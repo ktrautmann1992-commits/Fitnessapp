@@ -33,8 +33,23 @@ export function isMapMessage(value: unknown): value is MapMessage {
 
 const num = (n: number) => (Number.isFinite(n) ? Number(n.toFixed(6)) : 0);
 
-/** HTML der Karte; null bei weniger als 2 gültigen Punkten. */
-export function routeMapHtml(points: readonly LatLng[], label: string): string | null {
+/** Ein Stück der Linie in einer Farbe (Tempo-Stufe). */
+export interface MapColoredRun {
+  readonly color: string;
+  readonly points: readonly LatLng[];
+}
+
+const HEX = /^#[0-9A-Fa-f]{6}$/;
+
+/**
+ * HTML der Karte; null bei weniger als 2 gültigen Punkten. Mit `colored` wird die Linie stückweise nach Tempo
+ * eingefärbt (nur Zahlen und geprüfte Hex-Farben gelangen ins Skript); sonst einfarbig.
+ */
+export function routeMapHtml(
+  points: readonly LatLng[],
+  label: string,
+  colored: readonly MapColoredRun[] = [],
+): string | null {
   const valid = points.filter(
     (p) =>
       Number.isFinite(p.lat) &&
@@ -52,6 +67,18 @@ export function routeMapHtml(points: readonly LatLng[], label: string): string |
     [num(east), num(north)],
   ]);
   const safeLabel = label.replace(/[<>&"']/g, '');
+  const pieces = JSON.stringify(
+    colored
+      .filter((run) => run.points.length >= 2)
+      .map((run) => ({
+        type: 'Feature',
+        properties: { color: HEX.test(run.color) ? run.color : brandColors.blau },
+        geometry: {
+          type: 'LineString',
+          coordinates: run.points.map((p) => [num(p.lng), num(p.lat)]),
+        },
+      })),
+  );
   return `<!doctype html>
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
@@ -74,6 +101,7 @@ export function routeMapHtml(points: readonly LatLng[], label: string): string |
   try {
     if (!window.maplibregl) { finish('failed'); return; }
     var coords = ${coords};
+    var pieces = ${pieces};
     var map = new maplibregl.Map({
       container: 'map',
       style: '${OPENFREEMAP_STYLE}',
@@ -88,6 +116,10 @@ export function routeMapHtml(points: readonly LatLng[], label: string): string |
       map.addSource('route', { type: 'geojson', data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } } });
       map.addLayer({ id: 'route-casing', type: 'line', source: 'route', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#FFFFFF', 'line-width': 8 } });
       map.addLayer({ id: 'route', type: 'line', source: 'route', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '${brandColors.blau}', 'line-width': 5 } });
+      if (pieces.length > 0) {
+        map.addSource('pace', { type: 'geojson', data: { type: 'FeatureCollection', features: pieces } });
+        map.addLayer({ id: 'pace', type: 'line', source: 'pace', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': 5 } });
+      }
       map.addSource('ends', { type: 'geojson', data: { type: 'FeatureCollection', features: [
         { type: 'Feature', properties: { kind: 'start' }, geometry: { type: 'Point', coordinates: coords[0] } },
         { type: 'Feature', properties: { kind: 'finish' }, geometry: { type: 'Point', coordinates: coords[coords.length - 1] } }

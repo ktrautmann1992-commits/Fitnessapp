@@ -97,6 +97,9 @@ const ICONS = {
   alert: [{ d: 'M12 3 2 20h20Z' }, { d: 'M12 10v4M12 17h.01' }],
   bell: [{ d: 'M6 16V11a6 6 0 0 1 12 0v5l2 2H4ZM10 21h4' }],
   map: [{ d: 'M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3Z' }, { d: 'M9 3v15M15 6v15' }],
+  // Auswertung je Lauf: Anstieg und höchster Punkt.
+  mountain: [{ d: 'm3 20 6.5-11 4 6 2.5-3.5L21 20Z' }],
+  flag: [{ d: 'M5 21V4M5 4h11l-2 4 2 4H5' }],
   scale: [{ x: 3, y: 3, w: 18, h: 18, rx: 4 }, { d: 'M8 10a4 4 0 0 1 8 0M12 10l1.5-2.5' }],
   user: [{ cx: 12, cy: 8, r: 4 }, { d: 'M4 21a8 8 0 0 1 16 0' }],
   // Supplemente (Phase 6 SU4): Kapsel.

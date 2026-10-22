@@ -3,14 +3,12 @@ import {
   type EndurancePeriodSummary,
   distanceText,
   durationText,
-  elevationRange,
   sketchPath,
   sketchPoints,
-  splitBars,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Svg, { Circle, Line, Path, Polyline } from 'react-native-svg';
+import Svg, { Circle, Path } from 'react-native-svg';
 
 import { Body, Heading, MIN_TOUCH } from '@/components/ui';
 import { t } from '@/i18n';
@@ -20,9 +18,9 @@ import { useAreaColors } from '@/components/design';
 import { Text } from '@/components/text';
 
 /**
- * Bausteine für „Ausdauer“ (Etappen E4/E5): Linien-Skizze ohne Kartenkacheln, Kilometer-Balken, Höhenprofil, Summen
- * der Woche/des Monats und eine Zeile je Aktivität. Rechnungen in packages/core; hier nur Darstellung. Werte stehen
- * immer auch als Text da (nie nur Farbe/Grafik).
+ * Bausteine für „Ausdauer“ (Etappen E4/E5): Linien-Skizze ohne Kartenkacheln, Summen der Woche/des Monats und eine
+ * Zeile je Aktivität (Auswertung je Lauf: run-insights.tsx). Rechnungen in packages/core; hier nur Darstellung.
+ * Werte stehen immer auch als Text da (nie nur Farbe/Grafik).
  */
 
 const E = t.endurance;
@@ -65,96 +63,6 @@ export function RouteSketch({
           {last ? <Circle cx={last.x} cy={last.y} r={3} fill={theme.text} /> : null}
         </Svg>
       ) : null}
-    </View>
-  );
-}
-
-/** Kilometerzeiten als waagerechte Balken (langsamster = 100 %), Zeit als Text daneben. */
-export function SplitBars({ splits }: { splits: readonly number[] }) {
-  const theme = useThemeColors();
-  const orange = useAreaColors('ausdauer');
-  const bars = splitBars(splits);
-  if (bars.length === 0) return <Body muted>{E.detail.splitsEmpty}</Body>;
-  return (
-    <View style={styles.bars} testID="split-bars">
-      {bars.map((bar) => (
-        <View
-          key={bar.km}
-          style={styles.barRow}
-          accessible
-          accessibilityLabel={E.detail.splitA11y(bar.km, durationText(bar.seconds))}
-        >
-          <Text style={[styles.barLabel, { color: theme.textMuted }]}>{bar.km}</Text>
-          <View style={[styles.barTrack, { backgroundColor: theme.background }]}>
-            <View
-              style={[
-                styles.barFill,
-                {
-                  width: `${Math.max(4, Math.round(bar.share * 100))}%`,
-                  backgroundColor: orange.strong,
-                },
-              ]}
-            />
-          </View>
-          <Text style={[styles.barValue, { color: theme.text }]}>{durationText(bar.seconds)}</Text>
-        </View>
-      ))}
-    </View>
-  );
-}
-
-/** Höhenprofil als Linie (Distanz → Höhe), Achsenwerte als Text. */
-export function ElevationChart({
-  profile,
-  width = 320,
-  height = 120,
-}: {
-  profile: readonly (readonly number[])[] | null;
-  width?: number;
-  height?: number;
-}) {
-  const theme = useThemeColors();
-  const orange = useAreaColors('ausdauer');
-  const pairs = (profile ?? []).filter((p): p is [number, number] => p.length === 2) as [
-    number,
-    number,
-  ][];
-  const range = elevationRange(pairs);
-  if (!range || pairs.length < 2) return <Body muted>{E.detail.profileEmpty}</Body>;
-  const maxD = Math.max(1, (pairs.at(-1) as [number, number])[0]);
-  const span = Math.max(1, range.maxM - range.minM);
-  const pad = 4;
-  const pts = pairs
-    .map(([d, h]) => {
-      const x = pad + (d / maxD) * (width - 2 * pad);
-      const y = pad + (1 - (h / 10 - range.minM) / span) * (height - 2 * pad);
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(' ');
-  const minM = Math.round(range.minM);
-  const maxM = Math.round(range.maxM);
-  return (
-    <View testID="elevation-chart" accessible accessibilityLabel={E.detail.profileA11y(minM, maxM)}>
-      <Svg
-        width="100%"
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="none"
-      >
-        <Line
-          x1={0}
-          y1={height - 1}
-          x2={width}
-          y2={height - 1}
-          stroke={theme.border}
-          strokeWidth={1}
-        />
-        <Polyline points={pts} stroke={orange.strong} strokeWidth={2.5} fill="none" />
-      </Svg>
-      <View style={styles.axis}>
-        <Body muted>{`${minM} m`}</Body>
-        <Body muted>{`${maxM} m`}</Body>
-      </View>
     </View>
   );
 }
@@ -322,12 +230,10 @@ const styles = StyleSheet.create({
   sketch: { borderRadius: radius.md, overflow: 'hidden' },
   bars: { gap: spacing.xs },
   barRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 28 },
-  barLabel: { width: 28, textAlign: 'right', fontSize: fontSize.sm },
   weekLabel: { width: 52, fontSize: fontSize.sm },
   barTrack: { flex: 1, height: 14, borderRadius: radius.sm, overflow: 'hidden' },
   barFill: { height: '100%' },
   barValue: { width: 76, textAlign: 'right', fontVariant: ['tabular-nums'] },
-  axis: { flexDirection: 'row', justifyContent: 'space-between' },
   totals: { gap: spacing.sm },
   statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
   stat: { minWidth: 120, flexGrow: 1 },

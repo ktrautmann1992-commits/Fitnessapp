@@ -6,6 +6,7 @@ export * from './gpx';
 export * from './polyline';
 export * from './privacy-trim';
 export * from './recording';
+export * from './run-insights';
 export * from './schema';
 export * from './simplify';
 export * from './sketch';

@@ -92,6 +92,11 @@ test('Demo-Aufzeichnung → speichern → Auswertung → Liste/Summen → Story-
     '© OpenStreetMap-Mitwirkende',
   );
   await expect(page.getByTestId('route-map-failed')).toBeVisible();
+  // Anschauliche Auswertung: Kopf-Karte, farbige Skizze statt Karte, Legende, Tempo-Verlauf.
+  await expect(page.getByTestId('route-hero')).toBeVisible();
+  await expect(page.getByTestId('route-silhouette')).toBeVisible();
+  await expect(page.getByTestId('pace-legend')).toBeVisible();
+  await expect(page.getByTestId('pace-chart')).toBeVisible();
   await expect(page.getByTestId('route-compare')).toContainText(
     'Das erste Mal auf dieser Strecke.',
   );

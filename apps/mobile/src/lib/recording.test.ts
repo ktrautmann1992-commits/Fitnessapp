@@ -1,4 +1,10 @@
-import { addRecordingPoints, recordingSummary, startRecording } from '@fitnessapp/core';
+import {
+  addRecordingPoints,
+  recordingSummary,
+  runHighlights,
+  startRecording,
+  type TrackPoint,
+} from '@fitnessapp/core';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DEMO_MAX_SIM_MS, DemoRun, demoPointAt } from './demo-recording';
@@ -101,6 +107,41 @@ describe('Demo-Aufzeichnung (Testmodus)', () => {
     expect(Math.max(...points.map((p) => p.t))).toBeLessThan(realNow);
   });
 
+  it('Demo-Lauf ist abwechslungsreich: Tempo wechselt, ein Anstieg, starker Schluss (fest, ohne Zufall)', () => {
+    const realNow = Date.parse('2026-10-03T10:00:00Z');
+    const record = () => {
+      const points: TrackPoint[] = [];
+      const run = new DemoRun('run', (p) => points.push(...p), realNow);
+      run.tick(31 * 60 * 1000);
+      let state = startRecording({
+        id: ID,
+        ownerUserId: 'u',
+        sport: 'run',
+        now: realNow - DEMO_MAX_SIM_MS,
+      });
+      state = addRecordingPoints(state, points);
+      return recordingSummary(state);
+    };
+    const summary = record();
+    expect(summary.distanceM).toBeGreaterThan(5_000);
+    const splits = summary.kmSplits;
+    expect(splits.length).toBeGreaterThanOrEqual(5);
+    expect(Math.max(...splits) - Math.min(...splits)).toBeGreaterThan(30);
+    // Schnellster Kilometer am Schluss, langsamster am Anstieg (km 4).
+    expect(splits.indexOf(Math.min(...splits))).toBe(4);
+    expect(splits.indexOf(Math.max(...splits))).toBe(3);
+    const kinds = runHighlights({
+      kmSplits: splits,
+      distanceM: summary.distanceM,
+      movingS: summary.movingS,
+      elevationProfile: summary.elevationProfile,
+    }).map((h) => h.kind);
+    expect(kinds).toEqual(
+      expect.arrayContaining(['fastest_km', 'negative_split', 'biggest_climb', 'highest_point']),
+    );
+    expect(record().kmSplits).toEqual(splits);
+  });
+
   it('Runde ist geschlossen und hat Höhen', () => {
     const p = demoPointAt(0, 0);
     expect(p.altitudeM).toBeGreaterThan(40);
@@ -123,6 +164,22 @@ describe('Karte (WebView/iframe)', () => {
     expect(html).toContain('[[6.9,50.9],[6.91,50.91]]');
     expect(html).not.toContain('<script>alert');
     expect(html).not.toContain('tile.openstreetmap.org');
+  });
+
+  it('Linie nach Tempo: nur geprüfte Hex-Farben und Zahlen', () => {
+    const pts = [
+      { lat: 50.9, lng: 6.9 },
+      { lat: 50.91, lng: 6.91 },
+    ];
+    const html = routeMapHtml(pts, 'Karte', [
+      { color: '#6D28D9', points: pts },
+      { color: 'red;</script><script>alert(1)', points: pts },
+      { color: '#FFFFFF', points: [pts[0] as { lat: number; lng: number }] },
+    ]) as string;
+    expect(html).toContain("'line-color': ['get', 'color']");
+    expect(html).toContain('"color":"#6D28D9"');
+    expect(html).not.toContain('alert(1)');
+    expect(html).not.toContain('#FFFFFF"');
   });
 
   it('weniger als 2 gültige Punkte → keine Karte', () => {
