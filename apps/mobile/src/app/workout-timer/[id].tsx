@@ -26,6 +26,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { LiveRegion } from '@/components/calendar';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { kcalFor, SessionKcalLine, useSessionKcalContext } from '@/components/session-kcal';
 import {
   Body,
   Button,
@@ -88,6 +89,7 @@ export default function WorkoutTimerScreen() {
   const [note, setNote] = useState('');
   const [save, setSave] = useState<SaveState>({ kind: 'idle' });
   const [live, setLive] = useState({ text: '', version: 0 });
+  const kcalContext = useSessionKcalContext();
 
   const { ensureLibrary } = app;
   useEffect(() => {
@@ -294,6 +296,19 @@ export default function WorkoutTimerScreen() {
           <Body testID="workout-finish-rounds">
             {t.workouts.finish.rounds(summary.roundsCompleted, summary.rounds)}
           </Body>
+        ) : null}
+        {summary.workDone > 0 ? (
+          <SessionKcalLine
+            context={kcalContext}
+            // Aktive Zeit ohne Timer-Pausen; Workouts zählen wie Krafttraining (TRAINING_MET.strength).
+            result={kcalFor(kcalContext, {
+              kind: 'strength',
+              enduranceModality: null,
+              effortTarget: null,
+              durationS: summary.activeS,
+              measuredKcal: null,
+            })}
+          />
         ) : null}
         {summary.workDone === 0 ? (
           <Notice tone="warning">{t.workouts.finish.nothing}</Notice>

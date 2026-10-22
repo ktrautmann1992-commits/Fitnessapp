@@ -87,7 +87,9 @@ test('verbinden (Beispiel-Uhr) → Abgleich → Tagebuch/Puls → Story-Bild ohn
   const run = db.rows.sessionLogs.find((l) => l.name_de === 'Lauf');
   await page.goto(`/log/${run?.id ?? ''}`);
   await expect(page.getByTestId('wearable-badge')).toContainText('⌚ aus Samsung Health');
-  await expect(page.getByTestId('wearable-badge')).toContainText('kcal (laut Uhr)');
+  // kcal der Uhr an der Einheit: „ca. … kcal“ mit „laut Uhr“ (nicht mehr im Herkunfts-Hinweis).
+  await expect(page.getByTestId('session-kcal-value')).toHaveText(/^ca\. \d+ kcal$/);
+  await expect(page.getByTestId('session-kcal-source')).toHaveText('laut Uhr');
   await expect(page.getByTestId('hr-avg')).toContainText('/min');
   await expect(page.getByTestId('hr-zones')).toBeVisible();
   await expect(page.getByText(/Pulszonen sind Schätzwerte/)).toBeVisible();

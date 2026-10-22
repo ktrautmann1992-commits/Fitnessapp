@@ -7,6 +7,7 @@ import {
   evaluationMealPlanUsable,
   mealsInDayOrder,
   type PlannedMealDay,
+  sessionCaloriesTotal,
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
@@ -17,6 +18,12 @@ import { DayTrainingRow, IntakeBarCard } from '@/components/day-evaluation';
 import { PlanMealEaten } from '@/components/food-log';
 import { ConsentBlockedNotice } from '@/components/nutrition';
 import { Screen } from '@/components/screen';
+import {
+  kcalForLog,
+  SessionKcalLine,
+  useSessionKcalContext,
+  useWatchKcal,
+} from '@/components/session-kcal';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import {
   dayAchievementInputsAround,
@@ -25,6 +32,7 @@ import {
 } from '@/data/day-evaluation';
 import { t } from '@/i18n';
 import { intakeBarView, intakeTextLine } from '@/lib/day-evaluation-format';
+import { formatKcal } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { decodeRouteParam } from '@/lib/route-param';
 import { useToday } from '@/lib/use-today';
@@ -51,6 +59,8 @@ export default function DayScreen() {
   const view = useNutritionWeek(date);
   const foodLog = useFoodLogDay(date, view.showNumbers);
   const foodLogActions = useFoodLogActions();
+  const kcalContext = useSessionKcalContext();
+  const watchKcal = useWatchKcal();
   const [eatenMessage, setEatenMessage] = useState<{
     text: string;
     tone: 'success' | 'danger';
@@ -201,6 +211,17 @@ export default function DayScreen() {
     );
   }
   const hasActivePlan = rows.plans.some((p) => p.status === 'active');
+  // kcal je erledigter Einheit (Uhr bzw. Schätzung) und Summe des Tages – Rechnung in packages/core.
+  const kcalByLog = new Map(
+    evaluation.training.items.flatMap(({ item }) =>
+      item.logId === null
+        ? []
+        : [[item.logId, kcalForLog(kcalContext, rows, item.logId, watchKcal(item.logId))] as const],
+    ),
+  );
+  const kcalTotal = sessionCaloriesTotal(
+    [...kcalByLog.values()].filter((v): v is NonNullable<typeof v> => v !== null),
+  );
   const nutritionLoading =
     foodLog.supported && (view.library.kind === 'idle' || view.library.kind === 'loading');
 
@@ -263,9 +284,25 @@ export default function DayScreen() {
               entry={entry}
               exerciseNames={entry.item.logId ? dayExerciseNames(rows, entry.item.logId) : []}
               onOpenLog={(logId) => router.push(`/log/${logId}` as Href)}
+              kcal={
+                entry.item.logId !== null ? (
+                  <SessionKcalLine
+                    context={kcalContext}
+                    result={kcalByLog.get(entry.item.logId) ?? null}
+                  />
+                ) : null
+              }
             />
           ))
         )}
+        {kcalTotal !== null && kcalByLog.size > 1 ? (
+          <View testID="day-kcal-total">
+            <Body accessibilityLabel={t.sessionKcal.dayTotalA11y(formatKcal(kcalTotal.kcal))}>
+              {t.sessionKcal.dayTotal(formatKcal(kcalTotal.kcal))}
+            </Body>
+            <Body muted>{t.sessionKcal.dayTotalNote}</Body>
+          </View>
+        ) : null}
         <Button
           label={t.calendar.open}
           accessibilityLabel={t.calendar.openA11y}
