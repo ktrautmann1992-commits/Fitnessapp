@@ -13,6 +13,7 @@ export * from './import-rules';
 export * from './meal-prep-checks';
 export * from './meal-prep-plan-schema';
 export * from './muscle-map';
+export * from './muscle-tiles';
 export * from './nutrition-select';
 export * from './package-size-checks';
 export * from './package-size-schema';

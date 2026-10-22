@@ -11,6 +11,7 @@ import {
 } from '../plan/equipment-profile';
 import { isExerciseAllowed, type PlanSafetyRules } from '../plan/safety';
 import { muscleMapHighlights, type MuscleMapHighlights } from './muscle-map';
+import { MUSCLE_TILE_IDS, muscleTileRole, type MuscleTileRole } from './muscle-tiles';
 import { type Exercise, needsExpertReviewLabel } from './schemas';
 
 /**
@@ -108,6 +109,8 @@ export const glossarySearchOptionsSchema = z.strictObject({
   groups: z.array(z.enum(GLOSSARY_GROUP_IDS)).optional(),
   equipment: z.enum(GLOSSARY_EQUIPMENT_FILTERS).nullable().optional(),
   difficulty: z.array(z.number().int().min(1).max(3)).optional(),
+  /** Muskelgruppen-Kachel (muscle-tiles.ts): nur Übungen, die diesen Bereich als Haupt- oder Nebenmuskel trainieren. */
+  muscleTile: z.enum(MUSCLE_TILE_IDS).nullable().optional(),
 });
 export type GlossarySearchOptions = z.infer<typeof glossarySearchOptionsSchema>;
 
@@ -125,6 +128,8 @@ export interface GlossaryHit {
   readonly group: GlossaryGroup;
   /** null = ohne Suchwort (alle). */
   readonly match: GlossaryMatch | null;
+  /** Nur mit Muskelgruppen-Filter: Hauptmuskel oder unterstützend beteiligt; sonst null. */
+  readonly muscleRole: MuscleTileRole | null;
 }
 
 const NO_EQUIPMENT: Pick<EquipmentProfile, 'available'> = { available: new Set() };
@@ -192,12 +197,18 @@ export function searchExercises(
     if (groups.size > 0 && !groups.has(group)) continue;
     if (difficulty.size > 0 && !difficulty.has(exercise.difficulty)) continue;
     if (!passesEquipment(exercise, options.equipment, ctx)) continue;
+    const muscleRole = options.muscleTile ? muscleTileRole(exercise, options.muscleTile) : null;
+    if (options.muscleTile && muscleRole === null) continue;
     const match = tokens.length === 0 ? null : matchOf(exercise, tokens);
     if (tokens.length > 0 && match === null) continue;
-    hits.push({ exercise, group, match });
+    hits.push({ exercise, group, match, muscleRole });
   }
   const rank = (hit: GlossaryHit) => (hit.match === null ? 0 : GLOSSARY_MATCHES.indexOf(hit.match));
-  return hits.sort((a, b) => rank(a) - rank(b) || byNameDe(a.exercise, b.exercise));
+  // Mit Muskelgruppen-Filter: erst Übungen mit diesem Bereich als Hauptmuskel, dann „unterstützend beteiligt“.
+  const role = (hit: GlossaryHit) => (hit.muscleRole === 'secondary' ? 1 : 0);
+  return hits.sort(
+    (a, b) => role(a) - role(b) || rank(a) - rank(b) || byNameDe(a.exercise, b.exercise),
+  );
 }
 
 // ---------------------------------------------------------------------------------------------------------
