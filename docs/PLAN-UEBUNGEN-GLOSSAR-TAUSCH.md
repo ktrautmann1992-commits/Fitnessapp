@@ -1234,3 +1234,6 @@ Gründer-Wunsch: Im Glossar gibt es eine Übersicht mit einer Kachel pro Muskelg
   - Die Kacheln sind in beiden Modi dunkel (Graphit), weil die hellgrauen Figuren einen dunklen Grund brauchen.
   - Die Bilder sind Schmuck. Bildschirmleser lesen nur den Namen vor.
 - **Offen:** Eine Ganzkörper-Kachel fehlt noch, weil noch kein brauchbares Bild vorliegt.
+- **Übungsseite (22.10.2026):** Unter der Muskelkarte steht die Karte „Trainierte Muskelgruppen“. Sie zeigt dieselben
+  Bild-Kacheln, zuerst die Hauptmuskeln, dann die unterstützend beteiligten (`exerciseMuscleTiles`). „Nacken“ entfällt
+  neben „Oberer Rücken“, damit nichts doppelt erscheint. Ein Tipp öffnet `/uebungen?muskel=<kachel-id>`.

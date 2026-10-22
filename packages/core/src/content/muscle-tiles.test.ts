@@ -4,7 +4,13 @@ import { MUSCLE_GROUPS } from '../enums';
 import type { PlanLibrary } from '../plan/content-pool';
 import { repoLibrary } from '../plan/test-library';
 import { glossarySearchOptionsSchema, searchExercises } from './glossary';
-import { MUSCLE_TILE_IDS, MUSCLE_TILES, muscleTileRole, parseMuscleTileId } from './muscle-tiles';
+import {
+  exerciseMuscleTiles,
+  MUSCLE_TILE_IDS,
+  MUSCLE_TILES,
+  muscleTileRole,
+  parseMuscleTileId,
+} from './muscle-tiles';
 import { makeExercise } from './test-fixtures';
 
 /** Muskelgruppen-Kacheln im Glossar (Gründer-Wunsch 22.10.2026). */
@@ -114,6 +120,43 @@ describe('echter Inhaltsstand', () => {
     const repo = repoLibrary();
     for (const tile of MUSCLE_TILE_IDS) {
       expect(searchExercises(repo, { muscleTile: tile }).length, tile).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe('exerciseMuscleTiles (Übungsseite)', () => {
+  it('Hauptmuskeln zuerst, dann unterstützend, in Kachel-Reihenfolge', () => {
+    const ex = makeExercise({
+      primary_muscles: ['triceps', 'chest'],
+      secondary_muscles: ['front_delts', 'chest'],
+    });
+    expect(exerciseMuscleTiles(ex)).toEqual([
+      { tile: 'brust', role: 'primary' },
+      { tile: 'trizeps', role: 'primary' },
+      { tile: 'schultern', role: 'secondary' },
+    ]);
+  });
+
+  it('„Nacken“ entfällt neben „Oberer Rücken“ mit gleicher oder stärkerer Rolle', () => {
+    expect(
+      exerciseMuscleTiles(makeExercise({ primary_muscles: ['upper_back'], secondary_muscles: [] })),
+    ).toEqual([{ tile: 'ruecken-oben', role: 'primary' }]);
+    expect(
+      exerciseMuscleTiles(
+        makeExercise({ primary_muscles: ['lats'], secondary_muscles: ['upper_back'] }),
+      ),
+    ).toEqual([{ tile: 'ruecken-oben', role: 'primary' }]);
+  });
+
+  it('ohne Muskeln → leer', () => {
+    expect(
+      exerciseMuscleTiles(makeExercise({ primary_muscles: [], secondary_muscles: [] })),
+    ).toEqual([]);
+  });
+
+  it('echter Inhaltsstand: jede Übung hat mindestens eine Kachel', () => {
+    for (const ex of repoLibrary().exercises.values()) {
+      expect(exerciseMuscleTiles(ex).length, ex.id).toBeGreaterThan(0);
     }
   });
 });

@@ -86,3 +86,29 @@ test('Muskelgruppen: unbekannte Muskelgruppe im Link wird ignoriert', async ({ p
   await expect(visible(page, 'glossary-muscle-filter')).toHaveCount(0);
   await expect(visible(page, 'glossary-count')).toHaveText(total);
 });
+
+test('Übungsseite: Kacheln der trainierten Muskelgruppen führen zur gefilterten Liste', async ({
+  page,
+}) => {
+  await onboard(page, HOME_3_DAYS);
+  await toGlossary(page);
+  // Bankdrücken (Langhantel): Brust Hauptmuskel; Trizeps und Schultern unterstützend.
+  await page.goto('/uebungen/bankdruecken-langhantel');
+  await heading(page, 'Trainierte Muskelgruppen');
+  const tiles = page.getByTestId(/^exercise-muscle-tile-/);
+  await expect(tiles).toHaveCount(3);
+  await expect(tiles.first()).toHaveAttribute('data-testid', 'exercise-muscle-tile-brust');
+  await expect(tiles.first()).toContainText('Hauptmuskel');
+  await expect(page.getByTestId('exercise-muscle-tile-trizeps')).toContainText(
+    'unterstützend beteiligt',
+  );
+  if (process.env.SCREENSHOT_DIR) {
+    await page.getByTestId('exercise-muscle-tiles').screenshot({
+      path: `${process.env.SCREENSHOT_DIR}/uebung-muskelgruppen.png`,
+    });
+  }
+
+  await page.getByTestId('exercise-muscle-tile-trizeps').click();
+  await heading(page, 'Übungen');
+  await expect(visible(page, 'glossary-muscle-filter')).toContainText('Muskelgruppe: Trizeps');
+});

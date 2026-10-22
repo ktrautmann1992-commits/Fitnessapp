@@ -1,9 +1,10 @@
-import { glossaryEntry } from '@fitnessapp/core';
+import { exerciseMuscleTiles, glossaryEntry } from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { ExerciseMuscleTiles } from '@/components/exercise-muscle-tiles';
 import { MuscleMap, StartPositionImage } from '@/components/muscle-map';
 import { ReadAloudButton } from '@/components/read-aloud';
 import { Screen } from '@/components/screen';
@@ -176,6 +177,17 @@ export default function GlossaryDetailScreen() {
       <Card>
         <Heading level={2}>{t.muscleMap.title}</Heading>
         <MuscleMap highlights={entry.muscles} testID="glossary-muscle-map" />
+      </Card>
+
+      {/* Muskelgruppen mit Bild (Gründer-Wunsch 22.10.2026): Tipp → alle Übungen für diese Muskelgruppe. */}
+      <Card>
+        <Heading level={2}>{t.glossary.exerciseMusclesTitle}</Heading>
+        <ExerciseMuscleTiles
+          tiles={exerciseMuscleTiles({
+            primary_muscles: entry.muscles.primary,
+            secondary_muscles: entry.muscles.secondary,
+          })}
+        />
       </Card>
 
       <Card>
