@@ -1,4 +1,10 @@
-import { type AppLayout, type NavArea, normalizeLayout, toStoredLayout } from '@fitnessapp/core';
+import {
+  type AppLayout,
+  type NavArea,
+  normalizeLayout,
+  storedStepGoal,
+  toStoredLayout,
+} from '@fitnessapp/core';
 import { useCallback, useMemo } from 'react';
 
 import { AVAILABLE_AREAS } from '@/lib/app-areas';
@@ -10,11 +16,15 @@ export { AVAILABLE_AREAS };
 /**
  * Anordnung der Übersicht und der Menüleiste (Etappe E2): immer die normalisierte Fassung aus packages/core
  * (`normalizeLayout`, Standard ohne gespeicherten Stand). `save` speichert sofort lokal (offline möglich).
+ * Schrittziel (22.10.2026): wird mit der Anordnung gespeichert (`step_goal`); `save` behält ein gespeichertes Ziel,
+ * `saveStepGoal` behält die Anordnung. Ohne eigenes Ziel gilt der Standard (packages/core `storedStepGoal`).
  */
 export function useAppLayout(): {
   layout: AppLayout;
   available: readonly NavArea[];
   save: (layout: AppLayout) => Promise<void>;
+  stepGoal: number;
+  saveStepGoal: (goal: number) => Promise<void>;
 } {
   const app = useApp();
   const stored = app.rows?.appLayout ?? null;
@@ -28,10 +38,16 @@ export function useAppLayout(): {
       ),
     [stored],
   );
+  const ownGoal = stored?.step_goal ?? null;
+  const stepGoal = storedStepGoal(stored);
   const { saveAppLayout } = app;
   const save = useCallback(
-    (next: AppLayout) => saveAppLayout(toStoredLayout(next)),
-    [saveAppLayout],
+    (next: AppLayout) => saveAppLayout(toStoredLayout(next, ownGoal)),
+    [saveAppLayout, ownGoal],
   );
-  return { layout, available: AVAILABLE_AREAS, save };
+  const saveStepGoal = useCallback(
+    (goal: number) => saveAppLayout(toStoredLayout(layout, goal)),
+    [saveAppLayout, layout],
+  );
+  return { layout, available: AVAILABLE_AREAS, save, stepGoal, saveStepGoal };
 }

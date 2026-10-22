@@ -26,6 +26,7 @@ import { DashboardEditor } from '@/components/dashboard-edit';
 import { WorkoutsTile } from '@/components/workouts';
 import { EnduranceTile } from '@/components/endurance-tile';
 import { Screen } from '@/components/screen';
+import { StepsTile } from '@/components/steps';
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { Body, Button, Heading, LoadingState, Notice } from '@/components/ui';
 import { weightGoalOverviewFromRows } from '@/components/weight-goal';
@@ -128,6 +129,7 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
   const small = (id: DashboardTileId) =>
     id === 'workouts' ||
     id === 'endurance' ||
+    id === 'steps' ||
     (id === 'nutrition' && app.backend.supportsNutrition);
   const groups: DashboardTileId[][] = [];
   for (const id of visibleTiles) {
@@ -156,6 +158,9 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
       // Etappe E4 (Ausdauer): km dieser Woche mit Balken je Tag.
       case 'endurance':
         return <EnduranceTile rows={rows} today={today} />;
+      // Schritte mit Tagesziel als Ring (Gründer-Wunsch 22.10.2026, docs/PLAN-PHASE-8.md 13.4).
+      case 'steps':
+        return <StepsTile today={today} />;
       case 'shortcuts':
         return (
           <ShortcutGrid label={t.dashboard.shortcuts.title}>

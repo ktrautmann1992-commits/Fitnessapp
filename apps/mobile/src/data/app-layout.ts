@@ -12,6 +12,8 @@ export function appLayoutRowFromDb(row: unknown): AppLayoutRow | null {
   const parsed = storedAppLayoutSchema.safeParse({
     dashboard_tiles: value.dashboard_tiles,
     tab_bar: value.tab_bar,
+    // Spalte seit 22.10.2026 (vor `db-migrate` fehlt sie → Standard).
+    ...(typeof value.step_goal === 'number' ? { step_goal: value.step_goal } : {}),
   });
   if (!parsed.success || typeof value.user_id !== 'string') return null;
   return { user_id: value.user_id, ...parsed.data };

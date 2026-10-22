@@ -7,3 +7,4 @@ export * from './daily';
 export * from './sessions';
 export * from './sync';
 export * from './rows';
+export * from './steps';

@@ -19,6 +19,7 @@ import {
   setTabShown,
   setTileVisible,
   tilePosition,
+  storedStepGoal,
   toStoredLayout,
 } from './layout';
 
@@ -70,6 +71,7 @@ describe('normalizeLayout', () => {
     expect(layout.tiles).toEqual([
       { id: 'progress', visible: false },
       { id: 'endurance', visible: true },
+      { id: 'steps', visible: true },
       { id: 'shortcuts', visible: true },
       { id: 'training', visible: true },
       { id: 'competition', visible: true },
@@ -98,6 +100,7 @@ describe('normalizeLayout', () => {
       'body',
       'progress',
       'endurance',
+      'steps',
     ]);
   });
 
@@ -188,10 +191,10 @@ describe('Kacheln', () => {
       'workouts',
       'competition',
     ]);
-    expect(tilePosition(moved, 'workouts')).toEqual({ index: 2, count: 8 });
+    expect(tilePosition(moved, 'workouts')).toEqual({ index: 2, count: 9 });
     expect(tilePosition(moveTile(moved, 'workouts', 'down'), 'workouts')).toEqual({
       index: 3,
-      count: 8,
+      count: 9,
     });
   });
 
@@ -260,5 +263,54 @@ describe('Menüleiste', () => {
     ]);
     expect(sameLayout(defaultLayout(), defaultLayout())).toBe(true);
     expect(sameLayout(defaultLayout(), moveTile(defaultLayout(), 'body', 'up'))).toBe(false);
+  });
+});
+
+describe('Kachel „Schritte“ und Schrittziel (22.10.2026)', () => {
+  it('Standard: „Schritte“ direkt hinter „Ausdauer“, sichtbar', () => {
+    const ids = defaultLayout().tiles.map((t) => t.id);
+    expect(ids.indexOf('steps')).toBe(ids.indexOf('endurance') + 1);
+    expect(defaultLayout().tiles.find((t) => t.id === 'steps')?.visible).toBe(true);
+  });
+
+  it('gespeicherte Anordnung von vorher (ohne „steps“): erscheint hinter „Ausdauer“, eigene Reihenfolge bleibt', () => {
+    const layout = normalizeLayout({
+      dashboard_tiles: [
+        { id: 'endurance', visible: true },
+        { id: 'training', visible: false },
+        { id: 'shortcuts', visible: true },
+      ],
+      tab_bar: ['uebersicht', 'today', 'mehr'],
+    });
+    expect(layout.tiles.slice(0, 3)).toEqual([
+      { id: 'endurance', visible: true },
+      { id: 'steps', visible: true },
+      { id: 'training', visible: false },
+    ]);
+  });
+
+  it('Schrittziel wird mit gespeichert; ohne Ziel fehlt das Feld; ungültig → nicht speicherbar', () => {
+    const layout = defaultLayout();
+    expect(toStoredLayout(layout)).not.toHaveProperty('step_goal');
+    expect(toStoredLayout(layout, null)).not.toHaveProperty('step_goal');
+    expect(toStoredLayout(layout, 10_000).step_goal).toBe(10_000);
+    expect(() => toStoredLayout(layout, 10_250)).toThrow();
+    // Anordnung unverändert durch das Ziel.
+    expect(normalizeLayout(toStoredLayout(layout, 10_000))).toEqual(layout);
+  });
+
+  it('storedStepGoal: gespeichert → Ziel; fehlt/null/ungültig/kein Objekt → 8.000', () => {
+    const stored = toStoredLayout(defaultLayout(), 12_000);
+    expect(storedStepGoal(stored)).toBe(12_000);
+    expect(storedStepGoal(toStoredLayout(defaultLayout()))).toBe(8000);
+    expect(storedStepGoal({ ...stored, step_goal: null })).toBe(8000);
+    expect(storedStepGoal({ ...stored, step_goal: 42 })).toBe(8000);
+    expect(storedStepGoal(null)).toBe(8000);
+    expect(storedStepGoal('x')).toBe(8000);
+  });
+
+  it('ungültiges Ziel im Speicher → Anordnung fällt auf den Standard (Zod an der Grenze)', () => {
+    const stored = { ...toStoredLayout(moveTile(defaultLayout(), 'body', 'up')), step_goal: 99 };
+    expect(normalizeLayout(stored)).toEqual(defaultLayout());
   });
 });

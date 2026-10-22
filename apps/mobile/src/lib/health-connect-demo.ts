@@ -29,6 +29,12 @@ function heartRateSamples(
   }));
 }
 
+/**
+ * Schritte der letzten 7 Tage (älteste zuerst, letzter = heute): mal über, mal unter dem Standardziel 8.000 – heute
+ * 6.240 (78 %), damit die Kachel „Schritte“ im Testmodus einen halb gefüllten Ring zeigt.
+ */
+export const DEMO_STEPS = [7400, 9100, 5600, 10_300, 8200, 11_900, 6240] as const;
+
 /** Beispieldaten für den Zeitraum bis `today` (lokales Datum). */
 export function demoRead(today: string, from: string, to: string): HcReadResult {
   const days = Array.from({ length: 7 }, (_, i) => addDays(today, -6 + i));
@@ -90,7 +96,7 @@ export function demoRead(today: string, from: string, to: string): HcReadResult 
         stages: [],
       }))
       .filter((s) => inWindow(s.endTime)),
-    steps: days.map((day, i) => ({ day, count: 6500 + i * 900 })),
+    steps: days.map((day, i) => ({ day, count: DEMO_STEPS[i] ?? 0 })),
   };
 }
 

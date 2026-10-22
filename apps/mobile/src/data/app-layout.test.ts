@@ -50,6 +50,35 @@ describe('Anordnung im Testmodus', () => {
   });
 });
 
+describe('Schrittziel (22.10.2026) im Testmodus', () => {
+  it('speichern, ohne Feld bleibt das Ziel, im Export; ungültig → abgelehnt', async () => {
+    const { backend } = seededBackend(rows());
+    const layout = defaultLayout(AVAILABLE_AREAS);
+    const withGoal = await backend.saveAppLayout(toStoredLayout(layout, 10_000), rows());
+    expect(withGoal.appLayout?.step_goal).toBe(10_000);
+    // Anordnung ändern ohne Ziel (z. B. ältere Fassung) → Ziel bleibt.
+    const moved = await backend.saveAppLayout(
+      toStoredLayout(moveTile(layout, 'steps', 'up')),
+      withGoal,
+    );
+    expect(moved.appLayout?.step_goal).toBe(10_000);
+    const file = await backend.exportMyData();
+    expect(file.data.app_layout_settings).toEqual([expect.objectContaining({ step_goal: 10_000 })]);
+    for (const bad of [500, 30_500, 8250]) {
+      await expect(
+        backend.saveAppLayout({ ...toStoredLayout(layout), step_goal: bad }, moved),
+      ).rejects.toBeInstanceOf(BackendError);
+    }
+  });
+
+  it('Zeile aus der Datenbank: step_goal übernommen, null/fehlend → kein eigenes Ziel', () => {
+    const base = { user_id: USER_ID, ...toStoredLayout(defaultLayout(AVAILABLE_AREAS)) };
+    expect(appLayoutRowFromDb({ ...base, step_goal: 9000 })?.step_goal).toBe(9000);
+    expect(appLayoutRowFromDb({ ...base, step_goal: null })).toEqual(base);
+    expect(appLayoutRowFromDb(base)).toEqual(base);
+  });
+});
+
 describe('Standard in dieser App-Fassung', () => {
   it('mit Bereich „Workouts“: Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr (6)', () => {
     expect(AVAILABLE_AREAS).toContain('workouts');

@@ -230,10 +230,18 @@ export function isValidOp(
     // Anordnung (Etappe E2): Form wie storedAppLayoutSchema, Regeln wie save_app_layout (Übersicht links, Mehr rechts,
     // nur bekannte IDs, keine Doppel) – die normalisierte Form erfüllt sie.
     case 'save_app_layout': {
-      const stored = { dashboard_tiles: op.row.dashboard_tiles, tab_bar: op.row.tab_bar };
+      // Schrittziel (optional): 1.000–30.000 je 500 wie die Funktion (stepGoalSchema).
+      const stored = {
+        dashboard_tiles: op.row.dashboard_tiles,
+        tab_bar: op.row.tab_bar,
+        ...(op.row.step_goal === undefined || op.row.step_goal === null
+          ? {}
+          : { step_goal: op.row.step_goal }),
+      };
       return (
         storedAppLayoutSchema.safeParse(stored).success &&
-        JSON.stringify(toStoredLayout(normalizeLayout(stored))) === JSON.stringify(stored)
+        JSON.stringify(toStoredLayout(normalizeLayout(stored), stored.step_goal)) ===
+          JSON.stringify(stored)
       );
     }
     case 'upsert_measurement_reminder':

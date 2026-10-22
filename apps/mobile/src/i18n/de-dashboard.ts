@@ -125,6 +125,7 @@ export const deDashboard = {
       body: 'Körperdaten',
       progress: 'Fortschritt',
       endurance: 'Ausdauer',
+      steps: 'Schritte',
       shortcuts: 'Schnell zu',
     },
   },
