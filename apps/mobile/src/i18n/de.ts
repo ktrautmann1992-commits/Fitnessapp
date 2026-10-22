@@ -1483,6 +1483,8 @@ export const de = {
     muscleFilter: (name: string) => `Muskelgruppe: ${name}`,
     muscleFilterClear: 'Muskelgruppe entfernen',
     muscleSecondary: 'unterstützend beteiligt',
+    musclePrimary: 'Hauptmuskel',
+    exerciseMusclesTitle: 'Trainierte Muskelgruppen',
     muscleTiles: {
       brust: 'Brust',
       schultern: 'Schultern',

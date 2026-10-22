@@ -1,5 +1,4 @@
 import type { MuscleGroup } from '../enums';
-import type { Exercise } from './schemas';
 
 /**
  * Muskelgruppen-Kacheln im Übungs-Glossar (Gründer-Wunsch 22.10.2026): Eine Kachel pro Körperbereich mit
@@ -62,11 +61,43 @@ export function parseMuscleTileId(value: unknown): MuscleTileId | null {
 export type MuscleTileRole = 'primary' | 'secondary';
 
 export function muscleTileRole(
-  exercise: Pick<Exercise, 'primary_muscles' | 'secondary_muscles'>,
+  exercise: {
+    readonly primary_muscles: readonly MuscleGroup[];
+    readonly secondary_muscles: readonly MuscleGroup[];
+  },
   tile: MuscleTileId,
 ): MuscleTileRole | null {
   const muscles = MUSCLE_TILES[tile];
   if (exercise.primary_muscles.some((m) => muscles.includes(m))) return 'primary';
   if (exercise.secondary_muscles.some((m) => muscles.includes(m))) return 'secondary';
   return null;
+}
+
+export interface ExerciseMuscleTile {
+  readonly tile: MuscleTileId;
+  readonly role: MuscleTileRole;
+}
+
+/**
+ * Muskelgruppen-Kacheln einer Übung (Übungsseite, Gründer-Wunsch 22.10.2026): erst die Hauptmuskeln, dann
+ * „unterstützend beteiligt“, je in Kachel-Reihenfolge. Eine Kachel, deren Muskeln ganz in einer anderen gezeigten
+ * Kachel mit mindestens gleicher Rolle stecken, entfällt (z. B. „Nacken“ neben „Oberer Rücken“) – keine Doppelung.
+ */
+export function exerciseMuscleTiles(exercise: {
+  readonly primary_muscles: readonly MuscleGroup[];
+  readonly secondary_muscles: readonly MuscleGroup[];
+}): ExerciseMuscleTile[] {
+  const rank = (role: MuscleTileRole) => (role === 'primary' ? 0 : 1);
+  const hits = MUSCLE_TILE_IDS.flatMap((tile) => {
+    const role = muscleTileRole(exercise, tile);
+    return role === null ? [] : [{ tile, role }];
+  });
+  const covered = (a: ExerciseMuscleTile, b: ExerciseMuscleTile) =>
+    a.tile !== b.tile &&
+    rank(b.role) <= rank(a.role) &&
+    MUSCLE_TILES[a.tile].every((m) => MUSCLE_TILES[b.tile].includes(m)) &&
+    MUSCLE_TILES[b.tile].length > MUSCLE_TILES[a.tile].length;
+  return hits
+    .filter((a) => !hits.some((b) => covered(a, b)))
+    .sort((a, b) => rank(a.role) - rank(b.role));
 }
