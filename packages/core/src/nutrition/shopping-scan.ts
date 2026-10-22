@@ -2,8 +2,14 @@ import { z } from 'zod';
 
 import { SHOPPING_LIST_ROUNDING, SHOPPING_SCAN } from '../constants';
 import { contentIdSchema } from '../content/schemas';
-import type { FoodLookup, ShoppingCategory } from '../content/food-schema';
+import type { FoodLookup, FoodSource, ShoppingCategory } from '../content/food-schema';
 import { barcodeSchema } from './barcode';
+import type {
+  FoodProductBaseUnit,
+  FoodProductCheck,
+  ProductPer100,
+  UserFoodProduct,
+} from './food-product';
 import type { ShoppingList, ShoppingListItem } from './shopping-list';
 
 /**
@@ -292,4 +298,118 @@ export function withShoppingProductLink(
   const parsed = shoppingProductLinkSchema.parse(link);
   const next = [...links.filter((l) => l.code !== parsed.code), parsed];
   return next.slice(Math.max(0, next.length - SHOPPING_SCAN.linksMax));
+}
+
+/**
+ * Nährwerte zum gescannten Produkt (Wunsch des Gründers vom 22.10.2026: „Beim Barcode Scanner einkaufen sollen auch die
+ * Nährwerte angezeigt werden“). Reine Auswahl, keine Rechnung – die App zeigt das Ergebnis nur an:
+ * 1. **Eigenes Produkt** mit dieser Nummer → dessen Werte („Deine Angaben“).
+ * 2. **Produktabfrage** (Open Food Facts bzw. Attrappe) → Werte je 100 g/ml samt Prüfstufe; bei `blocked` sind alle
+ *    Werte null (die App zeigt dann keine Zahlen, nur den Hinweis).
+ * 3. **Gelernte Zuordnung** zu einem Katalog-Lebensmittel → dessen Werte je 100 g samt Quelle (BLS), nur wenn das
+ *    Lebensmittel im Katalog steht.
+ * Sonst null (nichts anzeigen). Nichts wird gespeichert; Nummern und Namen kommen im Ergebnis nicht vor.
+ */
+export type ScanNutrition =
+  | {
+      readonly source: 'product';
+      readonly baseUnit: FoodProductBaseUnit;
+      readonly per100: ProductPer100;
+      readonly check: FoodProductCheck;
+      /** Testmodus mit Attrappe (ausgedachte Testwerte). */
+      readonly mock: boolean;
+      /** Abrufzeit der Produktdaten (Quellenangabe „abgerufen am …“). */
+      readonly retrievedAt: string;
+    }
+  | {
+      readonly source: 'own';
+      readonly baseUnit: FoodProductBaseUnit;
+      readonly per100: ProductPer100;
+    }
+  | {
+      readonly source: 'catalog';
+      readonly baseUnit: 'g';
+      readonly per100: ProductPer100;
+      readonly foodSource: FoodSource;
+    };
+
+export interface ScanNutritionInput {
+  /** Eigenes Produkt mit der gescannten Nummer (`userProductForCode`), sonst null. */
+  readonly own: Pick<
+    UserFoodProduct,
+    'base_unit' | 'kcal' | 'protein_g' | 'carbs_g' | 'fat_g' | 'sugar_g' | 'salt_g'
+  > | null;
+  /** Antwort der Produktabfrage (`code: 'found'`), sonst null. */
+  readonly found: {
+    readonly product: {
+      readonly base_unit: FoodProductBaseUnit;
+      readonly per100: ProductPer100;
+      readonly source: { readonly retrieved_at: string };
+    };
+    readonly check: FoodProductCheck;
+    readonly mock: boolean;
+  } | null;
+  /** Lebensmittel der gelernten Zuordnung (food_id), sonst null. */
+  readonly linkedFoodId: string | null;
+}
+
+const EMPTY_PER100: ProductPer100 = {
+  kcal: null,
+  protein_g: null,
+  carbs_g: null,
+  fat_g: null,
+  sugar_g: null,
+  sat_fat_g: null,
+  fiber_g: null,
+  salt_g: null,
+};
+
+export function scanNutrition(input: ScanNutritionInput, foods?: FoodLookup): ScanNutrition | null {
+  if (input.own !== null) {
+    const o = input.own;
+    return {
+      source: 'own',
+      baseUnit: o.base_unit,
+      per100: {
+        ...EMPTY_PER100,
+        kcal: o.kcal,
+        protein_g: o.protein_g,
+        carbs_g: o.carbs_g,
+        fat_g: o.fat_g,
+        sugar_g: o.sugar_g,
+        salt_g: o.salt_g,
+      },
+    };
+  }
+  if (input.found !== null) {
+    const { product, check, mock } = input.found;
+    return {
+      source: 'product',
+      baseUnit: product.base_unit,
+      // Gesperrt: nie Zahlen weitergeben, auch wenn die Antwort welche enthielte.
+      per100: check.level === 'blocked' ? EMPTY_PER100 : product.per100,
+      check,
+      mock,
+      retrievedAt: product.source.retrieved_at,
+    };
+  }
+  if (input.linkedFoodId === null) return null;
+  const food = foods?.get(input.linkedFoodId);
+  if (food === undefined) return null;
+  const n = food.nutrients_per_100g;
+  return {
+    source: 'catalog',
+    baseUnit: 'g',
+    per100: {
+      kcal: n.kcal,
+      protein_g: n.protein_g,
+      carbs_g: n.carbs_g,
+      fat_g: n.fat_g,
+      sugar_g: n.sugar_g,
+      sat_fat_g: n.sat_fat_g,
+      fiber_g: n.fiber_g,
+      salt_g: n.salt_g,
+    },
+    foodSource: food.source,
+  };
 }
