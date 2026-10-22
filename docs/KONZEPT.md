@@ -421,6 +421,19 @@ nie „Plan neu erstellen“. Präferenzen sind im Datenexport (Testmodus) entha
 nicht.
 Regeln in `packages/core/src/content/glossary.ts`, Grenzen in `GLOSSARY_LIMITS`.
 
+**kcal je Einheit (Gründer-Wunsch 22.10.2026, Gratis, ohne KI):** An jeder erledigten Einheit steht „ca. 320 kcal“ –
+am Ende eines Workouts im Timer, im Tagebuch-Eintrag, bei jeder Einheit in „Dein Tag“ (ab zwei Einheiten mit Tagessumme)
+und als Wert im Zahlen-Raster eines Laufs. Darunter klein die Herkunft: **„laut Uhr“** (Health Connect
+`TotalCaloriesBurned` im Zeitraum der Einheit, `wearable_sessions.kcal`) oder **„geschätzt aus Dauer, Intensität und
+Gewicht“** (brutto MET × kg × Stunden mit denselben MET-Werten wie die Ernährung, `TRAINING_MET`; Kraft: Beginn bis
+Ende, ohne Zeiten die geplanten Minuten; Ausdauer: erfasste Dauer bzw. Bewegungszeit; Workouts: aktive Zeit ohne
+Timer-Pausen, MET wie Krafttraining). Brutto, damit Schätzung und Uhr vergleichbar sind – der Kalorienring der Ernährung
+rechnet netto ((MET − 1) × kg × h), darum ist „Verbrannt“ dort kleiner (Hinweis an der Tagessumme). Gerundet auf 5 kcal,
+unter 1 Minute bzw. über 8 Stunden keine Zahl, Deckel 6.000 kcal (`SESSION_KCAL`). Ohne Einwilligung Gesundheitsdaten
+bzw. ohne Gewicht keine Zahl, nur „Für kcal: Gewicht im Profil angeben“ mit Weg zur Eingabe; bei „Kalorienzahlen
+anzeigen“ aus oder Schwangerschaft gar nichts. kcal stehen **nie** auf dem Story-Bild (`STORY_CARD_FIELDS` ist eine
+Positivliste). Regeln in `packages/core/src/log/session-calories.ts`.
+
 ### 5.1 Workout-Bibliothek mit Sternen und Timer (Gratis, ohne KI)
 Eigener Reiter **„Workouts“**: fertige, vorab erstellte und geprüfte Workouts (Kategorien Ganzkörper, Bauch & Rumpf,
 Oberkörper, Beine & Po, HIIT & Cardio, Mobilität, Rücken-fit), Schwierigkeit **1–5 Sterne** (1 leicht … 5 sehr

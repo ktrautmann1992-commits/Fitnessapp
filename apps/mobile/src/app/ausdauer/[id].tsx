@@ -23,6 +23,7 @@ import { SectionLabel, StatValue } from '@/components/design';
 import { ElevationChart, SplitBars } from '@/components/endurance';
 import { RouteMap } from '@/components/route-map';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { SessionKcalStat } from '@/components/session-kcal';
 import { WearableLogInfo } from '@/components/wearables';
 import {
   Body,
@@ -203,6 +204,16 @@ export default function RouteDetailScreen() {
               valueTestID="route-moving"
             />
           </View>
+          {/* kcal (Uhr bzw. Schätzung aus Bewegungszeit) – eigene Zelle, nie auf dem Story-Bild. */}
+          <SessionKcalStat
+            input={{
+              kind: 'endurance',
+              enduranceModality: info.sport,
+              effortTarget: null,
+              durationS: info.moving_s,
+            }}
+            logId={info.session_log_id}
+          />
           {info.elevation_gain_m !== null ? (
             <View style={styles.statCell}>
               <StatValue

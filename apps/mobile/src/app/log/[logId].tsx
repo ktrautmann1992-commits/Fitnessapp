@@ -4,6 +4,7 @@ import {
   isBackfilledLog,
   isoDateInTimeZone,
   logEditability,
+  sessionCaloriesInputForLog,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
@@ -11,6 +12,12 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog, Screen } from '@/components/screen';
+import {
+  kcalFor,
+  SessionKcalLine,
+  useSessionKcalContext,
+  useWatchKcal,
+} from '@/components/session-kcal';
 import { WearableLogInfo } from '@/components/wearables';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { EMPTY_LOG_ROWS, logRowsOf, mergeLogRows } from '@/data/log-rows';
@@ -47,6 +54,8 @@ export default function LogEntryScreen() {
     void ensureLibrary();
   }, [ensureLibrary]);
   const lib = library.kind === 'ready' ? library.library : null;
+  const kcalContext = useSessionKcalContext();
+  const watchKcal = useWatchKcal();
 
   if (app.status.kind === 'loading') {
     return (
@@ -122,6 +131,11 @@ export default function LogEntryScreen() {
     }
   }
 
+  const kcal = kcalFor(kcalContext, {
+    ...sessionCaloriesInputForLog({ log, cardio: detail.cardio, planned: session }),
+    measuredKcal: watchKcal(log.id),
+  });
+
   const speed = detail.cardio
     ? cardioSpeed(detail.cardio.modality, detail.cardio.duration_s, detail.cardio.distance_m)
     : null;
@@ -152,6 +166,7 @@ export default function LogEntryScreen() {
           {log.status === 'completed' ? t.logEntry.completed : t.logEntry.partial}
         </Body>
         {log.session_rpe !== null ? <Body>{effortText(log.session_rpe)}</Body> : null}
+        <SessionKcalLine context={kcalContext} result={kcal} />
         {waiting ? <Body muted>{t.today.pendingUpload}</Body> : null}
       </Card>
 
