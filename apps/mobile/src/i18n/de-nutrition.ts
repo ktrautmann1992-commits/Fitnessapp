@@ -680,6 +680,11 @@ export const deNutrition = {
       cameraProblem: 'Die Kamera ließ sich nicht nutzen – tipp die Nummer ein.',
       testCodes: 'Testmodus: Testnummern (statt einer echten Packung)',
       testCodeA11y: (label: string) => `Testnummer scannen: ${label}`,
+      /** Nährwerte zum gescannten Produkt (Wunsch vom 22.10.2026) – nur Anzeige, nichts wird gespeichert. */
+      nutritionTitle: (unit: 'g' | 'ml') => `Nährwerte je 100 ${unit}`,
+      nutritionOwn: 'Deine Angaben – nur für dich sichtbar.',
+      nutritionReview:
+        'Bitte prüfen: Die Angaben wirken nicht ganz stimmig – vergleich sie mit der Packung.',
     },
     fromRecipe: {
       add: (servings: number) =>

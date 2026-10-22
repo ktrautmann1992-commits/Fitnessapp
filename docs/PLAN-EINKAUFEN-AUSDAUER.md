@@ -99,6 +99,18 @@ Produktabfrage), `docs/PLAN-PHASE-5.md` (N5b/N7 Einkaufsliste), Code-Stand `orig
 4. Produkt unbekannt, Abfrage aus oder offline → „Produkt nicht erkannt“ + Auswahl aus den offenen Einträgen bzw.
    eigener Artikel. Der Scanner führt nie in eine Sackgasse.
 
+**Nachtrag 22.10.2026 – Nährwerte beim Scannen** (Wunsch des Gründers: „Beim Barcode Scanner einkaufen sollen auch die
+Nährwerte angezeigt werden“): Nach jedem erkannten Scan (abgehakt mit „Rückgängig“, schon abgehakt, Auswahl,
+„Zusätzlich hinzufügen?“) zeigt der Scanner eine kompakte Karte „Nährwerte je 100 g/ml“ (Energie, Eiweiß,
+Kohlenhydrate, davon Zucker, Fett, Salz; fehlend „–“). Auswahl in packages/core `scanNutrition`: eigenes Produkt
+(„Deine Angaben“) → Produktabfrage (Regeln wie `ProductCard`: `blocked` keine Zahlen + Hinweis, `review` Zahlen +
+„Bitte prüfen“, Quellenangabe ODbL + „Mehr zur Lizenz“, Testmodus-Hinweis) → gelernte Zuordnung (Werte des
+Katalog-Lebensmittels mit BLS-Quelle bzw. „Testwerte“, nur wenn im Katalog). Texte/Schalter: `scanNutritionView`
+(`lib/food-product-format.ts`); Tabelle `Per100Table` geteilt mit `ProductCard`. „Kalorienzahlen aus“ → keine Zahlen,
+kurzer Hinweis. Verschwindet beim nächsten Scan; nichts wird gespeichert, testIDs ohne Nummer/Name. Testnummern im
+Einkaufen zusätzlich „Werte prüfen“ und „Werte unbrauchbar“. Tests: Vitest (`shopping-scan.test.ts`,
+`food-product-format.test.ts`), Playwright `shopping-scan.spec.ts`.
+
 **Abhaken offline (Lücke schließen):** Häkchen sensibler Listen gehen in eine **verschlüsselte Warteschlange**
 (`protected-store`, nur Woche, `item_key`, Häkchen, Zeitpunkt) und werden bei Verbindung über den vorhandenen
 Schreibweg gesendet; letzter Stand je Eintrag gewinnt; verschwundener Eintrag → still verworfen. Abmelden, Widerruf
