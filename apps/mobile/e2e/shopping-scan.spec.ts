@@ -10,7 +10,8 @@ import { heading } from './plan-helpers';
  * (Adresse /einkaufsliste), Abhaken bleibt nach dem Neuladen, „Alle Haken zurücksetzen“, eigener Artikel mit Menge,
  * Scannen im Laden (Kamera-Ersatz wie food-product-scan.spec.ts): eindeutiger Treffer sofort abgehakt mit „Rückgängig“,
  * mehrere → Auswahl, nicht auf der Liste → „Zusätzlich hinzufügen?“, nicht erkannt → Auswahl aus den offenen Einträgen,
- * Einkaufen ohne Essensplan. Beispiel-Rezepte mit TESTWERTEN. Fester Start: Montag, 12.10.2026, 9 Uhr.
+ * Einkaufen ohne Essensplan. Nach jedem erkannten Scan die Nährwerte je 100 g/ml (Wunsch vom 22.10.2026) – bei
+ * „Kalorienzahlen aus“ ohne Zahlen. Beispiel-Rezepte mit TESTWERTEN. Fester Start: Montag, 12.10.2026, 9 Uhr.
  */
 
 const NOT_FOUND = MOCK_PRODUCT_CASES.find((c) => c.key === 'nicht_gefunden')?.code ?? '';
@@ -54,6 +55,7 @@ async function addOwn(page: Page, label: string, quantity = '') {
 }
 
 const item = (page: Page, key: string) => page.getByTestId(`shopping-check-${key}`);
+const nutrition = (page: Page) => page.getByTestId('shopping-scan-nutrition');
 
 test('Menüleiste mit „Einkaufen“, Abhaken bleibt nach dem Neuladen, alle Haken zurücksetzen, eigener Artikel mit Menge', async ({
   page,
@@ -124,6 +126,29 @@ test('Scannen im Laden: nicht auf der Liste → hinzufügen; Treffer → abgehak
     'steht nicht auf deiner Liste',
   );
   await expect(page.getByTestId('shopping-scan-name')).toHaveValue('Testprodukt Müsli (Testwerte)');
+  // Nährwerte je 100 g der Attrappe (Testwerte) mit Quellenangabe, Lizenz-Link und Testmodus-Hinweis.
+  await expect(nutrition(page)).toContainText('Nährwerte je 100 g');
+  const nutrients = page.getByTestId('shopping-scan-nutrients');
+  for (const text of [
+    'Energie',
+    '380 kcal',
+    'Eiweiß',
+    '10 g',
+    'Kohlenhydrate',
+    '60 g',
+    'davon Zucker',
+    '15 g',
+    'Fett',
+    '9 g',
+    'Salz',
+    '0,1 g',
+  ]) {
+    await expect(nutrients).toContainText(text);
+  }
+  await expect(nutrients).not.toContainText('Ballaststoffe');
+  await expect(page.getByTestId('shopping-scan-nutrition-mock')).toContainText('Testmodus');
+  await expect(page.getByTestId('shopping-scan-nutrition-source')).toContainText('ODbL');
+  await expect(page.getByTestId('shopping-scan-nutrition-license')).toBeVisible();
   await page.getByTestId('shopping-scan-add-yes').click();
   await expect(page.getByTestId('shopping-scan-feedback')).toContainText(
     'hinzugefügt und abgehakt',
@@ -137,6 +162,8 @@ test('Scannen im Laden: nicht auf der Liste → hinzufügen; Treffer → abgehak
   await page.getByTestId('shopping-scan').click();
   await expect(page.getByTestId('shopping-scan-feedback')).toContainText('✓ Müsli abgehakt');
   await expect(item(page, 'manual|müsli')).toHaveAttribute('aria-checked', 'true');
+  // Auch beim sofortigen Abhaken: Nährwerte unter „Rückgängig“.
+  await expect(page.getByTestId('shopping-scan-nutrients')).toContainText('380 kcal');
   await page.getByTestId('shopping-scan-undo').click();
   await expect(page.getByTestId('shopping-scan-feedback')).toContainText('Müsli ist wieder offen.');
   await expect(item(page, 'manual|müsli')).toHaveAttribute('aria-checked', 'false');
@@ -147,6 +174,7 @@ test('Scannen im Laden: nicht auf der Liste → hinzufügen; Treffer → abgehak
   const choose = page.getByTestId('shopping-scan-choose');
   await expect(choose).toContainText('Welcher Eintrag ist es?');
   await expect(choose.getByRole('button', { name: /^Abhaken:/ })).toHaveCount(2);
+  await expect(page.getByTestId('shopping-scan-nutrients')).toContainText('380 kcal');
   await page.getByTestId('shopping-scan-pick-manual|bio-müsli').click();
   await expect(page.getByTestId('shopping-scan-feedback')).toContainText('✓ Bio-Müsli abgehakt');
   await expect(item(page, 'manual|bio-müsli')).toHaveAttribute('aria-checked', 'true');
@@ -178,6 +206,11 @@ test('Nicht erkannt: Nummer eintippen → Auswahl aus den offenen Einträgen ode
   await expect(page.getByTestId('shopping-scan-feedback')).toContainText(
     `${label} ist schon abgehakt.`,
   );
+  // Nährwerte des zugeordneten Katalog-Lebensmittels je 100 g (Beispiel-Inhalte: Testwerte).
+  await expect(nutrition(page)).toContainText('Nährwerte je 100 g');
+  await expect(page.getByTestId('shopping-scan-nutrients')).toContainText('kcal');
+  await expect(page.getByTestId('shopping-scan-nutrition-source')).toContainText('Nährwerte:');
+  await expect(page.getByTestId('shopping-scan-nutrition-license')).toHaveCount(0);
   expect(
     ((await db(page)).rows.shoppingProductLinks as { code: string }[]).map((l) => l.code),
   ).toEqual([NOT_FOUND]);
@@ -187,6 +220,8 @@ test('Nicht erkannt: Nummer eintippen → Auswahl aus den offenen Einträgen ode
   await page.getByTestId('shopping-scan-code').fill(TIMEOUT);
   await page.getByTestId('shopping-scan-search').click();
   await expect(page.getByTestId('shopping-scan-unknown')).toContainText('klappt gerade nicht');
+  // Neuer Scan ohne Ergebnis → keine Nährwerte mehr vom vorigen Scan.
+  await expect(nutrition(page)).toHaveCount(0);
   await page.getByTestId('shopping-scan-own').click();
   await page.getByTestId('shopping-scan-name').fill('Tee');
   await page.getByTestId('shopping-scan-add-yes').click();
@@ -219,4 +254,59 @@ test('Einkaufen ohne Essensplan (EA-2): eigene Artikel, Abhaken und Scanner gehe
   await page.reload();
   await expect(item(page, 'manual|brot')).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByTestId('shopping-scan-type')).toBeVisible();
+});
+
+test('Nährwerte beim Scannen: „Werte prüfen“ mit Hinweis, unbrauchbar ohne Zahlen, „Kalorienzahlen aus“ ohne Zahlen', async ({
+  page,
+}) => {
+  test.setTimeout(150_000);
+  await startWithPlan(page);
+  await openShoppingTab(page);
+  const scanTestCode = async (key: string) => {
+    await page.getByTestId('shopping-scan-type').click();
+    await page.getByTestId(`shopping-scan-testcode-${key}`).click();
+    await expect(nutrition(page)).toBeVisible();
+  };
+
+  // „Werte prüfen“: Zahlen mit Hinweis „Bitte prüfen“.
+  await scanTestCode('pruefen');
+  await expect(page.getByTestId('shopping-scan-nutrients')).toContainText('300 kcal');
+  await expect(page.getByTestId('shopping-scan-nutrition-review')).toContainText('Bitte prüfen');
+  await page.getByTestId('shopping-scan-add-no').click();
+
+  // Getränk: je 100 ml.
+  await scanTestCode('getraenk');
+  await expect(nutrition(page)).toContainText('Nährwerte je 100 ml');
+  await expect(page.getByTestId('shopping-scan-nutrients')).toContainText('24 kcal');
+  await page.getByTestId('shopping-scan-add-no').click();
+
+  // Unbrauchbare Werte: keine Zahlen, nur Hinweis.
+  await scanTestCode('unbrauchbar');
+  await expect(page.getByTestId('shopping-scan-nutrients')).toHaveCount(0);
+  await expect(page.getByTestId('shopping-scan-nutrition-blocked')).toContainText(
+    'fehlen verlässliche Nährwerte',
+  );
+  await expect(nutrition(page)).not.toContainText(/\d+ kcal/);
+  await page.getByTestId('shopping-scan-add-no').click();
+
+  // „Kalorienzahlen aus“: keine Zahlen, kurzer Hinweis; Quellenangabe bleibt.
+  for (let i = 0; i < 2; i += 1) {
+    await patchDb(page, (value) => ({
+      ...value,
+      rows: {
+        ...value.rows,
+        nutritionSetup: { ...(value.rows.nutritionSetup as object), show_energy_numbers: false },
+      },
+    }));
+    await heading(page, 'Heute');
+  }
+  await openShoppingTab(page);
+  await scanTestCode('plausibel');
+  await expect(page.getByTestId('shopping-scan-nutrients')).toHaveCount(0);
+  await expect(page.getByTestId('shopping-scan-nutrition-hidden')).toContainText(
+    'Kalorienzahlen aus',
+  );
+  await expect(nutrition(page)).not.toContainText('kcal');
+  await expect(nutrition(page)).not.toContainText('Eiweiß');
+  await expect(page.getByTestId('shopping-scan-nutrition-source')).toContainText('Open Food Facts');
 });

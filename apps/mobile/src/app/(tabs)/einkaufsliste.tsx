@@ -359,7 +359,12 @@ export default function ShoppingTabScreen() {
       ) : null}
 
       {actions ? (
-        <ShoppingScanPanel actions={actions} foods={foods} disabled={busy !== null} />
+        <ShoppingScanPanel
+          actions={actions}
+          foods={foods}
+          foodsDemo={view.library.kind === 'ready' && view.library.result.demo}
+          disabled={busy !== null}
+        />
       ) : null}
 
       {actions && !actions.planless ? (
