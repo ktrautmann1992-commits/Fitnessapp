@@ -36,6 +36,7 @@ export * from './replan';
 export * from './revocation';
 export * from './scale';
 export * from './schemas';
+export * from './shopping-buy-units';
 export * from './shopping-list';
 export * from './shopping-list-payload';
 export * from './shopping-list-share';

@@ -119,6 +119,8 @@ export interface NutritionPrintTextParams {
     unit: ShoppingUnit | null;
     label: string;
     manual: boolean;
+    /** Lebensmittel für die Einkaufs-Einheit (`shoppingBuyHint`), eigene Einträge null. */
+    foodId?: string | null;
   };
   'shopping.recipes': { recipes: readonly { title: string; servings: number }[] };
   'shopping.empty': Empty;
@@ -228,6 +230,7 @@ export const NUTRITION_PARAM_SCHEMAS = {
     unit: z.enum(['g', 'ml', 'piece']).nullable(),
     label: shortData,
     manual: z.boolean(),
+    foodId: z.string().max(100).nullable().optional(),
   }),
   'shopping.recipes': z.strictObject({
     recipes: z

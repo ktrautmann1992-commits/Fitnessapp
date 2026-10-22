@@ -159,7 +159,7 @@ function chars(value: PrintText): number {
           );
         }
         case 'shopping.item':
-          return (value.params as { label: string }).label.length + 14;
+          return (value.params as { label: string }).label.length + 30; // + Einkaufs-Einheit „3 … (450 g)“
         // Wächter N6 K4: lange feste Texte nach gesetzten Teilen schätzen (Zeichen der deutschen Texte, aufgerundet).
         case 'mealplan.legend': {
           const p = value.params as Record<string, boolean>;
@@ -913,6 +913,7 @@ const itemText = (item: ShoppingListItem): PrintCell => [
     unit: item.unit,
     label: short(item.labelDe),
     manual: item.isManual,
+    foodId: item.foodId,
   }),
 ];
 
