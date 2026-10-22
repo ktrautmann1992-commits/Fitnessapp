@@ -4,6 +4,8 @@ import {
   matchScannedProduct,
   MOCK_PRODUCT_CASES,
   normalizeBarcode,
+  type ScanNutrition,
+  scanNutrition,
   SHOPPING_CATEGORIES,
   type ShoppingCategory,
   type ShoppingListItem,
@@ -11,6 +13,7 @@ import {
   userProductForCode,
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
+import { type Href, useRouter } from 'expo-router';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
@@ -19,6 +22,8 @@ import {
   BarcodeScanner,
   CAMERA_SETTINGS_HELP,
 } from '@/components/barcode-scanner';
+import { ListGroup, SectionLabel } from '@/components/design';
+import { Per100Table } from '@/components/food-product';
 import {
   Body,
   Button,
@@ -29,8 +34,10 @@ import {
   Notice,
   TextField,
 } from '@/components/ui';
+import { showEnergyNumbers } from '@/data/nutrition-plan';
 import { t } from '@/i18n';
 import type { BarcodeScanResult } from '@/lib/barcode-scan';
+import { SCAN_PER100_ROWS, scanNutritionView } from '@/lib/food-product-format';
 import { shoppingCategoryLabel, shoppingItemText } from '@/lib/nutrition-format';
 import { useOnline } from '@/lib/use-online';
 import { useApp } from '@/state/app-state';
@@ -39,7 +46,9 @@ import type { ShoppingActionOutcome, ShoppingListActions } from '@/state/use-nut
 
 /** Testnummern der Attrappe, die im Testmodus ohne Packung „gescannt“ werden können. */
 const TEST_CASES = MOCK_PRODUCT_CASES.filter((c) =>
-  (['plausibel', 'getraenk', 'nicht_gefunden'] as string[]).includes(c.key),
+  (['plausibel', 'getraenk', 'pruefen', 'unbrauchbar', 'nicht_gefunden'] as string[]).includes(
+    c.key,
+  ),
 );
 
 type Phase =
@@ -73,22 +82,31 @@ type Feedback = {
  * der Liste → „Zusätzlich hinzufügen?“ (Name vorbefüllt, Abteilung änderbar); nicht erkannt/offline → Auswahl aus den
  * offenen Einträgen oder eigener Artikel. Nie eine Sackgasse. Kamerabilder, Nummern und Namen werden nie gespeichert
  * (außer der bewusst gewählten Zuordnung) oder geloggt; testIDs ohne Nummer und Namen.
+ *
+ * Nach jedem erkannten Scan zusätzlich die Nährwerte je 100 g/ml (Wunsch vom 22.10.2026, Auswahl `scanNutrition` in
+ * packages/core): eigenes Produkt („Deine Angaben“), Produktabfrage (Regeln wie in der Produktansicht) bzw. gelerntes
+ * Katalog-Lebensmittel (BLS). Verschwindet beim nächsten Scan; nichts davon wird gespeichert.
  */
 export function ShoppingScanPanel({
   actions,
   foods,
+  foodsDemo = false,
   disabled,
 }: {
   actions: ShoppingListActions;
   foods: FoodLookup | null;
+  /** Katalog mit Beispiel-Inhalten (Testwerte) – Quellenangabe „Testwerte“ statt BLS. */
+  foodsDemo?: boolean;
   disabled: boolean;
 }) {
   const app = useApp();
+  const router = useRouter();
   const online = useOnline();
   const [canScan] = useState(barcodeScanSupported);
   const [phase, setPhase] = useState<Phase>({ kind: 'idle' });
   const [code, setCode] = useState('');
   const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [nutrition, setNutrition] = useState<ScanNutrition | null>(null);
   const [scanProblem, setScanProblem] = useState<'denied' | 'problem' | null>(null);
   const [labelError, setLabelError] = useState<string>();
   const [busy, setBusy] = useState(false);
@@ -182,6 +200,7 @@ export function ShoppingScanPanel({
   const handleCode = useCallback(
     async (raw: string) => {
       setFeedback(null);
+      setNutrition(null);
       setScanProblem(null);
       setLabelError(undefined);
       const checked = normalizeBarcode(raw);
@@ -197,7 +216,14 @@ export function ShoppingScanPanel({
       const digits = checked.code;
       // 1. Gelernte Zuordnung bzw. eigenes Produkt – ohne Netz.
       const own = userProductForCode(rows?.userFoodProducts ?? [], digits);
-      if (links.some((l) => l.code === digits) || own !== null) {
+      const link = links.find((l) => l.code === digits);
+      if (link !== undefined || own !== null) {
+        setNutrition(
+          scanNutrition(
+            { own, found: null, linkedFoodId: link?.food_id ?? null },
+            foods ?? undefined,
+          ),
+        );
         await show(
           matchScannedProduct(
             { code: digits, productName: own?.name_de ?? null, brand: own?.brand_de ?? null },
@@ -219,6 +245,7 @@ export function ShoppingScanPanel({
         const response = await app.backend.lookupFoodProduct(digits);
         if (response.code === 'found') {
           const name = response.product.name_de;
+          setNutrition(scanNutrition({ own: null, found: response, linkedFoodId: null }));
           await show(
             matchScannedProduct(
               { code: digits, productName: name, brand: response.product.brand_de },
@@ -328,6 +355,7 @@ export function ShoppingScanPanel({
               disabled={disabled || busy}
               onPress={() => {
                 setFeedback(null);
+                setNutrition(null);
                 setScanProblem(null);
                 setPhase({ kind: 'scanning' });
               }}
@@ -340,6 +368,7 @@ export function ShoppingScanPanel({
             disabled={disabled || busy}
             onPress={() => {
               setFeedback(null);
+              setNutrition(null);
               setPhase({ kind: 'typing' });
             }}
             testID="shopping-scan-type"
@@ -533,6 +562,72 @@ export function ShoppingScanPanel({
         </Notice>
       ) : null}
       {body}
+      {nutrition !== null ? (
+        <ScanNutritionCard
+          nutrition={nutrition}
+          showNumbers={showEnergyNumbers(rows)}
+          demoFoods={foodsDemo}
+          onLicense={() => router.push('/lizenzen' as Href)}
+        />
+      ) : null}
     </Card>
+  );
+}
+
+/**
+ * Kompakte Nährwert-Karte zum gescannten Produkt: Energie, Eiweiß, Kohlenhydrate, davon Zucker, Fett, Salz je 100 g/ml
+ * (fehlend „–“). Bei „Kalorienzahlen aus“ und gesperrten Produktdaten keine Zahlen. testIDs ohne Nummer und Namen.
+ */
+function ScanNutritionCard({
+  nutrition,
+  showNumbers,
+  demoFoods,
+  onLicense,
+}: {
+  nutrition: ScanNutrition;
+  showNumbers: boolean;
+  demoFoods: boolean;
+  onLicense: () => void;
+}) {
+  const view = scanNutritionView(nutrition, showNumbers, demoFoods);
+  return (
+    <ListGroup testID="shopping-scan-nutrition">
+      <View style={{ padding: spacing.md, gap: spacing.sm }}>
+        <SectionLabel level={3}>{view.title}</SectionLabel>
+        {view.mockNote !== null ? (
+          <Body muted testID="shopping-scan-nutrition-mock">
+            {view.mockNote}
+          </Body>
+        ) : null}
+        {view.showValues ? (
+          <Per100Table
+            per100={nutrition.per100}
+            rows={SCAN_PER100_ROWS}
+            testID="shopping-scan-nutrients"
+          />
+        ) : null}
+        {view.hiddenNote !== null ? (
+          <Body muted testID="shopping-scan-nutrition-hidden">
+            {view.hiddenNote}
+          </Body>
+        ) : null}
+        {view.notice !== null ? (
+          <Notice tone="warning" testID={`shopping-scan-nutrition-${view.notice.kind}`}>
+            <Body>{view.notice.text}</Body>
+          </Notice>
+        ) : null}
+        <Body muted testID="shopping-scan-nutrition-source">
+          {view.sourceText}
+        </Body>
+        {view.licenseLink ? (
+          <Button
+            label={t.foodProduct.licenseLink}
+            variant="link"
+            onPress={onLicense}
+            testID="shopping-scan-nutrition-license"
+          />
+        ) : null}
+      </View>
+    </ListGroup>
   );
 }

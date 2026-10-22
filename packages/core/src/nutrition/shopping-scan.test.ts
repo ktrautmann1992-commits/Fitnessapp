@@ -13,6 +13,7 @@ import {
   manualItemFromProduct,
   matchScannedProduct,
   normalizeProductName,
+  scanNutrition,
   type ShoppingProductLink,
   withShoppingProductLink,
 } from './shopping-scan';
@@ -294,5 +295,103 @@ describe('planlessShoppingList (EA-2)', () => {
     expect(planlessShoppingList(stored, '2026-10-12')).toBe(stored);
     expect(planlessShoppingList(stored, '2026-10-19').items).toEqual([]);
     expect(() => planlessShoppingList(null, '2026-10-13')).toThrow();
+  });
+});
+
+describe('scanNutrition (Nährwerte zum Scan)', () => {
+  const per100 = {
+    kcal: 380,
+    protein_g: 10,
+    carbs_g: 60,
+    fat_g: 9,
+    sugar_g: 15,
+    sat_fat_g: 1.5,
+    fiber_g: 8,
+    salt_g: 0.1,
+  };
+  const found = (level: 'ok' | 'review' | 'blocked', mock = false) => ({
+    product: {
+      base_unit: 'ml' as const,
+      per100,
+      source: { retrieved_at: '2026-10-20T10:00:00.000Z' },
+    },
+    check: { level, reasons: [] },
+    mock,
+  });
+  const own = {
+    base_unit: 'g' as const,
+    kcal: 120,
+    protein_g: 3.5,
+    carbs_g: 20,
+    fat_g: 2,
+    sugar_g: null,
+    salt_g: 0.3,
+  };
+
+  it('nichts bekannt → null', () => {
+    expect(scanNutrition({ own: null, found: null, linkedFoodId: null }, N3_FOODS)).toBeNull();
+  });
+
+  it('Produktabfrage: Werte, Einheit, Prüfstufe, Testmodus und Abrufzeit', () => {
+    const result = scanNutrition({ own: null, found: found('ok', true), linkedFoodId: null });
+    expect(result).toEqual({
+      source: 'product',
+      baseUnit: 'ml',
+      per100,
+      check: { level: 'ok', reasons: [] },
+      mock: true,
+      retrievedAt: '2026-10-20T10:00:00.000Z',
+    });
+    expect(
+      scanNutrition({ own: null, found: found('review'), linkedFoodId: null })?.per100,
+    ).toEqual(per100);
+  });
+
+  it('gesperrt: keine Zahlen, auch wenn die Antwort welche enthielte', () => {
+    const result = scanNutrition({ own: null, found: found('blocked'), linkedFoodId: null });
+    expect(result?.source).toBe('product');
+    expect(Object.values(result?.per100 ?? {}).every((v) => v === null)).toBe(true);
+  });
+
+  it('eigenes Produkt geht vor Abfrage und Zuordnung; fehlende Werte bleiben null (nie 0)', () => {
+    const result = scanNutrition(
+      { own, found: found('ok'), linkedFoodId: 'haferflocken' },
+      N3_FOODS,
+    );
+    expect(result).toEqual({
+      source: 'own',
+      baseUnit: 'g',
+      per100: {
+        kcal: 120,
+        protein_g: 3.5,
+        carbs_g: 20,
+        fat_g: 2,
+        sugar_g: null,
+        sat_fat_g: null,
+        fiber_g: null,
+        salt_g: 0.3,
+      },
+    });
+  });
+
+  it('gelernte Zuordnung: Werte des Katalog-Lebensmittels je 100 g mit Quelle', () => {
+    const food = N3_FOODS.get('haferflocken');
+    if (food === undefined) throw new Error('haferflocken');
+    const result = scanNutrition(
+      { own: null, found: null, linkedFoodId: 'haferflocken' },
+      N3_FOODS,
+    );
+    expect(result?.source).toBe('catalog');
+    expect(result?.baseUnit).toBe('g');
+    expect(result?.per100.kcal).toBe(food.nutrients_per_100g.kcal);
+    expect(result?.per100.salt_g).toBe(food.nutrients_per_100g.salt_g);
+    expect(result?.source === 'catalog' ? result.foodSource : null).toEqual(food.source);
+  });
+
+  it('Zuordnung zu einem Lebensmittel außerhalb des Katalogs bzw. ohne Katalog → null', () => {
+    expect(
+      scanNutrition({ own: null, found: null, linkedFoodId: 'gibt_es_nicht' }, N3_FOODS),
+    ).toBeNull();
+    expect(scanNutrition({ own: null, found: null, linkedFoodId: 'haferflocken' })).toBeNull();
   });
 });

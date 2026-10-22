@@ -1,7 +1,7 @@
 {
   "id": "wettkampf",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Wettkampf-Ernährung",
   "sections": [
     {
@@ -59,9 +59,9 @@
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-11",
-    "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "expert_reviewed": true,
+    "reviewed_by": "Karsten",
+    "reviewed_at": "2026-10-22",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.0",
     "import_hash": "62b7cb803b80009f20cb7a238c1e6acccda0958455f19f7495a062b553dde3cc"

@@ -42,7 +42,7 @@ const WEEK = '2026-10-12';
 function item(labelDe: string, extra: Partial<ShoppingListItem> = {}): ShoppingListItem {
   return {
     itemKey: `${labelDe}|g`,
-    foodId: labelDe.toLowerCase(),
+    foodId: `test-${labelDe.toLowerCase()}`, // ohne Einkaufs-Einheit (eigene Tests unten)
     labelDe,
     amount: 100,
     unit: 'g',
@@ -804,5 +804,25 @@ describe('Händler-Modul (K5): Schnittstelle hinter Feature-Flag, ohne Händler'
 
   it('Liste aus einem Plan mit Gesundheitsbezug → keine Zeilen (sichere Voreinstellung bis G7)', () => {
     expect(retailOrderLines(list([item('Brokkoli'), item('Reis')], true))).toEqual([]);
+  });
+});
+
+describe('Einkaufs-Einheiten im Text', () => {
+  it('Frisches in Stück/Bund mit Grammzahl, foodId selbst steht nicht im Text', () => {
+    const text = textOf(
+      list([
+        item('Zwiebel', { foodId: 'zwiebel', amount: 450, category: 'fruit_vegetables' }),
+        item('Petersilie (frisch)', {
+          foodId: 'petersilie-frisch',
+          amount: 40,
+          category: 'fruit_vegetables',
+        }),
+        item('Haferflocken', { foodId: 'haferflocken', amount: 500 }),
+      ]),
+    );
+    expect(text).toContain('- 5 Zwiebeln (450 g)');
+    expect(text).toContain('- 1 Bund Petersilie (40 g)');
+    expect(text).toContain('- 500 g Haferflocken');
+    expect(text).not.toContain('petersilie-frisch');
   });
 });

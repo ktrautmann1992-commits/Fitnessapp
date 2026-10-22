@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { isoDateSchema } from '../age';
 import { SHOPPING_LIST_SHARE } from '../constants';
 import { SHOPPING_CATEGORIES, SHOPPING_CATEGORY_LABELS_DE } from '../content/food-schema';
+import { shoppingBuyHint } from './shopping-buy-units';
 import { roundShoppingAmount, type ShoppingList, type ShoppingUnit } from './shopping-list';
 import { stableHash } from './stable-hash';
 
@@ -20,7 +21,7 @@ import { stableHash } from './stable-hash';
  * entfernt und `javascript:`/`vbscript:` unschädlich gemacht – eine weitergehende Link-Erkennung gibt es bewusst nicht
  * (Kurzlinks oder Domains ohne Schema bleiben stehen, Wächter N12 H2). Datenminimierung über das Schema: Die Eingabe
  * wird auf die nötigen Felder reduziert (`shareableListSchema`), alles andere (`usesHealthData`, `substituteFor`,
- * `foodId`, Markierungen) erreicht den Textaufbau gar nicht.
+ * Markierungen) erreicht den Textaufbau gar nicht; `foodId` dient nur der Einkaufs-Einheit und steht nie im Text.
  *
  * Bewusste Ausnahme wie beim PDF (Plan 11, K4): Ein Ersatzprodukt bzw. eine ausgetauschte Zutat steht mit ihrem
  * Namen in der Liste (sonst würde falsch eingekauft) und kann auf eine Unverträglichkeit schließen lassen – deshalb
@@ -67,6 +68,8 @@ export type ShoppingListShareOptionsInput = z.input<typeof shoppingListShareOpti
  */
 const shareableItemSchema = z.object({
   labelDe: z.string(),
+  /** Nur für die Einkaufs-Einheit („3 Zwiebeln“, `shoppingBuyHint`); erscheint selbst nicht im Text. */
+  foodId: z.string().nullable().optional(),
   amount: z.number().nullable(),
   unit: z.enum(['g', 'ml', 'piece']).nullable(),
   category: z.enum(SHOPPING_CATEGORIES),
@@ -276,7 +279,9 @@ function itemLine(item: ShareableItem, texts: ShoppingListShareTexts): string | 
   if (label.length === 0) return null;
   const amount = shareAmountText(item.amount, item.unit, texts);
   let body: string;
-  if (amount !== null) body = `${amount} ${label}`;
+  const buy = shoppingBuyHint(item.foodId, item.amount, item.unit);
+  if (buy !== null && amount !== null) body = `${buy.count} ${buy.label} (${amount})`;
+  else if (amount !== null) body = `${amount} ${label}`;
   else if (item.isManual) body = label;
   else body = `${label} – ${texts.toTaste}`;
   return `- ${body}${item.checked ? ` (${texts.done})` : ''}`;

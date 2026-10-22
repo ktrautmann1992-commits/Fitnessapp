@@ -7,6 +7,7 @@ import {
   OPEN_FOOD_FACTS,
   productDataIsOld,
   type ProductLookupResponse,
+  type ProductPer100,
   type UserFoodProduct,
   userFoodProductSchema,
   USER_FOOD_PRODUCT_LIMITS,
@@ -29,6 +30,31 @@ import { ConfirmDialog } from './screen';
 import { Body, Button, Card, Checkbox, ChoiceList, Heading, Notice, TextField } from './ui';
 
 type Found = Extract<ProductLookupResponse, { code: 'found' }>;
+
+/**
+ * Nährwert-Tabelle je 100 g/ml (Name links, Wert rechts; fehlend „–“). Geteilt von Produktansicht (alle Zeilen) und
+ * Einkaufs-Scanner (kompakte Zeilen). Nur Anzeige – ob Zahlen erscheinen dürfen, entscheidet die aufrufende Stelle.
+ */
+export function Per100Table({
+  per100,
+  rows = PER100_ROWS,
+  testID,
+}: {
+  per100: ProductPer100;
+  rows?: readonly (typeof PER100_ROWS)[number][];
+  testID?: string;
+}) {
+  return (
+    <View testID={testID} style={{ gap: 2 }}>
+      {rows.map((key) => (
+        <View key={key} style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8 }}>
+          <Body muted>{t.foodProduct.nutrients[key]}</Body>
+          <Body>{per100Text(key, per100[key])}</Body>
+        </View>
+      ))}
+    </View>
+  );
+}
 
 /**
  * Produktansicht (Etappe E4a, docs/PLAN-E4.md 2.2): Name, Marke, Packung als reiner Text; Nährwerte je 100 g/ml
@@ -74,17 +100,7 @@ export function ProductCard({
       {showNumbers && check.level !== 'blocked' ? (
         <Card>
           <Body>{t.foodProduct.per100(product.base_unit)}</Body>
-          <View testID="food-product-nutrients" style={{ gap: 2 }}>
-            {PER100_ROWS.map((key) => (
-              <View
-                key={key}
-                style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8 }}
-              >
-                <Body muted>{t.foodProduct.nutrients[key]}</Body>
-                <Body>{per100Text(key, product.per100[key])}</Body>
-              </View>
-            ))}
-          </View>
+          <Per100Table per100={product.per100} testID="food-product-nutrients" />
         </Card>
       ) : null}
       {!showNumbers ? <Body muted>{t.foodProduct.numbersHidden}</Body> : null}

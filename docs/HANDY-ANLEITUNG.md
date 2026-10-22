@@ -1139,6 +1139,14 @@ Abschnitt 3.
      eurem Konto) – beim nächsten Scan desselben Produkts klappt es dann ohne Auswahl, auch ohne Netz.
    - **„Nicht gefunden“** → **„Produkt nicht erkannt“** → Eintrag aus der Liste antippen oder **„Als eigenen Artikel
      hinzufügen“**.
+   - **Nährwerte (neu, 22.10.2026):** Nach jedem erkannten Scan steht unten im Kasten **„Nährwerte je 100 g“** (bei
+     Getränken „je 100 ml“): Energie, Eiweiß, Kohlenhydrate, davon Zucker, Fett, Salz – fehlende Werte als „–“.
+     **Prüfen:** „Gefunden, Werte plausibel“ → 380 kcal, 10 g Eiweiß … mit Quellenangabe Open Food Facts und
+     „Mehr zur Lizenz“ (im Testmodus zusätzlich der Hinweis auf die Attrappe). **„Werte prüfen“** → Zahlen mit
+     Hinweis „Bitte prüfen“. **„Werte unbrauchbar“** → keine Zahlen, nur „Für dieses Produkt fehlen verlässliche
+     Nährwerte“. Eigene Produkte zeigen „Deine Angaben“, gelernte Zuordnungen die Werte des Lebensmittels (Quelle BLS
+     bzw. Testwerte). Beim nächsten Scan verschwindet die Karte; gespeichert wird nichts. Mit **„Kalorienzahlen aus“**
+     (Einstellungen → Ernährung ändern) erscheinen keine Zahlen, nur „Nährwerte ausgeblendet“.
 7. **Ohne Essensplan:** Wer die Ernährung noch nicht eingerichtet hat, sieht im Einkaufen den Hinweis „keinen
    Essensplan“ – eigene Artikel, Abhaken und Scannen gehen trotzdem.
 8. **„Fortschritt“** findet ihr jetzt unter **Mehr → Fortschritt** und über die Kachel auf der Übersicht.
