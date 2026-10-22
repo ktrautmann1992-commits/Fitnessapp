@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { APP_LAYOUT } from './constants';
+import { resolveStepGoal, stepGoalSchema } from './wearables/steps';
 
 /**
  * Übersicht und Menüleiste anpassen (docs/PLAN-EINKAUFEN-AUSDAUER.md 4, Gründer-Entscheidung EA-G2 vom 20.10.2026;
@@ -17,6 +18,8 @@ import { APP_LAYOUT } from './constants';
  *   kommen an ihrer Standardstelle dazu (sichtbar); die Regeln der Menüleiste werden erzwungen; kaputter Speicher →
  *   Standard. Neue Bereiche kommen NICHT von selbst in eine selbst zusammengestellte Menüleiste (sie stehen unter
  *   „Mehr“) – nur der Standard enthält sie.
+ * - **Schrittziel** (22.10.2026) wird mit der Anordnung gespeichert (`step_goal`, kein Gesundheitsdatum) – siehe
+ *   `toStoredLayout`/`storedStepGoal`; die Anordnung selbst (`AppLayout`) kennt es nicht.
  * - Standard (`defaultLayout`) = Stand vom 20.10.2026: alle Kacheln sichtbar in der heutigen Reihenfolge (mit
  *   „Mein Wettkampf“ an zweiter Stelle); Menüleiste Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr
  *   (EA-1 + Workouts). „Wettkampf“ ist wählbar, aber nicht im Standard (steht unter „Mehr“). Ist ein Bereich in dieser
@@ -32,6 +35,8 @@ export const DASHBOARD_TILES = [
   'body',
   'progress',
   'endurance',
+  // „Schritte“ mit Tagesziel als Ring (Gründer-Wunsch 22.10.2026, docs/PLAN-PHASE-8.md 13.4) – neben „Ausdauer“.
+  'steps',
   'shortcuts',
 ] as const;
 export type DashboardTileId = (typeof DASHBOARD_TILES)[number];
@@ -87,6 +92,8 @@ export const storedAppLayoutSchema = z.strictObject({
     .array(z.strictObject({ id: idSchema, visible: z.boolean() }))
     .max(APP_LAYOUT.storedTilesMax),
   tab_bar: z.array(idSchema).min(APP_LAYOUT.tabsMin).max(APP_LAYOUT.tabsMax),
+  // Eigenes Schrittziel (22.10.2026, Spalte `step_goal`): fehlt bzw. null = Standard (STEP_GOAL.default).
+  step_goal: stepGoalSchema.nullable().optional(),
 });
 export type StoredAppLayout = z.infer<typeof storedAppLayoutSchema>;
 
@@ -160,12 +167,22 @@ export function normalizeLayout(
   return { tiles: withMissingTiles(tiles), tabs: ruledTabs(parsed.data.tab_bar, available) };
 }
 
-/** Zum Speichern (Spaltennamen wie `app_layout_settings`). */
-export function toStoredLayout(layout: AppLayout): StoredAppLayout {
+/**
+ * Zum Speichern (Spaltennamen wie `app_layout_settings`). `stepGoal` (optional) = eigenes Schrittziel; ohne bzw. null
+ * fehlt das Feld (die Datenbank behält dann das gespeicherte Ziel).
+ */
+export function toStoredLayout(layout: AppLayout, stepGoal?: number | null): StoredAppLayout {
   return storedAppLayoutSchema.parse({
     dashboard_tiles: layout.tiles.map((t) => ({ id: t.id, visible: t.visible })),
     tab_bar: [...layout.tabs],
+    ...(stepGoal === undefined || stepGoal === null ? {} : { step_goal: stepGoal }),
   });
+}
+
+/** Schrittziel aus dem gespeicherten Stand (fehlt/ungültig → Standard 8.000). */
+export function storedStepGoal(stored: unknown): number {
+  if (typeof stored !== 'object' || stored === null) return resolveStepGoal(null);
+  return resolveStepGoal((stored as { step_goal?: unknown }).step_goal);
 }
 
 export type MoveDirection = 'up' | 'down';

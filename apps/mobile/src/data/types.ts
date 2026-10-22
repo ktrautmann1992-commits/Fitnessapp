@@ -240,6 +240,8 @@ export interface AppLayoutRow {
   user_id: string;
   dashboard_tiles: StoredAppLayout['dashboard_tiles'];
   tab_bar: StoredAppLayout['tab_bar'];
+  /** Eigenes Schrittziel (22.10.2026); fehlt/null = Standard 8.000. Einstellung, kein Gesundheitsdatum. */
+  step_goal?: StoredAppLayout['step_goal'];
 }
 
 /** Zutat eines eigenen Gerichts – Spalten wie `custom_meal_items`. */

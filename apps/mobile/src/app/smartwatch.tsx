@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { StepGoalCard } from '@/components/steps';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { consentRecordsFromRows } from '@/data/mapping';
 import type { WearableSyncOutcome } from '@/data/wearable-sync';
@@ -264,6 +265,8 @@ export default function SmartwatchScreen() {
               ) : null}
             </View>
           )}
+          {/* Schrittziel für die Kachel „Schritte“ auf der Übersicht (22.10.2026). */}
+          <StepGoalCard />
           {daily}
           <Button
             label={W.disconnect}

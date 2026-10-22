@@ -30,6 +30,7 @@ import { deNutrition } from './de-nutrition';
 import { deNutritionDay } from './de-nutrition-day';
 import { deWeekEval } from './de-week-eval';
 import { deWearables } from './de-wearables';
+import { deSteps } from './de-steps';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
 
@@ -1688,6 +1689,8 @@ export const de = {
   supplements: deSupplements,
   // Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5)
   accessibility: deAccessibility,
+  /** Kachel „Schritte“ mit Tagesziel und Schrittziel (22.10.2026). */
+  stepCounter: deSteps,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

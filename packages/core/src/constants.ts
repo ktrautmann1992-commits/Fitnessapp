@@ -3912,6 +3912,17 @@ export const DAILY_METRIC_LIMITS = {
 } as const;
 
 /**
+ * Schrittziel je Tag (Kachel „Schritte“ auf der Übersicht, Gründer-Wunsch 22.10.2026; `wearables/steps.ts`).
+ * - `default` 8.000: Paluch et al., „Daily steps and all-cause mortality: a meta-analysis of 15 international
+ *   cohorts“, Lancet Public Health 2022;7(3):e219–e228 – der Nutzen für die Sterblichkeit flacht bei Personen ab 60 Jahren
+ *   bei etwa 6.000–8.000 Schritten/Tag ab, bei Jüngeren bei etwa 8.000–10.000. 8.000 liegt für beide Gruppen im
+ *   wirksamen Bereich und ist erreichbar (statt der nicht belegten „10.000“). PRODUKTENTSCHEIDUNG.
+ * - Eigenes Ziel `min`–`max` in Schritten zu `step` (1.000–30.000, je 500): Bedienregel, keine Grenze zur Gesundheit
+ *   (sync: CHECK von app_layout_settings.step_goal und save_app_layout). PRODUKTENTSCHEIDUNG.
+ */
+export const STEP_GOAL = { default: 8000, min: 1000, max: 30_000, step: 500 } as const;
+
+/**
  * Abgleich mit Health Connect (W8-7, W8-8, docs/PLAN-PHASE-8.md 7.1):
  * - `firstSyncDays` 30: erster Abgleich = letzte 30 Tage – so weit liest Health Connect ohne die Zusatzberechtigung
  *   READ_HEALTH_DATA_HISTORY (Android-Doku „Health Connect data access“: 30 Tage vor der ersten Berechtigung).

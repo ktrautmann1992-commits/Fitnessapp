@@ -623,7 +623,14 @@ export async function executeWriteOp(
     case 'save_app_layout':
       check(
         await client.rpc('save_app_layout', {
-          p_layout: toJson({ dashboard_tiles: op.row.dashboard_tiles, tab_bar: op.row.tab_bar }),
+          // Schrittziel nur, wenn gesetzt – so klappt das Speichern der Anordnung auch vor `db-migrate`.
+          p_layout: toJson({
+            dashboard_tiles: op.row.dashboard_tiles,
+            tab_bar: op.row.tab_bar,
+            ...(op.row.step_goal === undefined || op.row.step_goal === null
+              ? {}
+              : { step_goal: op.row.step_goal }),
+          }),
         }),
       );
       return;
@@ -1925,7 +1932,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       // Anordnung der Übersicht/Menüleiste (Etappe E2) – vor `db-migrate` leer (Standard).
       client
         .from('app_layout_settings')
-        .select('user_id, dashboard_tiles, tab_bar')
+        // `*` statt Spaltenliste: die Spalte step_goal (22.10.2026) fehlt vor `db-migrate`.
+        .select('*')
         .eq('user_id', userId)
         .limit(1),
     ]);

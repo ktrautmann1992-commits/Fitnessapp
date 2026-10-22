@@ -109,6 +109,7 @@ import {
   MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION,
   SHOPPING_SCAN,
   APP_LAYOUT,
+  STEP_GOAL,
   DAILY_METRIC_LIMITS,
   HEART_RATE_LIMITS,
   WEARABLE_SYNC,
@@ -1212,15 +1213,42 @@ describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.m
     return Number(match[1]);
   };
 
-  it('neueste Fassung von save_app_layout in *_app_layout_competition.sql; nur die ID-Listen sind neu', () => {
+  it('neueste Fassung von save_app_layout in *_app_layout_steps.sql (Kachel „Schritte“ + Schrittziel, 22.10.2026)', () => {
     expect(migrationFiles.filter((n) => readMigration(n).includes(saveMarker)).at(-1)).toMatch(
-      /_app_layout_competition\.sql$/,
+      /_app_layout_steps\.sql$/,
     );
-    const withoutLists = (body: string) =>
-      body.replace(/(tile_ids|area_ids) constant text\[\] := array\[[^\]]*\];/g, '$1');
-    expect(withoutLists(save)).toBe(withoutLists(saveBody(sql)));
     expect(DASHBOARD_TILES).toContain('competition');
+    expect(DASHBOARD_TILES).toContain('steps');
     expect(NAV_AREAS).toContain('wettkampf');
+    // Die bisherigen Prüfungen der Vorgängerfassung bleiben (Zeile für Zeile enthalten).
+    const previous = saveBody(readMigration('_app_layout_competition.sql'));
+    for (const check of [
+      "raise exception 'Nicht angemeldet.' using errcode = 'insufficient_privilege';",
+      "raise exception 'Profil fehlt.' using errcode = 'insufficient_privilege';",
+      "raise exception 'Ungültige Kachel.' using errcode = 'invalid_parameter_value';",
+      "raise exception 'Kachel doppelt.' using errcode = 'invalid_parameter_value';",
+      "raise exception 'Ungültiger Bereich.' using errcode = 'invalid_parameter_value';",
+      "raise exception 'Ungültige Menüleiste.' using errcode = 'invalid_parameter_value';",
+      "is distinct from array['id', 'visible']",
+    ]) {
+      expect(previous).toContain(check);
+      expect(save).toContain(check);
+    }
+    expect(save).toContain("array['dashboard_tiles', 'step_goal', 'tab_bar']");
+    expect(save).toContain(
+      'step_goal = case when has_goal then excluded.step_goal else s.step_goal end',
+    );
+  });
+
+  it('Schrittziel: Grenzen = STEP_GOAL (Funktion und CHECK der Spalte)', () => {
+    const steps = readMigration('_app_layout_steps.sql');
+    expect(constant('step_goal_min')).toBe(STEP_GOAL.min);
+    expect(constant('step_goal_max')).toBe(STEP_GOAL.max);
+    expect(constant('step_goal_step')).toBe(STEP_GOAL.step);
+    expect(steps).toContain(
+      `step_goal is null or (step_goal between ${STEP_GOAL.min} and ${STEP_GOAL.max} and step_goal % ${STEP_GOAL.step} = 0)`,
+    );
+    expect(steps).not.toContain('consents_after_revoke');
   });
 
   it('ID-Listen und Grenzen = packages/core (DASHBOARD_TILES, NAV_AREAS, APP_LAYOUT)', () => {

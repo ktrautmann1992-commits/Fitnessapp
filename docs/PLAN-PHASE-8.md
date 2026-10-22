@@ -315,8 +315,19 @@ external_id)`, weil ein zusammengeführter Eintrag seine Herkunft (z. B. `gps`) 
    Datenschutzerklärung zeigen (kleiner Folge-PR, im Gerätetest prüfen).
 3. **Eigener Maximalpuls:** Core unterstützt ihn (Vorrang, 120–230), die App hat noch kein Eingabefeld/keine
    Speicherung – bis dahin immer Schätzung nach Tanaka (Hinweis in der Auswertung).
-4. **Kachel „Tageswerte“ auf der Übersicht** (7.2) noch nicht gebaut (neue Kachel-ID braucht eine Migration von
-   `save_app_layout`); Tageswerte stehen vorerst auf der Smartwatch-Seite.
+4. ~~**Kachel „Tageswerte“ auf der Übersicht** (7.2) noch nicht gebaut~~ – **erledigt (Nachtrag 22.10.2026)** als
+   Kachel **„Schritte“** mit Tagesziel (Gründer-Wunsch „Schrittzähler mit Tagesziel, das sich als Kreisdiagramm
+   füllt“): Ring mit den heutigen Schritten der Uhr bis zum Ziel (große Zahl, „von 8.000“, erreicht → voller Ring in
+   Erfolgsfarbe „✓ Ziel erreicht“), Mini-Balken der letzten 7 Tage; ohne Uhr/Einwilligung Hinweis „Uhr verbinden“,
+   ohne Wert heute „Noch keine Schritte heute“; Antippen → Smartwatch-Seite. **Schrittziel** (Standard 8.000, eigenes
+   Ziel 1.000–30.000 je 500, `STEP_GOAL` mit Quelle Paluch et al. 2022) auf der Smartwatch-Seite („Weniger“/„Mehr“,
+   Schnellauswahl). Gespeichert mit der Anordnung der Übersicht (`app_layout_settings.step_goal`, KEIN
+   Gesundheitsdatum, im Export; fehlt das Feld beim Speichern, bleibt das Ziel). Core: `wearables/steps.ts`
+   (`stepProgress`, `stepWeek`, `stepGoalSchema`), Kachel-ID `steps` hinter „Ausdauer“ (erscheint auch in
+   gespeicherten Anordnungen an dieser Stelle). Migration `20261022130000_app_layout_steps.sql`, pgTAP
+   `65_app_layout_steps.test.sql`, E2E `steps-tile.spec.ts`. Schlaf/Ruhepuls bleiben auf der Smartwatch-Seite.
+   Hinweis: Wer nur das Ziel ändert, speichert damit auch die aktuelle Menüleiste als eigene Anordnung (neue
+   Standard-Bereiche kommen dann – wie bei jeder eigenen Anordnung – nur über „Mehr“ dazu).
 5. **Ändern übernommener Einheiten:** Löschen geht immer; Ändern folgt den Regeln freier Einheiten (nur 14 Tage zurück,
    feste Namen) – „Sonstige“ wie „Yoga“ lassen sich deshalb nicht umbenennen.
 6. **Schritte je Tag** werden in der Zeitzone des Handys abgefragt (DACH = Europe/Berlin); Einheiten/Schlaf nutzen

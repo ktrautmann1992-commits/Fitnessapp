@@ -383,8 +383,17 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
       };
     case 'upsert_measurement_reminder':
       return { ...rows, reminder: op.row };
-    case 'save_app_layout':
-      return { ...rows, appLayout: op.row };
+    case 'save_app_layout': {
+      // Wie save_app_layout: ohne Feld `step_goal` bleibt das gespeicherte Schrittziel.
+      const keep = rows.appLayout?.step_goal;
+      return {
+        ...rows,
+        appLayout:
+          op.row.step_goal === undefined && keep !== undefined
+            ? { ...op.row, step_goal: keep }
+            : op.row,
+      };
+    }
     case 'save_training_plan':
       return applySavePlan(rows, op.payload, ctx);
     case 'append_plan_block':
