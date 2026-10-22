@@ -1,13 +1,19 @@
 import {
   attemptCompareText,
   averagePaceOrSpeedText,
+  averagePaceS,
   compareAttempts,
   distanceText,
   durationText,
+  elevationStats,
   gpxFileName,
   isoDateInTimeZone,
+  paceColoredRuns,
+  paceSegments,
   ROUTE_DIFFICULTIES,
   type RouteDifficulty,
+  runHighlights,
+  splitInsights,
   toGpx,
   TRACKED_ROUTE_LIMITS,
   type TrackedRouteRow,
@@ -20,8 +26,14 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { LiveRegion } from '@/components/calendar';
 import { SectionLabel, StatValue } from '@/components/design';
-import { ElevationChart, SplitBars } from '@/components/endurance';
-import { RouteMap } from '@/components/route-map';
+import {
+  ElevationArea,
+  PaceChart,
+  RouteMapSection,
+  RunHero,
+  RunHighlights,
+  SplitInsightBars,
+} from '@/components/run-insights';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { SessionKcalStat } from '@/components/session-kcal';
 import { WearableLogInfo } from '@/components/wearables';
@@ -51,9 +63,10 @@ const D = E.detail;
 const NO_POINTS: { lat: number; lng: number }[] = [];
 
 /**
- * Auswertung je Lauf (Etappe E4, `/ausdauer/[id]`): Karte (WebView/iframe mit OpenFreeMap, Start/Ziel,
- * Attribution), Gesamt-/Bewegungszeit, Distanz, Ø-Pace bzw. km/h, Kilometerzeiten als Balken, Höhenprofil,
- * Höhenmeter mit Hinweis „ungenau“, Vergleich auf Favoriten-Strecken (neutral, W-G16), Bearbeiten, GPX-Datei,
+ * Auswertung je Lauf (Etappe E4, `/ausdauer/[id]`, anschaulich seit 22.10.2026): dunkle Kopf-Karte (Distanz, Ø-Pace
+ * bzw. km/h, Zeit, Höhenmeter, Skizze), Bestwerte, Karte mit Linie in Tempo-Farben (WebView/iframe mit OpenFreeMap,
+ * Start/Ziel, Attribution; lädt sie nicht → farbige Skizze), Kilometer-Balken mit Abweichung zum Ø, Tempo-Verlauf,
+ * Höhenprofil mit Hinweis „ungenau“, Vergleich auf Favoriten-Strecken (neutral, W-G16), Bearbeiten, GPX-Datei,
  * „Als Bild teilen“, Löschen. Lädt die Karte nicht, bleiben alle Zahlen sichtbar.
  */
 export default function RouteDetailScreen() {
@@ -115,6 +128,16 @@ export default function RouteDetailScreen() {
   const day = isoDateInTimeZone(info.started_at);
   const comparison = saved ? compareFor(saved, result?.routes ?? []) : null;
   const speed = usesSpeed(info.sport);
+  const segments = paceSegments(kmSplits, info.distance_m, info.moving_s);
+  const splitRows = splitInsights(kmSplits, info.distance_m, info.moving_s);
+  const avgPace = averagePaceS(info.distance_m, info.moving_s);
+  const elevation = elevationStats(profile);
+  const highlights = runHighlights({
+    kmSplits,
+    distanceM: info.distance_m,
+    movingS: info.moving_s,
+    elevationProfile: profile,
+  });
 
   async function remove() {
     if (!id) return;
@@ -153,11 +176,17 @@ export default function RouteDetailScreen() {
   return (
     <Screen area="ausdauer" icon="run" title={info.name} footer={back} testID="route-detail">
       <LiveRegion text={live.text} version={live.version} />
-      <Body muted testID="route-detail-meta">
-        {`${E.sports[info.sport]} · ${formatDateDe(day)}${info.is_favorite ? ` · ★ ${D.favorite}` : ''}${
+      <RunHero
+        meta={`${E.sports[info.sport]} · ${formatDateDe(day)}${info.is_favorite ? ` · ★ ${D.favorite}` : ''}${
           difficulty ? ` · ${E.save.difficulties[difficulty]}` : ''
         }`}
-      </Body>
+        distance={distanceText(info.distance_m)}
+        pace={averagePaceOrSpeedText(info.sport, info.moving_s, info.distance_m)}
+        time={durationText(info.moving_s)}
+        elevation={info.elevation_gain_m !== null ? `${info.elevation_gain_m} m` : null}
+        points={points}
+        runs={paceColoredRuns(points, segments)}
+      />
       {pending ? (
         <Notice tone={pending.state === 'rejected' ? 'warning' : 'info'}>
           {pending.state === 'rejected' ? E.list.rejectedHint : E.save.queued}
@@ -169,25 +198,12 @@ export default function RouteDetailScreen() {
         </Notice>
       ) : null}
 
-      {/* Zahlen als Raster großer Werte (zwei Spalten, ab 320 px). */}
+      <RunHighlights highlights={highlights} />
+
+      {/* Weitere Zahlen als Raster großer Werte (zwei Spalten, ab 320 px); Distanz, Pace, Zeit stehen oben. */}
       <Card>
+        <SectionLabel>{D.details}</SectionLabel>
         <View style={styles.stats} testID="route-stats">
-          <View style={styles.statCell}>
-            <StatValue
-              size="lg"
-              label={D.distance}
-              value={distanceText(info.distance_m)}
-              valueTestID="route-distance"
-            />
-          </View>
-          <View style={styles.statCell}>
-            <StatValue
-              size="lg"
-              label={speed ? D.speed : D.pace}
-              value={averagePaceOrSpeedText(info.sport, info.moving_s, info.distance_m)}
-              valueTestID="route-pace"
-            />
-          </View>
           <View style={styles.statCell}>
             <StatValue
               size="lg"
@@ -199,9 +215,9 @@ export default function RouteDetailScreen() {
           <View style={styles.statCell}>
             <StatValue
               size="lg"
-              label={D.moving}
-              value={durationText(info.moving_s)}
-              valueTestID="route-moving"
+              label={D.pauses}
+              value={durationText(Math.max(0, info.duration_s - info.moving_s))}
+              valueTestID="route-pauses"
             />
           </View>
           {/* kcal (Uhr bzw. Schätzung aus Bewegungszeit) – eigene Zelle, nie auf dem Story-Bild. */}
@@ -214,18 +230,7 @@ export default function RouteDetailScreen() {
             }}
             logId={info.session_log_id}
           />
-          {info.elevation_gain_m !== null ? (
-            <View style={styles.statCell}>
-              <StatValue
-                size="lg"
-                label={D.elevation}
-                value={D.elevationValue(info.elevation_gain_m)}
-                valueTestID="route-elevation"
-              />
-            </View>
-          ) : null}
         </View>
-        <Body muted>{D.elevationNote}</Body>
       </Card>
 
       {/* Phase 8: Puls der Uhr, wenn die Aufzeichnung mit einer Uhr-Einheit zusammengeführt wurde. */}
@@ -238,18 +243,37 @@ export default function RouteDetailScreen() {
       ) : null}
 
       <Card>
-        <SectionLabel>{D.map}</SectionLabel>
-        <RouteMap points={points} />
+        <RouteMapSection points={points} segments={segments} />
       </Card>
 
       <Card>
         <SectionLabel>{D.splits}</SectionLabel>
-        <SplitBars splits={kmSplits} />
+        <SplitInsightBars
+          splits={splitRows}
+          rest={segments.find((s) => s.partial && s.km > 1) ?? null}
+          averageText={
+            avgPace !== null
+              ? averagePaceOrSpeedText(info.sport, info.moving_s, info.distance_m)
+              : null
+          }
+          speed={speed}
+        />
       </Card>
 
       <Card>
-        <SectionLabel>{D.profile}</SectionLabel>
-        <ElevationChart profile={profile} />
+        <PaceChart
+          segments={segments}
+          distanceM={info.distance_m}
+          averageS={avgPace}
+          speed={speed}
+        />
+        <ElevationArea
+          profile={profile}
+          stats={elevation}
+          gainM={info.elevation_gain_m}
+          distanceM={info.distance_m}
+        />
+        <Body muted>{D.elevationNote}</Body>
       </Card>
 
       {note ? (

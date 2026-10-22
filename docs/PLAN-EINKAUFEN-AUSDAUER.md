@@ -311,6 +311,14 @@ Lauf und in der abgeschlossenen Trainingseinheit/Verlauf.
 - **Auswertung** (`/ausdauer/[id]`): Karte, Gesamt-/Bewegungszeit, Distanz, Ø-Pace/km/h, Höhenmeter „ca.“ + Hinweis,
   Kilometer-Balken (`splitBars`), Höhenprofil, neutraler Vergleich auf Favoriten (`compareAttempts`), Bearbeiten,
   GPX-Datei, „Erneut laufen“, Löschen.
+- **Auswertung anschaulich** (Gründer-Wunsch 22.10.2026, `routes/run-insights.ts`, Grenzwerte `RUN_INSIGHTS`): dunkle
+  Kopf-Karte (große Distanz, Ø-Pace, Zeit, Höhenmeter, Skizze), „Bestwerte“ (`runHighlights`: schnellster km, zweite
+  Hälfte schneller, gleichmäßiges Tempo, größter Anstieg, höchster Punkt), Linie in fünf Tempo-Farben auf Karte und
+  Skizze (`paceSegments`, `paceColoredRuns`; Farben `apps/mobile/src/lib/pace-colors.ts`, Legende „schneller ↔
+  langsamer“), Kilometer-Balken mit Abweichung zum Ø und Abzeichen „schnellster km“ (`splitInsights`), Tempo-Verlauf
+  und Höhenprofil als Fläche mit gemeinsamer km-Achse (`distanceTicks`, `elevationStats`). Lädt die Karte nicht,
+  steht die farbige Skizze da. Nur eigener Bildschirm – das Teilen-Bild bleibt unverändert (Privatzone, ohne Puls).
+  Demo-Lauf mit wechselndem Tempo (Einlaufen, Anstieg ~22 m bei km 3, starker Schluss), fest ohne Zufall.
 - **Migration (additiv)** `20261020210000_tracked_route_elevation_profile.sql`: `private.elevation_profile_valid`,
   Spalte `tracked_routes.elevation_profile` (CHECK, auch für service_role), `save_tracked_route` = S1-Fassung + nur das
   optionale Feld (db-sync prüft die Obermenge); Export automatisch (`to_jsonb(t)`). pgTAP neu

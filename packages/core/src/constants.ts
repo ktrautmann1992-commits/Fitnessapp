@@ -3594,6 +3594,35 @@ export const ROUTE_ELEVATION_PROFILE = {
 } as const;
 
 /**
+ * Auswertung je Lauf „anschaulich“ (routes/run-insights.ts, Gründer-Wunsch 22.10.2026): Tempo-Stufen für die farbige
+ * Linie und die Kilometer-Balken, Rest-Kilometer, Bestwerte. Reine Anzeige – keine Bewertung, keine Bestzeit-Jagd
+ * (W-G16 bleibt neutral). Quelle aller Werte: PRODUKTENTSCHEIDUNG.
+ * - `paceBuckets`: so viele Farbstufen von „schneller“ bis „langsamer“ (5 = gut unterscheidbar, auch farbschwach).
+ * - `minPartialM`: Ein Rest nach dem letzten vollen Kilometer zählt erst ab so vielen Metern als eigener Abschnitt
+ *   (kürzer = GPS-Rauschen dominiert die Pace).
+ * - `constantPaceS`: Liegen schnellster und langsamster Abschnitt näher als so viele Sekunden/km, gilt das Tempo als
+ *   gleich (alle Abschnitte in der mittleren Farbstufe, kein „schnellster Kilometer“).
+ * - `evenPaceSpreadS` / `evenPaceMinSplits`: „Gleichmäßiges Tempo“, wenn alle vollen Kilometer höchstens so weit
+ *   auseinander liegen (bei mindestens so vielen Kilometern).
+ * - `negativeSplitMinShare` / `negativeSplitMinS`: „Zweite Hälfte schneller“ erst ab diesem Anteil der Halbzeit bzw.
+ *   diesen Sekunden (darunter ist es Messrauschen); Mindestdistanz `halvesMinM`.
+ * - `climbHysteresisM` / `climbMinGainM`: Ein Anstieg endet, wenn es so viele Meter abwärts geht; als „größter
+ *   Anstieg“ gezeigt ab so vielen Höhenmetern (unterhalb der GPS-Genauigkeit wäre es Rauschen, vgl. ROUTE_ELEVATION).
+ */
+export const RUN_INSIGHTS = {
+  paceBuckets: 5,
+  minPartialM: 100,
+  constantPaceS: 2,
+  evenPaceSpreadS: 10,
+  evenPaceMinSplits: 3,
+  negativeSplitMinShare: 0.01,
+  negativeSplitMinS: 3,
+  halvesMinM: 2_000,
+  climbHysteresisM: 3,
+  climbMinGainM: 5,
+} as const;
+
+/**
  * Privatzone des Story-Bilds (Etappe E6, EA-G4, `privacyTrim`): Entlang der Strecke werden die ersten und letzten
  * `trimM` Meter abgeschnitten (Wohnort/Startpunkt nicht ablesbar); bleibt weniger als `minRemainingM` übrig, zeigt
  * das Bild keine Linie. Quelle: Plan E6 (200 m, Rest unter 100 m → ohne Linie); PRODUKTENTSCHEIDUNG.
