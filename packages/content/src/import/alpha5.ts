@@ -98,6 +98,16 @@ export const ALPHA5_SECTIONS: Readonly<
   'Am Vorabend': { mealTypes: ['main'], training: [] },
   'Im Rennen': { mealTypes: ['snack'], training: ['waehrend'] },
   'Nach dem Ziel': { mealTypes: ['snack'], training: ['nach_training'] },
+  // Fassung 1.1: Fitness-Fast-Food, Heißluftfritteuse, Sommer-Eis.
+  'Pizza & Flammkuchen': { mealTypes: ['main'], training: [] },
+  'Burger & Hot Dog': { mealTypes: ['main'], training: [] },
+  Klassiker: { mealTypes: ['main'], training: [] },
+  Hauptgerichte: { mealTypes: ['main'], training: [] },
+  'Beilagen & Gemüse': { mealTypes: ['main'], training: [] },
+  'Snacks & Süßes': { mealTypes: ['snack'], training: [] },
+  'Protein-Eis mit Mandeldrink': { mealTypes: ['snack'], training: [] },
+  'Frozen Joghurt': { mealTypes: ['snack'], training: [] },
+  'Sorbet & Erfrischung': { mealTypes: ['snack'], training: [] },
 };
 
 /**
@@ -117,6 +127,10 @@ const TAG_CATEGORIES: Readonly<Record<string, RecipeCategoryId>> = {
   wettkampf: 'wettkampf',
   dessert: 'protein-dessert',
   'spar-küche': 'spar-kueche',
+  'fitness-fast-food': 'fitness-fast-food',
+  heißluftfritteuse: 'heissluftfritteuse',
+  'sommer-eis': 'sommer-eis',
+  'low carb': 'low-carb',
 };
 
 export const alpha5FileSchema = z
@@ -130,6 +144,11 @@ export const alpha5FileSchema = z
     ),
     ernaehrungsformen: z.array(z.strictObject({ id: z.enum(ALPHA5_DIETS), name: str })),
     abteilungen: z.array(str),
+    /**
+     * Zutatenlexikon des Rezeptbuchs (ab Fassung 1.1). Nur für das PDF – wird NICHT importiert: Nährwerte kommen
+     * ausschließlich aus der Quelle über `foods-import` (S3).
+     */
+    zutatenlexikon: z.array(z.unknown()).optional(),
     zutaten: z.array(
       z.strictObject({
         id: slug,
@@ -175,6 +194,15 @@ export const alpha5FileSchema = z
     ),
     ratgeber: z.strictObject({
       wettkampf: z.array(z.strictObject({ titel: str, text: str })).min(1),
+      // Ab Fassung 1.1: Tipps zu den Kapiteln Sommer-Eis und Heißluftfritteuse.
+      eismaschine: z
+        .array(z.strictObject({ titel: str, text: str }))
+        .min(1)
+        .optional(),
+      heissluftfritteuse: z
+        .array(z.strictObject({ titel: str, text: str }))
+        .min(1)
+        .optional(),
       unterwegs: z.strictObject({
         einleitung: str,
         grundregeln: z.array(str).min(1),
@@ -658,10 +686,33 @@ export function buildMealPrepPlan(
 export const GUIDE_TITLES = {
   wettkampf: 'Wettkampf-Ernährung',
   unterwegs: 'Unterwegs essen',
+  eismaschine: 'Eis selbst machen',
+  heissluftfritteuse: 'Kochen mit der Heißluftfritteuse',
 } as const;
 
+/** Ratgeber aus Abschnitten „Titel + Text“ (Eismaschine, Heißluftfritteuse; ab Fassung 1.1). */
+function tipsGuide(
+  file: Alpha5File,
+  id: 'eismaschine' | 'heissluftfritteuse',
+  tips: readonly { titel: string; text: string }[] | undefined,
+): Guide[] {
+  if (tips === undefined) {
+    return [];
+  }
+  return [
+    {
+      id,
+      version: 1,
+      status: 'draft',
+      title_de: GUIDE_TITLES[id],
+      sections: tips.map((tip) => ({ heading_de: tip.titel, body_de: [tip.text] })),
+      meta: importMeta(file),
+    },
+  ];
+}
+
 export function buildGuides(file: Alpha5File): Guide[] {
-  const { wettkampf, unterwegs } = file.ratgeber;
+  const { wettkampf, unterwegs, eismaschine, heissluftfritteuse } = file.ratgeber;
   return [
     {
       id: 'unterwegs',
@@ -693,6 +744,8 @@ export function buildGuides(file: Alpha5File): Guide[] {
       })),
       meta: importMeta(file),
     },
+    ...tipsGuide(file, 'eismaschine', eismaschine),
+    ...tipsGuide(file, 'heissluftfritteuse', heissluftfritteuse),
   ];
 }
 
