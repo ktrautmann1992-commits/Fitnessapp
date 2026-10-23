@@ -182,7 +182,7 @@
         {"name": "Salz", "menge_g": 0, "anzeige": "1 Prise"},
         {"name": "Sojajoghurt natur", "menge_g": 60, "anzeige": "3 EL (60 g)"},
         {"name": "Olivenöl", "menge_g": 5, "anzeige": "1 TL (5 g)"},
-        {"name": "Wasser", "menge_g": 0, "anzeige": "ca. 2 EL"},
+        {"name": "Wasser", "menge_g": 0, "anzeige": "2 EL"},
         {"name": "Passierte Tomaten", "menge_g": 80, "anzeige": "80 g"},
         {"name": "Oregano getrocknet", "menge_g": 0, "anzeige": "½ TL"},
         {"name": "Räuchertofu", "menge_g": 100, "anzeige": "100 g"},
