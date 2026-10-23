@@ -126,6 +126,7 @@ export function applyTrackedRouteSave(
     session_log_id: r.session_log_id,
     source: r.source,
     elevation_profile: r.elevation_profile ? r.elevation_profile.map((p) => [...p]) : null,
+    wearable_session_log_id: null,
     created_at: context.now,
     updated_at: context.now,
   };
@@ -176,14 +177,23 @@ export function applyTrackedRouteDelete(
     .map((x) => (x.base_route_id === id ? { ...x, base_route_id: null } : x));
 }
 
-/** Tagebuch-Eintrag gelöscht → Verweis der Strecke leer (on delete set null). */
+/**
+ * Tagebuch-Eintrag gelöscht → Verweis der Strecke leer (on delete set null). Route einer Uhr-Einheit: die Einheit geht
+ * mit dem Eintrag (Kaskade), ihre Route ebenso (20261023120100_wearable_routes.sql).
+ */
 export function detachRouteLogs(
   routes: readonly TrackedRouteRow[],
   existingLogIds: ReadonlySet<string>,
 ): TrackedRouteRow[] {
-  return routes.map((x) =>
-    x.session_log_id !== null && !existingLogIds.has(x.session_log_id)
-      ? { ...x, session_log_id: null }
-      : x,
-  );
+  return routes
+    .filter(
+      (x) =>
+        x.source !== 'watch' ||
+        (x.wearable_session_log_id != null && existingLogIds.has(x.wearable_session_log_id)),
+    )
+    .map((x) =>
+      x.session_log_id !== null && !existingLogIds.has(x.session_log_id)
+        ? { ...x, session_log_id: null }
+        : x,
+    );
 }

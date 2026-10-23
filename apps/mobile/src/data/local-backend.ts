@@ -145,6 +145,14 @@ import {
   type LocalWearableStore,
   wearableRowsFor,
 } from './wearable-rows';
+import {
+  applyWearableRouteSave,
+  dismissWatchRoutes,
+  followWatchRoute,
+  normalizeRouteRow,
+  type RouteDismissal,
+  withoutWatchRoutes,
+} from './wearable-route-rows';
 import { planSave } from './plan-save';
 import { activePlan, effectiveSafetyRules, planSnapshot, profilesFor } from './training-plan';
 import { emptyUserRows, type AuthSession, type ConsentPlatform, type UserRows } from './types';
@@ -211,6 +219,8 @@ interface LocalDb {
    */
   trackedRoutes?: TrackedRouteRow[];
   routeCounter?: { userId: string } & RouteCounter;
+  /** Von der Person gelöschte Routen der Uhr (wie private.wearable_route_dismissals, 23.10.2026). */
+  routeDismissals?: RouteDismissal[];
   /**
    * Smartwatch (Phase 8, Testmodus): Zeilen wie wearable_connections/-sessions, heart_rate_summaries, daily_metrics
    * (alle Konten dieses Geräts, gefiltert nach user_id) – dokumentierte Ausnahme des Testmodus wie alle Daten hier.
@@ -343,7 +353,8 @@ function serializeWrites(backend: Backend): Backend {
   wrapped.wearables = {
     load: () => serial(() => wear.load()),
     connect: (types) => serial(() => wear.connect(types)),
-    importBatches: (batches) => serial(() => wear.importBatches(batches)),
+    importBatches: (batches, routes) => serial(() => wear.importBatches(batches, routes)),
+    saveRoute: (route) => serial(() => wear.saveRoute(route)),
     resolveDuplicate: (id, merge) => serial(() => wear.resolveDuplicate(id, merge)),
     disconnect: (deleteImported) => serial(() => wear.disconnect(deleteImported)),
   } satisfies Backend['wearables'];
@@ -555,10 +566,21 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       rows: next,
       wearables:
         db.wearables && session ? applyWearableRevoke(db.wearables, session.userId) : db.wearables,
+      // 23.10.2026: Routen der Uhr gehen mit der Verbindung (wearable_connections_after_delete).
+      ...(session ? watchRoutesRemoved(db, session.userId) : {}),
       supplements: owner ? withoutSupplementData(db.supplements ?? [], owner) : db.supplements,
     });
     // Live-Anpassung (8.3, 4.7): Anpassungen sind (mittelbar) Gesundheitsdaten – der geschützte Speicher wird geleert.
     await liveStore.clear();
+  }
+
+  /** Trennen/Widerruf: Routen der Uhr und Merkliste der Person weg (wearable_connections_after_delete). */
+  function watchRoutesRemoved(
+    db: LocalDb,
+    userId: string,
+  ): Pick<LocalDb, 'trackedRoutes' | 'routeDismissals'> {
+    const next = withoutWatchRoutes(db.trackedRoutes ?? [], db.routeDismissals ?? [], userId);
+    return { trackedRoutes: next.routes, routeDismissals: next.dismissals };
   }
 
   /** Wie private.wearable_consents_locked: Einwilligungen wearable_data UND health_data gültig, sonst Ablehnung. */
@@ -876,6 +898,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           type === 'wearable_data' && db.wearables
             ? applyWearableRevoke(db.wearables, session.userId)
             : db.wearables,
+        // 23.10.2026: … und alle Routen der Uhr (wearable_connections_after_delete).
+        ...(type === 'wearable_data' ? watchRoutesRemoved(db, session.userId) : {}),
       });
     },
 
@@ -1566,6 +1590,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       const { db, session } = await requireUser();
       const routes = (db.trackedRoutes ?? [])
         .filter((r) => r.user_id === session.userId)
+        .map(normalizeRouteRow)
         .sort((a, b) => b.started_at.localeCompare(a.started_at));
       return { routes, pending: [], offline: false };
     },
@@ -1604,13 +1629,22 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       const { db, session } = await requireUser();
       const next = applyTrackedRouteDelete(db.trackedRoutes ?? [], id, session.userId);
       if (next === 'not_found') return;
-      await save({ ...db, trackedRoutes: next });
+      const removed = (db.trackedRoutes ?? []).filter((r) => r.id === id);
+      await save({
+        ...db,
+        trackedRoutes: next,
+        routeDismissals: dismissWatchRoutes(removed, db.routeDismissals ?? []),
+      });
     },
     deleteAllTrackedRoutes: async () => {
       const { db, session } = await requireUser();
       const all = db.trackedRoutes ?? [];
       const own = all.filter((r) => r.user_id === session.userId);
-      await save({ ...db, trackedRoutes: all.filter((r) => r.user_id !== session.userId) });
+      await save({
+        ...db,
+        trackedRoutes: all.filter((r) => r.user_id !== session.userId),
+        routeDismissals: dismissWatchRoutes(own, db.routeDismissals ?? []),
+      });
       return own.length;
     },
     // Keine Warteschlange im Testmodus.
@@ -1645,7 +1679,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           }),
         });
       },
-      importBatches: async (batches) => {
+      importBatches: async (batches, routes = []) => {
         const { db, rows, session } = await requireProfile();
         requireWearableConsents(rows);
         let store = db.wearables ?? EMPTY_LOCAL_WEARABLES;
@@ -1672,8 +1706,45 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           total.skipped += applied.result.skipped;
           total.days += applied.result.days;
         }
-        await save({ ...db, rows: next, wearables: store });
+        // Routen der Uhr NACH den Einheiten (save_wearable_route braucht die übernommene Einheit).
+        let trackedRoutes = db.trackedRoutes ?? [];
+        let routeDismissals = db.routeDismissals ?? [];
+        for (const route of routes) {
+          const saved = applyWearableRouteSave(
+            route,
+            false,
+            { routes: trackedRoutes, rows: next, wearables: store, dismissals: routeDismissals },
+            { userId: session.userId, now: options.now(), newId: options.newId },
+          );
+          if (saved.kind === 'reject') continue;
+          trackedRoutes = saved.routes;
+          routeDismissals = saved.dismissals;
+          next = saved.rows;
+        }
+        await save({ ...db, rows: next, wearables: store, trackedRoutes, routeDismissals });
         return { kind: 'imported', result: total };
+      },
+      saveRoute: async (route) => {
+        const { db, rows, session } = await requireProfile();
+        requireWearableConsents(rows);
+        const saved = applyWearableRouteSave(
+          route,
+          true,
+          {
+            routes: db.trackedRoutes ?? [],
+            rows,
+            wearables: db.wearables ?? EMPTY_LOCAL_WEARABLES,
+            dismissals: db.routeDismissals ?? [],
+          },
+          { userId: session.userId, now: options.now(), newId: options.newId },
+        );
+        if (saved.kind === 'reject') throw new BackendError('route_rejected');
+        await save({
+          ...db,
+          rows: saved.rows,
+          trackedRoutes: saved.routes,
+          routeDismissals: saved.dismissals,
+        });
       },
       resolveDuplicate: async (id, merge) => {
         const { db, rows, session } = await requireProfile();
@@ -1691,7 +1762,19 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         if (result === 'not_found' || result === 'invalid') {
           throw new BackendError('wearable_rejected', { sensitive: true });
         }
-        await save({ ...db, rows: result.rows, wearables: result.store });
+        const target = (db.wearables ?? EMPTY_LOCAL_WEARABLES).sessions.find(
+          (w) => w.session_log_id === id,
+        )?.duplicate_of;
+        await save({
+          ...db,
+          rows: result.rows,
+          wearables: result.store,
+          // Route folgt dem führenden Eintrag (wearable_route_follow_session).
+          trackedRoutes:
+            merge && target
+              ? followWatchRoute(db.trackedRoutes ?? [], id, target, session.userId)
+              : db.trackedRoutes,
+        });
       },
       disconnect: async (deleteImported) => {
         const { db, rows, session } = await requireProfile();
@@ -1701,7 +1784,12 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           deleteImported,
           session.userId,
         );
-        await save({ ...db, rows: result.rows, wearables: result.store });
+        await save({
+          ...db,
+          rows: result.rows,
+          wearables: result.store,
+          ...watchRoutesRemoved(db, session.userId),
+        });
         return result.deleted;
       },
     },

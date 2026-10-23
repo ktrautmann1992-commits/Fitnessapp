@@ -9,7 +9,7 @@ import { type EnduranceModality, WEARABLE_PROVIDERS } from '../enums';
  * Smartwatch-Daten über Health Connect (Phase 8 Etappe 1, docs/PLAN-PHASE-8.md 3, 5, 6): Listen und Eingabe-Schemas
  * des Imports. Dieselben Regeln prüft die Datenbank-Funktion import_wearable_batch (Abgleich in db-sync.test.ts) und
  * der Testmodus der App. Gespeichert werden nur Tageswerte und Summen je Einheit (W8-6) – nie Pulsreihen, nie
- * Schlafphasen, nie Strecken der Uhr (W8-4).
+ * Schlafphasen. Routen der Uhr (seit 23.10.2026) speichert save_wearable_route als Strecke (wearables/route.ts).
  */
 
 /**

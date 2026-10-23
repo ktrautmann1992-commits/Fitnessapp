@@ -4006,6 +4006,28 @@ export const WEARABLE_SYNC = {
 } as const;
 
 /**
+ * Route (GPS) einer Uhr-Einheit aus Health Connect (Gründer-Entscheidung 23.10.2026 „Routen lesen“, docs/PLAN-PHASE-8.md
+ * 3 und 12): Distanz, Höhenmeter und Kilometerzeiten rechnet Alpha5 selbst aus der Route – mit denselben Filtern wie die
+ * eigene Aufzeichnung (summarizeTrack). Die Distanz der Route gilt nur, wenn sie plausibel ist; sonst bleibt die Summe
+ * der Distance-Datensätze aus Health Connect.
+ * - `minPoints` 10: weniger gefilterte Punkte sind keine Route (z. B. nur Start/Ende). PRODUKTENTSCHEIDUNG.
+ * - `minCoverage` 0,5: die Route deckt mindestens die Hälfte der Dauer der Einheit ab (vom ersten bis zum letzten
+ *   Punkt) – sonst fehlt ein großes Stück (GPS erst spät gefunden, Uhr-Akku). PRODUKTENTSCHEIDUNG.
+ * - `maxJumpShare` 0,2: verwirft der Sprung-Filter (ROUTE_FILTER.jumpFactor) mehr als ein Fünftel der Punkte, ist es
+ *   keine Strecke dieser Sportart (z. B. im Auto aufgezeichnet). PRODUKTENTSCHEIDUNG.
+ * - `hcRatio` 0,75–1,33: weicht die Route mehr als ein Viertel bzw. ein Drittel von der Distanz laut Health Connect ab,
+ *   stimmt eines von beiden nicht (Lücke in der Route, Sprünge) – dann gilt die Distanz laut Health Connect. Bekannte
+ *   Abweichung Samsung Health ↔ Health Connect: ca. 5 % (Gründer-Test 23.10.2026, 22,84 km statt ca. 21,8 km).
+ *   PRODUKTENTSCHEIDUNG.
+ */
+export const WEARABLE_ROUTE = {
+  minPoints: 10,
+  minCoverage: 0.5,
+  maxJumpShare: 0.2,
+  hcRatio: { min: 0.75, max: 1.33 },
+} as const;
+
+/**
  * Doppelte Einheit (App-Aufzeichnung + Uhr, W8-9, docs/PLAN-PHASE-8.md 5.2): Überlappung der Zeitfenster als Anteil
  * der KÜRZEREN Einheit.
  * - ab `autoMergeShare` 50 % und gleiche Sportart-Gruppe → automatisch zusammenführen (App-Eintrag bleibt führend),

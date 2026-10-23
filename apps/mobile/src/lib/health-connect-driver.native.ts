@@ -1,4 +1,12 @@
-import { groupModality, mapExerciseType, type WearableDataType } from '@fitnessapp/core';
+import {
+  groupModality,
+  type HcRouteRead,
+  hcLocationsFromNative,
+  hcRouteFromRecord,
+  mapExerciseType,
+  watchRouteSport,
+  type WearableDataType,
+} from '@fitnessapp/core';
 import { Linking, Platform } from 'react-native';
 import {
   aggregateRecord,
@@ -6,7 +14,9 @@ import {
   getSdkStatus,
   initialize,
   openHealthConnectSettings,
+  readRecord,
   readRecords,
+  requestExerciseRoute,
   requestPermission,
   SdkAvailabilityStatus,
 } from 'react-native-health-connect';
@@ -25,9 +35,12 @@ export type {
 
 /**
  * Android: Health Connect über react-native-health-connect 4.1.3 (eingebautes Config-Plugin, TurboModule). NUR
- * Leserechte der Datentypen aus WEARABLE_DATA_TYPES (Manifest: app.config.ts), kein Schreiben, kein Hintergrund-Lesen,
- * keine Strecken. iPhone: nicht verfügbar (Apple Health ist eine spätere Etappe). Gelesene Werte nie loggen (Art. 9);
- * Fehler werden ohne Inhalt weitergereicht.
+ * Leserechte der Datentypen aus WEARABLE_DATA_TYPES plus Trainingsrouten (Manifest: app.config.ts), kein Schreiben,
+ * kein Hintergrund-Lesen. Routen (23.10.2026): je Ausdauer-Einheit über readRecord (nur dort liefert Health Connect die
+ * Route); ohne „Trainingsrouten“-Recht meldet Health Connect „Freigabe nötig“ – dann „Route freigeben“
+ * (requestExerciseRoute, Dialog je Einheit). Das Leserecht READ_EXERCISE_ROUTES fragt die App über einen kleinen Patch
+ * der Bibliothek ab (patches/react-native-health-connect@4.1.3.patch). iPhone: nicht verfügbar. Gelesene Werte nie
+ * loggen (Art. 9, Standort); Fehler werden ohne Inhalt weitergereicht.
  */
 
 type RecordName =
@@ -51,6 +64,27 @@ export const HC_RECORD_TYPES: Readonly<Record<WearableDataType, RecordName>> = {
 };
 
 const TYPES = Object.keys(HC_RECORD_TYPES) as WearableDataType[];
+
+/** Leserecht „Trainingsrouten“ (READ_EXERCISE_ROUTES; über den Bibliotheks-Patch, sonst ignoriert). */
+const ROUTE_PERMISSION = { accessType: 'read', recordType: 'ExerciseRoute' } as const;
+
+function hasRoutePermission(
+  permissions: readonly { accessType: string; recordType: string }[],
+): boolean {
+  return permissions.some((p) => p.accessType === 'read' && p.recordType === 'ExerciseRoute');
+}
+
+/** Route einer Einheit lesen (nur readRecord liefert sie); Fehler ohne Inhalt. */
+async function readRoute(id: string): Promise<HcRouteRead> {
+  try {
+    const record = (await readRecord('ExerciseSession', id)) as unknown as {
+      exerciseRoute?: unknown;
+    };
+    return hcRouteFromRecord(record.exerciseRoute);
+  } catch {
+    return { kind: 'error' };
+  }
+}
 const MAX_PAGES = 20;
 const PLAY_STORE =
   'market://details?id=com.google.android.apps.healthdata&url=healthconnect%3A%2F%2Fonboarding';
@@ -119,6 +153,15 @@ export const healthConnectDriver: HealthConnectDriver = {
     const granted = await requestPermission(
       TYPES.map((type) => ({ accessType: 'read' as const, recordType: HC_RECORD_TYPES[type] })),
     );
+    // Trainingsrouten getrennt fragen: Ältere Health-Connect-Versionen kennen das Recht nicht – dann bleibt es bei der
+    // Freigabe je Einheit, die übrigen Rechte sind schon erteilt.
+    try {
+      await requestPermission([
+        ROUTE_PERMISSION as unknown as Parameters<typeof requestPermission>[0][number],
+      ]);
+    } catch {
+      // nicht unterstützt
+    }
     return typesFrom(granted as { accessType: string; recordType: string }[]);
   },
   grantedTypes: async () => {
@@ -162,6 +205,11 @@ export const healthConnectDriver: HealthConnectDriver = {
           });
           kcal = agg.ENERGY_TOTAL?.inKilocalories ?? null;
         }
+        // Route (GPS) nur bei Ausdauer mit Strecke (Laufen, Gehen, Rad).
+        const route =
+          endurance && watchRouteSport(mapExerciseType(r.exerciseType).group) !== null
+            ? await readRoute(id)
+            : undefined;
         const heartRateSamples = has('heart_rate')
           ? (
               await readAll<{ samples: { time: string; beatsPerMinute: number }[] }>(
@@ -180,7 +228,7 @@ export const healthConnectDriver: HealthConnectDriver = {
             endTime: r.endTime,
             dataOrigin: r.metadata?.dataOrigin ?? null,
           },
-          extras: { distanceM, kcal, heartRateSamples },
+          extras: { distanceM, kcal, heartRateSamples, ...(route ? { route } : {}) },
         });
       }
     }
@@ -215,6 +263,25 @@ export const healthConnectDriver: HealthConnectDriver = {
       }
     }
     return { sessions, restingHeartRates, sleepSessions, steps };
+  },
+  routeAccess: async () => {
+    if (!(await ready())) return false;
+    try {
+      const granted = await getGrantedPermissions();
+      return hasRoutePermission(granted as { accessType: string; recordType: string }[]);
+    } catch {
+      return false;
+    }
+  },
+  requestRoute: async (externalId) => {
+    if (!(await ready())) return { kind: 'error' };
+    try {
+      const points = hcLocationsFromNative(await requestExerciseRoute(externalId));
+      return points.length > 0 ? { kind: 'points', points } : { kind: 'none' };
+    } catch {
+      // Abgelehnt oder Dialog geschlossen (ExerciseRouteAccessDenied) – ohne Inhalt.
+      return { kind: 'not_granted' };
+    }
   },
   openSettings: () => {
     if (Platform.OS === 'android') openHealthConnectSettings();

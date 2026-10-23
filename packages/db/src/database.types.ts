@@ -2544,6 +2544,7 @@ export type Database = {
           started_at: string;
           updated_at: string;
           user_id: string;
+          wearable_session_log_id: string | null;
         };
         Insert: {
           base_route_id?: string | null;
@@ -2568,6 +2569,7 @@ export type Database = {
           started_at: string;
           updated_at?: string;
           user_id?: string;
+          wearable_session_log_id?: string | null;
         };
         Update: {
           base_route_id?: string | null;
@@ -2592,6 +2594,7 @@ export type Database = {
           started_at?: string;
           updated_at?: string;
           user_id?: string;
+          wearable_session_log_id?: string | null;
         };
         Relationships: [
           {
@@ -3334,6 +3337,7 @@ export type Database = {
       save_food_log_entries: { Args: { p_entries: Json }; Returns: Json };
       save_session_log: { Args: { p_log: Json }; Returns: Json };
       save_tracked_route: { Args: { p_route: Json }; Returns: string };
+      save_wearable_route: { Args: { p_route: Json }; Returns: string };
       save_training_plan: { Args: { p_plan: Json }; Returns: string };
       save_app_layout: { Args: { p_layout: Json }; Returns: undefined };
       save_shopping_product_link: {
@@ -3559,7 +3563,7 @@ export type Database = {
       training_phase: 'base' | 'build' | 'peak' | 'taper' | 'race_week' | 'recovery';
       training_slot_kind: 'strength_gym' | 'strength_home' | 'endurance';
       training_time: 'early' | 'morning' | 'midday' | 'afternoon' | 'evening' | 'varies';
-      tracked_route_source: 'recorded' | 'gpx_import';
+      tracked_route_source: 'recorded' | 'gpx_import' | 'watch';
       workout_type:
         | 'easy'
         | 'recovery'
@@ -3877,7 +3881,7 @@ export const Constants = {
       training_phase: ['base', 'build', 'peak', 'taper', 'race_week', 'recovery'],
       training_slot_kind: ['strength_gym', 'strength_home', 'endurance'],
       training_time: ['early', 'morning', 'midday', 'afternoon', 'evening', 'varies'],
-      tracked_route_source: ['recorded', 'gpx_import'],
+      tracked_route_source: ['recorded', 'gpx_import', 'watch'],
       workout_type: [
         'easy',
         'recovery',

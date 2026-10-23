@@ -356,9 +356,19 @@ export type TrackedRouteSport = (typeof TRACKED_ROUTE_SPORTS)[number];
 export const ROUTE_DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
 export type RouteDifficulty = (typeof ROUTE_DIFFICULTIES)[number];
 
-/** Herkunft einer Strecke: in der App aufgezeichnet (S1) oder aus eigener GPX-Datei (S2a) – Enum tracked_route_source. */
-export const TRACKED_ROUTE_SOURCES = ['recorded', 'gpx_import'] as const;
+/**
+ * Herkunft einer Strecke – Enum tracked_route_source: in der App aufgezeichnet (S1), aus eigener GPX-Datei (S2a) oder
+ * Route einer Uhr-Einheit aus Health Connect (`watch`, Gründer-Entscheidung 23.10.2026, 20261023120000_wearable_route_enums.sql;
+ * schreibt NUR save_wearable_route).
+ */
+export const TRACKED_ROUTE_SOURCES = ['recorded', 'gpx_import', 'watch'] as const;
 export type TrackedRouteSource = (typeof TRACKED_ROUTE_SOURCES)[number];
+
+/** Herkünfte, die die App über save_tracked_route senden darf (Uhr-Routen nur über save_wearable_route). */
+export const APP_ROUTE_SOURCES = [
+  'recorded',
+  'gpx_import',
+] as const satisfies readonly TrackedRouteSource[];
 
 // ---------------------------------------------------------------------------------------------------------
 // Phase 5 · Ernährung (Etappe N7, 20261014120100_nutrition_enums.sql) – Onboarding-Schritt `nutrition_setup`

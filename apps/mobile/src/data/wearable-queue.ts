@@ -2,6 +2,8 @@ import {
   type WearableImportBatch,
   wearableImportBatchSchema,
   type WearableImportResult,
+  type WearableRoutePayload,
+  wearableRoutePayloadSchema,
   type WearableRows,
 } from '@fitnessapp/core';
 
@@ -13,7 +15,8 @@ import type { ProtectedStore } from './protected-store';
  * sessionStorage) und wird gesendet, sobald Verbindung besteht – NACH den Tagebuch-Einträgen, auf die er verweist
  * (Zusammenführen/Doppel-Hinweis). Teilerfolge bleiben: jeder gesendete Teil wird sofort entfernt. Daneben liegt hier
  * der zuletzt geladene Stand (offline anzeigen). Gehört einem Konto; Abmelden/Konto löschen/Trennen leeren alles.
- * Gesundheitsdaten (Art. 9): nie loggen.
+ * Routen der Uhr (23.10.2026, save_wearable_route) warten hier ebenfalls – gesendet NACH allen Abgleichen (sie
+ * verweisen auf deren Einheiten). Gesundheits- und Standortdaten: nie loggen.
  */
 
 export type WearableSendResult =
@@ -29,8 +32,13 @@ interface StoredQueue {
   format: 1;
   owner: string;
   batches: WearableImportBatch[];
+  /** Routen der Uhr (fehlt in älteren gespeicherten Warteschlangen). */
+  routes?: WearableRoutePayload[];
   cache: WearableRows | null;
 }
+
+/** Antwort von save_wearable_route: gespeichert/übersprungen = erledigt; sonst wie beim Abgleich. */
+export type WearableRouteSendResult = { readonly kind: 'ok' | 'retry' | 'consent' | 'reject' };
 
 export interface WearableFlushResult {
   readonly state: 'done' | 'later' | 'consent' | 'rejected';
@@ -49,6 +57,8 @@ export class WearableQueue {
     private readonly options: {
       store: ProtectedStore;
       send: (batch: WearableImportBatch) => Promise<WearableSendResult>;
+      /** Eine Route senden (save_wearable_route). */
+      sendRoute?: (route: WearableRoutePayload) => Promise<WearableRouteSendResult>;
       /** Wartet ein Tagebuch-Eintrag, auf den der Abgleich verweist, noch in seiner Warteschlange? */
       isLogPending: (sessionLogId: string) => boolean;
       currentUserId: () => string | null;
@@ -70,6 +80,9 @@ export class WearableQueue {
               ...parsed,
               // Nur gültige Abgleiche (Zod) – kaputte werden nie gesendet.
               batches: parsed.batches.filter((b) => wearableImportBatchSchema.safeParse(b).success),
+              routes: (parsed.routes ?? []).filter(
+                (r) => wearableRoutePayloadSchema.safeParse(r).success,
+              ),
             }
           : null;
     } catch {
@@ -96,9 +109,16 @@ export class WearableQueue {
     return this.data && owner && this.data.owner === owner ? this.data.batches.length : 0;
   }
 
-  async add(batches: readonly WearableImportBatch[], owner: string): Promise<void> {
+  async add(
+    batches: readonly WearableImportBatch[],
+    owner: string,
+    routes: readonly WearableRoutePayload[] = [],
+  ): Promise<void> {
     const data = await this.own(owner);
     data.batches = [...data.batches, ...batches];
+    // Je Einheit nur die neueste Route.
+    const ids = new Set(routes.map((r) => r.external_id));
+    data.routes = [...(data.routes ?? []).filter((r) => !ids.has(r.external_id)), ...routes];
     await this.persist();
   }
 
@@ -118,7 +138,7 @@ export class WearableQueue {
   async discardAll(): Promise<void> {
     await this.load();
     if (!this.data) return;
-    this.data = { ...this.data, batches: [], cache: null };
+    this.data = { ...this.data, batches: [], routes: [], cache: null };
     await this.persist();
   }
 
@@ -162,6 +182,7 @@ export class WearableQueue {
       }
       if (outcome.kind === 'consent') {
         this.data.batches = [];
+        this.data.routes = [];
         this.data.cache = null;
         await this.persist();
         return { state: 'consent', result: total };
@@ -180,6 +201,25 @@ export class WearableQueue {
         skipped: total.skipped + r.skipped,
         days: total.days + r.days,
       };
+    }
+    if (state === 'later') return { state, result: total };
+    // Routen erst, wenn kein Abgleich mehr wartet (sie verweisen auf dessen Einheiten).
+    while ((this.data.routes ?? []).length > 0) {
+      const route = (this.data.routes ?? [])[0] as WearableRoutePayload;
+      const outcome = this.options.sendRoute
+        ? await this.options.sendRoute(route)
+        : ({ kind: 'reject' } as const);
+      if (outcome.kind === 'retry') return { state: 'later', result: total };
+      if (outcome.kind === 'consent') {
+        this.data.batches = [];
+        this.data.routes = [];
+        this.data.cache = null;
+        await this.persist();
+        return { state: 'consent', result: total };
+      }
+      // Gespeichert, übersprungen oder abgelehnt (kann nie gelingen) → aus der Warteschlange.
+      this.data.routes = (this.data.routes ?? []).slice(1);
+      await this.persist();
     }
     return { state, result: total };
   }

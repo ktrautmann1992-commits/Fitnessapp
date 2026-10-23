@@ -1728,6 +1728,25 @@ Android 8 oder neuer)
 10. **Ohne Netz:** Flugmodus an → **Jetzt abgleichen** → „wird gesendet, sobald du wieder online bist“ → Flugmodus aus
     → App neu öffnen → Einträge sind da.
 
+**C – Routen der Uhr (seit 23.10.2026): Distanz wie in Samsung Health, Karte mit Tempo-Farben** – braucht wieder
+einen **neuen Build** (Leserecht „Trainingsrouten“ und Patch der Health-Connect-Bibliothek).
+1. **Samsung Health** → ☰/⋮ → **Einstellungen** → **Health Connect** → Samsung Health darf auch **Trainingsrouten**
+   (Routen/Strecken) schreiben – Schalter an. Ohne das kommt in Alpha5 keine Route an.
+2. Neue APK installieren (wie B4) → Alpha5 → **Einstellungen → Smartwatch**. Wer schon verbunden war: Hinweis **„Neue
+   Fassung der Einwilligung“** → Text lesen → **Neuer Fassung zustimmen** (die neue Fassung nennt die Routen).
+3. **Berechtigungen öffnen** → **Alpha5** → **Trainingsrouten** → **Immer zulassen** (Android 15 und neuer). Steht
+   auf der Smartwatch-Seite „✓ Trainingsrouten: für alle Einheiten erlaubt“, liest Alpha5 jede Route selbst.
+4. Fragt Health Connect je Lauf (Android 14 bzw. „Jedes Mal fragen“): Nach dem Abgleich steht „Für N Läufe fragt
+   Health Connect nach der Route“. Lauf öffnen (Verlauf) → **Route freigeben** → im Health-Connect-Fenster zulassen →
+   Alpha5 öffnet die Auswertung mit Karte.
+5. Prüfen: Distanz in Alpha5 ≈ Samsung Health (z. B. 22,84 km), Kopf-Karte mit „⌚ laut Uhr“, Ø Puls und „kcal laut
+   Uhr“, Karte „Strecke“ mit Tempo-Farben und „Route von der Uhr, nur für dich sichtbar“, darunter **Pulszonen**.
+   Ohne Route steht am Lauf **„Strecke laut Uhr (ohne Route)“** mit Erklärung.
+6. Schon übernommene Läufe der letzten 30 Tage bekommen ihre Route beim **ersten Abgleich nach dem Update**
+   (einmaliges Nachladen); gelöschte Einträge kommen dabei nicht zurück.
+7. **Trennen** (egal ob „behalten“ oder „löschen“) und **Widerruf** der Einwilligung löschen alle Routen der Uhr;
+   eigene Aufzeichnungen bleiben.
+
 Ergebnis bitte Claude schreiben, z. B. „9c Android 14, Galaxy Watch 6: 1–10 ok, Ruhepuls fehlt“ (ohne Passwörter,
 Codes oder Gesundheitswerte). **Wichtig für den Spike:** Bitte mitteilen, ob **Ruhepuls**, **Distanz** und **kcal**
 bei euren Einheiten ankommen – das klärt, was Samsung wirklich nach Health Connect schreibt.

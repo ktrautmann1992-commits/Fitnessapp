@@ -135,6 +135,11 @@ export const STORAGE_KEYS = {
   wearableQueueKey: 'fitnessapp.wearable-queue-key.v1',
   /** Smartwatch: Zeitpunkt des letzten Abgleich-VERSUCHS (nur Zeitstempel, keine Werte) – „höchstens alle 15 min“. */
   wearableSyncAttempt: 'fitnessapp.wearable-sync-attempt.v1',
+  /**
+   * Smartwatch: Routen der letzten 30 Tage einmal nachgeladen (23.10.2026) – Konto-ID, keine Werte. Fehlt sie bzw. ist
+   * es ein anderes Konto, liest der nächste Abgleich 30 Tage (nur schon übernommene Einheiten).
+   */
+  wearableRouteBackfill: 'fitnessapp.wearable-route-backfill.v1',
   /** Supabase-Modus: Workout-Bibliothek (nur Inhalte, keine Nutzerdaten) – für offline (docs/PLAN-WORKOUTS.md). */
   /** Supabase-Modus: Supplement-Inhalte (nur Inhalte, keine Nutzerdaten) – für offline (Phase 6 SU4). */
   supplementLibrary: 'fitnessapp.supplement-library.v1',
