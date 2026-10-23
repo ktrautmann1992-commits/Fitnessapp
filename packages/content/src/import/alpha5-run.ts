@@ -215,7 +215,7 @@ function list<T>(items: readonly T[], render: (item: T) => string, max = 60): st
 /** Import-Bericht als Markdown (CI-Zusammenfassung und PR-Text, Plan 19.2). */
 export function formatAlpha5Report(report: Alpha5ImportReport): string {
   const c = report.counts;
-  const soll = '(Soll 242/236/4/2)';
+  const soll = '(Soll 306/266/4/4)';
   const recipeDev = report.deviations.filter((d) => d.scope === 'recipe');
   const ingredientDev = report.deviations.filter((d) => d.scope === 'ingredient');
   const units = report.zeroAmounts;

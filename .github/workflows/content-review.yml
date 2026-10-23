@@ -64,6 +64,10 @@ on:
           - meal-prep
           - protein-dessert
           - spar-kueche
+          - fitness-fast-food
+          - heissluftfritteuse
+          - sommer-eis
+          - low-carb
         default: '-'
       fachlich_geprueft:
         description: 'Nur Ernährung und Supplemente (Art „recipe“ oder Rezepte/Pläne/Ratgeber/Supplemente per ID): fachlich geprüft (Fachperson hat geprüft)'

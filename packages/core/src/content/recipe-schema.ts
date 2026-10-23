@@ -29,8 +29,9 @@ export type TrainingTag = (typeof TRAINING_TAGS)[number];
 /**
  * Themen-Kategorien (docs/PLAN-PHASE-5.md 19.4, n:m – ein Rezept hat 0–8). IDs und Namen aus den Kategorien der
  * Gründer-Datei (`kategorien`, Typ „thema“); „meal-prep“ heißt hier „Meal-Prep“, weil die Kategorie alle für
- * Meal-Prep geeigneten Rezepte umfasst (Regel R22), nicht nur die der Wochenpläne. Die vier Ernährungsformen der
- * Datei sind KEINE Kategorie – „passt für“ berechnet der Core (`diet`, `contains_pork`).
+ * Meal-Prep geeigneten Rezepte umfasst (Regel R22), nicht nur die der Wochenpläne. Die Ernährungsformen der
+ * Datei sind KEINE Kategorie – „passt für“ berechnet der Core (`diet`, `contains_pork`). Fassung 1.1 der Datei
+ * (23.10.2026) bringt vier neue Kapitel: Fitness-Fast-Food, Heißluftfritteuse, Sommer-Eis und Low Carb.
  */
 export const RECIPE_CATEGORIES = [
   { id: 'schnell', name_de: 'Fertig in 10 Minuten' },
@@ -41,6 +42,10 @@ export const RECIPE_CATEGORIES = [
   { id: 'meal-prep', name_de: 'Meal-Prep' },
   { id: 'protein-dessert', name_de: 'Protein-Desserts' },
   { id: 'spar-kueche', name_de: 'Spar-Küche' },
+  { id: 'fitness-fast-food', name_de: 'Fitness-Fast-Food' },
+  { id: 'heissluftfritteuse', name_de: 'Heißluftfritteuse' },
+  { id: 'sommer-eis', name_de: 'Sommer-Eis' },
+  { id: 'low-carb', name_de: 'Low Carb' },
 ] as const;
 export type RecipeCategoryId = (typeof RECIPE_CATEGORIES)[number]['id'];
 export const RECIPE_CATEGORY_IDS = RECIPE_CATEGORIES.map((c) => c.id) as [
