@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { MEAL_SLOT_LAYOUTS } from '../constants';
 import {
   calorieRing,
+  goalFill,
   MEAL_CARD_GROUPS,
   macroProgress,
   mealCardEntrySlot,
@@ -95,6 +96,7 @@ describe('macroProgress', () => {
       fraction: 47 / 222,
       overG: 0,
       percent: 21,
+      over: false,
     });
   });
 
@@ -108,7 +110,17 @@ describe('macroProgress', () => {
   });
 
   it('Überschreitung: Balken voll, Gramm darüber', () => {
-    expect(macroProgress(150, 100)).toMatchObject({ fraction: 1, overG: 50, percent: 150 });
+    expect(macroProgress(150, 100)).toMatchObject({
+      fraction: 1,
+      overG: 50,
+      percent: 150,
+      over: true,
+    });
+  });
+
+  it('genau am Ziel ist nicht drüber, 1 g mehr schon (keine Toleranz)', () => {
+    expect(macroProgress(150, 150)).toMatchObject({ over: false, fraction: 1, percent: 100 });
+    expect(macroProgress(151, 150)).toMatchObject({ over: true, overG: 1 });
   });
 
   it('keine Einträge: 0 g', () => {
@@ -256,5 +268,71 @@ describe('mealCardIntake', () => {
         { slot: 'dinner', kcal: 9999 },
       ]).dinner,
     ).toEqual({ count: 2, kcal: 19_998, withoutValue: 0 });
+  });
+});
+
+describe('goalFill (Ziel-Ring: füllt sich, über dem Ziel Dunkelrot)', () => {
+  it('Ziel 0, fehlend, NaN, negativ oder unendlich → kein Ring', () => {
+    expect(goalFill(10, 0)).toBeNull();
+    expect(goalFill(10, null)).toBeNull();
+    expect(goalFill(10, undefined)).toBeNull();
+    expect(goalFill(10, Number.NaN)).toBeNull();
+    expect(goalFill(10, -50)).toBeNull();
+    expect(goalFill(10, Number.POSITIVE_INFINITY)).toBeNull();
+    // 0,4 wird auf 0 gerundet → kein sinnvolles Ziel.
+    expect(goalFill(10, 0.4)).toBeNull();
+  });
+
+  it('nichts gegessen → leer', () => {
+    expect(goalFill(0, 420)).toEqual({ eaten: 0, goal: 420, fraction: 0, percent: 0, over: false });
+  });
+
+  it('teilweise gefüllt', () => {
+    expect(goalFill(120, 420)).toMatchObject({ fraction: 120 / 420, percent: 29, over: false });
+  });
+
+  it('genau 100 % → voll, aber nicht drüber', () => {
+    expect(goalFill(150, 150)).toEqual({
+      eaten: 150,
+      goal: 150,
+      fraction: 1,
+      percent: 100,
+      over: false,
+    });
+  });
+
+  it('101 % → drüber, Ring voll', () => {
+    expect(goalFill(101, 100)).toEqual({
+      eaten: 101,
+      goal: 100,
+      fraction: 1,
+      percent: 101,
+      over: true,
+    });
+  });
+
+  it('rundet wie die Anzeige: 150,4 / 150 g ist nicht drüber, 150,6 schon', () => {
+    expect(goalFill(150.4, 150)?.over).toBe(false);
+    expect(goalFill(150.6, 150)?.over).toBe(true);
+  });
+
+  it('riesige Werte: Anteil bleibt 1, Prozent endlich', () => {
+    const fill = goalFill(1e9, 85);
+    expect(fill).toMatchObject({ fraction: 1, over: true });
+    expect(Number.isFinite(fill?.percent)).toBe(true);
+    expect(goalFill(5, 1e9)).toMatchObject({ fraction: 5 / 1e9, over: false, percent: 0 });
+  });
+
+  it('ungültig gegessen (negativ, NaN, unendlich, null) zählt als 0', () => {
+    for (const bad of [-5, Number.NaN, Number.POSITIVE_INFINITY, null, undefined]) {
+      expect(goalFill(bad, 100)).toMatchObject({ eaten: 0, fraction: 0, over: false });
+    }
+  });
+
+  it('gleiche Regel wie calorieRing: „over“ genau dann, wenn state „over“', () => {
+    for (const eaten of [0, 1999, 2000, 2001, 5000]) {
+      const ring = calorieRing({ targetKcal: 2000, eatenKcal: eaten });
+      expect(ring.kind === 'ring' && ring.state === 'over').toBe(goalFill(eaten, 2000)?.over);
+    }
   });
 });

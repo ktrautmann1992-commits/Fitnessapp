@@ -8,16 +8,17 @@ import {
   type ShoppingCategory,
   type ShoppingListItem,
   shoppingItemOutsideProfileDiet,
+  shoppingListProgress,
   type ShoppingListRecipe,
   shoppingRecipeOutsideProfileDiet,
   startOfIsoWeek,
 } from '@fitnessapp/core';
-import { fontSize, spacing } from '@fitnessapp/ui';
+import { areaColors, fontSize, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { Icon, useAreaColors } from '@/components/design';
+import { AreaProgress, HeroSurface, Icon, useAreaColors } from '@/components/design';
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { ShoppingScanPanel } from '@/components/shopping-scan';
@@ -37,6 +38,7 @@ import {
 import { storedShoppingListRow } from '@/data/meal-plan-rows';
 import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
+import { appFont } from '@/lib/fonts';
 import { shoppingCategoryLabel, shoppingItemText } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
@@ -281,6 +283,9 @@ export default function ShoppingTabScreen() {
     if (outcome?.kind === 'ok') setMessage({ text: texts.uncheckAllDone, tone: 'success' });
   }
   const anyChecked = list.items.some((i) => i.checked);
+  const progress = shoppingListProgress(list.items);
+  // Kennzeile auf der dunklen Hero-Fläche: Türkis der Dunkel-Palette (≥ 4,5 : 1, tokens.test.ts).
+  const heroAccent = areaColors.dark.einkaufen.icon;
 
   async function applyRange() {
     if (!actions) return;
@@ -317,11 +322,33 @@ export default function ShoppingTabScreen() {
     <>
       {demo ? <DemoBanner /> : null}
       {weekSwitch}
-      <Heading level={2}>
-        <Text testID="shopping-range">
-          {texts.range(formatDateDe(list.from), formatDateDe(list.to))}
-        </Text>
-      </Heading>
+      {/* Design 23.10.2026: Kopf als dunkle Hero-Karte in Einkaufs-Türkis mit Fortschritt der Liste. */}
+      <HeroSurface area="einkaufen" testID="shopping-hero">
+        <View style={styles.heroEyebrow}>
+          <Icon name="cart" size={16} color={heroAccent} strokeWidth={2.2} />
+          <Text style={[styles.heroEyebrowText, appFont('bold'), { color: heroAccent }]}>
+            {texts.title}
+          </Text>
+        </View>
+        <Heading level={2}>
+          <Text testID="shopping-range">
+            {texts.range(formatDateDe(list.from), formatDateDe(list.to))}
+          </Text>
+        </Heading>
+        {progress.total > 0 ? (
+          <>
+            <Body muted testID="shopping-progress">
+              {texts.progress(progress.checked, progress.total)}
+            </Body>
+            <AreaProgress
+              area="einkaufen"
+              current={progress.checked}
+              total={progress.total}
+              accessibilityLabel={texts.progress(progress.checked, progress.total)}
+            />
+          </>
+        ) : null}
+      </HeroSurface>
       {shopping === null ? (
         <Notice tone="info" testID="shopping-planless">
           <Body>{texts.planless}</Body>
@@ -647,6 +674,8 @@ function ShoppingItemRow({
 }
 
 const styles = StyleSheet.create({
+  heroEyebrow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  heroEyebrowText: { fontSize: fontSize.xs, letterSpacing: 0.6, textTransform: 'uppercase' },
   row: { flexDirection: 'row', gap: spacing.sm },
   flex: { flex: 1 },
   list: { gap: spacing.sm },

@@ -1,6 +1,7 @@
 import {
   calorieRing,
   type DashboardTileId,
+  goalFill,
   latestBodyWeight,
   nextMealOfDay,
   type PlanNotice,
@@ -8,7 +9,7 @@ import {
   weekTrainingProgress,
 } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
-import { brandColors, fontSize, spacing } from '@fitnessapp/ui';
+import { brandColors, fontSize, heroColors, spacing } from '@fitnessapp/ui';
 import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
@@ -21,7 +22,14 @@ import {
   TileCell,
   TileRow,
 } from '@/components/dashboard';
-import { HeroCard, IconButton, ProgressRing, StatValue, useAreaColors } from '@/components/design';
+import {
+  HeroCard,
+  IconButton,
+  ProgressRing,
+  StatValue,
+  TileTone,
+  useAreaColors,
+} from '@/components/design';
 import { DashboardEditor } from '@/components/dashboard-edit';
 import { WorkoutsTile } from '@/components/workouts';
 import { EnduranceTile } from '@/components/endurance-tile';
@@ -40,10 +48,10 @@ import { startKind, workoutView } from '@/data/workout-session';
 import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
 import { appFont } from '@/lib/fonts';
-import { ringCenterText } from '@/lib/nutrition-day-format';
+import { percentText, ringCenterText } from '@/lib/nutrition-day-format';
 import { formatKcal, roleLabel, slotLabel } from '@/lib/nutrition-format';
 import { dayLabel, longDayLabel } from '@/lib/plan-format';
-import { useThemeColors } from '@/lib/theme';
+import { useDeviceSchemeName, useThemeColors } from '@/lib/theme';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { useAppLayout } from '@/state/use-app-layout';
@@ -140,7 +148,17 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
       groups.push([id]);
     }
   }
+  // Gründer-Wunsch 23.10.2026 („Kacheln farbig wie Training heute“): Bereichs-Kacheln dunkel mit Farbschein;
+  // Körperdaten, Fortschritt und Schnellzugriffe bleiben helle Karten mit farbigem Chip (nicht alles schwarz).
   const tile = (id: DashboardTileId): ReactNode => {
+    const content = tileContent(id);
+    return id === 'body' || id === 'progress' || id === 'shortcuts' ? (
+      content
+    ) : (
+      <TileTone tone="hero">{content}</TileTone>
+    );
+  };
+  const tileContent = (id: DashboardTileId): ReactNode => {
     switch (id) {
       case 'training':
         return <TrainingTile rows={rows} today={today} planNotice={planNotice} />;
@@ -318,6 +336,7 @@ function TrainingTile({
   const toTraining = () => router.navigate('/today');
   // Design 20.10.2026: dunkle Hero-Karte mit großem Pillen-Knopf.
   const hero = {
+    area: 'training' as const,
     eyebrow: texts.title,
     eyebrowIcon: 'dumbbell' as const,
     testID: 'overview-training',
@@ -466,6 +485,7 @@ function NutritionTile({ today }: { today: string }) {
   const foodLog = useFoodLogDay(today, view.showNumbers);
   const ringColors = useAreaColors('ernaehrung');
   const theme = useThemeColors();
+  const hero = heroColors[useDeviceSchemeName()];
   const texts = t.dashboard.nutrition;
   if (!app.backend.supportsNutrition) return null;
   if (view.setupMissing) {
@@ -500,12 +520,28 @@ function NutritionTile({ today }: { today: string }) {
       ? calorieRing({ targetKcal, eatenKcal: intake.kcal })
       : null;
   const center = ring?.kind === 'ring' ? ringCenterText(ring, false) : null;
+  const over = ring?.kind === 'ring' && ring.state === 'over';
+  // Makro-Ringe (Gründer-Wunsch 23.10.2026): gleiche Regel wie in der Tagesübersicht (core `goalFill`).
+  const macroRings =
+    ring?.kind === 'ring' && targets && intake
+      ? (
+          [
+            ['carbs', intake.carbs_g, targets.carbsG, hero.macroCarbs],
+            ['protein', intake.protein_g, targets.proteinG, hero.macroProtein],
+            ['fat', intake.fat_g, targets.fatG, hero.macroFat],
+          ] as const
+        ).flatMap(([key, eaten, goal, color]) => {
+          const fill = goalFill(eaten, goal);
+          return fill ? [{ key, fill, color }] : [];
+        })
+      : [];
   return (
     <DashboardTile
       title={texts.title}
       area="ernaehrung"
       icon="utensils"
       testID="overview-nutrition"
+      tint="corner"
       pressTestID="overview-nutrition-open"
       accessibilityLabel={center ? `${texts.title}: ${center.a11y}` : texts.open}
       onPress={() => router.navigate('/ernaehrung' as Href)}
@@ -537,15 +573,60 @@ function NutritionTile({ today }: { today: string }) {
           <ProgressRing
             size={64}
             stroke={7}
-            fraction={ring.fraction}
-            overFraction={ring.overFraction}
-            color={ringColors.strong}
+            fraction={over ? 1 : ring.fraction}
+            color={over ? hero.over : ringColors.strong}
+            trackColor={hero.track}
           >
-            <Text style={[styles.ringPercent, appFont('extrabold'), { color: theme.text }]}>
-              {`${ring.percent} %`}
+            <Text
+              style={[
+                styles.ringPercent,
+                appFont('extrabold'),
+                { color: over ? hero.overText : theme.text },
+              ]}
+            >
+              {percentText(ring.percent)}
             </Text>
           </ProgressRing>
           <StatValue value={center.value} label={`kcal ${center.label}`} />
+        </View>
+      ) : null}
+      {macroRings.length > 0 ? (
+        <View style={styles.macroRow} testID="overview-nutrition-macros">
+          {macroRings.map(({ key, fill, color }) => {
+            const name = t.nutrition.macroNames[key];
+            const a11y = (fill.over ? t.nutritionDay.macroA11yOver : t.nutritionDay.macroA11y)(
+              name,
+              formatKcal(fill.eaten),
+              formatKcal(fill.goal),
+            );
+            return (
+              <View
+                key={key}
+                style={styles.macroCell}
+                accessible
+                accessibilityRole="progressbar"
+                accessibilityLabel={a11y}
+                testID={`overview-nutrition-macro-${key}`}
+              >
+                <ProgressRing
+                  size={34}
+                  stroke={4}
+                  fraction={fill.fraction}
+                  color={fill.over ? hero.over : color}
+                  trackColor={hero.track}
+                />
+                <Text
+                  style={[
+                    styles.macroShort,
+                    appFont('bold'),
+                    { color: fill.over ? hero.overText : color },
+                  ]}
+                >
+                  {fill.over ? `${texts.macroShort[key]} ↑` : texts.macroShort[key]}
+                </Text>
+              </View>
+            );
+          })}
         </View>
       ) : null}
       {targetKcal !== null ? (
@@ -677,6 +758,9 @@ const styles = StyleSheet.create({
   small: { fontSize: fontSize.sm, lineHeight: 20 },
   ringRow: { flexDirection: 'row', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
   ringPercent: { fontSize: fontSize.xs },
+  macroRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 4 },
+  macroCell: { alignItems: 'center', gap: 4, flex: 1, minWidth: 0 },
+  macroShort: { fontSize: 12, lineHeight: 16 },
   stats: { flexDirection: 'row', gap: spacing.sm },
   stat: { flex: 1, minWidth: 0 },
 });

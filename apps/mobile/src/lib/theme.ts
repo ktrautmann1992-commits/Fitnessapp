@@ -1,10 +1,35 @@
 import { cardColors, colors, largeViewColors, type ColorScheme } from '@fitnessapp/ui';
+import { createContext, createElement, useContext, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { useLargeView } from './accessibility';
 
+const SchemeOverride = createContext<ColorScheme | null>(null);
+
+/**
+ * Erzwingt für alle Bausteine darin einen Modus – z. B. `dark` in der dunklen Hero-Karte (Design 23.10.2026): Texte,
+ * Ringe, Balken und Knöpfe darin nehmen dann automatisch die Dunkel-Palette, deren Kontraste auf `--color-surface`
+ * bzw. `--color-background` dunkel geprüft sind (gleiche Werte wie die Hero-Flächen, tokens.test.ts).
+ */
+export function ColorSchemeOverride({
+  scheme,
+  children,
+}: {
+  scheme: ColorScheme;
+  children?: ReactNode;
+}) {
+  return createElement(SchemeOverride.Provider, { value: scheme }, children);
+}
+
 /** Hell oder dunkel – passend zur Einstellung des Geräts (für Farbgruppen wie areaColors, cardColors). */
 export function useColorSchemeName(): ColorScheme {
+  const override = useContext(SchemeOverride);
+  const device = useColorScheme();
+  return override ?? (device === 'dark' ? 'dark' : 'light');
+}
+
+/** Modus des Geräts – unabhängig von einer `ColorSchemeOverride` (z. B. für Flächen, die selbst dunkel sind). */
+export function useDeviceSchemeName(): ColorScheme {
   return useColorScheme() === 'dark' ? 'dark' : 'light';
 }
 

@@ -31,6 +31,18 @@ function contrast(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
+/** Farbe `top` mit Deckkraft `alpha` über `bottom` (beide #RRGGBB). */
+function blend(top: string, bottom: string, alpha: number): string {
+  const channel = (hex: string, i: number) => parseInt(hex.slice(i, i + 2), 16);
+  return `#${[1, 3, 5]
+    .map((i) =>
+      Math.round(channel(top, i) * alpha + channel(bottom, i) * (1 - alpha))
+        .toString(16)
+        .padStart(2, '0'),
+    )
+    .join('')}`;
+}
+
 /** Farbton in Grad (0–360). */
 function hue(hex: string): number {
   const [r = 0, g = 0, b = 0] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
@@ -161,6 +173,69 @@ describe('heroColors und cardColors', () => {
     expect(contrast(colors[scheme].primaryText, colors[scheme].primary)).toBeGreaterThanOrEqual(
       4.5,
     );
+  });
+
+  it.each(schemes)('Ziel-Ringe auf der Hero-Karte sind lesbar (%s)', (scheme) => {
+    const hero = heroColors[scheme];
+    // Makro-Farben: Ring ≥ 3 : 1, als Beschriftung sogar ≥ 4,5 : 1.
+    for (const key of ['macroCarbs', 'macroProtein', 'macroFat', 'overText'] as const) {
+      expect(contrast(hero[key], hero.background), key).toBeGreaterThanOrEqual(4.5);
+    }
+    // „Über dem Ziel“: Ring in Rot ≥ 3 : 1 (Grafik), Plakette Dunkelrot mit weißer Schrift ≥ 4,5 : 1.
+    expect(contrast(hero.over, hero.background)).toBeGreaterThanOrEqual(3);
+    expect(contrast(hero.text, hero.overBadge)).toBeGreaterThanOrEqual(4.5);
+    // Die Bereichsfarben (Dunkel-Palette) leuchten auf der Hero-Karte: Kennzeile ≥ 4,5 : 1, Ring ≥ 3 : 1.
+    for (const area of areaIds) {
+      expect(contrast(areaColors.dark[area].icon, hero.background), area).toBeGreaterThanOrEqual(
+        4.5,
+      );
+      expect(contrast(areaColors.dark[area].strong, hero.background), area).toBeGreaterThanOrEqual(
+        3,
+      );
+    }
+  });
+
+  it.each(schemes)('Eingefärbte Hero-Flächen bleiben lesbar (%s, schlimmster Fall)', (scheme) => {
+    const hero = heroColors[scheme];
+    // App: HERO_TINT in apps/mobile/src/components/design.tsx – Fläche 10 % + Schein bis 22 % ≈ 30 % Bereichsfarbe.
+    const alpha = 1 - (1 - 0.1) * (1 - 0.22);
+    for (const area of areaIds) {
+      const tinted = blend(areaColors.dark[area].strong, hero.background, alpha);
+      for (const key of ['text', 'muted'] as const) {
+        expect(contrast(hero[key], tinted), `${area} ${key}`).toBeGreaterThanOrEqual(4.5);
+      }
+      expect(contrast(areaColors.dark[area].icon, tinted), `${area} icon`).toBeGreaterThanOrEqual(
+        4.5,
+      );
+      // Ringe/Balken der Kachel (z. B. Schritte, Ausdauer) in der eigenen Bereichsfarbe bzw. Erfolgsgrün ≥ 3 : 1.
+      expect(
+        contrast(areaColors.dark[area].strong, tinted),
+        `${area} strong`,
+      ).toBeGreaterThanOrEqual(3);
+      expect(contrast(colors.dark.success, tinted), `${area} success`).toBeGreaterThanOrEqual(3);
+    }
+    const green = blend(areaColors.dark.ernaehrung.strong, hero.background, alpha);
+    for (const key of ['macroCarbs', 'macroProtein', 'macroFat', 'overText'] as const) {
+      expect(contrast(hero[key], green), key).toBeGreaterThanOrEqual(4.5);
+    }
+    // Der rote „über dem Ziel“-Ring liegt nie auf der Einfärbung: Karten mit Ziel-Ringen nutzen tint="corner"
+    // (nur Schein in der Ecke, Ringe auf reiner Hero-Fläche – oben geprüft: ≥ 3 : 1).
+  });
+
+  it('Makro-Farben und „über dem Ziel“ sind klar unterscheidbar und keine Warnfarbe', () => {
+    const hero = heroColors.light;
+    const hues = [hero.macroCarbs, hero.macroProtein, hero.macroFat].map(hue);
+    const warnHues = [
+      hue(brandColors.signal),
+      hue(colors.light.warning),
+      hue(colors.light.caution),
+    ];
+    for (const h of hues) {
+      for (const warn of warnHues) expect(hueDistance(h, warn)).toBeGreaterThanOrEqual(30);
+      expect(hueDistance(h, hue(hero.over))).toBeGreaterThanOrEqual(25);
+    }
+    expect(hueDistance(hues[0] as number, hues[1] as number)).toBeGreaterThanOrEqual(30);
+    expect(hueDistance(hues[1] as number, hues[2] as number)).toBeGreaterThanOrEqual(30);
   });
 
   it('hebt die Hero-Karte im Dunkelmodus vom Hintergrund ab (Rand)', () => {

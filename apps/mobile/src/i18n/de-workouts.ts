@@ -164,6 +164,8 @@ export const deWorkouts = {
     open: 'Workouts öffnen',
     statLabel: (withoutEquipment: number) => `Workouts · ${withoutEquipment} ohne Geräte`,
   },
+  /** Kopf des Reiters (Hero-Karte, Design 23.10.2026). */
+  hero: { eyebrow: 'Deine Workout-Bibliothek' },
   calendarBadge: 'Workout',
   logEntry:
     'Workout aus der Bibliothek (freie Einheit) – zählt in Woche und Verlauf, nicht für die Vorgaben deines Plans.',

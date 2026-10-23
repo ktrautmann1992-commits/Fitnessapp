@@ -1039,7 +1039,8 @@ Die Tagesansicht im Reiter **Ernährung** sieht jetzt so aus (eigenes Alpha5-Des
 - Karte **„Übersicht“**: großer **Kalorien-Ring** – in der Mitte „… übrig“ (bzw. neutral „… zu viel“), links
   **„Gegessen“**, rechts **„Verbrannt“** (Training des Tages, steht klein „im Ziel enthalten“ – es wird **nicht**
   doppelt dazugezählt) oder – an Tagen ohne Training – **„Ziel“**. Darunter „Tagesziel: … kcal“ und drei
-  **Makro-Balken** Kohlenhydrate / Eiweiß / Fett („47 / 222 g“ = gegessen / Ziel).
+  **Makro-Balken** Kohlenhydrate / Eiweiß / Fett („47 / 222 g“ = gegessen / Ziel). **Seit 23.10.2026:** dunkle Karte
+  mit grünem Schein und drei **Makro-Ringen** (Kohlenhydrate hellblau, Eiweiß violett, Fett rosa) – siehe 10.
 - Abschnitt **„Ernährung“**: je eine Karte **Frühstück, Mittagessen, Abendessen, Snacks** mit kleinem Ring,
   „317 / 606 kcal“ (gegessen / Anteil am Tagesziel), Vorschau der Einträge und rundem **„+“** rechts. Die Gerichte aus
   dem Essensplan stehen in der passenden Karte (antippen = Rezept, „Gegessen“, „Rezept tauschen“ wie bisher). Bei nur
@@ -1056,13 +1057,21 @@ So prüft ihr es am Handy:
    **Prüfen:** Frühstücks-Karte zeigt „… / … kcal“ und „Banane“, der große Ring „Gegessen“ ist gestiegen, „übrig“
    entsprechend gesunken; die Makro-Balken füllen sich.
 4. Snacks **„+“** → Schnelleintrag z. B. „Auswärts gegessen, 3.000 kcal“ → **Prüfen:** In der Mitte steht neutral
-   „… zu viel“, der Ring bekommt eine zweite Runde (hell: schwarz, dunkel: weiß). Keine roten Warnungen.
+   „… zu viel“, der Ring wird voll und rot, darunter „über dem Ziel“ (seit 23.10.2026, siehe 10).
 5. Mit **„Nächster Tag“** auf einen künftigen Tag → Ring zeigt nur das **Tagesziel**, keine „+“-Knöpfe.
 6. **Flugmodus an** (bzw. im Browser offline) → oben Hinweis „Du bist offline …“ – Eintragen geht weiter.
 7. **Einstellungen → Kalorienzahlen anzeigen** aus → kein Ring, keine kcal, Karten nur mit Vorschau und „+“.
 8. Mit Bildschirmleser (VoiceOver/TalkBack): Ring wird z. B. als „1.391 kcal übrig von 2.869 kcal Tagesziel“
    vorgelesen, die Balken als „Eiweiß: 47 von 222 Gramm gegessen“, „+“ als „Frühstück für heute eintragen“.
 9. Alles einmal hell und einmal dunkel ansehen.
+10. **Makro-Ringe (23.10.2026):** Jeder Ring füllt sich bis zum Tagesziel, in der Mitte steht der Anteil („38 %“).
+    Liegt ein Wert über dem Ziel (z. B. viel Eiweiß eintragen), wird der Ring **voll und rot**, der Wert rot und darunter
+    erscheint die dunkelrote Plakette **„über dem Ziel“**. Genau 100 % ist noch nicht drüber. Dasselbe beim großen
+    kcal-Ring (statt der früheren zweiten Runde). Auf der **Übersicht** zeigt die Kachel „Ernährung heute“ kleine Ringe
+    „KH / EW / Fett“.
+11. **Mehr Farbe (23.10.2026):** Auf der Übersicht sind Training, Wettkampf, Workouts, Ernährung, Ausdauer und Schritte
+    dunkle Kacheln mit Farbschein in ihrer Bereichsfarbe; Körperdaten und Fortschritt bleiben hell. Workouts und
+    Einkaufen haben oben eine farbige Kopf-Karte (Einkaufen mit „… von … abgehakt“).
 
 ## Teil 7m – Startbildschirm, Anmelden, Übersicht und Menüleiste testen (18.10.2026)
 Ihr müsst nichts einstellen – keine Datenbank-Änderung. Getestet mit **Chrome am iPhone** (Vorschau-Link aus dem Pull
