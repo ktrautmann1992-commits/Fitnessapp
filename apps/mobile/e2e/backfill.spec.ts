@@ -104,7 +104,7 @@ test('Geplante Einheit von vorgestern nachtragen: Datum, „nachgetragen“ in K
 
   // Woche zeigt „nachgetragen“.
   await page.goto('/week');
-  await heading(page, 'Woche');
+  await heading(page, 'Deine Woche');
   await expect(page.getByTestId(`week-day-${MI}`)).toContainText('nachgetragen');
 });
 

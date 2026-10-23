@@ -192,12 +192,14 @@ for (const scheme of ['light', 'dark'] as const) {
       .getByTestId('plan-week')
       .getByRole('button', { name: /^Montag/ })
       .click();
+    await page.getByTestId('day-sheet-close').click();
     await page.getByTestId('plan-medical-notice').scrollIntoViewIfNeeded();
     await shot('heute-ausdauer');
     await page
       .getByTestId('plan-week')
       .getByRole('button', { name: /^Mittwoch/ })
       .click();
+    await page.getByTestId('day-sheet-close').click();
     await page.getByTestId('plan-medical-notice').scrollIntoViewIfNeeded();
     await shot('heute-kraft');
     await page.getByTestId('plan-notes').scrollIntoViewIfNeeded();
@@ -207,6 +209,7 @@ for (const scheme of ['light', 'dark'] as const) {
       .getByTestId('plan-week')
       .getByRole('button', { name: /^Montag/ })
       .click();
+    await page.getByTestId('day-sheet-close').click();
     await page.getByTestId('workout-start').click();
     await expect(page.getByTestId('workout-cardio')).toBeVisible();
     await page.getByTestId('workout-cardio-distance').fill('3,2');
@@ -242,7 +245,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await shot('heute-erledigt');
     // Woche, Verlauf, Eintrag (Etappe D).
     await page.getByTestId('today-week').click();
-    await heading('Woche');
+    await heading('Deine Woche');
     await shot('woche');
     await page.getByTestId('week-summary').scrollIntoViewIfNeeded();
     await shot('woche-summen');

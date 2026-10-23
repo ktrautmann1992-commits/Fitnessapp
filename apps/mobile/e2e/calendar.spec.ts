@@ -325,7 +325,7 @@ test('„Verschieben …“-Menü: jeder Tag mit „erlaubt“ oder Grund; Auswa
 
   // Einstieg auch aus „Woche“.
   await page.goto('/week');
-  await heading(page, 'Woche');
+  await heading(page, 'Deine Woche');
   await page.getByTestId('week-calendar').click();
   await heading(page, 'Kalender');
 });

@@ -82,6 +82,11 @@ export const STORAGE_KEYS = {
    * kein Gesundheitsdatum, unverschlüsselt, je Konto (data/day-swaps.ts).
    */
   daySwaps: 'fitnessapp.day-swaps.v1',
+  /**
+   * Training-Übersicht (docs/PLAN-AUSWERTUNG.md „Training-Übersicht“): Antworten auf „Soll diese Uhr-/freie Einheit für die geplante
+   * Einheit an einem anderen Tag zählen?“ – nur IDs und Zeitpunkt, kein Gesundheitsdatum, je Konto (data/week-status.ts).
+   */
+  logAssignments: 'fitnessapp.log-assignments.v1',
   /** Geräte-Einstellung „Bildschirm im Training anlassen“ (true/false, keine Nutzerdaten). */
   keepAwake: 'fitnessapp.keep-awake.v1',
   /**

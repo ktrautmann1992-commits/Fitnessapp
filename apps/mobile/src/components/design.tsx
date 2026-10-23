@@ -104,6 +104,10 @@ const ICONS = {
   user: [{ cx: 12, cy: 8, r: 4 }, { d: 'M4 21a8 8 0 0 1 16 0' }],
   // Supplemente (Phase 6 SU4): Kapsel.
   pill: [{ d: 'M10.5 20.5 3.5 13.5a5 5 0 0 1 7-7l7 7a5 5 0 0 1-7 7Z' }, { d: 'm8.5 8.5 7 7' }],
+  // Training-Übersicht (23.10.2026): Ruhetag, Uhr-Einheit, Ansehen.
+  moon: [{ d: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z' }],
+  watch: [{ x: 6, y: 6, w: 12, h: 12, rx: 3 }, { d: 'M9 6V3h6v3M9 18v3h6v-3M12 9.5V12l1.5 1.5' }],
+  eye: [{ d: 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z' }, { cx: 12, cy: 12, r: 3 }],
   scan: [
     {
       d: 'M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M8 8v8M11 8v8M14 8v8M17 8v8',

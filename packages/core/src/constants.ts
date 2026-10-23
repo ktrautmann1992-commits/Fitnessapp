@@ -1122,6 +1122,16 @@ export const DAY_SWAP_LIMITS = {
   maxStoredOrderNo: PLAN_BLOCK_LIMITS.exercisesPerSession,
 } as const;
 
+/**
+ * Training-Übersicht (docs/PLAN-AUSWERTUNG.md „Training-Übersicht“, Gründer-Freigabe 23.10.2026): Zuordnungen „Diese freie
+ * Einheit bzw. Uhr-Einheit zählt für die geplante Einheit an einem anderen Tag“ – nur im Gerätespeicher (wie Day-Swaps),
+ * höchstens so viele Einträge je Konto; darüber fallen die ältesten weg. Keine Fachgrenze, nur ein Speicherdeckel.
+ */
+export const LOG_ASSIGNMENT_LIMITS = {
+  maxEntries: 300,
+  idMaxLength: 64,
+} as const;
+
 // ---------------------------------------------------------------------------------------------------------
 // Phase 5 · Ernährung (docs/PLAN-PHASE-5.md Abschnitt 4, Etappe N1)
 //

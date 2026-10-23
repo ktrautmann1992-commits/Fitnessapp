@@ -288,6 +288,8 @@ export interface AppContextValue {
    * tauschen. Der Core prüft vorher (validateMove); der Server prüft erneut. Fehler werfen (BackendError).
    */
   moveSessionTo: (sessionId: string, targetDate: string) => Promise<MoveOutcome>;
+  /** Training-Übersicht (Tages-Blatt): Einheit diese Woche auslassen (streichen, nie in die nächste Woche). */
+  skipSession: (sessionId: string) => Promise<void>;
   /** Folgeblock anhängen, wenn fällig (automatisch beim Anzeigen von „Heute“). */
   appendNextBlockIfDue: () => Promise<void>;
 
@@ -1571,6 +1573,30 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [backend, loadUser, refreshPending, rows],
   );
 
+  const skipSession = useCallback(
+    async (sessionId: string) => {
+      if (!rows) throw new BackendError('not_signed_in');
+      const active = activePlan(rows);
+      const session = rows.plannedSessions.find((s) => s.id === sessionId);
+      if (!active || !session || session.status !== 'planned') {
+        throw new BackendError('plan_rejected');
+      }
+      const next = await backend.updatePlannedSession(
+        {
+          sessionId,
+          planId: active.plan.id,
+          usesHealthData: active.plan.uses_health_data,
+          scheduledOn: session.scheduled_on,
+          status: 'skipped',
+        },
+        rows,
+      );
+      setRows(next);
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
+  );
+
   const appendNextBlockIfDue = useCallback(async () => {
     if (!rows || offline || appendingRef.current || library.kind !== 'ready' || !safetyRules) {
       return;
@@ -1787,6 +1813,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       deleteCompetition,
       moveSession,
       moveSessionTo,
+      skipSession,
       appendNextBlockIfDue,
       drafts,
       saveDraft,
@@ -1878,6 +1905,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       deleteCompetition,
       moveSession,
       moveSessionTo,
+      skipSession,
       appendNextBlockIfDue,
       drafts,
       saveDraft,

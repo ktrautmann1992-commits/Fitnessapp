@@ -163,7 +163,10 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
 
   // Am heutigen Tag sichtbar.
   await page.getByTestId('workout-finish-today').click();
-  await expect(page.getByText('Freie Kraft-Einheit').first()).toBeVisible();
+  // (Die Hero-Karte von „Heute“ bleibt im Hintergrund geladen und zeigt denselben Namen – hier der Eintrag im Tag.)
+  await expect(
+    page.getByRole('link', { name: 'Freie Kraft-Einheit: Eintrag ansehen' }),
+  ).toBeVisible();
 
   // Liste (auch nach dem Neuladen): Karte zeigt „Heute erledigt“.
   await page.goto('/workouts');

@@ -1109,3 +1109,60 @@ Nur wenn ihr es wollt (A-G3). Regeln in 2.6. Neue Spalte `planned_sessions.is_ex
 - Neue Fassung des Einwilligungstexts `health_data` (Präzisierung 14) – vor N7 Teil 2, juristisch prüfen.
 - Ist die Woche nicht berechenbar (Angaben unvollständig, Unverträglichkeit ohne gültige Einwilligung), zeigt der Tagesverlauf weiterhin nur den bestehenden Hinweis – das Tagebuch erscheint dann erst nach dem Beheben (bewusst nicht umgebaut).
 - E2 (eigene Gerichte) und A2 (Tagesauswertung mit Kalorienbalken) bauen hierauf auf.
+
+## Training-Übersicht: Heute, Woche, Tages-Blatt (Umsetzungsstand 23.10.2026)
+
+Gründer-Rückmeldung: „Übersichten nicht schön, sehr unübersichtlich, Training und Einheiten schwer zu finden, geplante
+und tatsächliche Tage schwer zu tauschen.“ Freigegebene Entwürfe s1–s4 (Heute, Woche, Tages-Blatt, Nachfrage
+Uhr-Einheit). Kein Datenbank-Umbau.
+
+**Aufbau „Heute“** (`apps/mobile/src/app/(tabs)/today.tsx`):
+
+1. Dunkle Hero-Karte immer für HEUTE: offene Einheit mit „Training starten“ (`workout-start`), erledigte Einheit mit
+   Werten (Dauer, Pace, ca. kcal, „laut Uhr“) und Kennzeichen „statt Sa: …“, sonst Ruhetag bzw. „Heute frei“ mit der
+   nächsten Einheit.
+2. „Deine Woche · x von y Einheiten“: Leiste Mo–So (`plan-week`, je Tag `plan-week-day-<Datum>`) mit Zustandskreis
+   (erledigt ✓ grün, geplant gestrichelt mit Sport-Icon, verpasst grau „!“, Ruhetag „–“, vorgezogen ↶ / nachgeholt ↷),
+   Legende, Kennzeichen „statt Sa“ unter dem tatsächlichen Tag. Jeder Tag hat einen vollständigen Namen für
+   Bildschirmleser („Freitag, 23.10.: Lauf 22,8 km (heute, erledigt, statt Sa)“). Tippen öffnet das Tages-Blatt.
+3. Links „Woche ansehen“ und „Dein Tag“, Werkzeugleiste Kalender · Verlauf · Tauschen · Übungen (große Ansicht: hinter
+   „Mehr anzeigen“), Block-Woche („Woche 1 von 6“, Einstiegs-/Erholungswoche), „Essen heute“.
+4. Darunter die Einheit des gewählten Tages mit Übungen (Übungs-Tausch, Vorgaben, „Erledigt – Ansehen/Ändern“).
+   „Übungen ansehen“ im Blatt bzw. `/today?tag=<Datum>` aus der Woche wählt den Tag.
+
+**Tages-Blatt** (`components/training-week.tsx`, `DaySheet`): offene Einheit → „Jetzt starten“ (heute bzw. vorziehen/
+nachholen nach `startKind`), „Auf anderen Tag legen“ mit 7 Tag-Chips (frei / Tausch / ✓ belegt / – gesperrt, Grund beim
+Antippen und als Name; Prüfung `moveTargets`/`validateMove` wie der Kalender, Speichern über `moveSessionTo`), „Als
+erledigt eintragen“ (Nachtragen, bis heute), „Übungen ansehen“, „Diese Woche auslassen“ (Rückfrage, `skipSession`).
+Erledigt → „Ansehen“ und „Zuordnung ändern“. Woanders erledigt → Hinweis und Sprung zum Tag. Ruhetag → „Einheit hierher
+legen“ (nur erlaubte), „Freie Einheit eintragen“ (bis heute). Immer: „Tag auswerten“ (Tagesauswertung).
+
+**Woche** (`app/week.tsx`): Summen-Karte (Einheiten x/y, km Ausdauer, kcal bzw. Minuten, zusätzliche Einheiten, Sätze),
+eine Zeile je Tag (`week-day-<Datum>`: Icon, „Mo · Name“, Beschreibung, Kennzeichen erledigt/teilweise/geplant/
+vorgezogen/nachgeholt/verpasst/entfällt/Ruhetag); die ganze Zeile öffnet das Tages-Blatt. Die wiederholten „Dein
+Tag“-Links je Tag entfallen (Tagesauswertung über das Blatt). Blättern, Wochenauswertung, Kalender, Verlauf, Übungen
+bleiben.
+
+**Regel „Erledigt am tatsächlichen Tag“** (`packages/core/src/plan/week-status.ts`, `weekStatus()`, getestet):
+
+- Ein Eintrag steht immer an seinem `performed_on` (an der Wochengrenze ± 1 Tag weiter am Termin, wie bisher).
+- Zählt er für eine geplante Einheit eines anderen Tages derselben Woche, zeigt der geplante Tag „vorgezogen“ (Eintrag
+  früher) bzw. „nachgeholt“ (später), der tatsächliche Tag „statt Sa“. Vorher zeigte die Leiste auf „Heute“ das ✓ am
+  geplanten Tag (Status der geplanten Einheit) und ignorierte freie bzw. Uhr-Einträge ganz – daher „Fr Ruhetag, Sa
+  erledigt“, während „Woche“ den Lauf am Freitag zeigte (Fehlerbild Gründer-Screenshot 23.10.2026).
+- Ein Eintrag zählt für eine Einheit, wenn er verknüpft ist (`planned_session_id`: Start, „Heute nachholen“,
+  Nachtragen), wenn die Person es bestätigt hat, oder ohne Nachfrage, wenn eine freie bzw. Uhr-Einheit am SELBEN Tag wie
+  eine offene Einheit derselben Sportart liegt (Kraft zu Kraft, Ausdauer gleicher Art; unbekannte Art passt).
+- Nie still über Tage: Liegt eine freie bzw. Uhr-Einheit an einem Tag ohne geplante Einheit dieser Sportart und ist an
+  einem anderen Tag derselben ISO-Woche eine passende Einheit offen (nächster Tag zuerst, bei Gleichstand der frühere),
+  fragt „Heute“ einmal (Entwurf s4): „Neuer Lauf von deiner Uhr · Di 07:00 · 5,8 km · 35 min. Am Samstag ist „…“
+  geplant. Soll dieser Lauf dafür zählen?“ – [Ja, Samstag ist erledigt] [Nein, zusätzliche Einheit]. Nach „Nein“ wird
+  nie mehr automatisch zugeordnet. Änderbar im Tages-Blatt („Zuordnung ändern“).
+- Antworten liegen wie die Day-Swaps im Gerätespeicher (`fitnessapp.log-assignments.v1`, nur IDs und Zeitpunkt, kein
+  Gesundheitsdatum, je Konto, Deckel `LOG_ASSIGNMENT_LIMITS`). Die geplante Einheit bleibt in der Datenbank `planned`
+  (freie Einträge bleiben frei, `session_logs_free_check`); Start-Knöpfe und Zustände der Übersicht richten sich nach
+  dem Wochen-Status.
+
+**Offen:** Antworten sind (wie Day-Swaps) nicht geräteübergreifend – ein zweites Gerät fragt erneut. Soll die Zuordnung
+auch in der Datenbank stehen (z. B. für die Übersicht-Kachel und die Progression), braucht es eine additive Spalte bzw.
+RPC – erst nach Gründer-Entscheidung.
