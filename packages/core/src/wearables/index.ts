@@ -4,6 +4,7 @@ export * from './exercise-types';
 export * from './heart-rate';
 export * from './duplicates';
 export * from './daily';
+export * from './route';
 export * from './sessions';
 export * from './sync';
 export * from './rows';

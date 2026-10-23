@@ -4,6 +4,15 @@ import { type DuplicateCandidate, matchExisting } from './duplicates';
 import { mapExerciseType } from './exercise-types';
 import { type HeartRateSample, hrZones, summarizeHeartRate } from './heart-rate';
 import {
+  chooseWatchDistance,
+  type HcRouteRead,
+  summarizeWatchRoute,
+  type WatchDistanceSource,
+  type WearableRoutePayload,
+  wearableRoutePayload,
+  watchRouteSport,
+} from './route';
+import {
   type DailyMetricImport,
   groupModality,
   originFromPackage,
@@ -36,7 +45,21 @@ export interface HcSessionExtras {
   /** Summe TotalCaloriesBurned im Zeitraum (kcal). */
   readonly kcal?: number | null;
   readonly heartRateSamples?: readonly HeartRateSample[];
+  /** Route (GPS) der Einheit (nur Ausdauer mit Strecke; fehlt = nicht gelesen). */
+  readonly route?: HcRouteRead;
 }
+
+/**
+ * Stand der Route einer Uhr-Einheit nach dem Abgleich:
+ * - `route`: Route gelesen und plausibel (Distanz daraus, wird gespeichert),
+ * - `stored_route`: früher gespeicherte Route gilt weiter,
+ * - `consent_required`: Health Connect will eine Freigabe für diese Einheit („Route freigeben“),
+ * - `unusable`: Route da, aber unplausibel (Distanz laut Health Connect),
+ * - `none`: keine Route (Laufband, GPS aus, nicht erlaubt, Lesefehler),
+ * - `not_applicable`: keine Sportart mit Strecke (Schwimmen, Kraft, Sonstige).
+ */
+export type WatchRouteStatus =
+  'route' | 'stored_route' | 'consent_required' | 'unusable' | 'none' | 'not_applicable';
 
 export type SessionSkipReason = 'too_short' | 'too_long' | 'invalid';
 
@@ -44,6 +67,11 @@ export type SessionFromHcResult =
   | {
       readonly kind: 'ok';
       readonly session: Omit<WearableSessionImport, 'merge_into' | 'possible_duplicate_of'>;
+      /** Route zum Speichern (save_wearable_route) oder null. */
+      readonly route: WearableRoutePayload | null;
+      readonly routeStatus: WatchRouteStatus;
+      /** Herkunft der Distanz (null = keine Distanz). */
+      readonly distanceSource: WatchDistanceSource | null;
     }
   | { readonly kind: 'skip'; readonly reason: SessionSkipReason };
 
@@ -61,11 +89,13 @@ const roundIn = (value: number | null | undefined, limits: { min: number; max: n
 /**
  * Eine Einheit übernehmen: Dauer 1 min–12 h (sonst überspringen, Zähler „nicht übernommen“), Tag = Beginn in
  * Europe/Berlin, Distanz nur bei Ausdauer, Puls-Zusammenfassung nur mit `hfMax` (aus Alter bzw. eigenem Wert).
+ * Distanz (23.10.2026): aus der Route, wenn plausibel (summarizeWatchRoute), sonst aus der früher gespeicherten Route
+ * (`storedRouteDistanceM`), sonst laut Health Connect (chooseWatchDistance).
  */
 export function sessionFromHc(
   record: HcExerciseSessionInput,
   extras: HcSessionExtras,
-  options: { hfMax: number | null },
+  options: { hfMax: number | null; storedRouteDistanceM?: number | null },
 ): SessionFromHcResult {
   const startedAt = iso(record.startTime);
   const finishedAt = iso(record.endTime);
@@ -82,6 +112,37 @@ export function sessionFromHc(
   if (duration > WEARABLE_SYNC.durationS.max) return { kind: 'skip', reason: 'too_long' };
   const mapped = mapExerciseType(record.exerciseType);
   const endurance = groupModality(mapped.group) !== null;
+  const hcDistance = roundIn(extras.distanceM, WEARABLE_SYNC.distanceM);
+  const routeRead = endurance ? extras.route : undefined;
+  const routeOutcome =
+    routeRead?.kind === 'points'
+      ? summarizeWatchRoute(routeRead.points, mapped.group, { startedAt, finishedAt }, hcDistance)
+      : null;
+  const routePayload =
+    routeOutcome?.kind === 'ok' ? wearableRoutePayload(record.id, routeOutcome.summary) : null;
+  const stored =
+    endurance && options.storedRouteDistanceM != null
+      ? roundIn(options.storedRouteDistanceM, WEARABLE_SYNC.distanceM)
+      : null;
+  const distance = endurance
+    ? chooseWatchDistance({
+        route: routePayload ? routeOutcome : null,
+        storedRouteDistanceM: stored,
+        hcDistanceM: hcDistance,
+      })
+    : { distanceM: null, source: null };
+  const routeStatus: WatchRouteStatus =
+    !endurance || watchRouteSport(mapped.group) === null
+      ? 'not_applicable'
+      : routePayload
+        ? 'route'
+        : distance.source === 'stored_route'
+          ? 'stored_route'
+          : routeRead?.kind === 'consent_required'
+            ? 'consent_required'
+            : routeOutcome?.kind === 'unusable' || (routeOutcome?.kind === 'ok' && !routePayload)
+              ? 'unusable'
+              : 'none';
   const heartRate =
     options.hfMax !== null && extras.heartRateSamples && extras.heartRateSamples.length > 0
       ? summarizeHeartRate(extras.heartRateSamples, hrZones(options.hfMax), {
@@ -100,10 +161,13 @@ export function sessionFromHc(
       finished_at: finishedAt,
       performed_on: isoDateInTimeZone(startedAt),
       duration_s: duration,
-      distance_m: endurance ? roundIn(extras.distanceM, WEARABLE_SYNC.distanceM) : null,
+      distance_m: distance.distanceM,
       kcal: roundIn(extras.kcal, WEARABLE_SYNC.kcal),
       heart_rate: heartRate,
     },
+    route: routePayload,
+    routeStatus,
+    distanceSource: distance.source,
   };
 }
 

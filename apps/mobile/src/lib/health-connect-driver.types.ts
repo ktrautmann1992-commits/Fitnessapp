@@ -1,6 +1,7 @@
 import type {
   DailyStepsInput,
   HcExerciseSessionInput,
+  HcRouteRead,
   HcSessionExtras,
   RestingHeartRateInput,
   SleepSessionInput,
@@ -10,8 +11,9 @@ import type {
 /**
  * Health Connect (Phase 8, docs/PLAN-PHASE-8.md 2, 7.1): gemeinsamer Vertrag für Android (health-connect-driver.native.ts,
  * react-native-health-connect), Browser/iPhone (health-connect-driver.ts: nicht verfügbar) und die Beispiel-Uhr im
- * Testmodus (health-connect-demo.ts). NUR lesen (W8-3), kein Hintergrund-Lesen (W8-7), keine Strecken (W8-4).
- * Gelesene Werte sind Gesundheitsdaten (Art. 9): nie loggen, nie in Fehlermeldungen.
+ * Testmodus (health-connect-demo.ts). NUR lesen (W8-3), kein Hintergrund-Lesen (W8-7). Routen (GPS) der Ausdauer-
+ * Einheiten seit 23.10.2026 (Gründer-Entscheidung „Routen lesen“, docs/PLAN-PHASE-8.md 14). Gelesene Werte sind
+ * Gesundheits- bzw. Standortdaten: nie loggen, nie in Fehlermeldungen.
  */
 export type HcAvailability =
   /** Health Connect da und aktuell. */
@@ -45,6 +47,16 @@ export interface HealthConnectDriver {
     granted: readonly WearableDataType[],
     days: readonly string[],
   ): Promise<HcReadResult>;
+  /**
+   * Trainingsrouten für ALLE Einheiten erlaubt (READ_EXERCISE_ROUTES)? Sonst fragt Health Connect je Einheit
+   * („Route freigeben“).
+   */
+  routeAccess(): Promise<boolean>;
+  /**
+   * „Route freigeben“: Health-Connect-Dialog für genau diese Einheit (metadata.id = external_id) → Route. Nur auf
+   * ausdrücklichen Tipp der Person aufrufen.
+   */
+  requestRoute(externalId: string): Promise<HcRouteRead>;
   /** Health-Connect-Einstellungen bzw. Berechtigungen öffnen (Zugriff zurückgeben/entziehen). */
   openSettings(): void;
   /** Play Store: Health Connect installieren/aktualisieren. */

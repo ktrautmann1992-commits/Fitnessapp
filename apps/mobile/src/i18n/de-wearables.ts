@@ -13,13 +13,14 @@ export const deWearables = {
   whatTitle: 'Was übernommen wird',
   whatList: [
     'Trainingseinheiten (Art, Dauer, Distanz, kcal) – erscheinen im Tagebuch mit Uhr-Symbol',
+    'Routen deiner Läufe, Rad- und Geh-Runden (GPS) – daraus rechnet Alpha5 Distanz, Höhenmeter und Kilometerzeiten und zeigt die Karte. Nur für dich sichtbar.',
     'Puls während deiner Einheiten: nur Durchschnitt, Maximum und Minuten je Pulszone',
     'Ruhepuls, Schlafdauer und Schritte je Tag',
   ],
   notTitle: 'Was nicht passiert',
   notList: [
     'Alpha5 schreibt nichts in Health Connect zurück.',
-    'Keine Strecken (GPS) der Uhr, keine Pulskurven, keine Schlafphasen.',
+    'Keine Pulskurven, keine Schlafphasen; von Routen nur eine vereinfachte Linie.',
     'Kein Abgleich im Hintergrund – nur beim Öffnen der App oder mit „Jetzt abgleichen“.',
     'Keine Weitergabe, kein Teilen; Puls steht nie auf einem geteilten Bild.',
   ],
@@ -39,7 +40,20 @@ export const deWearables = {
     'Dafür brauchst du zuerst die Einwilligung „Gesundheitsdaten“ (Einstellungen → Einwilligungen).',
   connect: 'Weiter zu Health Connect',
   connectHint:
-    'Im nächsten Fenster wählst du, welche Daten Alpha5 lesen darf. Alles, was du abwählst, wird nicht übernommen.',
+    'Im nächsten Fenster wählst du, welche Daten Alpha5 lesen darf. Alles, was du abwählst, wird nicht übernommen. Erlaube auch „Trainingsrouten“ – nur dann stimmt die Distanz genau und du siehst die Karte.',
+  reconsentTitle: 'Neue Fassung der Einwilligung',
+  reconsentText:
+    'Alpha5 liest jetzt auch die Routen (GPS) deiner Läufe, damit Distanz und Karte stimmen. Bitte lies die neue Fassung und stimme zu – bis dahin gleicht Alpha5 nichts ab.',
+  reconsentAccept: 'Neuer Fassung zustimmen',
+  routeAccessTitle: 'Trainingsrouten',
+  routeAccessOn: '✓ Trainingsrouten: für alle Einheiten erlaubt',
+  routeAccessOff:
+    '– Trainingsrouten: nicht für alle erlaubt. Health Connect fragt dann je Lauf – tippe am Lauf auf „Route freigeben“. Oder erlaube sie hier: Berechtigungen öffnen → Alpha5 → „Trainingsrouten“ → „Immer zulassen“.',
+  routeAccessDemo: 'Beispiel-Uhr: zwei Läufe mit Route, der älteste fragt nach der Freigabe.',
+  routeConsentNeeded: (n: number) =>
+    n === 1
+      ? 'Für 1 Lauf fragt Health Connect nach der Route. Öffne ihn und tippe auf „Route freigeben“.'
+      : `Für ${n} Läufe fragt Health Connect nach der Route. Öffne sie und tippe auf „Route freigeben“.`,
   installTitle: 'Health Connect fehlt',
   installText:
     'Auf deinem Handy ist Health Connect nicht installiert oder veraltet. Ab Android 14 ist es eingebaut; bei älteren Versionen installierst du die App „Health Connect“ aus dem Play Store.',
@@ -94,7 +108,7 @@ export const deWearables = {
   disconnect: 'Trennen',
   disconnectTitle: 'Smartwatch trennen?',
   disconnectText:
-    'Puls-Zusammenfassungen und Tageswerte (Ruhepuls, Schlaf, Schritte) werden in jedem Fall gelöscht. Was soll mit den übernommenen Einheiten im Tagebuch passieren?',
+    'Puls-Zusammenfassungen, Tageswerte (Ruhepuls, Schlaf, Schritte) und die Routen der Uhr werden in jedem Fall gelöscht. Was soll mit den übernommenen Einheiten im Tagebuch passieren?',
   disconnectKeep: 'Einheiten behalten',
   disconnectDelete: 'Einheiten löschen',
   disconnectCancel: 'Abbrechen',
@@ -107,10 +121,10 @@ export const deWearables = {
     'Tipp: Den Zugriff in Health Connect selbst nimmst du unter Einstellungen → Sicherheit & Datenschutz → Health Connect → App-Berechtigungen → Alpha5 zurück.',
   revokeTitle: 'Einwilligung Smartwatch-Daten widerrufen?',
   revokeText:
-    'Alle Pulswerte und Tageswerte (Ruhepuls, Schlaf, Schritte) und die Verbindung werden sofort gelöscht. Übernommene Einheiten bleiben als normale Einträge ohne Puls im Tagebuch.',
+    'Alle Pulswerte, Tageswerte (Ruhepuls, Schlaf, Schritte), die Routen der Uhr und die Verbindung werden sofort gelöscht. Übernommene Einheiten bleiben als normale Einträge ohne Puls im Tagebuch.',
   revokeConfirm: 'Widerrufen und löschen',
   revokeDone:
-    'Einwilligung widerrufen. Puls und Tageswerte sind gelöscht; übernommene Einheiten bleiben als normale Einträge.',
+    'Einwilligung widerrufen. Puls, Tageswerte und Routen der Uhr sind gelöscht; übernommene Einheiten bleiben als normale Einträge.',
   badge: (origin: string) => `⌚ aus ${origin}`,
   historyMarker: '⌚ Smartwatch',
   origins: {
@@ -140,6 +154,31 @@ export const deWearables = {
   zoneValue: (min: number) => `${min} min`,
   zonesNote: (hfMax: number) =>
     `Pulszonen sind Schätzwerte (Maximalpuls ${hfMax}/min, geschätzt aus dem Alter). Medikamente wie Betablocker verändern den Puls.`,
+  route: {
+    /** Kennzeichen in der Kopf-Karte des Laufs. */
+    heroSource: '⌚ laut Uhr',
+    avgHr: 'Ø Puls',
+    kcal: 'kcal laut Uhr',
+    legendNote: 'Route von der Uhr, nur für dich sichtbar',
+    zonesTitle: 'Pulszonen',
+    zonePart: (n: number, min: number) => `Zone ${n}: ${min} min`,
+    zonesA11y: (parts: string) => `Zeit je Pulszone: ${parts}`,
+    missingTitle: 'Strecke laut Uhr (ohne Route)',
+    missingText:
+      'Die Distanz stammt aus Health Connect und kann von Samsung Health abweichen. Mit der Route rechnet Alpha5 Distanz, Tempo und Höhenmeter selbst und zeigt die Karte.',
+    missingHowTo:
+      'So geht es: Erlaube in Health Connect für Alpha5 „Trainingsrouten“ (Einstellungen → Smartwatch → Berechtigungen öffnen) – oder gib nur diesen Lauf frei. In Samsung Health muss das Teilen der Routen mit Health Connect an sein.',
+    release: 'Route freigeben',
+    releasing: 'Route wird gelesen …',
+    released: 'Route übernommen – Distanz und Karte kommen jetzt aus der Route.',
+    releaseNone:
+      'Für diesen Lauf hat die Uhr keine Route gespeichert (z. B. Laufband oder GPS aus).',
+    releaseDenied: 'Route nicht freigegeben. Du kannst es jederzeit erneut versuchen.',
+    releaseUnusable:
+      'Die Route ist zu lückenhaft oder unplausibel – die Distanz bleibt laut Health Connect.',
+    releaseOnlyAndroid: 'Route freigeben geht nur in der Android-App mit Health Connect.',
+    openRoute: 'Strecke mit Karte ansehen',
+  },
   errors: {
     rejected: 'Der Abgleich wurde abgelehnt. Bitte App aktualisieren und erneut versuchen.',
   },

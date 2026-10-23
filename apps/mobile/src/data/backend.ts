@@ -27,6 +27,7 @@ import type {
   WearableDataType,
   WearableImportBatch,
   WearableImportResult,
+  WearableRoutePayload,
   WearableRows,
   Workout,
   RatedSupplementId,
@@ -282,7 +283,19 @@ export interface WearableBackend {
    * Abgleich übertragen (je ≤ 500 Einheiten/62 Tage). Supabase: erst in die verschlüsselte Warteschlange, dann senden;
    * offline → `queued`. Fehler `consent_required` (Einwilligung fehlt – die Warteschlange wird verworfen).
    */
-  importBatches(batches: readonly WearableImportBatch[]): Promise<WearableImportOutcome>;
+  importBatches(
+    batches: readonly WearableImportBatch[],
+    /**
+     * Routen der Uhr (23.10.2026, save_wearable_route) – gesendet NACH den Einheiten, auf die sie verweisen. Eine von
+     * der Person gelöschte Route wird dabei nicht wieder angelegt.
+     */
+    routes?: readonly WearableRoutePayload[],
+  ): Promise<WearableImportOutcome>;
+  /**
+   * „Route freigeben“ (Freigabe je Einheit in Health Connect): genau diese Route speichern – auch wenn die Person sie
+   * vorher gelöscht hatte. Nur online. Fehler `consent_required` bzw. `route_rejected`.
+   */
+  saveRoute(route: WearableRoutePayload): Promise<void>;
   /** Möglicher Doppel-Eintrag: zusammenführen (true) bzw. beide behalten (false). Nur online. */
   resolveDuplicate(sessionLogId: string, merge: boolean): Promise<void>;
   /** Trennen (W8-12): Puls und Tageswerte immer weg; `deleteImported` löscht die Uhr-Einträge. Anzahl gelöschter. */

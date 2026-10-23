@@ -32,7 +32,7 @@ export const CURRENT_CONSENT_VERSIONS: Readonly<Record<ConsentType, number | nul
   health_data: 2,
   cycle_data: 1,
   ai_food_photo: 1,
-  wearable_data: 1,
+  wearable_data: 2,
 };
 
 /** Ohne diese Einwilligungen ist keine Nutzung möglich (Onboarding-Schritt „Grund-Einwilligungen“). */

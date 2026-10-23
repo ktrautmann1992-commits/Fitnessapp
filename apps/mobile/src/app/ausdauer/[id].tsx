@@ -31,12 +31,13 @@ import {
   PaceChart,
   RouteMapSection,
   RunHero,
+  RunHeroExtraStats,
   RunHighlights,
   SplitInsightBars,
 } from '@/components/run-insights';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { SessionKcalStat } from '@/components/session-kcal';
-import { WearableLogInfo } from '@/components/wearables';
+import { HeartZonesBar, WearableLogInfo } from '@/components/wearables';
 import {
   Body,
   Button,
@@ -52,14 +53,17 @@ import { routeInputFromPayload, routePoints } from '@/data/endurance-rows';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { formatDateDe } from '@/lib/format';
+import { thousands as thousandsDe } from '@/lib/wearable-format';
 import { decodeRouteParam } from '@/lib/route-param';
 import { saveTextFile } from '@/lib/save-file';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { forgetTrackedRoutes, useTrackedRoutes } from '@/state/use-tracked-routes';
+import { useWearables } from '@/state/use-wearables';
 
 const E = t.endurance;
 const D = E.detail;
+const WR = t.wearables.route;
 const NO_POINTS: { lat: number; lng: number }[] = [];
 
 /**
@@ -68,6 +72,9 @@ const NO_POINTS: { lat: number; lng: number }[] = [];
  * Start/Ziel, Attribution; lädt sie nicht → farbige Skizze), Kilometer-Balken mit Abweichung zum Ø, Tempo-Verlauf,
  * Höhenprofil mit Hinweis „ungenau“, Vergleich auf Favoriten-Strecken (neutral, W-G16), Bearbeiten, GPX-Datei,
  * „Als Bild teilen“, Löschen. Lädt die Karte nicht, bleiben alle Zahlen sichtbar.
+ * Läufe der Uhr (Herkunft `watch`, 23.10.2026, Mockup s5): Kopf-Karte zusätzlich mit Ø Puls und kcal laut Uhr, Karte
+ * direkt darunter mit Hinweis „Route von der Uhr, nur für dich sichtbar“, Pulszonen als gestapelter Balken. Puls und
+ * kcal nie auf dem Story-Bild (eigene Positivliste).
  */
 export default function RouteDetailScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -75,6 +82,7 @@ export default function RouteDetailScreen() {
   const router = useRouter();
   const app = useApp();
   const { state, reload } = useTrackedRoutes();
+  const wearables = useWearables();
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -132,6 +140,26 @@ export default function RouteDetailScreen() {
   const splitRows = splitInsights(kmSplits, info.distance_m, info.moving_s);
   const avgPace = averagePaceS(info.distance_m, info.moving_s);
   const elevation = elevationStats(profile);
+  const watch = saved?.source === 'watch';
+  const wearableRows = wearables.state.kind === 'ready' ? wearables.state.result.rows : null;
+  const logId = info.session_log_id;
+  const heart =
+    watch && logId
+      ? (wearableRows?.heartRates.find((h) => h.session_log_id === logId) ?? null)
+      : null;
+  const watchKcal =
+    watch && logId
+      ? (wearableRows?.sessions.find((w) => w.session_log_id === logId)?.kcal ?? null)
+      : null;
+  const mapCard = (
+    <Card>
+      <RouteMapSection
+        points={points}
+        segments={segments}
+        note={watch ? WR.legendNote : undefined}
+      />
+    </Card>
+  );
   const highlights = runHighlights({
     kmSplits,
     distanceM: info.distance_m,
@@ -177,16 +205,29 @@ export default function RouteDetailScreen() {
     <Screen area="ausdauer" icon="run" title={info.name} footer={back} testID="route-detail">
       <LiveRegion text={live.text} version={live.version} />
       <RunHero
-        meta={`${E.sports[info.sport]} · ${formatDateDe(day)}${info.is_favorite ? ` · ★ ${D.favorite}` : ''}${
-          difficulty ? ` · ${E.save.difficulties[difficulty]}` : ''
-        }`}
+        meta={`${E.sports[info.sport]} · ${formatDateDe(day)}${watch ? ` · ${WR.heroSource}` : ''}${
+          info.is_favorite ? ` · ★ ${D.favorite}` : ''
+        }${difficulty ? ` · ${E.save.difficulties[difficulty]}` : ''}`}
         distance={distanceText(info.distance_m)}
         pace={averagePaceOrSpeedText(info.sport, info.moving_s, info.distance_m)}
         time={durationText(info.moving_s)}
         elevation={info.elevation_gain_m !== null ? `${info.elevation_gain_m} m` : null}
         points={points}
         runs={paceColoredRuns(points, segments)}
-      />
+      >
+        {watch ? (
+          <RunHeroExtraStats
+            stats={[
+              ...(heart
+                ? [{ label: WR.avgHr, value: String(heart.avg_bpm), testID: 'route-avg-hr' }]
+                : []),
+              ...(watchKcal !== null
+                ? [{ label: WR.kcal, value: thousandsDe(watchKcal), testID: 'route-watch-kcal' }]
+                : []),
+            ]}
+          />
+        ) : null}
+      </RunHero>
       {pending ? (
         <Notice tone={pending.state === 'rejected' ? 'warning' : 'info'}>
           {pending.state === 'rejected' ? E.list.rejectedHint : E.save.queued}
@@ -196,6 +237,14 @@ export default function RouteDetailScreen() {
         <Notice tone="success" testID="route-message">
           {message}
         </Notice>
+      ) : null}
+
+      {/* Uhr-Lauf: Karte und Pulszonen gleich unter der Kopf-Karte (Mockup s5). */}
+      {watch ? mapCard : null}
+      {heart ? (
+        <Card>
+          <HeartZonesBar summary={heart} />
+        </Card>
       ) : null}
 
       <RunHighlights highlights={highlights} />
@@ -234,7 +283,7 @@ export default function RouteDetailScreen() {
       </Card>
 
       {/* Phase 8: Puls der Uhr, wenn die Aufzeichnung mit einer Uhr-Einheit zusammengeführt wurde. */}
-      {info.session_log_id ? <WearableLogInfo logId={info.session_log_id} /> : null}
+      {info.session_log_id ? <WearableLogInfo logId={info.session_log_id} compact={watch} /> : null}
 
       {comparison ? (
         <Notice tone="info" title={D.compare} testID="route-compare">
@@ -242,9 +291,7 @@ export default function RouteDetailScreen() {
         </Notice>
       ) : null}
 
-      <Card>
-        <RouteMapSection points={points} segments={segments} />
-      </Card>
+      {watch ? null : mapCard}
 
       <Card>
         <SectionLabel>{D.splits}</SectionLabel>

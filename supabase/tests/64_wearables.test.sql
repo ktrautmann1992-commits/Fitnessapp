@@ -19,13 +19,14 @@ insert into public.profiles (user_id, birth_date) values
   ('22222222-2222-4222-8222-222222222222', '1990-01-01'),
   ('44444444-4444-4444-8444-444444444444', '1990-01-01'),
   ('55555555-5555-4555-8555-555555555555', '1990-01-01');
+-- Jeweils die AKTUELLE Fassung (wearable_data seit 23.10.2026 Fassung 2 mit Routen, 66_wearable_routes.test.sql).
 insert into public.consents (user_id, consent_type, version, platform)
-select u, t, 1, 'android'
+select u, t, public.current_consent_version(t), 'android'
 from unnest(array['11111111-1111-4111-8111-111111111111', '44444444-4444-4444-8444-444444444444']::uuid[]) as u
 cross join unnest(array['terms', 'privacy', 'health_data', 'wearable_data']::public.consent_type[]) as t;
 insert into public.consents (user_id, consent_type, version, platform) values
-  ('22222222-2222-4222-8222-222222222222', 'health_data', 1, 'android'),
-  ('55555555-5555-4555-8555-555555555555', 'wearable_data', 1, 'android');
+  ('22222222-2222-4222-8222-222222222222', 'health_data', public.current_consent_version('health_data'), 'android'),
+  ('55555555-5555-4555-8555-555555555555', 'wearable_data', public.current_consent_version('wearable_data'), 'android');
 
 create function pg_temp.as_user(p_user uuid) returns void language sql as $$
   select set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated')::text, true)
@@ -122,8 +123,8 @@ select ok(
   and (select position('for share' in p.prosrc) < position('has_valid_consent' in p.prosrc)
    from pg_proc p where p.oid = 'private.wearable_consents_locked(uuid)'::regprocedure),
   'Import: Einwilligung FOR SHARE → prüfen → Advisory-Sperre');
-select is((select count(*)::integer from public.consent_documents where consent_type = 'wearable_data'), 1,
-  'Einwilligungstext wearable_data Version 1');
+select is((select count(*)::integer from public.consent_documents where consent_type = 'wearable_data'), 2,
+  'Einwilligungstexte wearable_data Version 1 und 2 (Routen, 23.10.2026)');
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Anmeldung, Profil, Einwilligung, Aufbau

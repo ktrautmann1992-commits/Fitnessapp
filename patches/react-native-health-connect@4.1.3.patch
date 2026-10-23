@@ -1,0 +1,37 @@
+diff --git a/android/src/main/java/dev/matinzd/healthconnect/permissions/PermissionUtils.kt b/android/src/main/java/dev/matinzd/healthconnect/permissions/PermissionUtils.kt
+index 0d9d3427cb5c60e9a3d988ef6ac68ea54ea06fb4..5b7c4dc8f5ba832a9fe38c8ddb0c57a9ef15b55b 100644
+--- a/android/src/main/java/dev/matinzd/healthconnect/permissions/PermissionUtils.kt
++++ b/android/src/main/java/dev/matinzd/healthconnect/permissions/PermissionUtils.kt
+@@ -9,6 +9,8 @@ import dev.matinzd.healthconnect.utils.reactRecordTypeToClassMap
+ 
+ class PermissionUtils {
+   companion object {
++    const val READ_EXERCISE_ROUTES = "android.permission.health.READ_EXERCISE_ROUTES"
++
+     fun parsePermissions(reactPermissions: ReadableArray): Set<String> {
+       return reactPermissions.toArrayList().mapNotNull {
+         it as HashMap<*, *>
+@@ -19,6 +21,12 @@ class PermissionUtils {
+           return@mapNotNull HealthPermission.PERMISSION_WRITE_EXERCISE_ROUTE
+         }
+ 
++        // Alpha5-Patch: Leserecht für ALLE Trainingsrouten (Android 15+/aktuelles Health Connect). Als Text, weil
++        // connect-client 1.1.0 keine Konstante dafür hat; ältere Versionen ignorieren es (dann Freigabe je Einheit).
++        if (accessType == "read" && recordType == "ExerciseRoute") {
++          return@mapNotNull READ_EXERCISE_ROUTES
++        }
++
+         if (accessType == "read" && recordType == "ReadHealthDataHistory") {
+           return@mapNotNull HealthPermission.PERMISSION_READ_HEALTH_DATA_HISTORY
+         }
+@@ -58,6 +66,10 @@ class PermissionUtils {
+         }
+ 
+         // Handle special permissions
++        if (grantedPermissions.contains(READ_EXERCISE_ROUTES)) {
++          pushMap(ReactPermission(AccessType.READ, "ExerciseRoute").toReadableMap())
++        }
++
+         if (grantedPermissions.contains(HealthPermission.PERMISSION_WRITE_EXERCISE_ROUTE)) {
+           pushMap(ReactPermission(AccessType.WRITE, "ExerciseRoute").toReadableMap())
+         }

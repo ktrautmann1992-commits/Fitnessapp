@@ -135,7 +135,7 @@ test('Widerruf „Smartwatch-Daten“ in den Einwilligungen löscht Puls und Tag
   await page.getByTestId('settings-wearable-revoke').click();
   await page.getByRole('button', { name: 'Widerrufen und löschen' }).click();
   await expect(
-    page.getByText(/Einwilligung widerrufen. Puls und Tageswerte sind gelöscht/),
+    page.getByText(/Einwilligung widerrufen. Puls, Tageswerte und Routen der Uhr sind gelöscht/),
   ).toBeVisible();
   const db = await stored(page);
   expect(db.wearables?.heartRates ?? []).toHaveLength(0);

@@ -45,11 +45,14 @@ export const LOCATION_ALWAYS_TEXT =
   'Alpha5 braucht keinen Standort „Immer“. Der Standort wird nur während einer Aufzeichnung genutzt, die du selbst startest und beendest.';
 
 /**
- * Smartwatch über Health Connect (Phase 8, docs/PLAN-PHASE-8.md 2–3; W8-2 Datenumfang, W8-3 nur lesen, W8-4 keine
- * Strecken, W8-7 kein Hintergrund-Abgleich): je genutztem Datentyp GENAU eine Leseberechtigung (= WEARABLE_DATA_TYPES
- * in packages/core bzw. HC_RECORD_TYPES in lib/health-connect-driver.native.ts). Health Connect zeigt sie im
- * Systemdialog einzeln an; die Person kann jede abwählen.
+ * Smartwatch über Health Connect (Phase 8, docs/PLAN-PHASE-8.md 2–3; W8-2 Datenumfang, W8-3 nur lesen, W8-7 kein
+ * Hintergrund-Abgleich): je genutztem Datentyp GENAU eine Leseberechtigung (= WEARABLE_DATA_TYPES in packages/core bzw.
+ * HC_RECORD_TYPES in lib/health-connect-driver.native.ts) und seit 23.10.2026 (Gründer-Entscheidung „Routen lesen“,
+ * ersetzt W8-4) das Leserecht „Trainingsrouten“ (READ_EXERCISE_ROUTES, Android 15+/aktuelles Health Connect; sonst
+ * fragt Health Connect je Einheit – „Route freigeben“). Health Connect zeigt alle im Systemdialog einzeln an; die
+ * Person kann jede abwählen.
  */
+export const HEALTH_CONNECT_ROUTE_PERMISSION = 'android.permission.health.READ_EXERCISE_ROUTES';
 export const HEALTH_CONNECT_READ_PERMISSIONS = [
   'android.permission.health.READ_EXERCISE',
   'android.permission.health.READ_DISTANCE',
@@ -58,16 +61,16 @@ export const HEALTH_CONNECT_READ_PERMISSIONS = [
   'android.permission.health.READ_RESTING_HEART_RATE',
   'android.permission.health.READ_SLEEP',
   'android.permission.health.READ_STEPS',
+  HEALTH_CONNECT_ROUTE_PERMISSION,
 ] as const;
 
 /**
  * Bewusst GESPERRT (tools:node="remove", falls eine Bibliothek sie mitbringt): Schreiben (W8-3), Lesen im Hintergrund
- * (W8-7), Daten älter als 30 Tage (W8-8, Standardgrenze reicht) und Strecken der Uhr (W8-4).
+ * (W8-7) und Daten älter als 30 Tage (W8-8, Standardgrenze reicht).
  */
 export const HEALTH_CONNECT_BLOCKED_PERMISSIONS = [
   'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
   'android.permission.health.READ_HEALTH_DATA_HISTORY',
-  'android.permission.health.READ_EXERCISE_ROUTES',
   'android.permission.health.WRITE_EXERCISE',
   'android.permission.health.WRITE_EXERCISE_ROUTE',
   'android.permission.health.WRITE_DISTANCE',

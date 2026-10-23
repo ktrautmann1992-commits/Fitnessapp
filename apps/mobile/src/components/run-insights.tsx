@@ -179,9 +179,12 @@ export function RouteSilhouettePanel({
 export function RouteMapSection({
   points,
   segments,
+  note,
 }: {
   points: readonly { lat: number; lng: number }[];
   segments: readonly PaceSegment[];
+  /** Zusatz unter der Legende, z. B. „Route von der Uhr, nur für dich sichtbar“. */
+  note?: string;
 }) {
   const runs = useMemo(() => paceColoredRuns(points, segments), [points, segments]);
   // Gleiches Objekt bei gleichen Daten – sonst lädt die Karte bei jedem Rendern neu.
@@ -201,6 +204,11 @@ export function RouteMapSection({
         fallback={<RouteSilhouettePanel points={points} runs={runs} />}
       />
       {segments.length > 1 ? <PaceLegend /> : null}
+      {note ? (
+        <Body muted testID="route-map-note">
+          {note}
+        </Body>
+      ) : null}
     </View>
   );
 }
@@ -302,6 +310,31 @@ export function RunHero({
         ) : null}
       </View>
       {children}
+    </View>
+  );
+}
+
+/**
+ * Zweite Zeile der Kopf-Karte (Läufe der Uhr, 23.10.2026): z. B. Ø Puls und kcal laut Uhr. Fehlende Werte lässt der
+ * Aufrufer weg; nie auf dem Story-Bild (eigene Positivliste).
+ */
+export function RunHeroExtraStats({
+  stats,
+}: {
+  stats: readonly { label: string; value: string; testID?: string }[];
+}) {
+  if (stats.length === 0) return null;
+  return (
+    <View
+      style={[styles.heroStats, { borderTopColor: 'rgba(255,255,255,0.12)' }]}
+      testID="route-hero-extra"
+    >
+      {stats.map((stat, i) => (
+        <View key={stat.label} style={styles.heroExtraCell}>
+          {i > 0 ? <View style={styles.heroDivider} /> : null}
+          <HeroStat label={stat.label} value={stat.value} testID={stat.testID} />
+        </View>
+      ))}
     </View>
   );
 }
@@ -894,6 +927,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   heroStat: { flex: 1, gap: 2, minWidth: 0 },
+  heroExtraCell: { flex: 1, flexDirection: 'row', minWidth: 0 },
   heroStatWide: { flex: 1.45 },
   heroDivider: {
     width: 1,

@@ -13,6 +13,7 @@ import { createDemoHealthConnectDriver } from '@/lib/health-connect-demo';
 import { healthConnectDriver } from '@/lib/health-connect-driver';
 import type { HealthConnectDriver } from '@/lib/health-connect-driver.types';
 import { type AppContextValue, useApp } from '@/state/app-state';
+import { forgetTrackedRoutes } from '@/state/use-tracked-routes';
 
 /**
  * Smartwatch-Daten des Kontos (Phase 8): geladen über das Backend; der zuletzt geladene Stand bleibt im
@@ -59,6 +60,22 @@ async function readAttempt(): Promise<string | null> {
   }
 }
 
+async function readBackfill(): Promise<string | null> {
+  try {
+    return await deviceStore.getItem(STORAGE_KEYS.wearableRouteBackfill);
+  } catch {
+    return null;
+  }
+}
+
+async function writeBackfill(userId: string): Promise<void> {
+  try {
+    await deviceStore.setItem(STORAGE_KEYS.wearableRouteBackfill, userId);
+  } catch {
+    // Ohne Speicher wird beim nächsten Abgleich erneut nachgeladen (ändert nur, legt nichts doppelt an).
+  }
+}
+
 async function writeAttempt(at: string): Promise<void> {
   try {
     await deviceStore.setItem(STORAGE_KEYS.wearableSyncAttempt, at);
@@ -85,6 +102,10 @@ export function syncWearables(
     const loaded = await app.backend.wearables.load();
     if (!loaded.rows.connection) return null;
     await writeAttempt(now);
+    // Gespeicherte Routen der Uhr (Distanz bleibt, wenn Health Connect die Route gerade nicht herausgibt).
+    const tracked = await app.backend.loadTrackedRoutes().catch(() => null);
+    const userId = app.session.userId;
+    const routeBackfill = tracked !== null && (await readBackfill()) !== userId;
     const outcome = await runWearableSync({
       driver,
       backend: app.backend.wearables,
@@ -92,8 +113,14 @@ export function syncWearables(
       wearable: loaded.rows,
       now,
       today: todayIso(),
+      trackedRoutes: tracked?.routes ?? [],
+      routeBackfill,
     });
-    if (outcome.kind === 'imported' || outcome.kind === 'queued') await app.reload();
+    if (outcome.kind === 'imported' || outcome.kind === 'queued') {
+      if (routeBackfill && outcome.kind === 'imported') await writeBackfill(userId);
+      await app.reload();
+      forgetTrackedRoutes();
+    }
     forgetWearables();
     return outcome;
   })().finally(() => {

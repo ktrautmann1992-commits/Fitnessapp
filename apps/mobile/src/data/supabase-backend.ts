@@ -37,6 +37,7 @@ import {
   type WearableConnectionRow,
   type WearableImportBatch,
   wearableImportResultSchema,
+  type WearableRoutePayload,
   type WearableRows,
   type WearableSessionRow,
   EMPTY_SUPPLEMENT_USER_DATA,
@@ -89,7 +90,12 @@ import {
   type SaveLogResponse,
 } from './log-queue';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
-import { WearableQueue, type WearableSendResult } from './wearable-queue';
+import { normalizeRouteRow } from './wearable-route-rows';
+import {
+  WearableQueue,
+  type WearableRouteSendResult,
+  type WearableSendResult,
+} from './wearable-queue';
 import { healthConsentStatus } from '../state/flow';
 import { applyFavoriteChange, applyFoodLogDelete, checkFoodLogSave } from './food-log-rows';
 import { applyCustomMealDelete, checkCustomMealSave } from './custom-meal-rows';
@@ -1104,6 +1110,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
   const wearableQueue = new WearableQueue({
     store: options.wearableQueueStore ?? createMemoryProtectedStore(),
     send: (batch) => sendWearableBatch(batch),
+    sendRoute: (route) => sendWearableRoute(route, false),
     isLogPending: (logId) => logQueue.snapshot().some((e) => e.payload.id === logId),
     currentUserId: () => currentUserId,
   });
@@ -1119,6 +1126,26 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       }
       const parsed = wearableImportResultSchema.safeParse(data);
       return parsed.success ? { kind: 'ok', result: parsed.data } : { kind: 'reject' };
+    } catch (error) {
+      return { kind: classifyWearableError(error) };
+    }
+  }
+
+  /**
+   * Route der Uhr senden (save_wearable_route, 23.10.2026). Vor db-migrate fehlt die Funktion – dann verwerfen
+   * (die Route kommt beim nächsten Abgleich im Zeitraum wieder).
+   */
+  async function sendWearableRoute(
+    route: WearableRoutePayload,
+    explicit: boolean,
+  ): Promise<WearableRouteSendResult> {
+    try {
+      const { error, status } = await client.rpc('save_wearable_route', {
+        p_route: toJson(route),
+        p_explicit: explicit,
+      });
+      if (!error) return { kind: 'ok' };
+      return { kind: classifyWearableError({ ...error, status }) };
     } catch (error) {
       return { kind: classifyWearableError(error) };
     }
@@ -2891,7 +2918,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
           .order('started_at', { ascending: false })
           .limit(TRACKED_ROUTES_LOAD_LIMIT);
         if (error) throw error;
-        const routes = (data ?? []) as unknown as TrackedRouteRow[];
+        // Vor db-migrate (23.10.2026) fehlt die Spalte wearable_session_log_id – mit null ergänzen.
+        const routes = ((data ?? []) as unknown as TrackedRouteRow[]).map(normalizeRouteRow);
         await routeQueue.writeCache(routes, session.userId).catch(() => undefined);
         return { routes: routes.filter((r) => !pendingIds.has(r.id)), pending, offline: false };
       } catch (error) {
@@ -2997,10 +3025,10 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         });
         if (error) throw wearableError(error);
       },
-      importBatches: async (batches) => {
+      importBatches: async (batches, routes = []) => {
         const session = await requireSession();
         try {
-          await wearableQueue.add(batches, session.userId);
+          await wearableQueue.add(batches, session.userId, routes);
         } catch {
           throw new BackendError('storage_unavailable', { sensitive: true });
         }
@@ -3013,6 +3041,14 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
           throw new BackendError('wearable_rejected', { sensitive: true });
         if (flushed.state === 'later') return { kind: 'queued' };
         return { kind: 'imported', result: flushed.result };
+      },
+      saveRoute: async (route) => {
+        await requireSession();
+        const outcome = await sendWearableRoute(route, true);
+        if (outcome.kind === 'consent')
+          throw new BackendError('consent_required', { sensitive: true });
+        if (outcome.kind === 'retry') throw new BackendError('online_only', { sensitive: true });
+        if (outcome.kind === 'reject') throw new BackendError('route_rejected');
       },
       resolveDuplicate: async (id, merge) => {
         await requireSession();

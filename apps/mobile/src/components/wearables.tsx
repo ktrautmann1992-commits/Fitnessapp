@@ -1,7 +1,10 @@
 import {
   type HeartRateSummaryRow,
+  releasedWatchRoute,
   type WearableRows,
+  type WearableSessionGroup,
   type WearableSessionRow,
+  watchRouteSport,
   zoneShares,
 } from '@fitnessapp/core';
 import { fontSize, radius, spacing } from '@fitnessapp/ui';
@@ -18,7 +21,8 @@ import { errorText } from '@/lib/error-text';
 import { useThemeColors } from '@/lib/theme';
 import { originLabel, zoneMinutes } from '@/lib/wearable-format';
 import { useApp } from '@/state/app-state';
-import { forgetWearables, useWearables } from '@/state/use-wearables';
+import { forgetTrackedRoutes, useTrackedRoutes } from '@/state/use-tracked-routes';
+import { forgetWearables, useWearables, wearableDriver } from '@/state/use-wearables';
 
 /**
  * Smartwatch im Tagebuch und in der Auswertung (Phase 8 Etappe H4): Uhr-Symbol mit Herkunft, Puls
@@ -86,10 +90,156 @@ export function HeartRatePanel({ summary }: { summary: HeartRateSummaryRow }) {
 }
 
 /**
- * Alles zur Uhr an einem Tagebuch-Eintrag: Herkunft, kcal, Doppel-Hinweis mit Knöpfen, Puls. Nichts, wenn der Eintrag
- * nichts mit der Uhr zu tun hat.
+ * Farben der fünf Pulszonen im gestapelten Balken (sehr leicht → maximal): Blau, Grün, Gelb, Orange, Rot – wie in
+ * Uhr-Apps üblich. Die Minuten stehen immer auch als Text darunter (nie nur Farbe).
  */
-export function WearableLogInfo({ logId }: { logId: string }) {
+const ZONE_COLORS = ['#93C5FD', '#34D399', '#FBBF24', '#F97316', '#EF4444'] as const;
+
+/** Pulszonen als ein gestapelter Balken mit Text „Zone 3: 51 min · …“ (Läufe der Uhr, Mockup 23.10.2026). */
+export function HeartZonesBar({ summary }: { summary: HeartRateSummaryRow }) {
+  const theme = useThemeColors();
+  const shares = zoneShares(summary.zone_s);
+  const minutes = zoneMinutes(summary.zone_s);
+  const parts = minutes
+    .map((min, i) => ({ min, zone: i + 1 }))
+    .filter((p) => p.min > 0)
+    .map((p) => W.route.zonePart(p.zone, p.min))
+    .join(' · ');
+  if (shares.every((share) => share === 0)) return null;
+  return (
+    <View style={styles.wrap} testID="hr-zone-bar">
+      <Heading level={2}>{W.route.zonesTitle}</Heading>
+      <View
+        style={[styles.stack, { backgroundColor: theme.background }]}
+        accessible
+        accessibilityLabel={W.route.zonesA11y(parts)}
+      >
+        {shares.map((share, i) =>
+          share > 0 ? (
+            <View
+              key={i}
+              style={{ flexGrow: share, flexBasis: 0, backgroundColor: ZONE_COLORS[i] }}
+            />
+          ) : null,
+        )}
+      </View>
+      <Body muted testID="hr-zone-text">
+        {parts}
+      </Body>
+      <Body muted>{W.zonesNote(summary.hf_max_used)}</Body>
+    </View>
+  );
+}
+
+/**
+ * Route einer Uhr-Einheit im Tagebuch (23.10.2026): mit Route → „Strecke mit Karte ansehen“; ohne Route → „Strecke laut
+ * Uhr (ohne Route)“ mit Erklärung und „Route freigeben“ (Health-Connect-Dialog je Einheit; Beispiel-Uhr im Testmodus).
+ * Nur bei Ausdauer mit Strecke (Laufen, Gehen, Rad).
+ */
+export function WatchRouteInfo({ session }: { session: WearableSessionRow }) {
+  const app = useApp();
+  const router = useRouter();
+  const tracked = useTrackedRoutes();
+  const driver = wearableDriver(app.backend.mode);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ text: string; tone: 'success' | 'warning' } | null>(
+    null,
+  );
+  const cardio = app.rows?.cardioLogs.find((c) => c.session_log_id === session.session_log_id);
+  const group = (cardio?.modality ?? null) as WearableSessionGroup | null;
+  if (!cardio || !group || watchRouteSport(group) === null) return null;
+  const routes = tracked.state.kind === 'ready' ? tracked.state.result.routes : null;
+  if (routes === null) return null;
+  const route = routes.find((r) => r.session_log_id === session.session_log_id) ?? null;
+
+  if (route) {
+    return (
+      <View style={styles.wrap}>
+        {message ? (
+          <Notice tone={message.tone} testID="watch-route-message">
+            {message.text}
+          </Notice>
+        ) : null}
+        <Button
+          label={W.route.openRoute}
+          variant="secondary"
+          onPress={() => router.push(`/ausdauer/${route.id}` as Href)}
+          testID="watch-route-open"
+        />
+      </View>
+    );
+  }
+
+  async function release() {
+    if (!cardio || !group) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      const result = releasedWatchRoute(await driver.requestRoute(session.external_id), {
+        externalId: session.external_id,
+        group,
+        startedAt: session.started_at,
+        finishedAt: session.finished_at,
+        currentDistanceM: cardio.distance_m,
+      });
+      if (result.kind !== 'ok') {
+        setMessage({
+          text:
+            result.kind === 'none'
+              ? W.route.releaseNone
+              : result.kind === 'unusable'
+                ? W.route.releaseUnusable
+                : W.route.releaseDenied,
+          tone: 'warning',
+        });
+        return;
+      }
+      await app.backend.wearables.saveRoute(result.payload);
+      setMessage({ text: W.route.released, tone: 'success' });
+      // Gleich zur Auswertung mit Karte (die Seite lädt danach neu).
+      const saved = (await app.backend.loadTrackedRoutes()).routes.find(
+        (r) => r.session_log_id === session.session_log_id,
+      );
+      forgetTrackedRoutes();
+      await app.reload();
+      if (saved) router.push(`/ausdauer/${saved.id}` as Href);
+    } catch (error) {
+      setMessage({ text: errorText(error), tone: 'warning' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <View style={styles.wrap} testID="watch-route-missing">
+      <Notice tone="info" title={W.route.missingTitle}>
+        {`${W.route.missingText} ${W.route.missingHowTo}`}
+      </Notice>
+      {message ? (
+        <Notice tone={message.tone} testID="watch-route-message">
+          {message.text}
+        </Notice>
+      ) : null}
+      {driver.kind === 'none' ? (
+        <Body muted>{W.route.releaseOnlyAndroid}</Body>
+      ) : (
+        <Button
+          label={busy ? W.route.releasing : W.route.release}
+          loading={busy}
+          onPress={() => void release()}
+          testID="watch-route-release"
+        />
+      )}
+    </View>
+  );
+}
+
+/**
+ * Alles zur Uhr an einem Tagebuch-Eintrag: Herkunft, kcal, Doppel-Hinweis mit Knöpfen, Route (23.10.2026), Puls.
+ * Nichts, wenn der Eintrag nichts mit der Uhr zu tun hat. `compact` (Auswertung eines Uhr-Laufs): ohne Route und Puls
+ * – die stehen dort in der Kopf-Karte bzw. als Zonen-Balken.
+ */
+export function WearableLogInfo({ logId, compact = false }: { logId: string; compact?: boolean }) {
   const app = useApp();
   const router = useRouter();
   const { state, reload } = useWearables();
@@ -157,7 +307,8 @@ export function WearableLogInfo({ logId }: { logId: string }) {
           />
         </View>
       ) : null}
-      {heart ? <HeartRatePanel summary={heart} /> : null}
+      {session && !compact ? <WatchRouteInfo session={session} /> : null}
+      {heart && !compact ? <HeartRatePanel summary={heart} /> : null}
     </View>
   );
 }
@@ -172,4 +323,5 @@ const styles = StyleSheet.create({
   barTrack: { flex: 1, height: 14, borderRadius: radius.sm, overflow: 'hidden' },
   barFill: { height: '100%' },
   barValue: { width: 64, textAlign: 'right', fontVariant: ['tabular-nums'] },
+  stack: { flexDirection: 'row', height: 16, borderRadius: radius.pill, overflow: 'hidden' },
 });
