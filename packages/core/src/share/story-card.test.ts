@@ -229,3 +229,25 @@ describe('Story-Bild Kraft', () => {
     expect(groupedNumber(-5)).toBe('0');
   });
 });
+
+describe('Story-Bild E-Bike', () => {
+  const ride = {
+    sport: 'bike' as const,
+    startedAt: '2026-10-19T05:30:00Z',
+    day: '2026-10-19',
+    durationS: 3_600,
+    movingS: 3_600,
+    distanceM: 25_000,
+    elevationM: null,
+    points: route,
+  };
+
+  it('E-Bike nur beim Rad; Feld steht in der Positivliste; km/h unverändert', () => {
+    const card = enduranceStoryCard({ ...ride, eBike: true }, on);
+    expect(card.eBike).toBe(true);
+    expect(STORY_CARD_FIELDS).toContain('eBike');
+    expect(card.stats.find((s) => s.key === 'speed')?.value).toBe('25,0 km/h');
+    expect(enduranceStoryCard(ride, on).eBike).toBe(false);
+    expect(enduranceStoryCard({ ...ride, sport: 'run', eBike: true }, on).eBike).toBe(false);
+  });
+});

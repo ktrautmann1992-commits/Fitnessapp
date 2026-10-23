@@ -254,6 +254,7 @@ import {
   POLYLINE_PATTERN,
   TRACKED_ROUTE_NAME_TRIM_CLASS,
   TRACKED_ROUTE_OPTIONAL_KEYS,
+  UPDATE_TRACKED_ROUTE_OPTIONAL_KEYS,
   trackedRouteSchema,
   updateTrackedRouteSchema,
 } from './routes/schema';
@@ -732,9 +733,10 @@ describe('Trainingstagebuch (Phase 4 Etappe B)', () => {
     }
   });
 
-  it('neueste save_session_log-Fassung steht in *_live_adjust_outbox.sql (4b B, davor S1, A1b)', () => {
-    expect(saveFile).toMatch(/_live_adjust_outbox\.sql$/);
+  it('neueste save_session_log-Fassung steht in *_e_bike.sql (E-Bike, davor 4b B, S1, A1b)', () => {
+    expect(saveFile).toMatch(/_e_bike\.sql$/);
     expect(fieldsOf('log_fields').is_free).toBe('boolean|missing');
+    expect(fieldsOf('cardio_fields').e_bike).toBe('boolean|missing');
   });
 
   it('freie Einheit: Namen in save_session_log = FREE_SESSION.names', () => {
@@ -2207,8 +2209,11 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
   // Neueste Fassung (Etappe E4: + optionales Höhenprofil); die S1-Fassung ist darin Zeile für Zeile enthalten.
   const elevation = readMigration('_tracked_route_elevation_profile.sql');
   const saveS1 = fn(rpcs, 'public.save_tracked_route');
-  const save = fn(elevation, 'public.save_tracked_route');
-  const update = fn(rpcs, 'public.update_tracked_route');
+  const saveE4 = fn(elevation, 'public.save_tracked_route');
+  // Neueste Fassungen (E-Bike, 23.10.2026): save_tracked_route und update_tracked_route + optionales Feld e_bike.
+  const eBike = readMigration('_e_bike.sql');
+  const save = fn(eBike, 'public.save_tracked_route');
+  const update = fn(eBike, 'public.update_tracked_route');
   /** Zeilen der älteren Fassung, die in der neueren (in Reihenfolge, ggf. mit Komma am Ende) fehlen. */
   const missingLines = (older: string, newer: string) => {
     const next = newer.split('\n');
@@ -2225,13 +2230,14 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
   const L = TRACKED_ROUTE_LIMITS;
 
   it('Höhenprofil (E4): neueste save_tracked_route = S1-Fassung + nur das optionale Feld; Spalte additiv', () => {
-    expect(missingLines(saveS1, save)).toEqual([
+    expect(missingLines(saveS1, saveE4)).toEqual([
       "  perform private.assert_json_keys(r, route_keys, 'Strecke');",
     ]);
     const newest = migrationFiles.filter((n) =>
       readMigration(n).includes('create or replace function public.save_tracked_route('),
     );
-    expect(newest.at(-1)).toMatch(/_tracked_route_elevation_profile\.sql$/);
+    expect(newest.at(-2)).toMatch(/_tracked_route_elevation_profile\.sql$/);
+    expect(newest.at(-1)).toMatch(/_e_bike\.sql$/);
     expect(elevation).toContain(
       'alter table public.tracked_routes add column elevation_profile jsonb;',
     );
@@ -2290,8 +2296,17 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
     expect(save).toContain(
       "perform private.assert_json_keys(r, route_keys || optional_keys, 'Strecke');",
     );
+    const updateOptional: readonly string[] = UPDATE_TRACKED_ROUTE_OPTIONAL_KEYS;
     expect(quotedListAfter(update, 'update_keys constant text[] := array[').sort()).toEqual(
-      Object.keys(updateTrackedRouteSchema.shape).sort(),
+      Object.keys(updateTrackedRouteSchema.shape)
+        .filter((key) => !updateOptional.includes(key))
+        .sort(),
+    );
+    expect(
+      quotedListAfter(update, 'update_optional_keys constant text[] := array[').sort(),
+    ).toEqual([...updateOptional].sort());
+    expect(update).toContain(
+      "perform private.assert_json_keys(r, update_keys || update_optional_keys, 'Strecke');",
     );
     expect(update).toContain('if not (r ?& update_keys)');
     // Server-Felder nie in der Eingabe.
@@ -3179,7 +3194,13 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
       const newest = migrationFiles.filter((n) =>
         readMigration(n).includes(`create or replace function ${name}(`),
       );
-      expect(newest.at(-1), name).toMatch(/_live_adjust_outbox\.sql$/);
+      // save_session_log: danach nur noch die E-Bike-Fassung (Obermenge, eigener Test „E-Bike“).
+      expect(newest.at(-1), name).toMatch(
+        name === 'public.save_session_log' ? /_e_bike\.sql$/ : /_live_adjust_outbox\.sql$/,
+      );
+      if (name === 'public.save_session_log') {
+        expect(newest.at(-2), name).toMatch(/_live_adjust_outbox\.sql$/);
+      }
     }
     for (const [name, trigger] of [
       ['public.save_session_log', 'session_logged'],
@@ -3711,5 +3732,74 @@ describe('Fit im Alter FA1 in der Datenbank (docs/PLAN-FIT-IM-ALTER.md 8.3)', ()
     expect(helper).toContain("p.inputs ->> 'goalType' as goal");
     expect(helper).toContain("if v_plan.goal = 'active_aging'");
     expect(helper).toContain("g.goal_type = 'active_aging'");
+  });
+});
+
+describe('E-Bike in der Datenbank (20261023140000_e_bike.sql)', () => {
+  const sql = readMigration('_e_bike.sql');
+  const fnOf = (text: string, name: string) => {
+    const start = text.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return text.slice(start, text.indexOf('$$;', text.indexOf('as $$', start)));
+  };
+  /** Zeilen der älteren Fassung, die in der neueren (in Reihenfolge, ggf. mit Komma am Ende) fehlen. */
+  const missingLines = (older: string, newer: string) => {
+    const next = newer.split('\n');
+    let at = 0;
+    const missing: string[] = [];
+    for (const line of older.split('\n')) {
+      const found = next.findIndex((n, i) => i >= at && (n === line || n === `${line},`));
+      if (found < 0) missing.push(line);
+      else at = found + 1;
+    }
+    return missing;
+  };
+
+  it('nur additiv: zwei Spalten mit Standard false und CHECK „nur beim Rad“', () => {
+    expect(sql).toContain(
+      'alter table public.cardio_logs add column e_bike boolean not null default false;',
+    );
+    expect(sql).toContain("check (not e_bike or modality = 'bike')");
+    expect(sql).toContain(
+      'alter table public.tracked_routes add column e_bike boolean not null default false;',
+    );
+    expect(sql).toContain("check (not e_bike or sport = 'bike')");
+    expect(sql).not.toMatch(/drop |alter column|rename |create policy|grant select|disable row/i);
+  });
+
+  it('save_session_log = Fassung aus *_live_adjust_outbox.sql + nur e_bike', () => {
+    const before = fnOf(readMigration('_live_adjust_outbox.sql'), 'public.save_session_log');
+    expect(missingLines(before, fnOf(sql, 'public.save_session_log'))).toEqual([
+      '      insert into public.cardio_logs (session_log_id, user_id, modality, duration_s, distance_m, elevation_m)',
+    ]);
+  });
+
+  it('save_tracked_route = Fassung aus *_tracked_route_elevation_profile.sql + nur e_bike', () => {
+    const before = fnOf(
+      readMigration('_tracked_route_elevation_profile.sql'),
+      'public.save_tracked_route',
+    );
+    expect(missingLines(before, fnOf(sql, 'public.save_tracked_route'))).toEqual([
+      "  optional_keys constant text[] := array['elevation_profile'];",
+      '      elevation_profile',
+    ]);
+  });
+
+  it('update_tracked_route = Fassung aus *_tracked_route_rpcs.sql + nur e_bike (fehlt = unverändert)', () => {
+    const before = fnOf(readMigration('_tracked_route_rpcs.sql'), 'public.update_tracked_route');
+    const after = fnOf(sql, 'public.update_tracked_route');
+    expect(missingLines(before, after)).toEqual([
+      "  perform private.assert_json_keys(r, update_keys, 'Strecke');",
+      "     or jsonb_typeof(r -> 'note') not in ('string', 'null') then",
+      '    where t.id = v_id and t.user_id = current_user_id;',
+    ]);
+    expect(after).toContain("e_bike = coalesce((r ->> 'e_bike')::boolean, t.e_bike)");
+  });
+
+  it('Rechte der Funktionen unverändert (nur authenticated)', () => {
+    for (const name of ['save_session_log', 'save_tracked_route', 'update_tracked_route']) {
+      expect(sql).toContain(`revoke all on function public.${name}(jsonb) from public, anon;`);
+      expect(sql).toContain(`grant execute on function public.${name}(jsonb) to authenticated;`);
+    }
   });
 });

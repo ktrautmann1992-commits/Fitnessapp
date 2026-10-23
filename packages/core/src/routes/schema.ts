@@ -103,8 +103,16 @@ export const trackedRouteSchema = z
      * es nur an, verlangt es nie). null bzw. fehlend = kein Profil.
      */
     elevation_profile: elevationProfileSchema.nullable().optional(),
+    /**
+     * E-Bike (Gründer-Wunsch 23.10.2026, additiv): OPTIONAL wie elevation_profile – fehlt = normales Rad. Nur beim Rad
+     * erlaubt (CHECK tracked_routes_e_bike_only_bike).
+     */
+    e_bike: z.boolean().optional(),
   })
   .superRefine((r, ctx) => {
+    if (r.e_bike === true && r.sport !== 'bike') {
+      ctx.addIssue({ code: 'custom', path: ['e_bike'], message: 'e_bike_only_bike' });
+    }
     if (r.moving_s > r.duration_s) {
       ctx.addIssue({ code: 'custom', path: ['moving_s'], message: 'moving_after_duration' });
     }
@@ -165,20 +173,33 @@ export interface TrackedRouteRow {
    * Im Testmodus können ältere gespeicherte Zeilen das Feld nicht haben – dort beim Lesen mit null ergänzt.
    */
   wearable_session_log_id: string | null;
+  /**
+   * E-Bike (nur beim Rad; Gründer-Wunsch 23.10.2026). Im Testmodus können ältere gespeicherte Zeilen das Feld nicht
+   * haben – dort beim Lesen mit false ergänzt.
+   */
+  e_bike: boolean;
   created_at: string;
   updated_at: string;
 }
 
 /** Felder von save_tracked_route, die fehlen dürfen (additiv nach S1 Teil 1). */
-export const TRACKED_ROUTE_OPTIONAL_KEYS = ['elevation_profile'] as const;
+export const TRACKED_ROUTE_OPTIONAL_KEYS = ['elevation_profile', 'e_bike'] as const;
 
-/** Eingabe von update_tracked_route: nur Name, Schwierigkeit, Favorit und Notiz sind änderbar. */
+/** Felder von update_tracked_route, die fehlen dürfen (E-Bike, additiv 23.10.2026). */
+export const UPDATE_TRACKED_ROUTE_OPTIONAL_KEYS = ['e_bike'] as const;
+
+/**
+ * Eingabe von update_tracked_route: Name, Schwierigkeit, Favorit, Notiz und (optional) E-Bike sind änderbar. E-Bike
+ * gilt nur beim Rad (bei anderen Sportarten lehnt der Server `true` ab) und übernimmt der Server auch in den
+ * verknüpften Tagebuch-Eintrag (cardio_logs.e_bike).
+ */
 export const updateTrackedRouteSchema = z.strictObject({
   id: uuid,
   name: trackedRouteSchema.shape.name,
   difficulty: trackedRouteSchema.shape.difficulty,
   is_favorite: z.boolean(),
   note: trackedRouteSchema.shape.note,
+  e_bike: z.boolean().optional(),
 });
 
 export type UpdateTrackedRoutePayload = z.infer<typeof updateTrackedRouteSchema>;
@@ -294,6 +315,8 @@ export interface TrackedRouteDetails {
   readonly baseRouteId: string | null;
   readonly sessionLogId: string | null;
   readonly source: (typeof APP_ROUTE_SOURCES)[number];
+  /** E-Bike (nur beim Rad wirksam); fehlt = normales Rad. */
+  readonly eBike?: boolean;
 }
 
 /**
@@ -326,6 +349,8 @@ export function toTrackedRoutePayload(
     session_log_id: details.sessionLogId,
     source: details.source,
     elevation_profile: summary.elevationProfile.length >= 2 ? summary.elevationProfile : null,
+    // Nur gesendet, wenn wahr (fehlt = normales Rad).
+    ...(summary.sport === 'bike' && details.eBike === true ? { e_bike: true } : {}),
   });
   return parsed.success ? parsed.data : null;
 }

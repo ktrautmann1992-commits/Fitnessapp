@@ -12,6 +12,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { AreaButton } from '@/components/design';
 import { LiveRegion } from '@/components/calendar';
+import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
 import { ActivityRow, TotalsView } from '@/components/endurance';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { Body, Button, Card, ChoiceList, Heading, LoadingState, Notice } from '@/components/ui';
@@ -57,6 +58,10 @@ export default function EnduranceScreen() {
   );
   const [live, setLive] = useState({ text: '', version: 0 });
   const userId = app.session?.userId ?? null;
+  // E-Bike (23.10.2026): beim Rad „Fahrrad | E-Bike“, vorbelegt mit der zuletzt genutzten Wahl dieses Geräts.
+  const bikeChoice = useBikeChoice(userId);
+  const [eBikePicked, setEBikePicked] = useState<boolean | null>(null);
+  const eBike = eBikePicked ?? bikeChoice.eBike ?? false;
 
   // Nach Absturz/Neustart: gesicherte Aufzeichnung anbieten (nur eigenes Konto, nur wenn keine im Speicher läuft).
   useEffect(() => {
@@ -150,6 +155,7 @@ export default function EnduranceScreen() {
   }
 
   const periodLabel = period === 'week' ? E.totals.week : E.totals.month;
+  const bikeParam = sport === 'bike' ? `&ebike=${eBike ? '1' : '0'}` : '';
 
   return (
     <Screen area="ausdauer" icon="run" title={E.title} testID="endurance">
@@ -205,13 +211,27 @@ export default function EnduranceScreen() {
                 horizontal
               />
             ) : null}
+            {(!isWeb || testMode) && sport === 'bike' ? (
+              <BikeTypeChoice
+                eBike={eBike}
+                onChange={(value) => {
+                  setEBikePicked(value);
+                  bikeChoice.remember(value);
+                }}
+                testID="endurance-bike-type"
+              />
+            ) : null}
             {!isWeb ? (
               <AreaButton
                 area="ausdauer"
                 icon="play"
                 label={E.record.start}
-                accessibilityLabel={E.record.startA11y(E.sports[sport])}
-                onPress={() => router.push(`/ausdauer/aufzeichnen?sport=${sport}` as Href)}
+                accessibilityLabel={E.record.startA11y(
+                  sport === 'bike' && eBike ? E.eBike.sport : E.sports[sport],
+                )}
+                onPress={() =>
+                  router.push(`/ausdauer/aufzeichnen?sport=${sport}${bikeParam}` as Href)
+                }
                 testID="endurance-start"
               />
             ) : testMode ? (
@@ -220,7 +240,9 @@ export default function EnduranceScreen() {
                   area="ausdauer"
                   icon="play"
                   label={E.record.demoStart}
-                  onPress={() => router.push(`/ausdauer/aufzeichnen?sport=${sport}&demo=1` as Href)}
+                  onPress={() =>
+                    router.push(`/ausdauer/aufzeichnen?sport=${sport}&demo=1${bikeParam}` as Href)
+                  }
                   testID="endurance-demo"
                 />
                 <Body muted>{E.record.demoHint}</Body>

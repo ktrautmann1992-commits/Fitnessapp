@@ -114,7 +114,9 @@ import {
   applyTrackedRouteSave,
   applyTrackedRouteUpdate,
   detachRouteLogs,
+  logEBikeToRoutes,
   type RouteCounter,
+  routeEBikeToLog,
 } from './tracked-route-rows';
 import {
   applySessionLog,
@@ -1203,7 +1205,13 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
                 created: (db.logCounter?.day === today ? db.logCounter.created : 0) + 1,
               }
             : (db.logCounter ?? null);
-          await save({ ...db, rows: next, logCounter });
+          // E-Bike: verknüpfte Rad-Strecke folgt dem Eintrag (wie save_session_log).
+          const trackedRoutes = db.trackedRoutes
+            ? logEBikeToRoutes(db.trackedRoutes, {
+                cardioLogs: next.cardioLogs.filter((c) => c.session_log_id === id),
+              })
+            : db.trackedRoutes;
+          await save({ ...db, rows: next, logCounter, trackedRoutes });
           await drafts.remove(draft.key);
           // Plan 8.2 (Testmodus): nach dem gespeicherten Training neu rechnen – NUR mit „Live-Anpassung einschalten“ (Standard an).
           await recomputeLive(next, simulatePremiumOn(db));
@@ -1617,13 +1625,18 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       return 'saved';
     },
     updateTrackedRoute: async (payload) => {
-      const { db, session } = await requireProfile();
+      const { db, rows, session } = await requireProfile();
+      const now = options.now();
       const next = applyTrackedRouteUpdate(payload, db.trackedRoutes ?? [], {
         userId: session.userId,
-        now: options.now(),
+        now,
       });
       if (next === 'invalid' || next === 'not_found') throw new BackendError('route_rejected');
-      await save({ ...db, trackedRoutes: next });
+      // E-Bike angegeben: verknüpfter Rad-Eintrag folgt (wie update_tracked_route, Revision + 1).
+      const route = next.find((r) => r.id === payload.id);
+      const nextRows =
+        payload.e_bike !== undefined && route ? routeEBikeToLog(rows, route, now) : rows;
+      await save({ ...db, rows: nextRows, trackedRoutes: next });
     },
     deleteTrackedRoute: async (id) => {
       const { db, session } = await requireUser();

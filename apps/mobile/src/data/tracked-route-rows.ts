@@ -86,6 +86,12 @@ export function applyTrackedRouteSave(
     }
     rows = {
       ...rows,
+      // E-Bike: der verknüpfte Rad-Eintrag übernimmt die Angabe der Strecke (wie save_tracked_route).
+      cardioLogs: rows.cardioLogs.map((c) =>
+        c.session_log_id === r.session_log_id && c.modality === 'bike'
+          ? { ...c, e_bike: r.e_bike === true }
+          : c,
+      ),
       sessionLogs: rows.sessionLogs.map((l) =>
         l.id === r.session_log_id
           ? {
@@ -127,6 +133,7 @@ export function applyTrackedRouteSave(
     source: r.source,
     elevation_profile: r.elevation_profile ? r.elevation_profile.map((p) => [...p]) : null,
     wearable_session_log_id: null,
+    e_bike: r.sport === 'bike' && r.e_bike === true,
     created_at: context.now,
     updated_at: context.now,
   };
@@ -138,7 +145,10 @@ export function applyTrackedRouteSave(
   };
 }
 
-/** Name, Schwierigkeit, Favorit, Notiz einer EIGENEN Strecke ändern (update_tracked_route). */
+/**
+ * Name, Schwierigkeit, Favorit, Notiz und (optional) E-Bike einer EIGENEN Strecke ändern (update_tracked_route).
+ * E-Bike fehlt = unverändert; `true` nur beim Rad (sonst 'invalid', wie der CHECK der Datenbank).
+ */
 export function applyTrackedRouteUpdate(
   input: unknown,
   routes: readonly TrackedRouteRow[],
@@ -147,7 +157,9 @@ export function applyTrackedRouteUpdate(
   const parsed = updateTrackedRouteSchema.safeParse(input);
   if (!parsed.success) return 'invalid';
   const u: UpdateTrackedRoutePayload = parsed.data;
-  if (!routes.some((x) => x.id === u.id && x.user_id === context.userId)) return 'not_found';
+  const own = routes.find((x) => x.id === u.id && x.user_id === context.userId);
+  if (!own) return 'not_found';
+  if (u.e_bike === true && own.sport !== 'bike') return 'invalid';
   return routes.map((x) =>
     x.id === u.id
       ? {
@@ -156,10 +168,48 @@ export function applyTrackedRouteUpdate(
           difficulty: u.difficulty,
           is_favorite: u.is_favorite,
           note: u.note,
+          e_bike: u.e_bike ?? x.e_bike === true,
           updated_at: context.now,
         }
       : x,
   );
+}
+
+/**
+ * E-Bike der Strecke → verknüpfter EIGENER Rad-Eintrag (wie update_tracked_route: nur bei Änderung, Revision + 1).
+ * Unverändert, wenn die Strecke keinen Eintrag hat oder der Eintrag schon dieselbe Angabe trägt.
+ */
+export function routeEBikeToLog(
+  rows: UserRows,
+  route: Pick<TrackedRouteRow, 'session_log_id' | 'e_bike'>,
+  now: string,
+): UserRows {
+  const logId = route.session_log_id;
+  const eBike = route.e_bike === true;
+  const cardio = logId ? rows.cardioLogs.find((c) => c.session_log_id === logId) : undefined;
+  if (!logId || !cardio || cardio.modality !== 'bike' || (cardio.e_bike === true) === eBike) {
+    return rows;
+  }
+  return {
+    ...rows,
+    cardioLogs: rows.cardioLogs.map((c) => (c === cardio ? { ...c, e_bike: eBike } : c)),
+    sessionLogs: rows.sessionLogs.map((l) =>
+      l.id === logId ? { ...l, revision: l.revision + 1, updated_at: now } : l,
+    ),
+  };
+}
+
+/** Eintrag gespeichert → verknüpfte Rad-Strecken übernehmen dessen E-Bike-Angabe (wie save_session_log). */
+export function logEBikeToRoutes(
+  routes: readonly TrackedRouteRow[],
+  rows: Pick<UserRows, 'cardioLogs'>,
+): TrackedRouteRow[] {
+  const byLog = new Map(rows.cardioLogs.map((c) => [c.session_log_id, c.e_bike === true] as const));
+  return routes.map((r) => {
+    if (r.sport !== 'bike' || r.session_log_id === null || !byLog.has(r.session_log_id)) return r;
+    const eBike = byLog.get(r.session_log_id) === true;
+    return (r.e_bike === true) === eBike ? r : { ...r, e_bike: eBike };
+  });
 }
 
 /**

@@ -159,26 +159,36 @@ export const exerciseLogSchema = z
     path: ['reps_max'],
   });
 
-export const cardioLogSchema = z.strictObject({
-  modality: z.enum(ENDURANCE_MODALITIES),
-  duration_s: z
-    .number()
-    .int()
-    .min(CARDIO_LOG_LIMITS.durationS.min)
-    .max(CARDIO_LOG_LIMITS.durationS.max),
-  distance_m: z
-    .number()
-    .int()
-    .min(CARDIO_LOG_LIMITS.distanceM.min)
-    .max(CARDIO_LOG_LIMITS.distanceM.max)
-    .nullable(),
-  elevation_m: z
-    .number()
-    .int()
-    .min(CARDIO_LOG_LIMITS.elevationM.min)
-    .max(CARDIO_LOG_LIMITS.elevationM.max)
-    .nullable(),
-});
+export const cardioLogSchema = z
+  .strictObject({
+    modality: z.enum(ENDURANCE_MODALITIES),
+    duration_s: z
+      .number()
+      .int()
+      .min(CARDIO_LOG_LIMITS.durationS.min)
+      .max(CARDIO_LOG_LIMITS.durationS.max),
+    distance_m: z
+      .number()
+      .int()
+      .min(CARDIO_LOG_LIMITS.distanceM.min)
+      .max(CARDIO_LOG_LIMITS.distanceM.max)
+      .nullable(),
+    elevation_m: z
+      .number()
+      .int()
+      .min(CARDIO_LOG_LIMITS.elevationM.min)
+      .max(CARDIO_LOG_LIMITS.elevationM.max)
+      .nullable(),
+    /**
+     * E-Bike (Gründer-Wunsch 23.10.2026): nur bei Rad erlaubt. Optional, damit ältere, noch wartende Fassungen gültig
+     * bleiben (fehlt = false, wie in save_session_log und cardio_logs.e_bike).
+     */
+    e_bike: z.boolean().optional(),
+  })
+  .refine((c) => c.e_bike !== true || c.modality === 'bike', {
+    message: 'E-Bike nur beim Rad.',
+    path: ['e_bike'],
+  });
 
 export const sessionLogPayloadSchema = z
   .strictObject({

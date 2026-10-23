@@ -21,6 +21,8 @@ export const sessionCaloriesInputSchema = z.strictObject({
   kind: kindSchema,
   /** Sportart einer Ausdauer-Einheit; null = unbekannt (höchster lockerer MET-Wert, TRAINING_MET.unknownEndurance). */
   enduranceModality: z.enum(ENDURANCE_MODALITIES).nullable(),
+  /** E-Bike (TRAINING_MET.eBike, niedriger als normales Rad); nur bei Sportart Rad wirksam. Fehlt = false. */
+  eBike: z.boolean().default(false),
   /** Geplante Intensität 1–4 (`effort_target`); null = unbekannt (höherer Wert). */
   effortTarget: z.number().int().min(1).max(4).nullable(),
   /** Dauer in Sekunden (bei Strecken die Bewegungszeit); null = unbekannt. */
@@ -83,6 +85,7 @@ export function sessionCalories(raw: SessionCaloriesInput): SessionCalories {
     kind: input.kind,
     enduranceModality: input.kind === 'endurance' ? input.enduranceModality : null,
     effortTarget: input.effortTarget,
+    eBike: input.eBike,
   });
   const kcal = met * input.bodyWeightKg * (durationS / 3600);
   return { kcal: roundKcal(kcal), source: 'estimate', reason: null, met };
@@ -118,7 +121,12 @@ export interface SessionCaloriesLogInput {
     readonly started_at: string | null;
     readonly finished_at: string | null;
   };
-  readonly cardio: { readonly modality: EnduranceModality; readonly duration_s: number } | null;
+  readonly cardio: {
+    readonly modality: EnduranceModality;
+    readonly duration_s: number;
+    /** E-Bike (cardio_logs.e_bike); fehlt bei älteren Zeilen = false. */
+    readonly e_bike?: boolean;
+  } | null;
   readonly planned: {
     readonly endurance_modality: EnduranceModality | null;
     readonly effort_target: number | null;
@@ -149,6 +157,7 @@ export function sessionCaloriesInputForLog(
     enduranceModality: input.cardio?.modality ?? input.planned?.endurance_modality ?? null,
     effortTarget: input.planned?.effort_target ?? null,
     durationS: sessionLogDurationS(input),
+    eBike: input.cardio?.modality === 'bike' && input.cardio.e_bike === true,
   };
 }
 

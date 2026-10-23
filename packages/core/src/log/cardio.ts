@@ -138,6 +138,8 @@ export interface CardioInput {
   readonly minutes: number | null;
   readonly distanceKm: number | null;
   readonly elevationM: number | null;
+  /** E-Bike (nur bei Rad wirksam); fehlt = normales Rad. */
+  readonly eBike?: boolean;
 }
 
 export type CardioInputField = 'duration' | 'distance' | 'elevation';
@@ -219,6 +221,8 @@ export function cardioLogFromInput(input: CardioInput): CardioInputResult {
       duration_s: durationS,
       distance_m: distance,
       elevation_m: elevation,
+      // Nur gesendet, wenn wahr (fehlt = normales Rad); bei anderen Sportarten nie.
+      ...(input.modality === 'bike' && input.eBike === true ? { e_bike: true } : {}),
     },
   };
 }
