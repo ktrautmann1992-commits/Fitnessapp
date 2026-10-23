@@ -962,282 +962,425 @@ Food photo of "Thunfisch-Eiersalat mit Gurke auf Knäckebrot" (Herzhafter Salat 
 ```
 
 
+## Low Carb
+
+### 132. Spinat-Feta-Omelett mit Tomatensalat
+Dateiname: `spinat-feta-omelett-mit-tomatensalat.jpg`
+
+```
+Food photo of "Spinat-Feta-Omelett mit Tomatensalat" (Fluffiges Omelett aus drei Eiern mit Babyspinat und Feta, dazu ein frischer Tomatensalat – herzhaft, sättigend und fast ohne Kohlenhydrate.). Visible main ingredients: Ei, Cherrytomaten, Babyspinat, Feta, Schnittlauch (frisch). Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 133. Tofu-Scramble mit Champignons und Avocado
+Dateiname: `tofu-scramble-mit-champignons-und-avocado.jpg`
+
+```
+Food photo of "Tofu-Scramble mit Champignons und Avocado" (Würziges Rührei aus Tofu mit gebratenen Champignons, Spinat und Avocado – rein pflanzlich und mit über 30 g Eiweiß.). Visible main ingredients: Tofu natur, Champignons, Avocado, Babyspinat. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 134. Skyr-Bowl mit Himbeeren, Walnüssen und Leinsamen
+Dateiname: `skyr-bowl-mit-himbeeren-walnuessen-und-leinsamen.jpg`
+
+```
+Food photo of "Skyr-Bowl mit Himbeeren, Walnüssen und Leinsamen" (Cremiger Skyr mit Himbeeren, knackigen Walnüssen und Leinsamen – ein schnelles Eiweißfrühstück ohne Haferflocken und ohne Zuckerzusatz.). Visible main ingredients: Skyr natur, Himbeeren (TK), Walnüsse, Leinsamen geschrotet. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 135. Räucherlachs-Rührei mit Gurke und Dill
+Dateiname: `raeucherlachs-ruehrei-mit-gurke-und-dill.jpg`
+
+```
+Food photo of "Räucherlachs-Rührei mit Gurke und Dill" (Cremiges Rührei mit Räucherlachs, frischem Dill und knackigen Gurkenscheiben – ein Wochenendfrühstück mit viel Eiweiß und gesunden Fetten.). Visible main ingredients: Ei, Gurke, Eiklar, Räucherlachs, Dill (frisch). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 136. Kokos-Chia-Pudding mit Beeren und Sojaskyr
+Dateiname: `kokos-chia-pudding-mit-beeren-und-sojaskyr.jpg`
+
+```
+Food photo of "Kokos-Chia-Pudding mit Beeren und Sojaskyr" (Über Nacht gequollener Chia-Pudding mit Kokos, Sojaskyr und Vanille-Protein, getoppt mit Beeren – vegan, kohlenhydratarm und morgens sofort fertig.). Visible main ingredients: Sojadrink ungesüßt, Sojaskyr natur, Beerenmischung (TK), Chiasamen, Kokosraspeln. Presentation: layered in a clear glass jar, spoon beside it. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 137. Hähnchen-Brokkoli-Pfanne mit Cashews
+Dateiname: `haehnchen-brokkoli-pfanne-mit-cashews.jpg`
+
+```
+Food photo of "Hähnchen-Brokkoli-Pfanne mit Cashews" (Saftiges Hähnchen mit viel Brokkoli und Paprika in Soja-Ingwer-Sauce, getoppt mit gerösteten Cashews – Asia-Pfanne ganz ohne Reis.). Visible main ingredients: Brokkoli, Hähnchenbrustfilet, Paprika rot, Cashewkerne, Ingwer, Knoblauch. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 138. Zucchini-Lasagne mit Hüttenkäse und Spinat
+Dateiname: `zucchini-lasagne-mit-huettenkaese-und-spinat.jpg`
+
+```
+Food photo of "Zucchini-Lasagne mit Hüttenkäse und Spinat" (Lasagne, bei der Zucchinischeiben die Nudelplatten ersetzen: mit Tomatensauce, Hüttenkäse, Spinat und überbackenem Mozzarella.). Visible main ingredients: Zucchini, Hüttenkäse, Passierte Tomaten, Mozzarella light, Babyspinat, Knoblauch. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 139. Knusper-Tofu auf Asia-Krautsalat mit Erdnussdressing
+Dateiname: `knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing.jpg`
+
+```
+Food photo of "Knusper-Tofu auf Asia-Krautsalat mit Erdnussdressing" (Knusprig gebratener Tofu auf einem knackigen Salat aus Weißkohl, Rotkohl und Gurke mit cremigem Erdnuss-Limetten-Dressing.). Visible main ingredients: Tofu natur, Weißkohl, Gurke, Rotkohl, Erdnussmus, Limettensaft. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 140. Puten-Caesar-Salat mit Parmesan-Skyr-Dressing
+Dateiname: `puten-caesar-salat-mit-parmesan-skyr-dressing.jpg`
+
+```
+Food photo of "Puten-Caesar-Salat mit Parmesan-Skyr-Dressing" (Der Klassiker ohne Croûtons und schwere Sauce: gebratene Putenbrust auf knackigem Romanasalat mit einem cremigen Dressing aus Skyr, Parmesan und Zitrone.). Visible main ingredients: Putenbrustfilet, Romanasalat, Cherrytomaten, Skyr natur, Parmesan, Zitronensaft. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 141. Senfeier mit Brokkoli
+Dateiname: `senfeier-mit-brokkoli.jpg`
+
+```
+Food photo of "Senfeier mit Brokkoli" (Der norddeutsche Klassiker in Low-Carb-Version: wachsweiche Eier in einer leichten Senfsauce, dazu Brokkoli statt Kartoffeln.). Visible main ingredients: Brokkoli, Ei, Milch 1,5 %, Dill (frisch). Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 142. Rinderhack-Zucchini-Pfanne mit Feta
+Dateiname: `rinderhack-zucchini-pfanne-mit-feta.jpg`
+
+```
+Food photo of "Rinderhack-Zucchini-Pfanne mit Feta" (Würziges Rinderhack mit Zucchini, Paprika und Tomaten aus einer Pfanne, mit zerbröseltem Feta – sättigend, schnell und ohne Beilage.). Visible main ingredients: Zucchini, Rinderhackfleisch (5 % Fett), Paprika rot, Gehackte Tomaten (Dose), Zwiebel, Feta. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 143. Kräuter-Lachs mit Blumenkohlpüree und grünen Bohnen
+Dateiname: `kraeuter-lachs-mit-blumenkohlpueree-und-gruenen-bohnen.jpg`
+
+```
+Food photo of "Kräuter-Lachs mit Blumenkohlpüree und grünen Bohnen" (Saftiger Ofenlachs mit Zitrone und Dill auf cremigem Blumenkohlpüree, dazu knackige grüne Bohnen – wie Lachs mit Kartoffelpüree, nur viel leichter.). Visible main ingredients: Blumenkohl, Lachsfilet, Grüne Bohnen (TK), Milch 1,5 %, Parmesan, Zitronensaft. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 144. Kokos-Tofu-Curry mit Blumenkohlreis
+Dateiname: `kokos-tofu-curry-mit-blumenkohlreis.jpg`
+
+```
+Food photo of "Kokos-Tofu-Curry mit Blumenkohlreis" (Mildes gelbes Curry mit Tofu, Paprika und Spinat in Kokosmilch, serviert auf Blumenkohlreis statt Basmati – vegan und angenehm leicht.). Visible main ingredients: Blumenkohl, Tofu natur, Kokosmilch (fettreduziert), Paprika rot, Babyspinat, Ingwer. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 145. Schweinefilet-Spieße mit Paprika und Kräuterquark
+Dateiname: `schweinefilet-spiesse-mit-paprika-und-kraeuterquark.jpg`
+
+```
+Food photo of "Schweinefilet-Spieße mit Paprika und Kräuterquark" (Zartes Schweinefilet mit Paprika, Zucchini und roter Zwiebel am Spieß, aus Pfanne oder Grill, dazu ein frischer Schnittlauchquark.). Visible main ingredients: Schweinefilet, Zucchini, Paprika rot, Magerquark, Rote Zwiebel, Schnittlauch (frisch). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 146. Brokkoli-Käse-Auflauf mit Eiern
+Dateiname: `brokkoli-kaese-auflauf-mit-eiern.jpg`
+
+```
+Food photo of "Brokkoli-Käse-Auflauf mit Eiern" (Brokkoli in einem lockeren Guss aus Eiern, Hüttenkäse und Milch, mit Gouda überbacken – ein warmes, sättigendes Abendessen ohne Nudeln.). Visible main ingredients: Brokkoli, Ei, Hüttenkäse, Milch 1,5 %, Gouda light (gerieben). Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 147. Räuchertofu-Sticks mit Paprika und Tahin-Dip
+Dateiname: `raeuchertofu-sticks-mit-paprika-und-tahin-dip.jpg`
+
+```
+Food photo of "Räuchertofu-Sticks mit Paprika und Tahin-Dip" (Rauchige Tofustreifen und knackige Paprika zum Dippen in einen cremigen Sesam-Zitronen-Dip – ein herzhafter veganer Snack in 5 Minuten.). Visible main ingredients: Räuchertofu, Paprika rot, Tahin, Zitronensaft. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 148. Hüttenkäse mit Radieschen und Kürbiskernen
+Dateiname: `huettenkaese-mit-radieschen-und-kuerbiskernen.jpg`
+
+```
+Food photo of "Hüttenkäse mit Radieschen und Kürbiskernen" (Körniger Frischkäse mit knackigen Radieschen, Schnittlauch und gerösteten Kürbiskernen – herzhaft, frisch und mit über 25 g Eiweiß.). Visible main ingredients: Hüttenkäse, Radieschen, Kürbiskerne, Schnittlauch (frisch). Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 149. Roastbeef-Gurken-Röllchen mit Meerrettich-Skyr
+Dateiname: `roastbeef-gurken-roellchen-mit-meerrettich-skyr.jpg`
+
+```
+Food photo of "Roastbeef-Gurken-Röllchen mit Meerrettich-Skyr" (Dünne Roastbeefscheiben mit scharfem Meerrettich-Skyr und Gurkenstiften gerollt – ein eleganter Eiweiß-Snack ganz ohne Brot.). Visible main ingredients: Gurke, Roastbeef (Aufschnitt), Skyr natur, Meerrettich (Glas), Schnittlauch (frisch). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 150. Gefüllte Eier mit Senf-Skyr und Gurke
+Dateiname: `gefuellte-eier-mit-senf-skyr-und-gurke.jpg`
+
+```
+Food photo of "Gefüllte Eier mit Senf-Skyr und Gurke" (Hart gekochte Eier mit einer cremigen Füllung aus Eigelb, Skyr und Senf, bestäubt mit Paprika – Partyklassiker als proteinreicher Snack.). Visible main ingredients: Ei, Gurke, Skyr natur. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 151. Schoko-Mandel-Sojaskyr
+Dateiname: `schoko-mandel-sojaskyr.jpg`
+
+```
+Food photo of "Schoko-Mandel-Sojaskyr" (Cremiger Sojaskyr mit Kakao und Schoko-Protein, getoppt mit gehackten Mandeln – schmeckt wie Schokopudding, ist aber vegan und kohlenhydratarm.). Visible main ingredients: Sojaskyr natur, Mandeln, Backkakao. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+
 ## Vegan
 
-### 132. Overnight Oats mit Sojaskyr und Beeren
+### 152. Overnight Oats mit Sojaskyr und Beeren
 Dateiname: `overnight-oats-mit-sojaskyr-und-beeren.jpg`
 
 ```
 Food photo of "Overnight Oats mit Sojaskyr und Beeren" (Cremige Haferflocken mit Sojaskyr und Chia, die über Nacht ziehen und morgens fertig im Kühlschrank warten.). Visible main ingredients: Sojaskyr natur, Sojadrink ungesüßt, Beerenmischung (TK), Haferflocken, Chiasamen, Ahornsirup. Presentation: layered in a clear glass jar, spoon beside it. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 133. Seidentofu-Pancakes mit Beeren
+### 153. Seidentofu-Pancakes mit Beeren
 Dateiname: `seidentofu-pancakes-mit-beeren.jpg`
 
 ```
 Food photo of "Seidentofu-Pancakes mit Beeren" (Fluffige Hafer-Pancakes ohne Ei, getoppt mit Sojaskyr und warmen Beeren.). Visible main ingredients: Seidentofu, Sojaskyr natur, Sojadrink ungesüßt, Beerenmischung (TK), Haferflocken, Banane. Presentation: several pieces arranged on a plate or baking paper. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 134. Schoko-Erdnuss-Porridge
+### 154. Schoko-Erdnuss-Porridge
 Dateiname: `schoko-erdnuss-porridge.jpg`
 
 ```
 Food photo of "Schoko-Erdnuss-Porridge" (Warmer Proteinbrei mit Kakao, Banane und Erdnussmus – schmeckt wie Nachtisch.). Visible main ingredients: Sojadrink ungesüßt, Haferflocken, Banane, Erdnussmus, Backkakao. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 135. Kichererbsen-Avocado-Stulle mit Räuchertofu
+### 155. Kichererbsen-Avocado-Stulle mit Räuchertofu
 Dateiname: `kichererbsen-avocado-stulle-mit-raeuchertofu.jpg`
 
 ```
 Food photo of "Kichererbsen-Avocado-Stulle mit Räuchertofu" (Herzhaftes Vollkornbrot mit zerdrückten Kichererbsen, Avocado und knusprigem Räuchertofu.). Visible main ingredients: Kichererbsen (Dose, abgetropft), Vollkornbrot, Räuchertofu, Tomaten, Avocado, Zitronensaft. Presentation: on a plate, cut open so the filling is visible. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 136. Frühstücks-Burrito mit Tofu und Bohnen
+### 156. Frühstücks-Burrito mit Tofu und Bohnen
 Dateiname: `fruehstuecks-burrito-mit-tofu-und-bohnen.jpg`
 
 ```
 Food photo of "Frühstücks-Burrito mit Tofu und Bohnen" (Würziger Tofu-Scramble mit schwarzen Bohnen und Paprika im Vollkorn-Wrap.). Visible main ingredients: Tofu natur, Vollkorn-Wrap, Schwarze Bohnen (Dose, abgetropft), Paprika rot. Presentation: on a plate, cut open so the filling is visible. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 137. Vanille-Protein-Waffeln mit Apfelmus
+### 157. Vanille-Protein-Waffeln mit Apfelmus
 Dateiname: `vanille-protein-waffeln-mit-apfelmus.jpg`
 
 ```
 Food photo of "Vanille-Protein-Waffeln mit Apfelmus" (Fluffige Dinkel-Hafer-Waffeln mit Vanille-Protein, dazu fruchtiges Apfelmus und Beeren.). Visible main ingredients: Sojadrink ungesüßt, Apfelmus (ungesüßt), Beerenmischung (TK), Dinkelmehl Type 630, Haferflocken. Presentation: several pieces arranged on a plate or baking paper. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 138. Tofu-Rührei auf Vollkornbrot
+### 158. Tofu-Rührei auf Vollkornbrot
 Dateiname: `tofu-ruehrei-auf-vollkornbrot.jpg`
 
 ```
 Food photo of "Tofu-Rührei auf Vollkornbrot" (Würziges Rührei aus zerbröseltem Tofu mit Kurkuma und Spinat auf kräftigem Vollkornbrot mit Tomaten.). Visible main ingredients: Tofu natur, Cherrytomaten, Vollkornbrot, Babyspinat, Frühlingszwiebeln. Presentation: on a plate, cut open so the filling is visible. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 139. Grüne Mango-Smoothie-Bowl
+### 159. Grüne Mango-Smoothie-Bowl
 Dateiname: `gruene-mango-smoothie-bowl.jpg`
 
 ```
 Food photo of "Grüne Mango-Smoothie-Bowl" (Cremige, eiskalte Bowl aus Mango, Banane, Spinat und Vanille-Protein mit knusprigem Hafer-Kürbiskern-Topping.). Visible main ingredients: Sojajoghurt natur, Banane, Mango (TK), Sojadrink ungesüßt, Babyspinat, Haferflocken. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 140. Kichererbsenmehl-Omelett mit Paprika und Pilzen
+### 160. Kichererbsenmehl-Omelett mit Paprika und Pilzen
 Dateiname: `kichererbsenmehl-omelett-mit-paprika-und-pilzen.jpg`
 
 ```
 Food photo of "Kichererbsenmehl-Omelett mit Paprika und Pilzen" (Herzhaftes, eifreies Omelett aus Kichererbsenmehl, gefüllt mit Paprika und Champignons, dazu ein Kräuter-Sojaskyr-Dip.). Visible main ingredients: Sojaskyr natur, Paprika rot, Champignons, Kichererbsenmehl, Frühlingszwiebeln, Petersilie (frisch). Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 141. Protein-Grießbrei mit Sauerkirschen
+### 161. Protein-Grießbrei mit Sauerkirschen
 Dateiname: `protein-griessbrei-mit-sauerkirschen.jpg`
 
 ```
 Food photo of "Protein-Grießbrei mit Sauerkirschen" (Warmer, cremiger Grießbrei wie bei Oma, mit Vanille-Protein aufgepeppt und mit Sauerkirschen und Zimt serviert.). Visible main ingredients: Sojadrink ungesüßt, Sauerkirschen (Glas, abgetropft), Hartweizengrieß, Ahornsirup. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 142. Rotes Linsen-Dal mit Spinat und Reis
+### 162. Rotes Linsen-Dal mit Spinat und Reis
 Dateiname: `rotes-linsen-dal-mit-spinat-und-reis.jpg`
 
 ```
 Food photo of "Rotes Linsen-Dal mit Spinat und Reis" (Cremiges indisches Linsencurry mit Kokosmilch, Erbsen und Spinat.). Visible main ingredients: Gehackte Tomaten (Dose), Rote Linsen (trocken), Kokosmilch (fettreduziert), Erbsen (TK), Basmatireis (trocken), Babyspinat. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 143. Chili sin Carne mit Reis
+### 163. Chili sin Carne mit Reis
 Dateiname: `chili-sin-carne-mit-reis.jpg`
 
 ```
 Food photo of "Chili sin Carne mit Reis" (Herzhaftes mexikanisches Chili mit Sojaschnetzeln, Kidneybohnen und Mais.). Visible main ingredients: Gehackte Tomaten (Dose), Kidneybohnen (Dose, abgetropft), Paprika rot, Zwiebel, Mais (Dose, abgetropft), Basmatireis (trocken). Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 144. Teriyaki-Tofu-Bowl mit Edamame
+### 164. Teriyaki-Tofu-Bowl mit Edamame
 Dateiname: `vegan-teriyaki-tofu-bowl-mit-edamame.jpg`
 
 ```
 Food photo of "Teriyaki-Tofu-Bowl mit Edamame" (Knuspriger Tofu in süß-salziger Sauce mit Reis, Brokkoli und Edamame.). Visible main ingredients: Tofu natur, Brokkoli, Edamame (TK, geschält), Basmatireis (trocken), Karotten, Ahornsirup. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 145. Orientalischer Couscous-Salat mit Kichererbsen
+### 165. Orientalischer Couscous-Salat mit Kichererbsen
 Dateiname: `orientalischer-couscous-salat-mit-kichererbsen.jpg`
 
 ```
 Food photo of "Orientalischer Couscous-Salat mit Kichererbsen" (Frischer Couscous-Salat mit Kichererbsen, Räuchertofu, Gurke und viel Petersilie.). Visible main ingredients: Kichererbsen (Dose, abgetropft), Gurke, Cherrytomaten, Räuchertofu, Couscous (trocken), Rote Zwiebel. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 146. Tempeh-Gyros-Wrap mit Soja-Tzatziki
+### 166. Tempeh-Gyros-Wrap mit Soja-Tzatziki
 Dateiname: `tempeh-gyros-wrap-mit-soja-tzatziki.jpg`
 
 ```
 Food photo of "Tempeh-Gyros-Wrap mit Soja-Tzatziki" (Würzig gebratener Tempeh im Gyros-Stil mit Rotkohl, Tomate und knoblauchigem Tzatziki.). Visible main ingredients: Tempeh, Sojajoghurt natur, Vollkorn-Wrap, Tomaten, Gurke, Rotkohl. Presentation: on a plate, cut open so the filling is visible. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 147. Vollkorn-Spaghetti Bolognese mit Sojaschnetzeln
+### 167. Vollkorn-Spaghetti Bolognese mit Sojaschnetzeln
 Dateiname: `vollkorn-spaghetti-bolognese-mit-sojaschnetzeln.jpg`
 
 ```
 Food photo of "Vollkorn-Spaghetti Bolognese mit Sojaschnetzeln" (Der italienische Klassiker mit herzhafter Sojaschnetzel-Gemüse-Sauce – sättigend, eiweißreich und ideal zum Vorkochen.). Visible main ingredients: Passierte Tomaten, Vollkornspaghetti (trocken), Zwiebel, Karotten, Sojaschnetzel (trocken), Tomatenmark. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 148. Erdnuss-Nudeln mit Tofu und Brokkoli
+### 168. Erdnuss-Nudeln mit Tofu und Brokkoli
 Dateiname: `erdnuss-nudeln-mit-tofu-und-brokkoli.jpg`
 
 ```
 Food photo of "Erdnuss-Nudeln mit Tofu und Brokkoli" (Schnelle Asia-Nudeln in cremiger Erdnuss-Ingwer-Sauce mit knusprigem Tofu und Brokkoli.). Visible main ingredients: Tofu natur, Brokkoli, Vollkornspaghetti (trocken), Erdnussmus, Frühlingszwiebeln, Limettensaft. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 149. Linsensalat mit Räuchertofu und Senf-Vinaigrette
+### 169. Linsensalat mit Räuchertofu und Senf-Vinaigrette
 Dateiname: `linsensalat-mit-raeuchertofu-und-senf-vinaigrette.jpg`
 
 ```
 Food photo of "Linsensalat mit Räuchertofu und Senf-Vinaigrette" (Herzhafter, kalter Linsensalat mit rauchigem Tofu, knackigem Gemüse und würziger Senf-Vinaigrette.). Visible main ingredients: Linsen (Dose, abgetropft), Räuchertofu, Paprika rot, Gurke, Vollkornbrot, Rote Zwiebel. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 150. Kichererbsen-Shawarma-Bowl mit Bulgur
+### 170. Kichererbsen-Shawarma-Bowl mit Bulgur
 Dateiname: `kichererbsen-shawarma-bowl-mit-bulgur.jpg`
 
 ```
 Food photo of "Kichererbsen-Shawarma-Bowl mit Bulgur" (Orientalisch gewürzte Ofen-Kichererbsen auf Bulgur mit frischem Gemüse und cremiger Knoblauch-Sojaskyr-Sauce.). Visible main ingredients: Kichererbsen (Dose, abgetropft), Sojaskyr natur, Tomaten, Gurke, Bulgur (trocken), Rotkohl. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 151. Burrito-Bowl mit Tempeh-Hack
+### 171. Burrito-Bowl mit Tempeh-Hack
 Dateiname: `burrito-bowl-mit-tempeh-hack.jpg`
 
 ```
 Food photo of "Burrito-Bowl mit Tempeh-Hack" (Mexikanische Bowl mit rauchig gewürztem, zerbröseltem Tempeh, Reis, schwarzen Bohnen, Mais und Avocado.). Visible main ingredients: Tempeh, Schwarze Bohnen (Dose, abgetropft), Tomaten, Basmatireis (trocken), Mais (Dose, abgetropft), Avocado. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 152. Ofengemüse mit Tofu und Tahin-Zitronen-Sauce
+### 172. Ofengemüse mit Tofu und Tahin-Zitronen-Sauce
 Dateiname: `ofengemuese-mit-tofu-und-tahin-zitronen-sauce.jpg`
 
 ```
 Food photo of "Ofengemüse mit Tofu und Tahin-Zitronen-Sauce" (Buntes Blechgemüse mit Süßkartoffel, Kichererbsen und knusprigem Tofu, beträufelt mit Sesamsauce.). Visible main ingredients: Tofu natur, Süßkartoffel, Brokkoli, Paprika rot, Kichererbsen (Dose, abgetropft), Tahin. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 153. Blumenkohl-Tofu-Curry
+### 173. Blumenkohl-Tofu-Curry
 Dateiname: `blumenkohl-tofu-curry.jpg`
 
 ```
 Food photo of "Blumenkohl-Tofu-Curry" (Leichtes Kokos-Curry mit Blumenkohl, Zucchini, Edamame und Tofu auf wenig Reis.). Visible main ingredients: Tofu natur, Blumenkohl, Zucchini, Kokosmilch (fettreduziert), Edamame (TK, geschält), Babyspinat. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 154. Seitan-Geschnetzeltes mit Champignons und Kartoffeln
+### 174. Seitan-Geschnetzeltes mit Champignons und Kartoffeln
 Dateiname: `seitan-geschnetzeltes-mit-champignons-und-kartoffeln.jpg`
 
 ```
 Food photo of "Seitan-Geschnetzeltes mit Champignons und Kartoffeln" (Deutscher Klassiker in vegan: Seitanstreifen in cremiger Pilz-Senf-Sauce mit Pellkartoffeln.). Visible main ingredients: Kartoffeln, Champignons, Seitan, Zwiebel, Soja-Cuisine, Petersilie (frisch). Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 155. Tempeh-Gemüsepfanne mit Cashews
+### 175. Tempeh-Gemüsepfanne mit Cashews
 Dateiname: `tempeh-gemuesepfanne-mit-cashews.jpg`
 
 ```
 Food photo of "Tempeh-Gemüsepfanne mit Cashews" (Schnelle Asia-Pfanne mit Tempeh, knackigem Gemüse, Ingwer und gerösteten Cashews.). Visible main ingredients: Tempeh, Brokkoli, Paprika rot, Karotten, Frühlingszwiebeln, Cashewkerne. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 156. Mexikanischer Bohnensalat mit Avocado
+### 176. Mexikanischer Bohnensalat mit Avocado
 Dateiname: `mexikanischer-bohnensalat-mit-avocado.jpg`
 
 ```
 Food photo of "Mexikanischer Bohnensalat mit Avocado" (Bunter Salat mit schwarzen Bohnen, Edamame, Mais und Avocado in Limetten-Dressing.). Visible main ingredients: Schwarze Bohnen (Dose, abgetropft), Paprika rot, Tomaten, Edamame (TK, geschält), Mais (Dose, abgetropft), Blattsalat. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 157. Shakshuka mit Tofu und weißen Bohnen
+### 177. Shakshuka mit Tofu und weißen Bohnen
 Dateiname: `shakshuka-mit-tofu-und-weissen-bohnen.jpg`
 
 ```
 Food photo of "Shakshuka mit Tofu und weißen Bohnen" (Würzige Tomaten-Paprika-Pfanne nach orientalischer Art, in der Tofuscheiben und weiße Bohnen sanft garen.). Visible main ingredients: Gehackte Tomaten (Dose), Tofu natur, Weiße Bohnen (Dose, abgetropft), Paprika rot, Zwiebel, Vollkornbrot. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 158. Ingwer-Gemüsesuppe mit Tofu und Reisnudeln
+### 178. Ingwer-Gemüsesuppe mit Tofu und Reisnudeln
 Dateiname: `ingwer-gemuesesuppe-mit-tofu-und-reisnudeln.jpg`
 
 ```
 Food photo of "Ingwer-Gemüsesuppe mit Tofu und Reisnudeln" (Leichte, wärmende Asia-Suppe mit viel Gemüse, Edamame, Tofu und Reisnudeln in einer würzigen Ingwerbrühe.). Visible main ingredients: Tofu natur, Brokkoli, Champignons, Karotten, Edamame (TK, geschält), Reisnudeln (trocken). Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 159. Spitzkohl-Pfanne mit Räuchertofu und Kartoffeln
+### 179. Spitzkohl-Pfanne mit Räuchertofu und Kartoffeln
 Dateiname: `spitzkohl-pfanne-mit-raeuchertofu-und-kartoffeln.jpg`
 
 ```
 Food photo of "Spitzkohl-Pfanne mit Räuchertofu und Kartoffeln" (Deftige deutsche Pfanne mit geschmortem Spitzkohl, rauchigem Tofu und Kartoffeln in leichter Senf-Rahmsauce.). Visible main ingredients: Spitzkohl, Kartoffeln, Räuchertofu, Zwiebel, Soja-Cuisine, Petersilie (frisch). Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 160. Griechischer Salat mit Oregano-Tofu
+### 180. Griechischer Salat mit Oregano-Tofu
 Dateiname: `griechischer-salat-mit-oregano-tofu.jpg`
 
 ```
 Food photo of "Griechischer Salat mit Oregano-Tofu" (Bunter Bauernsalat mit Oliven und Kichererbsen, getoppt mit in Zitrone und Oregano mariniertem Tofu als Feta-Alternative.). Visible main ingredients: Tofu natur, Tomaten, Gurke, Paprika rot, Kichererbsen (Dose, abgetropft), Rote Zwiebel. Presentation: in a wide ceramic bowl. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 161. Gefüllte Paprika mit Sojaschnetzeln
+### 181. Gefüllte Paprika mit Sojaschnetzeln
 Dateiname: `gefuellte-paprika-mit-sojaschnetzeln.jpg`
 
 ```
 Food photo of "Gefüllte Paprika mit Sojaschnetzeln" (Ofen-Paprika gefüllt mit würziger Sojaschnetzel-Reis-Füllung, geschmort in Tomatensauce.). Visible main ingredients: Paprika rot, Passierte Tomaten, Sojaschnetzel (trocken), Zwiebel, Basmatireis (trocken), Tomatenmark. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 162. Sesam-Edamame
+### 182. Sesam-Edamame
 Dateiname: `sesam-edamame.jpg`
 
 ```
 Food photo of "Sesam-Edamame" (Warme Edamame mit einem Spritzer Sojasauce und geröstetem Sesam.). Visible main ingredients: Edamame (TK, geschält), Sesam. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 163. Sojaskyr mit Beeren und Kürbiskernen
+### 183. Sojaskyr mit Beeren und Kürbiskernen
 Dateiname: `sojaskyr-mit-beeren-und-kuerbiskernen.jpg`
 
 ```
 Food photo of "Sojaskyr mit Beeren und Kürbiskernen" (Schneller Eiweiß-Snack aus Sojaskyr, fruchtigen Beeren und knackigen Kernen.). Visible main ingredients: Sojaskyr natur, Beerenmischung (TK), Kürbiskerne. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 164. Knusprige Paprika-Kichererbsen
+### 184. Knusprige Paprika-Kichererbsen
 Dateiname: `knusprige-paprika-kichererbsen.jpg`
 
 ```
 Food photo of "Knusprige Paprika-Kichererbsen" (Im Ofen geröstete Kichererbsen mit Paprika – die herzhafte Alternative zu Chips.). Visible main ingredients: Kichererbsen (Dose, abgetropft). Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 165. Schoko-Bananen-Proteinshake
+### 185. Schoko-Bananen-Proteinshake
 Dateiname: `schoko-bananen-proteinshake.jpg`
 
 ```
 Food photo of "Schoko-Bananen-Proteinshake" (Cremiger Shake mit Sojadrink, Banane und veganem Proteinpulver für die schnelle Regeneration.). Visible main ingredients: Sojadrink ungesüßt, Banane, Backkakao. Presentation: in a tall clear glass, condensation on the glass. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 166. Gemüsesticks mit weißem Bohnen-Dip
+### 186. Gemüsesticks mit weißem Bohnen-Dip
 Dateiname: `gemuesesticks-mit-weissem-bohnen-dip.jpg`
 
 ```
 Food photo of "Gemüsesticks mit weißem Bohnen-Dip" (Cremiger Dip aus weißen Bohnen, Tahin und Zitrone mit knackigen Karotten- und Gurkensticks.). Visible main ingredients: Weiße Bohnen (Dose, abgetropft), Karotten, Gurke, Tahin, Zitronensaft, Knoblauch. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 167. Schoko-Proteinpudding
+### 187. Schoko-Proteinpudding
 Dateiname: `vegan-schoko-proteinpudding.jpg`
 
 ```
 Food photo of "Schoko-Proteinpudding" (Selbst gekochter Schokopudding mit Schoko-Protein – cremig, schnell gemacht und mit Beeren getoppt.). Visible main ingredients: Sojadrink ungesüßt, Beerenmischung (TK). Presentation: layered in a clear glass jar, spoon beside it. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 168. Vanille-Dattel-Energy-Balls
+### 188. Vanille-Dattel-Energy-Balls
 Dateiname: `vanille-dattel-energy-balls.jpg`
 
 ```
 Food photo of "Vanille-Dattel-Energy-Balls" (Saftige Protein-Kugeln aus Hafer, Datteln, Erdnussmus und Vanille-Protein – der perfekte Snack für unterwegs.). Visible main ingredients: Haferflocken, Datteln (getrocknet, entsteint), Sojadrink ungesüßt, Erdnussmus. Presentation: several pieces arranged on a plate or baking paper. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 169. Schoko-Protein-Tassenkuchen
+### 189. Schoko-Protein-Tassenkuchen
 Dateiname: `schoko-protein-tassenkuchen.jpg`
 
 ```
 Food photo of "Schoko-Protein-Tassenkuchen" (Saftiger Schoko-Kuchen aus der Tasse, in 2 Minuten in der Mikrowelle gebacken.). Visible main ingredients: Sojadrink ungesüßt, Apfelmus (ungesüßt), Dinkelmehl Type 630, Backkakao. Presentation: on a matte ceramic plate. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 170. Räuchertofu-Knäckebrot mit Gurke
+### 190. Räuchertofu-Knäckebrot mit Gurke
 Dateiname: `raeuchertofu-knaeckebrot-mit-gurke.jpg`
 
 ```
 Food photo of "Räuchertofu-Knäckebrot mit Gurke" (Knuspriges Knäckebrot mit Senf-Sojaskyr, rauchigem Tofu und frischer Gurke – herzhaft und in 5 Minuten fertig.). Visible main ingredients: Räuchertofu, Gurke, Sojaskyr natur, Knäckebrot, Frühlingszwiebeln. Presentation: on a plate, cut open so the filling is visible. The dish is fully vegan: no meat, fish, eggs or dairy visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 171. Knusprige Ofen-Tofu-Nuggets mit Senf-Dip
+### 191. Knusprige Ofen-Tofu-Nuggets mit Senf-Dip
 Dateiname: `knusprige-ofen-tofu-nuggets-mit-senf-dip.jpg`
 
 ```
@@ -1247,280 +1390,280 @@ Food photo of "Knusprige Ofen-Tofu-Nuggets mit Senf-Dip" (Panierte Tofu-Nuggets 
 
 ## Vegetarisch
 
-### 172. Quark-Porridge mit Beeren
+### 192. Quark-Porridge mit Beeren
 Dateiname: `quark-porridge-mit-beeren.jpg`
 
 ```
 Food photo of "Quark-Porridge mit Beeren" (Cremiger Haferbrei, in den zum Schluss Magerquark gerührt wird – warm, sättigend und richtig eiweißreich.). Visible main ingredients: Milch 1,5 %, Magerquark, Beeren-Mischung (TK), Haferflocken, Mandeln. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 173. Shakshuka mit Feta
+### 193. Shakshuka mit Feta
 Dateiname: `shakshuka-mit-feta.jpg`
 
 ```
 Food photo of "Shakshuka mit Feta" (Pochierte Eier in würziger Tomaten-Paprika-Sauce mit zerbröseltem Feta – orientalisches Frühstück aus einer Pfanne.). Visible main ingredients: Gehackte Tomaten (Dose), Ei, Paprika rot, Vollkornbrot, Zwiebel, Feta. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 174. Skyr-Bowl mit Apfel & Walnuss
+### 194. Skyr-Bowl mit Apfel & Walnuss
 Dateiname: `skyr-bowl-mit-apfel-und-walnuss.jpg`
 
 ```
 Food photo of "Skyr-Bowl mit Apfel & Walnuss" (Kühle Skyr-Schüssel mit knackigem Apfel, Haferflocken und Walnüssen – fertig in fünf Minuten.). Visible main ingredients: Skyr natur, Apfel, Haferflocken, Walnüsse. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 175. Rührei-Brot mit Hüttenkäse
+### 195. Rührei-Brot mit Hüttenkäse
 Dateiname: `ruehrei-brot-mit-huettenkaese.jpg`
 
 ```
 Food photo of "Rührei-Brot mit Hüttenkäse" (Klassisches deutsches Frühstück: cremiges Rührei und Hüttenkäse auf Vollkornbrot mit frischer Tomate.). Visible main ingredients: Ei, Vollkornbrot, Hüttenkäse, Tomate, Schnittlauch. Presentation: on a plate, cut open so the filling is visible. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 176. Overnight Oats Banane-Erdnuss
+### 196. Overnight Oats Banane-Erdnuss
 Dateiname: `overnight-oats-banane-erdnuss.jpg`
 
 ```
 Food photo of "Overnight Oats Banane-Erdnuss" (Über Nacht durchgezogene Haferflocken mit Skyr, Chia und Banane – morgens nur noch aus dem Kühlschrank nehmen.). Visible main ingredients: Skyr natur, Milch 1,5 %, Banane, Haferflocken, Chiasamen, Erdnussmus. Presentation: layered in a clear glass jar, spoon beside it. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 177. Protein-Pancakes mit Heidelbeeren & Skyr
+### 197. Protein-Pancakes mit Heidelbeeren & Skyr
 Dateiname: `protein-pancakes-mit-heidelbeeren-und-skyr.jpg`
 
 ```
 Food photo of "Protein-Pancakes mit Heidelbeeren & Skyr" (Fluffige Haferpancakes mit Vanille-Whey, getoppt mit kühlem Skyr und frischen Heidelbeeren.). Visible main ingredients: Skyr natur, Milch 1,5 %, Heidelbeeren, Ei, Haferflocken. Presentation: several pieces arranged on a plate or baking paper. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 178. Eiermuffins mit Paprika & Gouda
+### 198. Eiermuffins mit Paprika & Gouda
 Dateiname: `eiermuffins-mit-paprika-und-gouda.jpg`
 
 ```
 Food photo of "Eiermuffins mit Paprika & Gouda" (Herzhafte Ofen-Muffins aus Ei, Hüttenkäse und Gemüse – perfekt zum Vorbereiten, dazu eine Scheibe Vollkornbrot.). Visible main ingredients: Ei, Paprika rot, Vollkornbrot, Hüttenkäse, Frühlingszwiebel, Gouda. Presentation: several pieces arranged on a plate or baking paper. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 179. Schoko-Smoothie-Bowl mit Banane
+### 199. Schoko-Smoothie-Bowl mit Banane
 Dateiname: `schoko-smoothie-bowl-mit-banane.jpg`
 
 ```
 Food photo of "Schoko-Smoothie-Bowl mit Banane" (Dicke, eiskalte Schoko-Bowl aus gefrorener Banane, Skyr und Whey – wie Softeis zum Frühstück.). Visible main ingredients: Skyr natur, Banane, Milch 1,5 %, Beeren-Mischung (TK), Haferflocken, Erdnussmus. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 180. Protein-Grießbrei mit Zimtäpfeln
+### 200. Protein-Grießbrei mit Zimtäpfeln
 Dateiname: `protein-griessbrei-mit-zimtaepfeln.jpg`
 
 ```
 Food photo of "Protein-Grießbrei mit Zimtäpfeln" (Cremiger Milchgrieß wie bei Oma, mit Vanille-Whey verfeinert und mit warmen Zimtäpfeln serviert.). Visible main ingredients: Milch 1,5 %, Apfel, Weichweizengrieß, Mandeln. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 181. Hummus-Brot mit Ei, Feta & Gurke
+### 201. Hummus-Brot mit Ei, Feta & Gurke
 Dateiname: `hummus-brot-mit-ei-feta-und-gurke.jpg`
 
 ```
 Food photo of "Hummus-Brot mit Ei, Feta & Gurke" (Orientalisch angehauchtes Frühstücksbrot mit cremigem Hummus, wachsweichen Eiern und frischem Gemüse.). Visible main ingredients: Ei, Vollkornbrot, Gurke, Tomate, Hummus, Feta. Presentation: on a plate, cut open so the filling is visible. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 182. Linsen-Bolognese mit Parmesan
+### 202. Linsen-Bolognese mit Parmesan
 Dateiname: `linsen-bolognese-mit-parmesan.jpg`
 
 ```
 Food photo of "Linsen-Bolognese mit Parmesan" (Herzhafte Bolognese aus roten Linsen und Gemüse zu Vollkornnudeln, mit frisch geriebenem Parmesan.). Visible main ingredients: Passierte Tomaten, Vollkornnudeln, Möhre, Rote Linsen, Zwiebel, Parmesan. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 183. Halloumi-Couscous-Salat
+### 203. Halloumi-Couscous-Salat
 Dateiname: `halloumi-couscous-salat.jpg`
 
 ```
 Food photo of "Halloumi-Couscous-Salat" (Goldbraun gebratener Halloumi auf Couscous mit Kichererbsen, Gurke, Tomaten und viel Petersilie.). Visible main ingredients: Gurke, Cherrytomaten, Halloumi, Kichererbsen (Dose, abgetropft), Couscous, Petersilie. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 184. Eier-Reis mit Tofu & Brokkoli
+### 204. Eier-Reis mit Tofu & Brokkoli
 Dateiname: `eier-reis-mit-tofu-und-brokkoli.jpg`
 
 ```
 Food photo of "Eier-Reis mit Tofu & Brokkoli" (Asiatisch gebratener Reis mit knusprigem Tofu, Brokkoli, Paprika und Ei, abgeschmeckt mit Sojasauce und Ingwer.). Visible main ingredients: Tofu natur, Brokkoli, Paprika rot, Basmatireis, Ei, Knoblauch. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 185. Bohnen-Quesadilla mit Skyr-Dip
+### 205. Bohnen-Quesadilla mit Skyr-Dip
 Dateiname: `bohnen-quesadilla-mit-skyr-dip.jpg`
 
 ```
 Food photo of "Bohnen-Quesadilla mit Skyr-Dip" (Knusprig gebratene Tortilla gefüllt mit Kidneybohnen, Mais, Paprika und Mozzarella, dazu ein frischer Skyr-Dip.). Visible main ingredients: Kidneybohnen (Dose, abgetropft), Paprika rot, Skyr natur, Vollkorn-Tortilla, Mais (Dose, abgetropft), Mozzarella light. Presentation: on a plate, cut open so the filling is visible. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 186. Pellkartoffeln mit Kräuterquark
+### 206. Pellkartoffeln mit Kräuterquark
 Dateiname: `pellkartoffeln-mit-kraeuterquark.jpg`
 
 ```
 Food photo of "Pellkartoffeln mit Kräuterquark" (Der deutsche Klassiker: Pellkartoffeln mit Schnittlauch-Quark, Leinöl, Gurkensalat und einem Ei.). Visible main ingredients: Kartoffeln, Magerquark, Gurke, Ei, Milch 1,5 %, Schnittlauch. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 187. Käsespätzle light mit Röstzwiebeln
+### 207. Käsespätzle light mit Röstzwiebeln
 Dateiname: `kaesespaetzle-light-mit-roestzwiebeln.jpg`
 
 ```
 Food photo of "Käsespätzle light mit Röstzwiebeln" (Der Allgäuer Klassiker in leichter: Spätzle mit einer cremigen Sauce aus Hüttenkäse und würzigem Gouda.). Visible main ingredients: Hüttenkäse, Eierspätzle (getrocknet), Zwiebel, Romanasalat, Milch 1,5 %, Gouda. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 188. Teriyaki-Tofu-Bowl mit Edamame
+### 208. Teriyaki-Tofu-Bowl mit Edamame
 Dateiname: `vegetarisch-teriyaki-tofu-bowl-mit-edamame.jpg`
 
 ```
 Food photo of "Teriyaki-Tofu-Bowl mit Edamame" (Knusprig gebratener Tofu in glänzender Teriyaki-Glasur auf Reis, mit Edamame, Möhre und Sesam.). Visible main ingredients: Tofu natur, Edamame (TK, geschält), Basmatireis, Möhre, Frühlingszwiebel, Ingwer. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 189. Gefüllte Paprika mit Bulgur, Linsen & Feta
+### 209. Gefüllte Paprika mit Bulgur, Linsen & Feta
 Dateiname: `gefuellte-paprika-mit-bulgur-linsen-und-feta.jpg`
 
 ```
 Food photo of "Gefüllte Paprika mit Bulgur, Linsen & Feta" (Ofen-Paprika mit würziger Füllung aus Bulgur, roten Linsen und Feta, dazu ein Skyr-Dip.). Visible main ingredients: Paprika rot, Passierte Tomaten, Skyr natur, Bulgur, Feta, Zwiebel. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 190. Erbsen-Ricotta-Pasta mit Zitrone
+### 210. Erbsen-Ricotta-Pasta mit Zitrone
 Dateiname: `erbsen-ricotta-pasta-mit-zitrone.jpg`
 
 ```
 Food photo of "Erbsen-Ricotta-Pasta mit Zitrone" (Frühlingsfrische Vollkornpasta mit einer cremigen Sauce aus Ricotta, Quark, Erbsen und Zitrone.). Visible main ingredients: Erbsen (TK), Vollkornnudeln, Ricotta, Magerquark, Babyspinat, Parmesan. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 191. Falafel-Wrap mit Skyr-Joghurtsauce
+### 211. Falafel-Wrap mit Skyr-Joghurtsauce
 Dateiname: `falafel-wrap-mit-skyr-joghurtsauce.jpg`
 
 ```
 Food photo of "Falafel-Wrap mit Skyr-Joghurtsauce" (Schneller Streetfood-Wrap mit Falafel aus dem Kühlregal, knackigem Gemüse, Feta und Joghurtsauce.). Visible main ingredients: Skyr natur, Falafel (Kühlregal), Vollkorn-Tortilla, Tomate, Gurke, Romanasalat. Presentation: on a plate, cut open so the filling is visible. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 192. Gemüse-Frittata mit Feta
+### 212. Gemüse-Frittata mit Feta
 Dateiname: `gemuese-frittata-mit-feta.jpg`
 
 ```
 Food photo of "Gemüse-Frittata mit Feta" (Saftiges Ofen-Omelett mit Zucchini, Paprika, Kartoffel und Feta – mediterran und gemüsereich.). Visible main ingredients: Ei, Zucchini, Kartoffeln, Paprika rot, Zwiebel, Feta. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 193. Rote-Linsen-Dal mit Spinat
+### 213. Rote-Linsen-Dal mit Spinat
 Dateiname: `rote-linsen-dal-mit-spinat.jpg`
 
 ```
 Food photo of "Rote-Linsen-Dal mit Spinat" (Wärmendes Curry aus roten Linsen, Tomaten und Spinat, getoppt mit einem Klecks kühlem Skyr.). Visible main ingredients: Gehackte Tomaten (Dose), Babyspinat, Skyr natur, Rote Linsen, Kokosmilch, Zwiebel. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 194. Ofengemüse mit Kichererbsen & Quark-Dip
+### 214. Ofengemüse mit Kichererbsen & Quark-Dip
 Dateiname: `ofengemuese-mit-kichererbsen-und-quark-dip.jpg`
 
 ```
 Food photo of "Ofengemüse mit Kichererbsen & Quark-Dip" (Bunt geröstetes Blechgemüse mit Süßkartoffel und knusprigen Kichererbsen, dazu ein Knoblauch-Kräuterquark.). Visible main ingredients: Kichererbsen (Dose, abgetropft), Süßkartoffel, Magerquark, Paprika rot, Zucchini, Zwiebel. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 195. Asia-Nudelsuppe mit Tofu & Ei
+### 215. Asia-Nudelsuppe mit Tofu & Ei
 Dateiname: `asia-nudelsuppe-mit-tofu-und-ei.jpg`
 
 ```
 Food photo of "Asia-Nudelsuppe mit Tofu & Ei" (Würzige Brühe mit Mie-Nudeln, Tofu, Pilzen, Spinat und einem wachsweichen Ei – leicht und wärmend.). Visible main ingredients: Tofu natur, Champignons, Ei, Möhre, Mie-Nudeln, Babyspinat. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 196. Mexikanische Bohnenpfanne mit Spiegelei
+### 216. Mexikanische Bohnenpfanne mit Spiegelei
 Dateiname: `mexikanische-bohnenpfanne-mit-spiegelei.jpg`
 
 ```
 Food photo of "Mexikanische Bohnenpfanne mit Spiegelei" (Schnelle Pfanne aus Kidneybohnen, Mais, Paprika und Tomaten mit zwei Spiegeleiern und Avocado.). Visible main ingredients: Kidneybohnen (Dose, abgetropft), Gehackte Tomaten (Dose), Ei, Paprika rot, Zwiebel, Mais (Dose, abgetropft). Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 197. Pilz-Stroganoff mit Skyr & Erbsen
+### 217. Pilz-Stroganoff mit Skyr & Erbsen
 Dateiname: `pilz-stroganoff-mit-skyr-und-erbsen.jpg`
 
 ```
 Food photo of "Pilz-Stroganoff mit Skyr & Erbsen" (Würzige Champignonpfanne mit Paprika und cremiger Skyr-Sauce auf einer kleinen Portion Reis.). Visible main ingredients: Champignons, Skyr natur, Erbsen (TK), Basmatireis, Zwiebel, Petersilie. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 198. Griechischer Bauernsalat mit Kichererbsen & Ei
+### 218. Griechischer Bauernsalat mit Kichererbsen & Ei
 Dateiname: `griechischer-bauernsalat-mit-kichererbsen-und-ei.jpg`
 
 ```
 Food photo of "Griechischer Bauernsalat mit Kichererbsen & Ei" (Bunter Salat mit Feta, Oliven und Kichererbsen, dazu ein gekochtes Ei – sättigend, frisch und ohne viel Aufwand.). Visible main ingredients: Kichererbsen (Dose, abgetropft), Gurke, Tomate, Paprika rot, Feta, Ei. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 199. Thai-Gemüsepfanne mit Tofu & Erdnusssauce
+### 219. Thai-Gemüsepfanne mit Tofu & Erdnusssauce
 Dateiname: `thai-gemuesepfanne-mit-tofu-und-erdnusssauce.jpg`
 
 ```
 Food photo of "Thai-Gemüsepfanne mit Tofu & Erdnusssauce" (Knackiges Pfannengemüse mit knusprigem Tofu und cremiger Erdnuss-Ingwer-Sauce – ganz ohne Beilage.). Visible main ingredients: Tofu natur, Brokkoli, Paprika rot, Möhre, Erdnussmus, Ingwer. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 200. Eier-Curry mit Blumenkohl & Spinat
+### 220. Eier-Curry mit Blumenkohl & Spinat
 Dateiname: `eier-curry-mit-blumenkohl-und-spinat.jpg`
 
 ```
 Food photo of "Eier-Curry mit Blumenkohl & Spinat" (Indisches Egg Curry mit Blumenkohl in würziger Tomaten-Joghurt-Sauce und einer kleinen Portion Reis.). Visible main ingredients: Blumenkohl, Ei, Passierte Tomaten, Joghurt 1,5 %, Zwiebel, Babyspinat. Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 201. Zucchini-Puffer mit Skyr-Tzatziki
+### 221. Zucchini-Puffer mit Skyr-Tzatziki
 Dateiname: `zucchini-puffer-mit-skyr-tzatziki.jpg`
 
 ```
 Food photo of "Zucchini-Puffer mit Skyr-Tzatziki" (Goldbraune Gemüsepuffer mit Parmesan, dazu ein frisches Tzatziki aus Skyr, Gurke und Knoblauch.). Visible main ingredients: Zucchini, Skyr natur, Ei, Gurke, Haferflocken, Parmesan. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 202. Beeren-Quark mit Mandeln
+### 222. Beeren-Quark mit Mandeln
 Dateiname: `beeren-quark-mit-mandeln.jpg`
 
 ```
 Food photo of "Beeren-Quark mit Mandeln" (Cremiger Magerquark mit Beeren und einem Hauch Honig – der schnelle Eiweiß-Snack.). Visible main ingredients: Magerquark, Beeren-Mischung (TK), Mandeln. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 203. Knäckebrot mit Hüttenkäse & Gurke
+### 223. Knäckebrot mit Hüttenkäse & Gurke
 Dateiname: `knaeckebrot-mit-huettenkaese-und-gurke.jpg`
 
 ```
 Food photo of "Knäckebrot mit Hüttenkäse & Gurke" (Knuspriges Vollkorn-Knäcke mit Hüttenkäse, Gurke und Schnittlauch – herzhaft und leicht.). Visible main ingredients: Hüttenkäse, Gurke, Vollkorn-Knäckebrot, Schnittlauch. Presentation: on a plate, cut open so the filling is visible. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 204. Gekochte Eier mit Gemüsesticks
+### 224. Gekochte Eier mit Gemüsesticks
 Dateiname: `gekochte-eier-mit-gemuesesticks.jpg`
 
 ```
 Food photo of "Gekochte Eier mit Gemüsesticks" (Zwei hart gekochte Eier mit knackigen Paprika- und Möhrensticks – perfekt zum Mitnehmen.). Visible main ingredients: Ei, Paprika rot, Möhre. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 205. Bananen-Proteinshake
+### 225. Bananen-Proteinshake
 Dateiname: `bananen-proteinshake.jpg`
 
 ```
 Food photo of "Bananen-Proteinshake" (Cremiger Shake aus Milch, Banane und Molkenprotein – schnell getrunken nach dem Training.). Visible main ingredients: Milch 1,5 %, Banane. Presentation: in a tall clear glass, condensation on the glass. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 206. Caprese-Spieße mit Balsamico
+### 226. Caprese-Spieße mit Balsamico
 Dateiname: `caprese-spiesse-mit-balsamico.jpg`
 
 ```
 Food photo of "Caprese-Spieße mit Balsamico" (Mozzarella-Würfel, Cherrytomaten und Basilikum am Spieß, beträufelt mit Balsamico.). Visible main ingredients: Mozzarella light, Cherrytomaten, Basilikum. Presentation: on a matte ceramic plate. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 207. Schoko-Protein-Energy-Balls
+### 227. Schoko-Protein-Energy-Balls
 Dateiname: `schoko-protein-energy-balls.jpg`
 
 ```
 Food photo of "Schoko-Protein-Energy-Balls" (Kleine Schoko-Kugeln aus Haferflocken, Datteln, Erdnussmus und Whey – ohne Backen, ideal für unterwegs.). Visible main ingredients: Haferflocken, Milch 1,5 %, Erdnussmus, Datteln getrocknet. Presentation: several pieces arranged on a plate or baking paper. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 208. Casein-Vanillepudding mit Beeren
+### 228. Casein-Vanillepudding mit Beeren
 Dateiname: `casein-vanillepudding-mit-beeren.jpg`
 
 ```
 Food photo of "Casein-Vanillepudding mit Beeren" (Dicker, cremiger Vanillepudding aus Casein und Milch – der ideale Snack am späten Abend.). Visible main ingredients: Milch 1,5 %, Beeren-Mischung (TK). Presentation: layered in a clear glass jar, spoon beside it. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 209. Heidelbeer-Protein-Muffins
+### 229. Heidelbeer-Protein-Muffins
 Dateiname: `heidelbeer-protein-muffins.jpg`
 
 ```
 Food photo of "Heidelbeer-Protein-Muffins" (Saftige Quark-Muffins mit Vanille-Whey und Heidelbeeren – süß, eiweißreich und gut zum Mitnehmen.). Visible main ingredients: Magerquark, Dinkelmehl Type 630, Ei, Heidelbeeren. Presentation: several pieces arranged on a plate or baking paper. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 210. Edamame mit Meersalz & Chili
+### 230. Edamame mit Meersalz & Chili
 Dateiname: `edamame-mit-meersalz-und-chili.jpg`
 
 ```
 Food photo of "Edamame mit Meersalz & Chili" (Warme Edamame, nur mit Salz, Chili und Zitrone gewürzt – pflanzliches Eiweiß in 8 Minuten.). Visible main ingredients: Edamame (TK, geschält). Presentation: in a wide ceramic bowl. The dish is vegetarian: no meat or fish visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 211. Harzer-Brot mit Radieschen & Schnittlauch
+### 231. Harzer-Brot mit Radieschen & Schnittlauch
 Dateiname: `harzer-brot-mit-radieschen-und-schnittlauch.jpg`
 
 ```
@@ -1528,359 +1671,216 @@ Food photo of "Harzer-Brot mit Radieschen & Schnittlauch" (Der deutsche Fitness-
 ```
 
 
-## Mit Fleisch
+## Mit Fleisch & Fisch
 
-### 212. Rührei mit Lachsschinken auf Vollkornbrot
+### 232. Rührei mit Lachsschinken auf Vollkornbrot
 Dateiname: `ruehrei-mit-lachsschinken-auf-vollkornbrot.jpg`
 
 ```
 Food photo of "Rührei mit Lachsschinken auf Vollkornbrot" (Cremiges Rührei mit magerem Lachsschinken, Schnittlauch und Kirschtomaten auf kräftigem Vollkornbrot.). Visible main ingredients: Ei, Kirschtomaten, Vollkornbrot, Lachsschinken, Schnittlauch (frisch). Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 213. Kochschinken-Hüttenkäse-Brote mit Radieschen
+### 233. Kochschinken-Hüttenkäse-Brote mit Radieschen
 Dateiname: `kochschinken-huettenkaese-brote-mit-radieschen.jpg`
 
 ```
 Food photo of "Kochschinken-Hüttenkäse-Brote mit Radieschen" (Schnelles, kaltes Eiweißfrühstück mit körnigem Frischkäse, Kochschinken und knackigem Gemüse.). Visible main ingredients: Hüttenkäse, Vollkornbrot, Gurke, Kochschinken, Radieschen, Schnittlauch (frisch). Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 214. Frühstücks-Wrap mit Ei, Schinken und Spinat
+### 234. Frühstücks-Wrap mit Ei, Schinken und Spinat
 Dateiname: `fruehstuecks-wrap-mit-ei-schinken-und-spinat.jpg`
 
 ```
 Food photo of "Frühstücks-Wrap mit Ei, Schinken und Spinat" (Warmer Wrap im Mexiko-Stil mit Rührei, Kochschinken, Spinat, Mozzarella und Salsa.). Visible main ingredients: Ei, Vollkorn-Wrap, Kochschinken, Babyspinat, Mozzarella light, Tomatensalsa (Glas). Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 215. Lachs-Toast mit Kräuter-Skyr und Ei
+### 235. Lachs-Toast mit Kräuter-Skyr und Ei
 Dateiname: `lachs-toast-mit-kraeuter-skyr-und-ei.jpg`
 
 ```
 Food photo of "Lachs-Toast mit Kräuter-Skyr und Ei" (Knuspriger Vollkorntoast mit frischem Kräuter-Skyr, Räucherlachs und einem wachsweichen Ei.). Visible main ingredients: Skyr natur, Räucherlachs, Vollkorntoast, Ei, Gurke, Schnittlauch (frisch). Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 216. Shakshuka mit Putenbrust
+### 236. Shakshuka mit Putenbrust
 Dateiname: `shakshuka-mit-putenbrust.jpg`
 
 ```
 Food photo of "Shakshuka mit Putenbrust" (Orientalisch gewürzte Tomaten-Paprika-Pfanne mit pochierten Eiern und angebratener Putenbrust.). Visible main ingredients: Gehackte Tomaten (Dose), Ei, Paprika rot, Putenbrustfilet, Vollkornbrot, Zwiebel. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 217. Herzhafte Protein-Waffeln mit Kochschinken und Käse
+### 237. Herzhafte Protein-Waffeln mit Kochschinken und Käse
 Dateiname: `herzhafte-protein-waffeln-mit-kochschinken-und-kaese.jpg`
 
 ```
 Food photo of "Herzhafte Protein-Waffeln mit Kochschinken und Käse" (Knusprige Haferwaffeln mit Quark und Whey im Teig, gefüllt mit Kochschinkenwürfeln und würzigem Gouda.). Visible main ingredients: Magerquark, Kirschtomaten, Ei, Haferflocken, Kochschinken, Gouda light (gerieben). Presentation: several pieces arranged on a plate or baking paper. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 218. Kassler-Bauernfrühstück mit Ei
+### 238. Kassler-Bauernfrühstück mit Ei
 Dateiname: `kassler-bauernfruehstueck-mit-ei.jpg`
 
 ```
 Food photo of "Kassler-Bauernfrühstück mit Ei" (Deftige Bratkartoffeln mit magerem Kassler und Ei aus der Pfanne – der Klassiker für Hungrige.). Visible main ingredients: Kartoffeln, Ei, Kassler (mager), Zwiebel, Schnittlauch (frisch). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 219. Protein-Quarkbrötchen mit Lachsschinken
+### 239. Protein-Quarkbrötchen mit Lachsschinken
 Dateiname: `protein-quarkbroetchen-mit-lachsschinken.jpg`
 
 ```
 Food photo of "Protein-Quarkbrötchen mit Lachsschinken" (Zwei saftige, selbst gebackene Eiweißbrötchen aus Quark, Haferkleie und Leinsamen, belegt mit Lachsschinken und Gurke.). Visible main ingredients: Magerquark, Ei, Gurke, Lachsschinken, Dinkelmehl Type 630, Haferkleie. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 220. Herzhafter Spinat-Porridge mit Spiegelei und Pute
+### 240. Herzhafter Spinat-Porridge mit Spiegelei und Pute
 Dateiname: `herzhafter-spinat-porridge-mit-spiegelei-und-pute.jpg`
 
 ```
 Food photo of "Herzhafter Spinat-Porridge mit Spiegelei und Pute" (Würziger Haferbrei mit Brühe, Spinat und Parmesan, getoppt mit zwei Spiegeleiern und Putenbruststreifen.). Visible main ingredients: Ei, Babyspinat, Putenbrustaufschnitt, Haferflocken, Parmesan. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 221. Thunfisch-Ei-Toast mit Avocado
+### 241. Thunfisch-Ei-Toast mit Avocado
 Dateiname: `thunfisch-ei-toast-mit-avocado.jpg`
 
 ```
 Food photo of "Thunfisch-Ei-Toast mit Avocado" (Knuspriger Vollkorntoast mit cremigem Thunfisch-Skyr-Salat, Avocado und gekochtem Ei.). Visible main ingredients: Thunfisch im eigenen Saft (abgetropft), Vollkorntoast, Ei, Avocado, Skyr natur, Rote Zwiebel. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 222. Schweinefilet mit Senfkartoffeln und Bohnen
-Dateiname: `schweinefilet-mit-senfkartoffeln-und-bohnen.jpg`
-
-```
-Food photo of "Schweinefilet mit Senfkartoffeln und Bohnen" (Saftig gebratenes Schweinefilet mit Ofenkartoffeln, grünen Bohnen und einer leichten Senfsauce.). Visible main ingredients: Kartoffeln, Grüne Bohnen (TK), Schweinefilet, Kochsahne 15 %. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 223. Süß-saure Schweinepfanne mit Reis
-Dateiname: `suess-saure-schweinepfanne-mit-reis.jpg`
-
-```
-Food photo of "Süß-saure Schweinepfanne mit Reis" (Asiatische Wokpfanne mit zarten Schweineschnitzel-Streifen, Paprika, Ananas und Basmatireis.). Visible main ingredients: Schweineschnitzel, Paprika rot, Ananas (Dose, abgetropft), Basmatireis, Frühlingszwiebeln, Tomatenmark. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 224. Chili con Carne mit Reis
-Dateiname: `fleisch-chili-con-carne-mit-reis.jpg`
-
-```
-Food photo of "Chili con Carne mit Reis" (Würziges Chili mit Schweinehack, Kidneybohnen und Mais – perfekt zum Vorkochen.). Visible main ingredients: Gehackte Tomaten (Dose), Hackfleisch vom Schwein, Kidneybohnen (Dose, abgetropft), Paprika rot, Mais (Dose, abgetropft), Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 225. Puten-Gyros-Wrap mit Tzatziki
-Dateiname: `puten-gyros-wrap-mit-tzatziki.jpg`
-
-```
-Food photo of "Puten-Gyros-Wrap mit Tzatziki" (Griechisch gewürzte Putenstreifen mit Skyr-Tzatziki, Tomate und Gurke im Vollkorn-Wrap.). Visible main ingredients: Putenbrustfilet, Vollkorn-Wrap, Skyr natur, Tomaten, Gurke, Rote Zwiebel. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 226. Tomaten-Thunfisch-Pasta mit Rucola
-Dateiname: `tomaten-thunfisch-pasta-mit-rucola.jpg`
-
-```
-Food photo of "Tomaten-Thunfisch-Pasta mit Rucola" (Mediterrane Vollkornpasta mit schneller Tomatensauce, Thunfisch, Rucola und Parmesan.). Visible main ingredients: Passierte Tomaten, Thunfisch im eigenen Saft (abgetropft), Vollkornnudeln, Zwiebel, Rucola, Parmesan. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 227. Bami Goreng mit Schweinefilet
-Dateiname: `bami-goreng-mit-schweinefilet.jpg`
-
-```
-Food photo of "Bami Goreng mit Schweinefilet" (Indonesisch inspirierte Wok-Nudeln mit zartem Schweinefilet, knackigem Gemüse und Ei.). Visible main ingredients: Schweinefilet, Chinakohl, Mie-Nudeln, Ei, Karotte, Frühlingszwiebeln. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 228. Knuspriges Schweineschnitzel mit Kartoffel-Gurken-Salat
-Dateiname: `knuspriges-schweineschnitzel-mit-kartoffel-gurken-salat.jpg`
-
-```
-Food photo of "Knuspriges Schweineschnitzel mit Kartoffel-Gurken-Salat" (Dünn paniertes Schnitzel, nur mit wenig Öl gebraten, dazu ein süddeutscher Kartoffelsalat mit Gurke und Dill.). Visible main ingredients: Kartoffeln, Schweineschnitzel, Gurke, Ei, Paniermehl, Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 229. Burrito-Bowl mit Schweinehack und Bohnen
-Dateiname: `burrito-bowl-mit-schweinehack-und-bohnen.jpg`
-
-```
-Food photo of "Burrito-Bowl mit Schweinehack und Bohnen" (Mexikanische Bowl mit würzigem, magerem Schweinehack, Reis, Bohnen, Mais, Salsa und Limetten-Joghurt.). Visible main ingredients: Schweinehackfleisch mager, Paprika rot, Basmatireis, Kidneybohnen (Dose, abgetropft), Tomatensalsa (Glas), Joghurt 1,5 %. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 230. Orientalische Hähnchen-Couscous-Pfanne
-Dateiname: `orientalische-haehnchen-couscous-pfanne.jpg`
-
-```
-Food photo of "Orientalische Hähnchen-Couscous-Pfanne" (Hähnchenstreifen mit Zucchini, Paprika und Kichererbsen in Kreuzkümmel und Zimt, dazu Couscous und Minz-Joghurt.). Visible main ingredients: Hähnchenbrustfilet, Zucchini, Paprika rot, Couscous, Joghurt 1,5 %, Kichererbsen (Dose, abgetropft). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 231. Mediterraner Ofen-Seelachs mit Kartoffeln und Feta
-Dateiname: `mediterraner-ofen-seelachs-mit-kartoffeln-und-feta.jpg`
-
-```
-Food photo of "Mediterraner Ofen-Seelachs mit Kartoffeln und Feta" (Seelachs auf buntem Blechgemüse mit Kartoffelspalten, Oregano und Zitrone, mit Feta überbacken.). Visible main ingredients: Kartoffeln, Seelachsfilet (TK), Zucchini, Paprika gelb, Kirschtomaten, Rote Zwiebel. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 232. Schweinemedaillons mit Pilzrahm und Brokkoli
-Dateiname: `schweinemedaillons-mit-pilzrahm-und-brokkoli.jpg`
-
-```
-Food photo of "Schweinemedaillons mit Pilzrahm und Brokkoli" (Low-Carb-Abendessen aus zarten Filetmedaillons, Champignon-Rahmsauce und viel Brokkoli.). Visible main ingredients: Brokkoli, Champignons, Schweinefilet, Kochsahne 15 %, Zwiebel, Petersilie (frisch). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 233. Gefüllte Paprika mit Hackfleisch
-Dateiname: `gefuellte-paprika-mit-hackfleisch.jpg`
-
-```
-Food photo of "Gefüllte Paprika mit Hackfleisch" (Klassiker aus dem Ofen: Paprikaschoten mit Hack-Reis-Füllung in Tomatensauce, mit Mozzarella überbacken.). Visible main ingredients: Paprika rot, Passierte Tomaten, Hackfleisch vom Schwein, Zwiebel, Mozzarella light, Basmatireis. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 234. Saltimbocca mit Zucchini-Tomaten-Gemüse
-Dateiname: `saltimbocca-mit-zucchini-tomaten-gemuese.jpg`
-
-```
-Food photo of "Saltimbocca mit Zucchini-Tomaten-Gemüse" (Italienisch inspiriert: dünne Schweineschnitzel mit Lachsschinken und Salbei, dazu Zucchini, Kirschtomaten und Kartoffeln.). Visible main ingredients: Kartoffeln, Zucchini, Schweineschnitzel, Kirschtomaten, Lachsschinken, Knoblauch. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 235. Asia-Ofenlachs mit Sesam-Brokkoli
-Dateiname: `asia-ofenlachs-mit-sesam-brokkoli.jpg`
-
-```
-Food photo of "Asia-Ofenlachs mit Sesam-Brokkoli" (Lachs mit Soja-Honig-Ingwer-Glasur aus dem Ofen, dazu Sesam-Brokkoli und etwas Reis.). Visible main ingredients: Brokkoli, Lachsfilet, Basmatireis, Frühlingszwiebeln, Ingwer, Sesam. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 236. Griechischer Salat mit Hähnchen
-Dateiname: `griechischer-salat-mit-haehnchen.jpg`
-
-```
-Food photo of "Griechischer Salat mit Hähnchen" (Bunter Bauernsalat mit gebratener Hähnchenbrust, Feta und Oliven, dazu eine Scheibe Vollkornbrot.). Visible main ingredients: Hähnchenbrustfilet, Tomaten, Gurke, Salatmix, Paprika rot, Vollkornbrot. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 237. Schweinefilet-Souvlaki mit Bauernsalat und Tzatziki
-Dateiname: `schweinefilet-souvlaki-mit-bauernsalat-und-tzatziki.jpg`
-
-```
-Food photo of "Schweinefilet-Souvlaki mit Bauernsalat und Tzatziki" (Griechische Spieße aus mariniertem Schweinefilet mit Zitrone und Oregano, dazu Bulgur, Bauernsalat und Skyr-Tzatziki.). Visible main ingredients: Schweinefilet, Gurke, Tomaten, Skyr natur, Bulgur, Rote Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 238. Kassler mit Apfel-Sauerkraut und Kartoffelpüree
-Dateiname: `kassler-mit-apfel-sauerkraut-und-kartoffelpueree.jpg`
-
-```
-Food photo of "Kassler mit Apfel-Sauerkraut und Kartoffelpüree" (Deftiger Winterklassiker in leicht: mageres Kassler auf mildem Apfel-Sauerkraut mit cremigem Püree.). Visible main ingredients: Kartoffeln, Sauerkraut, Kassler (mager), Milch 1,5 %, Apfel, Zwiebel. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 239. Thai-Hacksalat mit Minze und Reisnudeln
-Dateiname: `thai-hacksalat-mit-minze-und-reisnudeln.jpg`
-
-```
-Food photo of "Thai-Hacksalat mit Minze und Reisnudeln" (Lauwarmes, mageres Schweinehack mit Limette, Chili und frischer Minze auf knackigem Salat und Reisnudeln – inspiriert vom thailändischen Larb.). Visible main ingredients: Schweinehackfleisch mager, Gurke, Reisnudeln, Karotte, Salatmix, Rote Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 240. Knoblauch-Garnelen mit Zucchini-Nudeln
-Dateiname: `knoblauch-garnelen-mit-zucchini-nudeln.jpg`
-
-```
-Food photo of "Knoblauch-Garnelen mit Zucchini-Nudeln" (Halb Zucchini-Spaghetti, halb Vollkornnudeln mit gebratenen Garnelen, Kirschtomaten, Chili und Parmesan.). Visible main ingredients: Zucchini, Garnelen (TK, roh), Kirschtomaten, Vollkornnudeln, Knoblauch, Parmesan. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 241. Hähnchen-Fajita-Pfanne mit Wrap
-Dateiname: `haehnchen-fajita-pfanne-mit-wrap.jpg`
-
-```
-Food photo of "Hähnchen-Fajita-Pfanne mit Wrap" (Bunte Paprika-Zwiebel-Pfanne mit würzigem Hähnchen nach Tex-Mex-Art, serviert mit einem Wrap, Salsa und Joghurt.). Visible main ingredients: Hähnchenbrustfilet, Paprika rot, Paprika gelb, Zwiebel, Vollkorn-Wrap, Joghurt 1,5 %. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 242. Schinken-Hüttenkäse-Röllchen
-Dateiname: `schinken-huettenkaese-roellchen.jpg`
-
-```
-Food photo of "Schinken-Hüttenkäse-Röllchen" (Kochschinkenscheiben gefüllt mit Hüttenkäse und Paprika, dazu eine Reiswaffel.). Visible main ingredients: Hüttenkäse, Kochschinken, Paprika rot, Reiswaffeln, Schnittlauch (frisch). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 243. Lachsschinken-Brot mit Frischkäse
-Dateiname: `lachsschinken-brot-mit-frischkaese.jpg`
-
-```
-Food photo of "Lachsschinken-Brot mit Frischkäse" (Herzhafte halbe Stulle mit leichtem Frischkäse, magerem Lachsschinken und Gurke.). Visible main ingredients: Vollkornbrot, Lachsschinken, Gurke, Frischkäse light. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 244. Eiweiß-Muffins mit Schinken und Spinat
-Dateiname: `eiweiss-muffins-mit-schinken-und-spinat.jpg`
-
-```
-Food photo of "Eiweiß-Muffins mit Schinken und Spinat" (Herzhafte Ei-Muffins aus dem Ofen mit Kochschinken, Paprika und Spinat – ideal zum Mitnehmen.). Visible main ingredients: Ei, Paprika rot, Kochschinken, Babyspinat. Presentation: several pieces arranged on a plate or baking paper. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 245. Thunfisch-Skyr-Dip mit Gemüsesticks
-Dateiname: `thunfisch-skyr-dip-mit-gemuesesticks.jpg`
-
-```
-Food photo of "Thunfisch-Skyr-Dip mit Gemüsesticks" (Cremiger, eiweißreicher Dip aus Thunfisch und Skyr mit knackigen Rohkoststicks.). Visible main ingredients: Karotte, Paprika rot, Gurke, Thunfisch im eigenen Saft (abgetropft), Skyr natur, Zitronensaft. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 246. Putenbrust-Röllchen mit Frischkäse und Walnüssen
-Dateiname: `putenbrust-roellchen-mit-frischkaese-und-walnuessen.jpg`
-
-```
-Food photo of "Putenbrust-Röllchen mit Frischkäse und Walnüssen" (Schnelle Röllchen aus Putenbrustaufschnitt mit Frischkäse, Rucola und knackigen Walnüssen.). Visible main ingredients: Putenbrustaufschnitt, Frischkäse light, Rucola, Walnüsse. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 247. Schoko-Proteinpudding
-Dateiname: `fleisch-schoko-proteinpudding.jpg`
-
-```
-Food photo of "Schoko-Proteinpudding" (Selbst gekochter Schokopudding mit Whey – cremig, süß und mit fast 30 g Eiweiß.). Visible main ingredients: Milch 1,5 %, Backkakao. Presentation: layered in a clear glass jar, spoon beside it. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 248. Erdnuss-Dattel-Energy-Balls mit Whey
-Dateiname: `erdnuss-dattel-energy-balls-mit-whey.jpg`
-
-```
-Food photo of "Erdnuss-Dattel-Energy-Balls mit Whey" (Drei saftige Kugeln aus Hafer, Datteln, Erdnussmus und Vanille-Whey – ohne Backen, perfekt für unterwegs.). Visible main ingredients: Haferflocken, Datteln (getrocknet), Milch 1,5 %, Erdnussmus. Presentation: several pieces arranged on a plate or baking paper. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 249. Casein-Quarkcreme mit Himbeeren
-Dateiname: `casein-quarkcreme-mit-himbeeren.jpg`
-
-```
-Food photo of "Casein-Quarkcreme mit Himbeeren" (Dicke Vanille-Quarkcreme mit Casein und warmen Himbeeren – der sättigende Eiweißsnack für den Abend.). Visible main ingredients: Magerquark, Himbeeren (TK), Milch 1,5 %. Presentation: layered in a clear glass jar, spoon beside it. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 250. Protein-Pizzaschnecken mit Kochschinken
-Dateiname: `protein-pizzaschnecken-mit-kochschinken.jpg`
-
-```
-Food photo of "Protein-Pizzaschnecken mit Kochschinken" (Zwei kleine Pizzaschnecken aus Quark-Öl-Teig mit Tomate, Kochschinken und Käse – warm oder kalt ein Genuss.). Visible main ingredients: Magerquark, Dinkelmehl Type 630, Kochschinken, Passierte Tomaten, Gouda light (gerieben), Milch 1,5 %. Presentation: whole on a dark wooden board, one slice slightly pulled out. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 251. Hähnchen-Satay-Spießchen mit Erdnuss-Dip
-Dateiname: `haehnchen-satay-spiesschen-mit-erdnuss-dip.jpg`
-
-```
-Food photo of "Hähnchen-Satay-Spießchen mit Erdnuss-Dip" (Kleine Hähnchenspieße mit Curry-Marinade und cremigem Erdnuss-Limetten-Dip, dazu Gurkensticks.). Visible main ingredients: Hähnchenbrustfilet, Gurke, Erdnussmus, Limettensaft. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-
-## Ohne Schweinefleisch
-
-### 252. Rührei mit Putenbrust auf Vollkornbrot
+### 242. Rührei mit Putenbrust auf Vollkornbrot
 Dateiname: `ruehrei-mit-putenbrust-auf-vollkornbrot.jpg`
 
 ```
 Food photo of "Rührei mit Putenbrust auf Vollkornbrot" (Cremiges Rührei mit Putenbrust und Lauchzwiebeln auf kräftigem Vollkornbrot – der deutsche Frühstücksklassiker in eiweißreich.). Visible main ingredients: Ei, Vollkornbrot, Cherrytomaten, Putenbrust-Aufschnitt, Lauchzwiebeln. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 253. Lachsbrötchen mit Kräuterquark
+### 243. Lachsbrötchen mit Kräuterquark
 Dateiname: `lachsbroetchen-mit-kraeuterquark.jpg`
 
 ```
 Food photo of "Lachsbrötchen mit Kräuterquark" (Knuspriges Vollkornbrötchen mit Räucherlachs, frischem Schnittlauchquark und Gurke – fertig in fünf Minuten.). Visible main ingredients: Apfel, Magerquark, Vollkornbrötchen, Räucherlachs, Gurke, Schnittlauch (frisch). Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 254. Shakshuka mit Rinderhack
+### 244. Shakshuka mit Rinderhack
 Dateiname: `shakshuka-mit-rinderhack.jpg`
 
 ```
 Food photo of "Shakshuka mit Rinderhack" (Orientalisch gewürzte Tomaten-Paprika-Sauce mit Rinderhack, in der zwei Eier sanft garen – dazu Vollkornbrot zum Dippen.). Visible main ingredients: Gehackte Tomaten (Dose), Ei, Paprika rot, Rinderhackfleisch (5 % Fett), Vollkornbrot, Zwiebel. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 255. Thunfisch-Avocado-Toast mit Ei
+### 245. Thunfisch-Avocado-Toast mit Ei
 Dateiname: `thunfisch-avocado-toast-mit-ei.jpg`
 
 ```
 Food photo of "Thunfisch-Avocado-Toast mit Ei" (Vollkorntoast mit cremiger Thunfisch-Quark-Creme, Avocado und gekochtem Ei – mediterran, sättigend und blitzschnell.). Visible main ingredients: Thunfisch (Dose, im eigenen Saft, abgetropft), Vollkorntoast, Ei, Cherrytomaten, Avocado, Magerquark. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 256. Frühstücks-Burrito mit Hähnchen
+### 246. Frühstücks-Burrito mit Hähnchen
 Dateiname: `fruehstuecks-burrito-mit-haehnchen.jpg`
 
 ```
 Food photo of "Frühstücks-Burrito mit Hähnchen" (Mexikanischer Wrap mit Rührei, gebratenem Hähnchen, Kidneybohnen, Paprika und Salsa – ideal zum Mitnehmen.). Visible main ingredients: Vollkorn-Tortilla, Ei, Eiklar, Hähnchenbrustfilet, Paprika rot, Kidneybohnen (Dose, abgetropft). Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 257. Herzhafte Protein-Waffeln mit Räucherlachs
+### 247. Herzhafte Protein-Waffeln mit Räucherlachs
 Dateiname: `herzhafte-protein-waffeln-mit-raeucherlachs.jpg`
 
 ```
 Food photo of "Herzhafte Protein-Waffeln mit Räucherlachs" (Knusprige Haferwaffeln mit neutralem Whey, belegt mit Räucherlachs, Frischkäse und Gurke – ein Frühstück wie im Café.). Visible main ingredients: Ei, Gurke, Magerquark, Räucherlachs, Haferflocken, Milch 1,5 %. Presentation: several pieces arranged on a plate or baking paper. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 258. American Protein-Pancakes mit knuspriger Putenbrust
+### 248. American Protein-Pancakes mit knuspriger Putenbrust
 Dateiname: `american-protein-pancakes-mit-knuspriger-putenbrust.jpg`
 
 ```
 Food photo of "American Protein-Pancakes mit knuspriger Putenbrust" (Fluffige Bananen-Vanille-Pancakes mit Beeren und kross gebratener Putenbrust – der süß-salzige Diner-Klassiker ohne Schwein.). Visible main ingredients: Beerenmischung (TK), Banane, Ei, Milch 1,5 %, Haferflocken, Putenbrust-Aufschnitt. Presentation: several pieces arranged on a plate or baking paper. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 259. Protein-Tassenbrot mit Hähnchenbrust und Avocado
+### 249. Protein-Tassenbrot mit Hähnchenbrust und Avocado
 Dateiname: `protein-tassenbrot-mit-haehnchenbrust-und-avocado.jpg`
 
 ```
 Food photo of "Protein-Tassenbrot mit Hähnchenbrust und Avocado" (Warmes Eiweißbrot aus der Mikrowelle in 2 Minuten, belegt mit Hähnchenbrust, Avocado und Tomaten.). Visible main ingredients: Cherrytomaten, Ei, Magerquark, Hähnchenbrust-Aufschnitt, Avocado, Haferflocken. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 260. Bauernfrühstück mit Pute
+### 250. Bauernfrühstück mit Pute
 Dateiname: `bauernfruehstueck-mit-pute.jpg`
 
 ```
 Food photo of "Bauernfrühstück mit Pute" (Herzhafte Bratkartoffeln mit Ei, Putenbrust und Zwiebeln aus einer Pfanne – deftig, sättigend und ganz ohne Speck.). Visible main ingredients: Kartoffeln, Ei, Gurke, Eiklar, Putenbrust-Aufschnitt, Zwiebel. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 261. Räucherforellen-Brot mit Hüttenkäse und Radieschen
+### 251. Räucherforellen-Brot mit Hüttenkäse und Radieschen
 Dateiname: `raeucherforellen-brot-mit-huettenkaese-und-radieschen.jpg`
 
 ```
 Food photo of "Räucherforellen-Brot mit Hüttenkäse und Radieschen" (Kräftiges Vollkornbrot mit cremigem Hüttenkäse, zarter Räucherforelle und knackigen Radieschen – norddeutsch frisch und in 5 Minuten fertig.). Visible main ingredients: Hüttenkäse, Vollkornbrot, Räucherforellenfilet, Radieschen, Meerrettich (Glas), Schnittlauch (frisch). Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 252. Schweinefilet mit Senfkartoffeln und Bohnen
+Dateiname: `schweinefilet-mit-senfkartoffeln-und-bohnen.jpg`
+
+```
+Food photo of "Schweinefilet mit Senfkartoffeln und Bohnen" (Saftig gebratenes Schweinefilet mit Ofenkartoffeln, grünen Bohnen und einer leichten Senfsauce.). Visible main ingredients: Kartoffeln, Grüne Bohnen (TK), Schweinefilet, Kochsahne 15 %. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 253. Süß-saure Schweinepfanne mit Reis
+Dateiname: `suess-saure-schweinepfanne-mit-reis.jpg`
+
+```
+Food photo of "Süß-saure Schweinepfanne mit Reis" (Asiatische Wokpfanne mit zarten Schweineschnitzel-Streifen, Paprika, Ananas und Basmatireis.). Visible main ingredients: Schweineschnitzel, Paprika rot, Ananas (Dose, abgetropft), Basmatireis, Frühlingszwiebeln, Tomatenmark. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 254. Chili con Carne mit Schweinehack und Reis
+Dateiname: `chili-con-carne-mit-schweinehack-und-reis.jpg`
+
+```
+Food photo of "Chili con Carne mit Schweinehack und Reis" (Würziges Chili mit Schweinehack, Kidneybohnen und Mais – perfekt zum Vorkochen.). Visible main ingredients: Gehackte Tomaten (Dose), Hackfleisch vom Schwein, Kidneybohnen (Dose, abgetropft), Paprika rot, Mais (Dose, abgetropft), Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 255. Puten-Gyros-Wrap mit Tzatziki
+Dateiname: `puten-gyros-wrap-mit-tzatziki.jpg`
+
+```
+Food photo of "Puten-Gyros-Wrap mit Tzatziki" (Griechisch gewürzte Putenstreifen mit Skyr-Tzatziki, Tomate und Gurke im Vollkorn-Wrap.). Visible main ingredients: Putenbrustfilet, Vollkorn-Wrap, Skyr natur, Tomaten, Gurke, Rote Zwiebel. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 256. Tomaten-Thunfisch-Pasta mit Rucola
+Dateiname: `tomaten-thunfisch-pasta-mit-rucola.jpg`
+
+```
+Food photo of "Tomaten-Thunfisch-Pasta mit Rucola" (Mediterrane Vollkornpasta mit schneller Tomatensauce, Thunfisch, Rucola und Parmesan.). Visible main ingredients: Passierte Tomaten, Thunfisch im eigenen Saft (abgetropft), Vollkornnudeln, Zwiebel, Rucola, Parmesan. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 257. Bami Goreng mit Schweinefilet
+Dateiname: `bami-goreng-mit-schweinefilet.jpg`
+
+```
+Food photo of "Bami Goreng mit Schweinefilet" (Indonesisch inspirierte Wok-Nudeln mit zartem Schweinefilet, knackigem Gemüse und Ei.). Visible main ingredients: Schweinefilet, Chinakohl, Mie-Nudeln, Ei, Karotte, Frühlingszwiebeln. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 258. Knuspriges Schweineschnitzel mit Kartoffel-Gurken-Salat
+Dateiname: `knuspriges-schweineschnitzel-mit-kartoffel-gurken-salat.jpg`
+
+```
+Food photo of "Knuspriges Schweineschnitzel mit Kartoffel-Gurken-Salat" (Dünn paniertes Schnitzel, nur mit wenig Öl gebraten, dazu ein süddeutscher Kartoffelsalat mit Gurke und Dill.). Visible main ingredients: Kartoffeln, Schweineschnitzel, Gurke, Ei, Paniermehl, Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 259. Burrito-Bowl mit Schweinehack und Bohnen
+Dateiname: `burrito-bowl-mit-schweinehack-und-bohnen.jpg`
+
+```
+Food photo of "Burrito-Bowl mit Schweinehack und Bohnen" (Mexikanische Bowl mit würzigem, magerem Schweinehack, Reis, Bohnen, Mais, Salsa und Limetten-Joghurt.). Visible main ingredients: Schweinehackfleisch mager, Paprika rot, Basmatireis, Kidneybohnen (Dose, abgetropft), Tomatensalsa (Glas), Joghurt 1,5 %. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 260. Orientalische Hähnchen-Couscous-Pfanne
+Dateiname: `orientalische-haehnchen-couscous-pfanne.jpg`
+
+```
+Food photo of "Orientalische Hähnchen-Couscous-Pfanne" (Hähnchenstreifen mit Zucchini, Paprika und Kichererbsen in Kreuzkümmel und Zimt, dazu Couscous und Minz-Joghurt.). Visible main ingredients: Hähnchenbrustfilet, Zucchini, Paprika rot, Couscous, Joghurt 1,5 %, Kichererbsen (Dose, abgetropft). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 261. Mediterraner Ofen-Seelachs mit Kartoffeln und Feta
+Dateiname: `mediterraner-ofen-seelachs-mit-kartoffeln-und-feta.jpg`
+
+```
+Food photo of "Mediterraner Ofen-Seelachs mit Kartoffeln und Feta" (Seelachs auf buntem Blechgemüse mit Kartoffelspalten, Oregano und Zitrone, mit Feta überbacken.). Visible main ingredients: Kartoffeln, Seelachsfilet (TK), Zucchini, Paprika gelb, Kirschtomaten, Rote Zwiebel. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
 ### 262. Teriyaki-Hähnchen-Bowl mit Brokkoli
@@ -1890,11 +1890,11 @@ Dateiname: `teriyaki-haehnchen-bowl-mit-brokkoli.jpg`
 Food photo of "Teriyaki-Hähnchen-Bowl mit Brokkoli" (Saftiges Hähnchen in Soja-Honig-Glasur mit Basmatireis, Brokkoli und Möhren – asiatisch und perfekt zum Vorkochen.). Visible main ingredients: Hähnchenbrustfilet, Brokkoli, Möhre, Basmatireis, Ingwer, Knoblauch. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 263. Chili con Carne mit Reis
-Dateiname: `ohne-schwein-chili-con-carne-mit-reis.jpg`
+### 263. Chili con Carne mit Rinderhack und Reis
+Dateiname: `chili-con-carne-mit-rinderhack-und-reis.jpg`
 
 ```
-Food photo of "Chili con Carne mit Reis" (Kräftiges mexikanisches Chili mit magerem Rinderhack, Bohnen und Mais – ein Topf, der sich perfekt für mehrere Tage vorkochen lässt.). Visible main ingredients: Gehackte Tomaten (Dose), Rinderhackfleisch (5 % Fett), Paprika rot, Kidneybohnen (Dose, abgetropft), Mais (Dose, abgetropft), Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+Food photo of "Chili con Carne mit Rinderhack und Reis" (Kräftiges mexikanisches Chili mit magerem Rinderhack, Bohnen und Mais – ein Topf, der sich perfekt für mehrere Tage vorkochen lässt.). Visible main ingredients: Gehackte Tomaten (Dose), Rinderhackfleisch (5 % Fett), Paprika rot, Kidneybohnen (Dose, abgetropft), Mais (Dose, abgetropft), Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
 ### 264. Vollkornpasta mit Thunfisch und Tomaten
@@ -1953,140 +1953,245 @@ Dateiname: `burrito-bowl-mit-putenhack-und-schwarzen-bohnen.jpg`
 Food photo of "Burrito-Bowl mit Putenhack und schwarzen Bohnen" (Mexikanisch gewürztes Putenhack mit Reis, schwarzen Bohnen, Mais, Paprika, Salsa und Avocado – alles, was einen Burrito ausmacht, ohne Tortilla.). Visible main ingredients: Putenhackfleisch, Paprika rot, Schwarze Bohnen (Dose, abgetropft), Salsa (Glas), Basmatireis, Mais (Dose, abgetropft). Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 272. Ofenlachs mit Brokkoli und Süßkartoffel
+### 272. Schweinemedaillons mit Pilzrahm und Brokkoli
+Dateiname: `schweinemedaillons-mit-pilzrahm-und-brokkoli.jpg`
+
+```
+Food photo of "Schweinemedaillons mit Pilzrahm und Brokkoli" (Low-Carb-Abendessen aus zarten Filetmedaillons, Champignon-Rahmsauce und viel Brokkoli.). Visible main ingredients: Brokkoli, Champignons, Schweinefilet, Kochsahne 15 %, Zwiebel, Petersilie (frisch). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 273. Gefüllte Paprika mit Hackfleisch
+Dateiname: `gefuellte-paprika-mit-hackfleisch.jpg`
+
+```
+Food photo of "Gefüllte Paprika mit Hackfleisch" (Klassiker aus dem Ofen: Paprikaschoten mit Hack-Reis-Füllung in Tomatensauce, mit Mozzarella überbacken.). Visible main ingredients: Paprika rot, Passierte Tomaten, Hackfleisch vom Schwein, Zwiebel, Mozzarella light, Basmatireis. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 274. Saltimbocca mit Zucchini-Tomaten-Gemüse
+Dateiname: `saltimbocca-mit-zucchini-tomaten-gemuese.jpg`
+
+```
+Food photo of "Saltimbocca mit Zucchini-Tomaten-Gemüse" (Italienisch inspiriert: dünne Schweineschnitzel mit Lachsschinken und Salbei, dazu Zucchini, Kirschtomaten und Kartoffeln.). Visible main ingredients: Kartoffeln, Zucchini, Schweineschnitzel, Kirschtomaten, Lachsschinken, Knoblauch. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 275. Asia-Ofenlachs mit Sesam-Brokkoli
+Dateiname: `asia-ofenlachs-mit-sesam-brokkoli.jpg`
+
+```
+Food photo of "Asia-Ofenlachs mit Sesam-Brokkoli" (Lachs mit Soja-Honig-Ingwer-Glasur aus dem Ofen, dazu Sesam-Brokkoli und etwas Reis.). Visible main ingredients: Brokkoli, Lachsfilet, Basmatireis, Frühlingszwiebeln, Ingwer, Sesam. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 276. Griechischer Salat mit Hähnchen
+Dateiname: `griechischer-salat-mit-haehnchen.jpg`
+
+```
+Food photo of "Griechischer Salat mit Hähnchen" (Bunter Bauernsalat mit gebratener Hähnchenbrust, Feta und Oliven, dazu eine Scheibe Vollkornbrot.). Visible main ingredients: Hähnchenbrustfilet, Tomaten, Gurke, Salatmix, Paprika rot, Vollkornbrot. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 277. Schweinefilet-Souvlaki mit Bauernsalat und Tzatziki
+Dateiname: `schweinefilet-souvlaki-mit-bauernsalat-und-tzatziki.jpg`
+
+```
+Food photo of "Schweinefilet-Souvlaki mit Bauernsalat und Tzatziki" (Griechische Spieße aus mariniertem Schweinefilet mit Zitrone und Oregano, dazu Bulgur, Bauernsalat und Skyr-Tzatziki.). Visible main ingredients: Schweinefilet, Gurke, Tomaten, Skyr natur, Bulgur, Rote Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 278. Kassler mit Apfel-Sauerkraut und Kartoffelpüree
+Dateiname: `kassler-mit-apfel-sauerkraut-und-kartoffelpueree.jpg`
+
+```
+Food photo of "Kassler mit Apfel-Sauerkraut und Kartoffelpüree" (Deftiger Winterklassiker in leicht: mageres Kassler auf mildem Apfel-Sauerkraut mit cremigem Püree.). Visible main ingredients: Kartoffeln, Sauerkraut, Kassler (mager), Milch 1,5 %, Apfel, Zwiebel. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 279. Thai-Hacksalat mit Minze und Reisnudeln
+Dateiname: `thai-hacksalat-mit-minze-und-reisnudeln.jpg`
+
+```
+Food photo of "Thai-Hacksalat mit Minze und Reisnudeln" (Lauwarmes, mageres Schweinehack mit Limette, Chili und frischer Minze auf knackigem Salat und Reisnudeln – inspiriert vom thailändischen Larb.). Visible main ingredients: Schweinehackfleisch mager, Gurke, Reisnudeln, Karotte, Salatmix, Rote Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 280. Knoblauch-Garnelen mit Zucchini-Nudeln
+Dateiname: `knoblauch-garnelen-mit-zucchini-nudeln.jpg`
+
+```
+Food photo of "Knoblauch-Garnelen mit Zucchini-Nudeln" (Halb Zucchini-Spaghetti, halb Vollkornnudeln mit gebratenen Garnelen, Kirschtomaten, Chili und Parmesan.). Visible main ingredients: Zucchini, Garnelen (TK, roh), Kirschtomaten, Vollkornnudeln, Knoblauch, Parmesan. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 281. Hähnchen-Fajita-Pfanne mit Wrap
+Dateiname: `haehnchen-fajita-pfanne-mit-wrap.jpg`
+
+```
+Food photo of "Hähnchen-Fajita-Pfanne mit Wrap" (Bunte Paprika-Zwiebel-Pfanne mit würzigem Hähnchen nach Tex-Mex-Art, serviert mit einem Wrap, Salsa und Joghurt.). Visible main ingredients: Hähnchenbrustfilet, Paprika rot, Paprika gelb, Zwiebel, Vollkorn-Wrap, Joghurt 1,5 %. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 282. Ofenlachs mit Brokkoli und Süßkartoffel
 Dateiname: `ofenlachs-mit-brokkoli-und-suesskartoffel.jpg`
 
 ```
 Food photo of "Ofenlachs mit Brokkoli und Süßkartoffel" (Lachsfilet mit Zitrone vom Blech, dazu geröstete Süßkartoffelspalten und Brokkoli – ein Blech, kaum Abwasch.). Visible main ingredients: Süßkartoffel, Brokkoli, Lachsfilet, Zitronensaft. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 273. Thai-Garnelen-Curry mit Gemüse
+### 283. Thai-Garnelen-Curry mit Gemüse
 Dateiname: `thai-garnelen-curry-mit-gemuese.jpg`
 
 ```
 Food photo of "Thai-Garnelen-Curry mit Gemüse" (Mildes Kokos-Curry mit Garnelen, viel Gemüse, Ingwer und Limette auf etwas Basmatireis – asiatisch und in 18 Minuten fertig.). Visible main ingredients: Asia-Gemüsemischung (TK), Garnelen (TK, roh, geschält), Kokosmilch (fettreduziert), Basmatireis, Limettensaft, Ingwer. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 274. Kabeljau in Senfsauce mit Spinat
+### 284. Kabeljau in Senfsauce mit Spinat
 Dateiname: `kabeljau-in-senfsauce-mit-spinat.jpg`
 
 ```
 Food photo of "Kabeljau in Senfsauce mit Spinat" (Zarter Kabeljau in cremiger Senfsauce mit Salzkartoffeln und Rahmspinat – norddeutscher Klassiker, leicht gemacht.). Visible main ingredients: Kartoffeln, Kabeljaufilet, Spinat, Milch 1,5 %, Frischkäse light, Zwiebel. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 275. Lammfilet mit Ofengemüse und Tzatziki
+### 285. Lammfilet mit Ofengemüse und Tzatziki
 Dateiname: `lammfilet-mit-ofengemuese-und-tzatziki.jpg`
 
 ```
 Food photo of "Lammfilet mit Ofengemüse und Tzatziki" (Rosa gebratenes Lammfilet auf mediterranem Ofengemüse mit Bulgur und frischem Skyr-Tzatziki.). Visible main ingredients: Lammfilet, Zucchini, Paprika rot, Skyr natur, Gurke, Zwiebel. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 276. Rindersteak auf Rucola-Tomaten-Salat
+### 286. Rindersteak auf Rucola-Tomaten-Salat
 Dateiname: `rindersteak-auf-rucola-tomaten-salat.jpg`
 
 ```
 Food photo of "Rindersteak auf Rucola-Tomaten-Salat" (Kurz gebratenes Hüftsteak in Streifen auf Rucola mit Cherrytomaten, Balsamico und Parmesan – leicht, mediterran und in 15 Minuten fertig.). Visible main ingredients: Rinderhüftsteak, Cherrytomaten, Rucola, Vollkornbrot, Parmesan. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 277. Knoblauch-Garnelen mit Zucchini-Spaghetti
-Dateiname: `knoblauch-garnelen-mit-zucchini-spaghetti.jpg`
-
-```
-Food photo of "Knoblauch-Garnelen mit Zucchini-Spaghetti" (Scampi-Style-Garnelen in Tomaten-Knoblauchsauce auf einer Mischung aus Zucchininudeln und Vollkornspaghetti – leicht und trotzdem richtig Pasta-Gefühl.). Visible main ingredients: Zucchini, Garnelen (TK, roh, geschält), Gehackte Tomaten (Dose), Vollkornnudeln, Parmesan, Knoblauch. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 278. Rindfleisch-Brokkoli-Wok mit Ingwer
+### 287. Rindfleisch-Brokkoli-Wok mit Ingwer
 Dateiname: `rindfleisch-brokkoli-wok-mit-ingwer.jpg`
 
 ```
 Food photo of "Rindfleisch-Brokkoli-Wok mit Ingwer" (Zarte Rindfleischstreifen und viel Brokkoli in glänzender Soja-Ingwer-Sauce mit einer kleinen Portion Reis – der Asia-Imbiss-Klassiker, nur leichter.). Visible main ingredients: Brokkoli, Rinderhüftsteak, Basmatireis, Ingwer, Knoblauch. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 279. Gefüllte Paprika mit Putenhack und Feta
+### 288. Gefüllte Paprika mit Putenhack und Feta
 Dateiname: `gefuellte-paprika-mit-putenhack-und-feta.jpg`
 
 ```
 Food photo of "Gefüllte Paprika mit Putenhack und Feta" (Ofenpaprika, gefüllt mit würzigem Putenhack, Couscous und Feta, in Tomatensauce gegart – mediterranes Wohlfühlessen.). Visible main ingredients: Paprika rot, Gehackte Tomaten (Dose), Putenhackfleisch, Zwiebel, Couscous, Feta. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 280. Seelachs mit Gurken-Dill-Salat und Petersilienkartoffeln
+### 289. Seelachs mit Gurken-Dill-Salat und Petersilienkartoffeln
 Dateiname: `seelachs-mit-gurken-dill-salat-und-petersilienkartoffeln.jpg`
 
 ```
 Food photo of "Seelachs mit Gurken-Dill-Salat und Petersilienkartoffeln" (Goldbraun gebratenes Seelachsfilet mit Kartoffeln und einem frischen Gurkensalat mit Joghurt-Dill-Dressing – ein leichter deutscher Abendteller.). Visible main ingredients: Kartoffeln, Seelachsfilet (TK), Gurke, Joghurt 1,5 %, Zitronensaft, Dill (frisch). Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 281. Fajita-Salat mit Hähnchen und Tortilla-Chips
+### 290. Fajita-Salat mit Hähnchen und Tortilla-Chips
 Dateiname: `fajita-salat-mit-haehnchen-und-tortilla-chips.jpg`
 
 ```
 Food photo of "Fajita-Salat mit Hähnchen und Tortilla-Chips" (Knackiger Romanasalat mit scharf gebratenen Hähnchen- und Paprikastreifen, Bohnen, Mais, Avocado und selbst gebackenen Tortilla-Chips.). Visible main ingredients: Hähnchenbrustfilet, Paprika rot, Romanasalatherzen, Schwarze Bohnen (Dose, abgetropft), Salsa (Glas), Zwiebel. Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 282. Putenröllchen mit Frischkäse
+### 291. Schinken-Hüttenkäse-Röllchen
+Dateiname: `schinken-huettenkaese-roellchen.jpg`
+
+```
+Food photo of "Schinken-Hüttenkäse-Röllchen" (Kochschinkenscheiben gefüllt mit Hüttenkäse und Paprika, dazu eine Reiswaffel.). Visible main ingredients: Hüttenkäse, Kochschinken, Paprika rot, Reiswaffeln, Schnittlauch (frisch). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 292. Lachsschinken-Brot mit Frischkäse
+Dateiname: `lachsschinken-brot-mit-frischkaese.jpg`
+
+```
+Food photo of "Lachsschinken-Brot mit Frischkäse" (Herzhafte halbe Stulle mit leichtem Frischkäse, magerem Lachsschinken und Gurke.). Visible main ingredients: Vollkornbrot, Lachsschinken, Gurke, Frischkäse light. Presentation: on a plate, cut open so the filling is visible. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 293. Eiweiß-Muffins mit Schinken und Spinat
+Dateiname: `eiweiss-muffins-mit-schinken-und-spinat.jpg`
+
+```
+Food photo of "Eiweiß-Muffins mit Schinken und Spinat" (Herzhafte Ei-Muffins aus dem Ofen mit Kochschinken, Paprika und Spinat – ideal zum Mitnehmen.). Visible main ingredients: Ei, Paprika rot, Kochschinken, Babyspinat. Presentation: several pieces arranged on a plate or baking paper. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 294. Thunfisch-Skyr-Dip mit Gemüsesticks
+Dateiname: `thunfisch-skyr-dip-mit-gemuesesticks.jpg`
+
+```
+Food photo of "Thunfisch-Skyr-Dip mit Gemüsesticks" (Cremiger, eiweißreicher Dip aus Thunfisch und Skyr mit knackigen Rohkoststicks.). Visible main ingredients: Karotte, Paprika rot, Gurke, Thunfisch im eigenen Saft (abgetropft), Skyr natur, Zitronensaft. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 295. Putenbrust-Röllchen mit Frischkäse und Walnüssen
+Dateiname: `putenbrust-roellchen-mit-frischkaese-und-walnuessen.jpg`
+
+```
+Food photo of "Putenbrust-Röllchen mit Frischkäse und Walnüssen" (Schnelle Röllchen aus Putenbrustaufschnitt mit Frischkäse, Rucola und knackigen Walnüssen.). Visible main ingredients: Putenbrustaufschnitt, Frischkäse light, Rucola, Walnüsse. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 296. Schoko-Proteinpudding
+Dateiname: `fleisch-schoko-proteinpudding.jpg`
+
+```
+Food photo of "Schoko-Proteinpudding" (Selbst gekochter Schokopudding mit Whey – cremig, süß und mit fast 30 g Eiweiß.). Visible main ingredients: Milch 1,5 %, Backkakao. Presentation: layered in a clear glass jar, spoon beside it. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 297. Erdnuss-Dattel-Energy-Balls mit Whey
+Dateiname: `erdnuss-dattel-energy-balls-mit-whey.jpg`
+
+```
+Food photo of "Erdnuss-Dattel-Energy-Balls mit Whey" (Drei saftige Kugeln aus Hafer, Datteln, Erdnussmus und Vanille-Whey – ohne Backen, perfekt für unterwegs.). Visible main ingredients: Haferflocken, Datteln (getrocknet), Milch 1,5 %, Erdnussmus. Presentation: several pieces arranged on a plate or baking paper. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 298. Casein-Quarkcreme mit Himbeeren
+Dateiname: `casein-quarkcreme-mit-himbeeren.jpg`
+
+```
+Food photo of "Casein-Quarkcreme mit Himbeeren" (Dicke Vanille-Quarkcreme mit Casein und warmen Himbeeren – der sättigende Eiweißsnack für den Abend.). Visible main ingredients: Magerquark, Himbeeren (TK), Milch 1,5 %. Presentation: layered in a clear glass jar, spoon beside it. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 299. Protein-Pizzaschnecken mit Kochschinken
+Dateiname: `protein-pizzaschnecken-mit-kochschinken.jpg`
+
+```
+Food photo of "Protein-Pizzaschnecken mit Kochschinken" (Zwei kleine Pizzaschnecken aus Quark-Öl-Teig mit Tomate, Kochschinken und Käse – warm oder kalt ein Genuss.). Visible main ingredients: Magerquark, Dinkelmehl Type 630, Kochschinken, Passierte Tomaten, Gouda light (gerieben), Milch 1,5 %. Presentation: whole on a dark wooden board, one slice slightly pulled out. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 300. Hähnchen-Satay-Spießchen mit Erdnuss-Dip
+Dateiname: `haehnchen-satay-spiesschen-mit-erdnuss-dip.jpg`
+
+```
+Food photo of "Hähnchen-Satay-Spießchen mit Erdnuss-Dip" (Kleine Hähnchenspieße mit Curry-Marinade und cremigem Erdnuss-Limetten-Dip, dazu Gurkensticks.). Visible main ingredients: Hähnchenbrustfilet, Gurke, Erdnussmus, Limettensaft. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
+```
+
+### 301. Putenröllchen mit Frischkäse
 Dateiname: `putenroellchen-mit-frischkaese.jpg`
 
 ```
 Food photo of "Putenröllchen mit Frischkäse" (Putenbrustscheiben mit Frischkäse und knackigen Gurkenstiften gerollt, dazu Reiswaffeln – der schnelle Snack fürs Büro.). Visible main ingredients: Putenbrust-Aufschnitt, Gurke, Frischkäse light, Reiswaffeln, Schnittlauch (frisch). Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 283. Thunfisch-Dip mit Gemüsesticks
-Dateiname: `thunfisch-dip-mit-gemuesesticks.jpg`
-
-```
-Food photo of "Thunfisch-Dip mit Gemüsesticks" (Cremiger Thunfisch-Quark-Dip mit Zitrone und Senf zu knackigen Möhren- und Paprikasticks.). Visible main ingredients: Möhre, Paprika rot, Magerquark, Thunfisch (Dose, im eigenen Saft, abgetropft), Zitronensaft. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 284. Roastbeef-Reiswaffeln mit Meerrettichquark
+### 302. Roastbeef-Reiswaffeln mit Meerrettichquark
 Dateiname: `roastbeef-reiswaffeln-mit-meerrettichquark.jpg`
 
 ```
 Food photo of "Roastbeef-Reiswaffeln mit Meerrettichquark" (Knusprige Reiswaffeln mit scharfem Meerrettichquark, zartem Roastbeef und Gurke.). Visible main ingredients: Roastbeef (Aufschnitt), Magerquark, Gurke, Reiswaffeln, Meerrettich (Glas). Presentation: in a wide ceramic bowl. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 285. Frittata-Muffins mit Pute und Spinat
+### 303. Frittata-Muffins mit Pute und Spinat
 Dateiname: `frittata-muffins-mit-pute-und-spinat.jpg`
 
 ```
 Food photo of "Frittata-Muffins mit Pute und Spinat" (Herzhafte Ei-Muffins mit Putenbrust, Spinat, Paprika und Gouda aus dem Ofen – warm oder kalt ein idealer Vorrats-Snack.). Visible main ingredients: Ei, Putenbrust-Aufschnitt, Spinat, Paprika rot, Gouda (gerieben). Presentation: several pieces arranged on a plate or baking paper. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 286. Skyr mit Beeren und Mandeln
+### 304. Skyr mit Beeren und Mandeln
 Dateiname: `skyr-mit-beeren-und-mandeln.jpg`
 
 ```
 Food photo of "Skyr mit Beeren und Mandeln" (Cremiger Skyr mit fruchtigen Beeren, einem Hauch Honig und gerösteten Mandeln – süß, frisch und eiweißreich.). Visible main ingredients: Skyr natur, Beerenmischung (TK), Mandeln. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 287. Schoko-Proteinpudding
-Dateiname: `ohne-schwein-schoko-proteinpudding.jpg`
-
-```
-Food photo of "Schoko-Proteinpudding" (Selbst gekochter Schokopudding mit Whey – cremig, warm oder kalt zu genießen und eine echte Alternative zum Supermarkt-Pudding.). Visible main ingredients: Milch 1,5 %. Presentation: layered in a clear glass jar, spoon beside it. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 288. Zimt-Casein-Quarkcreme mit Walnüssen
+### 305. Zimt-Casein-Quarkcreme mit Walnüssen
 Dateiname: `zimt-casein-quarkcreme-mit-walnuessen.jpg`
 
 ```
 Food photo of "Zimt-Casein-Quarkcreme mit Walnüssen" (Dicke Vanille-Quarkcreme mit Casein, Zimt und Walnüssen – sättigt lange und ist ideal als Spätsnack am Abend.). Visible main ingredients: Magerquark, Milch 1,5 %, Walnüsse. Presentation: layered in a clear glass jar, spoon beside it. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
 ```
 
-### 289. Erdnuss-Vanille-Energy-Balls
-Dateiname: `erdnuss-vanille-energy-balls.jpg`
-
-```
-Food photo of "Erdnuss-Vanille-Energy-Balls" (Kleine Kugeln aus Haferflocken, Datteln, Erdnussmus und Vanille-Whey – perfekt für die Sporttasche.). Visible main ingredients: Haferflocken, Datteln (getrocknet), Erdnussmus, Milch 1,5 %. Presentation: several pieces arranged on a plate or baking paper. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 290. Hähnchen-Satéspieße mit Erdnuss-Skyr-Dip
-Dateiname: `haehnchen-satespiesse-mit-erdnuss-skyr-dip.jpg`
-
-```
-Food photo of "Hähnchen-Satéspieße mit Erdnuss-Skyr-Dip" (Kleine marinierte Hähnchenspieße aus der Pfanne mit einem cremigen Erdnuss-Dip und Gurkensticks – asiatisches Fingerfood.). Visible main ingredients: Hähnchenbrustfilet, Gurke, Skyr natur, Erdnussmus, Limettensaft. Presentation: on a matte ceramic plate. Professional food photography for a sporty fitness cookbook. Natural soft daylight from the side, appetizing, fresh, realistic portion size for one person, shallow depth of field, 45-degree angle. Surface: light grey concrete or dark slate. Small blue linen napkin as accent. Clean, modern, energetic look. Wide landscape format 16:9, dish centered with space above and below (the image will be cropped to a wide banner). No text, no logos, no brand packaging, no hands, no people.
-```
-
-### 291. Gurkenschiffchen mit Krabben-Skyr
+### 306. Gurkenschiffchen mit Krabben-Skyr
 Dateiname: `gurkenschiffchen-mit-krabben-skyr.jpg`
 
 ```

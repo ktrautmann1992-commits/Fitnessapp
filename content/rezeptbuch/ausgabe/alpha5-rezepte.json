@@ -1,7 +1,7 @@
 {
  "format": "alpha5-rezepte",
- "version": "1.0",
- "stand": "2026-10-11",
+ "version": "1.1",
+ "stand": "2026-10-23",
  "hinweise": [
   "Nährwerte pro Portion sind aus den Zutatenmengen berechnet (Richtwerte).",
   "Alle Rezepte haben status \"draft\" und sollen vor Veröffentlichung fachlich geprüft werden.",
@@ -22,12 +22,7 @@
   },
   {
    "id": "fleisch",
-   "name": "Mit Fleisch",
-   "typ": "ernaehrungsform"
-  },
-  {
-   "id": "ohne-schwein",
-   "name": "Ohne Schweinefleisch",
+   "name": "Mit Fleisch & Fisch",
    "typ": "ernaehrungsform"
   },
   {
@@ -83,6 +78,11 @@
   {
    "id": "spar-kueche",
    "name": "Spar-Küche",
+   "typ": "thema"
+  },
+  {
+   "id": "low-carb",
+   "name": "Low Carb",
    "typ": "thema"
   }
  ],
@@ -12962,8 +12962,8 @@
    "status": "draft"
   },
   {
-   "id": "chili-con-carne-mit-reis",
-   "name": "Chili con Carne mit Reis",
+   "id": "chili-con-carne-mit-schweinehack-und-reis",
+   "name": "Chili con Carne mit Schweinehack und Reis",
    "beschreibung": "Würziges Chili mit Schweinehack, Kidneybohnen und Mais – perfekt zum Vorkochen.",
    "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
@@ -15681,7 +15681,7 @@
    "id": "ruehrei-mit-putenbrust-auf-vollkornbrot",
    "name": "Rührei mit Putenbrust auf Vollkornbrot",
    "beschreibung": "Cremiges Rührei mit Putenbrust und Lauchzwiebeln auf kräftigem Vollkornbrot – der deutsche Frühstücksklassiker in eiweißreich.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
     "fleisch",
@@ -15755,7 +15755,7 @@
    "id": "lachsbroetchen-mit-kraeuterquark",
    "name": "Lachsbrötchen mit Kräuterquark",
    "beschreibung": "Knuspriges Vollkornbrötchen mit Räucherlachs, frischem Schnittlauchquark und Gurke – fertig in fünf Minuten.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
     "fleisch",
@@ -15833,7 +15833,7 @@
    "id": "shakshuka-mit-rinderhack",
    "name": "Shakshuka mit Rinderhack",
    "beschreibung": "Orientalisch gewürzte Tomaten-Paprika-Sauce mit Rinderhack, in der zwei Eier sanft garen – dazu Vollkornbrot zum Dippen.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
     "fleisch",
@@ -15920,7 +15920,7 @@
    "id": "thunfisch-avocado-toast-mit-ei",
    "name": "Thunfisch-Avocado-Toast mit Ei",
    "beschreibung": "Vollkorntoast mit cremiger Thunfisch-Quark-Creme, Avocado und gekochtem Ei – mediterran, sättigend und blitzschnell.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
     "fleisch",
@@ -16004,7 +16004,7 @@
    "id": "fruehstuecks-burrito-mit-haehnchen",
    "name": "Frühstücks-Burrito mit Hähnchen",
    "beschreibung": "Mexikanischer Wrap mit Rührei, gebratenem Hähnchen, Kidneybohnen, Paprika und Salsa – ideal zum Mitnehmen.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
     "fleisch",
@@ -16093,7 +16093,7 @@
    "id": "teriyaki-haehnchen-bowl-mit-brokkoli",
    "name": "Teriyaki-Hähnchen-Bowl mit Brokkoli",
    "beschreibung": "Saftiges Hähnchen in Soja-Honig-Glasur mit Basmatireis, Brokkoli und Möhren – asiatisch und perfekt zum Vorkochen.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -16175,10 +16175,10 @@
    "status": "draft"
   },
   {
-   "id": "chili-con-carne-mit-reis-ohne-schwein",
-   "name": "Chili con Carne mit Reis",
+   "id": "chili-con-carne-mit-rinderhack-und-reis",
+   "name": "Chili con Carne mit Rinderhack und Reis",
    "beschreibung": "Kräftiges mexikanisches Chili mit magerem Rinderhack, Bohnen und Mais – ein Topf, der sich perfekt für mehrere Tage vorkochen lässt.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -16272,7 +16272,7 @@
    "id": "vollkornpasta-mit-thunfisch-und-tomaten",
    "name": "Vollkornpasta mit Thunfisch und Tomaten",
    "beschreibung": "Mediterrane Pasta mit Thunfisch, geschmorten Cherrytomaten, Zucchini, Rucola und Parmesan – schneller als jeder Lieferdienst.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -16361,7 +16361,7 @@
    "id": "orientalischer-couscous-salat-mit-haehnchen",
    "name": "Orientalischer Couscous-Salat mit Hähnchen",
    "beschreibung": "Frischer Couscous-Salat mit Kreuzkümmel-Hähnchen, Kichererbsen, Gurke, Paprika, Petersilie und Feta – kalt genauso gut wie warm.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -16454,7 +16454,7 @@
    "id": "putengeschnetzeltes-mit-champignons-und-kartoffeln",
    "name": "Putengeschnetzeltes mit Champignons und Kartoffeln",
    "beschreibung": "Deutsches Wohlfühlessen in leicht: zartes Putengeschnetzeltes in cremiger Champignonsauce mit Kartoffeln und grünen Bohnen.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -16548,7 +16548,7 @@
    "id": "ofenlachs-mit-brokkoli-und-suesskartoffel",
    "name": "Ofenlachs mit Brokkoli und Süßkartoffel",
    "beschreibung": "Lachsfilet mit Zitrone vom Blech, dazu geröstete Süßkartoffelspalten und Brokkoli – ein Blech, kaum Abwasch.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -16619,7 +16619,7 @@
    "id": "thai-garnelen-curry-mit-gemuese",
    "name": "Thai-Garnelen-Curry mit Gemüse",
    "beschreibung": "Mildes Kokos-Curry mit Garnelen, viel Gemüse, Ingwer und Limette auf etwas Basmatireis – asiatisch und in 18 Minuten fertig.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -16701,7 +16701,7 @@
    "id": "kabeljau-in-senfsauce-mit-spinat",
    "name": "Kabeljau in Senfsauce mit Spinat",
    "beschreibung": "Zarter Kabeljau in cremiger Senfsauce mit Salzkartoffeln und Rahmspinat – norddeutscher Klassiker, leicht gemacht.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -16787,7 +16787,7 @@
    "id": "lammfilet-mit-ofengemuese-und-tzatziki",
    "name": "Lammfilet mit Ofengemüse und Tzatziki",
    "beschreibung": "Rosa gebratenes Lammfilet auf mediterranem Ofengemüse mit Bulgur und frischem Skyr-Tzatziki.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -16884,7 +16884,7 @@
    "id": "rindersteak-auf-rucola-tomaten-salat",
    "name": "Rindersteak auf Rucola-Tomaten-Salat",
    "beschreibung": "Kurz gebratenes Hüftsteak in Streifen auf Rucola mit Cherrytomaten, Balsamico und Parmesan – leicht, mediterran und in 15 Minuten fertig.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -16962,7 +16962,7 @@
    "id": "putenroellchen-mit-frischkaese",
    "name": "Putenröllchen mit Frischkäse",
    "beschreibung": "Putenbrustscheiben mit Frischkäse und knackigen Gurkenstiften gerollt, dazu Reiswaffeln – der schnelle Snack fürs Büro.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
     "fleisch",
@@ -17022,83 +17022,10 @@
    "status": "draft"
   },
   {
-   "id": "thunfisch-dip-mit-gemuesesticks",
-   "name": "Thunfisch-Dip mit Gemüsesticks",
-   "beschreibung": "Cremiger Thunfisch-Quark-Dip mit Zitrone und Senf zu knackigen Möhren- und Paprikasticks.",
-   "kategorie": "ohne-schwein",
-   "abschnitt": "Snack",
-   "ernaehrungsformen": [
-    "fleisch",
-    "ohne-schwein"
-   ],
-   "zeit_min": 5,
-   "portionen": 1,
-   "tags": [
-    "Unter 10 Minuten",
-    "ohne Kochen",
-    "nach dem Training"
-   ],
-   "zutaten": [
-    {
-     "zutat_id": "thunfisch-dose-im-eigenen-saft-abgetropft",
-     "menge_g": 60,
-     "anzeige": "½ Dose, abgetropft (60 g)"
-    },
-    {
-     "zutat_id": "magerquark",
-     "menge_g": 80,
-     "anzeige": "80 g"
-    },
-    {
-     "zutat_id": "senf",
-     "menge_g": 5,
-     "anzeige": "1 TL (5 g)"
-    },
-    {
-     "zutat_id": "zitronensaft",
-     "menge_g": 5,
-     "anzeige": "1 TL (5 g)"
-    },
-    {
-     "zutat_id": "moehre",
-     "menge_g": 100,
-     "anzeige": "1 große Möhre (100 g)"
-    },
-    {
-     "zutat_id": "paprika-rot",
-     "menge_g": 100,
-     "anzeige": "½ Paprika (100 g)"
-    },
-    {
-     "zutat_id": "salz",
-     "menge_g": 0,
-     "anzeige": "1 Prise"
-    },
-    {
-     "zutat_id": "pfeffer",
-     "menge_g": 0,
-     "anzeige": "1 Prise"
-    }
-   ],
-   "zubereitung": [
-    "Zerdrücke den Thunfisch mit einer Gabel und verrühre ihn mit Magerquark, Senf und Zitronensaft.",
-    "Schmecke den Dip mit Salz und Pfeffer ab.",
-    "Schneide Möhre und Paprika in Sticks und tunke sie in den Dip."
-   ],
-   "tipp": "Der Dip hält sich abgedeckt 2 Tage im Kühlschrank.",
-   "naehrwerte_pro_portion": {
-    "kcal": 198,
-    "eiweiss_g": 26.9,
-    "kohlenhydrate_g": 16.9,
-    "fett_g": 1.7
-   },
-   "status": "draft"
-  },
-  {
    "id": "roastbeef-reiswaffeln-mit-meerrettichquark",
    "name": "Roastbeef-Reiswaffeln mit Meerrettichquark",
    "beschreibung": "Knusprige Reiswaffeln mit scharfem Meerrettichquark, zartem Roastbeef und Gurke.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
     "fleisch",
@@ -17160,7 +17087,7 @@
    "id": "frittata-muffins-mit-pute-und-spinat",
    "name": "Frittata-Muffins mit Pute und Spinat",
    "beschreibung": "Herzhafte Ei-Muffins mit Putenbrust, Spinat, Paprika und Gouda aus dem Ofen – warm oder kalt ein idealer Vorrats-Snack.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
     "fleisch",
@@ -17227,7 +17154,7 @@
    "id": "skyr-mit-beeren-und-mandeln",
    "name": "Skyr mit Beeren und Mandeln",
    "beschreibung": "Cremiger Skyr mit fruchtigen Beeren, einem Hauch Honig und gerösteten Mandeln – süß, frisch und eiweißreich.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
     "vegetarisch",
@@ -17281,7 +17208,7 @@
    "id": "herzhafte-protein-waffeln-mit-raeucherlachs",
    "name": "Herzhafte Protein-Waffeln mit Räucherlachs",
    "beschreibung": "Knusprige Haferwaffeln mit neutralem Whey, belegt mit Räucherlachs, Frischkäse und Gurke – ein Frühstück wie im Café.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
     "fleisch",
@@ -17374,7 +17301,7 @@
    "id": "american-protein-pancakes-mit-knuspriger-putenbrust",
    "name": "American Protein-Pancakes mit knuspriger Putenbrust",
    "beschreibung": "Fluffige Bananen-Vanille-Pancakes mit Beeren und kross gebratener Putenbrust – der süß-salzige Diner-Klassiker ohne Schwein.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
     "fleisch",
@@ -17452,7 +17379,7 @@
    "id": "protein-tassenbrot-mit-haehnchenbrust-und-avocado",
    "name": "Protein-Tassenbrot mit Hähnchenbrust und Avocado",
    "beschreibung": "Warmes Eiweißbrot aus der Mikrowelle in 2 Minuten, belegt mit Hähnchenbrust, Avocado und Tomaten.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
     "fleisch",
@@ -17535,7 +17462,7 @@
    "id": "bauernfruehstueck-mit-pute",
    "name": "Bauernfrühstück mit Pute",
    "beschreibung": "Herzhafte Bratkartoffeln mit Ei, Putenbrust und Zwiebeln aus einer Pfanne – deftig, sättigend und ganz ohne Speck.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
     "fleisch",
@@ -17623,7 +17550,7 @@
    "id": "raeucherforellen-brot-mit-huettenkaese-und-radieschen",
    "name": "Räucherforellen-Brot mit Hüttenkäse und Radieschen",
    "beschreibung": "Kräftiges Vollkornbrot mit cremigem Hüttenkäse, zarter Räucherforelle und knackigen Radieschen – norddeutsch frisch und in 5 Minuten fertig.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
     "fleisch",
@@ -17696,7 +17623,7 @@
    "id": "haehnchen-gyros-bowl-mit-reis-und-tzatziki",
    "name": "Hähnchen-Gyros-Bowl mit Reis und Tzatziki",
    "beschreibung": "Würzige Gyros-Streifen vom Hähnchen mit Reis, Tomaten-Gurken-Salat und frischem Skyr-Tzatziki – Griechenland in der Schüssel.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -17785,7 +17712,7 @@
    "id": "nasi-goreng-mit-garnelen",
    "name": "Nasi Goreng mit Garnelen",
    "beschreibung": "Indonesischer gebratener Reis mit Garnelen, Gemüse und Spiegelei – leicht scharf und ideal für Reis vom Vortag.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -17868,7 +17795,7 @@
    "id": "rinder-koefte-mit-kraeuter-bulgur-und-joghurtdip",
    "name": "Rinder-Köfte mit Kräuter-Bulgur und Joghurtdip",
    "beschreibung": "Saftige, mit Kreuzkümmel gewürzte Hackröllchen vom Rind auf Petersilien-Bulgur mit kühlem Skyr-Dip – orientalisches Meal-Prep-Essen.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -17976,7 +17903,7 @@
    "id": "lachs-spinat-pasta-in-zitronen-frischkaesesauce",
    "name": "Lachs-Spinat-Pasta in Zitronen-Frischkäsesauce",
    "beschreibung": "Vollkornpasta mit gebratenen Lachswürfeln und Blattspinat in einer leichten, cremigen Zitronensauce.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -18059,7 +17986,7 @@
    "id": "burrito-bowl-mit-putenhack-und-schwarzen-bohnen",
    "name": "Burrito-Bowl mit Putenhack und schwarzen Bohnen",
    "beschreibung": "Mexikanisch gewürztes Putenhack mit Reis, schwarzen Bohnen, Mais, Paprika, Salsa und Avocado – alles, was einen Burrito ausmacht, ohne Tortilla.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -18154,96 +18081,10 @@
    "status": "draft"
   },
   {
-   "id": "knoblauch-garnelen-mit-zucchini-spaghetti",
-   "name": "Knoblauch-Garnelen mit Zucchini-Spaghetti",
-   "beschreibung": "Scampi-Style-Garnelen in Tomaten-Knoblauchsauce auf einer Mischung aus Zucchininudeln und Vollkornspaghetti – leicht und trotzdem richtig Pasta-Gefühl.",
-   "kategorie": "ohne-schwein",
-   "abschnitt": "Abendessen",
-   "ernaehrungsformen": [
-    "fleisch",
-    "ohne-schwein"
-   ],
-   "zeit_min": 18,
-   "portionen": 1,
-   "tags": [],
-   "zutaten": [
-    {
-     "zutat_id": "garnelen-tk-roh-geschaelt",
-     "menge_g": 200,
-     "anzeige": "200 g"
-    },
-    {
-     "zutat_id": "zucchini",
-     "menge_g": 300,
-     "anzeige": "1 große Zucchini (300 g)"
-    },
-    {
-     "zutat_id": "vollkornnudeln",
-     "menge_g": 50,
-     "anzeige": "50 g Spaghetti"
-    },
-    {
-     "zutat_id": "gehackte-tomaten-dose",
-     "menge_g": 200,
-     "anzeige": "½ Dose (200 g)"
-    },
-    {
-     "zutat_id": "knoblauch",
-     "menge_g": 6,
-     "anzeige": "2 Zehen (6 g)"
-    },
-    {
-     "zutat_id": "olivenoel",
-     "menge_g": 10,
-     "anzeige": "2 TL (10 g)"
-    },
-    {
-     "zutat_id": "parmesan",
-     "menge_g": 15,
-     "anzeige": "1½ EL gerieben (15 g)"
-    },
-    {
-     "zutat_id": "petersilie-frisch",
-     "menge_g": 5,
-     "anzeige": "1 EL gehackt (5 g)"
-    },
-    {
-     "zutat_id": "chiliflocken",
-     "menge_g": 0,
-     "anzeige": "1 Prise"
-    },
-    {
-     "zutat_id": "salz",
-     "menge_g": 0,
-     "anzeige": "1 Prise"
-    },
-    {
-     "zutat_id": "pfeffer",
-     "menge_g": 0,
-     "anzeige": "1 Prise"
-    }
-   ],
-   "zubereitung": [
-    "Koche die Spaghetti in Salzwasser nach Packungsangabe bissfest (ca. 10 Minuten).",
-    "Schneide die Zucchini mit einem Spiralschneider oder Sparschäler in dünne Nudeln.",
-    "Brate Garnelen und gehackten Knoblauch im Olivenöl bei mittlerer bis hoher Hitze 3 Minuten, bis die Garnelen rosa sind.",
-    "Gib die Tomaten und Chiliflocken dazu und lass die Sauce 3 Minuten köcheln; mit Salz und Pfeffer abschmecken.",
-    "Schwenke Zucchininudeln und Spaghetti 1–2 Minuten in der Sauce, bis die Zucchini gerade weich ist, und serviere mit Parmesan und Petersilie."
-   ],
-   "tipp": "Die Zucchininudeln nur kurz erhitzen, sonst werden sie wässrig. Fertige Zucchini-Spaghetti gibt es auch im Kühlregal.",
-   "naehrwerte_pro_portion": {
-    "kcal": 576,
-    "eiweiss_g": 51.5,
-    "kohlenhydrate_g": 47.6,
-    "fett_g": 18.7
-   },
-   "status": "draft"
-  },
-  {
    "id": "rindfleisch-brokkoli-wok-mit-ingwer",
    "name": "Rindfleisch-Brokkoli-Wok mit Ingwer",
    "beschreibung": "Zarte Rindfleischstreifen und viel Brokkoli in glänzender Soja-Ingwer-Sauce mit einer kleinen Portion Reis – der Asia-Imbiss-Klassiker, nur leichter.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -18326,7 +18167,7 @@
    "id": "gefuellte-paprika-mit-putenhack-und-feta",
    "name": "Gefüllte Paprika mit Putenhack und Feta",
    "beschreibung": "Ofenpaprika, gefüllt mit würzigem Putenhack, Couscous und Feta, in Tomatensauce gegart – mediterranes Wohlfühlessen.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -18419,7 +18260,7 @@
    "id": "seelachs-mit-gurken-dill-salat-und-petersilienkartoffeln",
    "name": "Seelachs mit Gurken-Dill-Salat und Petersilienkartoffeln",
    "beschreibung": "Goldbraun gebratenes Seelachsfilet mit Kartoffeln und einem frischen Gurkensalat mit Joghurt-Dill-Dressing – ein leichter deutscher Abendteller.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -18505,7 +18346,7 @@
    "id": "fajita-salat-mit-haehnchen-und-tortilla-chips",
    "name": "Fajita-Salat mit Hähnchen und Tortilla-Chips",
    "beschreibung": "Knackiger Romanasalat mit scharf gebratenen Hähnchen- und Paprikastreifen, Bohnen, Mais, Avocado und selbst gebackenen Tortilla-Chips.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
     "fleisch",
@@ -18605,64 +18446,10 @@
    "status": "draft"
   },
   {
-   "id": "schoko-proteinpudding-ohne-schwein",
-   "name": "Schoko-Proteinpudding",
-   "beschreibung": "Selbst gekochter Schokopudding mit Whey – cremig, warm oder kalt zu genießen und eine echte Alternative zum Supermarkt-Pudding.",
-   "kategorie": "ohne-schwein",
-   "abschnitt": "Snack",
-   "ernaehrungsformen": [
-    "vegetarisch",
-    "fleisch",
-    "ohne-schwein"
-   ],
-   "zeit_min": 10,
-   "portionen": 1,
-   "tags": [
-    "Unter 10 Minuten",
-    "nach dem Training"
-   ],
-   "zutaten": [
-    {
-     "zutat_id": "milch-1-5",
-     "menge_g": 250,
-     "anzeige": "250 ml"
-    },
-    {
-     "zutat_id": "whey-proteinpulver-schoko",
-     "menge_g": 25,
-     "anzeige": "1 Messlöffel (25 g)"
-    },
-    {
-     "zutat_id": "speisestaerke",
-     "menge_g": 15,
-     "anzeige": "1½ EL (15 g)"
-    },
-    {
-     "zutat_id": "kakaopulver-stark-entoelt",
-     "menge_g": 5,
-     "anzeige": "1 TL (5 g)"
-    }
-   ],
-   "zubereitung": [
-    "Verrühre 50 ml der Milch mit Speisestärke und Kakao klümpchenfrei.",
-    "Bringe die restliche Milch in einem kleinen Topf zum Kochen, rühre die Stärkemischung ein und lass alles unter Rühren 1 Minute köcheln, bis der Pudding eindickt.",
-    "Nimm den Topf vom Herd, lass ihn 2 Minuten abkühlen und rühre dann das Proteinpulver mit dem Schneebesen glatt ein.",
-    "Fülle den Pudding in ein Glas und iss ihn warm oder lass ihn mindestens 30 Minuten im Kühlschrank fest werden."
-   ],
-   "tipp": "Das Pulver erst nach dem Kochen einrühren, sonst flockt es aus. Ohne Pulver: 1 TL Honig mitkochen und 100 g Skyr unter den abgekühlten Pudding rühren.",
-   "naehrwerte_pro_portion": {
-    "kcal": 281,
-    "eiweiss_g": 28.3,
-    "kohlenhydrate_g": 27.8,
-    "fett_g": 5.7
-   },
-   "status": "draft"
-  },
-  {
    "id": "zimt-casein-quarkcreme-mit-walnuessen",
    "name": "Zimt-Casein-Quarkcreme mit Walnüssen",
    "beschreibung": "Dicke Vanille-Quarkcreme mit Casein, Zimt und Walnüssen – sättigt lange und ist ideal als Spätsnack am Abend.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
     "vegetarisch",
@@ -18717,144 +18504,10 @@
    "status": "draft"
   },
   {
-   "id": "erdnuss-vanille-energy-balls",
-   "name": "Erdnuss-Vanille-Energy-Balls",
-   "beschreibung": "Kleine Kugeln aus Haferflocken, Datteln, Erdnussmus und Vanille-Whey – perfekt für die Sporttasche.",
-   "kategorie": "ohne-schwein",
-   "abschnitt": "Snack",
-   "ernaehrungsformen": [
-    "vegetarisch",
-    "fleisch",
-    "ohne-schwein"
-   ],
-   "zeit_min": 10,
-   "portionen": 1,
-   "tags": [
-    "Unter 10 Minuten",
-    "vor dem Training",
-    "Meal-Prep"
-   ],
-   "zutaten": [
-    {
-     "zutat_id": "haferflocken",
-     "menge_g": 20,
-     "anzeige": "2 EL (20 g)"
-    },
-    {
-     "zutat_id": "whey-proteinpulver-vanille",
-     "menge_g": 15,
-     "anzeige": "½ Messlöffel (15 g)"
-    },
-    {
-     "zutat_id": "erdnussmus",
-     "menge_g": 10,
-     "anzeige": "2 TL (10 g)"
-    },
-    {
-     "zutat_id": "datteln-getrocknet-entsteint",
-     "menge_g": 15,
-     "anzeige": "1–2 Datteln (15 g)"
-    },
-    {
-     "zutat_id": "milch-1-5",
-     "menge_g": 10,
-     "anzeige": "2 TL (10 ml)"
-    }
-   ],
-   "zubereitung": [
-    "Hacke die Datteln sehr fein oder zerkleinere sie im Blitzhacker.",
-    "Verknete Datteln, Haferflocken, Proteinpulver und Erdnussmus mit so viel Milch, dass eine formbare, nicht klebrige Masse entsteht.",
-    "Forme mit feuchten Händen 3 Kugeln daraus.",
-    "Lass die Energy-Balls 10 Minuten im Kühlschrank fest werden oder iss sie sofort."
-   ],
-   "tipp": "Gleich die 5-fache Menge zubereiten – die Kugeln halten sich luftdicht verpackt eine Woche im Kühlschrank. Ohne Pulver: Haferflocken auf 30 g erhöhen; dann sinkt das Eiweiß aber deutlich.",
-   "naehrwerte_pro_portion": {
-    "kcal": 239,
-    "eiweiss_g": 17.3,
-    "kohlenhydrate_g": 24.4,
-    "fett_g": 7.4
-   },
-   "status": "draft"
-  },
-  {
-   "id": "haehnchen-satespiesse-mit-erdnuss-skyr-dip",
-   "name": "Hähnchen-Satéspieße mit Erdnuss-Skyr-Dip",
-   "beschreibung": "Kleine marinierte Hähnchenspieße aus der Pfanne mit einem cremigen Erdnuss-Dip und Gurkensticks – asiatisches Fingerfood.",
-   "kategorie": "ohne-schwein",
-   "abschnitt": "Snack",
-   "ernaehrungsformen": [
-    "fleisch",
-    "ohne-schwein"
-   ],
-   "zeit_min": 20,
-   "portionen": 1,
-   "tags": [
-    "Meal-Prep",
-    "nach dem Training"
-   ],
-   "zutaten": [
-    {
-     "zutat_id": "haehnchenbrustfilet",
-     "menge_g": 100,
-     "anzeige": "100 g"
-    },
-    {
-     "zutat_id": "sojasauce",
-     "menge_g": 10,
-     "anzeige": "2 TL (10 g)"
-    },
-    {
-     "zutat_id": "currypulver",
-     "menge_g": 0,
-     "anzeige": "½ TL"
-    },
-    {
-     "zutat_id": "rapsoel",
-     "menge_g": 3,
-     "anzeige": "½ TL (3 g)"
-    },
-    {
-     "zutat_id": "erdnussmus",
-     "menge_g": 8,
-     "anzeige": "1½ TL (8 g)"
-    },
-    {
-     "zutat_id": "skyr-natur",
-     "menge_g": 50,
-     "anzeige": "2 EL (50 g)"
-    },
-    {
-     "zutat_id": "limettensaft",
-     "menge_g": 5,
-     "anzeige": "1 TL (5 g)"
-    },
-    {
-     "zutat_id": "gurke",
-     "menge_g": 100,
-     "anzeige": "1/3 Gurke (100 g)"
-    }
-   ],
-   "zubereitung": [
-    "Schneide das Hähnchen in dünne, lange Streifen und mariniere es mit der Hälfte der Sojasauce und dem Currypulver 5 Minuten.",
-    "Stecke die Streifen wellenförmig auf 3–4 kleine Holzspieße.",
-    "Brate die Spieße im Rapsöl in einer Pfanne bei mittlerer bis hoher Hitze 3 Minuten pro Seite, bis sie durchgegart sind.",
-    "Verrühre Erdnussmus, Skyr, Limettensaft und die restliche Sojasauce zu einem glatten Dip.",
-    "Schneide die Gurke in Sticks und serviere sie mit Spießen und Dip."
-   ],
-   "tipp": "Die Spieße schmecken auch kalt – ideal für die Lunchbox. Für mehr Schärfe 1 Prise Chiliflocken in den Dip rühren.",
-   "naehrwerte_pro_portion": {
-    "kcal": 231,
-    "eiweiss_g": 32.5,
-    "kohlenhydrate_g": 5.4,
-    "fett_g": 8.6
-   },
-   "status": "draft"
-  },
-  {
    "id": "gurkenschiffchen-mit-krabben-skyr",
    "name": "Gurkenschiffchen mit Krabben-Skyr",
    "beschreibung": "Ausgehöhlte Gurkenhälften gefüllt mit Nordseekrabben in Dill-Skyr, dazu ein Vollkorn-Knäckebrot – frisch, leicht und eiweißreich.",
-   "kategorie": "ohne-schwein",
+   "kategorie": "fleisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
     "fleisch",
@@ -28870,6 +28523,1397 @@
    },
    "status": "draft",
    "kosten_eur_pro_portion": 1.39
+  },
+  {
+   "id": "spinat-feta-omelett-mit-tomatensalat",
+   "name": "Spinat-Feta-Omelett mit Tomatensalat",
+   "beschreibung": "Fluffiges Omelett aus drei Eiern mit Babyspinat und Feta, dazu ein frischer Tomatensalat – herzhaft, sättigend und fast ohne Kohlenhydrate.",
+   "kategorie": "low-carb",
+   "abschnitt": "Frühstück",
+   "ernaehrungsformen": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 12,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "ei",
+     "menge_g": 165,
+     "anzeige": "3 Eier (M)"
+    },
+    {
+     "zutat_id": "babyspinat",
+     "menge_g": 60,
+     "anzeige": "2 Handvoll (60 g)"
+    },
+    {
+     "zutat_id": "feta",
+     "menge_g": 30,
+     "anzeige": "30 g"
+    },
+    {
+     "zutat_id": "cherrytomaten",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "zutat_id": "olivenoel",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 ml)"
+    },
+    {
+     "zutat_id": "schnittlauch-frisch",
+     "menge_g": 5,
+     "anzeige": "1 EL, in Röllchen"
+    },
+    {
+     "zutat_id": "salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "zutat_id": "pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Verquirle die Eier mit Salz und Pfeffer in einer Schüssel.",
+    "Erhitze das Öl in einer beschichteten Pfanne und lass den Spinat darin 1 Minute zusammenfallen.",
+    "Gieß die Eier darüber, zerbrösle den Feta darauf und lass das Omelett bei mittlerer Hitze mit Deckel 4–5 Minuten stocken.",
+    "Halbiere die Tomaten, würze sie mit Salz, Pfeffer und Schnittlauch und serviere sie neben dem zusammengeklappten Omelett."
+   ],
+   "tipp": "Wer mehr Eiweiß braucht, ersetzt ein Ei durch 100 g Eiklar – das spart Fett und bringt zusätzlich rund 11 g Eiweiß.",
+   "naehrwerte_pro_portion": {
+    "kcal": 402,
+    "eiweiss_g": 29.0,
+    "kohlenhydrate_g": 8.0,
+    "fett_g": 27.7
+   },
+   "status": "draft"
+  },
+  {
+   "id": "tofu-scramble-mit-champignons-und-avocado",
+   "name": "Tofu-Scramble mit Champignons und Avocado",
+   "beschreibung": "Würziges Rührei aus Tofu mit gebratenen Champignons, Spinat und Avocado – rein pflanzlich und mit über 30 g Eiweiß.",
+   "kategorie": "low-carb",
+   "abschnitt": "Frühstück",
+   "ernaehrungsformen": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 12,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "tofu-natur",
+     "menge_g": 200,
+     "anzeige": "200 g"
+    },
+    {
+     "zutat_id": "champignons",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "zutat_id": "babyspinat",
+     "menge_g": 50,
+     "anzeige": "1 Handvoll (50 g)"
+    },
+    {
+     "zutat_id": "avocado",
+     "menge_g": 60,
+     "anzeige": "½ kleine Avocado (60 g)"
+    },
+    {
+     "zutat_id": "hefeflocken",
+     "menge_g": 5,
+     "anzeige": "1 EL (5 g)"
+    },
+    {
+     "zutat_id": "rapsoel",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 ml)"
+    },
+    {
+     "zutat_id": "kurkuma",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "zutat_id": "salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "zutat_id": "pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Schneide die Champignons in Scheiben und brate sie im Öl 3–4 Minuten goldbraun an.",
+    "Zerbrösle den Tofu mit den Fingern in die Pfanne, bestreue ihn mit Kurkuma und Hefeflocken und brate alles 3 Minuten unter Rühren.",
+    "Heb den Spinat unter, bis er zusammenfällt, und schmecke mit Salz und Pfeffer ab.",
+    "Richte das Scramble an und lege die Avocado in Scheiben dazu."
+   ],
+   "tipp": "Eine Prise Kala Namak (schwefliges Salz) statt normalem Salz gibt dem Tofu einen typischen Ei-Geschmack.",
+   "naehrwerte_pro_portion": {
+    "kcal": 452,
+    "eiweiss_g": 35.6,
+    "kohlenhydrate_g": 6.5,
+    "fett_g": 29.7
+   },
+   "status": "draft"
+  },
+  {
+   "id": "skyr-bowl-mit-himbeeren-walnuessen-und-leinsamen",
+   "name": "Skyr-Bowl mit Himbeeren, Walnüssen und Leinsamen",
+   "beschreibung": "Cremiger Skyr mit Himbeeren, knackigen Walnüssen und Leinsamen – ein schnelles Eiweißfrühstück ohne Haferflocken und ohne Zuckerzusatz.",
+   "kategorie": "low-carb",
+   "abschnitt": "Frühstück",
+   "ernaehrungsformen": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 5,
+   "portionen": 1,
+   "tags": [
+    "Unter 10 Minuten",
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "skyr-natur",
+     "menge_g": 250,
+     "anzeige": "250 g"
+    },
+    {
+     "zutat_id": "himbeeren-tk",
+     "menge_g": 100,
+     "anzeige": "100 g, aufgetaut"
+    },
+    {
+     "zutat_id": "walnuesse",
+     "menge_g": 15,
+     "anzeige": "1 kleine Handvoll (15 g)"
+    },
+    {
+     "zutat_id": "leinsamen-geschrotet",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "zutat_id": "zimt",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Rühre den Skyr mit Zimt glatt und gib ihn in eine Schale.",
+    "Verteile die aufgetauten Himbeeren darauf und drücke einige mit der Gabel leicht an, damit sich Saft bildet.",
+    "Hacke die Walnüsse grob und streue sie zusammen mit den Leinsamen darüber."
+   ],
+   "tipp": "Gefrorene Himbeeren am Vorabend in den Kühlschrank stellen – morgens sind sie aufgetaut und saftig.",
+   "naehrwerte_pro_portion": {
+    "kcal": 346,
+    "eiweiss_g": 32.9,
+    "kohlenhydrate_g": 16.0,
+    "fett_g": 14.8
+   },
+   "status": "draft"
+  },
+  {
+   "id": "raeucherlachs-ruehrei-mit-gurke-und-dill",
+   "name": "Räucherlachs-Rührei mit Gurke und Dill",
+   "beschreibung": "Cremiges Rührei mit Räucherlachs, frischem Dill und knackigen Gurkenscheiben – ein Wochenendfrühstück mit viel Eiweiß und gesunden Fetten.",
+   "kategorie": "low-carb",
+   "abschnitt": "Frühstück",
+   "ernaehrungsformen": [
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 10,
+   "portionen": 1,
+   "tags": [
+    "Unter 10 Minuten",
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "ei",
+     "menge_g": 165,
+     "anzeige": "3 Eier (M)"
+    },
+    {
+     "zutat_id": "eiklar",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "zutat_id": "raeucherlachs",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "zutat_id": "gurke",
+     "menge_g": 150,
+     "anzeige": "½ Gurke (150 g)"
+    },
+    {
+     "zutat_id": "dill-frisch",
+     "menge_g": 5,
+     "anzeige": "1 EL, gehackt"
+    },
+    {
+     "zutat_id": "rapsoel",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 ml)"
+    },
+    {
+     "zutat_id": "pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Verquirle Eier und Eiklar mit Pfeffer, Salz brauchst du wegen des Lachses kaum.",
+    "Erhitze das Öl bei niedriger Hitze und schiebe die Eimasse mit einem Pfannenwender langsam zusammen, bis sie gerade so stockt.",
+    "Zupfe den Lachs in Streifen und heb ihn mit dem Dill unter das noch cremige Rührei.",
+    "Schneide die Gurke in Scheiben und serviere sie dazu."
+   ],
+   "tipp": "Nimm die Pfanne vom Herd, solange das Rührei noch leicht feucht glänzt – es gart auf dem Teller nach.",
+   "naehrwerte_pro_portion": {
+    "kcal": 429,
+    "eiweiss_g": 41.6,
+    "kohlenhydrate_g": 4.5,
+    "fett_g": 26.8
+   },
+   "status": "draft"
+  },
+  {
+   "id": "kokos-chia-pudding-mit-beeren-und-sojaskyr",
+   "name": "Kokos-Chia-Pudding mit Beeren und Sojaskyr",
+   "beschreibung": "Über Nacht gequollener Chia-Pudding mit Kokos, Sojaskyr und Vanille-Protein, getoppt mit Beeren – vegan, kohlenhydratarm und morgens sofort fertig.",
+   "kategorie": "low-carb",
+   "abschnitt": "Frühstück",
+   "ernaehrungsformen": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 5,
+   "portionen": 1,
+   "tags": [
+    "Unter 10 Minuten",
+    "Low Carb",
+    "Vorbereiten"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "chiasamen",
+     "menge_g": 30,
+     "anzeige": "3 EL (30 g)"
+    },
+    {
+     "zutat_id": "sojadrink-ungesuesst",
+     "menge_g": 200,
+     "anzeige": "200 ml"
+    },
+    {
+     "zutat_id": "sojaskyr-natur",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "zutat_id": "veganes-proteinpulver-vanille",
+     "menge_g": 20,
+     "anzeige": "1 Messlöffel (20 g)"
+    },
+    {
+     "zutat_id": "beerenmischung-tk",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "zutat_id": "kokosraspeln",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre Sojadrink und Proteinpulver klumpenfrei und rühre die Chiasamen unter.",
+    "Rühr nach 5 Minuten noch einmal um, damit nichts verklumpt, und stell den Pudding abgedeckt über Nacht in den Kühlschrank.",
+    "Gib morgens den Sojaskyr darauf, verteile die Beeren darüber und bestreue alles mit Kokosraspeln."
+   ],
+   "tipp": "Ohne Pulver: Nimm 150 g Sojaskyr statt 100 g – der Pudding wird etwas weniger süß, bleibt aber eiweißreich.",
+   "naehrwerte_pro_portion": {
+    "kcal": 426,
+    "eiweiss_g": 35.7,
+    "kohlenhydrate_g": 14.8,
+    "fett_g": 19.7
+   },
+   "status": "draft"
+  },
+  {
+   "id": "haehnchen-brokkoli-pfanne-mit-cashews",
+   "name": "Hähnchen-Brokkoli-Pfanne mit Cashews",
+   "beschreibung": "Saftiges Hähnchen mit viel Brokkoli und Paprika in Soja-Ingwer-Sauce, getoppt mit gerösteten Cashews – Asia-Pfanne ganz ohne Reis.",
+   "kategorie": "low-carb",
+   "abschnitt": "Mittagessen",
+   "ernaehrungsformen": [
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 20,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "haehnchenbrustfilet",
+     "menge_g": 180,
+     "anzeige": "180 g"
+    },
+    {
+     "zutat_id": "brokkoli",
+     "menge_g": 250,
+     "anzeige": "1 kleiner Kopf (250 g)"
+    },
+    {
+     "zutat_id": "paprika-rot",
+     "menge_g": 80,
+     "anzeige": "½ Paprika (80 g)"
+    },
+    {
+     "zutat_id": "cashewkerne",
+     "menge_g": 15,
+     "anzeige": "1 kleine Handvoll (15 g)"
+    },
+    {
+     "zutat_id": "sojasauce",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 ml)"
+    },
+    {
+     "zutat_id": "ingwer",
+     "menge_g": 5,
+     "anzeige": "1 daumennagelgroßes Stück"
+    },
+    {
+     "zutat_id": "knoblauch",
+     "menge_g": 3,
+     "anzeige": "1 Zehe"
+    },
+    {
+     "zutat_id": "rapsoel",
+     "menge_g": 8,
+     "anzeige": "2 TL (8 ml)"
+    }
+   ],
+   "zubereitung": [
+    "Röste die Cashews in einer trockenen Pfanne goldbraun und stell sie beiseite.",
+    "Schneide das Hähnchen in Streifen, den Brokkoli in kleine Röschen und die Paprika in Streifen. Reibe Ingwer und Knoblauch fein.",
+    "Brate das Hähnchen im Öl bei hoher Hitze 4–5 Minuten rundum an und nimm es heraus.",
+    "Gib Brokkoli, Paprika, Ingwer und Knoblauch mit 3 EL Wasser in die Pfanne und gare alles mit Deckel 4 Minuten bissfest.",
+    "Gib Hähnchen und Sojasauce zurück, schwenke alles 1 Minute durch und streue die Cashews darüber."
+   ],
+   "tipp": "Wer mehr Volumen möchte, gibt 150 g Blumenkohl, fein gehackt wie Reis, mit in die Pfanne – das sättigt ohne viele Kohlenhydrate.",
+   "naehrwerte_pro_portion": {
+    "kcal": 477,
+    "eiweiss_g": 56.8,
+    "kohlenhydrate_g": 18.7,
+    "fett_g": 17.8
+   },
+   "status": "draft"
+  },
+  {
+   "id": "zucchini-lasagne-mit-huettenkaese-und-spinat",
+   "name": "Zucchini-Lasagne mit Hüttenkäse und Spinat",
+   "beschreibung": "Lasagne, bei der Zucchinischeiben die Nudelplatten ersetzen: mit Tomatensauce, Hüttenkäse, Spinat und überbackenem Mozzarella.",
+   "kategorie": "low-carb",
+   "abschnitt": "Mittagessen",
+   "ernaehrungsformen": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 40,
+   "portionen": 1,
+   "tags": [
+    "Low Carb",
+    "Vorbereiten"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "zucchini",
+     "menge_g": 250,
+     "anzeige": "1 große Zucchini (250 g)"
+    },
+    {
+     "zutat_id": "passierte-tomaten",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "zutat_id": "huettenkaese",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "zutat_id": "babyspinat",
+     "menge_g": 50,
+     "anzeige": "1 Handvoll (50 g)"
+    },
+    {
+     "zutat_id": "mozzarella-light",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "zutat_id": "knoblauch",
+     "menge_g": 3,
+     "anzeige": "1 Zehe"
+    },
+    {
+     "zutat_id": "oregano-getrocknet",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "zutat_id": "salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "zutat_id": "pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Heize den Ofen auf 200 °C Ober-/Unterhitze vor. Schneide die Zucchini längs in dünne Scheiben, salze sie und lass sie 10 Minuten Wasser ziehen, dann trocken tupfen.",
+    "Würze die passierten Tomaten mit gepresstem Knoblauch, Oregano, Salz und Pfeffer.",
+    "Schichte in einer kleinen Auflaufform Zucchini, Tomatensauce, Spinat und Hüttenkäse zweimal übereinander und schließe mit Zucchini und Sauce ab.",
+    "Belege alles mit Mozzarella in Stücken und backe die Lasagne 25 Minuten, bis sie goldbraun ist."
+   ],
+   "tipp": "Das Salzen der Zucchini ist wichtig – sonst wird die Lasagne wässrig. Lässt sich gut für den nächsten Tag vorbereiten.",
+   "naehrwerte_pro_portion": {
+    "kcal": 333,
+    "eiweiss_g": 36.5,
+    "kohlenhydrate_g": 15.3,
+    "fett_g": 13.3
+   },
+   "status": "draft"
+  },
+  {
+   "id": "knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing",
+   "name": "Knusper-Tofu auf Asia-Krautsalat mit Erdnussdressing",
+   "beschreibung": "Knusprig gebratener Tofu auf einem knackigen Salat aus Weißkohl, Rotkohl und Gurke mit cremigem Erdnuss-Limetten-Dressing.",
+   "kategorie": "low-carb",
+   "abschnitt": "Mittagessen",
+   "ernaehrungsformen": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 20,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "tofu-natur",
+     "menge_g": 200,
+     "anzeige": "200 g"
+    },
+    {
+     "zutat_id": "weisskohl",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "zutat_id": "rotkohl",
+     "menge_g": 50,
+     "anzeige": "50 g"
+    },
+    {
+     "zutat_id": "gurke",
+     "menge_g": 100,
+     "anzeige": "1/3 Gurke (100 g)"
+    },
+    {
+     "zutat_id": "erdnussmus",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 g)"
+    },
+    {
+     "zutat_id": "sojasauce",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 ml)"
+    },
+    {
+     "zutat_id": "limettensaft",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 ml)"
+    },
+    {
+     "zutat_id": "sesamoel",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 ml)"
+    },
+    {
+     "zutat_id": "koriander-frisch",
+     "menge_g": 5,
+     "anzeige": "1 EL, gehackt"
+    }
+   ],
+   "zubereitung": [
+    "Drücke den Tofu mit Küchenpapier trocken, schneide ihn in Würfel und brate ihn im Sesamöl 8 Minuten rundum knusprig.",
+    "Hobel Weiß- und Rotkohl in feine Streifen, schneide die Gurke in Stifte und knete den Kohl mit einer Prise Salz kurz durch.",
+    "Verrühre Erdnussmus, Sojasauce, Limettensaft und 2 EL warmes Wasser zu einem glatten Dressing.",
+    "Mische Salat und Dressing, verteile den Tofu darauf und bestreue alles mit Koriander."
+   ],
+   "tipp": "Der Krautsalat hält sich ohne Tofu 2 Tage im Kühlschrank und schmeckt am zweiten Tag sogar noch besser.",
+   "naehrwerte_pro_portion": {
+    "kcal": 461,
+    "eiweiss_g": 34.0,
+    "kohlenhydrate_g": 15.6,
+    "fett_g": 28.2
+   },
+   "status": "draft"
+  },
+  {
+   "id": "puten-caesar-salat-mit-parmesan-skyr-dressing",
+   "name": "Puten-Caesar-Salat mit Parmesan-Skyr-Dressing",
+   "beschreibung": "Der Klassiker ohne Croûtons und schwere Sauce: gebratene Putenbrust auf knackigem Romanasalat mit einem cremigen Dressing aus Skyr, Parmesan und Zitrone.",
+   "kategorie": "low-carb",
+   "abschnitt": "Mittagessen",
+   "ernaehrungsformen": [
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 15,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "putenbrustfilet",
+     "menge_g": 180,
+     "anzeige": "180 g"
+    },
+    {
+     "zutat_id": "romanasalat",
+     "menge_g": 150,
+     "anzeige": "1 kleiner Kopf (150 g)"
+    },
+    {
+     "zutat_id": "cherrytomaten",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "zutat_id": "skyr-natur",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "zutat_id": "parmesan",
+     "menge_g": 15,
+     "anzeige": "15 g, gerieben"
+    },
+    {
+     "zutat_id": "zitronensaft",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 ml)"
+    },
+    {
+     "zutat_id": "senf",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "zutat_id": "knoblauch",
+     "menge_g": 2,
+     "anzeige": "½ Zehe"
+    },
+    {
+     "zutat_id": "olivenoel",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 ml)"
+    }
+   ],
+   "zubereitung": [
+    "Brate die Putenbrust im Öl bei mittlerer Hitze 5–6 Minuten pro Seite, salze und pfeffere sie und lass sie kurz ruhen.",
+    "Verrühre Skyr, die Hälfte des Parmesans, Zitronensaft, Senf und gepressten Knoblauch zu einem Dressing, eventuell mit 1 EL Wasser verdünnen.",
+    "Zupfe den Salat in Stücke, halbiere die Tomaten und mische beides mit dem Dressing.",
+    "Schneide die Pute in Streifen, lege sie auf den Salat und streue den restlichen Parmesan darüber."
+   ],
+   "tipp": "Für unterwegs Dressing separat einpacken und erst kurz vor dem Essen untermischen.",
+   "naehrwerte_pro_portion": {
+    "kcal": 402,
+    "eiweiss_g": 60.5,
+    "kohlenhydrate_g": 10.9,
+    "fett_g": 12.1
+   },
+   "status": "draft"
+  },
+  {
+   "id": "senfeier-mit-brokkoli",
+   "name": "Senfeier mit Brokkoli",
+   "beschreibung": "Der norddeutsche Klassiker in Low-Carb-Version: wachsweiche Eier in einer leichten Senfsauce, dazu Brokkoli statt Kartoffeln.",
+   "kategorie": "low-carb",
+   "abschnitt": "Mittagessen",
+   "ernaehrungsformen": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 20,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "ei",
+     "menge_g": 220,
+     "anzeige": "4 Eier (M)"
+    },
+    {
+     "zutat_id": "milch-1-5",
+     "menge_g": 100,
+     "anzeige": "100 ml"
+    },
+    {
+     "zutat_id": "senf",
+     "menge_g": 20,
+     "anzeige": "1 EL (20 g)"
+    },
+    {
+     "zutat_id": "speisestaerke",
+     "menge_g": 4,
+     "anzeige": "1 TL (4 g)"
+    },
+    {
+     "zutat_id": "brokkoli",
+     "menge_g": 250,
+     "anzeige": "1 kleiner Kopf (250 g)"
+    },
+    {
+     "zutat_id": "gemuesebruehe-zubereitet",
+     "menge_g": 100,
+     "anzeige": "100 ml"
+    },
+    {
+     "zutat_id": "dill-frisch",
+     "menge_g": 3,
+     "anzeige": "1 TL, gehackt"
+    },
+    {
+     "zutat_id": "salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "zutat_id": "pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Koche die Eier 7–8 Minuten wachsweich, schrecke sie kalt ab und pelle sie.",
+    "Gare den Brokkoli in Röschen in wenig Salzwasser 5 Minuten bissfest.",
+    "Bring Brühe und Milch zum Köcheln, rühre die Stärke mit 1 EL kaltem Wasser an und binde damit die Sauce.",
+    "Rühre den Senf ein, schmecke mit Salz, Pfeffer und Dill ab und lass die Sauce nicht mehr kochen.",
+    "Halbiere die Eier, lege sie in die Sauce und serviere den Brokkoli dazu."
+   ],
+   "tipp": "Für eine noch leichtere Sauce die Milch durch Brühe ersetzen und zum Schluss 2 EL Skyr unterrühren.",
+   "naehrwerte_pro_portion": {
+    "kcal": 469,
+    "eiweiss_g": 42.0,
+    "kohlenhydrate_g": 17.9,
+    "fett_g": 23.5
+   },
+   "status": "draft"
+  },
+  {
+   "id": "rinderhack-zucchini-pfanne-mit-feta",
+   "name": "Rinderhack-Zucchini-Pfanne mit Feta",
+   "beschreibung": "Würziges Rinderhack mit Zucchini, Paprika und Tomaten aus einer Pfanne, mit zerbröseltem Feta – sättigend, schnell und ohne Beilage.",
+   "kategorie": "low-carb",
+   "abschnitt": "Abendessen",
+   "ernaehrungsformen": [
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 20,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "rinderhackfleisch-5-fett",
+     "menge_g": 180,
+     "anzeige": "180 g"
+    },
+    {
+     "zutat_id": "zucchini",
+     "menge_g": 250,
+     "anzeige": "1 große Zucchini (250 g)"
+    },
+    {
+     "zutat_id": "paprika-rot",
+     "menge_g": 100,
+     "anzeige": "½ Paprika (100 g)"
+    },
+    {
+     "zutat_id": "zwiebel",
+     "menge_g": 30,
+     "anzeige": "½ kleine Zwiebel"
+    },
+    {
+     "zutat_id": "gehackte-tomaten-dose",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "zutat_id": "feta",
+     "menge_g": 30,
+     "anzeige": "30 g"
+    },
+    {
+     "zutat_id": "olivenoel",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 ml)"
+    },
+    {
+     "zutat_id": "paprikapulver-edelsuess",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "zutat_id": "oregano-getrocknet",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    }
+   ],
+   "zubereitung": [
+    "Würfle Zwiebel, Zucchini und Paprika.",
+    "Brate das Hack im Öl krümelig an, gib die Zwiebel dazu und würze mit Paprikapulver, Salz und Pfeffer.",
+    "Gib Zucchini und Paprika dazu und brate alles 5 Minuten weiter.",
+    "Rühre die Tomaten und den Oregano ein und lass alles 5 Minuten köcheln.",
+    "Zerbrösle den Feta darüber und serviere die Pfanne heiß."
+   ],
+   "tipp": "Mit Putenhack wird die Pfanne noch magerer – die Würzung bleibt gleich.",
+   "naehrwerte_pro_portion": {
+    "kcal": 466,
+    "eiweiss_g": 50.1,
+    "kohlenhydrate_g": 17.0,
+    "fett_g": 21.5
+   },
+   "status": "draft"
+  },
+  {
+   "id": "kraeuter-lachs-mit-blumenkohlpueree-und-gruenen-bohnen",
+   "name": "Kräuter-Lachs mit Blumenkohlpüree und grünen Bohnen",
+   "beschreibung": "Saftiger Ofenlachs mit Zitrone und Dill auf cremigem Blumenkohlpüree, dazu knackige grüne Bohnen – wie Lachs mit Kartoffelpüree, nur viel leichter.",
+   "kategorie": "low-carb",
+   "abschnitt": "Abendessen",
+   "ernaehrungsformen": [
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 30,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "lachsfilet",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "zutat_id": "blumenkohl",
+     "menge_g": 300,
+     "anzeige": "½ Kopf (300 g)"
+    },
+    {
+     "zutat_id": "gruene-bohnen-tk",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "zutat_id": "milch-1-5",
+     "menge_g": 50,
+     "anzeige": "50 ml"
+    },
+    {
+     "zutat_id": "parmesan",
+     "menge_g": 10,
+     "anzeige": "10 g, gerieben"
+    },
+    {
+     "zutat_id": "zitronensaft",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 ml)"
+    },
+    {
+     "zutat_id": "dill-frisch",
+     "menge_g": 3,
+     "anzeige": "1 TL, gehackt"
+    },
+    {
+     "zutat_id": "muskatnuss-gerieben",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Heize den Ofen auf 200 °C vor. Lege den Lachs in eine kleine Form, beträufle ihn mit Zitronensaft, würze mit Salz, Pfeffer und Dill und gare ihn 15 Minuten.",
+    "Gare den Blumenkohl in Röschen in Salzwasser 12 Minuten weich und lass ihn gut abtropfen.",
+    "Püriere den Blumenkohl mit warmer Milch und Parmesan cremig und würze mit Salz und Muskat.",
+    "Gare die Bohnen 6–8 Minuten in Salzwasser und serviere alles zusammen."
+   ],
+   "tipp": "Gut abtropfen lassen ist das Geheimnis für ein cremiges, nicht wässriges Blumenkohlpüree.",
+   "naehrwerte_pro_portion": {
+    "kcal": 486,
+    "eiweiss_g": 44.0,
+    "kohlenhydrate_g": 17.2,
+    "fett_g": 24.9
+   },
+   "status": "draft"
+  },
+  {
+   "id": "kokos-tofu-curry-mit-blumenkohlreis",
+   "name": "Kokos-Tofu-Curry mit Blumenkohlreis",
+   "beschreibung": "Mildes gelbes Curry mit Tofu, Paprika und Spinat in Kokosmilch, serviert auf Blumenkohlreis statt Basmati – vegan und angenehm leicht.",
+   "kategorie": "low-carb",
+   "abschnitt": "Abendessen",
+   "ernaehrungsformen": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 25,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "tofu-natur",
+     "menge_g": 200,
+     "anzeige": "200 g"
+    },
+    {
+     "zutat_id": "blumenkohl",
+     "menge_g": 250,
+     "anzeige": "¼ Kopf (250 g)"
+    },
+    {
+     "zutat_id": "kokosmilch-fettreduziert",
+     "menge_g": 100,
+     "anzeige": "100 ml"
+    },
+    {
+     "zutat_id": "paprika-rot",
+     "menge_g": 80,
+     "anzeige": "½ Paprika (80 g)"
+    },
+    {
+     "zutat_id": "babyspinat",
+     "menge_g": 80,
+     "anzeige": "2 Handvoll (80 g)"
+    },
+    {
+     "zutat_id": "ingwer",
+     "menge_g": 5,
+     "anzeige": "1 daumennagelgroßes Stück"
+    },
+    {
+     "zutat_id": "rapsoel",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 ml)"
+    },
+    {
+     "zutat_id": "currypulver",
+     "menge_g": 0,
+     "anzeige": "2 TL"
+    }
+   ],
+   "zubereitung": [
+    "Raspel den Blumenkohl auf der groben Reibe zu „Reis“ und schneide Tofu und Paprika in Würfel.",
+    "Brate den Tofu im Öl 5 Minuten goldbraun, gib Paprika, geriebenen Ingwer und Currypulver dazu und röste alles 1 Minute.",
+    "Lösche mit Kokosmilch und 50 ml Wasser ab und lass das Curry 5 Minuten köcheln. Heb den Spinat unter.",
+    "Gare den Blumenkohlreis in einer zweiten Pfanne ohne Fett 4–5 Minuten, salze ihn und serviere das Curry darauf."
+   ],
+   "tipp": "Blumenkohlreis gibt es auch tiefgekühlt – das spart das Raspeln.",
+   "naehrwerte_pro_portion": {
+    "kcal": 489,
+    "eiweiss_g": 35.0,
+    "kohlenhydrate_g": 17.4,
+    "fett_g": 29.0
+   },
+   "status": "draft"
+  },
+  {
+   "id": "schweinefilet-spiesse-mit-paprika-und-kraeuterquark",
+   "name": "Schweinefilet-Spieße mit Paprika und Kräuterquark",
+   "beschreibung": "Zartes Schweinefilet mit Paprika, Zucchini und roter Zwiebel am Spieß, aus Pfanne oder Grill, dazu ein frischer Schnittlauchquark.",
+   "kategorie": "low-carb",
+   "abschnitt": "Abendessen",
+   "ernaehrungsformen": [
+    "fleisch"
+   ],
+   "zeit_min": 25,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "schweinefilet",
+     "menge_g": 180,
+     "anzeige": "180 g"
+    },
+    {
+     "zutat_id": "paprika-rot",
+     "menge_g": 100,
+     "anzeige": "½ Paprika (100 g)"
+    },
+    {
+     "zutat_id": "zucchini",
+     "menge_g": 150,
+     "anzeige": "½ Zucchini (150 g)"
+    },
+    {
+     "zutat_id": "rote-zwiebel",
+     "menge_g": 40,
+     "anzeige": "½ kleine Zwiebel"
+    },
+    {
+     "zutat_id": "magerquark",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "zutat_id": "schnittlauch-frisch",
+     "menge_g": 5,
+     "anzeige": "1 EL, in Röllchen"
+    },
+    {
+     "zutat_id": "olivenoel",
+     "menge_g": 8,
+     "anzeige": "2 TL (8 ml)"
+    },
+    {
+     "zutat_id": "paprikapulver-geraeuchert",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    }
+   ],
+   "zubereitung": [
+    "Schneide Filet, Paprika, Zucchini und Zwiebel in mundgerechte Stücke und stecke sie abwechselnd auf 3–4 Spieße.",
+    "Bestreiche die Spieße mit Öl und würze sie mit Paprikapulver, Salz und Pfeffer.",
+    "Brate sie in einer Grillpfanne oder auf dem Grill 10–12 Minuten rundum, bis das Fleisch durch, aber noch saftig ist.",
+    "Verrühre den Quark mit Schnittlauch, 2 EL Wasser, Salz und Pfeffer und serviere ihn dazu."
+   ],
+   "tipp": "Holzspieße vorher 20 Minuten in Wasser legen, dann verbrennen sie nicht. Ohne Schwein klappt das Rezept genauso mit Hähnchen- oder Putenbrust.",
+   "naehrwerte_pro_portion": {
+    "kcal": 417,
+    "eiweiss_g": 54.7,
+    "kohlenhydrate_g": 16.6,
+    "fett_g": 13.0
+   },
+   "status": "draft"
+  },
+  {
+   "id": "brokkoli-kaese-auflauf-mit-eiern",
+   "name": "Brokkoli-Käse-Auflauf mit Eiern",
+   "beschreibung": "Brokkoli in einem lockeren Guss aus Eiern, Hüttenkäse und Milch, mit Gouda überbacken – ein warmes, sättigendes Abendessen ohne Nudeln.",
+   "kategorie": "low-carb",
+   "abschnitt": "Abendessen",
+   "ernaehrungsformen": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 35,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "brokkoli",
+     "menge_g": 300,
+     "anzeige": "1 Kopf (300 g)"
+    },
+    {
+     "zutat_id": "ei",
+     "menge_g": 110,
+     "anzeige": "2 Eier (M)"
+    },
+    {
+     "zutat_id": "huettenkaese",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "zutat_id": "milch-1-5",
+     "menge_g": 50,
+     "anzeige": "50 ml"
+    },
+    {
+     "zutat_id": "gouda-light-gerieben",
+     "menge_g": 40,
+     "anzeige": "40 g"
+    },
+    {
+     "zutat_id": "muskatnuss-gerieben",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "zutat_id": "salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "zutat_id": "pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Heize den Ofen auf 200 °C vor. Gare den Brokkoli in Röschen 4 Minuten in Salzwasser vor und lass ihn abtropfen.",
+    "Verquirle Eier, Hüttenkäse und Milch und würze mit Salz, Pfeffer und Muskat.",
+    "Verteile den Brokkoli in einer kleinen Auflaufform, gieß den Eierguss darüber und streue den Gouda darauf.",
+    "Backe den Auflauf 20 Minuten, bis der Guss gestockt und die Oberfläche goldbraun ist."
+   ],
+   "tipp": "Mit Kochschinken- oder Putenbruststreifen wird daraus eine Variante für Fleischesser.",
+   "naehrwerte_pro_portion": {
+    "kcal": 482,
+    "eiweiss_g": 51.3,
+    "kohlenhydrate_g": 13.9,
+    "fett_g": 22.7
+   },
+   "status": "draft"
+  },
+  {
+   "id": "raeuchertofu-sticks-mit-paprika-und-tahin-dip",
+   "name": "Räuchertofu-Sticks mit Paprika und Tahin-Dip",
+   "beschreibung": "Rauchige Tofustreifen und knackige Paprika zum Dippen in einen cremigen Sesam-Zitronen-Dip – ein herzhafter veganer Snack in 5 Minuten.",
+   "kategorie": "low-carb",
+   "abschnitt": "Snack",
+   "ernaehrungsformen": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 5,
+   "portionen": 1,
+   "tags": [
+    "Unter 10 Minuten",
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "raeuchertofu",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "zutat_id": "paprika-rot",
+     "menge_g": 80,
+     "anzeige": "½ Paprika (80 g)"
+    },
+    {
+     "zutat_id": "tahin",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "zutat_id": "zitronensaft",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 ml)"
+    },
+    {
+     "zutat_id": "salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Schneide Räuchertofu und Paprika in Sticks.",
+    "Verrühre Tahin mit Zitronensaft, 1–2 EL Wasser und einer Prise Salz zu einem glatten Dip.",
+    "Richte alles an und dippe nach Lust und Laune."
+   ],
+   "tipp": "Der Dip dickt beim Rühren erst an – einfach esslöffelweise Wasser zugeben, bis er cremig ist.",
+   "naehrwerte_pro_portion": {
+    "kcal": 255,
+    "eiweiss_g": 19.7,
+    "kohlenhydrate_g": 8.1,
+    "fett_g": 15.2
+   },
+   "status": "draft"
+  },
+  {
+   "id": "huettenkaese-mit-radieschen-und-kuerbiskernen",
+   "name": "Hüttenkäse mit Radieschen und Kürbiskernen",
+   "beschreibung": "Körniger Frischkäse mit knackigen Radieschen, Schnittlauch und gerösteten Kürbiskernen – herzhaft, frisch und mit über 25 g Eiweiß.",
+   "kategorie": "low-carb",
+   "abschnitt": "Snack",
+   "ernaehrungsformen": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 5,
+   "portionen": 1,
+   "tags": [
+    "Unter 10 Minuten",
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "huettenkaese",
+     "menge_g": 200,
+     "anzeige": "200 g"
+    },
+    {
+     "zutat_id": "radieschen",
+     "menge_g": 80,
+     "anzeige": "6 Radieschen (80 g)"
+    },
+    {
+     "zutat_id": "kuerbiskerne",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "zutat_id": "schnittlauch-frisch",
+     "menge_g": 5,
+     "anzeige": "1 EL, in Röllchen"
+    },
+    {
+     "zutat_id": "pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Schneide die Radieschen in feine Scheiben.",
+    "Röste die Kürbiskerne kurz in einer trockenen Pfanne, bis sie duften.",
+    "Gib den Hüttenkäse in eine Schale, verteile Radieschen, Schnittlauch und Kürbiskerne darauf und pfeffere alles."
+   ],
+   "tipp": "Passt auch ins Büro: Hüttenkäse im Becher lassen und die Toppings in einer kleinen Dose mitnehmen.",
+   "naehrwerte_pro_portion": {
+    "kcal": 268,
+    "eiweiss_g": 28.8,
+    "kohlenhydrate_g": 7.5,
+    "fett_g": 13.4
+   },
+   "status": "draft"
+  },
+  {
+   "id": "roastbeef-gurken-roellchen-mit-meerrettich-skyr",
+   "name": "Roastbeef-Gurken-Röllchen mit Meerrettich-Skyr",
+   "beschreibung": "Dünne Roastbeefscheiben mit scharfem Meerrettich-Skyr und Gurkenstiften gerollt – ein eleganter Eiweiß-Snack ganz ohne Brot.",
+   "kategorie": "low-carb",
+   "abschnitt": "Snack",
+   "ernaehrungsformen": [
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 8,
+   "portionen": 1,
+   "tags": [
+    "Unter 10 Minuten",
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "roastbeef-aufschnitt",
+     "menge_g": 80,
+     "anzeige": "4 Scheiben (80 g)"
+    },
+    {
+     "zutat_id": "gurke",
+     "menge_g": 150,
+     "anzeige": "½ Gurke (150 g)"
+    },
+    {
+     "zutat_id": "skyr-natur",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "zutat_id": "meerrettich-glas",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "zutat_id": "schnittlauch-frisch",
+     "menge_g": 3,
+     "anzeige": "1 TL, in Röllchen"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre Skyr, Meerrettich und Schnittlauch und würze mit Salz und Pfeffer.",
+    "Schneide die Gurke in lange, dünne Stifte.",
+    "Bestreiche die Roastbeefscheiben mit der Creme, lege einige Gurkenstifte darauf und rolle sie auf.",
+    "Serviere die restlichen Gurkenstifte dazu."
+   ],
+   "tipp": "Die Röllchen lassen sich gut mit einem Zahnstocher fixieren und bis zu einem Tag vorbereiten.",
+   "naehrwerte_pro_portion": {
+    "kcal": 167,
+    "eiweiss_g": 25.4,
+    "kohlenhydrate_g": 6.8,
+    "fett_g": 3.9
+   },
+   "status": "draft"
+  },
+  {
+   "id": "gefuellte-eier-mit-senf-skyr-und-gurke",
+   "name": "Gefüllte Eier mit Senf-Skyr und Gurke",
+   "beschreibung": "Hart gekochte Eier mit einer cremigen Füllung aus Eigelb, Skyr und Senf, bestäubt mit Paprika – Partyklassiker als proteinreicher Snack.",
+   "kategorie": "low-carb",
+   "abschnitt": "Snack",
+   "ernaehrungsformen": [
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 15,
+   "portionen": 1,
+   "tags": [
+    "Low Carb"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "ei",
+     "menge_g": 110,
+     "anzeige": "2 Eier (M)"
+    },
+    {
+     "zutat_id": "skyr-natur",
+     "menge_g": 40,
+     "anzeige": "40 g"
+    },
+    {
+     "zutat_id": "senf",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "zutat_id": "gurke",
+     "menge_g": 100,
+     "anzeige": "1/3 Gurke (100 g)"
+    },
+    {
+     "zutat_id": "paprikapulver-edelsuess",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "zutat_id": "salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Koche die Eier 10 Minuten hart, schrecke sie kalt ab, pelle und halbiere sie.",
+    "Drücke die Eigelbe mit einer Gabel fein und verrühre sie mit Skyr, Senf und Salz.",
+    "Fülle die Creme in die Eiweißhälften und bestäube sie mit Paprikapulver.",
+    "Schneide die Gurke in Scheiben und serviere sie dazu."
+   ],
+   "tipp": "Mit einem Gefrierbeutel, bei dem du eine Ecke abschneidest, lässt sich die Creme sauber einfüllen.",
+   "naehrwerte_pro_portion": {
+    "kcal": 193,
+    "eiweiss_g": 19.2,
+    "kohlenhydrate_g": 4.4,
+    "fett_g": 10.7
+   },
+   "status": "draft"
+  },
+  {
+   "id": "schoko-mandel-sojaskyr",
+   "name": "Schoko-Mandel-Sojaskyr",
+   "beschreibung": "Cremiger Sojaskyr mit Kakao und Schoko-Protein, getoppt mit gehackten Mandeln – schmeckt wie Schokopudding, ist aber vegan und kohlenhydratarm.",
+   "kategorie": "low-carb",
+   "abschnitt": "Snack",
+   "ernaehrungsformen": [
+    "vegan",
+    "vegetarisch",
+    "fleisch",
+    "ohne-schwein"
+   ],
+   "zeit_min": 5,
+   "portionen": 1,
+   "tags": [
+    "Unter 10 Minuten",
+    "Low Carb",
+    "Süß"
+   ],
+   "zutaten": [
+    {
+     "zutat_id": "sojaskyr-natur",
+     "menge_g": 200,
+     "anzeige": "200 g"
+    },
+    {
+     "zutat_id": "veganes-proteinpulver-schoko",
+     "menge_g": 15,
+     "anzeige": "½ Messlöffel (15 g)"
+    },
+    {
+     "zutat_id": "backkakao",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "zutat_id": "mandeln",
+     "menge_g": 15,
+     "anzeige": "1 kleine Handvoll (15 g)"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre Sojaskyr, Proteinpulver und Kakao glatt, bei Bedarf mit 1–2 EL Wasser.",
+    "Hacke die Mandeln grob und röste sie kurz ohne Fett an.",
+    "Streue die Mandeln über die Creme."
+   ],
+   "tipp": "Ohne Pulver: Nimm 1 TL mehr Kakao und süße nach Geschmack mit Erythrit.",
+   "naehrwerte_pro_portion": {
+    "kcal": 300,
+    "eiweiss_g": 31.6,
+    "kohlenhydrate_g": 8.9,
+    "fett_g": 14.3
+   },
+   "status": "draft"
   }
  ],
  "meal_prep_plaene": [

@@ -2,7 +2,7 @@
 
 Alles, was nötig ist, um die drei PDFs mit Fotos neu zu bauen:
 
-- `Alpha5-Rezeptbuch.pdf` mit 291 Rezepten und Zutatenlexikon
+- `Alpha5-Rezeptbuch.pdf` mit 306 Rezepten und Zutatenlexikon
 - `Alpha5-Gratis-Rezepte.pdf` mit 20 Rezepten für den Lead-Magnet
 - `Alpha5-Zutatenlexikon.pdf`
 
@@ -13,7 +13,7 @@ Alles, was nötig ist, um die drei PDFs mit Fotos neu zu bauen:
 | `daten/` | Rezept-JSONs pro Kapitel, `unterwegs.json`, `lexikon/` |
 | `build/` | Python-Skripte (ReportLab), Schriften, Logo |
 | `fotos/` | Rezeptfotos als `<datei>.jpg`. Fehlt ein Foto, zeigt das PDF einen Platzhalter. |
-| `foto-auftraege.json` | 291 Einträge: `nr`, `kapitel`, `rezept`, `datei`, `prompt` |
+| `foto-auftraege.json` | 306 Einträge: `nr`, `kapitel`, `rezept`, `datei`, `prompt` |
 | `ausgabe/` | Fertige PDFs, Seed-JSON und Gemini-Prompt-Datei |
 
 ## PDFs bauen
@@ -53,4 +53,10 @@ Erste Testbilder sind bereits erzeugt. Für diese Job-IDs nur `jobs_wait` bzw. `
 **Regeln:**
 - In Rezepten keine Markennamen.
 - Die Fotos sind KI-Beispielbilder.
-- Erst die 5 Testbilder einbauen und das Ergebnis zeigen. Die restlichen ~286 Bilder erst nach Freigabe der Gründer erzeugen.
+- Alle 306 Rezepte haben ein Foto (Stand 23.10.2026). Neue Rezepte bekommen ihr Foto nach demselben Ablauf; `foto-auftraege.json` vorher mit `python3 build/make_prompts.py` neu erzeugen.
+
+## Kapitelstruktur (Stand 23.10.2026)
+
+- **Mit Fleisch & Fisch** (`daten/fleisch.json`, `fleisch-2.json`, `fleisch-3.json`): enthält auch die früheren Rezepte aus „Ohne Schweinefleisch“ (`fleisch-3.json`). Rezepte ohne Schweinefleisch werden beim Bauen automatisch mit „Ohne Schwein“ markiert. In der App bleibt „ohne-schwein“ als Ernährungsform-Filter erhalten.
+- **Low Carb** (`daten/lowcarb.json`): 20 Rezepte, Hauptmahlzeiten höchstens 20 g, Snacks höchstens 10 g Kohlenhydrate pro Portion.
+- Die App-Daten (`ausgabe/alpha5-rezepte.json`) neu erzeugen mit `python3 build/make_seed.py`.

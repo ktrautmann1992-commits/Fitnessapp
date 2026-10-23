@@ -7,11 +7,16 @@ from design import Table, st, esc, ChapterHero, callout, ACC, SCHWARZ, BLAU, GRA
 
 OUT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/ausgabe/Alpha5-Gratis-Rezepte.pdf'
 PICK = [('schnell', 0), ('schnell', 5), ('pre', 0), ('pre', 5), ('post', 1), ('post', 9), ('cardio', 4), ('wettkampf', 7),
-        ('vegan', 0), ('vegan', 11), ('vegetarisch', 5), ('vegetarisch', 15), ('fleisch', 10), ('fleisch', 23),
-        ('ohne-schwein', 17), ('ohne-schwein', 21), ('fastfood', 0), ('airfryer', 0), ('dessert', 0), ('eis', 0)]
+        ('vegan', 0), ('vegan', 11), ('vegetarisch', 5), ('vegetarisch', 15),
+        ('fleisch', 'Schweinefilet mit Senfkartoffeln und Bohnen'), ('fleisch', 'Asia-Ofenlachs mit Sesam-Brokkoli'),
+        ('fleisch', 'Rinder-Köfte mit Kräuter-Bulgur und Joghurtdip'), ('lowcarb', 'Hähnchen-Brokkoli-Pfanne mit Cashews'),
+        ('fastfood', 0), ('airfryer', 0), ('dessert', 0), ('eis', 0)]
 NAMES = {k: n for k, n, *_ in b.ALL}
-ITEMS = [(k, NAMES[k], b.data[k]['recipes'][i], b.data[k]['ingredients']) for k, i in PICK]
-DIET = {'vegan': 'Vegan', 'vegetarisch': 'Vegetarisch', 'fleisch': 'Mit Fleisch', 'ohne-schwein': 'Ohne Schweinefleisch'}
+def _rezept(k, i):
+    recs = b.data[k]['recipes']
+    return recs[i] if isinstance(i, int) else next(r for r in recs if r['name'] == i)
+ITEMS = [(k, NAMES[k], _rezept(k, i), b.data[k]['ingredients']) for k, i in PICK]
+DIET = {'vegan': 'Vegan', 'vegetarisch': 'Vegetarisch', 'fleisch': 'Mit Fleisch &amp; Fisch'}
 
 def cover(c, doc):
     c.saveState(); c.setFillColor(SCHWARZ); c.rect(0, 0, W, H, fill=1, stroke=0)
@@ -23,7 +28,7 @@ def cover(c, doc):
     c.setFont('C-BoldIt', 19); c.setFillColor(colors.HexColor('#8db0ff')); c.drawString(M, H - 126 * mm, 'Gratis-Auszug aus dem Alpha5 Rezeptbuch')
     c.setFillColor(colors.HexColor('#b4bdd0')); c.setFont('A-Regular', 11)
     for i, line in enumerate(['Vor und nach dem Training, für lange Läufe, schnell in 10 Minuten,', 'Fitness-Pizza, Heißluftfritteuse, Protein-Dessert und Sommer-Eis.',
-                              'Vegan, vegetarisch, mit Fleisch und ohne Schweinefleisch.']):
+                              'Vegan, vegetarisch, mit Fleisch und Fisch und Low Carb.']):
         c.drawString(M, H - 142 * mm - i * 6.5 * mm, line)
     c.setFont('A-Regular', 9.5); c.drawString(M, 16 * mm, 'Alle Mengen für 1 Portion, Nährwerte pro Portion berechnet')
     c.restoreState()
@@ -35,10 +40,10 @@ def overview():
 
 def outro():
     s = [b.Anchor('outro', 'Gratis-Auszug', ''), ChapterHero('gratis', 'Das war erst der Anfang', kicker='Alpha5', bg=''), Spacer(0, 9 * mm),
-         Paragraph('In der Alpha5-App warten fast 300 Rezepte, passend zu deinem Ziel, deinem Training und deiner Ernährungsform.', st('ot', fontSize=13, leading=18)), Spacer(0, 6 * mm),
+         Paragraph('In der Alpha5-App warten über 300 Rezepte, passend zu deinem Ziel, deinem Training und deiner Ernährungsform.', st('ot', fontSize=13, leading=18)), Spacer(0, 6 * mm),
          blist(['Rezepte vor und nach jeder Trainingseinheit, automatisch passend zu deinem Plan', 'Portionen, die zu deinem Körpergewicht und Ziel passen',
                 'Einkaufslisten nach Supermarkt-Bereichen zum Abhaken', 'Meal-Prep-Wochenpläne mit Kochtag-Ablauf',
-                'Zutatenlexikon mit 59 Grundnahrungsmitteln', 'Filter für vegan, vegetarisch, ohne Schweinefleisch und „Unter 10 Minuten“'], BLAU, 12, W - 2 * M),
+                'Zutatenlexikon mit 59 Grundnahrungsmitteln', 'Filter für vegan, vegetarisch, ohne Schweinefleisch, Low Carb und „Unter 10 Minuten“'], BLAU, 12, W - 2 * M),
          Spacer(0, 8 * mm), callout('Du stehst auf der Warteliste', 'Wir melden uns per E-Mail, sobald Alpha5 startet. Als eine der Ersten bekommst du Zugang.', BLAU, label_color=SCHWARZ),
          Spacer(0, 8 * mm), Paragraph('Die Rezepte ersetzen keine individuelle Ernährungsberatung. Bei Allergien, Unverträglichkeiten oder Vorerkrankungen prüfe die Zutaten selbst und sprich bei Bedarf mit deinem Arzt.', st('oh', fontSize=9, leading=13, textColor=GRAU))]
     return s

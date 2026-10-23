@@ -1,4 +1,4 @@
-import json, os, sys
+import json, os, re, sys
 from collections import OrderedDict, defaultdict
 from PIL import Image
 from reportlab.lib.pagesizes import A4
@@ -32,8 +32,7 @@ LW, LH = logo.size
 GROUPS = [
     ('vegan', 'Vegan', 'Rein pflanzlich: ohne Fleisch, Fisch, Milch, Ei und Honig.'),
     ('vegetarisch', 'Vegetarisch', 'Ohne Fleisch und Fisch, mit Eiern und Milchprodukten.'),
-    ('fleisch', 'Mit Fleisch', 'Für Fleischesser, mit magerem Schweinefleisch, Geflügel, Rind und Fisch.'),
-    ('ohne-schwein', 'Ohne Schweinefleisch', 'Fleisch und Fisch, aber nichts vom Schwein, auch keine Gelatine.'),
+    ('fleisch', 'Mit Fleisch &amp; Fisch', 'Für Fleischesser: Geflügel, Rind, Lamm, Fisch und mageres Schweinefleisch. Rezepte ohne Schwein sind mit „Ohne Schwein“ markiert.'),
 ]
 MEALS = ['Frühstück', 'Mittagessen', 'Abendessen', 'Snack']
 MEAL_PL = {'Frühstück': 'Frühstück', 'Mittagessen': 'Mittagessen', 'Abendessen': 'Abendessen', 'Snack': 'Snacks'}
@@ -57,9 +56,12 @@ data = {}
 for key, *_ in GROUPS:
     fix = lambda t: t.replace('⅓', '1/3').replace('⅔', '2/3')
     d = json.loads(fix(open(f'{WORK}/{key}.json').read()))
-    d2 = json.loads(fix(open(f'{WORK}/{key}-2.json').read()))
-    for n, v in d2['ingredients'].items(): d['ingredients'].setdefault(n, v)
-    d['recipes'] += d2['recipes']
+    n_teil = 2
+    while os.path.exists(f'{WORK}/{key}-{n_teil}.json'):
+        d2 = json.loads(fix(open(f'{WORK}/{key}-{n_teil}.json').read()))
+        for n, v in d2['ingredients'].items(): d['ingredients'].setdefault(n, v)
+        d['recipes'] += d2['recipes']
+        n_teil += 1
     order = {m: i for i, m in enumerate(MEALS)}
     d['recipes'].sort(key=lambda r: order[r['mahlzeit']])
     for i, r in enumerate(d['recipes']):
@@ -81,6 +83,11 @@ d['recipes'].sort(key=lambda r: _order[r['mahlzeit']])
 for i, r in enumerate(d['recipes']):
     r['m'] = macros(r, d['ingredients']); r['anchor'] = f'schnell-{i}'
 data['schnell'] = d
+# Fleisch-Rezepte ohne Schweinefleisch markieren
+PORK = re.compile(r'schwein|(?<!puten)schinken|speck|kassler|salami|mett\b|bacon|gelatine', re.I)
+for r in data['fleisch']['recipes']:
+    if not any(PORK.search(z['name']) for z in r['zutaten']) and 'Ohne Schwein' not in r.get('tags', []):
+        r['tags'] = ['Ohne Schwein'] + r.get('tags', [])
 # Rezepte unter 10 Minuten in den übrigen Kapiteln markieren
 for key, *_ in GROUPS:
     for r in data[key]['recipes']:
@@ -119,6 +126,8 @@ MORE = [
      'So geht es: Masse mixen, im Gefrierbecher 24 Stunden einfrieren, mit dem Programm für leichtes Eis verarbeiten. Bei veganen Rezepten darauf achten, dass Proteinpulver und Geschmackspulver als vegan gekennzeichnet sind.'),
     ('budget', 'Spar-Küche', 'Fitnessgerecht essen für unter 2 € pro Portion: mit Haferflocken, Linsen, Eiern, Quark, TK-Gemüse und Eigenmarken.',
      'Zu den Preisen: Die Kosten sind geschätzte Richtwerte für Discounter-Eigenmarken in Deutschland, Stand 2026. Sie schwanken je nach Markt, Region und Saison.'),
+    ('lowcarb', 'Low Carb', 'Wenig Kohlenhydrate, viel Eiweiß und Gemüse: Hauptmahlzeiten mit höchstens 20 g, Snacks mit höchstens 10 g Kohlenhydraten pro Portion. Für alle Ernährungsformen.',
+     'Gut zu wissen: Low Carb ist eine Option, kein Muss. Für harte Einheiten und Ausdauersport brauchst du Kohlenhydrate. Plane Low-Carb-Mahlzeiten deshalb eher an Ruhetagen oder abends. Wer Diabetes-Medikamente nimmt, spricht eine Low-Carb-Ernährung vorher mit dem Arzt ab.'),
 ]
 for key, *_ in MORE:
     d = json.loads(_fix(open(f'{WORK}/{key}.json').read()))
@@ -148,7 +157,7 @@ GUIDES = {'wettkampf': ('So planst du deine Wettkampf-Ernährung', 'Richtwerte f
           'eis': ('So gelingt Protein-Eis aus der Eismaschine', 'Allgemeine Tipps für Eismaschinen mit Gefrierbecher. Beachte zusätzlich immer die Anleitung deines Geräts.', 'Anleitung: So gelingt Protein-Eis aus der Eismaschine')}
 UNTERWEGS = json.loads(open(f'{WORK}/unterwegs.json').read())
 data['schnell']['sections'] = MEALS
-SPECIAL = {'schnell', 'pre', 'post', 'cardio', 'wettkampf', 'mealprep', 'fastfood', 'airfryer', 'dessert', 'eis', 'budget'}
+SPECIAL = {'schnell', 'pre', 'post', 'cardio', 'wettkampf', 'mealprep', 'fastfood', 'airfryer', 'dessert', 'eis', 'budget', 'lowcarb'}
 FAUST = {k: f for k, _, _, f in TRAINING + MORE}
 COVER_TXT = {'schnell': 'In höchstens 10 Minuten auf dem Teller, für alle Ernährungsformen.',
              'pre': 'Kleine Mahlzeiten für Energie vor dem Training.',
@@ -162,8 +171,8 @@ COVER_TXT = {'schnell': 'In höchstens 10 Minuten auf dem Teller, für alle Ern�
              'fastfood': 'Pizza, Burger und Co. mit viel Eiweiß.',
              'airfryer': 'Knusprig mit wenig Öl, schnell gemacht.',
              'vegan': 'Rein pflanzlich.', 'vegetarisch': 'Mit Eiern und Milchprodukten.',
-             'fleisch': 'Mit magerem Schweinefleisch, Geflügel, Fisch.',
-             'ohne-schwein': 'Fleisch und Fisch, nichts vom Schwein.',
+             'fleisch': 'Geflügel, Rind, Fisch, auch ohne Schwein.',
+             'lowcarb': 'Höchstens 20 g Kohlenhydrate pro Mahlzeit.',
              'unterwegs': 'Gut essen beim Bäcker, Döner, im Hotel.'}
 COVER_TXT['schnell'] = 'Auf dem Teller in höchstens 10 Minuten.'
 COVER_TXT['pre'] = 'Energie vor dem Training.'
@@ -540,8 +549,8 @@ def intro():
     pts = INTRO_POINTS = [
         ('Fertig in 10 Minuten', 'Wenig Zeit? Das erste Kapitel sammelt 10 Rezepte, die in höchstens 10 Minuten auf dem Teller sind, für alle Ernährungsformen. Auch in den anderen Kapiteln sind schnelle Rezepte mit „Unter 10 Minuten“ markiert.'),
         ('Rund ums Training', 'Drei Kapitel mit kleinen Mahlzeiten: Pre-Workout für Energie vor dem Training, Post-Workout für die Erholung danach und Cardio &amp; Ausdauer für lange Lauf-, Rad- oder Schwimmeinheiten. Bei jedem Rezept steht, für welche Ernährungsform es passt.'),
-        ('Weitere Themen-Kapitel', 'Wettkampftag, vier Meal-Prep-Wochenpläne mit Kochtag-Ablauf, Fitness-Fast-Food, Rezepte für die Heißluftfritteuse, Protein-Desserts, Sommer-Eis aus der Eismaschine und günstige Rezepte unter 2 € pro Portion. Am Ende helfen der Ratgeber „Unterwegs essen“ und das Zutatenlexikon mit 59 Grundnahrungsmitteln.'),
-        ('Vier Ernährungsformen', 'Vegan, vegetarisch, mit Fleisch und ohne Schweinefleisch. Jede Form hat ihr eigenes Kapitel mit je 10 Rezepten für Frühstück, Mittagessen, Abendessen und Snacks.'),
+        ('Weitere Themen-Kapitel', 'Wettkampftag, vier Meal-Prep-Wochenpläne mit Kochtag-Ablauf, Fitness-Fast-Food, Rezepte für die Heißluftfritteuse, Protein-Desserts, Sommer-Eis aus der Eismaschine, günstige Rezepte unter 2 € pro Portion und Low-Carb-Rezepte mit höchstens 20 g Kohlenhydraten. Am Ende helfen der Ratgeber „Unterwegs essen“ und das Zutatenlexikon mit 59 Grundnahrungsmitteln.'),
+        ('Drei Ernährungsformen', 'Vegan, vegetarisch und mit Fleisch &amp; Fisch. Jede Form hat ihr eigenes Kapitel mit Rezepten für Frühstück, Mittagessen, Abendessen und Snacks. Im Fleisch-Kapitel sind alle Rezepte ohne Schweinefleisch mit „Ohne Schwein“ markiert.'),
         ('Alle Mengen für 1 Portion', 'Kochst du für zwei oder für die Woche vor, nimmst du die Mengen einfach mal 2 oder mal die Anzahl der Tage. In der App passt Alpha5 die Portion später automatisch an dein Ziel an.'),
         ('Einkaufen leicht gemacht', 'Auf jeder Rezeptseite steht links die Einkaufsliste zum Abhaken. Am Ende jedes Kapitels findest du eine Gesamt-Einkaufsliste, sortiert nach den Bereichen im Supermarkt.'),
         ('Nährwerte', 'Kalorien, Eiweiß, Kohlenhydrate und Fett sind aus den Zutatenmengen berechnet. Sie sind Richtwerte, denn Produkte und Marken unterscheiden sich.'),
@@ -571,7 +580,7 @@ def intro():
 def build():
     STATE.update(group='', meal='')
     doc = BaseDocTemplate(OUT, pagesize=A4, title='Alpha5 Rezeptbuch', author='Alpha5',
-                          subject='Fitness-Rezepte: vegan, vegetarisch, mit Fleisch, ohne Schweinefleisch',
+                          subject='Fitness-Rezepte: vegan, vegetarisch, mit Fleisch und Fisch, Low Carb',
                           leftMargin=M, rightMargin=M)
     full = Frame(M, 16 * mm, W - 2 * M, H - 16 * mm - 26 * mm, id='f', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
     rec = Frame(M, 16 * mm, W - 2 * M, H - 14 * mm - 12 * mm - 16 * mm, id='r', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)

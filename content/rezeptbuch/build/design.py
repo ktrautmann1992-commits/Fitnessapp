@@ -23,7 +23,7 @@ SCHWARZ = colors.HexColor('#0a0c10'); BLAU = colors.HexColor('#1f5bff'); GRAU = 
 LINIE = colors.HexColor('#e2e6ee'); PAPIER = colors.HexColor('#f3f5f9'); WEISS = colors.white
 ACC = {'schnell': '#f5b400', 'pre': '#00b3c7', 'post': '#1f5bff', 'cardio': '#ff7a1a', 'wettkampf': '#e11d48',
        'mealprep': '#7c4dff', 'fastfood': '#ff4d2e', 'airfryer': '#d99a00', 'dessert': '#ff5fa2', 'eis': '#2cc4f5',
-       'budget': '#21b36b', 'vegan': '#1f9d55', 'vegetarisch': '#86bc25', 'fleisch': '#c8102e', 'ohne-schwein': '#e07a1f',
+       'budget': '#21b36b', 'vegan': '#1f9d55', 'vegetarisch': '#86bc25', 'fleisch': '#c8102e', 'ohne-schwein': '#e07a1f', 'lowcarb': '#0f9d8a',
        'unterwegs': '#6b7a99', 'lexikon': '#1f5bff', 'gratis': '#1f5bff'}
 ACC = {k: colors.HexColor(v) for k, v in ACC.items()}
 NAME2KEY = {n.replace('&amp;', '&'): k for k, n, _ in b.ALL}
@@ -315,6 +315,8 @@ def opener(key, gname, desc, sections, links=(), extra=None, kicker=None):
          Paragraph(esc(desc), st('od', fontSize=12, leading=17, textColor=SCHWARZ)), Spacer(0, 5 * mm)]
     if extra: s += [extra, Spacer(0, 6 * mm)]
     inner = []
+    # Lange Übersichten (z. B. 75 Rezepte) nicht schrumpfen, sondern auf der nächsten Seite weiterlaufen lassen
+    long_list = sum(len(rows) for _, rows in sections) > 45
     for title, rows in sections:
         inner += [Table([[Mark(acc, w=3 * mm, h=3.4 * mm, dy=0.6 * mm), Paragraph(esc(title), st('sh', fontName='C-BoldIt', fontSize=14, leading=16))]],
                         colWidths=[6 * mm, W - 2 * M - 6 * mm], style=[('LEFTPADDING', (0, 0), (-1, -1), 0), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'), ('BOTTOMPADDING', (0, 0), (-1, -1), 1)])]
@@ -327,10 +329,12 @@ def opener(key, gname, desc, sections, links=(), extra=None, kicker=None):
         t = Table(tr, colWidths=[104 * mm, 54 * mm, W - 2 * M - 158 * mm])
         t.setStyle(TableStyle([('LINEBELOW', (0, 0), (-1, -1), 0.5, LINIE), ('LEFTPADDING', (0, 0), (-1, -1), 0), ('RIGHTPADDING', (0, 0), (-1, -1), 0),
                                ('TOPPADDING', (0, 0), (-1, -1), 1.8), ('BOTTOMPADDING', (0, 0), (-1, -1), 2.6), ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')]))
-        inner += [t, Spacer(0, 5 * mm)]
+        if long_list: inner += [KeepTogether([inner.pop(), t]), Spacer(0, 5 * mm)]
+        else: inner += [t, Spacer(0, 5 * mm)]
     for text, anchor in links:
         inner += [Paragraph(f'<a href="#{anchor}" color="#1f5bff">{text} <font name="C-XBIt">{b.PREV_PAGES.get(anchor, "")}</font></a>', st('ol', fontName='A-SemiBold', fontSize=10.5, leading=15))]
-    s.append(KeepInFrame(W - 2 * M, H - 16 * mm - FRAME_TOP_GAP - 58 * mm - 40 * mm - (25 * mm if extra else 0), inner, mode='shrink'))
+    if long_list: s += inner
+    else: s.append(KeepInFrame(W - 2 * M, H - 16 * mm - FRAME_TOP_GAP - 58 * mm - 40 * mm - (25 * mm if extra else 0), inner, mode='shrink'))
     return s
 
 def info_for(key, r):
@@ -338,6 +342,7 @@ def info_for(key, r):
     if key == 'budget': return f'{b.diet_of(r)}, ca. {de(r["kosten_eur"], 2)} €'
     if key == 'schnell': return f'{b.diet_of(r)}, {r["zeit_min"]} Min.'
     if 'passt_fuer' in r: return f'{b.diet_of(r)}, {round(r["m"]["kcal"])} kcal'
+    if key == 'fleisch' and 'Ohne Schwein' in r.get('tags', []): return f'Ohne Schwein, {round(r["m"]["kcal"])} kcal'
     return f'{round(r["m"]["kcal"])} kcal, {round(r["m"]["p"])} g Eiweiß'
 
 def chapter_divider(key, gname, gtxt, recs):
@@ -350,7 +355,7 @@ def chapter_divider(key, gname, gtxt, recs):
         links.append((f'Noch {n} weitere Rezepte unter 10 Minuten aus den anderen Kapiteln: Seite', 'mehr-schnell'))
     if key in b.GUIDES: links.append((b.GUIDES[key][2] + ': Seite', f'guide-{key}'))
     if key != 'mealprep': links.append((f'Einkaufsliste für alle {len(recs)} Rezepte dieses Kapitels: Seite', f'shop-{key}'))
-    extra = callout('Gut zu wissen', esc(b.FAUST[key]), ACC.get(key, BLAU), label_color=SCHWARZ) if key in b.FAUST else None
+    extra = callout('Gut zu wissen', esc(re.sub(r'^Gut zu wissen: ', '', b.FAUST[key])), ACC.get(key, BLAU), label_color=SCHWARZ) if key in b.FAUST else None
     desc = gtxt + (' Ohne Ofen, ohne Wartezeit, mit cleveren Zutaten aus dem Supermarkt wie Express-Reis, Bohnen aus der Dose oder Aufschnitt.' if key == 'schnell' else '')
     return opener(key, gname, desc, sections, links, extra)
 b.divider = chapter_divider; b.divider_schnell = chapter_divider

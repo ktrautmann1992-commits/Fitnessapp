@@ -5,7 +5,7 @@ Lachs-Toast mit Kräuter-Skyr und Ei
 Shakshuka mit Putenbrust
 Schweinefilet mit Senfkartoffeln und Bohnen
 Süß-saure Schweinepfanne mit Reis
-Chili con Carne mit Reis
+Chili con Carne mit Schweinehack und Reis
 Puten-Gyros-Wrap mit Tzatziki
 Tomaten-Thunfisch-Pasta mit Rucola
 Schweinemedaillons mit Pilzrahm und Brokkoli
@@ -18,3 +18,58 @@ Lachsschinken-Brot mit Frischkäse
 Eiweiß-Muffins mit Schinken und Spinat
 Thunfisch-Skyr-Dip mit Gemüsesticks
 Putenbrust-Röllchen mit Frischkäse und Walnüssen
+Herzhafte Protein-Waffeln mit Kochschinken und Käse
+Kassler-Bauernfrühstück mit Ei
+Protein-Quarkbrötchen mit Lachsschinken
+Herzhafter Spinat-Porridge mit Spiegelei und Pute
+Thunfisch-Ei-Toast mit Avocado
+Bami Goreng mit Schweinefilet
+Knuspriges Schweineschnitzel mit Kartoffel-Gurken-Salat
+Burrito-Bowl mit Schweinehack und Bohnen
+Orientalische Hähnchen-Couscous-Pfanne
+Mediterraner Ofen-Seelachs mit Kartoffeln und Feta
+Schweinefilet-Souvlaki mit Bauernsalat und Tzatziki
+Kassler mit Apfel-Sauerkraut und Kartoffelpüree
+Thai-Hacksalat mit Minze und Reisnudeln
+Knoblauch-Garnelen mit Zucchini-Nudeln
+Hähnchen-Fajita-Pfanne mit Wrap
+Schoko-Proteinpudding
+Erdnuss-Dattel-Energy-Balls mit Whey
+Casein-Quarkcreme mit Himbeeren
+Protein-Pizzaschnecken mit Kochschinken
+Hähnchen-Satay-Spießchen mit Erdnuss-Dip
+Rührei mit Putenbrust auf Vollkornbrot
+Lachsbrötchen mit Kräuterquark
+Shakshuka mit Rinderhack
+Thunfisch-Avocado-Toast mit Ei
+Frühstücks-Burrito mit Hähnchen
+Teriyaki-Hähnchen-Bowl mit Brokkoli
+Chili con Carne mit Rinderhack und Reis
+Vollkornpasta mit Thunfisch und Tomaten
+Orientalischer Couscous-Salat mit Hähnchen
+Putengeschnetzeltes mit Champignons und Kartoffeln
+Ofenlachs mit Brokkoli und Süßkartoffel
+Thai-Garnelen-Curry mit Gemüse
+Kabeljau in Senfsauce mit Spinat
+Lammfilet mit Ofengemüse und Tzatziki
+Rindersteak auf Rucola-Tomaten-Salat
+Putenröllchen mit Frischkäse
+Roastbeef-Reiswaffeln mit Meerrettichquark
+Frittata-Muffins mit Pute und Spinat
+Skyr mit Beeren und Mandeln
+Herzhafte Protein-Waffeln mit Räucherlachs
+American Protein-Pancakes mit knuspriger Putenbrust
+Protein-Tassenbrot mit Hähnchenbrust und Avocado
+Bauernfrühstück mit Pute
+Räucherforellen-Brot mit Hüttenkäse und Radieschen
+Hähnchen-Gyros-Bowl mit Reis und Tzatziki
+Nasi Goreng mit Garnelen
+Rinder-Köfte mit Kräuter-Bulgur und Joghurtdip
+Lachs-Spinat-Pasta in Zitronen-Frischkäsesauce
+Burrito-Bowl mit Putenhack und schwarzen Bohnen
+Rindfleisch-Brokkoli-Wok mit Ingwer
+Gefüllte Paprika mit Putenhack und Feta
+Seelachs mit Gurken-Dill-Salat und Petersilienkartoffeln
+Fajita-Salat mit Hähnchen und Tortilla-Chips
+Zimt-Casein-Quarkcreme mit Walnüssen
+Gurkenschiffchen mit Krabben-Skyr

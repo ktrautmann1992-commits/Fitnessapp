@@ -1,0 +1,3129 @@
+{
+ "ingredients": {
+  "Ei": {
+   "kcal": 145,
+   "p": 12.5,
+   "c": 0.7,
+   "f": 10.0,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Eiklar": {
+   "kcal": 48,
+   "p": 10.9,
+   "c": 0.7,
+   "f": 0.2,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Magerquark": {
+   "kcal": 67,
+   "p": 12.0,
+   "c": 4.0,
+   "f": 0.3,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Skyr natur": {
+   "kcal": 63,
+   "p": 11.0,
+   "c": 4.0,
+   "f": 0.2,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Milch 1,5 %": {
+   "kcal": 47,
+   "p": 3.4,
+   "c": 4.8,
+   "f": 1.5,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Frischkäse light": {
+   "kcal": 145,
+   "p": 7.4,
+   "c": 4.1,
+   "f": 11.0,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Feta": {
+   "kcal": 262,
+   "p": 16.0,
+   "c": 1.0,
+   "f": 21.5,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Parmesan": {
+   "kcal": 392,
+   "p": 32.0,
+   "c": 0.0,
+   "f": 29.0,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Gouda (gerieben)": {
+   "kcal": 360,
+   "p": 23.0,
+   "c": 0.0,
+   "f": 29.0,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Putenbrust-Aufschnitt": {
+   "kcal": 105,
+   "p": 21.0,
+   "c": 1.5,
+   "f": 1.5,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Roastbeef (Aufschnitt)": {
+   "kcal": 125,
+   "p": 22.0,
+   "c": 0.5,
+   "f": 4.0,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Hähnchenbrustfilet": {
+   "kcal": 110,
+   "p": 23.0,
+   "c": 0.0,
+   "f": 1.5,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Putenbrustfilet": {
+   "kcal": 107,
+   "p": 24.0,
+   "c": 0.0,
+   "f": 1.0,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Rinderhackfleisch (5 % Fett)": {
+   "kcal": 125,
+   "p": 21.5,
+   "c": 0.0,
+   "f": 4.5,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Rinderhüftsteak": {
+   "kcal": 120,
+   "p": 22.0,
+   "c": 0.0,
+   "f": 3.5,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Lammfilet": {
+   "kcal": 112,
+   "p": 20.4,
+   "c": 0.0,
+   "f": 3.4,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Lachsfilet": {
+   "kcal": 200,
+   "p": 20.0,
+   "c": 0.0,
+   "f": 13.0,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Räucherlachs": {
+   "kcal": 180,
+   "p": 20.0,
+   "c": 0.0,
+   "f": 11.0,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Kabeljaufilet": {
+   "kcal": 77,
+   "p": 17.7,
+   "c": 0.0,
+   "f": 0.6,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Thunfisch (Dose, im eigenen Saft, abgetropft)": {
+   "kcal": 110,
+   "p": 25.0,
+   "c": 0.0,
+   "f": 1.0,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Garnelen (TK, roh, geschält)": {
+   "kcal": 70,
+   "p": 16.0,
+   "c": 0.0,
+   "f": 0.8,
+   "abteilung": "Tiefkühl"
+  },
+  "Basmatireis": {
+   "kcal": 350,
+   "p": 7.5,
+   "c": 77.0,
+   "f": 0.8,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Vollkornnudeln": {
+   "kcal": 350,
+   "p": 13.0,
+   "c": 64.0,
+   "f": 2.5,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Couscous": {
+   "kcal": 360,
+   "p": 12.0,
+   "c": 72.0,
+   "f": 1.0,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Bulgur": {
+   "kcal": 350,
+   "p": 12.0,
+   "c": 69.0,
+   "f": 1.5,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Kartoffeln": {
+   "kcal": 70,
+   "p": 2.0,
+   "c": 15.0,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Süßkartoffel": {
+   "kcal": 86,
+   "p": 1.6,
+   "c": 20.0,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Vollkornbrot": {
+   "kcal": 215,
+   "p": 7.5,
+   "c": 38.0,
+   "f": 1.5,
+   "abteilung": "Brot & Backwaren"
+  },
+  "Vollkorntoast": {
+   "kcal": 245,
+   "p": 9.0,
+   "c": 41.0,
+   "f": 3.5,
+   "abteilung": "Brot & Backwaren"
+  },
+  "Vollkornbrötchen": {
+   "kcal": 245,
+   "p": 9.0,
+   "c": 42.0,
+   "f": 3.5,
+   "abteilung": "Brot & Backwaren"
+  },
+  "Vollkorn-Tortilla": {
+   "kcal": 300,
+   "p": 9.0,
+   "c": 48.0,
+   "f": 7.0,
+   "abteilung": "Brot & Backwaren"
+  },
+  "Reiswaffeln": {
+   "kcal": 385,
+   "p": 8.0,
+   "c": 80.0,
+   "f": 3.0,
+   "abteilung": "Brot & Backwaren"
+  },
+  "Kichererbsen (Dose, abgetropft)": {
+   "kcal": 125,
+   "p": 7.0,
+   "c": 17.0,
+   "f": 2.6,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Kidneybohnen (Dose, abgetropft)": {
+   "kcal": 100,
+   "p": 7.0,
+   "c": 13.0,
+   "f": 0.5,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Mais (Dose, abgetropft)": {
+   "kcal": 80,
+   "p": 2.6,
+   "c": 13.0,
+   "f": 1.7,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Gehackte Tomaten (Dose)": {
+   "kcal": 22,
+   "p": 1.2,
+   "c": 3.5,
+   "f": 0.2,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Salsa (Glas)": {
+   "kcal": 35,
+   "p": 1.4,
+   "c": 6.0,
+   "f": 0.3,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Kokosmilch (fettreduziert)": {
+   "kcal": 90,
+   "p": 1.0,
+   "c": 2.5,
+   "f": 8.0,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Meerrettich (Glas)": {
+   "kcal": 90,
+   "p": 2.0,
+   "c": 12.0,
+   "f": 3.0,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Apfel": {
+   "kcal": 54,
+   "p": 0.3,
+   "c": 11.4,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Beerenmischung (TK)": {
+   "kcal": 45,
+   "p": 1.0,
+   "c": 7.0,
+   "f": 0.4,
+   "abteilung": "Tiefkühl"
+  },
+  "Cherrytomaten": {
+   "kcal": 20,
+   "p": 1.0,
+   "c": 3.0,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Gurke": {
+   "kcal": 15,
+   "p": 0.6,
+   "c": 2.2,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Paprika rot": {
+   "kcal": 37,
+   "p": 1.3,
+   "c": 6.4,
+   "f": 0.5,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Zwiebel": {
+   "kcal": 28,
+   "p": 1.2,
+   "c": 4.9,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Knoblauch": {
+   "kcal": 140,
+   "p": 6.0,
+   "c": 28.0,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Ingwer": {
+   "kcal": 80,
+   "p": 1.8,
+   "c": 15.0,
+   "f": 0.8,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Lauchzwiebeln": {
+   "kcal": 27,
+   "p": 1.8,
+   "c": 3.3,
+   "f": 0.5,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Zucchini": {
+   "kcal": 20,
+   "p": 1.6,
+   "c": 2.0,
+   "f": 0.4,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Brokkoli": {
+   "kcal": 35,
+   "p": 3.8,
+   "c": 2.7,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Spinat": {
+   "kcal": 23,
+   "p": 2.9,
+   "c": 0.6,
+   "f": 0.4,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Rucola": {
+   "kcal": 25,
+   "p": 2.6,
+   "c": 2.0,
+   "f": 0.7,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Champignons": {
+   "kcal": 22,
+   "p": 3.0,
+   "c": 0.6,
+   "f": 0.3,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Möhre": {
+   "kcal": 36,
+   "p": 1.0,
+   "c": 7.0,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Avocado": {
+   "kcal": 160,
+   "p": 2.0,
+   "c": 1.9,
+   "f": 15.0,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Zitronensaft": {
+   "kcal": 25,
+   "p": 0.4,
+   "c": 2.4,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Limettensaft": {
+   "kcal": 25,
+   "p": 0.4,
+   "c": 2.4,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Petersilie (frisch)": {
+   "kcal": 50,
+   "p": 4.4,
+   "c": 7.4,
+   "f": 0.4,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Schnittlauch (frisch)": {
+   "kcal": 30,
+   "p": 3.6,
+   "c": 1.6,
+   "f": 0.7,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Grüne Bohnen (TK)": {
+   "kcal": 30,
+   "p": 2.0,
+   "c": 5.0,
+   "f": 0.2,
+   "abteilung": "Tiefkühl"
+  },
+  "Asia-Gemüsemischung (TK)": {
+   "kcal": 35,
+   "p": 2.0,
+   "c": 5.0,
+   "f": 0.3,
+   "abteilung": "Tiefkühl"
+  },
+  "Mandeln": {
+   "kcal": 600,
+   "p": 24.0,
+   "c": 5.7,
+   "f": 53.0,
+   "abteilung": "Nüsse, Samen & Trockenfrüchte"
+  },
+  "Olivenöl": {
+   "kcal": 884,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 100.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Rapsöl": {
+   "kcal": 884,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 100.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Sojasauce": {
+   "kcal": 55,
+   "p": 7.0,
+   "c": 5.6,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Honig": {
+   "kcal": 304,
+   "p": 0.3,
+   "c": 80.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Senf (mittelscharf)": {
+   "kcal": 70,
+   "p": 5.0,
+   "c": 5.0,
+   "f": 4.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Balsamico-Essig": {
+   "kcal": 88,
+   "p": 0.5,
+   "c": 17.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Gemüsebrühe (Instantpulver)": {
+   "kcal": 200,
+   "p": 10.0,
+   "c": 25.0,
+   "f": 5.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Salz": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Pfeffer": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Paprikapulver edelsüß": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Kreuzkümmel (gemahlen)": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Currypulver": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Chiliflocken": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Oregano (getrocknet)": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Wasser": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Sonstiges"
+  },
+  "Joghurt 1,5 %": {
+   "kcal": 47,
+   "p": 3.4,
+   "c": 4.1,
+   "f": 1.5,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Hüttenkäse": {
+   "kcal": 98,
+   "p": 12.3,
+   "c": 2.6,
+   "f": 4.3,
+   "abteilung": "Kühlregal & Molkerei"
+  },
+  "Hähnchenbrust-Aufschnitt": {
+   "kcal": 100,
+   "p": 21.0,
+   "c": 1.0,
+   "f": 1.5,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Putenhackfleisch": {
+   "kcal": 130,
+   "p": 20.0,
+   "c": 0.0,
+   "f": 5.5,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Räucherforellenfilet": {
+   "kcal": 150,
+   "p": 23.0,
+   "c": 0.0,
+   "f": 6.5,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Nordseekrabben (gekocht, geschält)": {
+   "kcal": 85,
+   "p": 18.6,
+   "c": 0.0,
+   "f": 1.4,
+   "abteilung": "Fleisch & Fisch"
+  },
+  "Seelachsfilet (TK)": {
+   "kcal": 80,
+   "p": 18.3,
+   "c": 0.0,
+   "f": 0.9,
+   "abteilung": "Tiefkühl"
+  },
+  "Whey-Proteinpulver (Vanille)": {
+   "kcal": 380,
+   "p": 76.0,
+   "c": 7.0,
+   "f": 6.0,
+   "abteilung": "Sonstiges"
+  },
+  "Whey-Proteinpulver (Schoko)": {
+   "kcal": 380,
+   "p": 74.0,
+   "c": 9.0,
+   "f": 6.0,
+   "abteilung": "Sonstiges"
+  },
+  "Whey-Proteinpulver (neutral)": {
+   "kcal": 375,
+   "p": 80.0,
+   "c": 4.0,
+   "f": 5.0,
+   "abteilung": "Sonstiges"
+  },
+  "Casein-Proteinpulver (Vanille)": {
+   "kcal": 360,
+   "p": 78.0,
+   "c": 5.0,
+   "f": 2.0,
+   "abteilung": "Sonstiges"
+  },
+  "Haferflocken": {
+   "kcal": 372,
+   "p": 13.5,
+   "c": 58.7,
+   "f": 7.0,
+   "abteilung": "Getreide, Nudeln & Hülsenfrüchte"
+  },
+  "Vollkorn-Knäckebrot": {
+   "kcal": 330,
+   "p": 10.0,
+   "c": 60.0,
+   "f": 1.5,
+   "abteilung": "Brot & Backwaren"
+  },
+  "Schwarze Bohnen (Dose, abgetropft)": {
+   "kcal": 110,
+   "p": 7.5,
+   "c": 14.0,
+   "f": 0.5,
+   "abteilung": "Konserven & Gläser"
+  },
+  "Banane": {
+   "kcal": 93,
+   "p": 1.2,
+   "c": 20.0,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Radieschen": {
+   "kcal": 15,
+   "p": 1.0,
+   "c": 2.1,
+   "f": 0.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Romanasalatherzen": {
+   "kcal": 16,
+   "p": 1.2,
+   "c": 1.7,
+   "f": 0.2,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Dill (frisch)": {
+   "kcal": 45,
+   "p": 3.5,
+   "c": 7.0,
+   "f": 1.1,
+   "abteilung": "Obst & Gemüse"
+  },
+  "Erdnussmus": {
+   "kcal": 600,
+   "p": 25.0,
+   "c": 13.0,
+   "f": 49.0,
+   "abteilung": "Nüsse, Samen & Trockenfrüchte"
+  },
+  "Walnüsse": {
+   "kcal": 665,
+   "p": 15.0,
+   "c": 11.0,
+   "f": 63.0,
+   "abteilung": "Nüsse, Samen & Trockenfrüchte"
+  },
+  "Datteln (getrocknet)": {
+   "kcal": 280,
+   "p": 2.5,
+   "c": 66.0,
+   "f": 0.5,
+   "abteilung": "Nüsse, Samen & Trockenfrüchte"
+  },
+  "Kakaopulver (stark entölt)": {
+   "kcal": 350,
+   "p": 20.0,
+   "c": 11.0,
+   "f": 11.0,
+   "abteilung": "Sonstiges"
+  },
+  "Speisestärke": {
+   "kcal": 350,
+   "p": 0.4,
+   "c": 85.0,
+   "f": 0.1,
+   "abteilung": "Sonstiges"
+  },
+  "Backpulver": {
+   "kcal": 160,
+   "p": 0.0,
+   "c": 40.0,
+   "f": 0.0,
+   "abteilung": "Sonstiges"
+  },
+  "Sambal Oelek": {
+   "kcal": 40,
+   "p": 1.5,
+   "c": 6.0,
+   "f": 1.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Gyros-Gewürz": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  },
+  "Zimt (gemahlen)": {
+   "kcal": 0,
+   "p": 0.0,
+   "c": 0.0,
+   "f": 0.0,
+   "abteilung": "Gewürze, Öle & Saucen"
+  }
+ },
+ "recipes": [
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Rührei mit Putenbrust auf Vollkornbrot",
+   "beschreibung": "Cremiges Rührei mit Putenbrust und Lauchzwiebeln auf kräftigem Vollkornbrot – der deutsche Frühstücksklassiker in eiweißreich.",
+   "zeit_min": 10,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Ei",
+     "menge_g": 120,
+     "anzeige": "2 Eier (Größe M)"
+    },
+    {
+     "name": "Putenbrust-Aufschnitt",
+     "menge_g": 50,
+     "anzeige": "3 Scheiben (50 g)"
+    },
+    {
+     "name": "Vollkornbrot",
+     "menge_g": 80,
+     "anzeige": "2 Scheiben (80 g)"
+    },
+    {
+     "name": "Lauchzwiebeln",
+     "menge_g": 15,
+     "anzeige": "1 Lauchzwiebel (15 g)"
+    },
+    {
+     "name": "Cherrytomaten",
+     "menge_g": 80,
+     "anzeige": "6 Cherrytomaten (80 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Schneide die Lauchzwiebel in feine Ringe und die Putenbrust in Streifen.",
+    "Verquirle die Eier mit Salz und Pfeffer in einer Schüssel.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne bei mittlerer Hitze und brate die Putenstreifen 1 Minute an.",
+    "Gib die Eier dazu und schiebe sie mit einem Pfannenwender 2–3 Minuten langsam zusammen, bis sie gerade gestockt sind.",
+    "Streue die Lauchzwiebeln darüber und richte das Rührei auf dem Vollkornbrot an; die Cherrytomaten dazu servieren."
+   ],
+   "tipp": "Statt Putenbrust passt auch Putenschinken – achte beim Kauf darauf, dass er zu 100 % aus Pute besteht."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Lachsbrötchen mit Kräuterquark",
+   "beschreibung": "Knuspriges Vollkornbrötchen mit Räucherlachs, frischem Schnittlauchquark und Gurke – fertig in fünf Minuten.",
+   "zeit_min": 5,
+   "tags": [
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Vollkornbrötchen",
+     "menge_g": 70,
+     "anzeige": "1 Vollkornbrötchen (70 g)"
+    },
+    {
+     "name": "Magerquark",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Räucherlachs",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 50,
+     "anzeige": "¼ Gurke (50 g)"
+    },
+    {
+     "name": "Schnittlauch (frisch)",
+     "menge_g": 5,
+     "anzeige": "1 EL, gehackt (5 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Apfel",
+     "menge_g": 150,
+     "anzeige": "1 Apfel (150 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre den Magerquark mit Schnittlauch, Zitronensaft, Salz und Pfeffer.",
+    "Schneide die Gurke in dünne Scheiben.",
+    "Halbiere das Brötchen und bestreiche beide Hälften mit dem Kräuterquark.",
+    "Belege die Hälften mit Gurke und Räucherlachs und iss den Apfel dazu."
+   ],
+   "tipp": "Das Brötchen 3 Minuten bei 180 °C aufbacken, dann wird es besonders knusprig."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Shakshuka mit Rinderhack",
+   "beschreibung": "Orientalisch gewürzte Tomaten-Paprika-Sauce mit Rinderhack, in der zwei Eier sanft garen – dazu Vollkornbrot zum Dippen.",
+   "zeit_min": 25,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Ei",
+     "menge_g": 120,
+     "anzeige": "2 Eier (Größe M)"
+    },
+    {
+     "name": "Rinderhackfleisch (5 % Fett)",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "name": "Gehackte Tomaten (Dose)",
+     "menge_g": 200,
+     "anzeige": "½ Dose (200 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 100,
+     "anzeige": "½ Paprika (100 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 40,
+     "anzeige": "½ kleine Zwiebel (40 g)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Vollkornbrot",
+     "menge_g": 50,
+     "anzeige": "1 Scheibe (50 g)"
+    },
+    {
+     "name": "Kreuzkümmel (gemahlen)",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Würfle Zwiebel und Paprika klein.",
+    "Erhitze das Olivenöl in einer kleinen Pfanne bei mittlerer Hitze und brate das Rinderhack 3–4 Minuten krümelig an.",
+    "Gib Zwiebel und Paprika dazu und dünste alles 4 Minuten, dann Kreuzkümmel und Paprikapulver kurz mitrösten.",
+    "Rühre die gehackten Tomaten ein, würze mit Salz und Pfeffer und lass die Sauce 5 Minuten köcheln.",
+    "Drücke zwei Mulden in die Sauce, schlage die Eier hinein und gare sie mit Deckel bei niedriger Hitze 6–8 Minuten, bis das Eiweiß fest ist.",
+    "Serviere die Shakshuka direkt aus der Pfanne mit dem Vollkornbrot."
+   ],
+   "tipp": "Die Hack-Tomaten-Sauce lässt sich für 3 Tage vorkochen – morgens nur aufwärmen und die Eier darin garen."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Thunfisch-Avocado-Toast mit Ei",
+   "beschreibung": "Vollkorntoast mit cremiger Thunfisch-Quark-Creme, Avocado und gekochtem Ei – mediterran, sättigend und blitzschnell.",
+   "zeit_min": 10,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Vollkorntoast",
+     "menge_g": 60,
+     "anzeige": "2 Scheiben (60 g)"
+    },
+    {
+     "name": "Thunfisch (Dose, im eigenen Saft, abgetropft)",
+     "menge_g": 80,
+     "anzeige": "½ Dose, abgetropft (80 g)"
+    },
+    {
+     "name": "Magerquark",
+     "menge_g": 40,
+     "anzeige": "2 EL (40 g)"
+    },
+    {
+     "name": "Avocado",
+     "menge_g": 50,
+     "anzeige": "¼ Avocado (50 g)"
+    },
+    {
+     "name": "Ei",
+     "menge_g": 60,
+     "anzeige": "1 Ei (Größe M)"
+    },
+    {
+     "name": "Cherrytomaten",
+     "menge_g": 60,
+     "anzeige": "5 Cherrytomaten (60 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Chiliflocken",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Koche das Ei in siedendem Wasser 8 Minuten, schrecke es kalt ab und pelle es.",
+    "Toaste währenddessen die Brotscheiben goldbraun.",
+    "Vermische Thunfisch, Magerquark, Zitronensaft, Salz und Pfeffer mit einer Gabel.",
+    "Zerdrücke die Avocado auf den Toastscheiben und verteile die Thunfischcreme darauf.",
+    "Belege die Toasts mit Eischeiben und halbierten Cherrytomaten und würze mit Chiliflocken."
+   ],
+   "tipp": "Hart gekochte Eier für mehrere Tage vorkochen – sie halten im Kühlschrank bis zu einer Woche."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Frühstücks-Burrito mit Hähnchen",
+   "beschreibung": "Mexikanischer Wrap mit Rührei, gebratenem Hähnchen, Kidneybohnen, Paprika und Salsa – ideal zum Mitnehmen.",
+   "zeit_min": 20,
+   "tags": [
+    "Meal-Prep",
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Vollkorn-Tortilla",
+     "menge_g": 60,
+     "anzeige": "1 große Tortilla (60 g)"
+    },
+    {
+     "name": "Ei",
+     "menge_g": 60,
+     "anzeige": "1 Ei (Größe M)"
+    },
+    {
+     "name": "Eiklar",
+     "menge_g": 60,
+     "anzeige": "60 g (ca. 2 Eiweiß)"
+    },
+    {
+     "name": "Hähnchenbrustfilet",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "name": "Kidneybohnen (Dose, abgetropft)",
+     "menge_g": 40,
+     "anzeige": "2 EL (40 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 50,
+     "anzeige": "¼ Paprika (50 g)"
+    },
+    {
+     "name": "Salsa (Glas)",
+     "menge_g": 30,
+     "anzeige": "2 EL (30 g)"
+    },
+    {
+     "name": "Gouda (gerieben)",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Schneide das Hähnchen in kleine Würfel und die Paprika in Streifen.",
+    "Erhitze das Rapsöl in einer Pfanne bei mittlerer bis hoher Hitze und brate Hähnchen und Paprika mit Paprikapulver und Salz 5–6 Minuten, bis das Fleisch durchgegart ist.",
+    "Verquirle Ei und Eiklar, gib sie mit den Kidneybohnen in die Pfanne und rühre alles 2 Minuten, bis das Ei gestockt ist.",
+    "Erwärme die Tortilla 20 Sekunden in einer trockenen Pfanne.",
+    "Fülle die Tortilla mit der Mischung, gib Salsa und Gouda darüber, schlage die Seiten ein und rolle sie fest auf."
+   ],
+   "tipp": "Fest in Alufolie gewickelt hält der Burrito 3 Tage im Kühlschrank oder 2 Monate im Gefrierfach – zum Aufwärmen 15 Minuten bei 180 °C in den Ofen."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Teriyaki-Hähnchen-Bowl mit Brokkoli",
+   "beschreibung": "Saftiges Hähnchen in Soja-Honig-Glasur mit Basmatireis, Brokkoli und Möhren – asiatisch und perfekt zum Vorkochen.",
+   "zeit_min": 25,
+   "tags": [
+    "Meal-Prep",
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Basmatireis",
+     "menge_g": 70,
+     "anzeige": "70 g (trocken)"
+    },
+    {
+     "name": "Hähnchenbrustfilet",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Brokkoli",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Möhre",
+     "menge_g": 80,
+     "anzeige": "1 Möhre (80 g)"
+    },
+    {
+     "name": "Sojasauce",
+     "menge_g": 20,
+     "anzeige": "1½ EL (20 g)"
+    },
+    {
+     "name": "Honig",
+     "menge_g": 10,
+     "anzeige": "1 TL (10 g)"
+    },
+    {
+     "name": "Ingwer",
+     "menge_g": 5,
+     "anzeige": "1 cm Stück (5 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 5,
+     "anzeige": "1 Zehe (5 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "2 EL"
+    }
+   ],
+   "zubereitung": [
+    "Koche den Reis nach Packungsanweisung (ca. 12 Minuten).",
+    "Teile den Brokkoli in Röschen, schneide die Möhre in dünne Scheiben und gare beides die letzten 5 Minuten über dem Reis oder in wenig Wasser.",
+    "Verrühre Sojasauce, Honig, 2 EL Wasser sowie fein geriebenen Ingwer und Knoblauch zu einer Sauce.",
+    "Schneide das Hähnchen in Streifen und brate es im Rapsöl bei hoher Hitze 5–6 Minuten goldbraun.",
+    "Gieße die Sauce dazu und lass sie 1–2 Minuten einkochen, bis das Hähnchen glänzend überzogen ist.",
+    "Richte Reis, Gemüse und Hähnchen in einer Schüssel an."
+   ],
+   "tipp": "In Meal-Prep-Boxen hält die Bowl 3 Tage im Kühlschrank; Sesam oder Lauchzwiebeln obendrauf geben Extra-Crunch."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Chili con Carne mit Rinderhack und Reis",
+   "beschreibung": "Kräftiges mexikanisches Chili mit magerem Rinderhack, Bohnen und Mais – ein Topf, der sich perfekt für mehrere Tage vorkochen lässt.",
+   "zeit_min": 35,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Rinderhackfleisch (5 % Fett)",
+     "menge_g": 125,
+     "anzeige": "125 g"
+    },
+    {
+     "name": "Kidneybohnen (Dose, abgetropft)",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Mais (Dose, abgetropft)",
+     "menge_g": 50,
+     "anzeige": "50 g"
+    },
+    {
+     "name": "Gehackte Tomaten (Dose)",
+     "menge_g": 200,
+     "anzeige": "½ Dose (200 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 100,
+     "anzeige": "½ Paprika (100 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 50,
+     "anzeige": "½ Zwiebel (50 g)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Basmatireis",
+     "menge_g": 50,
+     "anzeige": "50 g (trocken)"
+    },
+    {
+     "name": "Kreuzkümmel (gemahlen)",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Chiliflocken",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Würfle Zwiebel und Paprika.",
+    "Brate das Rinderhack im Olivenöl bei hoher Hitze 4–5 Minuten krümelig an.",
+    "Gib Zwiebel, Paprika und die Gewürze dazu und brate alles 3 Minuten mit.",
+    "Rühre gehackte Tomaten, Kidneybohnen und Mais ein und lass das Chili zugedeckt 20 Minuten bei niedriger Hitze köcheln.",
+    "Koche währenddessen den Reis nach Packungsanweisung.",
+    "Schmecke das Chili mit Salz ab und serviere es mit dem Reis."
+   ],
+   "tipp": "Gleich die vierfache Menge kochen: Das Chili hält 4 Tage im Kühlschrank und lässt sich portionsweise einfrieren."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Vollkornpasta mit Thunfisch und Tomaten",
+   "beschreibung": "Mediterrane Pasta mit Thunfisch, geschmorten Cherrytomaten, Zucchini, Rucola und Parmesan – schneller als jeder Lieferdienst.",
+   "zeit_min": 18,
+   "tags": [
+    "vor dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Vollkornnudeln",
+     "menge_g": 90,
+     "anzeige": "90 g (trocken)"
+    },
+    {
+     "name": "Thunfisch (Dose, im eigenen Saft, abgetropft)",
+     "menge_g": 120,
+     "anzeige": "1 Dose, abgetropft (120 g)"
+    },
+    {
+     "name": "Cherrytomaten",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Zucchini",
+     "menge_g": 100,
+     "anzeige": "½ Zucchini (100 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 5,
+     "anzeige": "1 Zehe (5 g)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Parmesan",
+     "menge_g": 10,
+     "anzeige": "1 EL, gerieben (10 g)"
+    },
+    {
+     "name": "Rucola",
+     "menge_g": 20,
+     "anzeige": "1 Handvoll (20 g)"
+    },
+    {
+     "name": "Oregano (getrocknet)",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Koche die Nudeln in reichlich Salzwasser nach Packungsanweisung (ca. 10 Minuten) bissfest.",
+    "Würfle die Zucchini, halbiere die Cherrytomaten und hacke den Knoblauch.",
+    "Brate Zucchini und Knoblauch im Olivenöl bei mittlerer Hitze 3 Minuten, gib dann die Tomaten dazu und schmore alles 3 Minuten weiter.",
+    "Rühre den Thunfisch und den Oregano unter und erwärme ihn 1 Minute.",
+    "Gieße die Nudeln ab, schwenke sie in der Sauce und würze mit Salz und Pfeffer.",
+    "Serviere die Pasta mit Rucola und Parmesan."
+   ],
+   "tipp": "Ein Schuss Nudelwasser macht die Sauce sämiger, ganz ohne Sahne."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Orientalischer Couscous-Salat mit Hähnchen",
+   "beschreibung": "Frischer Couscous-Salat mit Kreuzkümmel-Hähnchen, Kichererbsen, Gurke, Paprika, Petersilie und Feta – kalt genauso gut wie warm.",
+   "zeit_min": 18,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Couscous",
+     "menge_g": 60,
+     "anzeige": "60 g (trocken)"
+    },
+    {
+     "name": "Hähnchenbrustfilet",
+     "menge_g": 120,
+     "anzeige": "120 g"
+    },
+    {
+     "name": "Kichererbsen (Dose, abgetropft)",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 100,
+     "anzeige": "½ Gurke (100 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 80,
+     "anzeige": "½ kleine Paprika (80 g)"
+    },
+    {
+     "name": "Petersilie (frisch)",
+     "menge_g": 10,
+     "anzeige": "½ Bund (10 g)"
+    },
+    {
+     "name": "Feta",
+     "menge_g": 30,
+     "anzeige": "30 g"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 g)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Kreuzkümmel (gemahlen)",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "70 ml (kochend)"
+    }
+   ],
+   "zubereitung": [
+    "Übergieße den Couscous mit 70 ml kochendem, leicht gesalzenem Wasser, decke ihn ab und lass ihn 5 Minuten quellen.",
+    "Schneide das Hähnchen in Streifen, würze es mit Kreuzkümmel und Salz und brate es in der Hälfte des Olivenöls bei mittlerer bis hoher Hitze 6–7 Minuten durch.",
+    "Würfle Gurke und Paprika und hacke die Petersilie.",
+    "Lockere den Couscous mit einer Gabel auf und vermische ihn mit Gemüse, Kichererbsen, Zitronensaft und dem restlichen Olivenöl.",
+    "Gib das Hähnchen darauf und zerbröckle den Feta darüber."
+   ],
+   "tipp": "Für die Lunchbox Hähnchen und Feta getrennt einpacken – so bleibt alles 3 Tage frisch."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Putengeschnetzeltes mit Champignons und Kartoffeln",
+   "beschreibung": "Deutsches Wohlfühlessen in leicht: zartes Putengeschnetzeltes in cremiger Champignonsauce mit Kartoffeln und grünen Bohnen.",
+   "zeit_min": 25,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Putenbrustfilet",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Champignons",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 50,
+     "anzeige": "½ Zwiebel (50 g)"
+    },
+    {
+     "name": "Kartoffeln",
+     "menge_g": 250,
+     "anzeige": "3 mittelgroße Kartoffeln (250 g)"
+    },
+    {
+     "name": "Grüne Bohnen (TK)",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 100,
+     "anzeige": "100 ml"
+    },
+    {
+     "name": "Frischkäse light",
+     "menge_g": 30,
+     "anzeige": "2 EL (30 g)"
+    },
+    {
+     "name": "Gemüsebrühe (Instantpulver)",
+     "menge_g": 3,
+     "anzeige": "1 TL (3 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Petersilie (frisch)",
+     "menge_g": 5,
+     "anzeige": "1 EL, gehackt (5 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Schäle die Kartoffeln, viertele sie und koche sie in Salzwasser 18–20 Minuten gar; die Bohnen die letzten 8 Minuten mitgaren.",
+    "Schneide die Pute in Streifen, die Champignons in Scheiben und die Zwiebel in Würfel.",
+    "Brate die Putenstreifen im Rapsöl bei hoher Hitze 3–4 Minuten an und nimm sie aus der Pfanne.",
+    "Brate Champignons und Zwiebel in derselben Pfanne 4 Minuten, lösche mit Milch ab und rühre Brühpulver und Frischkäse ein.",
+    "Lass die Sauce 2 Minuten köcheln, gib das Fleisch zurück und erwärme es 1 Minute; mit Salz und Pfeffer abschmecken.",
+    "Serviere das Geschnetzelte mit Kartoffeln und Bohnen und streue Petersilie darüber."
+   ],
+   "tipp": "Statt Kartoffeln passen auch 70 g Vollkornreis oder Vollkornspätzle."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Ofenlachs mit Brokkoli und Süßkartoffel",
+   "beschreibung": "Lachsfilet mit Zitrone vom Blech, dazu geröstete Süßkartoffelspalten und Brokkoli – ein Blech, kaum Abwasch.",
+   "zeit_min": 30,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Lachsfilet",
+     "menge_g": 125,
+     "anzeige": "1 Filet (125 g)"
+    },
+    {
+     "name": "Süßkartoffel",
+     "menge_g": 200,
+     "anzeige": "1 kleine Süßkartoffel (200 g)"
+    },
+    {
+     "name": "Brokkoli",
+     "menge_g": 200,
+     "anzeige": "200 g"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Heize den Ofen auf 200 °C Ober-/Unterhitze vor.",
+    "Schneide die Süßkartoffel in Spalten, vermische sie mit dem Olivenöl, Paprikapulver und Salz und backe sie auf einem Blech mit Backpapier 10 Minuten.",
+    "Teile den Brokkoli in Röschen und lege ihn zusammen mit dem Lachs auf das Blech; den Lachs mit Zitronensaft, Salz und Pfeffer würzen.",
+    "Backe alles weitere 12–15 Minuten, bis der Lachs innen gerade glasig-rosa ist.",
+    "Richte Lachs, Süßkartoffel und Brokkoli auf einem Teller an."
+   ],
+   "tipp": "Ein Klecks Skyr mit Zitrone und Dill passt hervorragend als leichter Dip."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Thai-Garnelen-Curry mit Gemüse",
+   "beschreibung": "Mildes Kokos-Curry mit Garnelen, viel Gemüse, Ingwer und Limette auf etwas Basmatireis – asiatisch und in 18 Minuten fertig.",
+   "zeit_min": 18,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Garnelen (TK, roh, geschält)",
+     "menge_g": 200,
+     "anzeige": "200 g (aufgetaut)"
+    },
+    {
+     "name": "Asia-Gemüsemischung (TK)",
+     "menge_g": 250,
+     "anzeige": "250 g"
+    },
+    {
+     "name": "Kokosmilch (fettreduziert)",
+     "menge_g": 100,
+     "anzeige": "100 ml"
+    },
+    {
+     "name": "Basmatireis",
+     "menge_g": 50,
+     "anzeige": "50 g (trocken)"
+    },
+    {
+     "name": "Sojasauce",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 g)"
+    },
+    {
+     "name": "Ingwer",
+     "menge_g": 5,
+     "anzeige": "1 cm Stück (5 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 5,
+     "anzeige": "1 Zehe (5 g)"
+    },
+    {
+     "name": "Limettensaft",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Currypulver",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    }
+   ],
+   "zubereitung": [
+    "Setze den Reis nach Packungsanweisung auf (ca. 12 Minuten).",
+    "Reibe Ingwer und Knoblauch fein und dünste sie im Rapsöl mit dem Currypulver 1 Minute bei mittlerer Hitze an.",
+    "Gib das TK-Gemüse dazu und brate es 4 Minuten bei hoher Hitze.",
+    "Gieße Kokosmilch und Sojasauce an und lass alles 3 Minuten köcheln.",
+    "Gib die Garnelen hinein und gare sie 3–4 Minuten, bis sie rosa und durchgegart sind.",
+    "Schmecke das Curry mit Limettensaft ab und serviere es mit dem Reis."
+   ],
+   "tipp": "Für noch weniger Kohlenhydrate den Reis weglassen und 100 g Brokkoli mehr ins Curry geben."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Kabeljau in Senfsauce mit Spinat",
+   "beschreibung": "Zarter Kabeljau in cremiger Senfsauce mit Salzkartoffeln und Rahmspinat – norddeutscher Klassiker, leicht gemacht.",
+   "zeit_min": 25,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Kabeljaufilet",
+     "menge_g": 180,
+     "anzeige": "180 g"
+    },
+    {
+     "name": "Kartoffeln",
+     "menge_g": 250,
+     "anzeige": "3 mittelgroße Kartoffeln (250 g)"
+    },
+    {
+     "name": "Spinat",
+     "menge_g": 150,
+     "anzeige": "150 g (frisch)"
+    },
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 100,
+     "anzeige": "100 ml"
+    },
+    {
+     "name": "Frischkäse light",
+     "menge_g": 30,
+     "anzeige": "2 EL (30 g)"
+    },
+    {
+     "name": "Senf (mittelscharf)",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 30,
+     "anzeige": "¼ Zwiebel (30 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 3,
+     "anzeige": "½ Zehe (3 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Schäle die Kartoffeln und koche sie in Salzwasser 20 Minuten gar.",
+    "Würze den Kabeljau mit Salz und Pfeffer und brate ihn in der Hälfte des Rapsöls bei mittlerer Hitze von jeder Seite 3–4 Minuten.",
+    "Dünste in einem kleinen Topf die gewürfelte Zwiebel im restlichen Öl an, gieße die Milch dazu und rühre Senf und Frischkäse ein; 2 Minuten sanft köcheln lassen.",
+    "Lass den Spinat mit gehacktem Knoblauch und 2 EL Senfsauce in einer Pfanne 2 Minuten zusammenfallen und würze ihn mit Salz.",
+    "Richte Fisch, Kartoffeln und Spinat an und gieße die Senfsauce über den Fisch."
+   ],
+   "tipp": "TK-Kabeljau vorher über Nacht im Kühlschrank auftauen und gut trocken tupfen, dann brät er schön an."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Lammfilet mit Ofengemüse und Tzatziki",
+   "beschreibung": "Rosa gebratenes Lammfilet auf mediterranem Ofengemüse mit Bulgur und frischem Skyr-Tzatziki.",
+   "zeit_min": 35,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Lammfilet",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Zucchini",
+     "menge_g": 150,
+     "anzeige": "1 kleine Zucchini (150 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 150,
+     "anzeige": "1 Paprika (150 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 50,
+     "anzeige": "½ rote Zwiebel (50 g)"
+    },
+    {
+     "name": "Bulgur",
+     "menge_g": 40,
+     "anzeige": "40 g (trocken)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Skyr natur",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 60,
+     "anzeige": "1 Stück (60 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 3,
+     "anzeige": "½ Zehe (3 g)"
+    },
+    {
+     "name": "Oregano (getrocknet)",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "80 ml"
+    }
+   ],
+   "zubereitung": [
+    "Heize den Ofen auf 200 °C Ober-/Unterhitze vor.",
+    "Schneide Zucchini, Paprika und Zwiebel in grobe Stücke, vermische sie mit 2 TL Olivenöl, Oregano und Salz und röste sie auf einem Blech 25 Minuten.",
+    "Koche den Bulgur in 80 ml Salzwasser 10 Minuten und lass ihn zugedeckt quellen.",
+    "Raspel die Gurke, drücke sie aus und verrühre sie mit Skyr, gepresstem Knoblauch, Salz und Pfeffer zu Tzatziki.",
+    "Brate das Lammfilet im restlichen Öl bei hoher Hitze rundum 6–8 Minuten an, sodass es innen rosa bleibt, und lass es 3 Minuten ruhen.",
+    "Schneide das Lamm in Scheiben und serviere es auf Ofengemüse und Bulgur mit dem Tzatziki."
+   ],
+   "tipp": "Lammlachse oder Lammhüfte funktionieren genauso – einfach 1–2 Minuten länger braten."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Rindersteak auf Rucola-Tomaten-Salat",
+   "beschreibung": "Kurz gebratenes Hüftsteak in Streifen auf Rucola mit Cherrytomaten, Balsamico und Parmesan – leicht, mediterran und in 15 Minuten fertig.",
+   "zeit_min": 15,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Rinderhüftsteak",
+     "menge_g": 180,
+     "anzeige": "1 Steak (180 g)"
+    },
+    {
+     "name": "Rucola",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "name": "Cherrytomaten",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Parmesan",
+     "menge_g": 15,
+     "anzeige": "15 g (gehobelt)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 15,
+     "anzeige": "1½ EL (15 g)"
+    },
+    {
+     "name": "Balsamico-Essig",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Vollkornbrot",
+     "menge_g": 60,
+     "anzeige": "1 dicke Scheibe (60 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Nimm das Steak 10 Minuten vor dem Braten aus dem Kühlschrank und tupfe es trocken.",
+    "Erhitze 1 TL Olivenöl in einer Pfanne sehr stark und brate das Steak von jeder Seite 2–3 Minuten (medium); danach salzen, pfeffern und 3 Minuten ruhen lassen.",
+    "Verrühre das restliche Olivenöl mit Balsamico, Salz und Pfeffer zu einem Dressing.",
+    "Mische Rucola und halbierte Cherrytomaten mit dem Dressing.",
+    "Schneide das Steak in dünne Streifen, lege es auf den Salat, hoble den Parmesan darüber und reiche das Brot dazu."
+   ],
+   "tipp": "Statt Steak schmeckt auch Hähnchenbrust – dann 5–6 Minuten pro Seite braten."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Putenröllchen mit Frischkäse",
+   "beschreibung": "Putenbrustscheiben mit Frischkäse und knackigen Gurkenstiften gerollt, dazu Reiswaffeln – der schnelle Snack fürs Büro.",
+   "zeit_min": 5,
+   "tags": [
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Putenbrust-Aufschnitt",
+     "menge_g": 80,
+     "anzeige": "5 Scheiben (80 g)"
+    },
+    {
+     "name": "Frischkäse light",
+     "menge_g": 30,
+     "anzeige": "2 EL (30 g)"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 80,
+     "anzeige": "1 Stück (80 g)"
+    },
+    {
+     "name": "Reiswaffeln",
+     "menge_g": 16,
+     "anzeige": "2 Reiswaffeln (16 g)"
+    },
+    {
+     "name": "Schnittlauch (frisch)",
+     "menge_g": 3,
+     "anzeige": "1 TL, gehackt (3 g)"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Schneide die Gurke in lange, dünne Stifte.",
+    "Verrühre den Frischkäse mit Schnittlauch und Pfeffer.",
+    "Bestreiche die Putenscheiben mit dem Frischkäse, lege je einen Gurkenstift darauf und rolle sie auf.",
+    "Iss die Röllchen mit den Reiswaffeln."
+   ],
+   "tipp": "Mit Zahnstochern fixiert halten die Röllchen in der Box bis zum Nachmittag."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Roastbeef-Reiswaffeln mit Meerrettichquark",
+   "beschreibung": "Knusprige Reiswaffeln mit scharfem Meerrettichquark, zartem Roastbeef und Gurke.",
+   "zeit_min": 5,
+   "tags": [
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Reiswaffeln",
+     "menge_g": 24,
+     "anzeige": "3 Reiswaffeln (24 g)"
+    },
+    {
+     "name": "Roastbeef (Aufschnitt)",
+     "menge_g": 60,
+     "anzeige": "4 dünne Scheiben (60 g)"
+    },
+    {
+     "name": "Magerquark",
+     "menge_g": 40,
+     "anzeige": "2 EL (40 g)"
+    },
+    {
+     "name": "Meerrettich (Glas)",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 40,
+     "anzeige": "6 Scheiben (40 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre den Magerquark mit Meerrettich und einer Prise Salz.",
+    "Bestreiche die Reiswaffeln mit dem Quark.",
+    "Belege sie mit Gurkenscheiben und Roastbeef und iss sie sofort, damit sie knusprig bleiben."
+   ],
+   "tipp": "Statt Roastbeef schmeckt auch Räucherlachs mit Meerrettich."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Frittata-Muffins mit Pute und Spinat",
+   "beschreibung": "Herzhafte Ei-Muffins mit Putenbrust, Spinat, Paprika und Gouda aus dem Ofen – warm oder kalt ein idealer Vorrats-Snack.",
+   "zeit_min": 25,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Ei",
+     "menge_g": 120,
+     "anzeige": "2 Eier (Größe M)"
+    },
+    {
+     "name": "Putenbrust-Aufschnitt",
+     "menge_g": 30,
+     "anzeige": "2 Scheiben (30 g)"
+    },
+    {
+     "name": "Spinat",
+     "menge_g": 30,
+     "anzeige": "1 Handvoll (30 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 30,
+     "anzeige": "30 g"
+    },
+    {
+     "name": "Gouda (gerieben)",
+     "menge_g": 10,
+     "anzeige": "1 EL (10 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Heize den Ofen auf 180 °C Ober-/Unterhitze vor und fette 2 Mulden eines Muffinblechs leicht ein oder lege Papierförmchen hinein.",
+    "Schneide Putenbrust, Spinat und Paprika klein und verteile alles auf die Mulden.",
+    "Verquirle die Eier mit Salz und Pfeffer und gieße sie darüber.",
+    "Streue den Gouda darauf und backe die Muffins 18–20 Minuten, bis sie fest und goldbraun sind."
+   ],
+   "tipp": "Gleich ein ganzes Blech backen: Die Muffins halten 4 Tage im Kühlschrank und lassen sich auch einfrieren."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Skyr mit Beeren und Mandeln",
+   "beschreibung": "Cremiger Skyr mit fruchtigen Beeren, einem Hauch Honig und gerösteten Mandeln – süß, frisch und eiweißreich.",
+   "zeit_min": 5,
+   "tags": [
+    "ohne Kochen",
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Skyr natur",
+     "menge_g": 200,
+     "anzeige": "200 g"
+    },
+    {
+     "name": "Beerenmischung (TK)",
+     "menge_g": 100,
+     "anzeige": "100 g (aufgetaut)"
+    },
+    {
+     "name": "Mandeln",
+     "menge_g": 10,
+     "anzeige": "1 EL, gehackt (10 g)"
+    },
+    {
+     "name": "Honig",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    }
+   ],
+   "zubereitung": [
+    "Taue die Beeren über Nacht im Kühlschrank oder 2 Minuten in der Mikrowelle auf.",
+    "Röste die gehackten Mandeln in einer trockenen Pfanne 2 Minuten bei mittlerer Hitze.",
+    "Gib den Skyr in eine Schale, verteile Beeren und Mandeln darauf und beträufle alles mit Honig."
+   ],
+   "tipp": "Der Beerensaft färbt den Skyr – wer mag, rührt ihn einfach unter."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Herzhafte Protein-Waffeln mit Räucherlachs",
+   "beschreibung": "Knusprige Haferwaffeln mit neutralem Whey, belegt mit Räucherlachs, Frischkäse und Gurke – ein Frühstück wie im Café.",
+   "zeit_min": 15,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Haferflocken",
+     "menge_g": 40,
+     "anzeige": "4 EL (40 g)"
+    },
+    {
+     "name": "Ei",
+     "menge_g": 60,
+     "anzeige": "1 Ei (Größe M)"
+    },
+    {
+     "name": "Whey-Proteinpulver (neutral)",
+     "menge_g": 20,
+     "anzeige": "1 kleiner Messlöffel (20 g)"
+    },
+    {
+     "name": "Magerquark",
+     "menge_g": 50,
+     "anzeige": "2 EL (50 g)"
+    },
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 40,
+     "anzeige": "40 ml"
+    },
+    {
+     "name": "Backpulver",
+     "menge_g": 3,
+     "anzeige": "½ TL (3 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 3,
+     "anzeige": "etwas zum Einfetten (3 g)"
+    },
+    {
+     "name": "Räucherlachs",
+     "menge_g": 50,
+     "anzeige": "2 Scheiben (50 g)"
+    },
+    {
+     "name": "Frischkäse light",
+     "menge_g": 20,
+     "anzeige": "1 EL (20 g)"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 60,
+     "anzeige": "¼ Gurke (60 g)"
+    },
+    {
+     "name": "Dill (frisch)",
+     "menge_g": 2,
+     "anzeige": "einige Zweige"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Heize das Waffeleisen auf mittlerer Stufe vor.",
+    "Püriere Haferflocken, Ei, Proteinpulver, Magerquark, Milch, Backpulver und Salz mit dem Stabmixer zu einem dickflüssigen Teig und lass ihn 3 Minuten quellen.",
+    "Fette das Waffeleisen dünn mit Rapsöl ein und backe aus dem Teig 2 Waffeln je 3–4 Minuten goldbraun.",
+    "Schneide die Gurke in dünne Scheiben.",
+    "Bestreiche die Waffeln mit Frischkäse, lege Räucherlachs und Gurke darauf und garniere mit Dill."
+   ],
+   "tipp": "Ohne Pulver: Nimm 100 g Magerquark statt 50 g und 10 g mehr Haferflocken. Die Waffeln lassen sich gut einfrieren und im Toaster aufbacken."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "American Protein-Pancakes mit knuspriger Putenbrust",
+   "beschreibung": "Fluffige Bananen-Vanille-Pancakes mit Beeren und kross gebratener Putenbrust – der süß-salzige Diner-Klassiker ohne Schwein.",
+   "zeit_min": 15,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Haferflocken",
+     "menge_g": 40,
+     "anzeige": "4 EL (40 g)"
+    },
+    {
+     "name": "Banane",
+     "menge_g": 60,
+     "anzeige": "½ Banane (60 g)"
+    },
+    {
+     "name": "Ei",
+     "menge_g": 60,
+     "anzeige": "1 Ei (Größe M)"
+    },
+    {
+     "name": "Whey-Proteinpulver (Vanille)",
+     "menge_g": 25,
+     "anzeige": "1 Messlöffel (25 g)"
+    },
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 50,
+     "anzeige": "50 ml"
+    },
+    {
+     "name": "Backpulver",
+     "menge_g": 3,
+     "anzeige": "½ TL (3 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 3,
+     "anzeige": "½ TL (3 g)"
+    },
+    {
+     "name": "Putenbrust-Aufschnitt",
+     "menge_g": 40,
+     "anzeige": "3 Scheiben (40 g)"
+    },
+    {
+     "name": "Beerenmischung (TK)",
+     "menge_g": 80,
+     "anzeige": "1 Handvoll (80 g)"
+    }
+   ],
+   "zubereitung": [
+    "Lass die Beeren antauen oder erwärme sie 1 Minute in einem kleinen Topf.",
+    "Püriere Haferflocken, Banane, Ei, Proteinpulver, Milch und Backpulver zu einem glatten Teig.",
+    "Erhitze eine beschichtete Pfanne mit dem Rapsöl bei mittlerer Hitze und backe 4–5 kleine Pancakes je 1–2 Minuten pro Seite, bis sie goldbraun sind.",
+    "Brate die Putenbrustscheiben anschließend in derselben Pfanne ohne zusätzliches Fett 1–2 Minuten pro Seite knusprig.",
+    "Staple die Pancakes, gib die Beeren darüber und serviere die knusprige Putenbrust daneben."
+   ],
+   "tipp": "Ohne Pulver: 80 g Magerquark in den Teig rühren. Wer es süßer mag, gibt 1 TL Honig über die Beeren."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Protein-Tassenbrot mit Hähnchenbrust und Avocado",
+   "beschreibung": "Warmes Eiweißbrot aus der Mikrowelle in 2 Minuten, belegt mit Hähnchenbrust, Avocado und Tomaten.",
+   "zeit_min": 7,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Ei",
+     "menge_g": 60,
+     "anzeige": "1 Ei (Größe M)"
+    },
+    {
+     "name": "Magerquark",
+     "menge_g": 50,
+     "anzeige": "2 EL (50 g)"
+    },
+    {
+     "name": "Haferflocken",
+     "menge_g": 30,
+     "anzeige": "3 EL (30 g)"
+    },
+    {
+     "name": "Whey-Proteinpulver (neutral)",
+     "menge_g": 15,
+     "anzeige": "½ Messlöffel (15 g)"
+    },
+    {
+     "name": "Backpulver",
+     "menge_g": 3,
+     "anzeige": "½ TL (3 g)"
+    },
+    {
+     "name": "Hähnchenbrust-Aufschnitt",
+     "menge_g": 50,
+     "anzeige": "3 Scheiben (50 g)"
+    },
+    {
+     "name": "Avocado",
+     "menge_g": 50,
+     "anzeige": "⅓ Avocado (50 g)"
+    },
+    {
+     "name": "Cherrytomaten",
+     "menge_g": 80,
+     "anzeige": "6 Cherrytomaten (80 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre Ei, Magerquark, Haferflocken, Proteinpulver, Backpulver und Salz in einer großen, mikrowellengeeigneten Tasse zu einem glatten Teig.",
+    "Gare das Brot bei 800 Watt etwa 90 Sekunden in der Mikrowelle, bis es aufgegangen und in der Mitte fest ist.",
+    "Stürze es aus der Tasse, lass es 1 Minute abkühlen und schneide es quer in 2 Scheiben.",
+    "Zerdrücke die Avocado mit Salz und Pfeffer und streiche sie auf die Scheiben.",
+    "Belege das Brot mit der Hähnchenbrust und serviere die halbierten Cherrytomaten dazu."
+   ],
+   "tipp": "Ohne Pulver: 1 EL mehr Haferflocken und 1 Eiklar zusätzlich verwenden. Für eine knusprige Kruste die Scheiben kurz toasten."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Bauernfrühstück mit Pute",
+   "beschreibung": "Herzhafte Bratkartoffeln mit Ei, Putenbrust und Zwiebeln aus einer Pfanne – deftig, sättigend und ganz ohne Speck.",
+   "zeit_min": 20,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Kartoffeln",
+     "menge_g": 200,
+     "anzeige": "2 mittelgroße Pellkartoffeln, gekocht (200 g)"
+    },
+    {
+     "name": "Ei",
+     "menge_g": 120,
+     "anzeige": "2 Eier (Größe M)"
+    },
+    {
+     "name": "Eiklar",
+     "menge_g": 60,
+     "anzeige": "60 g (ca. 2 Eiklar)"
+    },
+    {
+     "name": "Putenbrust-Aufschnitt",
+     "menge_g": 60,
+     "anzeige": "4 Scheiben (60 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 40,
+     "anzeige": "½ Zwiebel (40 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 8,
+     "anzeige": "2 TL (8 g)"
+    },
+    {
+     "name": "Schnittlauch (frisch)",
+     "menge_g": 5,
+     "anzeige": "1 EL Röllchen (5 g)"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 100,
+     "anzeige": "⅓ Gurke (100 g)"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Schneide die gekochten Kartoffeln in Scheiben, die Zwiebel in Würfel und die Putenbrust in Streifen.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne bei mittlerer bis hoher Hitze und brate die Kartoffeln 8–10 Minuten goldbraun, dabei gelegentlich wenden.",
+    "Gib Zwiebeln und Putenbrust dazu und brate alles weitere 2 Minuten.",
+    "Verquirle Eier und Eiklar mit Salz, Pfeffer und Paprikapulver, gieße die Mischung über die Kartoffeln und lass sie bei mittlerer Hitze 3 Minuten stocken.",
+    "Bestreue das Bauernfrühstück mit Schnittlauch und serviere die Gurke in Scheiben dazu."
+   ],
+   "tipp": "Koche am Vorabend ein paar Kartoffeln mehr – mit Pellkartoffeln vom Vortag werden die Bratkartoffeln besonders knusprig."
+  },
+  {
+   "mahlzeit": "Frühstück",
+   "name": "Räucherforellen-Brot mit Hüttenkäse und Radieschen",
+   "beschreibung": "Kräftiges Vollkornbrot mit cremigem Hüttenkäse, zarter Räucherforelle und knackigen Radieschen – norddeutsch frisch und in 5 Minuten fertig.",
+   "zeit_min": 5,
+   "tags": [
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Vollkornbrot",
+     "menge_g": 80,
+     "anzeige": "2 Scheiben (80 g)"
+    },
+    {
+     "name": "Hüttenkäse",
+     "menge_g": 100,
+     "anzeige": "½ Becher (100 g)"
+    },
+    {
+     "name": "Räucherforellenfilet",
+     "menge_g": 80,
+     "anzeige": "1 Filet (80 g)"
+    },
+    {
+     "name": "Radieschen",
+     "menge_g": 60,
+     "anzeige": "5 Radieschen (60 g)"
+    },
+    {
+     "name": "Meerrettich (Glas)",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Schnittlauch (frisch)",
+     "menge_g": 5,
+     "anzeige": "1 EL Röllchen (5 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre den Hüttenkäse mit Meerrettich, Zitronensaft, der Hälfte des Schnittlauchs und Pfeffer.",
+    "Schneide die Radieschen in feine Scheiben.",
+    "Zupfe das Forellenfilet in mundgerechte Stücke.",
+    "Bestreiche die Brotscheiben mit dem Hüttenkäse, verteile Forelle und Radieschen darauf und streue den restlichen Schnittlauch darüber."
+   ],
+   "tipp": "Räucherforelle findest du im Kühlregal bei Fisch – alternativ passt geräucherte Makrele, die hat aber etwas mehr Fett."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Hähnchen-Gyros-Bowl mit Reis und Tzatziki",
+   "beschreibung": "Würzige Gyros-Streifen vom Hähnchen mit Reis, Tomaten-Gurken-Salat und frischem Skyr-Tzatziki – Griechenland in der Schüssel.",
+   "zeit_min": 25,
+   "tags": [
+    "Meal-Prep",
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Hähnchenbrustfilet",
+     "menge_g": 150,
+     "anzeige": "1 Filet (150 g)"
+    },
+    {
+     "name": "Basmatireis",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "name": "Skyr natur",
+     "menge_g": 100,
+     "anzeige": "100 g"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 120,
+     "anzeige": "⅓ Gurke (120 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 3,
+     "anzeige": "1 kleine Zehe (3 g)"
+    },
+    {
+     "name": "Cherrytomaten",
+     "menge_g": 100,
+     "anzeige": "8 Cherrytomaten (100 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 30,
+     "anzeige": "¼ rote Zwiebel (30 g)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Gyros-Gewürz",
+     "menge_g": 0,
+     "anzeige": "2 TL"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "120 ml"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Bringe den Reis mit 120 ml Wasser und einer Prise Salz zum Kochen und lass ihn zugedeckt bei kleiner Hitze 12–15 Minuten quellen.",
+    "Schneide das Hähnchen in dünne Streifen und vermische es mit Gyros-Gewürz und 1 TL Olivenöl.",
+    "Raspel die Hälfte der Gurke, drücke sie aus und verrühre sie mit Skyr, gepresstem Knoblauch und Salz zu Tzatziki.",
+    "Brate die Hähnchenstreifen in einer heißen Pfanne 5–6 Minuten, bis sie rundum gebräunt und durchgegart sind.",
+    "Würfle die restliche Gurke, Tomaten und Zwiebel, mische sie mit dem übrigen Olivenöl und richte alles mit Reis und Tzatziki in einer Schüssel an."
+   ],
+   "tipp": "Für Meal-Prep Tzatziki separat aufbewahren – so bleibt es frisch und der Salat wird nicht wässrig."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Nasi Goreng mit Garnelen",
+   "beschreibung": "Indonesischer gebratener Reis mit Garnelen, Gemüse und Spiegelei – leicht scharf und ideal für Reis vom Vortag.",
+   "zeit_min": 25,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Basmatireis",
+     "menge_g": 70,
+     "anzeige": "70 g"
+    },
+    {
+     "name": "Garnelen (TK, roh, geschält)",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Ei",
+     "menge_g": 60,
+     "anzeige": "1 Ei (Größe M)"
+    },
+    {
+     "name": "Asia-Gemüsemischung (TK)",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Lauchzwiebeln",
+     "menge_g": 20,
+     "anzeige": "1 Lauchzwiebel (20 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 3,
+     "anzeige": "1 kleine Zehe (3 g)"
+    },
+    {
+     "name": "Sojasauce",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 g)"
+    },
+    {
+     "name": "Sambal Oelek",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "140 ml"
+    }
+   ],
+   "zubereitung": [
+    "Koche den Reis mit 140 ml Wasser 12–15 Minuten und lass ihn offen ausdampfen – oder nimm gekochten Reis vom Vortag.",
+    "Taue die Garnelen kurz unter kaltem Wasser an und tupfe sie trocken.",
+    "Erhitze 1 TL Rapsöl im Wok oder in einer großen Pfanne und brate Garnelen, Knoblauch und Asia-Gemüse 4–5 Minuten bei hoher Hitze.",
+    "Gib den Reis, Sojasauce und Sambal Oelek dazu und brate alles weitere 3 Minuten unter Rühren.",
+    "Brate das Ei im restlichen Öl als Spiegelei und serviere es mit den Lauchzwiebelringen auf dem Reis."
+   ],
+   "tipp": "Statt Garnelen schmeckt Nasi Goreng auch mit Hähnchenbruststreifen – dann 2 Minuten länger braten."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Rinder-Köfte mit Kräuter-Bulgur und Joghurtdip",
+   "beschreibung": "Saftige, mit Kreuzkümmel gewürzte Hackröllchen vom Rind auf Petersilien-Bulgur mit kühlem Skyr-Dip – orientalisches Meal-Prep-Essen.",
+   "zeit_min": 30,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Rinderhackfleisch (5 % Fett)",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Bulgur",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 30,
+     "anzeige": "¼ Zwiebel (30 g)"
+    },
+    {
+     "name": "Petersilie (frisch)",
+     "menge_g": 10,
+     "anzeige": "½ Bund (10 g)"
+    },
+    {
+     "name": "Skyr natur",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 80,
+     "anzeige": "¼ Gurke (80 g)"
+    },
+    {
+     "name": "Cherrytomaten",
+     "menge_g": 100,
+     "anzeige": "8 Cherrytomaten (100 g)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 8,
+     "anzeige": "2 TL (8 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Gemüsebrühe (Instantpulver)",
+     "menge_g": 3,
+     "anzeige": "½ TL (3 g)"
+    },
+    {
+     "name": "Kreuzkümmel (gemahlen)",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "120 ml"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Übergieße den Bulgur mit 120 ml kochendem Wasser und der Gemüsebrühe und lass ihn abgedeckt 10 Minuten quellen.",
+    "Reibe die Zwiebel fein und verknete sie mit Hackfleisch, der Hälfte der gehackten Petersilie, Kreuzkümmel, Paprikapulver, Salz und Pfeffer.",
+    "Forme daraus 4 längliche Köfte und brate sie in 1 TL Olivenöl bei mittlerer Hitze 8–10 Minuten rundum braun und durch.",
+    "Verrühre Skyr mit der Hälfte der fein geriebenen Gurke, Zitronensaft und Salz zum Dip.",
+    "Lockere den Bulgur mit restlicher Petersilie, dem übrigen Olivenöl, gewürfelter Gurke und halbierten Tomaten auf und serviere ihn mit Köfte und Dip."
+   ],
+   "tipp": "Die Köfte lassen sich auch im Ofen bei 200 °C Umluft in 15 Minuten garen – praktisch, wenn du mehrere Portionen vorbereitest."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Lachs-Spinat-Pasta in Zitronen-Frischkäsesauce",
+   "beschreibung": "Vollkornpasta mit gebratenen Lachswürfeln und Blattspinat in einer leichten, cremigen Zitronensauce.",
+   "zeit_min": 18,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Vollkornnudeln",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Lachsfilet",
+     "menge_g": 120,
+     "anzeige": "1 Filet (120 g)"
+    },
+    {
+     "name": "Spinat",
+     "menge_g": 100,
+     "anzeige": "2 Handvoll (100 g)"
+    },
+    {
+     "name": "Frischkäse light",
+     "menge_g": 30,
+     "anzeige": "1½ EL (30 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 3,
+     "anzeige": "1 kleine Zehe (3 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Parmesan",
+     "menge_g": 10,
+     "anzeige": "1 EL gerieben (10 g)"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "50 ml Nudelwasser"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Koche die Nudeln in Salzwasser nach Packungsangabe bissfest (ca. 10 Minuten) und fange 50 ml Nudelwasser auf.",
+    "Schneide den Lachs in Würfel und brate ihn in einer beschichteten Pfanne ohne Öl bei mittlerer Hitze 4 Minuten, bis er gerade durch ist; aus der Pfanne nehmen.",
+    "Dünste den gehackten Knoblauch und den Spinat in derselben Pfanne 1–2 Minuten, bis der Spinat zusammenfällt.",
+    "Rühre Frischkäse, Nudelwasser und Zitronensaft ein, gib die Nudeln dazu und schwenke alles durch.",
+    "Hebe den Lachs vorsichtig unter, würze mit Salz und Pfeffer und bestreue die Pasta mit Parmesan."
+   ],
+   "tipp": "Statt frischem Lachs kannst du TK-Lachs verwenden – über Nacht im Kühlschrank auftauen lassen."
+  },
+  {
+   "mahlzeit": "Mittagessen",
+   "name": "Burrito-Bowl mit Putenhack und schwarzen Bohnen",
+   "beschreibung": "Mexikanisch gewürztes Putenhack mit Reis, schwarzen Bohnen, Mais, Paprika, Salsa und Avocado – alles, was einen Burrito ausmacht, ohne Tortilla.",
+   "zeit_min": 18,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Putenhackfleisch",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Basmatireis",
+     "menge_g": 50,
+     "anzeige": "50 g"
+    },
+    {
+     "name": "Schwarze Bohnen (Dose, abgetropft)",
+     "menge_g": 60,
+     "anzeige": "3 EL (60 g)"
+    },
+    {
+     "name": "Mais (Dose, abgetropft)",
+     "menge_g": 40,
+     "anzeige": "2 EL (40 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 80,
+     "anzeige": "½ Paprika (80 g)"
+    },
+    {
+     "name": "Salsa (Glas)",
+     "menge_g": 60,
+     "anzeige": "3 EL (60 g)"
+    },
+    {
+     "name": "Avocado",
+     "menge_g": 40,
+     "anzeige": "¼ Avocado (40 g)"
+    },
+    {
+     "name": "Limettensaft",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Kreuzkümmel (gemahlen)",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "100 ml"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Koche den Reis mit 100 ml Wasser und einer Prise Salz zugedeckt 12–15 Minuten bei kleiner Hitze.",
+    "Brate das Putenhack im Rapsöl bei hoher Hitze 5–6 Minuten krümelig, bis es durchgegart ist, und würze es mit Kreuzkümmel, Paprikapulver und Salz.",
+    "Gib Bohnen und Mais für die letzten 2 Minuten mit in die Pfanne, damit sie warm werden.",
+    "Würfle Paprika und Avocado und beträufle die Avocado mit Limettensaft.",
+    "Richte Reis, Hackmischung, Paprika, Avocado und Salsa nebeneinander in einer Schüssel an."
+   ],
+   "tipp": "Für Meal-Prep die Avocado erst vor dem Essen aufschneiden. Mit Rinderhack (5 % Fett) schmeckt die Bowl genauso gut."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Rindfleisch-Brokkoli-Wok mit Ingwer",
+   "beschreibung": "Zarte Rindfleischstreifen und viel Brokkoli in glänzender Soja-Ingwer-Sauce mit einer kleinen Portion Reis – der Asia-Imbiss-Klassiker, nur leichter.",
+   "zeit_min": 20,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Rinderhüftsteak",
+     "menge_g": 170,
+     "anzeige": "1 Steak (170 g)"
+    },
+    {
+     "name": "Brokkoli",
+     "menge_g": 250,
+     "anzeige": "½ Kopf (250 g)"
+    },
+    {
+     "name": "Basmatireis",
+     "menge_g": 50,
+     "anzeige": "50 g"
+    },
+    {
+     "name": "Sojasauce",
+     "menge_g": 20,
+     "anzeige": "1 EL + 1 TL (20 g)"
+    },
+    {
+     "name": "Speisestärke",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Honig",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Knoblauch",
+     "menge_g": 3,
+     "anzeige": "1 kleine Zehe (3 g)"
+    },
+    {
+     "name": "Ingwer",
+     "menge_g": 5,
+     "anzeige": "1 daumennagelgroßes Stück (5 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "100 ml + 50 ml"
+    }
+   ],
+   "zubereitung": [
+    "Koche den Reis mit 100 ml Wasser zugedeckt 12–15 Minuten bei kleiner Hitze.",
+    "Schneide das Steak quer zur Faser in dünne Streifen und teile den Brokkoli in kleine Röschen.",
+    "Verrühre Sojasauce, Honig, Speisestärke, geriebenen Ingwer, gepressten Knoblauch und 50 ml Wasser zu einer Sauce.",
+    "Brate das Rindfleisch in 1 TL Rapsöl im sehr heißen Wok 1–2 Minuten scharf an und nimm es heraus; brate dann den Brokkoli im restlichen Öl 4 Minuten unter Rühren.",
+    "Gib Fleisch und Sauce zurück in den Wok, lass alles 1 Minute aufkochen, bis die Sauce bindet, und serviere es mit dem Reis."
+   ],
+   "tipp": "Wer abends Kohlenhydrate sparen will, lässt den Reis weg und nimmt 100 g Brokkoli mehr."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Gefüllte Paprika mit Putenhack und Feta",
+   "beschreibung": "Ofenpaprika, gefüllt mit würzigem Putenhack, Couscous und Feta, in Tomatensauce gegart – mediterranes Wohlfühlessen.",
+   "zeit_min": 45,
+   "tags": [
+    "Meal-Prep"
+   ],
+   "zutaten": [
+    {
+     "name": "Paprika rot",
+     "menge_g": 300,
+     "anzeige": "2 Paprika (300 g)"
+    },
+    {
+     "name": "Putenhackfleisch",
+     "menge_g": 150,
+     "anzeige": "150 g"
+    },
+    {
+     "name": "Couscous",
+     "menge_g": 35,
+     "anzeige": "35 g"
+    },
+    {
+     "name": "Feta",
+     "menge_g": 30,
+     "anzeige": "30 g"
+    },
+    {
+     "name": "Gehackte Tomaten (Dose)",
+     "menge_g": 200,
+     "anzeige": "½ Dose (200 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 40,
+     "anzeige": "½ Zwiebel (40 g)"
+    },
+    {
+     "name": "Olivenöl",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Oregano (getrocknet)",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Wasser",
+     "menge_g": 0,
+     "anzeige": "40 ml"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Heize den Ofen auf 200 °C Ober-/Unterhitze vor und übergieße den Couscous mit 40 ml kochendem Wasser; 5 Minuten quellen lassen.",
+    "Schneide von den Paprika einen Deckel ab und entferne die Kerne.",
+    "Brate Zwiebelwürfel und Putenhack im Olivenöl 5 Minuten krümelig und würze mit Oregano, Paprikapulver, Salz und Pfeffer.",
+    "Mische Hack, Couscous und zwei Drittel des zerbröselten Fetas und fülle die Paprika damit.",
+    "Gieße die gehackten Tomaten in eine kleine Auflaufform, setze die Paprika hinein, streue den restlichen Feta darüber und backe alles 25–30 Minuten, bis die Paprika weich sind."
+   ],
+   "tipp": "Gleich 3–4 Portionen vorbereiten: Die gefüllten Paprika halten sich 3 Tage im Kühlschrank und schmecken aufgewärmt sehr gut."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Seelachs mit Gurken-Dill-Salat und Petersilienkartoffeln",
+   "beschreibung": "Goldbraun gebratenes Seelachsfilet mit Kartoffeln und einem frischen Gurkensalat mit Joghurt-Dill-Dressing – ein leichter deutscher Abendteller.",
+   "zeit_min": 25,
+   "tags": [],
+   "zutaten": [
+    {
+     "name": "Seelachsfilet (TK)",
+     "menge_g": 200,
+     "anzeige": "2 Filets (200 g)"
+    },
+    {
+     "name": "Kartoffeln",
+     "menge_g": 250,
+     "anzeige": "3 kleine Kartoffeln (250 g)"
+    },
+    {
+     "name": "Gurke",
+     "menge_g": 200,
+     "anzeige": "⅔ Gurke (200 g)"
+    },
+    {
+     "name": "Joghurt 1,5 %",
+     "menge_g": 80,
+     "anzeige": "4 EL (80 g)"
+    },
+    {
+     "name": "Dill (frisch)",
+     "menge_g": 5,
+     "anzeige": "1 EL gehackt (5 g)"
+    },
+    {
+     "name": "Petersilie (frisch)",
+     "menge_g": 5,
+     "anzeige": "1 EL gehackt (5 g)"
+    },
+    {
+     "name": "Senf (mittelscharf)",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 10,
+     "anzeige": "2 TL (10 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Taue den Seelachs vorher im Kühlschrank auf oder nach Packungsangabe; tupfe ihn trocken.",
+    "Schäle die Kartoffeln, viertele sie und koche sie in Salzwasser 15–18 Minuten weich.",
+    "Hoble die Gurke in dünne Scheiben und vermenge sie mit Joghurt, Senf, der Hälfte des Zitronensafts, Dill, Salz und Pfeffer.",
+    "Würze den Fisch mit Salz und Pfeffer und brate ihn im Rapsöl bei mittlerer Hitze 3–4 Minuten pro Seite goldbraun; mit dem restlichen Zitronensaft beträufeln.",
+    "Schwenke die abgegossenen Kartoffeln in der Petersilie und serviere sie mit Fisch und Gurkensalat."
+   ],
+   "tipp": "Seelachs ist günstig und mager – statt Seelachs passt auch Kabeljau oder Alaska-Seelachs aus der Tiefkühltruhe."
+  },
+  {
+   "mahlzeit": "Abendessen",
+   "name": "Fajita-Salat mit Hähnchen und Tortilla-Chips",
+   "beschreibung": "Knackiger Romanasalat mit scharf gebratenen Hähnchen- und Paprikastreifen, Bohnen, Mais, Avocado und selbst gebackenen Tortilla-Chips.",
+   "zeit_min": 18,
+   "tags": [
+    "nach dem Training"
+   ],
+   "zutaten": [
+    {
+     "name": "Hähnchenbrustfilet",
+     "menge_g": 160,
+     "anzeige": "1 großes Filet (160 g)"
+    },
+    {
+     "name": "Paprika rot",
+     "menge_g": 150,
+     "anzeige": "1 Paprika (150 g)"
+    },
+    {
+     "name": "Zwiebel",
+     "menge_g": 40,
+     "anzeige": "½ rote Zwiebel (40 g)"
+    },
+    {
+     "name": "Romanasalatherzen",
+     "menge_g": 100,
+     "anzeige": "1 Salatherz (100 g)"
+    },
+    {
+     "name": "Schwarze Bohnen (Dose, abgetropft)",
+     "menge_g": 60,
+     "anzeige": "3 EL (60 g)"
+    },
+    {
+     "name": "Mais (Dose, abgetropft)",
+     "menge_g": 40,
+     "anzeige": "2 EL (40 g)"
+    },
+    {
+     "name": "Avocado",
+     "menge_g": 40,
+     "anzeige": "¼ Avocado (40 g)"
+    },
+    {
+     "name": "Vollkorn-Tortilla",
+     "menge_g": 30,
+     "anzeige": "½ Tortilla (30 g)"
+    },
+    {
+     "name": "Salsa (Glas)",
+     "menge_g": 50,
+     "anzeige": "2 EL (50 g)"
+    },
+    {
+     "name": "Limettensaft",
+     "menge_g": 15,
+     "anzeige": "1 EL (15 g)"
+    },
+    {
+     "name": "Rapsöl",
+     "menge_g": 8,
+     "anzeige": "2 TL (8 g)"
+    },
+    {
+     "name": "Paprikapulver edelsüß",
+     "menge_g": 0,
+     "anzeige": "1 TL"
+    },
+    {
+     "name": "Kreuzkümmel (gemahlen)",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Heize den Ofen auf 200 °C Umluft vor, schneide die Tortilla in Dreiecke und backe sie auf einem Blech 5–6 Minuten knusprig.",
+    "Schneide Hähnchen, Paprika und Zwiebel in Streifen und würze das Hähnchen mit Paprikapulver, Kreuzkümmel und Salz.",
+    "Brate Hähnchen und Gemüse im Rapsöl bei hoher Hitze 6–7 Minuten, bis das Fleisch durchgegart ist.",
+    "Verrühre Salsa und Limettensaft zum Dressing.",
+    "Schneide den Salat in Streifen, verteile ihn mit Bohnen, Mais und Avocadowürfeln auf einem Teller, gib die warme Fajita-Pfanne darauf, beträufle alles mit Dressing und streue die Chips darüber."
+   ],
+   "tipp": "Statt Tortilla-Chips aus dem Ofen funktioniert auch eine Reiswaffel, grob zerbröselt."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Zimt-Casein-Quarkcreme mit Walnüssen",
+   "beschreibung": "Dicke Vanille-Quarkcreme mit Casein, Zimt und Walnüssen – sättigt lange und ist ideal als Spätsnack am Abend.",
+   "zeit_min": 3,
+   "tags": [
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Magerquark",
+     "menge_g": 125,
+     "anzeige": "125 g"
+    },
+    {
+     "name": "Casein-Proteinpulver (Vanille)",
+     "menge_g": 20,
+     "anzeige": "⅔ Messlöffel (20 g)"
+    },
+    {
+     "name": "Milch 1,5 %",
+     "menge_g": 40,
+     "anzeige": "40 ml"
+    },
+    {
+     "name": "Walnüsse",
+     "menge_g": 10,
+     "anzeige": "3 Walnusshälften (10 g)"
+    },
+    {
+     "name": "Zimt (gemahlen)",
+     "menge_g": 0,
+     "anzeige": "½ TL"
+    }
+   ],
+   "zubereitung": [
+    "Verrühre Magerquark, Casein und Milch mit einem Schneebesen zu einer glatten, dicken Creme.",
+    "Würze die Creme mit Zimt.",
+    "Hacke die Walnüsse grob und streue sie darüber."
+   ],
+   "tipp": "Casein wird langsam verdaut und eignet sich deshalb gut vor dem Schlafengehen. Ohne Pulver: 200 g Magerquark und 1 TL Honig nehmen."
+  },
+  {
+   "mahlzeit": "Snack",
+   "name": "Gurkenschiffchen mit Krabben-Skyr",
+   "beschreibung": "Ausgehöhlte Gurkenhälften gefüllt mit Nordseekrabben in Dill-Skyr, dazu ein Vollkorn-Knäckebrot – frisch, leicht und eiweißreich.",
+   "zeit_min": 5,
+   "tags": [
+    "ohne Kochen"
+   ],
+   "zutaten": [
+    {
+     "name": "Gurke",
+     "menge_g": 150,
+     "anzeige": "½ Gurke (150 g)"
+    },
+    {
+     "name": "Nordseekrabben (gekocht, geschält)",
+     "menge_g": 60,
+     "anzeige": "60 g"
+    },
+    {
+     "name": "Skyr natur",
+     "menge_g": 80,
+     "anzeige": "80 g"
+    },
+    {
+     "name": "Dill (frisch)",
+     "menge_g": 3,
+     "anzeige": "1 TL gehackt (3 g)"
+    },
+    {
+     "name": "Zitronensaft",
+     "menge_g": 5,
+     "anzeige": "1 TL (5 g)"
+    },
+    {
+     "name": "Vollkorn-Knäckebrot",
+     "menge_g": 20,
+     "anzeige": "2 Scheiben (20 g)"
+    },
+    {
+     "name": "Salz",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    },
+    {
+     "name": "Pfeffer",
+     "menge_g": 0,
+     "anzeige": "1 Prise"
+    }
+   ],
+   "zubereitung": [
+    "Halbiere die Gurke längs und kratze die Kerne mit einem Teelöffel heraus.",
+    "Verrühre Skyr mit Dill, Zitronensaft, Salz und Pfeffer und hebe die Krabben unter.",
+    "Fülle die Krabbenmasse in die Gurkenhälften und serviere das Knäckebrot dazu."
+   ],
+   "tipp": "Nordseekrabben gibt es abgepackt im Kühlregal an der Fischtheke. Alternativ schmeckt die Füllung mit Thunfisch im eigenen Saft."
+  }
+ ]
+}

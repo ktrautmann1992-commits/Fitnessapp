@@ -1,9 +1,8 @@
 import json,re,unicodedata,os
 from collections import Counter
 W=os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/daten/'
-files=[('vegan','vegan'),('vegan-2','vegan'),('vegetarisch','vegetarisch'),('vegetarisch-2','vegetarisch'),('fleisch','fleisch'),('fleisch-2','fleisch'),
-       ('ohne-schwein','ohne-schwein'),('ohne-schwein-2','ohne-schwein'),('schnell','schnell'),('pre','pre-workout'),('post','post-workout'),
-       ('cardio','cardio'),('wettkampf','wettkampf'),('mealprep','meal-prep'),('fastfood','fitness-fast-food'),('airfryer','heissluftfritteuse'),('airfryer-2','heissluftfritteuse'),('dessert','protein-dessert'),('eis','sommer-eis'),('budget','spar-kueche')]
+files=[('vegan','vegan'),('vegan-2','vegan'),('vegetarisch','vegetarisch'),('vegetarisch-2','vegetarisch'),('fleisch','fleisch'),('fleisch-2','fleisch'),('fleisch-3','fleisch'),('schnell','schnell'),('pre','pre-workout'),('post','post-workout'),
+       ('cardio','cardio'),('wettkampf','wettkampf'),('mealprep','meal-prep'),('fastfood','fitness-fast-food'),('airfryer','heissluftfritteuse'),('airfryer-2','heissluftfritteuse'),('dessert','protein-dessert'),('eis','sommer-eis'),('budget','spar-kueche'),('lowcarb','low-carb')]
 fix=lambda t:t.replace('⅓','1/3').replace('⅔','2/3')
 def slug(s):
     s=s.lower().replace('ä','ae').replace('ö','oe').replace('ü','ue').replace('ß','ss').replace('&','und')
@@ -33,8 +32,8 @@ def diets(cat,r):
         return ['vegetarisch','fleisch','ohne-schwein']
     return {'vegan':['vegan','vegetarisch','fleisch','ohne-schwein'],'vegetarisch':['vegetarisch','fleisch','ohne-schwein'],
             'ohne-schwein':['fleisch','ohne-schwein'],'fleisch':['fleisch'] if PORK.search(zs) else ['fleisch','ohne-schwein']}[cat]
-CAT={'vegan':'Vegan','vegetarisch':'Vegetarisch','fleisch':'Mit Fleisch','ohne-schwein':'Ohne Schweinefleisch','schnell':'Fertig in 10 Minuten','pre-workout':'Pre-Workout',
-     'post-workout':'Post-Workout','cardio':'Cardio & Ausdauer','wettkampf':'Wettkampftag','meal-prep':'Meal-Prep-Wochenpläne','fitness-fast-food':'Fitness-Fast-Food','heissluftfritteuse':'Heißluftfritteuse','protein-dessert':'Protein-Desserts','sommer-eis':'Sommer-Eis','spar-kueche':'Spar-Küche'}
+CAT={'vegan':'Vegan','vegetarisch':'Vegetarisch','fleisch':'Mit Fleisch & Fisch','schnell':'Fertig in 10 Minuten','pre-workout':'Pre-Workout',
+     'post-workout':'Post-Workout','cardio':'Cardio & Ausdauer','wettkampf':'Wettkampftag','meal-prep':'Meal-Prep-Wochenpläne','fitness-fast-food':'Fitness-Fast-Food','heissluftfritteuse':'Heißluftfritteuse','protein-dessert':'Protein-Desserts','sommer-eis':'Sommer-Eis','spar-kueche':'Spar-Küche','low-carb':'Low Carb'}
 used=set(); recipes=[]; ids=set()
 for f,cat,d in raw:
     for r in d['recipes']:
@@ -67,11 +66,11 @@ assert all(z['zutat_id'] in zids for r in recipes for z in r['zutaten'])
 mp=json.loads(fix(open(W+'mealprep.json').read()))['plaene']
 plans=[{'id':slug(p['plan']),'ernaehrungsform':p['plan'],'titel':p['titel'],'beschreibung':p['beschreibung'],
         'rezepte':[r['id'] for r in recipes if r.get('meal_prep_plan')==slug(p['plan'])],'kochtag':p['kochtag'],'aufbewahrung':p['aufbewahrung'],'abendessen_hinweis':p['abendessen_hinweis']} for p in mp]
-seed={'format':'alpha5-rezepte','version':'1.0','stand':'2026-10-11',
+seed={'format':'alpha5-rezepte','version':'1.1','stand':'2026-10-23',
       'hinweise':['Nährwerte pro Portion sind aus den Zutatenmengen berechnet (Richtwerte).','Alle Rezepte haben status "draft" und sollen vor Veröffentlichung fachlich geprüft werden.',
                   'preis_eur_kg_schaetzung sind grobe Discounter-Schätzungen (Stand 2026) und nur für die Spar-Küche gedacht.','Erythrit ist mit 0 kcal angesetzt.',
                   'ernaehrungsformen nennt alle Gruppen, für die ein Rezept geeignet ist (ein veganes Rezept passt z. B. für alle vier).'],
-      'kategorien':[{'id':k,'name':v,'typ':'ernaehrungsform' if k in ('vegan','vegetarisch','fleisch','ohne-schwein') else 'thema'} for k,v in CAT.items()],
+      'kategorien':[{'id':k,'name':v,'typ':'ernaehrungsform' if k in ('vegan','vegetarisch','fleisch') else 'thema'} for k,v in CAT.items()],
       'ernaehrungsformen':[{'id':'vegan','name':'Vegan'},{'id':'vegetarisch','name':'Vegetarisch'},{'id':'fleisch','name':'Mit Fleisch (inkl. Schwein)'},{'id':'ohne-schwein','name':'Ohne Schweinefleisch'}],
       'abteilungen':["Obst & Gemüse","Fleisch & Fisch","Kühlregal & Molkerei","Pflanzliche Alternativen","Brot & Backwaren","Getreide, Nudeln & Hülsenfrüchte","Konserven & Gläser","Nüsse, Samen & Trockenfrüchte","Tiefkühl","Gewürze, Öle & Saucen","Sonstiges"],
       'zutatenlexikon':[e for f in ['teil-kohlenhydrate.json','teil-huelsen-nuesse.json','teil-eiweiss-fette.json'] for e in json.load(open(W+'lexikon/'+f))['eintraege']],
