@@ -34,6 +34,7 @@ import { deSteps } from './de-steps';
 import { deSessionKcal } from './de-session-kcal';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
+import { deTrainingWeek } from './de-training-week';
 
 export const de = {
   common: {
@@ -1632,6 +1633,7 @@ export const de = {
   /** Wettkampf-Ernährung (Phase 10, Etappe W1). */
   competitionNutrition: deCompetitionNutrition,
   day: deDay,
+  trainingWeek: deTrainingWeek,
   weekEval: deWeekEval,
   /** Menüleiste, Übersicht, Fortschritt, Mehr, Mein Konto (docs/PLAN-DASHBOARD.md). */
   tabs: deTabs,

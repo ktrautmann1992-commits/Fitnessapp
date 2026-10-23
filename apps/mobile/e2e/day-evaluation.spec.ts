@@ -145,8 +145,10 @@ test('Heute neutral bis zum Zielbereich, gestern rot mit „fehlt etwas?“, obe
   await expect(page).toHaveURL(new RegExp(`/tag/${MONDAY}$`));
   await heading(page, 'Dein Tag');
   await page.goto('/week');
-  await heading(page, 'Woche');
-  await page.getByTestId(`week-open-day-${MONDAY}`).click();
+  await heading(page, 'Deine Woche');
+  // Woche: ganze Zeile → Tages-Blatt → „Tag auswerten“ (Training-Übersicht 23.10.2026).
+  await page.getByTestId(`week-day-${MONDAY}`).click();
+  await page.getByTestId('day-sheet-day').click();
   await expect(page).toHaveURL(new RegExp(`/tag/${MONDAY}$`));
   await expect(page.getByTestId('day-zone')).toHaveText('✓ Im Zielbereich');
 

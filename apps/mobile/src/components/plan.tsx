@@ -9,24 +9,23 @@ import {
   sessionPaceInfo,
   sessionSafetyNotices,
   type StoredSession,
-  type WeekDay,
 } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { t } from '@/i18n';
 import { workoutInfoLines } from '@/lib/competition-format';
-import { dayLabel, enduranceLines, exerciseLines, weekdayShort } from '@/lib/plan-format';
+import { enduranceLines, exerciseLines } from '@/lib/plan-format';
 import { keyPatternTexts, markText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 
 import { StepList } from './competition';
-import { HeroCard, useAreaColors } from './design';
+import { HeroCard } from './design';
 import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
 import { Text } from '@/components/text';
 
 /**
- * Bausteine für „Heute“ (docs/PLAN-PHASE-3.md 10.2): Einheit, Arzt-Hinweis, Wochenübersicht. Nur Anzeige –
+ * Bausteine für „Heute“ (docs/PLAN-PHASE-3.md 10.2): Einheit und Arzt-Hinweis (Wochen-Leiste: components/training-week.tsx). Nur Anzeige –
  * welche Einheit, welche Regeln und welche Texte kommen aus packages/core bzw. lib/plan-format.ts.
  */
 
@@ -283,89 +282,6 @@ export function SessionCard({
   );
 }
 
-export function WeekOverview({
-  days,
-  selected,
-  onSelect,
-}: {
-  days: readonly WeekDay<StoredSession>[];
-  selected: string;
-  onSelect: (date: string) => void;
-}) {
-  const theme = useThemeColors();
-  const training = useAreaColors('training');
-  return (
-    <View style={styles.week} testID="plan-week">
-      {days.map((day) => {
-        const session = day.session;
-        const status = session
-          ? session.name_de
-          : day.skipped.length > 0
-            ? `${day.skipped[0]?.name_de ?? ''} – ${t.plan.skipped}`
-            : t.plan.restShort;
-        const extra = [
-          day.isToday ? t.plan.todayBadge : null,
-          session?.status === 'completed' ? t.plan.completedBadge : null,
-          session?.is_deload ? t.plan.deloadBadge : null,
-          session?.original_date && session.original_date !== session.scheduled_on
-            ? t.plan.movedFrom(weekdayShort(session.original_date))
-            : null,
-          ...day.movedAway.map((s) => t.plan.movedAway(weekdayShort(s.scheduled_on))),
-          // Erledigte Einheit neben einer offenen am selben Tag (completedOn, z. B. alter Plan) – Etappe D.
-          ...day.alsoCompleted.map((s) => t.plan.alsoCompleted(s.name_de)),
-        ].filter((value): value is string => value !== null);
-        const isSelected = day.date === selected;
-        return (
-          <Pressable
-            key={day.date}
-            accessibilityRole="button"
-            accessibilityLabel={`${dayLabel(day.date)}: ${status}${extra.length > 0 ? ` (${extra.join(', ')})` : ''}`}
-            accessibilityState={{ selected: isSelected }}
-            onPress={() => onSelect(day.date)}
-            style={({ pressed }) => [
-              styles.day,
-              {
-                backgroundColor: theme.surface,
-                borderColor: isSelected || day.isToday ? theme.primary : theme.cardBorder,
-                borderWidth: isSelected ? 3 : day.isToday ? 2 : 1,
-                opacity: pressed ? 0.85 : 1,
-              },
-            ]}
-          >
-            {/* Wochentag als Chip: mit Einheit in der Trainingsfarbe, Ruhetag neutral (Wort steht daneben). */}
-            <View
-              style={[
-                styles.dayChip,
-                { backgroundColor: session ? training.surface : theme.background },
-              ]}
-            >
-              <Text style={[styles.dayName, { color: session ? training.icon : theme.textMuted }]}>
-                {weekdayShort(day.date)}
-              </Text>
-            </View>
-            <View style={styles.dayText}>
-              <Text
-                style={[
-                  styles.dayStatus,
-                  { color: session ? theme.text : theme.textMuted },
-                  session ? { fontWeight: fontWeight.semibold } : null,
-                ]}
-              >
-                {status}
-              </Text>
-              {extra.length > 0 ? (
-                <Text style={[styles.dayExtra, { color: theme.textMuted }]}>
-                  {extra.join(' · ')}
-                </Text>
-              ) : null}
-            </View>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   block: { gap: spacing.xs },
   label: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
@@ -376,25 +292,4 @@ const styles = StyleSheet.create({
   },
   exerciseName: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, lineHeight: 24 },
   exerciseLink: { minHeight: MIN_TOUCH, justifyContent: 'center' },
-  week: { gap: spacing.xs },
-  day: {
-    minHeight: MIN_TOUCH + 8,
-    borderRadius: 16,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  dayChip: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dayName: { fontSize: fontSize.sm, fontWeight: fontWeight.extrabold },
-  dayText: { flex: 1, gap: 2 },
-  dayStatus: { fontSize: fontSize.md, lineHeight: 22 },
-  dayExtra: { fontSize: fontSize.sm, lineHeight: 20 },
 });

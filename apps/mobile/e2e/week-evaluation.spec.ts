@@ -75,7 +75,7 @@ test('Einstiege, Tagesbalken = „Dein Tag“, Ø nur eingetragene Tage, Muster-
 
   // Einstieg aus „Woche“.
   await page.goto('/week');
-  await heading(page, 'Woche');
+  await heading(page, 'Deine Woche');
   await expect(page.getByTestId('week-evaluation')).toHaveAccessibleName(
     'Wochenauswertung für 12.10.2026 bis 18.10.2026 öffnen',
   );
@@ -264,5 +264,5 @@ test('Noch nicht begonnene Woche, ungültige Woche', async ({ page }) => {
   await page.goto('/wochenauswertung?woche=2026-02-30');
   await expect(page.getByTestId('week-eval-invalid')).toContainText('Diese Woche gibt es nicht.');
   await page.getByRole('button', { name: 'Zur Woche' }).click();
-  await heading(page, 'Woche');
+  await heading(page, 'Deine Woche');
 });

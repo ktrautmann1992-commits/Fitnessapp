@@ -7,19 +7,30 @@ import {
   planInfoNotices,
   type PreferenceChange,
   sessionOn,
-  startOfIsoWeek,
-  weekOverview,
+  type StoredSession,
+  type WeekStatusDay,
 } from '@fitnessapp/core';
-import { Redirect, useFocusEffect, useRouter, type Href } from 'expo-router';
+import { spacing } from '@fitnessapp/ui';
+import { Redirect, useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { CycleTodayCard } from '@/components/cycle-entry';
 import { CountdownCard, PhaseBand } from '@/components/competition';
 import { FewerDaysCard, SessionAdjustedNotice } from '@/components/live-adjust';
 import { NutritionTodayCard } from '@/components/nutrition';
-import { Tile } from '@/components/design';
-import { MedicalNotice, SessionCard, WeekOverview } from '@/components/plan';
+import { HeroCard, Tile } from '@/components/design';
+import { MedicalNotice, SessionCard } from '@/components/plan';
+import { Text } from '@/components/text';
+import {
+  CrossDayDialog,
+  DaySheet,
+  type SheetMessage,
+  StripLegend,
+  TrainingToolbar,
+  useWeekStatus,
+  WeekStrip,
+} from '@/components/training-week';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { focusTestId, SwapDialog, type SwapDecision, SwapFeedback } from '@/components/swap';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
@@ -33,23 +44,22 @@ import {
   type SwapTarget,
   swapTargetFor,
 } from '@/data/exercise-swap';
-import {
-  competitionEntry,
-  competitionPlanView,
-  displayedSessionNames,
-  withDisplayedNames,
-} from '@/data/competition';
+import { competitionEntry, competitionPlanView, displayedSessionNames } from '@/data/competition';
 import { stateOverridesFor } from '@/data/live-adjust';
 import { logForSession } from '@/data/log-rows';
 import type { WorkoutDraft } from '@/data/workout-draft';
 import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
 import { planNoticeFor } from '@/data/training-attention';
-import { activePlan, rescheduleInRows } from '@/data/training-plan';
+import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe, todayIso } from '@/lib/format';
 import { workoutTargetLines } from '@/lib/workout-format';
-import { dayLabel, weekdayName } from '@/lib/plan-format';
+import { dayLabel, weekdayName, weekdayShort } from '@/lib/plan-format';
+import { appFont } from '@/lib/fonts';
+import { isoDateParam } from '@/lib/route-param';
+import { useThemeColors } from '@/lib/theme';
+import { entryStats, entryTitle, weekCountText } from '@/lib/week-status-format';
 import { planNameLine, planTitleText } from '@/lib/plan-title';
 import { WeightGoalLifecycleCard, weightGoalOverviewFromRows } from '@/components/weight-goal';
 import {
@@ -64,6 +74,18 @@ import { healthConsentStatus, isReminderDue, HOME_ROUTE, resolveEntryRoute } fro
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { useLargeView } from '@/lib/accessibility';
 
+const W = t.trainingWeek;
+
+/** Browser: zum Abschnitt springen (z. B. „Übungen ansehen“ im Tages-Blatt). */
+function scrollToTestId(testID: string): void {
+  if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+  setTimeout(() => {
+    document
+      .querySelector<HTMLElement>(`[data-testid="${testID}"]`)
+      ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }, 350);
+}
+
 /**
  * „Heute“ (docs/PLAN-PHASE-3.md 10.2/10.3): heutige Einheit mit Arzt-Hinweis, Wochenübersicht, Verschieben,
  * Hinweise und alle Zustände. Vor dem Anzeigen JEDER Einheit wendet prepareSessionForDisplay() die aktuellen
@@ -72,13 +94,28 @@ import { useLargeView } from '@/lib/accessibility';
 export default function TodayScreen() {
   const router = useRouter();
   const app = useApp();
+  const theme = useThemeColors();
   const today = todayIso();
   const clock = new Date();
   const nowMinutes = clock.getHours() * 60 + clock.getMinutes();
-  const [selected, setSelected] = useState(today);
+  const params = useLocalSearchParams<{ tag?: string }>();
+  const dayParam = isoDateParam(params.tag);
+  const [selected, setSelected] = useState(dayParam ?? today);
+  /** Tages-Blatt (Training-Übersicht, docs/PLAN-AUSWERTUNG.md „Training-Übersicht“): offener Tag oder null. */
+  const [sheetDate, setSheetDate] = useState<string | null>(null);
+  const [answerBusy, setAnswerBusy] = useState(false);
+  const week = useWeekStatus(today);
+  // „Übungen ansehen“ aus der Woche: /today?tag=… zeigt die Einheit dieses Tages (Zustand beim Rendern angleichen).
+  const [paramSeen, setParamSeen] = useState(dayParam);
+  if (dayParam !== paramSeen) {
+    setParamSeen(dayParam);
+    if (dayParam) setSelected(dayParam);
+  }
+  useEffect(() => {
+    if (dayParam) scrollToTestId('today-detail');
+  }, [dayParam]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: 'success' | 'danger'; text: string }>();
-  const [skipDialog, setSkipDialog] = useState<string | null>(null);
   const [declineDialog, setDeclineDialog] = useState(false);
   const [discardDraftKey, setDiscardDraftKey] = useState<string | null>(null);
   const [foreignDialog, setForeignDialog] = useState(false);
@@ -118,6 +155,17 @@ export default function TodayScreen() {
   );
   // Bildschirm verlassen → „Rückgängig“ verschwindet (8.2; rückgängig geht dann über die Einstellungen).
   useFocusEffect(useCallback(() => () => setSwapFeedback(null), []));
+  // Frage und Tages-Blatt nur auf dem sichtbaren Bildschirm (Tabs bleiben im Hintergrund geladen).
+  const [focused, setFocused] = useState(true);
+  useFocusEffect(
+    useCallback(() => {
+      setFocused(true);
+      return () => {
+        setFocused(false);
+        setSheetDate(null);
+      };
+    }, []),
+  );
 
   if (app.status.kind === 'loading') {
     return (
@@ -176,34 +224,6 @@ export default function TodayScreen() {
     );
   }
 
-  async function move(sessionId: string) {
-    setBusy(true);
-    setMessage(undefined);
-    try {
-      const result = await app.moveSession(sessionId);
-      if (result.kind === 'moved') {
-        setSelected(result.date);
-        setMessage({ tone: 'success', text: t.plan.moved(weekdayName(result.date)) });
-      } else if (result.kind === 'skipped') {
-        setMessage({ tone: 'success', text: t.plan.skippedResult });
-      } else {
-        setMessage({ tone: 'danger', text: t.errors.planRejected });
-      }
-    } catch (caught) {
-      const sensitive = caught instanceof BackendError && caught.sensitive;
-      setMessage({
-        tone: 'danger',
-        text:
-          caught instanceof BackendError && caught.code === 'network' && sensitive
-            ? t.errors.networkPlan
-            : errorText(caught),
-      });
-    } finally {
-      setBusy(false);
-      setSkipDialog(null);
-    }
-  }
-
   async function submitDraft(draft: WorkoutDraft) {
     setBusy(true);
     try {
@@ -223,18 +243,6 @@ export default function TodayScreen() {
       setMessage({ tone: 'danger', text: errorText(caught) });
     } finally {
       setBusy(false);
-    }
-  }
-
-  /** Verschieben antippen: Ergebnis vorab berechnen – wird gestrichen, erst nachfragen. */
-  function requestMove(sessionId: string) {
-    if (!rows) return;
-    setSwapFeedback(null);
-    const preview = rescheduleInRows(rows, sessionId, today);
-    if (preview.kind === 'skipped') {
-      setSkipDialog(sessionId);
-    } else {
-      void move(sessionId);
     }
   }
 
@@ -394,15 +402,6 @@ export default function TodayScreen() {
   const dialogs = (
     <>
       <ConfirmDialog
-        visible={skipDialog !== null}
-        title={t.plan.skipTitle}
-        message={t.plan.skipText}
-        confirmLabel={t.plan.skipConfirm}
-        onConfirm={() => (skipDialog ? void move(skipDialog) : undefined)}
-        onCancel={() => setSkipDialog(null)}
-        loading={busy}
-      />
-      <ConfirmDialog
         visible={discardDraftKey !== null}
         title={t.workout.discardTitle}
         message={t.workout.discardText}
@@ -490,19 +489,15 @@ export default function TodayScreen() {
   // --- Plan vorhanden -------------------------------------------------------------------------------------
   const plan = active.plan;
   const ownerUserId = app.session?.userId ?? null;
-  const week = blockWeekFor(active.sessions, today);
-  // Wochenübersicht mit den angezeigten (sicheren) Namen (Wächter WP4 M2).
-  const days = weekOverview(
-    withDisplayedNames(active.sessions, displayedSessionNames(rows, active, rules)),
-    today,
-    selected,
-  );
+  const blockWeek = blockWeekFor(active.sessions, today);
+  const displayedNames = displayedSessionNames(rows, active, rules);
   const selectedSession = sessionOn(active.sessions, selected);
   // Nächste Einheit nach dem gewählten Tag – frühestens heute (vergangene Tage verweisen auf heute und später).
   const next = nextPlannedSession(
     active.sessions,
     selected < today ? addDays(today, -1) : selected,
   );
+  const nextFromToday = nextPlannedSession(active.sessions, today);
   // Wettkampfplan (WP4): Phasen-Band „Aufbau · Woche 6 von 14“ für den gewählten Tag, Pace aus der Referenzzeit.
   // Nur ein passender Wettkampfplan zeigt Phasen-Band und Pace (Regel in data/competition.ts, Wächter WP4 H1).
   const planView = competitionPlanView(rows, active, selected, app.offline, rules);
@@ -517,46 +512,50 @@ export default function TodayScreen() {
     library: lib,
     today,
   });
-  // EIN Anzeigeweg (prepareSessionForDisplay im Core): Sicherheitsregeln → Präferenzen → „Nur heute“-Tausche.
-  const display =
-    selectedSession && rules
+
+  /** Anzeige, Vorgabe und Start einer Einheit – für den gewählten Tag (Details) und für heute (Hero-Karte). */
+  function sessionInfo(session: StoredSession | null): SessionInfo | null {
+    if (!session || !rows || !active) return null;
+    // EIN Anzeigeweg (prepareSessionForDisplay im Core): Sicherheitsregeln → Präferenzen → „Nur heute“-Tausche.
+    const display = rules
       ? sessionDisplay({
           rows,
           active,
           library: lib,
           rules,
-          session: selectedSession,
+          session,
           today,
           daySwaps: app.daySwaps,
           ownerUserId,
         })
       : null;
+    // Phase 4: berechnete Vorgabe aus dem Tagebuch (packages/core planWorkout) – nur Kraft, mit Bibliothek.
+    const view =
+      session.kind === 'strength' && lib && rules
+        ? workoutView(rows, lib, rules, session.id, today, {
+            excludeLogId: logForSession(rows, session.id)?.id ?? null,
+            daySwaps: app.daySwaps,
+            ownerUserId,
+            // Live-Anpassung (Phase 4b): wirksame Zustands-Vorgaben (Testmodus mit „Premium simulieren“).
+            stateOverrides: stateOverridesFor(rows, app.liveAdjust.adjustments),
+          })
+        : null;
+    return {
+      display,
+      view,
+      start: startKind(rows, session, today),
+      hasDraft: app.drafts.some((d) => d.key === session.id),
+    };
+  }
+
+  const selectedInfo = sessionInfo(selectedSession);
+  const display = selectedInfo?.display ?? null;
   const shown = display?.shown ?? null;
   const context = display?.context ?? null;
-  // Verschieben/Streichen, solange die Woche des ursprünglichen Termins nicht vorbei ist – auch verpasste
-  // Einheiten an vergangenen Tagen dieser Woche (Regel des Datenbank-Triggers).
-  const canMove =
-    selectedSession !== null &&
-    selectedSession.status === 'planned' &&
-    addDays(startOfIsoWeek(selectedSession.original_date ?? selectedSession.scheduled_on), 6) >=
-      today;
-  const missed = canMove && selectedSession !== null && selectedSession.scheduled_on < today;
-  const firstSession = active.sessions.find((s) => s.status === 'planned');
-  // Phase 4: berechnete Vorgabe aus dem Tagebuch (packages/core planWorkout) – nur Kraft, mit Bibliothek.
-  const view =
-    selectedSession && selectedSession.kind === 'strength' && lib && rules
-      ? workoutView(rows, lib, rules, selectedSession.id, today, {
-          excludeLogId: logForSession(rows, selectedSession.id)?.id ?? null,
-          daySwaps: app.daySwaps,
-          ownerUserId,
-          // Live-Anpassung (Phase 4b): wirksame Zustands-Vorgaben (Testmodus mit „Premium simulieren“).
-          stateOverrides: stateOverridesFor(rows, app.liveAdjust.adjustments),
-        })
-      : null;
+  const view = selectedInfo?.view ?? null;
   const targets = view?.items.map(workoutTargetLines);
-  const start = selectedSession ? startKind(rows, selectedSession, today) : null;
   const log = selectedSession ? logForSession(rows, selectedSession.id) : null;
-  const hasDraft = selectedSession ? app.drafts.some((d) => d.key === selectedSession.id) : false;
+  const hasDraft = selectedInfo?.hasDraft ?? false;
   const pendingUpload =
     selectedSession !== null && app.pendingLogSessionIds.includes(selectedSession.id);
   const swapEnabled =
@@ -567,6 +566,64 @@ export default function TodayScreen() {
   const viewExclusions = supportsPreferences
     ? () => router.push('/ausgeschlossene-uebungen' as Href)
     : null;
+  const firstSession = active.sessions.find((s) => s.status === 'planned');
+
+  // Heute (Hero-Karte): Stand aus dem Wochen-Status – erledigt steht immer am tatsächlichen Tag.
+  const todayDay = week.status?.days.find((d) => d.isToday) ?? null;
+  const todaySession = sessionOn(active.sessions, today);
+  const todayOpen =
+    todaySession && todayDay?.open.some((o) => o.sessionId === todaySession.id)
+      ? todaySession
+      : null;
+  const todayInfo =
+    todayOpen && selectedSession?.id === todayOpen.id ? selectedInfo : sessionInfo(todayOpen);
+  const question =
+    focused && week.assignmentsReady && sheetDate === null && swapTarget === null
+      ? (week.status?.questions[0] ?? null)
+      : null;
+
+  function showMessage(next: SheetMessage) {
+    setMessage({ tone: next.tone === 'danger' ? 'danger' : 'success', text: next.text });
+    scrollToTestId('today');
+  }
+
+  function openDay(date: string) {
+    // Andere Aktion → „Rückgängig“ verschwindet (8.2).
+    setSwapFeedback(null);
+    setMessage(undefined);
+    setSelected(date);
+    setSheetDate(date);
+  }
+
+  /** „Tauschen“: Blatt der heutigen bzw. nächsten offenen Einheit dieser Woche (dort die Tag-Chips). */
+  function openSwapDay() {
+    const days = week.status?.days ?? [];
+    const target =
+      days.find((d) => d.isToday && d.open.length > 0) ??
+      days.find((d) => d.date >= today && d.open.length > 0) ??
+      days.find((d) => d.open.length > 0) ??
+      todayDay;
+    if (target) openDay(target.date);
+  }
+
+  async function answer(sessionId: string | null) {
+    if (!question) return;
+    setAnswerBusy(true);
+    try {
+      await week.decide(question.logId, sessionId);
+      setMessage({
+        tone: 'success',
+        text:
+          sessionId !== null
+            ? W.sheet.countsFor(weekdayShort(question.sessionDate), question.sessionName)
+            : W.sheet.extraUnit,
+      });
+    } catch (caught) {
+      setMessage({ tone: 'danger', text: errorText(caught) });
+    } finally {
+      setAnswerBusy(false);
+    }
+  }
 
   function openSwap(index: number) {
     if (!selectedSession || !display || !lib || !rows) return;
@@ -680,8 +737,50 @@ export default function TodayScreen() {
     }
   }
 
+  const toolbar = (
+    <TrainingToolbar
+      items={[
+        {
+          key: 'calendar',
+          icon: 'calendar',
+          label: W.toolbar.calendar,
+          accessibilityLabel: t.calendar.openA11y,
+          onPress: () => router.push('/kalender' as Href),
+          testID: 'today-calendar',
+        },
+        {
+          key: 'history',
+          icon: 'trend',
+          label: W.toolbar.history,
+          onPress: () => router.push('/history' as Href),
+          testID: 'today-history',
+        },
+        {
+          key: 'swap',
+          icon: 'swap',
+          label: W.toolbar.swap,
+          accessibilityLabel: W.toolbar.swapA11y,
+          role: 'button',
+          onPress: openSwapDay,
+          testID: 'today-swap',
+        },
+        {
+          key: 'exercises',
+          icon: 'book',
+          label: W.toolbar.exercises,
+          accessibilityLabel: t.glossary.allExercises,
+          onPress: () => router.push('/uebungen' as Href),
+          testID: 'today-glossary',
+        },
+      ]}
+    />
+  );
+
   return (
     <Screen area="training" icon="dumbbell" title={t.today.title} testID="today" footer={footer}>
+      <Body muted testID="today-date">
+        {dayLabel(today)}
+      </Body>
       {header}
       {/* Live-Anpassung (Phase 4b, 8.1): offener Vorschlag „Weniger Trainingstage?“ oben. */}
       <FewerDaysCard today={today} />
@@ -723,176 +822,74 @@ export default function TodayScreen() {
           />
         </Notice>
       ) : null}
-      {week ? (
-        <View style={{ gap: 4 }} testID="plan-week-header">
-          <Heading level={2}>
-            {week.weekNo === 0 ? t.plan.week0 : t.plan.weekHeader(week.weekNo, week.weeksInBlock)}
-          </Heading>
-          {week.isIntroWeek ? (
-            <Body muted>
-              {t.plan.introWeek}: {t.plan.introWeekText}
-            </Body>
-          ) : null}
-          {week.isDeload ? (
-            <Body muted>
-              {t.plan.deloadWeek}: {t.plan.deloadWeekText}
-            </Body>
+
+      {/* Arzt-Hinweis vor JEDER Einheit – das Feld liegt am Plan (auch offline). */}
+      {plan.medical_notice && (todayOpen || selectedSession) ? <MedicalNotice /> : null}
+      <TodayHero
+        day={todayDay}
+        session={todayOpen}
+        displayName={todayOpen ? (displayedNames.get(todayOpen.id) ?? todayOpen.name_de) : null}
+        info={todayInfo}
+        exerciseCount={
+          todayOpen ? rows.plannedExercises.filter((e) => e.session_id === todayOpen.id).length : 0
+        }
+        nextText={
+          nextFromToday
+            ? firstSession &&
+              firstSession.id === nextFromToday.id &&
+              firstSession.scheduled_on > today
+              ? t.plan.firstSession(dayLabel(nextFromToday.scheduled_on))
+              : t.plan.nextSession(dayLabel(nextFromToday.scheduled_on), nextFromToday.name_de)
+            : t.plan.noUpcoming
+        }
+        onStart={(id) => router.push(`/workout/${id}` as Href)}
+        onView={(logId) => router.push(`/log/${logId}` as Href)}
+      />
+
+      {/* Deine Woche (Entwurf s1): 7 Tage mit Zustand, Legende, „statt Sa“; Tippen öffnet das Tages-Blatt. */}
+      <View style={styles.weekHead}>
+        <View style={styles.weekTitle} testID="plan-week-title">
+          <Heading level={2}>{W.weekTitle}</Heading>
+          {week.status ? (
+            <Text
+              style={[styles.weekCount, appFont('bold'), { color: theme.textMuted }]}
+              testID="plan-week-count"
+            >
+              · {weekCountText(week.status.summary)}
+            </Text>
           ) : null}
         </View>
-      ) : null}
-
-      {selectedSession && shown ? (
+      </View>
+      {week.status ? (
         <>
-          {/* Arzt-Hinweis vor JEDER Einheit – das Feld liegt am Plan (auch offline). */}
-          {plan.medical_notice ? <MedicalNotice /> : null}
-          <SessionCard
-            hero
-            original={selectedSession}
-            shown={shown}
-            rules={rules}
-            context={context ?? { library: null }}
-            heading={
-              selected === today ? t.plan.todaySession : t.plan.sessionOn(dayLabel(selected))
-            }
-            {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
-            paceProfile={paceProfile}
-            onOpenExercise={(exerciseId) =>
-              router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href)
-            }
-            swap={{
-              enabled: swapEnabled,
-              later: selectedSession.scheduled_on > today,
-              onSwap: openSwap,
-              onUndoDaySwap: (index) => void undoDaySwap(index),
-              onViewExclusions: viewExclusions,
-            }}
-          />
-          {/* Live-Anpassung (Phase 4b, 8.1): Kennzeichen „angepasst“ mit Link zur Erklärung. */}
-          {selectedSession.status === 'planned' ? (
-            <SessionAdjustedNotice session={selectedSession} />
-          ) : null}
-          {/* Vom Core verworfene „Nur heute“-Tausche still aus dem Speicher räumen (8.2). */}
-          <DaySwapCleanup dropped={shown.droppedDaySwaps ?? []} />
-          {swapFeedback ? (
-            <SwapFeedback
-              text={swapFeedback.text}
-              tone={swapFeedback.tone}
-              onUndo={swapFeedback.undo ? () => void undoSwap() : null}
-              undoBusy={swapBusy}
-            />
-          ) : null}
-          {hasDraft &&
-          selectedSession.kind === 'strength' &&
-          selectedSession.status === 'planned' ? (
-            <Body muted testID="plan-swap-draft-hint">
-              {t.swap.draftRunning}
-            </Body>
-          ) : null}
-          {selectedSession.status === 'completed' ? (
-            <Notice tone="success" testID="plan-completed">
-              <Body>{log?.status === 'partial' ? t.today.completedPartly : t.today.completed}</Body>
-              {pendingUpload ? <Body muted>{t.today.pendingUpload}</Body> : null}
-              {log && !hasDraft ? (
-                <Button
-                  label={t.today.viewWorkout}
-                  variant="secondary"
-                  onPress={() => router.push(`/workout/${selectedSession.id}?edit=1` as Href)}
-                  testID="workout-view"
-                />
-              ) : null}
-            </Notice>
-          ) : null}
-          {selectedSession.status === 'planned' &&
-          selected === today &&
-          trainedTodayOther(rows, selectedSession, today) ? (
-            <Notice tone="info" testID="plan-trained-today">
-              {t.today.alreadyTrained}
-            </Notice>
-          ) : null}
-          {start && !hasDraft ? (
-            // Ausdauer braucht keine Übungs-Bibliothek (C2); Kraft erst nach geprüften Übungen (H7).
-            selectedSession.kind === 'strength' && shown.emptyByPreference ? (
-              // Wächter S9: Start deaktiviert, mit sichtbarem Grund (nie eine stumme leere Einheit).
-              <>
-                <Body muted testID="plan-start-disabled">
-                  {t.swap.emptyStartDisabled}
-                </Body>
-                <Button
-                  label={start === 'today' ? t.today.startWorkout : t.today.catchUp}
-                  onPress={() => undefined}
-                  disabled
-                  testID="workout-start"
-                />
-              </>
-            ) : selectedSession.kind === 'strength' && (shown.libraryMissing || !view) ? (
-              <Notice tone="info">{t.today.libraryMissingStart}</Notice>
-            ) : (
-              <>
-                {start === 'catch_up' ? <Body muted>{t.today.catchUpHint}</Body> : null}
-                <Button
-                  label={
-                    selectedSession.kind === 'endurance'
-                      ? start === 'today'
-                        ? t.today.startEndurance
-                        : t.today.catchUpEndurance
-                      : start === 'today'
-                        ? t.today.startWorkout
-                        : t.today.catchUp
-                  }
-                  onPress={() => router.push(`/workout/${selectedSession.id}` as Href)}
-                  testID="workout-start"
-                />
-              </>
-            )
-          ) : null}
-          {missed ? (
-            <Notice tone="info" testID="plan-missed">
-              {t.plan.missed}
-            </Notice>
-          ) : null}
-          {canMove ? (
-            <Button
-              label={t.plan.move}
-              variant="secondary"
-              onPress={() => requestMove(selectedSession.id)}
-              loading={busy}
-            />
-          ) : null}
+          <WeekStrip days={week.status.days} onSelect={openDay} />
+          <StripLegend />
         </>
-      ) : selectedSession ? (
-        <LoadingState label={t.plan.loading} />
-      ) : (
-        <Card>
-          <Heading level={2}>
-            {selected === today ? t.plan.restDay : `${dayLabel(selected)}: ${t.plan.restShort}`}
-          </Heading>
-          <Body muted>{t.plan.restDayTip}</Body>
-          {next ? (
-            <Body>
-              {firstSession && firstSession.id === next.id && firstSession.scheduled_on > today
-                ? t.plan.firstSession(dayLabel(next.scheduled_on))
-                : t.plan.nextSession(dayLabel(next.scheduled_on), next.name_de)}
-            </Body>
-          ) : (
-            <Body>{t.plan.noUpcoming}</Body>
-          )}
-        </Card>
-      )}
+      ) : null}
+      <View style={styles.links}>
+        <View style={styles.linkItem}>
+          <Button
+            label={W.openWeek}
+            accessibilityLabel={W.openWeekA11y}
+            variant="link"
+            onPress={() => router.push('/week' as Href)}
+            testID="today-week"
+          />
+        </View>
+        <View style={styles.linkItem}>
+          {/* Tagesauswertung (Etappe A2): Essen und Training heute. */}
+          <Button
+            label={t.day.openToday}
+            accessibilityLabel={t.day.openA11y(t.day.today)}
+            variant="link"
+            onPress={() => router.push(`/tag/${today}` as Href)}
+            testID="today-day"
+          />
+        </View>
+      </View>
 
-      <Heading level={2}>{t.plan.weekTitle}</Heading>
-      <WeekOverview
-        days={days}
-        selected={selected}
-        onSelect={(date) => {
-          // Andere Aktion → „Rückgängig“ verschwindet (8.2).
-          setSwapFeedback(null);
-          setSelected(date);
-        }}
-      />
-      {/* Ernährung (Phase 5, Etappe N4): Karte „Essen heute“. */}
-      <NutritionTodayCard nowMinutes={nowMinutes} />
-      {/* Große Ansicht (FA5, Plan 12 Nr. 2): weniger Elemente – die Wege zu Tag, Woche, Verlauf, Kalender und
-          Übungen liegen hinter „Mehr anzeigen“. */}
+      {/* Große Ansicht (FA5, Plan 12 Nr. 2): weniger Elemente – Kalender, Verlauf, Tauschen und Übungen liegen hinter
+          „Mehr anzeigen“. */}
       {largeView ? (
         <Button
           label={showMore ? t.accessibility.todayLess : t.accessibility.todayMore}
@@ -902,51 +899,130 @@ export default function TodayScreen() {
           testID="today-more"
         />
       ) : null}
-      {!largeView || showMore ? (
-        <>
-          {/* Tagesauswertung (Etappe A2): Essen und Training heute. */}
-          <Button
-            label={t.day.openToday}
-            accessibilityLabel={t.day.openA11y(t.day.today)}
-            variant="secondary"
-            onPress={() => router.push(`/tag/${today}` as Href)}
-            testID="today-day"
-          />
-          {/* Woche und Verlauf (Etappe D). */}
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <View style={{ flex: 1 }}>
-              <Button
-                label={t.today.openWeek}
-                variant="secondary"
-                onPress={() => router.push('/week' as Href)}
-                testID="today-week"
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Button
-                label={t.today.openHistory}
-                variant="secondary"
-                onPress={() => router.push('/history' as Href)}
-                testID="today-history"
-              />
-            </View>
-          </View>
-          {/* Trainingskalender: Einheiten auf einen gewählten Tag ziehen (Etappe A1a). */}
-          <Button
-            label={t.calendar.open}
-            accessibilityLabel={t.calendar.openA11y}
-            variant="secondary"
-            onPress={() => router.push('/kalender' as Href)}
-            testID="today-calendar"
-          />
-          <Button
-            label={t.glossary.allExercises}
-            variant="secondary"
-            onPress={() => router.push('/uebungen' as Href)}
-            testID="today-glossary"
-          />
-        </>
+      {!largeView || showMore ? toolbar : null}
+      {/* Woche im Block (Einstiegs-/Erholungswoche) – unter der Leiste, damit die Woche oben ruhig bleibt. */}
+      {blockWeek ? (
+        <View style={styles.blockWeek} testID="plan-week-header">
+          <Heading level={2}>
+            {blockWeek.weekNo === 0
+              ? t.plan.week0
+              : t.plan.weekHeader(blockWeek.weekNo, blockWeek.weeksInBlock)}
+          </Heading>
+          {blockWeek.isIntroWeek ? (
+            <Body muted>
+              {t.plan.introWeek}: {t.plan.introWeekText}
+            </Body>
+          ) : null}
+          {blockWeek.isDeload ? (
+            <Body muted>
+              {t.plan.deloadWeek}: {t.plan.deloadWeekText}
+            </Body>
+          ) : null}
+        </View>
       ) : null}
+
+      {/* Ernährung (Phase 5, Etappe N4): Karte „Essen heute“. */}
+      <NutritionTodayCard nowMinutes={nowMinutes} />
+
+      {/* Einheit des gewählten Tages mit Übungen (Tauschen einzelner Übungen, Vorgaben) – Standard: heute. */}
+      <View testID="today-detail" style={styles.detail}>
+        {selectedSession && shown ? (
+          <>
+            <SessionCard
+              original={selectedSession}
+              shown={shown}
+              rules={rules}
+              context={context ?? { library: null }}
+              heading={
+                selected === today ? t.plan.todaySession : t.plan.sessionOn(dayLabel(selected))
+              }
+              {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
+              paceProfile={paceProfile}
+              onOpenExercise={(exerciseId) =>
+                router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href)
+              }
+              swap={{
+                enabled: swapEnabled,
+                later: selectedSession.scheduled_on > today,
+                onSwap: openSwap,
+                onUndoDaySwap: (index) => void undoDaySwap(index),
+                onViewExclusions: viewExclusions,
+              }}
+            />
+            {/* Live-Anpassung (Phase 4b, 8.1): Kennzeichen „angepasst“ mit Link zur Erklärung. */}
+            {selectedSession.status === 'planned' ? (
+              <SessionAdjustedNotice session={selectedSession} />
+            ) : null}
+            {/* Vom Core verworfene „Nur heute“-Tausche still aus dem Speicher räumen (8.2). */}
+            <DaySwapCleanup dropped={shown.droppedDaySwaps ?? []} />
+            {swapFeedback ? (
+              <SwapFeedback
+                text={swapFeedback.text}
+                tone={swapFeedback.tone}
+                onUndo={swapFeedback.undo ? () => void undoSwap() : null}
+                undoBusy={swapBusy}
+              />
+            ) : null}
+            {hasDraft &&
+            selectedSession.kind === 'strength' &&
+            selectedSession.status === 'planned' ? (
+              <Body muted testID="plan-swap-draft-hint">
+                {t.swap.draftRunning}
+              </Body>
+            ) : null}
+            {selectedSession.status === 'completed' ? (
+              <Notice tone="success" testID="plan-completed">
+                <Body>
+                  {log?.status === 'partial' ? t.today.completedPartly : t.today.completed}
+                </Body>
+                {log && log.performed_on !== selectedSession.scheduled_on ? (
+                  <Body muted>{t.week.caughtUpFrom(dayLabel(log.performed_on))}</Body>
+                ) : null}
+                {pendingUpload ? <Body muted>{t.today.pendingUpload}</Body> : null}
+                {log && !hasDraft ? (
+                  <Button
+                    label={t.today.viewWorkout}
+                    variant="secondary"
+                    onPress={() => router.push(`/workout/${selectedSession.id}?edit=1` as Href)}
+                    testID="workout-view"
+                  />
+                ) : null}
+              </Notice>
+            ) : null}
+            {selectedSession.status === 'planned' &&
+            selected === today &&
+            trainedTodayOther(rows, selectedSession, today) ? (
+              <Notice tone="info" testID="plan-trained-today">
+                {t.today.alreadyTrained}
+              </Notice>
+            ) : null}
+            {selected !== today && selectedSession.status === 'planned' ? (
+              <Button
+                label={W.detailActions(weekdayName(selected))}
+                variant="secondary"
+                onPress={() => openDay(selected)}
+                testID="today-detail-actions"
+              />
+            ) : null}
+          </>
+        ) : selectedSession ? (
+          <LoadingState label={t.plan.loading} />
+        ) : selected !== today ? (
+          <Card>
+            <Heading level={2}>{`${dayLabel(selected)}: ${t.plan.restShort}`}</Heading>
+            <Body muted>{t.plan.restDayTip}</Body>
+            {next ? (
+              <Body>
+                {firstSession && firstSession.id === next.id && firstSession.scheduled_on > today
+                  ? t.plan.firstSession(dayLabel(next.scheduled_on))
+                  : t.plan.nextSession(dayLabel(next.scheduled_on), next.name_de)}
+              </Body>
+            ) : (
+              <Body>{t.plan.noUpcoming}</Body>
+            )}
+          </Card>
+        ) : null}
+      </View>
 
       <Card>
         {planNameLine(plan) ? <Body testID="plan-name">{planNameLine(plan)}</Body> : null}
@@ -961,7 +1037,7 @@ export default function TodayScreen() {
         )}
         {rules?.pregnancyNotice ? <Body>{t.plan.pregnancy}</Body> : null}
         {plan.notes.length > 0 ? (
-          <View style={{ gap: 4 }} testID="plan-notes">
+          <View style={styles.blockWeek} testID="plan-notes">
             <Heading level={2}>{t.plan.notesTitle}</Heading>
             {plan.notes.map((note) => (
               <Body key={note} muted>
@@ -989,6 +1065,22 @@ export default function TodayScreen() {
         testID="plan-print"
       />
       {dialogs}
+      <DaySheet
+        date={sheetDate}
+        status={week.status}
+        onClose={() => setSheetDate(null)}
+        onSelectDate={(date) => {
+          setSelected(date);
+          setSheetDate(date);
+        }}
+        onShowExercises={(date) => {
+          setSelected(date);
+          scrollToTestId('today-detail');
+        }}
+        onMessage={showMessage}
+        decide={week.decide}
+      />
+      <CrossDayDialog question={question} busy={answerBusy} onAnswer={(id) => void answer(id)} />
       <SwapDialog
         target={swapTarget?.target ?? null}
         allowAlways={supportsPreferences}
@@ -1009,6 +1101,169 @@ export default function TodayScreen() {
     </Screen>
   );
 }
+
+interface SessionInfo {
+  readonly display: ReturnType<typeof sessionDisplay> | null;
+  readonly view: ReturnType<typeof workoutView> | null;
+  readonly start: ReturnType<typeof startKind>;
+  readonly hasDraft: boolean;
+}
+
+/**
+ * Hero-Karte „Heute“ (Entwurf s1): offene Einheit mit „Training starten“, erledigte Einheit mit Werten und „statt Sa“
+ * bzw. Ruhetag mit der nächsten Einheit. Erledigt steht immer am tatsächlichen Tag (Wochen-Status aus dem Core).
+ */
+function TodayHero({
+  day,
+  session,
+  displayName,
+  info,
+  exerciseCount,
+  nextText,
+  onStart,
+  onView,
+}: {
+  day: WeekStatusDay | null;
+  session: StoredSession | null;
+  displayName: string | null;
+  info: SessionInfo | null;
+  exerciseCount: number;
+  nextText: string;
+  onStart: (sessionId: string) => void;
+  onView: (logId: string) => void;
+}) {
+  if (session && info) {
+    const shown = info.display?.shown ?? null;
+    const meta = [
+      W.hero.minutes(session.estimated_minutes),
+      session.kind === 'strength' && exerciseCount > 0 ? W.hero.exercises(exerciseCount) : null,
+    ].filter((v): v is string => v !== null);
+    const startLabel =
+      session.kind === 'endurance'
+        ? info.start === 'today'
+          ? t.today.startEndurance
+          : t.today.catchUpEndurance
+        : info.start === 'today'
+          ? t.today.startWorkout
+          : t.today.catchUp;
+    const emptyStart = session.kind === 'strength' && shown?.emptyByPreference === true;
+    const libraryMissing =
+      session.kind === 'strength' && (shown === null || shown.libraryMissing || !info.view);
+    const canStart = info.start !== null && !info.hasDraft;
+    return (
+      <HeroCard
+        eyebrow={W.hero.eyebrowTraining}
+        eyebrowIcon={session.kind === 'endurance' ? 'run' : 'dumbbell'}
+        title={displayName ?? session.name_de}
+        subtitle={meta.join(' · ')}
+        testID="today-hero"
+        note={
+          canStart && emptyStart
+            ? t.swap.emptyStartDisabled
+            : canStart && libraryMissing
+              ? t.today.libraryMissingStart
+              : null
+        }
+        noteTestID={emptyStart ? 'plan-start-disabled' : 'today-hero-note'}
+        {...(canStart && !emptyStart && !libraryMissing
+          ? {
+              actionLabel: startLabel,
+              onAction: () => onStart(session.id),
+              actionTestID: 'workout-start',
+            }
+          : {})}
+      >
+        {canStart && emptyStart ? (
+          <Button label={startLabel} onPress={() => undefined} disabled testID="workout-start" />
+        ) : null}
+      </HeroCard>
+    );
+  }
+  const entry = day?.entries[0] ?? null;
+  if (day && entry) {
+    const moved = entry.fulfils && entry.fulfils.shift !== 'same' ? entry.fulfils : null;
+    const stats = entryStats(entry).join(' · ');
+    return (
+      <HeroCard
+        eyebrow={
+          entry.partial
+            ? W.hero.eyebrowPartial
+            : entry.fromWatch
+              ? W.hero.eyebrowDoneWatch
+              : W.hero.eyebrowDone
+        }
+        title={entryTitle(entry)}
+        {...(stats ? { subtitle: stats } : {})}
+        titleIsHeading
+        testID="today-hero"
+        {...(entry.logId
+          ? {
+              secondaryLabel: W.hero.view,
+              onSecondary: () => (entry.logId ? onView(entry.logId) : undefined),
+              secondaryTestID: 'today-hero-view',
+            }
+          : {})}
+      >
+        {moved ? (
+          <View style={styles.heroTag}>
+            <Text style={[styles.heroTagText, appFont('bold')]} testID="today-hero-instead">
+              {W.insteadOfName(weekdayShort(moved.plannedOn), moved.name_de)}
+            </Text>
+          </View>
+        ) : null}
+        {day.entries.length > 1 ? (
+          <Text style={[styles.heroMore, appFont('regular')]}>
+            {day.entries
+              .slice(1)
+              .map((e) => entryTitle(e))
+              .join(' · ')}
+          </Text>
+        ) : null}
+      </HeroCard>
+    );
+  }
+  const moved = day?.doneElsewhere[0] ?? null;
+  return (
+    <HeroCard
+      eyebrow={W.hero.eyebrowToday}
+      eyebrowIcon="moon"
+      title={moved ? W.hero.freeTitle : t.plan.restDay}
+      subtitle={
+        moved
+          ? moved.shift === 'early'
+            ? W.hero.movedEarly(moved.name_de, weekdayShort(moved.doneOn))
+            : W.hero.movedLate(moved.name_de, weekdayShort(moved.doneOn))
+          : t.plan.restDayTip
+      }
+      titleIsHeading
+      testID="today-hero"
+    >
+      <Text style={[styles.heroNext, appFont('semibold')]} testID="today-hero-next">
+        {nextText}
+      </Text>
+    </HeroCard>
+  );
+}
+
+const styles = StyleSheet.create({
+  weekHead: { gap: spacing.xs },
+  weekTitle: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 6 },
+  weekCount: { fontSize: 16, lineHeight: 22 },
+  blockWeek: { gap: 4 },
+  links: { flexDirection: 'row', flexWrap: 'wrap', columnGap: spacing.md },
+  linkItem: { flexGrow: 1 },
+  detail: { gap: spacing.md },
+  heroTag: {
+    alignSelf: 'flex-start',
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+  },
+  heroTagText: { color: '#FFFFFF', fontSize: 15, lineHeight: 20 },
+  heroMore: { color: '#B4BDD0', fontSize: 15, lineHeight: 21 },
+  heroNext: { color: '#FFFFFF', fontSize: 15, lineHeight: 21 },
+});
 
 /** Räumt verworfene Day-Swaps einmal je Änderung aus dem Speicher (keine Meldung – die Anzeige ist schon richtig). */
 function DaySwapCleanup({ dropped }: { dropped: readonly DaySwap[] }) {

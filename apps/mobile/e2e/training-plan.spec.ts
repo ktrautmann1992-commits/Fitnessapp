@@ -82,11 +82,14 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await week.getByRole('button', { name: /^Dienstag/ }).click();
   await expect(page.getByRole('heading', { name: 'Dienstag, 06.10.: Ruhetag' })).toBeVisible();
   await expect(page.getByText(/^Nächste Einheit: Mittwoch, 07\.10\./)).toBeVisible();
+  // Training-Übersicht (23.10.2026): Tippen auf einen Tag öffnet zusätzlich das Tages-Blatt.
+  await page.getByTestId('day-sheet-close').click();
 
   // Mittwoch: kein freier Tag ohne 48-h-Konflikt (Do/Sa neben Fr, So neben Mo der Folgewoche) → nachfragen,
   // dann gestrichen – nie in die nächste Woche.
   await week.getByRole('button', { name: /^Mittwoch/ }).click();
-  await page.getByRole('button', { name: 'Einheit verschieben' }).click();
+  await expect(page.getByTestId('day-sheet-move')).toBeVisible();
+  await page.getByTestId('day-sheet-skip').click();
   await expect(page.getByRole('heading', { name: 'Einheit streichen?' })).toBeVisible();
   await page.getByRole('button', { name: 'Einheit streichen' }).click();
   await expect(page.getByTestId('plan-message')).toHaveText(
@@ -101,7 +104,8 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   // Freitag → heute (Mittwoch ist gestrichen und blockiert den Tag nicht mehr – „ab heute“).
   await week.getByRole('button', { name: /^Freitag/ }).click();
   await expect(page.getByText('Einheit am Freitag, 09.10.')).toBeVisible();
-  await page.getByRole('button', { name: 'Einheit verschieben' }).click();
+  // Tag-Chip „Mi“ im Tages-Blatt (dieselbe Prüfung wie der Kalender).
+  await page.getByTestId('day-sheet-chip-2026-10-07').click();
   await expect(page.getByTestId('plan-message')).toHaveText('Auf Mittwoch verschoben.');
   await expect(
     week.getByRole('button', { name: /^Mittwoch, 07\.10\.: .*verschoben von Fr/ }),
@@ -126,6 +130,7 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
     .click();
   await expect(page.getByRole('heading', { name: 'Freitag, 09.10.: Ruhetag' })).toBeVisible();
   await expect(page.getByText(/^Nächste Einheit: Montag, 12\.10\./)).toBeVisible();
+  await page.getByTestId('day-sheet-close').click();
 
   // Angaben ändern (Einstellungen → Training) → „Plan neu erstellen?“ → neuer Plan.
   await page.getByRole('button', { name: 'Einstellungen' }).click();
@@ -222,17 +227,17 @@ test('Start mitten in der Woche: alle Lauf-Tage in der Wochenübersicht der näc
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Heute');
   await page.getByTestId('today-week').click();
-  await heading(page, 'Woche');
+  await heading(page, 'Deine Woche');
   // Diese Woche: nur noch der Samstag-Lauf (Mo/Di lagen vor dem Planstart).
-  await expect(page.getByTestId('week-day-2026-10-10')).toContainText(
-    '○ Geplant: Geh-Lauf-Wechsel',
-  );
+  await expect(page.getByTestId('week-day-2026-10-10')).toContainText('Sa · Geh-Lauf-Wechsel');
+  await expect(page.getByTestId('week-day-2026-10-10')).toContainText('geplant');
   await page.getByTestId('week-next').click();
   await expect(page.getByTestId('week-range')).toHaveText('12.10.2026 bis 18.10.2026');
   for (const day of ['2026-10-12', '2026-10-13', '2026-10-17']) {
-    await expect(page.getByTestId(`week-day-${day}`)).toContainText('○ Geplant: Geh-Lauf-Wechsel');
+    await expect(page.getByTestId(`week-day-${day}`)).toContainText('Geh-Lauf-Wechsel');
+    await expect(page.getByTestId(`week-day-${day}`)).toContainText('geplant');
   }
-  await expect(page.getByTestId('week-summary')).toContainText('Einheiten: 0 geschafft, 5 geplant');
+  await expect(page.getByTestId('week-summary')).toContainText('0/5');
   const rows = await storedRows(page);
   const runs = rows.plannedSessions.filter(
     (s) =>
@@ -272,6 +277,7 @@ test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundl
   );
   await week.getByRole('button', { name: /^Freitag, 09\.10\.: / }).click();
   await expect(page.getByTestId('plan-endurance')).toContainText('Anstrengung');
+  await page.getByTestId('day-sheet-close').click();
   const rows = await storedRows(page);
   const kinds = rows.plannedSessions.map((s) => s.kind);
   expect(kinds).toContain('endurance');
@@ -337,6 +343,7 @@ test('vorsichtiger Plan mit Arzt-Hinweis; Widerruf löscht den Plan vollständig
     .getByRole('button', { name: /^Freitag/ })
     .click();
   await expect(page.getByTestId('plan-medical-notice')).toBeVisible();
+  await page.getByTestId('day-sheet-close').click();
   let rows = await storedRows(page);
   expect(rows.plans[0]).toMatchObject({ uses_health_data: true, medical_notice: true });
 
@@ -475,7 +482,7 @@ test('verpasste Einheit: Plan am Montag, Uhr Mittwoch → Montags-Einheit versch
     'Verpasst – auf einen freien Tag dieser Woche verschieben?',
   );
   // Mi belegt, Do/Sa neben Fr, So neben Mo der Folgewoche → nichts frei → streichen (nie in die nächste Woche).
-  await page.getByRole('button', { name: 'Einheit verschieben' }).click();
+  await page.getByTestId('day-sheet-skip').click();
   await page.getByRole('button', { name: 'Einheit streichen' }).click();
   await expect(page.getByTestId('plan-message')).toHaveText(
     'Diese Woche ist kein Tag mehr frei – die Einheit entfällt.',
@@ -508,7 +515,7 @@ test('verpasste Einheit mit freiem Tag: Mo/Fr, Uhr Mittwoch → Montags-Einheit 
   const week = page.getByTestId('plan-week');
   await week.getByRole('button', { name: /^Montag/ }).click();
   await expect(page.getByTestId('plan-missed')).toBeVisible();
-  await page.getByRole('button', { name: 'Einheit verschieben' }).click();
+  await page.getByTestId('day-sheet-chip-2026-10-07').click();
   await expect(page.getByTestId('plan-message')).toHaveText('Auf Mittwoch verschoben.');
   await expect(
     week.getByRole('button', { name: /^Mittwoch, 07\.10\.: .*verschoben von Mo/ }),

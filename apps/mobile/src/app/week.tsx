@@ -1,34 +1,32 @@
-import {
-  addDays,
-  startOfIsoWeek,
-  summaryWeekBounds,
-  weekLogSummary,
-  weekPager,
-  type DayItem,
-} from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { addDays, startOfIsoWeek, summaryWeekBounds, weekPager } from '@fitnessapp/core';
+import { fontSize, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
-import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
+import { Text } from '@/components/text';
+import { DaySheet, type SheetMessage, useWeekStatus, WeekDayRow } from '@/components/training-week';
+import { Body, Button, Heading, LoadingState, Notice } from '@/components/ui';
 import { summaryInputs } from '@/data/log-summary';
-import { t } from '@/i18n';
-import { formatDateDe, todayIso } from '@/lib/format';
-import { dayStatusText, kmText, weekRangeText } from '@/lib/history-format';
-import { dayLabel } from '@/lib/plan-format';
-import { planNameLine } from '@/lib/plan-title';
 import { activePlan } from '@/data/training-plan';
+import { t } from '@/i18n';
+import { appFont } from '@/lib/fonts';
+import { todayIso } from '@/lib/format';
+import { kmText, weekRangeText } from '@/lib/history-format';
+import { formatKcal } from '@/lib/nutrition-format';
+import { planNameLine } from '@/lib/plan-title';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
-import { Text } from '@/components/text';
+
+const W = t.trainingWeek;
 
 /**
- * Woche (docs/PLAN-PHASE-4.md 6.1 Punkt 4, Etappe D): Mo–So mit Status-Zeichen UND Text, Summen, Blättern zu früheren
- * Wochen. Status, Summen und „nachgeholt am tatsächlichen Datum“ (H2) bzw. „entfallen“ (H1) rechnet weekLogSummary()
- * in packages/core; die Grenzen fürs Blättern summaryWeekBounds()/weekPager().
+ * Woche (Training-Übersicht, docs/PLAN-AUSWERTUNG.md „Training-Übersicht“, Entwurf s2): Summen-Karte (Einheiten, km, kcal), eine
+ * kompakte Zeile je Tag mit Status (erledigt/geplant/vorgezogen/nachgeholt/verpasst) – die ganze Zeile öffnet das
+ * Tages-Blatt (Starten, Verschieben, Eintragen, „Dein Tag“). Erledigt steht immer am tatsächlichen Tag; Status, Summen
+ * und Zuordnungen rechnet weekStatus() in packages/core, die Grenzen fürs Blättern summaryWeekBounds()/weekPager().
  */
 export default function WeekScreen() {
   const router = useRouter();
@@ -36,6 +34,16 @@ export default function WeekScreen() {
   const theme = useThemeColors();
   const today = todayIso();
   const [week, setWeek] = useState(() => startOfIsoWeek(today));
+  const [sheetDate, setSheetDate] = useState<string | null>(null);
+  const [message, setMessage] = useState<SheetMessage | null>(null);
+  const rows = app.rows;
+  const bounds = rows
+    ? summaryWeekBounds(summaryInputs(rows).sessions, summaryInputs(rows).logs, today, {
+        earliest: app.backend.logHistoryStart(),
+      })
+    : { first: week, last: week };
+  const pager = weekPager(week, bounds);
+  const { status, decide } = useWeekStatus(pager.weekStart);
 
   if (app.status.kind === 'loading') {
     return (
@@ -50,44 +58,31 @@ export default function WeekScreen() {
     versions: app.versions,
     nutritionSetupAvailable: app.backend.supportsNutrition,
   });
-  if (route !== HOME_ROUTE || !app.rows) {
+  if (route !== HOME_ROUTE || !rows) {
     return <Redirect href={route as Href} />;
   }
-  const { sessions, logs } = summaryInputs(app.rows);
   const since = app.backend.logHistoryStart();
-  const pager = weekPager(week, summaryWeekBounds(sessions, logs, today, { earliest: since }));
-  const summary = weekLogSummary(sessions, logs, pager.weekStart, today);
   const pending = new Set(app.pendingLogSessionIds);
-  const isCurrent = pager.weekStart === startOfIsoWeek(today);
   // Planname mit beiden Zielen (Etappe Z5) – ohne Wunschgewicht oder Tempo; nur für Wochen des aktiven Plans
   // (Wächter Z5 N7: eine vergangene Woche eines früheren Plans bekommt nicht den heutigen Namen).
-  const active = activePlan(app.rows);
+  const active = activePlan(rows);
   const weekEnd = addDays(pager.weekStart, 6);
   const planName =
     active &&
     active.sessions.some((s) => s.scheduled_on >= pager.weekStart && s.scheduled_on <= weekEnd)
       ? planNameLine(active.plan)
       : null;
-  const empty = summary.days.every((d) => d.status === 'rest');
-
-  const itemLines = (item: DayItem): string[] =>
-    [
-      item.caughtUpFrom ? t.week.caughtUpFrom(formatDateDe(item.caughtUpFrom)) : null,
-      // Wächter A3 S1: an der Wochengrenze eingetragen – steht am Termin, tatsächliches Datum dazu.
-      item.performedOn ? t.weekEval.performedOn(formatDateDe(item.performedOn)) : null,
-      item.free ? t.week.free : null,
-      item.backfilled ? t.week.backfilled : null,
-      item.status === 'dropped' ? t.week.droppedHint : null,
-      item.sessionId !== null && item.logId !== null && pending.has(item.sessionId)
-        ? t.week.pending
-        : null,
-    ].filter((value): value is string => value !== null);
+  const summary = status?.summary ?? null;
+  const empty = status
+    ? status.days.every((d) => d.state === 'rest' && d.movedAway.length === 0)
+    : false;
+  const km = kmText((summary?.distanceKm ?? 0) * 1000);
 
   return (
     <Screen
       area="training"
       icon="calendar"
-      title={t.week.title}
+      title={W.weekPage.title}
       testID="week"
       footer={
         <Button
@@ -99,16 +94,75 @@ export default function WeekScreen() {
     >
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
       <View style={styles.header}>
-        <Heading level={2}>{isCurrent ? t.week.current : t.week.title}</Heading>
-        <Body testID="week-range">
-          {weekRangeText(summary.weekStart, addDays(summary.weekStart, 6))}
-        </Body>
+        <Body testID="week-range">{weekRangeText(pager.weekStart, weekEnd)}</Body>
         {planName ? (
           <Body muted testID="week-plan-name">
             {planName}
           </Body>
         ) : null}
       </View>
+      {message ? (
+        <Notice tone={message.tone === 'danger' ? 'danger' : 'success'} testID="week-message">
+          {message.text}
+        </Notice>
+      ) : null}
+
+      {summary ? (
+        <View
+          testID="week-summary"
+          accessible
+          accessibilityLabel={W.weekPage.summaryA11y(
+            summary.sessionsDone,
+            summary.sessionsPlanned,
+            km,
+            summary.enduranceMinutes,
+          )}
+          style={[
+            styles.summary,
+            { backgroundColor: theme.surface, borderColor: theme.cardBorder },
+          ]}
+        >
+          <View style={styles.stats}>
+            <Stat
+              value={`${summary.sessionsDone}/${summary.sessionsPlanned}`}
+              label={W.weekPage.sessions}
+            />
+            <Stat value={km} label={W.weekPage.km} />
+            {summary.kcal !== null ? (
+              <Stat value={formatKcal(summary.kcal)} label={W.weekPage.kcal} />
+            ) : (
+              <Stat value={String(summary.enduranceMinutes)} label={W.weekPage.minutes} />
+            )}
+          </View>
+          {summary.extraUnits > 0 || summary.strengthSets > 0 ? (
+            <Text style={[styles.summaryExtra, appFont('regular'), { color: theme.textMuted }]}>
+              {[
+                summary.extraUnits > 0 ? W.extraUnits(summary.extraUnits) : null,
+                summary.strengthSets > 0 ? W.weekPage.sets(summary.strengthSets) : null,
+              ]
+                .filter((v): v is string => v !== null)
+                .join(' · ')}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
+
+      {empty ? <Body muted>{t.week.empty}</Body> : null}
+      <View style={styles.days}>
+        {status?.days.map((day) => (
+          <WeekDayRow
+            key={day.date}
+            day={day}
+            pending={pending}
+            onPress={() => {
+              setMessage(null);
+              setSheetDate(day.date);
+            }}
+          />
+        ))}
+      </View>
+      <Body muted>{W.weekPage.tapHint}</Body>
+
       <View style={styles.pager}>
         <View style={styles.pagerButton}>
           <Button
@@ -133,87 +187,12 @@ export default function WeekScreen() {
       </View>
       {pager.previous === null && since !== null ? <Body muted>{t.week.olderHint}</Body> : null}
 
-      {empty ? <Body muted>{t.week.empty}</Body> : null}
-      <View style={styles.days}>
-        {summary.days.map((day) => (
-          <View
-            key={day.date}
-            testID={`week-day-${day.date}`}
-            style={[
-              styles.day,
-              {
-                backgroundColor: theme.surface,
-                borderColor: day.date === today ? theme.primary : theme.border,
-                borderWidth: day.date === today ? 2 : 1,
-              },
-            ]}
-          >
-            <Text style={[styles.dayName, { color: theme.text }]}>
-              {dayLabel(day.date)}
-              {day.date === today ? ` · ${t.plan.todayBadge}` : ''}
-            </Text>
-            {/* Tagesauswertung (Etappe A2). */}
-            <Button
-              label={t.day.open}
-              variant="link"
-              accessibilityLabel={t.day.openA11y(dayLabel(day.date))}
-              onPress={() => router.push(`/tag/${day.date}` as Href)}
-              testID={`week-open-day-${day.date}`}
-            />
-            {day.items.length === 0 ? (
-              <Body muted>{t.week.status.rest}</Body>
-            ) : (
-              day.items.map((item, index) => (
-                <View
-                  key={`${item.logId ?? item.sessionId ?? index}`}
-                  style={styles.item}
-                  testID="week-item"
-                >
-                  <Text style={[styles.itemStatus, { color: theme.text }]}>
-                    {dayStatusText(item.status)}: {item.name_de}
-                  </Text>
-                  {itemLines(item).map((line) => (
-                    <Body key={line} muted>
-                      {line}
-                    </Body>
-                  ))}
-                  {item.logId !== null ? (
-                    <Button
-                      label={t.week.open}
-                      variant="link"
-                      accessibilityLabel={`${item.name_de}, ${dayLabel(day.date)}: ${t.week.open}`}
-                      onPress={() => router.push(`/log/${item.logId}` as Href)}
-                    />
-                  ) : null}
-                </View>
-              ))
-            )}
-          </View>
-        ))}
-      </View>
-
-      <Card>
-        <View testID="week-summary" style={styles.summary}>
-          <Heading level={2}>{t.week.summaryTitle}</Heading>
-          <Body>{t.week.sessions(summary.sessionsDone, summary.sessionsPlanned)}</Body>
-          <Body>{t.week.sets(summary.strengthSets)}</Body>
-          <Body
-            accessibilityLabel={t.week.enduranceA11y(
-              summary.enduranceMinutes,
-              kmText(summary.enduranceKm * 1000),
-            )}
-          >
-            {t.week.endurance(summary.enduranceMinutes, kmText(summary.enduranceKm * 1000))}
-          </Body>
-        </View>
-      </Card>
+      <Heading level={2}>{W.toolbar.label}</Heading>
       {/* Wochenauswertung (Etappe A3): Essen und Training dieser Woche. */}
       <Button
         label={t.weekEval.open}
-        accessibilityLabel={t.weekEval.openA11y(
-          weekRangeText(summary.weekStart, addDays(summary.weekStart, 6)),
-        )}
-        onPress={() => router.push(`/wochenauswertung?woche=${summary.weekStart}` as Href)}
+        accessibilityLabel={t.weekEval.openA11y(weekRangeText(pager.weekStart, weekEnd))}
+        onPress={() => router.push(`/wochenauswertung?woche=${pager.weekStart}` as Href)}
         testID="week-evaluation"
       />
       {/* Trainingskalender (Etappe A1a): Einheiten dieser oder kommender Wochen verschieben. */}
@@ -244,7 +223,28 @@ export default function WeekScreen() {
           testID="week-adjust-changes"
         />
       ) : null}
+      <DaySheet
+        date={sheetDate}
+        status={status}
+        onClose={() => setSheetDate(null)}
+        onSelectDate={setSheetDate}
+        onShowExercises={(date) => router.push(`/today?tag=${date}` as Href)}
+        onMessage={setMessage}
+        decide={decide}
+      />
     </Screen>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  const theme = useThemeColors();
+  return (
+    <View style={styles.stat}>
+      <Text style={[styles.statValue, appFont('extrabold'), { color: theme.text }]}>{value}</Text>
+      <Text style={[styles.statLabel, appFont('regular'), { color: theme.textMuted }]}>
+        {label}
+      </Text>
+    </View>
   );
 }
 
@@ -252,15 +252,17 @@ const styles = StyleSheet.create({
   header: { gap: 4 },
   pager: { flexDirection: 'row', gap: spacing.sm },
   pagerButton: { flex: 1 },
-  days: { gap: spacing.xs },
-  day: {
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    gap: 4,
+  days: { gap: spacing.sm },
+  summary: {
+    borderWidth: 1,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+    gap: spacing.xs,
   },
-  dayName: { fontSize: fontSize.md, fontWeight: fontWeight.bold, lineHeight: 24 },
-  item: { gap: 2 },
-  itemStatus: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, lineHeight: 24 },
-  summary: { gap: 4 },
+  stats: { flexDirection: 'row', justifyContent: 'space-around', flexWrap: 'wrap', rowGap: 8 },
+  stat: { alignItems: 'center', minWidth: 80, gap: 2 },
+  statValue: { fontSize: 26, lineHeight: 32 },
+  statLabel: { fontSize: fontSize.sm, lineHeight: 20 },
+  summaryExtra: { fontSize: fontSize.sm, lineHeight: 20, textAlign: 'center' },
 });

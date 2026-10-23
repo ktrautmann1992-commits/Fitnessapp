@@ -140,7 +140,9 @@ test('„Nur heute“: Tausch mit Kennzeichen, Rückgängig, Training übernimmt
   await expect(exerciseName(page, 0)).toContainText(SQUAT_CHAIR);
 
   // Freitag: unverändert, dort heißt es „Nur bei diesem Training“.
+  // Training-Übersicht: Tippen auf den Tag öffnet das Tages-Blatt – schließen, darunter die Übungen.
   await page.getByRole('button', { name: /^Freitag/ }).click();
+  await page.getByTestId('day-sheet-close').click();
   await expect(exerciseName(page, 0)).toContainText(SQUAT);
   await page.getByTestId('plan-swap-0').click();
   await expect(
@@ -152,6 +154,7 @@ test('„Nur heute“: Tausch mit Kennzeichen, Rückgängig, Training übernimmt
 
   // Heute: Training starten → die getauschte Übung steht schon da (Status „alternative“ beim Speichern).
   await page.getByRole('button', { name: /^Mittwoch/ }).click();
+  await page.getByTestId('day-sheet-close').click();
   await page.getByTestId('workout-start').click();
   await expect(page.getByTestId('workout-exercise-0').getByRole('heading')).toContainText(
     SQUAT_CHAIR,
@@ -218,11 +221,13 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
   await expect(page.getByTestId('swap-undo')).toBeVisible();
   for (const day of ['Montag', 'Freitag']) {
     await page.getByRole('button', { name: new RegExp(`^${day}`) }).click();
+    await page.getByTestId('day-sheet-close').click();
     await expect(page.getByTestId('swap-undo')).toHaveCount(0);
     const names = await page.getByTestId('plan-exercise-link').allInnerTexts();
     expect(names.some((n) => n.includes(PUSHUP_RAISED))).toBe(false);
   }
   await page.getByRole('button', { name: /^Mittwoch/ }).click();
+  await page.getByTestId('day-sheet-close').click();
 
   // Druckansicht/PDF: Kennzeichen „getauscht (deine Wahl)“.
   await page.getByTestId('plan-print').click();

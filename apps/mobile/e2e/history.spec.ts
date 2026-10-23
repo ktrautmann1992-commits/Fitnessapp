@@ -107,32 +107,34 @@ test('Woche: Status mit Zeichen und Wort, Summen, Blättern, nachgeholt am tats�
   await heading(page, 'Heute');
 
   await page.getByTestId('today-week').click();
-  await heading(page, 'Woche');
+  await heading(page, 'Deine Woche');
   await expect(page.getByTestId('week-range')).toHaveText('05.10.2026 bis 11.10.2026');
   const wednesday = page.getByTestId('week-day-2026-10-07');
-  await expect(wednesday).toContainText('◐ Teilweise erledigt');
-  await expect(wednesday).toContainText('nachgeholt vom 06.10.2026');
-  await expect(page.getByTestId('week-day-2026-10-08')).toContainText('× Entfallen: Alte Einheit');
+  // Training-Übersicht (23.10.2026): Zeile je Tag mit Kennzeichen (Zeichen + Wort); Kalender-Verschiebung Di → Mi.
+  await expect(wednesday).toContainText('◐ teilweise');
+  await expect(page.getByTestId('week-day-2026-10-06')).toContainText('verschoben auf Mi');
+  await expect(page.getByTestId('week-day-2026-10-08')).toContainText('Alte Einheit – entfällt');
   await expect(page.getByTestId('week-day-2026-10-08')).toContainText('früheren Plan');
-  await expect(page.getByTestId('week-day-2026-10-09')).toContainText('○ Geplant');
+  await expect(page.getByTestId('week-day-2026-10-09')).toContainText('geplant');
   await expect(page.getByTestId('week-day-2026-10-10')).toContainText('Ruhetag');
   const summary = page.getByTestId('week-summary');
-  await expect(summary).toContainText('Einheiten: 1 geschafft');
+  await expect(summary).toContainText('1/');
   await expect(summary).toContainText(`Kraft: ${sets} Sätze`);
-  await expect(summary).toContainText('Ausdauer: 0 min, 0,0 km');
+  await expect(summary).toContainText('0,0');
 
   // Blättern: nächste Woche (nur geplant), zurück; ganz am Anfang ist „Vorwoche“ gesperrt.
   await page.getByTestId('week-next').click();
   await expect(page.getByTestId('week-range')).toHaveText('12.10.2026 bis 18.10.2026');
-  await expect(page.getByTestId('week-day-2026-10-12')).toContainText('○ Geplant');
-  await expect(page.getByTestId('week-summary')).toContainText('Einheiten: 0 geschafft');
+  await expect(page.getByTestId('week-day-2026-10-12')).toContainText('geplant');
+  await expect(page.getByTestId('week-summary')).toContainText('0/');
   await page.getByTestId('week-prev').click();
   await expect(page.getByTestId('week-range')).toHaveText('05.10.2026 bis 11.10.2026');
   // Der Plan beginnt in dieser Woche – davor gibt es nichts.
   await expect(page.getByTestId('week-prev')).toBeDisabled();
 
   // Eintrag aus der Woche öffnen.
-  await wednesday.getByRole('link', { name: /Ansehen/ }).click();
+  await wednesday.click();
+  await page.getByTestId('day-sheet-view').click();
   const entry = page.getByTestId('log-entry');
   await expect(entry).toBeVisible();
   await expect(entry.getByText('Trainiert am 07.10.2026')).toBeVisible();
