@@ -37,6 +37,9 @@ function syncMessage(outcome: WearableSyncOutcome | null): Message | null {
       const parts = [W.syncDone(r.created, r.merged)];
       if (r.skipped > 0) parts.push(W.syncSkipped(r.skipped));
       if (r.created + r.merged + r.updated === 0 && r.days === 0) parts.push(W.noData);
+      if ((outcome.routeConsentRequired ?? 0) > 0) {
+        parts.push(W.routeConsentNeeded(outcome.routeConsentRequired ?? 0));
+      }
       return { text: parts.join(' '), tone: 'success' };
     }
     case 'queued':
@@ -67,6 +70,7 @@ export default function SmartwatchScreen() {
   const [message, setMessage] = useState<Message | null>(null);
   const [dialog, setDialog] = useState(false);
   const [dialogError, setDialogError] = useState<string>();
+  const [routeAccess, setRouteAccess] = useState<boolean | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -78,6 +82,18 @@ export default function SmartwatchScreen() {
       active = false;
     };
   }, [driver]);
+
+  // Trainingsrouten für alle Einheiten erlaubt? (Health Connect; neu geprüft nach Verbinden/Abgleich)
+  useEffect(() => {
+    let active = true;
+    driver
+      .routeAccess()
+      .then((value) => active && setRouteAccess(value))
+      .catch(() => active && setRouteAccess(false));
+    return () => {
+      active = false;
+    };
+  }, [driver, state]);
 
   if (app.status.kind === 'loading' || state.kind === 'loading' || availability === null) {
     return (
@@ -239,6 +255,16 @@ export default function SmartwatchScreen() {
                   : `– ${W.types[type]} (${W.notGranted})`}
               </Body>
             ))}
+            {/* Routen (23.10.2026): eigenes Recht in Health Connect, sonst Freigabe je Lauf. */}
+            {unsupported ? null : (
+              <Body muted={routeAccess !== true} testID="smartwatch-route-access">
+                {driver.kind === 'demo'
+                  ? W.routeAccessDemo
+                  : routeAccess
+                    ? W.routeAccessOn
+                    : W.routeAccessOff}
+              </Body>
+            )}
           </Card>
           {unsupported ? (
             <Notice tone="info" title={W.onlyAndroidTitle} testID="smartwatch-only-android">
@@ -246,8 +272,26 @@ export default function SmartwatchScreen() {
             </Notice>
           ) : (
             <View style={styles.actions}>
-              {!wearableValid ? (
-                <Notice tone="warning">{healthValid ? W.consentText : W.needsHealthConsent}</Notice>
+              {!wearableValid && healthValid ? (
+                <>
+                  {/* Einwilligung nur in einer älteren Fassung (Fassung 2 nennt die Routen): erneut fragen. */}
+                  <Notice tone="warning" title={W.reconsentTitle} testID="smartwatch-reconsent">
+                    {W.reconsentText}
+                  </Notice>
+                  <Button
+                    label={W.consentRead}
+                    variant="link"
+                    onPress={() => router.push('/consent/wearable_data' as Href)}
+                  />
+                  <Button
+                    label={W.reconsentAccept}
+                    loading={busy === 'consent'}
+                    onPress={() => void grantConsent()}
+                    testID="smartwatch-reconsent-accept"
+                  />
+                </>
+              ) : !wearableValid ? (
+                <Notice tone="warning">{W.needsHealthConsent}</Notice>
               ) : null}
               <Button
                 label={busy === 'sync' ? W.syncing : W.syncNow}

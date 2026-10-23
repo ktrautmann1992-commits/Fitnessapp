@@ -124,6 +124,7 @@ import {
   dailyMetricImportSchema,
   wearableImportBatchSchema,
 } from './wearables/schema';
+import { wearableRoutePayloadSchema } from './wearables/route';
 import { DASHBOARD_TILES, FIXED_FIRST_TAB, FIXED_LAST_TAB, NAV_AREAS } from './layout';
 import { serverDayKcalFloor } from './nutrition/plausibility';
 import { AI_USAGE_STATUSES } from './nutrition/food-photo';
@@ -3495,6 +3496,84 @@ describe('Smartwatch über Health Connect (Phase 8 Etappe H2, docs/PLAN-PHASE-8.
     expect(sql).not.toContain('function public.save_session_log(');
     expect(revokeExport).not.toContain('function public.save_session_log(');
     expect(importFn).toContain("'health_connect', now()");
+  });
+});
+
+describe('Routen der Uhr (Gründer-Entscheidung 23.10.2026, docs/PLAN-PHASE-8.md 14)', () => {
+  const enumsSql = readMigration('_wearable_route_enums.sql');
+  const sql = readMigration('_wearable_routes.sql');
+  const fnStart = sql.indexOf('create or replace function public.save_wearable_route(');
+  const saveFn = sql.slice(fnStart, sql.indexOf('$$;', fnStart));
+
+  it('Enum-Wert in eigener Datei direkt VOR der Verwendung', () => {
+    expect(enumsSql).toContain("alter type public.tracked_route_source add value 'watch';");
+    expect(enumsSql).not.toMatch(/create (or replace )?(function|trigger|table)/);
+    const enumsIdx = migrationFiles.findIndex((n) => n.endsWith('_wearable_route_enums.sql'));
+    expect(migrationFiles.findIndex((n) => n.endsWith('_wearable_routes.sql'))).toBe(enumsIdx + 1);
+    expect(enums.TRACKED_ROUTE_SOURCES).toContain('watch');
+    expect(enums.APP_ROUTE_SOURCES).not.toContain('watch');
+  });
+
+  it('Feldliste = wearableRoutePayloadSchema, feste Namen = FREE_SESSION, Grenzen = TRACKED_ROUTE_LIMITS', () => {
+    const keys = /route_keys constant text\[\] := array\[([^\]]*)\]/.exec(saveFn)?.[1] ?? '';
+    expect([...keys.matchAll(/'([^']+)'/g)].map((m) => m[1])).toEqual(
+      Object.keys(wearableRoutePayloadSchema.shape),
+    );
+    const names = JSON.parse(
+      /route_names constant jsonb := '([^']*)'/.exec(saveFn)?.[1] ?? '{}',
+    ) as Record<string, string>;
+    const { run, walk, bike } = FREE_SESSION.names.endurance;
+    expect(names).toEqual({ run, walk, bike });
+    const L = TRACKED_ROUTE_LIMITS;
+    for (const expected of [
+      `char_length(r ->> 'external_id') not between 1 and ${WEARABLE_SYNC.externalIdMaxLength}`,
+      `jsonb_number_between(r -> 'distance_m', ${L.distanceM.min}, ${L.distanceM.max}, 0)`,
+      `jsonb_number_between(r -> 'moving_s', 0, ${L.durationS.max}, 0)`,
+      `jsonb_number_between(r -> 'elevation_gain_m', ${L.elevationGainM.min}, ${L.elevationGainM.max}, 0)`,
+      `v_summary[1] not between ${L.minPoints} and ${L.maxPoints}`,
+    ]) {
+      expect(saveFn, expected).toContain(expected);
+    }
+  });
+
+  it('Einwilligung zuerst (gesperrt), dann Advisory-Sperre; Herkunft watch nur hier', () => {
+    expect(saveFn.indexOf('wearable_consents_locked')).toBeGreaterThan(0);
+    expect(saveFn.indexOf('wearable_consents_locked')).toBeLessThan(
+      saveFn.indexOf('pg_advisory_xact_lock'),
+    );
+    expect(saveFn).toContain('security definer');
+    expect(saveFn).toContain("set search_path = ''");
+    expect(sql).toContain(
+      'revoke all on function public.save_wearable_route(jsonb, boolean) from public, anon;',
+    );
+    // Herkunft watch genau mit Verknüpfung zur Uhr-Einheit (save_tracked_route kann sie so nie schreiben).
+    expect(sql).toContain("check ((source = 'watch') = (wearable_session_log_id is not null))");
+    const writers = migrationFiles.filter(
+      (n) =>
+        /'watch'/.test(readMigration(n)) &&
+        /insert into public\.tracked_routes/.test(readMigration(n)),
+    );
+    expect(writers).toEqual([migrationFiles.find((n) => n.endsWith('_wearable_routes.sql'))]);
+  });
+
+  it('Einwilligungstext Fassung 2 = CURRENT_CONSENT_VERSIONS, nennt die Routen', () => {
+    expect(CURRENT_CONSENT_VERSIONS.wearable_data).toBe(2);
+    const seed = sql.slice(sql.indexOf('insert into public.consent_documents'));
+    expect(seed).toContain("'wearable_data',\n  2,");
+    expect(seed).toContain('Routen (GPS-Strecken)');
+    expect(seed).not.toContain('übernehmen wir nicht');
+  });
+
+  it('Widerruf und Trennen löschen die Routen der Uhr über die Verbindung; eigene Strecken bleiben', () => {
+    const fnAt = sql.indexOf(
+      'create or replace function private.wearable_connections_after_delete()',
+    );
+    const body = sql.slice(fnAt, sql.indexOf('$$;', fnAt));
+    expect(body).toContain("t.source = 'watch'");
+    expect(sql).toContain('after delete on public.wearable_connections');
+    // consents_after_revoke bleibt unangetastet (Strecken sind kein Art.-9-Datum, W-G15).
+    expect(sql).not.toContain('function private.consents_after_revoke()');
+    expect(sql).not.toContain('function public.disconnect_wearable(');
   });
 });
 

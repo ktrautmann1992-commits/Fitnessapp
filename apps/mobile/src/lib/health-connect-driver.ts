@@ -17,6 +17,8 @@ export const healthConnectDriver: HealthConnectDriver = {
   requestPermissions: async () => [],
   grantedTypes: async () => [],
   read: async () => ({ sessions: [], restingHeartRates: [], sleepSessions: [], steps: [] }),
+  routeAccess: async () => false,
+  requestRoute: async () => ({ kind: 'error' }),
   openSettings: () => undefined,
   openInstall: () => undefined,
 };

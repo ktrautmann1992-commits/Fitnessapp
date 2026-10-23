@@ -8,8 +8,8 @@ import {
 } from '../constants';
 import { addDays, isoDateInTimeZone } from '../dates';
 import {
+  APP_ROUTE_SOURCES,
   ROUTE_DIFFICULTIES,
-  TRACKED_ROUTE_SOURCES,
   TRACKED_ROUTE_SPORTS,
   type RouteDifficulty,
   type TrackedRouteSource,
@@ -97,7 +97,7 @@ export const trackedRouteSchema = z
       })
       .nullable(),
     session_log_id: uuid.nullable(),
-    source: z.enum(TRACKED_ROUTE_SOURCES),
+    source: z.enum(APP_ROUTE_SOURCES),
     /**
      * Höhenprofil (Etappe E4, additiv): OPTIONAL – ältere App-Fassungen senden das Feld nicht (save_tracked_route nimmt
      * es nur an, verlangt es nie). null bzw. fehlend = kein Profil.
@@ -160,6 +160,11 @@ export interface TrackedRouteRow {
   source: TrackedRouteSource;
   /** Höhenprofil [Distanz m, Höhe dm] (Etappe E4); null = keines (ältere Strecken, keine Höhen). */
   elevation_profile: number[][] | null;
+  /**
+   * Route einer Uhr-Einheit (source `watch`, 23.10.2026): Verknüpfung zu wearable_sessions (geht mit ihr); sonst null.
+   * Im Testmodus können ältere gespeicherte Zeilen das Feld nicht haben – dort beim Lesen mit null ergänzt.
+   */
+  wearable_session_log_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -288,7 +293,7 @@ export interface TrackedRouteDetails {
   readonly note: string | null;
   readonly baseRouteId: string | null;
   readonly sessionLogId: string | null;
-  readonly source: TrackedRouteSource;
+  readonly source: (typeof APP_ROUTE_SOURCES)[number];
 }
 
 /**

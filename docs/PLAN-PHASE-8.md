@@ -29,7 +29,7 @@ Story-Bild). Gründer-Wunsch: „Die Daten meiner Galaxy Watch sollen automatisc
 | W8-1  | Weg zur Uhr                   | Health Connect (über Samsung Health), keine Samsung-eigene Schnittstelle                       | wie empfohlen (21.10.) |
 | W8-2  | Datenumfang Etappe 1          | Einheiten, Puls in Einheiten (Ø/Max/Zonen), Ruhepuls, Schlafdauer, Schritte; HRV/VO2max später | wie empfohlen (21.10.) |
 | W8-3  | Nur lesen oder auch schreiben | Nur lesen (Schreiben von App-Läufen nach Health Connect frühestens Etappe 2)                   | wie empfohlen (21.10.) |
-| W8-4  | Strecken (GPS) der Uhr        | In Etappe 1 **nicht** importieren; Linie kommt weiter aus der App-Aufzeichnung                 | wie empfohlen (21.10.) |
+| W8-4  | Strecken (GPS) der Uhr        | ~~In Etappe 1 nicht importieren~~ → **Routen lesen** (Abschnitt 14)                            | **geändert 23.10.**    |
 | W8-5  | Einwilligung                  | Neue, getrennte Einwilligungsart `wearable_data` (Version 1)                                   | wie empfohlen (21.10.) |
 | W8-6  | Speichertiefe Puls            | Nur Zusammenfassung je Einheit (Ø, Max, Sekunden je Zone), keine Rohreihen                     | wie empfohlen (21.10.) |
 | W8-7  | Abgleich-Zeitpunkt            | App-Start/Vordergrund + Knopf; kein Hintergrund-Abgleich in Etappe 1                           | wie empfohlen (21.10.) |
@@ -82,8 +82,10 @@ Rest weiter und zeigt „nicht freigegeben“.
 - **Später:** HRV (`HeartRateVariabilityRmssd`), VO2max, SpO2, Gewicht/Körperfett (Doppelung mit Mess-Erfassung klären).
 - **Nur lesen (W8-3):** kein Schreiben in Etappe 1 – weniger Berechtigungen, weniger Play-Prüfaufwand, kein Risiko,
   Samsung-Daten zu verfälschen. App-Läufe nach Health Connect schreiben = Kandidat Etappe 2.
-- **Keine Uhr-Strecken (W8-4):** das Lesen einer Strecke verlangt je Einheit einen eigenen Systemdialog und bringt
-  Standortdaten ins Spiel. Die App-Aufzeichnung (E4) liefert die Linie bereits; spätere Etappe, dann mit Privatzone.
+- ~~**Keine Uhr-Strecken (W8-4):** das Lesen einer Strecke verlangt je Einheit einen eigenen Systemdialog und bringt
+  Standortdaten ins Spiel. Die App-Aufzeichnung (E4) liefert die Linie bereits; spätere Etappe, dann mit Privatzone.~~
+  **Überholt am 23.10.2026** (Gründer-Entscheidung „Routen lesen“, Abschnitt 14): Gerätetest zeigte ~1 km zu wenig
+  Distanz aus den Distance-Datensätzen.
 - **Schritte doppelt (Handy + Uhr):** nur die Aggregat-Abfrage von Health Connect nutzen – sie entdoppelt Quellen
   selbst. Nie einzelne Schritt-Datensätze addieren.
 - **Ruhepuls:** ob Samsung Health `RestingHeartRate` in Health Connect schreibt, ist **im Spike H0 zu prüfen**. Falls
@@ -165,6 +167,8 @@ Rest weiter und zeigt „nicht freigegeben“.
 - **`heart_rate_summaries`** (session_log_id PK/FK cascade, user_id, avg_bpm, max_bpm, zone_s integer[5],
   hf_max_used) – fällt beim Widerruf komplett weg.
 - `tracked_routes` bleibt unverändert (Etappe 1 importiert keine Strecken); Verknüpfung über `session_log_id` reicht.
+  **Seit 23.10.2026** (Abschnitt 14): Routen der Uhr als `tracked_routes` mit Herkunft `watch` und Spalte
+  `wearable_session_log_id`.
 - **RPCs:** `import_wearable_batch(p_items jsonb)` – idempotent je `external_id`, Einwilligung prüfen, Grenzen wie
   Core, Zusammenführen nur an eigenen Einträgen, höchstens 500 Einträge je Aufruf; `upsert_daily_metrics(p_days
 jsonb)`; `disconnect_wearable(p_delete_imported boolean)`. `save_session_log` bleibt unangetastet (wie W-E6).
@@ -333,3 +337,52 @@ external_id)`, weil ein zusammengeführter Eintrag seine Herkunft (z. B. `gps`) 
 6. **Schritte je Tag** werden in der Zeitzone des Handys abgefragt (DACH = Europe/Berlin); Einheiten/Schlaf nutzen
    Europe/Berlin wie das übrige Tagebuch.
 7. **Play-Formular** Health-Connect-Berechtigungen und Datenschutzerklärung (Abschnitt 8) – vor der Store-Einreichung.
+
+## 14. Routen der Uhr lesen (Gründer-Entscheidung 23.10.2026 „Routen lesen“, ersetzt W8-4)
+
+**Anlass:** Gerätetest des Gründers mit Galaxy Watch → Samsung Health → Health Connect: Alpha5 zeigte ca. 1 km weniger
+als Samsung Health (22,84 km, 2:13:57, 5:51/km, 258 m Steigung, Ø HF 173, 1.519 kcal). Samsung zeigt die Distanz aus
+der GPS-Route; die Distance-Datensätze in Health Connect sind niedriger.
+
+**Entscheidung:** Für Ausdauer-Einheiten mit Strecke (Laufen, Gehen, Rad) liest Alpha5 die **Route** aus Health
+Connect, rechnet Distanz, Höhenmeter, Bewegungszeit und Kilometerzeiten **selbst** – mit denselben Filtern wie die
+eigene Aufzeichnung (`summarizeTrack`) – und zeigt die Karte mit Tempo-Farben wie bei eigenen Läufen. Nur ohne
+(brauchbare) Route gilt die Summe der Distance-Datensätze.
+
+- **Core** (`packages/core/src/wearables/route.ts`): `hcRouteFromRecord`/`hcLocationsFromNative` (Format der
+  Bibliothek, Zod), `summarizeWatchRoute` (Punkte nur im Zeitraum der Einheit; brauchbar ab `WEARABLE_ROUTE.minPoints`
+  Punkten, Abdeckung ≥ 50 % der Dauer, höchstens 20 % Sprung-Punkte, plausibel für die Sportart, Abweichung zu Health
+  Connect 0,75–1,33), `chooseWatchDistance` (Route → früher gespeicherte Route → Health Connect), Schema
+  `wearableRoutePayloadSchema`, `releasedWatchRoute` („Route freigeben“). `sessionFromHc` meldet `routeStatus` und
+  `distanceSource`.
+- **Berechtigung:** `READ_EXERCISE_ROUTES` im Manifest (nicht mehr gesperrt). react-native-health-connect 4.1.3 kann
+  das Leserecht nicht anfragen – kleiner Patch `patches/react-native-health-connect@4.1.3.patch` (pnpm). Die App fragt
+  es getrennt nach den übrigen Rechten (ältere Health-Connect-Versionen ignorieren es).
+- **Freigabe je Einheit:** Ohne „Trainingsrouten → Immer zulassen“ liefert Health Connect `CONSENT_REQUIRED`. Dann
+  zählt der Abgleich die Läufe („Für N Läufe fragt Health Connect …“), am Lauf steht **„Strecke laut Uhr (ohne
+  Route)“** mit **„Route freigeben“** (`requestExerciseRoute`, Dialog nur auf Tipp der Person).
+- **Einwilligung:** `wearable_data` **Fassung 2** nennt die Routen (Fassung 1 sagte „keine Strecken“) – wer Fassung 1
+  hat, wird vor dem nächsten Abgleich erneut gefragt (Smartwatch-Seite „Neue Fassung der Einwilligung“). Routen sind
+  Standortdaten (kein Art.-9-Datum, W-G15), hängen aber an `wearable_data` + `health_data` und an der Verbindung.
+- **Speicher** (Migrationen `20261023120000_wearable_route_enums.sql`, `20261023120100_wearable_routes.sql`, pgTAP
+  `66_wearable_routes.test.sql`): `tracked_routes` mit Herkunft `watch` und `wearable_session_log_id` (FK auf
+  `wearable_sessions`, on update/delete cascade; CHECK: `watch` ⇔ Verknüpfung; je Einheit eine Route). Schreiben nur
+  über `save_wearable_route(p_route, p_explicit)` (Sportart, Beginn, Dauer, Name vom Server; Distanz/Höhenmeter des
+  Eintrags folgen der Route, revision + 1; eigene Aufzeichnung am Eintrag ist führend). Trigger: Trennen (beide
+  Varianten) und Widerruf löschen alle Routen der Uhr; „Zusammenführen“ hängt die Route um; von der Person gelöschte
+  Routen merkt `private.wearable_route_dismissals` (kein Wiederanlegen beim Abgleich, außer „Route freigeben“).
+  Export: ganze Zeile von `tracked_routes`. RLS unverändert (nur eigene Zeilen lesen).
+- **Abgleich:** Routen gehen nach den Einheiten in dieselbe verschlüsselte Warteschlange; gleiche Linie wie
+  gespeichert → nicht erneut gesendet. Einmaliges **Nachladen** der letzten 30 Tage nach dem Update (nur schon
+  übernommene Einheiten, gelöschte kommen nicht zurück).
+- **Anzeige** (`/ausdauer/[id]`, Mockup s5): Kopf-Karte „⌚ laut Uhr“, Distanz, Pace, Zeit, Höhe, **Ø Puls**, **kcal
+  laut Uhr** (Schritte/min entfallen – Kadenz wird nicht gelesen), Karte „Strecke“ mit Tempo-Farben und „Route von der
+  Uhr, nur für dich sichtbar“, **Pulszonen** als gestapelter Balken. Teilen nur über das Story-Bild mit Privatzone, nie
+  Puls/kcal.
+- **Testmodus:** Beispiel-Uhr mit fester Runde um das Tempelhofer Feld (ca. 5,55 km, Route ca. 5 % länger als „laut
+  Health Connect“); ältester Lauf verlangt die Freigabe je Einheit. E2E `smartwatch-route.spec.ts`.
+
+**Nur am echten Gerät prüfbar:** ob Samsung Health die Route nach Health Connect schreibt (Schalter in Samsung Health),
+ob der Patch das Recht „Trainingsrouten“ im Dialog zeigt (Android 15+), Verhalten von `readRecord`/
+`requestExerciseRoute` auf Android 14, Distanz-Abweichung zu Samsung Health bei echten GPS-Daten (Glättung der eigenen
+Aufzeichnung schneidet enge Kurven leicht ab).

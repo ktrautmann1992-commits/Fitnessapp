@@ -47,6 +47,8 @@ const ALLOWED_ANDROID_PERMISSIONS = [
   'android.permission.health.READ_RESTING_HEART_RATE',
   'android.permission.health.READ_SLEEP',
   'android.permission.health.READ_STEPS',
+  // Routen der Uhr (Gründer-Entscheidung 23.10.2026).
+  'android.permission.health.READ_EXERCISE_ROUTES',
 ];
 const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.READ_EXTERNAL_STORAGE',
@@ -54,10 +56,9 @@ const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.SYSTEM_ALERT_WINDOW',
   // Kein „Immer erlauben“ (W-G13): Der Vordergrund-Dienst braucht es nicht.
   'android.permission.ACCESS_BACKGROUND_LOCATION',
-  // Phase 8: kein Hintergrund-Lesen, keine älteren Daten, keine Uhr-Strecken, kein Schreiben.
+  // Phase 8: kein Hintergrund-Lesen, keine älteren Daten, kein Schreiben (Routen lesen seit 23.10.2026 erlaubt).
   'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
   'android.permission.health.READ_HEALTH_DATA_HISTORY',
-  'android.permission.health.READ_EXERCISE_ROUTES',
   'android.permission.health.WRITE_EXERCISE',
   'android.permission.health.WRITE_EXERCISE_ROUTE',
   'android.permission.health.WRITE_DISTANCE',
@@ -195,8 +196,11 @@ describe('app.config.ts', () => {
     expect(android?.permissions ?? []).toEqual([...HEALTH_CONNECT_READ_PERMISSIONS]);
   });
 
-  it('Health Connect (Phase 8): je Datentyp genau eine Leseberechtigung, Plugin und minSdk 26', () => {
-    expect(HEALTH_CONNECT_READ_PERMISSIONS).toHaveLength(WEARABLE_DATA_TYPES.length);
+  it('Health Connect (Phase 8): je Datentyp genau eine Leseberechtigung plus Trainingsrouten, Plugin und minSdk 26', () => {
+    expect(HEALTH_CONNECT_READ_PERMISSIONS).toHaveLength(WEARABLE_DATA_TYPES.length + 1);
+    expect(HEALTH_CONNECT_READ_PERMISSIONS).toContain(
+      'android.permission.health.READ_EXERCISE_ROUTES',
+    );
     for (const permission of HEALTH_CONNECT_READ_PERMISSIONS) {
       expect(permission).toMatch(/^android\.permission\.health\.READ_[A-Z_]+$/);
       expect(HEALTH_CONNECT_BLOCKED_PERMISSIONS as readonly string[]).not.toContain(permission);
@@ -204,7 +208,6 @@ describe('app.config.ts', () => {
     for (const blocked of [
       'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
       'android.permission.health.READ_HEALTH_DATA_HISTORY',
-      'android.permission.health.READ_EXERCISE_ROUTES',
     ]) {
       expect(HEALTH_CONNECT_BLOCKED_PERMISSIONS as readonly string[]).toContain(blocked);
     }
