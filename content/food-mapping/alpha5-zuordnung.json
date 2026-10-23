@@ -148,6 +148,33 @@
       "reason_de": "Zustand: Konserve ohne Zuckerzusatz. Quell-ID Y864112 „Apfelmus ungesüßt“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): ausdrücklich ungesüßt (nicht „Apfelmus“ allgemein oder mit Süßstoff)."
     },
     {
+      "alpha5_id": "aprikosen",
+      "food_id": "aprikosen",
+      "alpha5_name": "Aprikosen",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Aprikose"],
+        "state_de": "roh, entsteint",
+        "category": "fruit"
+      },
+      "name_de": "Aprikosen",
+      "aliases_de": [],
+      "shopping_category": "fruit_vegetables",
+      "pantry": false,
+      "units": {},
+      "groups": ["fructose"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh, entsteint. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Aprikose roh“ (nicht Kompott/Konserve)."
+    },
+    {
       "alpha5_id": "asia-gemuesemischung-tk",
       "food_id": "asia-gemuesemischung-tk",
       "alpha5_name": "Asia-Gemüsemischung (TK)",
@@ -173,6 +200,33 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: TK, roh. Quell-ID G994100 „Gemüsemischung asiatische Art, roh“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): Gemüsemischung asiatische Art, roh – TK-Ware ist roh. Mischung, Zusammensetzung je Produkt verschieden (oft Mungbohnensprossen, Mu-Err-Pilze, Zwiebeln) – Gruppen vorsichtig gesetzt; Quelleintrag nur ein Näherungswert."
+    },
+    {
+      "alpha5_id": "aubergine",
+      "food_id": "aubergine",
+      "alpha5_name": "Aubergine",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Aubergine"],
+        "state_de": "roh",
+        "category": "vegetables"
+      },
+      "name_de": "Aubergine",
+      "aliases_de": [],
+      "shopping_category": "fruit_vegetables",
+      "pantry": false,
+      "units": {},
+      "groups": ["histamine"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": false,
+      "substitutes": [],
+      "reason_de": "Zustand: roh. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Aubergine roh“. Histamin: Aubergine gilt als histaminreich (bei R19 bestätigen)."
     },
     {
       "alpha5_id": "avocado",
@@ -580,6 +634,33 @@
       "reason_de": "Zustand: trocken, ungekocht. Quell-ID C119100 „Bulgur (Hartweizen) roh“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): roh = trocken, ungekocht."
     },
     {
+      "alpha5_id": "butterkekse",
+      "food_id": "butterkekse",
+      "alpha5_name": "Butterkekse",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Butterkeks", "Butterplätzchen"],
+        "state_de": "trocken, Gebäck",
+        "category": "pastries_sweets"
+      },
+      "name_de": "Butterkekse",
+      "aliases_de": [],
+      "shopping_category": "bread_bakery",
+      "pantry": true,
+      "units": {},
+      "groups": ["gluten", "dairy", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: trocken, Gebäck. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Butterkekse/Butterplätzchen (Mürbeteig)“ ohne Schokolade/Füllung. Eier je nach Rezeptur – bei R19 prüfen."
+    },
+    {
       "alpha5_id": "casein-proteinpulver-vanille",
       "food_id": "casein-proteinpulver-vanille",
       "alpha5_name": "Casein-Proteinpulver (Vanille)",
@@ -813,6 +894,60 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: roh. Quell-ID G321100 „Chinakohl roh“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): roh."
+    },
+    {
+      "alpha5_id": "clear-whey-isolat-fruchtgeschmack",
+      "food_id": "clear-whey-isolat-fruchtgeschmack",
+      "alpha5_name": "Clear-Whey-Isolat (Fruchtgeschmack)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Molkenproteinisolat", "Molkenprotein", "Eiweißpulver", "Proteinpulver"],
+        "state_de": "Pulver, Fruchtgeschmack",
+        "category": "dairy"
+      },
+      "name_de": "Clear-Whey-Isolat (Fruchtgeschmack)",
+      "aliases_de": [],
+      "shopping_category": "other",
+      "pantry": true,
+      "units": {},
+      "groups": ["dairy", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Pulver, Fruchtgeschmack. Quell-ID offen: nicht in BLS 4.0 (wie bei den anderen Whey-Pulvern kein Molkenprotein) → Zweitquelle oder ungeprüft (Plan 19.3). Isolat ist laktosearm, aber nicht sicher laktosefrei – daher vorsichtig mit „lactose“ (R18)."
+    },
+    {
+      "alpha5_id": "cornflakes-ungezuckert",
+      "food_id": "cornflakes-ungezuckert",
+      "alpha5_name": "Cornflakes (ungezuckert)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Cornflakes"],
+        "state_de": "trocken, ungesüßt",
+        "category": "cereal_products"
+      },
+      "name_de": "Cornflakes (ungezuckert)",
+      "aliases_de": [],
+      "shopping_category": "cereal_breakfast",
+      "pantry": true,
+      "units": {},
+      "groups": ["gluten"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: trocken, ungesüßt. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Cornflakes“ ohne Zuckerglasur (C515600 ist gezuckert, passt nicht). Mit „gluten“ (R18, Getreideerzeugnis; Gerstenmalz enthält Gluten)."
     },
     {
       "alpha5_id": "couscous-trocken",
@@ -1454,6 +1589,33 @@
       "reason_de": "Zustand: roh, TK, geschält. Quell-ID T753100 „Garnele/Granat/Krabbe, roh“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): roh (nicht paniert/gekocht). Haltbarkeit gekocht 1 Tag (R9: Reis, Fisch, Hackfleisch, Geflügel)."
     },
     {
+      "alpha5_id": "gefluegelwuerstchen-fettreduziert",
+      "food_id": "gefluegelwuerstchen-fettreduziert",
+      "alpha5_name": "Geflügelwürstchen (fettreduziert)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "W212032",
+        "search": ["Geflügel Wiener", "Geflügelwürstchen", "Geflügel Würstchen"],
+        "state_de": "Brühwurst, gegart",
+        "category": "sausage_meat_products"
+      },
+      "name_de": "Geflügelwürstchen",
+      "aliases_de": ["Geflügel-Wiener"],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": ["poultry"],
+      "animal": ["meat"],
+      "meat_kind": ["poultry", "pork"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Brühwurst, gegart. UNSICHER – bei R19 zuerst prüfen. Quell-ID W212032 „Geflügel-Wiener Würstchen gargezogen“ (Namensliste Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Geflügel-Wiener; ob die Quelle fettreduziert ist, bei R19 prüfen. Name ohne „fettreduziert“, bis die Fettangabe bestätigt ist. Vorsichtig zusätzlich „pork“: Würstchen enthalten oft Schweinespeck oder -darm (R18); bei R19 nur mit Quelle über die Ausnahmeliste entfernen. Geflügel: höchstens 1 Tag im Kühlschrank (R9)."
+    },
+    {
       "alpha5_id": "gehackte-tomaten-dose",
       "food_id": "gehackte-tomaten-dose",
       "alpha5_name": "Gehackte Tomaten (Dose)",
@@ -1542,6 +1704,60 @@
       "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: zubereitet (verdünnt). Quell-ID X416243 „Gemüsebrühe“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): zubereitete Gemüsebrühe; Rezeptur der Quelle kann vom Instant-Produkt abweichen (Salz)."
     },
     {
+      "alpha5_id": "geschmackspulver-zuckerfrei",
+      "food_id": "geschmackspulver-zuckerfrei",
+      "alpha5_name": "Geschmackspulver (zuckerfrei)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Geschmackspulver", "Aromapulver", "Süßstoff", "Süßungsmittel"],
+        "state_de": "Pulver, mit Süßungsmitteln",
+        "category": "other"
+      },
+      "name_de": "Geschmackspulver (zuckerfrei)",
+      "aliases_de": [],
+      "shopping_category": "other",
+      "pantry": true,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Pulver, mit Süßungsmitteln. Quell-ID offen: Geschmackspulver (Aroma mit Süßungsmitteln) hat in BLS 4.0 vermutlich keinen Eintrag; Menge im Rezept sehr klein → Zweitquelle oder ungeprüft (Plan 19.3). Kein Markenname."
+    },
+    {
+      "alpha5_id": "gewuerzgurken-glas",
+      "food_id": "gewuerzgurken-glas",
+      "alpha5_name": "Gewürzgurken (Glas)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "G520802",
+        "search": ["Gewürzgurke", "Gurke gesäuert"],
+        "state_de": "gesäuert, abgetropft",
+        "category": "vegetables"
+      },
+      "name_de": "Gewürzgurken (Glas)",
+      "aliases_de": [],
+      "shopping_category": "legumes_canned",
+      "pantry": true,
+      "units": {},
+      "groups": ["sulphites"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gesäuert, abgetropft. Quell-ID G520802 „Gurke gesäuert (Gewürzgurke) abgetropft“ (Namensliste Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0). Sulfite je nach Hersteller – bei R19 prüfen."
+    },
+    {
       "alpha5_id": "gnocchi-kuehlregal",
       "food_id": "gnocchi-kuehlregal",
       "alpha5_name": "Gnocchi (Kühlregal)",
@@ -1621,6 +1837,33 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: Schnittkäse, fettreduziert, gerieben. Quell-ID M402400 „Gouda mind. 30 % Fett i. Tr.“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): fettreduziert ≈ mind. 30 % Fett i. Tr.; Fettstufe der Ware prüfen. Name ohne „light“ (R10, Health-Claims-Verordnung), mit Fettangabe der Quelle (Import-Lauf 1, PR #47)."
+    },
+    {
+      "alpha5_id": "gouda-light-scheiben",
+      "food_id": "gouda-light-scheiben",
+      "alpha5_name": "Gouda light (Scheiben)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "M402400",
+        "search": ["Gouda", "Schnittkäse"],
+        "state_de": "Schnittkäse, fettreduziert, Scheiben",
+        "category": "dairy"
+      },
+      "name_de": "Gouda in Scheiben (30 % Fett i. Tr.)",
+      "aliases_de": ["Gouda Dreiviertelfettstufe Scheiben"],
+      "shopping_category": "chilled_dairy_eggs",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "histamine", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Schnittkäse, fettreduziert, Scheiben. UNSICHER – bei R19 zuerst prüfen. Quell-ID M402400 „Gouda mind. 30 % Fett i. Tr.“ wie bei gouda-light-gerieben (Lauf „kandidaten“ 12.10.2026, BLS 4.0). Name ohne „light“ (R10, Health-Claims-Verordnung). Lab tierisch möglich – bei R19 prüfen."
     },
     {
       "alpha5_id": "gruene-bohnen-tk",
@@ -2034,6 +2277,33 @@
       "reason_de": "Zustand: roh. Quell-ID F533100 „Honigmelone roh“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): roh."
     },
     {
+      "alpha5_id": "hot-dog-broetchen",
+      "food_id": "hot-dog-broetchen",
+      "alpha5_name": "Hot-Dog-Brötchen",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "B511000",
+        "search": ["Weizenbrötchen", "Brötchen", "Hot Dog"],
+        "state_de": "gebacken",
+        "category": "bread_bakery"
+      },
+      "name_de": "Hot-Dog-Brötchen",
+      "aliases_de": [],
+      "shopping_category": "bread_bakery",
+      "pantry": true,
+      "units": {},
+      "groups": ["gluten"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gebacken. UNSICHER – bei R19 prüfen. Quell-ID B511000 wie bei weizenbroetchen (Lauf „kandidaten“ 12.10.2026, BLS 4.0): Hot-Dog-Brötchen sind weiche Weizenbrötchen; oft etwas Zucker und Fett mehr. Milch/Ei je nach Rezeptur prüfen."
+    },
+    {
       "alpha5_id": "hummus",
       "food_id": "hummus",
       "alpha5_name": "Hummus",
@@ -2209,6 +2479,33 @@
       "reason_de": "Zustand: frisch, roh. Quell-ID R211200 „Ingwer/Ingwerwurzel, roh“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): Ingwerwurzel roh (nicht kandiert/Gari)."
     },
     {
+      "alpha5_id": "instant-puddingpulver-zuckerfrei",
+      "food_id": "instant-puddingpulver-zuckerfrei",
+      "alpha5_name": "Instant-Puddingpulver (zuckerfrei)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Puddingpulver", "Pudding Pulver", "Dessertpulver"],
+        "state_de": "Pulver, ohne Zucker",
+        "category": "other"
+      },
+      "name_de": "Instant-Puddingpulver (zuckerfrei)",
+      "aliases_de": [],
+      "shopping_category": "spices_baking",
+      "pantry": true,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Pulver, ohne Zucker. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Im lesbaren Teil nur R481200 „Puddingpulver Schokolade, ungezuckert“ – Geschmack passt nicht immer; Instant-Pulver enthält oft Milchpulver (dairy/lactose bei R19 prüfen)."
+    },
+    {
       "alpha5_id": "instantkaffee",
       "food_id": "instantkaffee",
       "alpha5_name": "Instantkaffee",
@@ -2261,6 +2558,33 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: 1,5 % Fett. Quell-ID M141200 „Joghurt fettarm, mind. 1,5 % bis max. 1,8 % Fett“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): genau passend (1,5–1,8 % Fett, nicht laktosefrei)."
+    },
+    {
+      "alpha5_id": "johannisbrotkernmehl",
+      "food_id": "johannisbrotkernmehl",
+      "alpha5_name": "Johannisbrotkernmehl",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Johannisbrotkernmehl", "Johannisbrot", "Bindemittel"],
+        "state_de": "Pulver",
+        "category": "other"
+      },
+      "name_de": "Johannisbrotkernmehl",
+      "aliases_de": [],
+      "shopping_category": "spices_baking",
+      "pantry": true,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Pulver. Quell-ID offen: im lesbaren Teil der Namensliste kein Eintrag; Menge im Rezept sehr klein (Bindemittel) → Kandidatenlauf, sonst Zweitquelle oder ungeprüft."
     },
     {
       "alpha5_id": "kabeljaufilet",
@@ -2707,6 +3031,33 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: Konserve, fettreduziert. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: nur Kokosmilch normal (H154000); die fettreduzierte Variante fehlt, Vollfett würde Fett und kcal etwa verdoppeln."
+    },
+    {
+      "alpha5_id": "kokosraspeln",
+      "food_id": "kokosraspeln",
+      "alpha5_name": "Kokosraspeln",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Kokosraspel", "Kokosnuss getrocknet", "Kokosnuss"],
+        "state_de": "getrocknet, geraspelt",
+        "category": "nuts_seeds"
+      },
+      "name_de": "Kokosraspeln",
+      "aliases_de": [],
+      "shopping_category": "nuts_seeds_dried_fruit",
+      "pantry": true,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: getrocknet, geraspelt. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Kokosnuss getrocknet/Kokosraspeln“. Kokos zählt nach LMIV nicht zu den Schalenfrüchten, daher ohne „tree_nuts“ (bei R19 bestätigen)."
     },
     {
       "alpha5_id": "koriander-frisch",
@@ -3272,6 +3623,60 @@
       "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Majoran-Eintrag."
     },
     {
+      "alpha5_id": "makkaroni-trocken",
+      "food_id": "makkaroni-trocken",
+      "alpha5_name": "Makkaroni (trocken)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "E401000",
+        "search": ["Teigwaren eifrei", "Makkaroni", "Nudeln"],
+        "state_de": "trocken, roh",
+        "category": "cereal_products"
+      },
+      "name_de": "Makkaroni (trocken)",
+      "aliases_de": [],
+      "shopping_category": "pasta_rice_grains",
+      "pantry": true,
+      "units": {},
+      "groups": ["gluten"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: trocken, roh. Quell-ID E401000 wie bei spaghetti-trocken (Lauf „kandidaten“ 12.10.2026, BLS 4.0): eifreie Hartweizen-Teigwaren, roh."
+    },
+    {
+      "alpha5_id": "mandeldrink-ungesuesst",
+      "food_id": "mandeldrink-ungesuesst",
+      "alpha5_name": "Mandeldrink ungesüßt",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Mandeldrink", "Mandelmilch"],
+        "state_de": "ungesüßt",
+        "category": "nuts_seeds"
+      },
+      "name_de": "Mandeldrink ungesüßt",
+      "aliases_de": [],
+      "shopping_category": "chilled_plant_based",
+      "pantry": false,
+      "units": {},
+      "groups": ["tree_nuts"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: ungesüßt. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Im lesbaren Teil nur gesüßte Mandeldrinks (H800200 ff.) – passen nicht."
+    },
+    {
       "alpha5_id": "mandeln",
       "food_id": "mandeln",
       "alpha5_name": "Mandeln",
@@ -3324,6 +3729,33 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: TK, roh. Quell-ID F516100 „Mango roh“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): roh – TK-Ware ist roh."
+    },
+    {
+      "alpha5_id": "maracuja",
+      "food_id": "maracuja",
+      "alpha5_name": "Maracuja",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Maracuja", "Passionsfrucht", "Grenadilla"],
+        "state_de": "roh, Fruchtfleisch mit Kernen",
+        "category": "fruit"
+      },
+      "name_de": "Maracuja",
+      "aliases_de": [],
+      "shopping_category": "fruit_vegetables",
+      "pantry": false,
+      "units": {},
+      "groups": ["fructose"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh, Fruchtfleisch mit Kernen. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Passionsfrucht/Maracuja roh“."
     },
     {
       "alpha5_id": "meerrettich-glas",
@@ -3716,6 +4148,33 @@
       "reason_de": "Zustand: trocken. Quell-ID B821000 „Paniermehl/Semmelbrösel/Semmelmehl“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): mit Gluten (nicht glutenfrei)."
     },
     {
+      "alpha5_id": "panko",
+      "food_id": "panko",
+      "alpha5_name": "Panko",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "B821000",
+        "search": ["Paniermehl", "Semmelbrösel"],
+        "state_de": "trocken",
+        "category": "bread_bakery"
+      },
+      "name_de": "Panko",
+      "aliases_de": ["Panko-Paniermehl"],
+      "shopping_category": "bread_bakery",
+      "pantry": true,
+      "units": {},
+      "groups": ["gluten"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: trocken. UNSICHER – bei R19 prüfen. Quell-ID B821000 „Paniermehl/Semmelbrösel/Semmelmehl“ (Namensliste Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Panko ist grobes Paniermehl aus Weißbrot; Werte nahe an normalem Paniermehl."
+    },
+    {
       "alpha5_id": "paprika-gelb",
       "food_id": "paprika-gelb",
       "alpha5_name": "Paprika gelb",
@@ -3890,6 +4349,33 @@
       "reason_de": "Zustand: passiert. Quell-ID R161200 „Tomaten passiert/Tomatenpüree“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): genau passend."
     },
     {
+      "alpha5_id": "pastinake",
+      "food_id": "pastinake",
+      "alpha5_name": "Pastinake",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Pastinake"],
+        "state_de": "roh",
+        "category": "vegetables"
+      },
+      "name_de": "Pastinake",
+      "aliases_de": [],
+      "shopping_category": "fruit_vegetables",
+      "pantry": false,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Pastinake roh“ (nicht gekocht/gebacken)."
+    },
+    {
       "alpha5_id": "petersilie-frisch",
       "food_id": "petersilie-frisch",
       "alpha5_name": "Petersilie (frisch)",
@@ -3948,6 +4434,60 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: gemahlen. Quell-ID R258100 „Pfeffer schwarz, getrocknet“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): schwarzer Pfeffer getrocknet; weißer Pfeffer fehlt."
+    },
+    {
+      "alpha5_id": "pfirsich",
+      "food_id": "pfirsich",
+      "alpha5_name": "Pfirsich",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Pfirsich"],
+        "state_de": "roh, entsteint",
+        "category": "fruit"
+      },
+      "name_de": "Pfirsich",
+      "aliases_de": [],
+      "shopping_category": "fruit_vegetables",
+      "pantry": false,
+      "units": {},
+      "groups": ["fructose"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh, entsteint. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Pfirsich roh“ (nicht Kompott/Konserve/Nektar)."
+    },
+    {
+      "alpha5_id": "pistazienkerne-ungesalzen",
+      "food_id": "pistazienkerne-ungesalzen",
+      "alpha5_name": "Pistazienkerne (ungesalzen)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Pistazie", "Pistazienkern"],
+        "state_de": "roh, geschält, ungesalzen",
+        "category": "nuts_seeds"
+      },
+      "name_de": "Pistazienkerne (ungesalzen)",
+      "aliases_de": [],
+      "shopping_category": "nuts_seeds_dried_fruit",
+      "pantry": true,
+      "units": {},
+      "groups": ["tree_nuts"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh, geschält, ungesalzen. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Pistazie“ ohne Salz/Röstung."
     },
     {
       "alpha5_id": "putenbrust-aufschnitt",
@@ -4406,6 +4946,33 @@
       "reason_de": "Zustand: roh. Quell-ID G107100 „Römischer Salat/Romanasalat, roh“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): roh; Herzen sind Teil des Romanasalats."
     },
     {
+      "alpha5_id": "rosenkohl",
+      "food_id": "rosenkohl",
+      "alpha5_name": "Rosenkohl",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Rosenkohl"],
+        "state_de": "roh",
+        "category": "vegetables"
+      },
+      "name_de": "Rosenkohl",
+      "aliases_de": [],
+      "shopping_category": "fruit_vegetables",
+      "pantry": false,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Rosenkohl roh“; im lesbaren Teil nur gegart und G332200 „Rosenkohl tiefgefroren“ (Ausweichlösung, falls frisch fehlt)."
+    },
+    {
       "alpha5_id": "rosinen",
       "food_id": "rosinen",
       "alpha5_name": "Rosinen",
@@ -4658,6 +5225,33 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "UNSICHER – bei R19 zuerst prüfen. Zustand: geräuchert. Quell-ID H861000 „Tofu“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Tofu natur; geräucherter Tofu fehlt."
+    },
+    {
+      "alpha5_id": "roestzwiebeln",
+      "food_id": "roestzwiebeln",
+      "alpha5_name": "Röstzwiebeln",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "G860192",
+        "search": ["Röstzwiebel", "Zwiebel geröstet"],
+        "state_de": "frittiert, Fertigprodukt",
+        "category": "vegetables"
+      },
+      "name_de": "Röstzwiebeln",
+      "aliases_de": [],
+      "shopping_category": "spices_baking",
+      "pantry": true,
+      "units": {},
+      "groups": ["gluten", "onion_garlic"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: frittiert, Fertigprodukt. Quell-ID G860192 „Röstzwiebeln (Fertigprodukt)“ (Namensliste Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0). Fertig-Röstzwiebeln sind meist mit Weizenmehl bestäubt (gluten, bei R19 bestätigen)."
     },
     {
       "alpha5_id": "salatmix",
@@ -4940,6 +5534,33 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: Konserve, abgetropft. Quell-ID H520800 „Oliven geschwärzt, in Salzlake, abgetropft“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): geschwärzte Oliven in Salzlake, abgetropft. Gleiche Quell-ID wie „oliven-schwarz“."
+    },
+    {
+      "alpha5_id": "schwarzer-tee-aufgebrueht",
+      "food_id": "schwarzer-tee-aufgebrueht",
+      "alpha5_name": "Schwarzer Tee (aufgebrüht)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Schwarztee", "Schwarzer Tee", "Tee"],
+        "state_de": "Getränk, aufgebrüht, ohne Zucker",
+        "category": "beverages"
+      },
+      "name_de": "Schwarzer Tee (aufgebrüht)",
+      "aliases_de": [],
+      "shopping_category": "drinks",
+      "pantry": true,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": false,
+      "substitutes": [],
+      "reason_de": "Zustand: Getränk, aufgebrüht, ohne Zucker. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Schwarztee (Getränk)“ ohne Zucker/Milch; im lesbaren Teil nur Varianten mit Zucker oder Milch (N630200 ff.)."
     },
     {
       "alpha5_id": "schweinefilet",
@@ -5548,6 +6169,33 @@
       "reason_de": "Zustand: roh. Quell-ID K420100 „Batate/Süßkartoffel, roh“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): roh."
     },
     {
+      "alpha5_id": "suesskirschen-tk-entsteint",
+      "food_id": "suesskirschen-tk-entsteint",
+      "alpha5_name": "Süßkirschen (TK, entsteint)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Süßkirsche", "Kirsche"],
+        "state_de": "tiefgefroren, entsteint",
+        "category": "fruit"
+      },
+      "name_de": "Süßkirschen (TK, entsteint)",
+      "aliases_de": [],
+      "shopping_category": "frozen",
+      "pantry": false,
+      "units": {},
+      "groups": ["fructose"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: tiefgefroren, entsteint. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Süßkirsche roh“ oder „tiefgefroren“; im lesbaren Teil nur gedünstet, getrocknet und Konserven."
+    },
+    {
       "alpha5_id": "tahin",
       "food_id": "tahin",
       "alpha5_name": "Tahin",
@@ -5828,6 +6476,33 @@
       "reason_de": "Zustand: Sauce im Glas. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: keine Tomaten-Salsa (Dip); X3A7040 „Spanische Sauce (Salsa)“ ist eine gekochte Sauce und kein Dip aus dem Glas."
     },
     {
+      "alpha5_id": "veganer-reibekaese",
+      "food_id": "veganer-reibekaese",
+      "alpha5_name": "Veganer Reibekäse",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Käsealternative", "Käseersatz", "vegan Käse"],
+        "state_de": "gerieben, auf Kokosfett-/Stärkebasis",
+        "category": "other"
+      },
+      "name_de": "Vegane Reibe-Alternative",
+      "aliases_de": ["Vegane Streu-Alternative"],
+      "shopping_category": "chilled_plant_based",
+      "pantry": false,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gerieben, auf Kokosfett-/Stärkebasis. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Im lesbaren Teil nur X5A8040 „Käsealternative Mozzarella-Art, vegan“ (Ausweichlösung). Zutaten je nach Hersteller (Soja/Nüsse) – bei R19 prüfen. Kein Markenname. Name ohne „Käse“: R18 verlangt sonst Milch – Rezeptname bleibt „Veganer Reibekäse“; eine Ausnahme mit Quelle (allergen-exceptions.json) wäre bei R19 der Weg zum Namen mit „Käse“."
+    },
+    {
       "alpha5_id": "veganes-proteinpulver",
       "food_id": "veganes-proteinpulver",
       "alpha5_name": "Veganes Proteinpulver",
@@ -5860,6 +6535,39 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein veganes Proteinpulver; Sojaproteinisolat H011000 passt nur, wenn die Ware reines Sojaisolat ist. Pflanzliches Proteinpulver (oft Erbse/Soja): kein Quelleintrag erwartet → Zweitquelle oder ungeprüft; Gruppen vorsichtig."
+    },
+    {
+      "alpha5_id": "veganes-proteinpulver-erbse-reis-neutral",
+      "food_id": "veganes-proteinpulver-erbse-reis-neutral",
+      "alpha5_name": "Veganes Proteinpulver (Erbse/Reis, neutral)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": [
+          "Erbsenprotein",
+          "Erbsenproteinisolat",
+          "Reisprotein",
+          "Proteinpulver vegan",
+          "Eiweißpulver"
+        ],
+        "state_de": "Pulver, neutral",
+        "category": "other"
+      },
+      "name_de": "Veganes Proteinpulver (Erbse/Reis, neutral)",
+      "aliases_de": [],
+      "shopping_category": "other",
+      "pantry": true,
+      "units": {},
+      "groups": ["legumes"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Pulver, neutral. Quell-ID offen: wie bei veganes-proteinpulver kein passender Eintrag in BLS 4.0 → Zweitquelle oder ungeprüft (Plan 19.3). Erbse = Hülsenfrucht; ohne Soja. „Reis“ im Namen → höchstens 1 Tag (R9, sichere Richtung)."
     },
     {
       "alpha5_id": "veganes-proteinpulver-schoko",
@@ -6214,6 +6922,33 @@
       "reason_de": "Zustand: Leitungswasser. Quell-ID N110000 „Trinkwasser“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): Trinkwasser."
     },
     {
+      "alpha5_id": "wassermelone",
+      "food_id": "wassermelone",
+      "alpha5_name": "Wassermelone",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Wassermelone", "Melone"],
+        "state_de": "roh, ohne Schale",
+        "category": "fruit"
+      },
+      "name_de": "Wassermelone",
+      "aliases_de": [],
+      "shopping_category": "fruit_vegetables",
+      "pantry": false,
+      "units": {},
+      "groups": ["fructose"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": false,
+      "substitutes": [],
+      "reason_de": "Zustand: roh, ohne Schale. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Wassermelone roh“."
+    },
+    {
       "alpha5_id": "weichweizengriess",
       "food_id": "weichweizengriess",
       "alpha5_name": "Weichweizengrieß",
@@ -6266,6 +7001,33 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: Gebäck. Quell-ID B511000 „Weizenbrötchen“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): genau passend."
+    },
+    {
+      "alpha5_id": "weizenmehl-type-405",
+      "food_id": "weizenmehl-type-405",
+      "alpha5_name": "Weizenmehl Type 405",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Weizenmehl", "Weizen Mehl"],
+        "state_de": "trocken, Type 405",
+        "category": "cereal_products"
+      },
+      "name_de": "Weizenmehl Type 405",
+      "aliases_de": [],
+      "shopping_category": "spices_baking",
+      "pantry": true,
+      "units": {},
+      "groups": ["gluten"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: trocken, Type 405. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Weizenmehl Type 405“ (wie Dinkelmehl C234000 in der Gruppe C2…)."
     },
     {
       "alpha5_id": "weisse-bohnen-dose-abgetropft",
@@ -6538,6 +7300,33 @@
       "reason_de": "Zustand: Saft. Quell-ID F601600 „Zitronensaft“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): Saft (kein Konzentrat)."
     },
     {
+      "alpha5_id": "zitronenschale-bio-abgerieben",
+      "food_id": "zitronenschale-bio-abgerieben",
+      "alpha5_name": "Zitronenschale (Bio, abgerieben)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Zitrone Schale", "Zitronenschale", "Zitrone"],
+        "state_de": "roh, abgerieben",
+        "category": "fruit"
+      },
+      "name_de": "Zitronenschale (Bio, abgerieben)",
+      "aliases_de": [],
+      "shopping_category": "fruit_vegetables",
+      "pantry": false,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh, abgerieben. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Zitrone Schale“; sonst „Zitrone roh“ als Ausweichlösung (Menge im Rezept sehr klein)."
+    },
+    {
       "alpha5_id": "zucchini",
       "food_id": "zucchini",
       "alpha5_name": "Zucchini",
@@ -6597,6 +7386,33 @@
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: Haushaltszucker. Quell-ID S111000 „Zucker weiß (Raffinadezucker/Weißzucker)“ (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0): Weißzucker, genau passend."
+    },
+    {
+      "alpha5_id": "zuckerschoten",
+      "food_id": "zuckerschoten",
+      "alpha5_name": "Zuckerschoten",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Zuckererbse", "Zuckerschote", "Kaiserschote"],
+        "state_de": "roh",
+        "category": "vegetables"
+      },
+      "name_de": "Zuckerschoten",
+      "aliases_de": [],
+      "shopping_category": "fruit_vegetables",
+      "pantry": false,
+      "units": {},
+      "groups": ["legumes"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh. Quell-ID offen: im lesbaren Teil der Namensliste (Lauf 38367139392, BLS 4.0) kein passender Eintrag – bitte Lauf „kandidaten“ starten. Gesucht ist „Zuckererbse roh“; im lesbaren Teil nur gedünstet und G761200 „Zuckererbse tiefgefroren“ (Ausweichlösung)."
     },
     {
       "alpha5_id": "zwieback",
