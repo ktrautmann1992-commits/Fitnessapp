@@ -142,6 +142,33 @@ Gewichte je Einheit stehen zentral in `SHOPPING_BUY_UNITS` (`packages/core/src/c
 `shoppingBuyHint` (`packages/core/src/nutrition/shopping-buy-units.ts`). Gilt in der App, beim Weitergeben und im
 Druck. Lebensmittel ohne Eintrag (Haferflocken, Reis, Milch …) bleiben in g/ml.
 
+### 3.y Kürzere Liste: „3 Tage | Ganze Woche“ und Abteilungen zum Zuklappen (Gründer-Entscheidung 23.10.2026)
+
+Anlass: „Da steht viel zu viel drauf auf der Liste.“ Entscheidung „Beides“:
+
+- **Standard-Zeitraum 3 Tage** (`SHOPPING_DEFAULT_DAYS = 3`, `shoppingDefaultRange` in
+  `packages/core/src/nutrition/shopping-list-store.ts`): von `max(Wochenbeginn, heute)` bis `min(Sonntag, heute + 2)`.
+  Samstag → nur Sa–So, Sonntag → nur So. Liegt heute nicht in der Woche (nächste Woche – auch am Sonntag davor, 6.5 –
+  bzw. vergangene Woche), gelten die ersten 3 Tage der Woche. Oben auf dem Reiter die Wahl **„3 Tage | Ganze Woche“**
+  („Ganze Woche“ = ab heute bis Sonntag); die Wahl merkt sich das Gerät. Das 3-Tage-Fenster wandert täglich mit.
+- **„Eigener Zeitraum“** (Link unter der Wahl) öffnet den bisherigen Von/Bis-Wähler. Ein selbst gewählter Zeitraum
+  bleibt (auf dem Gerät je Woche gemerkt bzw. erkennbar, weil er weder am Sonntag endet noch 3 Tage lang ist –
+  `shoppingRangeIsAutomatic`/`shoppingListTargetRange`).
+- **Alte Listen:** Eine gespeicherte Liste mit dem früheren Standard „ganze Woche“ wird beim Öffnen auf den neuen
+  Zeitraum umgestellt; Häkchen bleiben über `item_key` für alles, was im neuen Zeitraum steht. Was nur außerhalb liegt,
+  fällt weg (wie bisher beim Zeitraum-Wählen) – ändert sich gleichzeitig der Plan, bleiben abgehakte als „nicht mehr
+  im Plan“ (R2-S4).
+- **Abteilungen zuklappbar** (`shoppingDepartments`): Kopf mit Pfeil, Name und „x offen“; antippen klappt auf/zu
+  (gemerkt). Ist alles einer Abteilung abgehakt, klappt sie von selbst zu und zeigt „✓ erledigt“.
+- **„Erledigte ausblenden“ ist standardmäßig an** (gemerkt); je Abteilung „x erledigt – anzeigen“.
+- Der Scanner steht jetzt unter der Liste. Drucken (PDF) und Weitergeben nehmen denselben Zeitraum wie die Liste.
+- Gerätespeicher: `fitnessapp.shopping-prefs.v1` (`apps/mobile/src/lib/shopping-prefs.ts`) – nur Wahl, Wochen-Daten,
+  Abteilungsnamen; keine Gesundheitsdaten. Keine Migration nötig (`from`/`to` gab es schon).
+- Tests: `packages/core/src/nutrition/shopping-range.test.ts` (Montag, Mittwoch, Samstag, Sonntag, Sonntag davor,
+  nächste/vergangene Woche, alte Wochenliste mit Häkchen, eigener Zeitraum, Abteilungen); Playwright
+  `nutrition-shopping.spec.ts` (Standard 3 Tage, „Ganze Woche“ zeigt mehr und bleibt gemerkt, Abteilungen auf/zu,
+  ganz erledigt → zu).
+
 ## 4. Etappe E2 – Dashboard bearbeiten (Kacheln + Menüleiste)
 
 **Core (`packages/core/src/layout.ts`, Konstanten `APP_LAYOUT`):**

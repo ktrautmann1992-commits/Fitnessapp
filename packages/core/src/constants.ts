@@ -2116,6 +2116,14 @@ export const SHOPPING_SCAN = {
 export const SHOPPING_LIST_EXTRAS = { recipesMax: 20, itemsMax: 1000 } as const;
 
 /**
+ * Einkaufsliste – Standard-Zeitraum (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, Gründer-Entscheidung 23.10.2026 „Beides“):
+ * Ohne eigene Wahl zeigt die Liste nur die nächsten 3 Tage (heute + 2, innerhalb der Planwoche), umschaltbar auf
+ * „Ganze Woche“ (ab heute bis Sonntag). Grund: Die Wochenliste war zu lang („Da steht viel zu viel drauf“); die
+ * meisten Leute kaufen alle 2–3 Tage frisch ein. Keine Grenze zur Gesundheit, nur Bedienung. PRODUKTENTSCHEIDUNG.
+ */
+export const SHOPPING_DEFAULT_DAYS = 3;
+
+/**
  * Größte Payload an `save_meal_plan` bzw. `replace_shopping_list` in Byte (Etappe N7, Wächter N7 H1) – der Server lehnt
  * Größeres ab, BEVOR er die Eingabe Feld für Feld prüft. Keine Grenze zur Gesundheit, nur Schutz der Datenbank.
  * PRODUKTENTSCHEIDUNG, hergeleitet aus den übrigen Grenzen:

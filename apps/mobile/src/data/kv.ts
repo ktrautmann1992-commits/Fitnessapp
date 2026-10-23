@@ -156,4 +156,10 @@ export const STORAGE_KEYS = {
    * nur dieses Gerät, keine Nutzerdaten (kein Alter, kein Grund).
    */
   accessibility: 'fitnessapp.accessibility.v1',
+  /**
+   * Einkaufsliste (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, 23.10.2026): „3 Tage | Ganze Woche“, Wochen mit eigenem
+   * Zeitraum, „Erledigte ausblenden“, zugeklappte Abteilungen – nur dieses Gerät, keine Nutzerdaten
+   * (lib/shopping-prefs.ts).
+   */
+  shoppingPrefs: 'fitnessapp.shopping-prefs.v1',
 } as const;

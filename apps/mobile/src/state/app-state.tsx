@@ -835,8 +835,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     ) => {
       const weekStart = plan?.weekStart ?? options.shoppingList?.weekStart;
       if (weekStart === undefined) return;
+      // Mit dem Zeitraum der Liste: Das 3-Tage-Fenster wandert täglich mit (23.10.2026) – auch das wird gespeichert.
+      const list = options.shoppingList;
       const key = `${weekStart}|${options.inputsKey}|${plan === null ? '-' : 'plan'}|${
-        options.shoppingList?.planKey ?? '-'
+        list ? `${list.planKey}|${list.from}|${list.to}` : '-'
       }`;
       if (!rows || persistedMealPlansRef.current.has(key)) return;
       persistedMealPlansRef.current.add(key);

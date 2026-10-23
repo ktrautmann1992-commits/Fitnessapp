@@ -399,3 +399,35 @@ export function parseShoppingQuantity(input: unknown): ShoppingQuantityParse {
   if (unit.unit === 'piece' && !Number.isInteger(amount)) return { ok: false };
   return { ok: true, amount: Math.round(amount * 10) / 10, unit: unit.unit };
 }
+
+export interface ShoppingDepartment {
+  readonly category: ShoppingCategory;
+  /** Alle Einträge der Abteilung (Reihenfolge der Liste). */
+  readonly items: readonly ShoppingListItem[];
+  readonly open: number;
+  readonly checked: number;
+  /** Alles abgehakt → die App klappt die Abteilung zu und zeigt „✓ erledigt“. */
+  readonly done: boolean;
+}
+
+/**
+ * Abteilungen der Liste zum Auf- und Zuklappen (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, 23.10.2026): ohne Vorrat (der hat
+ * einen eigenen Bereich), in der Reihenfolge des Ladens (`SHOPPING_CATEGORIES`), leere Abteilungen fehlen. Zählt
+ * offene und abgehakte Einträge.
+ */
+export function shoppingDepartments(items: readonly ShoppingListItem[]): ShoppingDepartment[] {
+  return SHOPPING_CATEGORIES.flatMap((category) => {
+    const inDepartment = items.filter((i) => !i.isPantry && i.category === category);
+    if (inDepartment.length === 0) return [];
+    const checked = inDepartment.filter((i) => i.checked).length;
+    return [
+      {
+        category,
+        items: inDepartment,
+        open: inDepartment.length - checked,
+        checked,
+        done: checked === inDepartment.length,
+      },
+    ];
+  });
+}

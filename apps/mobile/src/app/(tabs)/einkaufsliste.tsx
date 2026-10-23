@@ -6,9 +6,14 @@ import {
   planlessShoppingList,
   SHOPPING_CATEGORIES,
   type ShoppingCategory,
+  shoppingDefaultRange,
+  type ShoppingDepartment,
+  shoppingDepartments,
   type ShoppingListItem,
   shoppingItemOutsideProfileDiet,
   type ShoppingListRecipe,
+  type ShoppingRangeMode,
+  shoppingRangeIsAutomatic,
   shoppingRecipeOutsideProfileDiet,
   startOfIsoWeek,
 } from '@fitnessapp/core';
@@ -39,6 +44,7 @@ import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
 import { shoppingCategoryLabel, shoppingItemText } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
+import { setShoppingWeekManual, updateShoppingPrefs, useShoppingPrefs } from '@/lib/shopping-prefs';
 import { useThemeColors } from '@/lib/theme';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
@@ -112,7 +118,14 @@ export default function ShoppingTabScreen() {
     return planlessShoppingList(usable, weekStart);
   }, [app.versions, noPlan, rows, weekStart]);
   const actions = useShoppingListActions(noPlan ? null : view.week, planlessList);
-  const [hideChecked, setHideChecked] = useState(false);
+  // „Erledigte ausblenden“ (Standard: an) und zugeklappte Abteilungen merkt sich das Gerät (23.10.2026).
+  const prefs = useShoppingPrefs();
+  const hideChecked = prefs.hideChecked;
+  // Ganz erledigte Abteilungen klappen von selbst zu; aufgeklappt bleiben sie nur in dieser Sitzung.
+  const [openDone, setOpenDone] = useState<ReadonlySet<ShoppingCategory>>(() => new Set());
+  // „x erledigt – anzeigen“ je Abteilung (nur diese Sitzung).
+  const [showDoneIn, setShowDoneIn] = useState<ReadonlySet<ShoppingCategory>>(() => new Set());
+  const theme = useThemeColors();
   const [showPantry, setShowPantry] = useState(false);
   const [rangeOpen, setRangeOpen] = useState(false);
   const [draftFrom, setDraftFrom] = useState<string | null>(null);
@@ -221,12 +234,12 @@ export default function ShoppingTabScreen() {
   const days = Array.from({ length: 7 }, (_, i) => addDays(list.weekStart, i));
   const dayChoices = days.map((d) => ({ value: d, label: dayLabel(d) }));
   const visible = (item: ShoppingListItem) => !hideChecked || !item.checked;
-  const regular = list.items.filter((i) => !i.isPantry);
   const pantry = list.items.filter((i) => i.isPantry);
-  const groups = SHOPPING_CATEGORIES.map((c) => ({
-    category: c,
-    items: regular.filter((i) => i.category === c && visible(i)),
-  })).filter((g) => g.items.length > 0);
+  const departments = shoppingDepartments(list.items);
+  // Eigener Zeitraum: auf diesem Gerät gewählt oder kein automatischer Zeitraum (`shoppingRangeIsAutomatic`).
+  const customRange =
+    prefs.manualWeeks.includes(list.weekStart) || !shoppingRangeIsAutomatic(list.weekStart, list);
+  const rangeControls = actions !== null && !actions.planless;
   const nothingToBuy = list.items.length === 0;
   const allDone = !nothingToBuy && list.items.every((i) => i.checked);
 
@@ -290,8 +303,36 @@ export default function ShoppingTabScreen() {
       setMessage({ text: texts.rangeInvalid, tone: 'danger' });
       return;
     }
+    // Erst merken, dann speichern: sonst stellte der automatische Zeitraum die Liste sofort wieder um.
+    const wasManual = prefs.manualWeeks.includes(list.weekStart);
+    setShoppingWeekManual(list.weekStart, true, today);
     const outcome = await run('range', () => actions.setRange(from, to));
     if (outcome?.kind === 'ok') setRangeOpen(false);
+    else if (!wasManual) setShoppingWeekManual(list.weekStart, false, today);
+  }
+
+  /** „3 Tage | Ganze Woche“: Wahl merken; die Liste stellt sich dann selbst um (Häkchen bleiben über `item_key`). */
+  async function chooseMode(mode: ShoppingRangeMode) {
+    if (!actions) return;
+    setRangeOpen(false);
+    updateShoppingPrefs(() => ({ mode }));
+    setShoppingWeekManual(list.weekStart, false, today);
+    // Ein selbst gewählter Zeitraum, der nicht automatisch aussieht, wird ausdrücklich umgestellt.
+    if (!shoppingRangeIsAutomatic(list.weekStart, list)) {
+      const range = shoppingDefaultRange(list.weekStart, today, mode);
+      await run('mode', () => actions.setRange(range.from, range.to));
+    }
+  }
+
+  function toggleDepartment(department: ShoppingDepartment) {
+    const c = department.category;
+    if (department.done) {
+      setOpenDone((current) => toggled(current, c));
+      return;
+    }
+    updateShoppingPrefs((p) => ({
+      collapsed: p.collapsed.includes(c) ? p.collapsed.filter((x) => x !== c) : [...p.collapsed, c],
+    }));
   }
 
   const itemRow = (item: ShoppingListItem) => (
@@ -317,11 +358,81 @@ export default function ShoppingTabScreen() {
     <>
       {demo ? <DemoBanner /> : null}
       {weekSwitch}
+      {rangeControls ? (
+        <ChoiceList
+          label={texts.rangeModeLabel}
+          options={[
+            {
+              value: 'days' as const,
+              label: texts.rangeDays,
+              accessibilityLabel: texts.rangeDaysA11y,
+              testID: 'shopping-range-days',
+            },
+            {
+              value: 'week' as const,
+              label: texts.rangeWeek,
+              accessibilityLabel: texts.rangeWeekA11y,
+              testID: 'shopping-range-week',
+            },
+          ]}
+          value={customRange ? null : prefs.mode}
+          onChange={(mode) => void chooseMode(mode)}
+          horizontal
+        />
+      ) : null}
       <Heading level={2}>
         <Text testID="shopping-range">
           {texts.range(formatDateDe(list.from), formatDateDe(list.to))}
         </Text>
       </Heading>
+      {rangeControls ? (
+        <View style={styles.list}>
+          {/* „Eigener Zeitraum“ als schlichter Link – die Wahl „3 Tage | Ganze Woche“ steht oben. */}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ expanded: rangeOpen }}
+            aria-expanded={rangeOpen}
+            onPress={() => {
+              setDraftFrom(list.from);
+              setDraftTo(list.to);
+              setRangeOpen((open) => !open);
+            }}
+            style={styles.doneLink}
+            testID="shopping-range-toggle"
+          >
+            <Text style={[styles.rangeLinkText, { color: theme.text }]}>
+              {customRange ? texts.rangeCustomActive : texts.rangeCustom}
+            </Text>
+          </Pressable>
+          {rangeOpen ? (
+            <Card>
+              <View style={styles.list} testID="shopping-range-picker">
+                <ChoiceList
+                  label={texts.rangeFrom}
+                  options={dayChoices}
+                  value={draftFrom ?? list.from}
+                  onChange={setDraftFrom}
+                  horizontal
+                />
+                <ChoiceList
+                  label={texts.rangeTo}
+                  options={dayChoices}
+                  value={draftTo ?? list.to}
+                  onChange={setDraftTo}
+                  horizontal
+                />
+                <Body muted>{texts.rangeHint}</Body>
+                <Button
+                  label={texts.rangeApply}
+                  loading={busy === 'range'}
+                  onPress={() => void applyRange()}
+                  testID="shopping-range-apply"
+                />
+              </View>
+            </Card>
+          ) : null}
+        </View>
+      ) : null}
       {shopping === null ? (
         <Notice tone="info" testID="shopping-planless">
           <Body>{texts.planless}</Body>
@@ -343,9 +454,6 @@ export default function ShoppingTabScreen() {
         </Notice>
       ) : null}
       {actions === null ? <Body muted>{texts.readOnly}</Body> : null}
-      <Body muted testID="shopping-offline">
-        {texts.offline}
-      </Body>
       {view.saveFailed ? (
         <Notice tone="warning" testID="shopping-save-failed">
           <Body>{t.nutrition.plan.saveFailed}</Body>
@@ -358,6 +466,64 @@ export default function ShoppingTabScreen() {
         </Notice>
       ) : null}
 
+      <Checkbox
+        label={texts.hideChecked}
+        checked={hideChecked}
+        onChange={(value) => updateShoppingPrefs(() => ({ hideChecked: value }))}
+        testID="shopping-hide-checked"
+      />
+
+      {nothingToBuy ? (
+        <Body muted testID="shopping-empty">
+          {texts.empty}
+        </Body>
+      ) : null}
+      {allDone ? (
+        <Notice tone="success" testID="shopping-all-done">
+          {texts.allChecked}
+        </Notice>
+      ) : null}
+
+      <View style={styles.list} testID="shopping-items">
+        {departments.map((department) => {
+          const c = department.category;
+          const expanded = department.done ? openDone.has(c) : !prefs.collapsed.includes(c);
+          const showDone = !hideChecked || showDoneIn.has(c);
+          const shown = department.items.filter((i) => showDone || !i.checked);
+          return (
+            <View
+              key={c}
+              style={[styles.department, { borderTopColor: theme.cardBorder }]}
+              testID={`shopping-dept-${c}`}
+            >
+              <DepartmentHeader
+                department={department}
+                expanded={expanded}
+                onPress={() => toggleDepartment(department)}
+              />
+              {expanded ? (
+                <View style={styles.list} testID={`shopping-dept-items-${c}`}>
+                  {shown.map(itemRow)}
+                  {hideChecked && department.checked > 0 ? (
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => setShowDoneIn((current) => toggled(current, c))}
+                      style={styles.doneLink}
+                      testID={`shopping-dept-show-done-${c}`}
+                    >
+                      <Text style={[styles.doneLinkText, { color: theme.textMuted }]}>
+                        {showDoneIn.has(c) ? texts.doneHide : texts.doneShow(department.checked)}
+                      </Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              ) : null}
+            </View>
+          );
+        })}
+      </View>
+
+      {/* Scanner unter der Liste: zuerst kommt, was zu kaufen ist (23.10.2026). */}
       {actions ? (
         <ShoppingScanPanel
           actions={actions}
@@ -367,61 +533,23 @@ export default function ShoppingTabScreen() {
         />
       ) : null}
 
-      {actions && !actions.planless ? (
+      {pantry.length > 0 ? (
         <Card>
+          <Heading level={2}>{texts.pantry}</Heading>
           <Button
-            label={texts.rangeTitle}
+            label={showPantry ? texts.pantryHide : texts.pantryShow(pantry.length)}
             variant="secondary"
-            onPress={() => {
-              setDraftFrom(list.from);
-              setDraftTo(list.to);
-              setRangeOpen((open) => !open);
-            }}
-            testID="shopping-range-toggle"
+            onPress={() => setShowPantry((v) => !v)}
+            testID="shopping-pantry-toggle"
           />
-          {rangeOpen ? (
-            <View style={styles.list} testID="shopping-range-picker">
-              <ChoiceList
-                label={texts.rangeFrom}
-                options={dayChoices}
-                value={draftFrom ?? list.from}
-                onChange={setDraftFrom}
-                horizontal
-              />
-              <ChoiceList
-                label={texts.rangeTo}
-                options={dayChoices}
-                value={draftTo ?? list.to}
-                onChange={setDraftTo}
-                horizontal
-              />
-              <Body muted>{texts.rangeHint}</Body>
-              <Button
-                label={texts.rangeApply}
-                loading={busy === 'range'}
-                onPress={() => void applyRange()}
-                testID="shopping-range-apply"
-              />
+          {showPantry ? (
+            <View style={styles.list} testID="shopping-pantry">
+              {pantry.filter(visible).map(itemRow)}
             </View>
           ) : null}
         </Card>
       ) : null}
 
-      {/* Etappe N12: als Text weitergeben (System-Teilen-Dialog bzw. Kopieren), Hinweis vorher wie K4. */}
-      <Button
-        label={t.nutrition.share.open}
-        accessibilityHint={t.nutrition.share.openHint}
-        onPress={() => router.push(`/einkaufsliste/weitergeben?woche=${list.weekStart}` as Href)}
-        testID="shopping-share"
-      />
-      {/* PDF P5 (11, Etappe N6): Druckansicht mit Kästchen; Hinweis-Dialog bei Gesundheitsbezug. */}
-      <Button
-        label={t.nutrition.printView.button}
-        variant="secondary"
-        accessibilityHint={t.nutrition.printView.listHint}
-        onPress={() => router.push(`/einkaufsliste/drucken?woche=${list.weekStart}` as Href)}
-        testID="shopping-print"
-      />
       {actions && anyChecked ? (
         <Button
           label={texts.uncheckAll}
@@ -441,49 +569,25 @@ export default function ShoppingTabScreen() {
         onCancel={() => setConfirmReset(false)}
         testID="shopping-uncheck-all-dialog"
       />
-      <Checkbox
-        label={texts.hideChecked}
-        checked={hideChecked}
-        onChange={setHideChecked}
-        testID="shopping-hide-checked"
+      {/* Etappe N12: als Text weitergeben (System-Teilen-Dialog bzw. Kopieren), Hinweis vorher wie K4. Drucken und
+          Weitergeben zeigen denselben Zeitraum wie die Liste (dieselbe aufgelöste Liste der Woche). */}
+      <Button
+        label={t.nutrition.share.open}
+        accessibilityHint={t.nutrition.share.openHint}
+        onPress={() => router.push(`/einkaufsliste/weitergeben?woche=${list.weekStart}` as Href)}
+        testID="shopping-share"
       />
-
-      {nothingToBuy ? (
-        <Body muted testID="shopping-empty">
-          {texts.empty}
-        </Body>
-      ) : null}
-      {allDone ? (
-        <Notice tone="success" testID="shopping-all-done">
-          {texts.allChecked}
-        </Notice>
-      ) : null}
-
-      <View style={styles.list} testID="shopping-items">
-        {groups.map((group) => (
-          <View key={group.category} style={styles.list}>
-            <Heading level={2}>{shoppingCategoryLabel(group.category)}</Heading>
-            {group.items.map(itemRow)}
-          </View>
-        ))}
-      </View>
-
-      {pantry.length > 0 ? (
-        <Card>
-          <Heading level={2}>{texts.pantry}</Heading>
-          <Button
-            label={showPantry ? texts.pantryHide : texts.pantryShow(pantry.length)}
-            variant="secondary"
-            onPress={() => setShowPantry((v) => !v)}
-            testID="shopping-pantry-toggle"
-          />
-          {showPantry ? (
-            <View style={styles.list} testID="shopping-pantry">
-              {pantry.filter(visible).map(itemRow)}
-            </View>
-          ) : null}
-        </Card>
-      ) : null}
+      {/* PDF P5 (11, Etappe N6): Druckansicht mit Kästchen; Hinweis-Dialog bei Gesundheitsbezug. */}
+      <Button
+        label={t.nutrition.printView.button}
+        variant="secondary"
+        accessibilityHint={t.nutrition.printView.listHint}
+        onPress={() => router.push(`/einkaufsliste/drucken?woche=${list.weekStart}` as Href)}
+        testID="shopping-print"
+      />
+      <Body muted testID="shopping-offline">
+        {texts.offline}
+      </Body>
 
       {list.recipes.length > 0 ? (
         <Card>
@@ -561,6 +665,60 @@ export default function ShoppingTabScreen() {
       ) : null}
       <Body muted>{texts.healthNote}</Body>
     </>,
+  );
+}
+
+function toggled<T>(set: ReadonlySet<T>, value: T): ReadonlySet<T> {
+  const next = new Set(set);
+  if (next.has(value)) next.delete(value);
+  else next.add(value);
+  return next;
+}
+
+/**
+ * Kopf einer Abteilung (23.10.2026): antippen klappt auf bzw. zu. Zeigt „x offen“ bzw. „✓ erledigt“; der Pfeil zeigt
+ * nach unten, wenn aufgeklappt. Für Bildschirmleser ein Knopf mit Zustand „aufgeklappt“.
+ */
+function DepartmentHeader({
+  department,
+  expanded,
+  onPress,
+}: {
+  department: ShoppingDepartment;
+  expanded: boolean;
+  onPress: () => void;
+}) {
+  const theme = useThemeColors();
+  const teal = useAreaColors('einkaufen');
+  const texts = t.nutrition.shopping;
+  const name = shoppingCategoryLabel(department.category);
+  const status = department.done ? texts.departmentDone : texts.departmentOpen(department.open);
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={texts.departmentA11y(
+        name,
+        department.done ? texts.departmentA11yDone : texts.departmentOpen(department.open),
+      )}
+      accessibilityState={{ expanded }}
+      aria-expanded={expanded}
+      onPress={onPress}
+      style={styles.departmentHeader}
+      testID={`shopping-dept-toggle-${department.category}`}
+    >
+      <View style={[styles.chevron, expanded && styles.chevronOpen]}>
+        <Icon name="chevron" size={18} color={theme.textMuted} />
+      </View>
+      <Text style={[styles.departmentName, { color: theme.text }]} numberOfLines={2}>
+        {name}
+      </Text>
+      <Text
+        style={[styles.departmentStatus, { color: department.done ? teal.icon : theme.textMuted }]}
+        testID={`shopping-dept-status-${department.category}`}
+      >
+        {status}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -677,4 +835,18 @@ const styles = StyleSheet.create({
   itemText: { fontSize: fontSize.md },
   done: { textDecorationLine: 'line-through' },
   itemMarks: { fontSize: fontSize.sm },
+  department: { gap: spacing.xs, borderTopWidth: 1, paddingTop: spacing.xs },
+  departmentHeader: {
+    minHeight: MIN_TOUCH,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  chevron: { width: 18, height: 18 },
+  chevronOpen: { transform: [{ rotate: '90deg' }] },
+  departmentName: { flex: 1, fontSize: fontSize.md, fontWeight: '700' },
+  departmentStatus: { fontSize: fontSize.sm, fontWeight: '600' },
+  doneLink: { minHeight: MIN_TOUCH, justifyContent: 'center', alignSelf: 'flex-start' },
+  doneLinkText: { fontSize: fontSize.sm, textDecorationLine: 'underline' },
+  rangeLinkText: { fontSize: fontSize.md, fontWeight: '600', textDecorationLine: 'underline' },
 });
