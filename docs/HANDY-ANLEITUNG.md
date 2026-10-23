@@ -522,7 +522,8 @@ Workflows genehmigen nie selbst. Voraussetzung: Der Pull Request mit den Rezept-
 3. Pull Request „Sammelfreigabe Rezepte …“ öffnen → Tabellen „Freigegeben“, „Übersprungen“ und gelbe Hinweise lesen →
    auf grünes **ci** warten → **Merge pull request**.
 4. Für die nächste Kategorie wiederholen (erst nach dem Merge starten): `schnell`, `pre-workout`, `post-workout`,
-   `cardio`, `wettkampf`, `meal-prep`, `protein-dessert`, `spar-kueche`. Rezepte in mehreren Kategorien sind danach
+   `cardio`, `wettkampf`, `meal-prep`, `protein-dessert`, `spar-kueche`, `fitness-fast-food`, `heissluftfritteuse`,
+   `sommer-eis`, `low-carb`. Rezepte in mehreren Kategorien sind danach
    „schon freigegeben“.
 5. Rezepte **ohne Kategorie** (Liste: `/admin` → Rezepte → „Ohne Kategorie“; Stand 20.10.2026:
    `asia-ofenlachs-mit-sesam-brokkoli, kabeljau-in-senfsauce-mit-spinat, kaesespaetzle-light-mit-roestzwiebeln,

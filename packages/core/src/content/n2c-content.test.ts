@@ -56,7 +56,7 @@ describe('Rezept-Schema: Erweiterungen 19.4', () => {
       ],
     });
     expect(recipeSchema.safeParse(recipe).success).toBe(true);
-    expect(RECIPE_CATEGORIES).toHaveLength(8);
+    expect(RECIPE_CATEGORIES).toHaveLength(12);
   });
 
   it('Grenzen: Gesamtzeit 1–360, Vorbereitung + Kochzeit ≤ Gesamtzeit, Abschnitt ≤ 40 Zeichen', () => {
