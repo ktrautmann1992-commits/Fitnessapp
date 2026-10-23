@@ -1998,6 +1998,24 @@ export const SHOPPING_LIST_ROUNDING = {
 } as const;
 
 /**
+ * Gleiches Produkt im Laden (Gründer-Rückmeldung 23.10.2026: „5 Karotten und 2 Karotten“ auf einer Liste): Der
+ * Lebensmittel-Katalog enthält für manche Produkte mehrere Einträge (Singular/Plural, Synonyme wie Karotte/Möhre,
+ * Schreibvarianten). Die Einkaufsliste zählt sie unter EINEM Eintrag zusammen (Schlüssel = Ziel-ID). Nur echte
+ * Synonyme desselben Produkts – keine Ersatzprodukte, keine unterschiedlichen Fettstufen. Ist das Ziel im Katalog
+ * nicht vorhanden, bleibt der ursprüngliche Eintrag. PRODUKTENTSCHEIDUNG.
+ */
+export const SHOPPING_SAME_PRODUCT: Readonly<Record<string, string>> = {
+  karotte: 'karotten',
+  moehre: 'karotten',
+  tomaten: 'tomate',
+  kirschtomaten: 'cherrytomaten',
+  fruehlingszwiebel: 'fruehlingszwiebeln',
+  lauchzwiebeln: 'fruehlingszwiebeln',
+  'beeren-mischung-tk': 'beerenmischung-tk',
+  putenbrustaufschnitt: 'putenbrust-aufschnitt',
+};
+
+/**
  * Einkaufs-Einheiten (Wunsch Gründer 22.10.2026: „wie im Laden“): frisches Obst/Gemüse/Kräuter erscheinen in der
  * Einkaufsliste als Stück, Bund, Knolle, Kopf, Schale bzw. Beutel; die Grammzahl steht immer dahinter und bleibt
  * maßgeblich. `grams` = typisches Gewicht EINER Einheit (Richtwerte, gerundet; Quellen: BZfE/aid

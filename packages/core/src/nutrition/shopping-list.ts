@@ -1,7 +1,11 @@
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
-import { SHOPPING_LIST_ROUNDING, SHOPPING_MANUAL_QUANTITY } from '../constants';
+import {
+  SHOPPING_LIST_ROUNDING,
+  SHOPPING_MANUAL_QUANTITY,
+  SHOPPING_SAME_PRODUCT,
+} from '../constants';
 import {
   type FoodLookup,
   SHOPPING_CATEGORIES,
@@ -82,6 +86,13 @@ export function sortShoppingItems(items: ShoppingListItem[]): ShoppingListItem[]
   );
 }
 
+/** Ziel-ID für „gleiches Produkt im Laden“ (constants SHOPPING_SAME_PRODUCT); fehlt das Ziel, die eigene ID. */
+export function shoppingProductId(foodId: string, foods: FoodLookup): string {
+  if (!Object.hasOwn(SHOPPING_SAME_PRODUCT, foodId)) return foodId;
+  const target = SHOPPING_SAME_PRODUCT[foodId];
+  return target !== undefined && foods.get(target) !== undefined ? target : foodId;
+}
+
 interface Bucket {
   grams: number;
   ml: number;
@@ -118,8 +129,9 @@ export function buildShoppingList(
   sources.push(...extras);
   for (const ingredients of sources) {
     for (const ingredient of ingredients) {
-      const food = foods.get(ingredient.foodId);
-      if (food === undefined) throw new Error(`Lebensmittel „${ingredient.foodId}“ fehlt.`);
+      const original = foods.get(ingredient.foodId);
+      if (original === undefined) throw new Error(`Lebensmittel „${ingredient.foodId}“ fehlt.`);
+      const food = foods.get(shoppingProductId(original.id, foods)) ?? original;
       const bucket = buckets.get(food.id) ?? {
         grams: 0,
         ml: 0,

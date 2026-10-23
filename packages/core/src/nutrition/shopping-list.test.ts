@@ -338,3 +338,45 @@ describe('Reiter „Einkaufen“ (20.10.2026): Menge eigener Einträge, abgehakt
     expect(uncheckAllShoppingItems({ ...list, items: [] }).items).toEqual([]);
   });
 });
+
+describe('Gleiches Produkt im Laden (SHOPPING_SAME_PRODUCT)', () => {
+  const base = [...N3_FOODS.values()][0]!;
+  const as = (id: string, name: string) => ({
+    ...base,
+    id,
+    name_de: name,
+    units: {},
+    pantry: false,
+  });
+  const foods = new Map(
+    [as('karotte', 'Karotte'), as('karotten', 'Karotten'), as('moehre', 'Möhre')].map((f) => [
+      f.id,
+      f,
+    ]),
+  );
+  const g = (foodId: string, grams: number): ScaledIngredient => ({
+    index: 0,
+    foodId,
+    originalFoodId: null,
+    amount: grams,
+    unit: 'g',
+    optional: false,
+    grams,
+  });
+
+  it('Karotte, Karotten und Möhre stehen als EIN Eintrag mit Summe', () => {
+    const list = buildShoppingList(
+      week([[meal([g('karotte', 100), g('moehre', 300)])], [meal([g('karotten', 350)])]]),
+      foods,
+    );
+    expect(list.items.map((i) => [i.itemKey, i.labelDe, i.amount])).toEqual([
+      ['karotten|g', 'Karotten', 750],
+    ]);
+  });
+
+  it('fehlt das Ziel im Katalog, bleibt der eigene Eintrag', () => {
+    const only = new Map([['moehre', as('moehre', 'Möhre')]]);
+    const list = buildShoppingList(week([[meal([g('moehre', 120)])]]), only);
+    expect(list.items.map((i) => i.itemKey)).toEqual(['moehre|g']);
+  });
+});
