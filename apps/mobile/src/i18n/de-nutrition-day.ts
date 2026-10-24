@@ -33,6 +33,13 @@ export const deNutritionDay = {
   macroValue: (eaten: string, target: string) => `${eaten} / ${target} g`,
   macroA11y: (label: string, eaten: string, target: string) =>
     `${label}: ${eaten} von ${target} Gramm gegessen`,
+  /** Gründer-Wunsch 23.10.2026: über dem Ziel wird der Ring dunkelrot – immer zusätzlich in Worten. */
+  overGoal: 'über dem Ziel',
+  macroA11yOver: (label: string, eaten: string, target: string) =>
+    `${label}: ${eaten} von ${target} Gramm gegessen, über dem Ziel`,
+  /** Anteil in der Ring-Mitte („29 %“); sehr große Werte gekappt. */
+  percent: (value: string) => `${value} %`,
+  percentMax: '>999 %',
   mealsTitle: 'Ernährung',
   cards: {
     breakfast: 'Frühstück',

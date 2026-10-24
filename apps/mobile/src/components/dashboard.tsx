@@ -1,10 +1,22 @@
-import { cardColors, fontSize, radius, spacing, type AreaId } from '@fitnessapp/ui';
+import { cardColors, fontSize, heroColors, radius, spacing, type AreaId } from '@fitnessapp/ui';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 
-import { IconChip, type IconName } from '@/components/design';
+import {
+  HeroGlow,
+  IconChip,
+  useTileTone,
+  type HeroTint,
+  type IconName,
+  type TileTone,
+} from '@/components/design';
 import { appFont } from '@/lib/fonts';
-import { useColorSchemeName, useThemeColors } from '@/lib/theme';
+import {
+  ColorSchemeOverride,
+  useColorSchemeName,
+  useDeviceSchemeName,
+  useThemeColors,
+} from '@/lib/theme';
 import { Text } from '@/components/text';
 
 /**
@@ -15,7 +27,24 @@ import { Text } from '@/components/text';
  * Mit `onPress` ist die ganze Kachel ein Link (dann keine Knöpfe darin – keine verschachtelten Bedienelemente); ohne
  * Pfeil, damit der Titel auch in schmalen Kacheln Platz hat.
  */
-export function DashboardTile({
+type DashboardTileProps = Omit<Parameters<typeof DashboardTileBody>[0], 'hero'> & {
+  /** `hero`: dunkle Fläche mit Farbschein (Standard aus `TileTone`, sonst `card`). */
+  tone?: TileTone;
+};
+
+/** Kachel der Übersicht; Art (`card`/`hero`) aus `tone` bzw. `TileTone` (design.tsx). */
+export function DashboardTile({ tone, ...props }: DashboardTileProps) {
+  if (useTileTone(tone) === 'hero') {
+    return (
+      <ColorSchemeOverride scheme="dark">
+        <DashboardTileBody {...props} hero />
+      </ColorSchemeOverride>
+    );
+  }
+  return <DashboardTileBody {...props} />;
+}
+
+function DashboardTileBody({
   title,
   children,
   testID,
@@ -24,6 +53,8 @@ export function DashboardTile({
   onPress,
   accessibilityLabel,
   pressTestID,
+  hero = false,
+  tint = 'full',
 }: {
   title: string;
   children: ReactNode;
@@ -35,12 +66,17 @@ export function DashboardTile({
   accessibilityLabel?: string;
   /** testID der antippbaren Fläche (sonst trägt sie `testID`). */
   pressTestID?: string;
+  /** Dunkle Hero-Fläche (über `DashboardTile tone="hero"`); Inhalt dann in der Dunkel-Palette. */
+  hero?: boolean;
+  /** Einfärbung der Hero-Fläche (`corner` für Kacheln mit Ziel-Ringen, siehe `HeroTint`). */
+  tint?: HeroTint;
 }) {
   const theme = useThemeColors();
   const card = cardColors[useColorSchemeName()];
+  const heroBox = heroColors[useDeviceSchemeName()];
   const head = (
     <View style={styles.head}>
-      <IconChip area={area} icon={icon} />
+      <IconChip area={area} icon={icon} solid={hero} />
       <Text
         accessibilityRole="header"
         aria-level={2}
@@ -50,7 +86,17 @@ export function DashboardTile({
       </Text>
     </View>
   );
-  const box = [styles.tile, { backgroundColor: theme.surface, borderColor: card.border }];
+  const box = [
+    styles.tile,
+    hero
+      ? {
+          backgroundColor: heroBox.background,
+          borderColor: heroBox.border,
+          overflow: 'hidden' as const,
+        }
+      : { backgroundColor: theme.surface, borderColor: card.border },
+  ];
+  const glow = hero ? <HeroGlow area={area} tint={tint} /> : null;
   if (onPress) {
     return (
       <View testID={testID} style={styles.flexCell}>
@@ -61,6 +107,7 @@ export function DashboardTile({
           testID={pressTestID}
           style={({ pressed }) => [box, styles.flexCell, { opacity: pressed ? 0.85 : 1 }]}
         >
+          {glow}
           {head}
           {children}
         </Pressable>
@@ -69,6 +116,7 @@ export function DashboardTile({
   }
   return (
     <View testID={testID} style={box}>
+      {glow}
       {head}
       {children}
     </View>

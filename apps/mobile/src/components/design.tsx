@@ -8,12 +8,17 @@ import {
   type AreaId,
   type AreaPalette,
 } from '@fitnessapp/ui';
-import type { ReactNode } from 'react';
+import { createContext, useContext, useId, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import Svg, { Circle, Defs, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 import { appFont, displayFont } from '@/lib/fonts';
-import { useColorSchemeName, useThemeColors } from '@/lib/theme';
+import {
+  ColorSchemeOverride,
+  useColorSchemeName,
+  useDeviceSchemeName,
+  useThemeColors,
+} from '@/lib/theme';
 import { Text } from '@/components/text';
 
 /**
@@ -193,11 +198,14 @@ export function IconChip({
   area,
   icon,
   size = 36,
+  solid = false,
   testID,
 }: {
   area: AreaId;
   icon: IconName;
   size?: 36 | 40 | 52;
+  /** Kräftiger Chip für dunkle Hero-Flächen: Fläche in der Akzentfarbe, Icon in Schwarz (≥ 7 : 1). */
+  solid?: boolean;
   testID?: string;
 }) {
   const palette = useAreaColors(area);
@@ -214,11 +222,16 @@ export function IconChip({
           width: size,
           height: size,
           borderRadius: size === 52 ? 16 : radius.md,
-          backgroundColor: palette.surface,
+          backgroundColor: solid ? palette.icon : palette.surface,
         },
       ]}
     >
-      <Icon name={icon} size={iconSize} color={palette.icon} />
+      <Icon
+        name={icon}
+        size={iconSize}
+        color={solid ? heroColors.light.background : palette.icon}
+        strokeWidth={solid ? 2.2 : 2}
+      />
     </View>
   );
 }
@@ -262,22 +275,7 @@ type TileVariant = 'header' | 'stacked' | 'row';
  * Mit `onPress` ist die ganze Kachel antippbar (Rolle `button` oder `link`); der Name für Bildschirmleser setzt sich
  * aus Kennzeile, Titel und Untertitel zusammen, wenn `accessibilityLabel` fehlt.
  */
-export function Tile({
-  area,
-  icon,
-  title,
-  subtitle,
-  eyebrow,
-  children,
-  variant = 'header',
-  onPress,
-  role = 'button',
-  accessibilityLabel,
-  accessibilityHint,
-  style,
-  testID,
-  titleTestID,
-}: {
+type TileProps = {
   area: AreaId;
   icon: IconName;
   title: string;
@@ -295,11 +293,76 @@ export function Tile({
   testID?: string;
   /** testID des Titels (z. B. für Prüfungen des angezeigten Namens). */
   titleTestID?: string;
-}) {
+  /**
+   * `card` (Standard): weiße Karte mit Icon-Chip. `hero`: dunkle Karte mit Farbschein in der Bereichsfarbe
+   * (`HeroSurface`, Design 23.10.2026) – Inhalt automatisch in der Dunkel-Palette.
+   */
+  tone?: 'card' | 'hero';
+};
+
+export type TileTone = 'card' | 'hero';
+
+const TileToneContext = createContext<TileTone>('card');
+
+/**
+ * Setzt die Art aller `Tile`/`DashboardTile` darin, die selbst keine `tone` haben (Übersicht: Kacheln dunkel mit
+ * Farbschein, Design 23.10.2026). So sehen dieselben Kacheln auf anderen Bildschirmen weiter wie Karten aus.
+ * Mit `hero` gilt darin die Dunkel-Palette (`ColorSchemeOverride`).
+ */
+export function TileTone({ tone, children }: { tone: TileTone; children: ReactNode }) {
+  // `hero`: auch die Kachel-Komponente selbst (Ringe, Zahlen) rechnet ihre Farben schon in der Dunkel-Palette.
+  return (
+    <TileToneContext.Provider value={tone}>
+      {tone === 'hero' ? (
+        <ColorSchemeOverride scheme="dark">{children}</ColorSchemeOverride>
+      ) : (
+        children
+      )}
+    </TileToneContext.Provider>
+  );
+}
+
+/** Art der Kachel: eigene `tone` vor der aus `TileTone`. */
+export function useTileTone(tone?: TileTone): TileTone {
+  const fromContext = useContext(TileToneContext);
+  return tone ?? fromContext;
+}
+
+export function Tile(props: TileProps) {
+  const tone = useTileTone(props.tone);
+  if (tone === 'hero') {
+    return (
+      <ColorSchemeOverride scheme="dark">
+        <TileBody {...props} tone="hero" />
+      </ColorSchemeOverride>
+    );
+  }
+  return <TileBody {...props} tone="card" />;
+}
+
+function TileBody({
+  area,
+  icon,
+  title,
+  subtitle,
+  eyebrow,
+  children,
+  variant = 'header',
+  onPress,
+  role = 'button',
+  accessibilityLabel,
+  accessibilityHint,
+  style,
+  testID,
+  titleTestID,
+  tone = 'card',
+}: TileProps) {
   const theme = useThemeColors();
   const scheme = useColorSchemeName();
   const palette = areaColors[scheme][area];
   const card = cardColors[scheme];
+  const heroBox = heroColors[useDeviceSchemeName()];
+  const isHero = tone === 'hero';
   const titleText = (
     <Text
       testID={titleTestID}
@@ -321,7 +384,7 @@ export function Tile({
   const body =
     variant === 'row' ? (
       <View style={styles.tileRow}>
-        <IconChip area={area} icon={icon} size={52} />
+        <IconChip area={area} icon={icon} size={52} solid={isHero} />
         <View style={styles.tileRowText}>
           {eyebrow ? (
             <Text style={[styles.eyebrow, appFont('bold'), { color: palette.icon }]}>
@@ -336,7 +399,7 @@ export function Tile({
       </View>
     ) : variant === 'stacked' ? (
       <>
-        <IconChip area={area} icon={icon} size={40} />
+        <IconChip area={area} icon={icon} size={40} solid={isHero} />
         <View style={styles.tileText}>
           {titleText}
           {subtitleText}
@@ -346,7 +409,7 @@ export function Tile({
     ) : (
       <>
         <View style={styles.tileHead}>
-          <IconChip area={area} icon={icon} />
+          <IconChip area={area} icon={icon} solid={isHero} />
           <View style={styles.tileHeadText}>{titleText}</View>
         </View>
         {subtitleText}
@@ -358,13 +421,27 @@ export function Tile({
     styles.tile,
     variant === 'stacked' && styles.tileStacked,
     variant === 'row' && styles.tileRowBox,
-    { backgroundColor: theme.surface, borderColor: card.border },
+    isHero
+      ? {
+          backgroundColor: heroBox.background,
+          borderColor: heroBox.border,
+          overflow: 'hidden' as const,
+        }
+      : { backgroundColor: theme.surface, borderColor: card.border },
   ];
+  const content = isHero ? (
+    <>
+      <HeroGlow area={area} />
+      {body}
+    </>
+  ) : (
+    body
+  );
 
   if (!onPress) {
     return (
       <View testID={testID} style={[boxStyle, style]}>
-        {body}
+        {content}
       </View>
     );
   }
@@ -378,8 +455,96 @@ export function Tile({
       onPress={onPress}
       style={({ pressed }) => [boxStyle, { opacity: pressed ? 0.85 : 1 }, style]}
     >
-      {body}
+      {content}
     </Pressable>
+  );
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Hero-Fläche (dunkel, mit Farbschein in der Bereichsfarbe)
+// ---------------------------------------------------------------------------------------------------------
+/**
+ * Einfärbung der Hero-Flächen (Gründer-Wunsch 23.10.2026 „Kacheln farbig“): ganze Fläche mit `base` Deckkraft in der
+ * Bereichsfarbe (Dunkel-Palette `strong`), dazu ein Schein oben rechts mit bis zu `glow`. Schlimmster Fall
+ * (base + glow übereinander) ist in packages/ui `tokens.test.ts` geprüft: Text, Nebentext und Kennzeile ≥ 4,5 : 1.
+ */
+export const HERO_TINT = { base: 0.1, glow: 0.22 } as const;
+
+/**
+ * `full`: ganze Fläche eingefärbt + Schein (Kacheln mit Text und Zahlen). `corner`: nur der Schein in der Ecke oben
+ * rechts – für Karten mit Ziel-Ringen, damit der rote „über dem Ziel“-Ring auf reiner Hero-Fläche liegt (≥ 3 : 1).
+ */
+export type HeroTint = 'full' | 'corner';
+
+/**
+ * Einfärbung und Farbschein in der Bereichsfarbe (weicher Verlauf, reine Deko; docs/DESIGN.md „Farbige
+ * Hero-Karten“). Für Bildschirmleser ausgeblendet.
+ */
+export function HeroGlow({ area, tint = 'full' }: { area: AreaId; tint?: HeroTint }) {
+  const corner = tint === 'corner';
+  const id = `glow-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
+  const color = areaColors.dark[area].strong;
+  return (
+    <View
+      pointerEvents="none"
+      aria-hidden
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={StyleSheet.absoluteFill}
+    >
+      <Svg width="100%" height="100%" preserveAspectRatio="none" aria-hidden>
+        <Defs>
+          <RadialGradient
+            id={id}
+            cx="100%"
+            cy="0%"
+            rx={corner ? '55%' : '85%'}
+            ry={corner ? '28%' : '110%'}
+            fx="100%"
+            fy="0%"
+          >
+            <Stop offset="0" stopColor={color} stopOpacity={HERO_TINT.glow} />
+            <Stop offset="0.55" stopColor={color} stopOpacity={HERO_TINT.glow / 3} />
+            <Stop offset="1" stopColor={color} stopOpacity={0} />
+          </RadialGradient>
+        </Defs>
+        {/* Ganze Fläche leicht eingefärbt, dazu der Schein oben rechts. */}
+        {corner ? null : (
+          <Rect x="0" y="0" width="100%" height="100%" fill={color} fillOpacity={HERO_TINT.base} />
+        )}
+        <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${id})`} />
+      </Svg>
+    </View>
+  );
+}
+
+/**
+ * Dunkle Fläche wie „Training heute“ (Gründer-Wunsch 23.10.2026: „Kacheln farbig, wie im zweiten Anhang“): Schwarz
+ * (hell) bzw. Graphit (dunkel), Farbschein in der Bereichsfarbe. Alles darin rendert in der Dunkel-Palette
+ * (`ColorSchemeOverride`), damit Texte, Ringe und Knöpfe ohne Sonderfälle lesbar bleiben.
+ */
+export function HeroSurface({
+  area,
+  tint = 'full',
+  children,
+  style,
+  testID,
+}: {
+  area?: AreaId | undefined;
+  tint?: HeroTint;
+  children?: ReactNode;
+  style?: StyleProp<ViewStyle>;
+  testID?: string;
+}) {
+  const hero = heroColors[useDeviceSchemeName()];
+  return (
+    <View
+      testID={testID}
+      style={[styles.hero, { backgroundColor: hero.background, borderColor: hero.border }, style]}
+    >
+      {area ? <HeroGlow area={area} tint={tint} /> : null}
+      <ColorSchemeOverride scheme="dark">{children}</ColorSchemeOverride>
+    </View>
   );
 }
 
@@ -391,6 +556,7 @@ export function Tile({
  * großer Titel, Untertitel und ein großer Pillen-Knopf (52 px) in der Hauptfarbe.
  */
 export function HeroCard({
+  area = 'training',
   eyebrow,
   eyebrowIcon,
   meta,
@@ -411,6 +577,8 @@ export function HeroCard({
   children,
   testID,
 }: {
+  /** Bereich: Kennzeile/Icon in der Bereichsfarbe und Farbschein (ohne: Himmelblau, kein Schein). */
+  area?: AreaId;
   eyebrow: string;
   eyebrowIcon?: IconName;
   /** Kleiner Zusatz rechts oben, z. B. „Woche 3 von 12“. */
@@ -436,21 +604,19 @@ export function HeroCard({
   testID?: string;
 }) {
   const theme = useThemeColors();
-  const hero = heroColors[useColorSchemeName()];
+  const hero = heroColors[useDeviceSchemeName()];
+  const accent = area ? areaColors.dark[area].icon : hero.accent;
   return (
-    <View
-      testID={testID}
-      style={[styles.hero, { backgroundColor: hero.background, borderColor: hero.border }]}
-    >
+    <HeroSurface area={area} testID={testID}>
       <View style={styles.heroTop}>
         <View style={styles.heroEyebrow}>
           {eyebrowIcon ? (
-            <Icon name={eyebrowIcon} size={16} color={hero.accent} strokeWidth={2.2} />
+            <Icon name={eyebrowIcon} size={16} color={accent} strokeWidth={2.2} />
           ) : null}
           <Text
             accessibilityRole={titleIsHeading ? undefined : 'header'}
             aria-level={titleIsHeading ? undefined : 2}
-            style={[styles.eyebrow, appFont('bold'), { color: hero.accent }]}
+            style={[styles.eyebrow, appFont('bold'), { color: accent }]}
           >
             {eyebrow}
           </Text>
@@ -515,7 +681,7 @@ export function HeroCard({
           </Text>
         </Pressable>
       ) : null}
-    </View>
+    </HeroSurface>
   );
 }
 
@@ -977,7 +1143,7 @@ const styles = StyleSheet.create({
   tileTitleSmall: { fontSize: 15, lineHeight: 20 },
   tileTitle: { fontSize: 16, lineHeight: 22 },
   tileSubtitle: { fontSize: fontSize.xs, lineHeight: 18 },
-  hero: { borderRadius: radius.lg, borderWidth: 1, padding: 20, gap: 14 },
+  hero: { borderRadius: radius.lg, borderWidth: 1, padding: 20, gap: 14, overflow: 'hidden' },
   heroTop: {
     flexDirection: 'row',
     alignItems: 'center',

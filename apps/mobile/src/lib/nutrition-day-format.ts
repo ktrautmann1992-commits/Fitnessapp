@@ -48,8 +48,17 @@ export function macroText(
   const target = formatGrams(macro.targetG);
   return {
     value: t.nutritionDay.macroValue(eaten, target),
-    a11y: t.nutritionDay.macroA11y(label, eaten, target),
+    a11y: macro.over
+      ? t.nutritionDay.macroA11yOver(label, eaten, target)
+      : t.nutritionDay.macroA11y(label, eaten, target),
   };
+}
+
+/** Anteil in der Ring-Mitte („29 %“), ab 1.000 % gekappt („>999 %“), damit nichts überläuft. */
+export function percentText(percent: number): string {
+  if (!Number.isFinite(percent) || percent < 0) return t.nutritionDay.percent('0');
+  if (percent > 999) return t.nutritionDay.percentMax;
+  return t.nutritionDay.percent(String(Math.round(percent)));
 }
 
 /** Titel einer Karte; bei nur einer Mahlzeit am Tag heißt „Mittagessen“ wie im Plan „Hauptmahlzeit“. */

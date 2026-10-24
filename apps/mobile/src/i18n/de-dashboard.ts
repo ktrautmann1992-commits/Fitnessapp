@@ -62,6 +62,8 @@ export const deDashboard = {
           ? '1 Eintrag heute.'
           : `${count} Einträge heute.`,
     target: (kcal: string) => `Tagesziel: ${kcal} kcal`,
+    /** Kurzname unter den Makro-Ringen der kleinen Kachel (Ansage nennt den vollen Namen). */
+    macroShort: { carbs: 'KH', protein: 'EW', fat: 'Fett' },
     open: 'Zur Ernährung',
     log: 'Essen eintragen',
     loading: 'Ernährung wird geladen …',
