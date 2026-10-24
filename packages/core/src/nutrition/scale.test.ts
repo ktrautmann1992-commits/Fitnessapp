@@ -3,7 +3,12 @@ import { describe, expect, it } from 'vitest';
 import { ing, makeRecipe } from '../content/nutrition-fixtures';
 import type { Recipe } from '../content/recipe-schema';
 import { N3_FOODS, N3_RECIPES } from './meal-plan-fixtures';
-import { balancePortions, scalePortion, scaleRecipeForServings } from './scale';
+import {
+  balancePortions,
+  recipeCardNutrients,
+  scalePortion,
+  scaleRecipeForServings,
+} from './scale';
 import { stableHash, stableHashKey, stableUnit } from './stable-hash';
 
 function recipe(id: string): Recipe {
@@ -81,6 +86,45 @@ describe('scaleRecipeForServings (19.6 Portionswähler)', () => {
     expect(twelve.perServing.kcal).toBeCloseTo(twelve.total.kcal / 12, 6);
     expect(() => scaleRecipeForServings(five, 0, N3_FOODS)).toThrow();
     expect(() => scaleRecipeForServings(five, 13, N3_FOODS)).toThrow();
+  });
+});
+
+describe('recipeCardNutrients (Rezeptkarten: kcal, Eiweiß, KH je Portion)', () => {
+  it('gleich wie die Rezeptansicht (Grundrezept, servings des Rezepts) – 1 und 5 Portionen', () => {
+    const one = recipe('spaghetti-tomatensauce');
+    const card = recipeCardNutrients(one, N3_FOODS);
+    const view = scaleRecipeForServings(one, one.servings, N3_FOODS).perServing;
+    expect(card).toEqual({ kcal: view.kcal, protein_g: view.protein_g, carbs_g: view.carbs_g });
+    const five = makeRecipe({
+      id: 'fuenf',
+      servings: 5,
+      ingredients: [ing('haferflocken', 250, 'g'), ing('huehnerei', 3, 'piece')],
+    });
+    const fiveCard = recipeCardNutrients(five, N3_FOODS)!;
+    const fiveTotal = scaleRecipeForServings(five, 5, N3_FOODS).total;
+    expect(fiveCard.kcal).toBeCloseTo(fiveTotal.kcal / 5, 6);
+    expect(fiveCard.protein_g).toBeCloseTo(fiveTotal.protein_g / 5, 6);
+    expect(fiveCard.carbs_g).toBeCloseTo(fiveTotal.carbs_g / 5, 6);
+    expect(fiveCard.protein_g).toBeGreaterThan(0);
+  });
+
+  it('Variante mit Ersatzprodukt rechnet mit dem tatsächlich verwendeten Lebensmittel', () => {
+    const r = makeRecipe({ id: 'milch', ingredients: [ing('vollmilch', 250, 'ml')] });
+    const milk = recipeCardNutrients(r, N3_FOODS)!;
+    const oat = recipeCardNutrients(
+      {
+        recipe: r,
+        omitted: [],
+        substitutions: [{ index: 0, foodId: 'vollmilch', substituteFoodId: 'haferdrink' }],
+      },
+      N3_FOODS,
+    )!;
+    expect(oat.protein_g).toBeLessThan(milk.protein_g);
+  });
+
+  it('nicht berechenbar (Lebensmittel fehlt im Katalog) → null statt falscher Zahlen', () => {
+    const broken = makeRecipe({ id: 'kaputt', ingredients: [ing('gibt-es-nicht', 100, 'g')] });
+    expect(recipeCardNutrients(broken, N3_FOODS)).toBeNull();
   });
 });
 

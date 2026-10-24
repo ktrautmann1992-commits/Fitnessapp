@@ -39,6 +39,25 @@ export function formatGrams(value: number): string {
   return groupThousands(value);
 }
 
+/**
+ * Zahlen einer Rezeptkarte bzw. Mahlzeit (Gründer-Wunsch 24.10.2026): „482 kcal“, „31 g Eiweiß · 40 g KH“ und die
+ * ausgeschriebene Fassung für Bildschirmleser. Nur Format – die Werte kommen aus packages/core
+ * (`recipeCardNutrients` bzw. die Portion im Essensplan).
+ */
+export function recipeNumbersText(values: {
+  readonly kcal: number;
+  readonly protein_g: number;
+  readonly carbs_g: number;
+}): { readonly kcal: string; readonly macros: string; readonly a11y: string } {
+  const protein = formatGrams(values.protein_g);
+  const carbs = formatGrams(values.carbs_g);
+  return {
+    kcal: `${formatKcal(values.kcal)}\u00a0kcal`,
+    macros: t.nutrition.macrosShort(protein, carbs),
+    a11y: `${formatKcal(values.kcal)} Kilokalorien, ${t.nutrition.macrosShortA11y(protein, carbs)}`,
+  };
+}
+
 /** Dezimalzahl mit Komma, höchstens zwei Nachkommastellen, z. B. 1.5 → „1,5“, 0.333 → „0,33“. */
 export function formatNumberDe(value: number): string {
   const rounded = Math.round(value * 100) / 100;

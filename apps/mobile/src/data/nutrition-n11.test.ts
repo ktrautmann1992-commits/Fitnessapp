@@ -193,7 +193,10 @@ describe('Kühlschrank-Suche in der App (19.7 N11)', () => {
     expect(card?.missingMinor).toEqual(['Reis parboiled', 'Olivenöl', 'Speisesalz']);
     expect(card?.percent).toBe(48); // 150 g Hähnchen ÷ (150 g + 150 g Paprika + Vorrat × 0,1)
     expect(card?.percent).toBeLessThan(100);
-    expect(card?.kcalPerServing).toBeGreaterThan(0);
+    expect(card?.perServing?.kcal).toBeGreaterThan(0);
+    // Hähnchen: Eiweiß und Kohlenhydrate (Reis) je Portion für die Karte (Gründer-Wunsch 24.10.2026).
+    expect(card?.perServing?.protein_g).toBeGreaterThan(20);
+    expect(card?.perServing?.carbs_g).toBeGreaterThan(0);
     expect(card?.isDraft).toBe(true);
     expect(result.hasDrafts).toBe(true);
     expect(result.hasTestphase).toBe(false);

@@ -115,6 +115,15 @@ lassen sich jederzeit ändern.
 - **In der App:** Übungsdetail, Karte „Ausgangsposition“ über der Muskelkarte, Screenreader liest den Alt-Text
   („Ausgangsposition: …“). Bilder sind im Bundle, kein Netzaufruf.
 
+### Rezeptbilder (24.10.2026)
+
+Gleiches Muster wie die Übungsbilder, aber Fotos: KI-Bilder der Gründer aus dem Rezeptbuch (Higgsfield), je Rezept
+`content/recipe-media/<id>.json` (Lizenz, Quelle, Pflicht-Hinweis „KI-Bild, Higgsfield“) und zwei WebP-Dateien unter
+`apps/mobile/assets/recipe-media/` (Vorschau 160 × 160 für Listen, Banner 1080 × 463 für die Rezeptansicht). In Listen
+56 × 56 links in der Karte (abgerundet wie die Symbol-Chips, ohne Foto das grüne Rezept-Symbol), in der Rezeptansicht
+volle Breite 21:9 mit kleinem Hinweis-Schild unten rechts. Erzeugen und Auswahl: `pnpm recipe-media`,
+docs/PLAN-PHASE-5.md Nachtrag „Rezeptbilder“.
+
 | Rolle                        | Hell                   | Dunkel            |
 | ---------------------------- | ---------------------- | ----------------- |
 | Figur (vorn)                 | graphit-hell `#262c3a` | eisblau `#e3ebff` |

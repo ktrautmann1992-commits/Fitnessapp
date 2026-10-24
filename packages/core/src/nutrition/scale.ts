@@ -217,6 +217,34 @@ export function scaleRecipeForServings(
   return { servings: n, ingredients, total: nutrients, perServing };
 }
 
+/** Kurzwerte einer Rezeptkarte je Portion des Grundrezepts (Gründer-Wunsch 24.10.2026: kcal, Eiweiß, KH). */
+export interface RecipeCardNutrients {
+  readonly kcal: number;
+  readonly protein_g: number;
+  readonly carbs_g: number;
+}
+
+/**
+ * kcal, Eiweiß und Kohlenhydrate je Portion des Grundrezepts für Rezeptkarten (Suche, Kühlschrank-Suche) – dieselbe
+ * Rechnung wie die Rezeptansicht (`scaleRecipeForServings` mit `recipe.servings`, Nährwerte nach der Rundung).
+ * `null`, wenn sich das Rezept nicht berechnen lässt (z. B. fehlendes Lebensmittel im Katalog) – die Karte zeigt
+ * dann keine Zahlen statt falscher. Ungerundet; das Format („31 g“) macht die Anzeige.
+ */
+export function recipeCardNutrients(
+  variant: RecipeVariant | Recipe,
+  foods: FoodLookup,
+): RecipeCardNutrients | null {
+  const recipe = 'recipe' in variant ? variant.recipe : variant;
+  try {
+    const { perServing } = scaleRecipeForServings(variant, recipe.servings, foods);
+    const values = [perServing.kcal, perServing.protein_g, perServing.carbs_g];
+    if (!values.every((value) => Number.isFinite(value) && value >= 0)) return null;
+    return { kcal: perServing.kcal, protein_g: perServing.protein_g, carbs_g: perServing.carbs_g };
+  } catch {
+    return null;
+  }
+}
+
 // ---------------------------------------------------------------------------------------------------------
 // Tagesausgleich ins Planband (B1)
 // ---------------------------------------------------------------------------------------------------------

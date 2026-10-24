@@ -89,6 +89,12 @@ export const deNutrition = {
   noMeals: 'Für diesen Tag gibt es noch keine Mahlzeiten.',
   portion: (factor: string) => `${factor} × Portion`,
   portionKcal: (factor: string, kcal: string) => `${factor} × Portion · ${kcal} kcal`,
+  /** Kurz-Makros auf Rezeptkarten und Mahlzeiten (Gründer-Wunsch 24.10.2026): „31 g Eiweiß · 40 g KH“. */
+  /** Geschützte Leerzeichen: „31 g Eiweiß“ bricht nie mitten in der Angabe um. */
+  macrosShort: (protein: string, carbs: string) =>
+    `${protein}\u00a0g\u00a0Eiweiß · ${carbs}\u00a0g\u00a0KH`,
+  macrosShortA11y: (protein: string, carbs: string) =>
+    `${protein} Gramm Eiweiß, ${carbs} Gramm Kohlenhydrate`,
   fill: 'Ergänzung, damit du deinen Bedarf erreichst',
   openRecipe: (title: string) => `Rezept öffnen: ${title}`,
   emptySlot: (slot: string, reasons: string) => `${slot}: Gerade passt kein Rezept (${reasons}).`,
@@ -408,6 +414,8 @@ export const deNutrition = {
     gramsValue: (grams: string) => `${grams} g`,
     macroA11y: (label: string, grams: string) => `${label}: ${grams} Gramm je Portion`,
     kcalA11y: (kcal: string) => `${kcal} Kilokalorien je Portion`,
+    /** Rezeptfoto (Banner): KI-Hinweis sichtbar im Bild. */
+    aiImageA11y: (notice: string) => `Hinweis zum Foto: ${notice}`,
     notes: 'Hinweise',
   },
 
@@ -848,9 +856,12 @@ export const deNutrition = {
     reset: 'Filter zurücksetzen',
     outsideDiet: (diet: string) => `Passt nicht zu deiner Ernährungsform: ${diet}`,
     minutes: (n: number) => `${n} Min.`,
-    kcal: (kcal: string) => `${kcal} kcal je Portion`,
+    /** Werte auf der Karte gelten je Portion des Grundrezepts – für Bildschirmleser ausgeschrieben. */
+    perServingA11y: 'Werte je Portion',
     draft: 'Entwurf',
-    testphase: 'Testphase – nicht fachlich geprüft',
+    /** Kleines Kennzeichen; ausgeschrieben für Bildschirmleser (`testphaseA11y`). */
+    testphase: 'Testphase',
+    testphaseA11y: 'Testphase – nicht fachlich geprüft',
     cardA11y: (title: string) => `Rezept öffnen: ${title}`,
     outsideDietRecipe:
       'Du hast dieses Rezept über die erweiterte Suche gefunden. Es kommt nie automatisch in deinen Essensplan.',
@@ -893,9 +904,9 @@ export const deNutrition = {
     missingNone: 'Alle Hauptzutaten hast du da.',
     missingMinor: (list: string) => `Aus dem Vorrat: ${list}`,
     minutes: (n: number) => `${n} Min.`,
-    kcal: (kcal: string) => `${kcal} kcal je Portion`,
     draft: 'Entwurf',
-    testphase: 'Testphase – nicht fachlich geprüft',
+    testphase: 'Testphase',
+    testphaseA11y: 'Testphase – nicht fachlich geprüft',
     allergenWarning:
       'Entwürfe: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
     /** Testphase (freigegeben ohne Fachprüfung, Wächter M2). */

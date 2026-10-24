@@ -24,7 +24,11 @@ test('Testphase: Suche gekennzeichnet, Rezeptansicht und Ratgeber mit Hinweis', 
   await page.getByTestId('nutrition-recipe-search').click();
   await expect(page.getByTestId('recipe-search')).toBeVisible();
   const hit = page.getByTestId('recipe-search-hit-overnight-oats');
-  await expect(hit).toContainText('Testphase – nicht fachlich geprüft');
+  // Kleines Kennzeichen „Testphase“ (24.10.2026); ausgeschrieben im Namen für Bildschirmleser.
+  await expect(page.getByTestId('recipe-search-hit-overnight-oats-testphase')).toHaveText(
+    'Testphase',
+  );
+  await expect(hit).toHaveAttribute('aria-label', /Testphase – nicht fachlich geprüft/);
   await expect(hit).not.toContainText('Entwurf');
 
   // Rezeptansicht: dezenter Hinweis, keine Entwurfs-Kennzeichen.

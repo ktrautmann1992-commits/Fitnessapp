@@ -1192,6 +1192,8 @@ werden keine fremden Bilder genutzt.
   jedes Problem – vor allem **Bild ohne Lizenzangabe** – ist ein blockierender Fehler. Die App zeigt den Bereich nur,
   wenn es ein Bild gibt (Registry `apps/mobile/src/data/exercise-media.ts`, ein Test hält sie deckungsgleich mit
   `content/exercise-media`). Seit 21.10.2026 hat jede Übung eine eigene Illustration (Entscheidung B, unten).
+  Rezeptfotos nutzen seit 24.10.2026 dasselbe Muster (`content/recipe-media`, `recipeMediaSchema`, KI-Hinweis Pflicht;
+  docs/PLAN-PHASE-5.md Nachtrag „Rezeptbilder“).
 - Tests: core (Vitest), App (Vitest), E2E `apps/mobile/e2e/muscle-map.spec.ts`.
 
 ### Gründer-Entscheidung: Übungsbilder „Ausgangsposition“ – Quelle und Lizenz (entschieden 21.10.2026: B)

@@ -17,7 +17,7 @@ import {
   NutritionGate,
   nutritionReady,
 } from '@/components/nutrition';
-import { IconChip } from '@/components/design';
+import { RecipeFlagChip, RecipeThumb } from '@/components/recipe-image';
 import { Screen } from '@/components/screen';
 import {
   Body,
@@ -35,7 +35,7 @@ import {
   prepareFridgeSearch,
 } from '@/data/fridge-search';
 import { t } from '@/i18n';
-import { formatKcal } from '@/lib/nutrition-format';
+import { recipeNumbersText } from '@/lib/nutrition-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
@@ -325,18 +325,26 @@ function FridgeCard({
 }) {
   const theme = useThemeColors();
   const texts = t.nutrition.fridge;
+  // Wie die Rezeptsuche: Foto links, „28 Min. · 482 kcal · 31 g Eiweiß · 40 g KH“, kleines Kennzeichen.
+  const numbers =
+    showNumbers && card.perServing !== null ? recipeNumbersText(card.perServing) : null;
   const details = [
     texts.minutes(card.totalMinutes),
-    showNumbers && card.kcalPerServing !== null
-      ? texts.kcal(formatKcal(card.kcalPerServing))
-      : null,
-    card.isDraft ? texts.draft : null,
-    card.isTestphase ? texts.testphase : null,
+    numbers?.kcal ?? null,
+    numbers?.macros ?? null,
   ].filter((part): part is string => part !== null);
+  const a11y = [
+    `${texts.cardA11y(card.title)}, ${texts.matchA11y(card.percent)}`,
+    numbers ? `${numbers.a11y}, ${t.nutrition.search.perServingA11y}` : null,
+    card.isDraft ? texts.draft : null,
+    card.isTestphase ? texts.testphaseA11y : null,
+  ]
+    .filter((part): part is string => part !== null)
+    .join('. ');
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${texts.cardA11y(card.title)}, ${texts.matchA11y(card.percent)}`}
+      accessibilityLabel={a11y}
       onPress={onOpen}
       testID={`fridge-hit-${card.id}`}
       style={({ pressed }) => [
@@ -348,16 +356,24 @@ function FridgeCard({
       ]}
     >
       <View style={styles.cardHead}>
-        <IconChip area="ernaehrung" icon="recipe" size={40} />
-        <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
-        <Text
-          style={[styles.match, { color: theme.text, borderColor: theme.border }]}
-          testID={`fridge-hit-${card.id}-match`}
-        >
-          {texts.match(card.percent)}
-        </Text>
+        <RecipeThumb recipeId={card.id} testID={`fridge-hit-${card.id}-thumb`} />
+        <View style={styles.cardText}>
+          <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
+          <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
+          <View style={styles.flags}>
+            <Text
+              style={[styles.match, { color: theme.text, borderColor: theme.border }]}
+              testID={`fridge-hit-${card.id}-match`}
+            >
+              {texts.match(card.percent)}
+            </Text>
+            {card.isDraft ? <RecipeFlagChip label={texts.draft} a11y={texts.draft} /> : null}
+            {card.isTestphase ? (
+              <RecipeFlagChip label={texts.testphase} a11y={texts.testphaseA11y} />
+            ) : null}
+          </View>
+        </View>
       </View>
-      <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
       <Text style={[styles.detail, { color: theme.text }]}>{texts.have(card.have.join(', '))}</Text>
       <Text style={[styles.detail, { color: theme.text }]} testID={`fridge-hit-${card.id}-missing`}>
         {card.missing.length === 0
@@ -386,13 +402,10 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.xs,
   },
-  cardHead: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  title: { fontSize: fontSize.md, fontWeight: fontWeight.bold, flex: 1, minWidth: 120 },
+  cardHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  cardText: { flex: 1, minWidth: 0, gap: spacing.xs },
+  flags: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xs },
+  title: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
   match: {
     alignSelf: 'flex-start',
     fontSize: fontSize.sm,

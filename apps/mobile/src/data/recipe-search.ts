@@ -6,8 +6,9 @@ import {
   type RecipeSearchQuery,
   recipeSearchDietOptions,
   recipeSearchFacets,
+  recipeCardNutrients,
+  type RecipeCardNutrients,
   recipeTotalMinutes,
-  scaleRecipeForServings,
   searchRecipes,
   weekExcludesPregnancyCaution,
   type IntoleranceBlockReason,
@@ -31,8 +32,11 @@ export interface RecipeSearchCard {
   totalMinutes: number;
   /** Gekennzeichnet „passt nicht zu deiner Ernährungsform: …“ (K3/G4). */
   outsideProfileDiet: DietType | null;
-  /** kcal je Portion des Grundrezepts; nur anzeigen, wenn „Kalorienzahlen“ an sind. null = nicht berechenbar. */
-  kcalPerServing: number | null;
+  /**
+   * kcal, Eiweiß und Kohlenhydrate je Portion des Grundrezepts (packages/core `recipeCardNutrients`); nur anzeigen,
+   * wenn „Kalorienzahlen“ an sind. null = nicht berechenbar.
+   */
+  perServing: RecipeCardNutrients | null;
   isDraft: boolean;
   /** Freigegeben ohne Fachprüfung (Testphase, Gründer 19.10.2026) → kleines Kennzeichen „Testphase …“. */
   isTestphase: boolean;
@@ -83,20 +87,13 @@ export function recipeSearchForPerson(input: {
     ...facets,
     cards: hits.map((hit) => {
       const recipe = hit.variant.recipe;
-      let kcal: number | null;
-      try {
-        kcal = scaleRecipeForServings(hit.variant, recipe.servings, input.library.foods).perServing
-          .kcal;
-      } catch {
-        kcal = null;
-      }
       return {
         id: recipe.id,
         title: recipe.title_de,
         description: recipe.description_de,
         totalMinutes: recipeTotalMinutes(recipe),
         outsideProfileDiet: hit.outsideProfileDiet,
-        kcalPerServing: kcal,
+        perServing: recipeCardNutrients(hit.variant, input.library.foods),
         isDraft: recipe.status === 'draft',
         isTestphase: isPublishedWithoutExpertReview(recipe),
       };

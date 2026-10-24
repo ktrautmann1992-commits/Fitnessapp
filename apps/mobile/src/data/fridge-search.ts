@@ -9,8 +9,9 @@ import {
   fridgeSearchVariants,
   type IntoleranceBlockReason,
   type NutritionLibrary,
+  recipeCardNutrients,
+  type RecipeCardNutrients,
   recipeTotalMinutes,
-  scaleRecipeForServings,
   searchFridge,
   weekExcludesPregnancyCaution,
 } from '@fitnessapp/core';
@@ -41,8 +42,11 @@ export interface FridgeSearchCard {
   missingMore: number;
   /** Namen fehlender Zutaten aus Vorrat und Gewürzen. */
   missingMinor: string[];
-  /** kcal je Portion des Grundrezepts; nur anzeigen, wenn „Kalorienzahlen“ an sind. null = nicht berechenbar. */
-  kcalPerServing: number | null;
+  /**
+   * kcal, Eiweiß und Kohlenhydrate je Portion des Grundrezepts (packages/core `recipeCardNutrients`); nur anzeigen,
+   * wenn „Kalorienzahlen“ an sind. null = nicht berechenbar.
+   */
+  perServing: RecipeCardNutrients | null;
   isDraft: boolean;
   /** Freigegeben ohne Fachprüfung (Testphase, Gründer 19.10.2026) → kleines Kennzeichen „Testphase …“. */
   isTestphase: boolean;
@@ -125,12 +129,6 @@ export function fridgeSearchResults(
   const shownHits = limit === undefined ? hits : hits.slice(0, Math.max(0, limit));
   const cards = shownHits.map((hit): FridgeSearchCard => {
     const recipe = hit.variant.recipe;
-    let kcal: number | null;
-    try {
-      kcal = scaleRecipeForServings(hit.variant, recipe.servings, foods).perServing.kcal;
-    } catch {
-      kcal = null;
-    }
     const shown = hit.missing.slice(0, FRIDGE_SEARCH.maxMissingShown);
     return {
       id: recipe.id,
@@ -141,7 +139,7 @@ export function fridgeSearchResults(
       missing: shown.map(name),
       missingMore: hit.missing.length - shown.length,
       missingMinor: hit.missingMinor.map(name),
-      kcalPerServing: kcal,
+      perServing: recipeCardNutrients(hit.variant, foods),
       isDraft: recipe.status === 'draft',
       isTestphase: isPublishedWithoutExpertReview(recipe),
     };

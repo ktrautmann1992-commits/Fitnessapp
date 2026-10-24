@@ -4303,3 +4303,37 @@ Ratgeber-Liste und Ratgeber ohne R21H mit Kennzeichen, `demo-wettkampf` bleibt E
 - 30 neue Zutaten in `content/food-mapping/alpha5-zuordnung.json` (KI-Vorschlag, unbestätigt). Quell-IDs nur, wo die
   Namensliste aus Lauf 38367139392 einen eindeutigen Eintrag zeigt (bzw. dieselbe Quell-ID wie eine schon zugeordnete
   Zutat); sonst `ref: null` → nächster Lauf `foods-import` im Modus „kandidaten“.
+
+## Nachtrag 24.10.2026: Rezeptbilder und Eiweiß/KH auf den Rezeptkarten
+
+Gründer-Wunsch: Rezeptlisten mit Vorschaufoto und „28 Min. · 482 kcal · 31 g Eiweiß · 40 g KH“.
+
+- **Quelle der Fotos:** die Rezeptbuch-Fotos (Higgsfield, KI-Bilder der Gründer, 1800 × 771 JPG) unter
+  `content/rezeptbuch/fotos/<datei>.jpg` auf dem Branch `rezeptbuch-baukasten`. Dateiname = Rezept-ID aus
+  `packages/content/seed/alpha5-rezepte.json`; nur bei doppeltem Titel steht das Kapitel davor
+  (`vegan-schoko-proteinpudding` → `schoko-proteinpudding`, `fleisch-schoko-proteinpudding` →
+  `schoko-proteinpudding-fleisch`, ebenso die zwei Teriyaki-Tofu-Bowls). Zuordnung über `foto-auftraege.json`
+  (Titel + Kapitel), nie geraten. Gegenprobe über die Higgsfield-Titel: alle 306 Rezeptbuch-Titel haben ein Foto.
+- **Gleiches Muster wie die Übungsbilder:** Zuordnung `content/recipe-media/<rezept-id>.json` (Schema
+  `recipeMediaSchema` in `packages/core/src/content/recipe-media.ts`: Alt-Text, Herkunft, Lizenz, Quelle, bei KI-Bildern
+  Pflicht-Hinweis `ai_notice_de` = „KI-Bild, Higgsfield“), Bilder unter `apps/mobile/assets/recipe-media/` als WebP:
+  `<id>-thumb.webp` 160 × 160 (Mitte, für Listen) und `<id>-banner.webp` 1080 × 463 (21:9, Rezeptansicht).
+  `content:validate` prüft jede Zuordnung (blockierend: fehlende Lizenz/KI-Hinweis, falsche Größe, fehlende Datei,
+  unbekanntes Rezept – erlaubt sind Rezepte aus `content/recipes` und aus `content/rezeptbuch-app-auswahl.json`).
+- **App-Größe:** nur ausgewählte Rezepte kommen ins Bündel (Gründer-Entscheidung 24.10.2026: ~150 der 306). Je Rezept
+  ≈ 55 KB (Banner ≈ 50 KB, Vorschau ≈ 5 KB) → 150 Rezepte ≈ 8 MB. Ein Test begrenzt die Dateigrößen und verbietet
+  Bilddateien ohne Zuordnung.
+- **Erzeugen:** `pnpm recipe-media` liest die Auswahl `content/rezeptbuch-app-auswahl.json` (Liste von Rezept-IDs),
+  holt die Fotos per `git show origin/rezeptbuch-baukasten:…` (kein Download), schreibt Bilder, Zuordnungen und das
+  App-Modul `apps/mobile/src/data/recipe-media.generated.ts` (require() je Bild – Metro bündelt sie für Web-Export und
+  APK) und entfernt alles außerhalb der Auswahl. `--ids a,b` statt Auswahl-Datei, `--all` nur zum lokalen Ansehen.
+  In der Claude-Code-Sitzung: „Übernimm die Rezeptbilder für die App-Auswahl.“
+- **Stand dieses Branches:** Die Auswahl-Datei gibt es noch nicht – eingecheckt sind nur 8 Beispiele (u. a. Eier-Reis
+  mit Tofu & Brokkoli, Eiermuffins, Beeren-Frozen-Joghurt-Bark). Sobald die Auswahl vorliegt: `pnpm recipe-media`.
+- **Anzeige:** Rezeptsuche, „Was habe ich da?“ und die Mahlzeiten im Ernährungs-Tag zeigen links das Vorschaubild
+  (56 × 56, reiner Schmuck); ohne Foto das grüne Rezept-Symbol in gleicher Größe. Die Rezeptansicht zeigt oben das
+  Banner mit sichtbarem Hinweis „KI-Bild, Higgsfield“ (Alt-Text „Foto: <Titel>“). Das Testphase-Kennzeichen ist jetzt
+  ein kleines Schild „Testphase“; ausgeschrieben („Testphase – nicht fachlich geprüft“) im Namen für Bildschirmleser.
+- **Eiweiß/KH:** `recipeCardNutrients` in `packages/core/src/nutrition/scale.ts` (gleiche Rechnung wie die
+  Rezeptansicht: Grundrezept je Portion, Nährwerte nach der Rundung; `null` statt falscher Zahlen). Mahlzeiten nutzen
+  die schon berechnete Portion der Person. Nur bei „Kalorienzahlen an“ (sonst weder kcal noch Makros, wie bisher).

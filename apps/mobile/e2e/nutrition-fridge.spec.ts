@@ -72,7 +72,7 @@ test('Was habe ich da?: Auswahl, Übereinstimmung, nur Gewürze, Entwurf-Warnung
   await expect(page.getByTestId('fridge-draft-warning')).toContainText(
     'Allergene noch nicht fachlich geprüft',
   );
-  await expect(page.getByTestId('fridge-results')).toContainText('kcal je Portion');
+  await expect(page.getByTestId('fridge-results')).toContainText(/\d+\skcal\s·\s\d+\sg\sEiweiß/);
 
   // Suchfeld grenzt die Auswahl ein.
   await page.getByLabel('Zutat suchen').fill('hafer');

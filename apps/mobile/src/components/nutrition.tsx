@@ -15,6 +15,7 @@ import { useRouter, type Href } from 'expo-router';
 import { type ReactNode, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { RecipeThumb } from '@/components/recipe-image';
 import { ConfirmDialog } from '@/components/screen';
 import {
   Body,
@@ -42,6 +43,7 @@ import {
   leftoverAccessibilityText,
   type LeftoverHintView,
   noticeText,
+  recipeNumbersText,
   roleLabel,
   slotLabel,
 } from '@/lib/nutrition-format';
@@ -428,6 +430,8 @@ export function MealRow({
   const theme = useThemeColors();
   const role = roleLabel(meal.role);
   const portion = formatNumberDe(meal.factor);
+  // Zahlen der Portion der Person (aus dem Essensplan, packages/core) – nur bei „Kalorienzahlen an“.
+  const numbers = showNumbers ? recipeNumbersText(meal.nutrients) : null;
   const extra: string[] = [];
   if (meal.isFill) extra.push(t.nutrition.fill);
   if (meal.prepKind === 'cook') extra.push(t.nutrition.prep.cook);
@@ -459,38 +463,44 @@ export function MealRow({
         },
       ]}
     >
-      <Text style={[styles.slot, { color: theme.textMuted }]}>
-        {role ? `${slotLabel(meal.slot)} · ${role}` : slotLabel(meal.slot)}
-      </Text>
-      <Text style={[styles.title, { color: theme.text }]}>{meal.titleDe}</Text>
-      <Text style={[styles.detail, { color: theme.textMuted }]}>
-        {showNumbers
-          ? t.nutrition.portionKcal(portion, formatKcal(meal.nutrients.kcal))
-          : t.nutrition.portion(portion)}
-      </Text>
-      {extra.map((line) => (
-        <Text key={line} style={[styles.detail, { color: theme.textMuted }]}>
-          {line}
-        </Text>
-      ))}
-      {leftover ? (
-        <View testID={`leftover-${meal.slot}`}>
-          <Text style={[styles.detail, { color: theme.text }]}>{leftover.line}</Text>
-          {leftover.unreviewed ? (
-            <Text style={[styles.detail, { color: theme.textMuted }]}>
-              {t.nutrition.leftovers.unreviewed}
+      {/* Gründer-Wunsch 24.10.2026: Rezeptfoto links (ohne Foto das grüne Rezept-Symbol). */}
+      <View style={styles.mealRow}>
+        <RecipeThumb recipeId={meal.recipeId} testID={`meal-${meal.slot}-thumb`} />
+        <View style={styles.mealText}>
+          <Text style={[styles.slot, { color: theme.textMuted }]}>
+            {role ? `${slotLabel(meal.slot)} · ${role}` : slotLabel(meal.slot)}
+          </Text>
+          <Text style={[styles.title, { color: theme.text }]}>{meal.titleDe}</Text>
+          <Text style={[styles.detail, { color: theme.textMuted }]}>
+            {numbers
+              ? `${t.nutrition.portionKcal(portion, formatKcal(meal.nutrients.kcal))} · ${numbers.macros}`
+              : t.nutrition.portion(portion)}
+          </Text>
+          {extra.map((line) => (
+            <Text key={line} style={[styles.detail, { color: theme.textMuted }]}>
+              {line}
             </Text>
-          ) : null}
-          {leftover.shortLived ? (
-            <Text
-              style={[styles.detail, { color: theme.textMuted }]}
-              testID={`leftover-short-${meal.slot}`}
-            >
-              {t.nutrition.leftovers.shortLived}
-            </Text>
+          ))}
+          {leftover ? (
+            <View testID={`leftover-${meal.slot}`}>
+              <Text style={[styles.detail, { color: theme.text }]}>{leftover.line}</Text>
+              {leftover.unreviewed ? (
+                <Text style={[styles.detail, { color: theme.textMuted }]}>
+                  {t.nutrition.leftovers.unreviewed}
+                </Text>
+              ) : null}
+              {leftover.shortLived ? (
+                <Text
+                  style={[styles.detail, { color: theme.textMuted }]}
+                  testID={`leftover-short-${meal.slot}`}
+                >
+                  {t.nutrition.leftovers.shortLived}
+                </Text>
+              ) : null}
+            </View>
           ) : null}
         </View>
-      ) : null}
+      </View>
     </Pressable>
   );
 }
@@ -510,6 +520,8 @@ export function EmptySlotRow({ empty }: { empty: EmptySlot }) {
 }
 
 const styles = StyleSheet.create({
+  mealRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  mealText: { flex: 1, minWidth: 0 },
   list: { gap: spacing.sm },
   macro: { gap: spacing.xs },
   macroText: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold },
