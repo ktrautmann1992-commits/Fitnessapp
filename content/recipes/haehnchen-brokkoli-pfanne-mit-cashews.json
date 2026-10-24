@@ -1,0 +1,146 @@
+{
+  "id": "haehnchen-brokkoli-pfanne-mit-cashews",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hähnchen-Brokkoli-Pfanne mit Cashews",
+  "description_de": "Saftiges Hähnchen mit viel Brokkoli und Paprika in Soja-Ingwer-Sauce, getoppt mit gerösteten Cashews – Asia-Pfanne ganz ohne Reis.",
+  "section_de": "Mittagessen",
+  "categories": ["low-carb"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "180 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Kopf (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cashewkerne",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Handvoll (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 daumennagelgroßes Stück",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 ml)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Röste die Cashews in einer trockenen Pfanne goldbraun und stell sie beiseite.",
+    "Schneide das Hähnchen in Streifen, den Brokkoli in kleine Röschen und die Paprika in Streifen. Reibe Ingwer und Knoblauch fein.",
+    "Brate das Hähnchen im Öl bei hoher Hitze 4–5 Minuten rundum an und nimm es heraus.",
+    "Gib Brokkoli, Paprika, Ingwer und Knoblauch mit 3 EL Wasser in die Pfanne und gare alles mit Deckel 4 Minuten bissfest.",
+    "Gib Hähnchen und Sojasauce zurück, schwenke alles 1 Minute durch und streue die Cashews darüber."
+  ],
+  "tip_de": "Wer mehr Volumen möchte, gibt 150 g Blumenkohl, fein gehackt wie Reis, mit in die Pfanne – das sättigt ohne viele Kohlenhydrate.",
+  "tags_de": ["Low Carb"],
+  "total_minutes": 20,
+  "prep_minutes": 11,
+  "cook_minutes": 9,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 477,
+    "protein_g": 56.8,
+    "carbs_g": 18.7,
+    "fat_g": 17.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "poultry",
+    "legumes",
+    "soy",
+    "tree_nuts",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "haehnchenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 3 gart die Zutat durch: „Brate das Hähnchen im Öl bei hoher Hitze 4–5 Minuten rundum an und nimm es heraus.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ceed97f8e69993faafa950b4f70a35a274032770beda248328c27b398343f244"
+  }
+}
