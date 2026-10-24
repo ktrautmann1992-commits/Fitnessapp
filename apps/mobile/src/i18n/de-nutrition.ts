@@ -88,11 +88,19 @@ export const deNutrition = {
   mealsTitle: 'Mahlzeiten',
   noMeals: 'Für diesen Tag gibt es noch keine Mahlzeiten.',
   portion: (factor: string) => `${factor} × Portion`,
-  portionKcal: (factor: string, kcal: string) => `${factor} × Portion · ${kcal} kcal`,
   /** Kurz-Makros auf Rezeptkarten und Mahlzeiten (Gründer-Wunsch 24.10.2026): „31 g Eiweiß · 40 g KH“. */
   /** Geschützte Leerzeichen: „31 g Eiweiß“ bricht nie mitten in der Angabe um. */
   macrosShort: (protein: string, carbs: string) =>
     `${protein}\u00a0g\u00a0Eiweiß · ${carbs}\u00a0g\u00a0KH`,
+  /** Mahlzeit im Ernährungs-Tag, einzeilig (`mealNumbersLine`). */
+  mealLine: {
+    factor: (factor: string) => `${factor}×`,
+    kcal: (kcal: string) => `${kcal}\u00a0kcal`,
+    protein: (grams: string) => `${grams}\u00a0g\u00a0E`,
+    carbs: (grams: string) => `${grams}\u00a0g\u00a0KH`,
+    a11y: (factor: string | null, kcal: string, protein: string, carbs: string) =>
+      `${factor === null ? 'Eine Portion' : `${factor}-fache Portion`}: ${kcal} Kilokalorien, ${protein} Gramm Eiweiß, ${carbs} Gramm Kohlenhydrate`,
+  },
   macrosShortA11y: (protein: string, carbs: string) =>
     `${protein} Gramm Eiweiß, ${carbs} Gramm Kohlenhydrate`,
   fill: 'Ergänzung, damit du deinen Bedarf erreichst',

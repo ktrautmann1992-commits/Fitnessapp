@@ -1,0 +1,30 @@
+{
+  "recipe_id": "thunfisch-eiersalat-mit-gurke-auf-knaeckebrot",
+  "alt_de": "Foto: Thunfisch-Eiersalat mit Gurke auf Knäckebrot",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/thunfisch-eiersalat-mit-gurke-auf-knaeckebrot.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "thunfisch-eiersalat-mit-gurke-auf-knaeckebrot-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "thunfisch-eiersalat-mit-gurke-auf-knaeckebrot-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "recipe_id": "raeuchertofu-reispfanne-mit-edamame-und-paprika",
+  "alt_de": "Foto: Räuchertofu-Reispfanne mit Edamame und Paprika",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/raeuchertofu-reispfanne-mit-edamame-und-paprika.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "raeuchertofu-reispfanne-mit-edamame-und-paprika-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "raeuchertofu-reispfanne-mit-edamame-und-paprika-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

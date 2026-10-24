@@ -4323,13 +4323,15 @@ Gründer-Wunsch: Rezeptlisten mit Vorschaufoto und „28 Min. · 482 kcal · 31 
 - **App-Größe:** nur ausgewählte Rezepte kommen ins Bündel (Gründer-Entscheidung 24.10.2026: ~150 der 306). Je Rezept
   ≈ 55 KB (Banner ≈ 50 KB, Vorschau ≈ 5 KB) → 150 Rezepte ≈ 8 MB. Ein Test begrenzt die Dateigrößen und verbietet
   Bilddateien ohne Zuordnung.
-- **Erzeugen:** `pnpm recipe-media` liest die Auswahl `content/rezeptbuch-app-auswahl.json` (Liste von Rezept-IDs),
+- **Erzeugen:** `pnpm recipe-media` liest die Auswahl `content/rezeptbuch-app-auswahl.json` (`rezepte`) plus alle
+  Rezepte aus `content/recipes` mit Rezeptbuch-Foto,
   holt die Fotos per `git show origin/rezeptbuch-baukasten:…` (kein Download), schreibt Bilder, Zuordnungen und das
   App-Modul `apps/mobile/src/data/recipe-media.generated.ts` (require() je Bild – Metro bündelt sie für Web-Export und
   APK) und entfernt alles außerhalb der Auswahl. `--ids a,b` statt Auswahl-Datei, `--all` nur zum lokalen Ansehen.
   In der Claude-Code-Sitzung: „Übernimm die Rezeptbilder für die App-Auswahl.“
-- **Stand dieses Branches:** Die Auswahl-Datei gibt es noch nicht – eingecheckt sind nur 8 Beispiele (u. a. Eier-Reis
-  mit Tofu & Brokkoli, Eiermuffins, Beeren-Frozen-Joghurt-Bark). Sobald die Auswahl vorliegt: `pnpm recipe-media`.
+- **Stand:** 164 Rezepte mit Foto = App-Auswahl (153) ∪ die 65 Rezepte aus `content/recipes`, die schon heute in der
+  App laufen und ein Rezeptbuch-Foto haben (sonst fehlten dort Bilder bis zum Import). Zusammen 9,6 MB (Banner 8,7 MB,
+  Vorschau 0,9 MB); das App-Modul hat 60 KB. Die Foto-Dateinamen der Auswahl (`fotos.dateien`) werden gegengeprüft.
 - **Anzeige:** Rezeptsuche, „Was habe ich da?“ und die Mahlzeiten im Ernährungs-Tag zeigen links das Vorschaubild
   (56 × 56, reiner Schmuck); ohne Foto das grüne Rezept-Symbol in gleicher Größe. Die Rezeptansicht zeigt oben das
   Banner mit sichtbarem Hinweis „KI-Bild, Higgsfield“ (Alt-Text „Foto: <Titel>“). Das Testphase-Kennzeichen ist jetzt
@@ -4337,6 +4339,9 @@ Gründer-Wunsch: Rezeptlisten mit Vorschaufoto und „28 Min. · 482 kcal · 31 
 - **Eiweiß/KH:** `recipeCardNutrients` in `packages/core/src/nutrition/scale.ts` (gleiche Rechnung wie die
   Rezeptansicht: Grundrezept je Portion, Nährwerte nach der Rundung; `null` statt falscher Zahlen). Mahlzeiten nutzen
   die schon berechnete Portion der Person. Nur bei „Kalorienzahlen an“ (sonst weder kcal noch Makros, wie bisher).
+- **Mahlzeiten im Ernährungs-Tag** einzeilig auf 390 px: „669 kcal · 44 g E · 65 g KH“; der Portionsfaktor steht nur
+  davor, wenn er gerundet nicht 1 ist („1,3× · …“, eine Nachkommastelle; genaue Portion in der Rezeptansicht).
+  E/KH erklärt die Übersicht darüber; Bildschirmleser hören „Eine Portion: 669 Kilokalorien, 44 Gramm Eiweiß, …“.
 
 ## Nachtrag 24.10.2026: Nur etwa die Hälfte der Rezeptbuch-Rezepte in der App (Gründer-Entscheidung)
 

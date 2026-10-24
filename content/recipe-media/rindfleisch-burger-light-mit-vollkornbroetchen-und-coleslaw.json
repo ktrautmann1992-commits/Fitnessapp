@@ -1,0 +1,30 @@
+{
+  "recipe_id": "rindfleisch-burger-light-mit-vollkornbroetchen-und-coleslaw",
+  "alt_de": "Foto: Rindfleisch-Burger light mit Vollkornbrötchen und Coleslaw",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/rindfleisch-burger-light-mit-vollkornbroetchen-und-coleslaw.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "rindfleisch-burger-light-mit-vollkornbroetchen-und-coleslaw-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "rindfleisch-burger-light-mit-vollkornbroetchen-und-coleslaw-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "recipe_id": "rueblikuchen-protein-muffins-mit-walnuessen",
+  "alt_de": "Foto: Rüblikuchen-Protein-Muffins mit Walnüssen",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/rueblikuchen-protein-muffins-mit-walnuessen.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "rueblikuchen-protein-muffins-mit-walnuessen-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "rueblikuchen-protein-muffins-mit-walnuessen-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

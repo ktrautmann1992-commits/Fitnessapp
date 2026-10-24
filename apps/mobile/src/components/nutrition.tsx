@@ -43,7 +43,7 @@ import {
   leftoverAccessibilityText,
   type LeftoverHintView,
   noticeText,
-  recipeNumbersText,
+  mealNumbersLine,
   roleLabel,
   slotLabel,
 } from '@/lib/nutrition-format';
@@ -431,7 +431,7 @@ export function MealRow({
   const role = roleLabel(meal.role);
   const portion = formatNumberDe(meal.factor);
   // Zahlen der Portion der Person (aus dem Essensplan, packages/core) – nur bei „Kalorienzahlen an“.
-  const numbers = showNumbers ? recipeNumbersText(meal.nutrients) : null;
+  const numbers = showNumbers ? mealNumbersLine(meal.factor, meal.nutrients) : null;
   const extra: string[] = [];
   if (meal.isFill) extra.push(t.nutrition.fill);
   if (meal.prepKind === 'cook') extra.push(t.nutrition.prep.cook);
@@ -448,11 +448,13 @@ export function MealRow({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={
-        leftover
-          ? `${t.nutrition.openRecipe(meal.titleDe)}. ${leftoverAccessibilityText(leftover)}`
-          : t.nutrition.openRecipe(meal.titleDe)
-      }
+      accessibilityLabel={[
+        t.nutrition.openRecipe(meal.titleDe),
+        numbers?.a11y ?? null,
+        leftover ? leftoverAccessibilityText(leftover) : null,
+      ]
+        .filter((part): part is string => part !== null)
+        .join('. ')}
       onPress={onOpen}
       testID={`meal-${meal.slot}`}
       style={({ pressed }) => [
@@ -471,10 +473,11 @@ export function MealRow({
             {role ? `${slotLabel(meal.slot)} · ${role}` : slotLabel(meal.slot)}
           </Text>
           <Text style={[styles.title, { color: theme.text }]}>{meal.titleDe}</Text>
-          <Text style={[styles.detail, { color: theme.textMuted }]}>
-            {numbers
-              ? `${t.nutrition.portionKcal(portion, formatKcal(meal.nutrients.kcal))} · ${numbers.macros}`
-              : t.nutrition.portion(portion)}
+          <Text
+            style={[styles.detail, { color: theme.textMuted }]}
+            testID={`meal-${meal.slot}-numbers`}
+          >
+            {numbers ? numbers.text : t.nutrition.portion(portion)}
           </Text>
           {extra.map((line) => (
             <Text key={line} style={[styles.detail, { color: theme.textMuted }]}>

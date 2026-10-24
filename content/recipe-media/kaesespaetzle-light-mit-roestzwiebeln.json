@@ -1,0 +1,30 @@
+{
+  "recipe_id": "kaesespaetzle-light-mit-roestzwiebeln",
+  "alt_de": "Foto: Käsespätzle light mit Röstzwiebeln",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/kaesespaetzle-light-mit-roestzwiebeln.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "kaesespaetzle-light-mit-roestzwiebeln-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "kaesespaetzle-light-mit-roestzwiebeln-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

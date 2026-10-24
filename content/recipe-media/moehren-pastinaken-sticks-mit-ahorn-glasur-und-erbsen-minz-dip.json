@@ -1,0 +1,30 @@
+{
+  "recipe_id": "moehren-pastinaken-sticks-mit-ahorn-glasur-und-erbsen-minz-dip",
+  "alt_de": "Foto: Möhren-Pastinaken-Sticks mit Ahorn-Glasur und Erbsen-Minz-Dip",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/moehren-pastinaken-sticks-mit-ahorn-glasur-und-erbsen-minz-dip.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "moehren-pastinaken-sticks-mit-ahorn-glasur-und-erbsen-minz-dip-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "moehren-pastinaken-sticks-mit-ahorn-glasur-und-erbsen-minz-dip-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

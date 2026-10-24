@@ -2,7 +2,8 @@
  * Aufruf: `pnpm recipe-media` (im Hauptordner) – übernimmt Rezeptbuch-Fotos in die App (docs/PLAN-PHASE-5.md
  * Nachtrag „Rezeptbilder“, Logik in recipe-media/build.ts).
  *
- *   pnpm recipe-media                      Auswahl aus content/rezeptbuch-app-auswahl.json
+ *   pnpm recipe-media                      Auswahl aus content/rezeptbuch-app-auswahl.json und alle Rezepte aus
+ *                                          content/recipes mit Rezeptbuch-Foto
  *   pnpm recipe-media --ids a,b,c          nur diese Rezepte (z. B. solange es die Auswahl-Datei noch nicht gibt)
  *   pnpm recipe-media --all                alle 306 (nur zum lokalen Ansehen – nicht so committen, App-Größe!)
  *   pnpm recipe-media --ref <git-ref>     Fotos von einem anderen Stand (Vorgabe: origin/rezeptbuch-baukasten)
@@ -103,7 +104,31 @@ if (check) {
   if (unknown.length > 0) {
     throw new Error(`Kein Rezeptbuch-Foto für: ${unknown.join(', ')}`);
   }
-  const wanted = new Set(selection);
+  // Dazu alle Rezepte, die schon in content/recipes stehen und ein Rezeptbuch-Foto haben (laufen heute in der App –
+  // sonst fehlen dort Bilder, bis der Import die Auswahl übernimmt). Nicht bei --ids/--all.
+  const inApp =
+    idsArg === undefined && !args.includes('--all')
+      ? readdirSync(join(repoRoot, 'content/recipes'))
+          .filter((name) => name.endsWith('.json'))
+          .map((name) => name.slice(0, -5))
+          .filter((id) => byRecipe.has(id))
+      : [];
+  const wanted = new Set([...selection, ...inApp]);
+  // Gegenprobe: Foto-Datei laut Auswahl-Datei (fotos.dateien) = eigene Zuordnung.
+  if (idsArg === undefined && existsSync(selectionPath)) {
+    const listed = (
+      JSON.parse(readFileSync(selectionPath, 'utf8')) as {
+        fotos?: { dateien?: Record<string, string> };
+      }
+    ).fotos?.dateien;
+    for (const [id, file] of Object.entries(listed ?? {})) {
+      if (`${byRecipe.get(id)}.jpg` !== file) {
+        throw new Error(
+          `Auswahl nennt für ${id} das Foto ${file}, Zuordnung ergibt ${byRecipe.get(id)}.jpg.`,
+        );
+      }
+    }
+  }
   const assetDir = join(repoRoot, RECIPE_MEDIA_ASSET_DIR);
   const mediaDir = join(repoRoot, 'content', RECIPE_MEDIA_FOLDER);
   mkdirSync(assetDir, { recursive: true });
