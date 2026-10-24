@@ -9,7 +9,7 @@
  *   GitHub-API auf `alpha5-import/<Lauf-ID>`, Pull Request mit Bericht, `ci` starten. Nie direkt in die Datenbank
  *   (KONZEPT 3: Repository → Datenbank, Entwürfe nie in Supabase).
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 import { type ContentIssue, type NutritionContentFile, validateContent } from '@fitnessapp/core';
@@ -42,8 +42,15 @@ import {
   GUIDES_DIR,
   importAlpha5,
   MEAL_PREP_PLANS_DIR,
+  parseAlpha5File,
   RECIPES_DIR,
 } from './alpha5';
+import {
+  APP_SELECTION_PATH,
+  type AppSelection,
+  parseAppSelection,
+  RECIPE_PHOTO_DIR,
+} from './app-selection';
 
 export const ALPHA5_IMPORT_BRANCH_PREFIX = 'alpha5-import/';
 /** Regeln, die ohne Lebensmittel-Katalog aussagekräftig sind (Strukturprüfung im Bericht). */
@@ -212,6 +219,39 @@ function list<T>(items: readonly T[], render: (item: T) => string, max = 60): st
   ];
 }
 
+/** Abschnitt „App-Auswahl“ des Berichts (Gründer-Entscheidung 24.10.2026). */
+function selectionMarkdown(report: Alpha5ImportReport): string[] {
+  const s = report.selection;
+  if (s === null) {
+    return [
+      `#### App-Auswahl`,
+      '',
+      `⚠️ \`${APP_SELECTION_PATH}\` fehlt – **alle** Rezepte der Datei kommen in die App.`,
+      '',
+    ];
+  }
+  const published = s.repoOutside.filter((o) => o.status === 'published');
+  return [
+    `#### App-Auswahl (${s.entschieden})`,
+    '',
+    `In der App: **${s.inApp} von ${report.counts.recipes} Rezepten** · **nur im Buch: ${s.bookOnly}** · Meal-Prep-Pläne in der App: ${s.plansInApp.join(', ') || '–'} · nur im Buch: ${s.plansBookOnly.join(', ') || '–'}.`,
+    ...(s.versionMismatch
+      ? [
+          '',
+          `⚠️ Die Auswahl gilt für \`${s.quelle}\`, die Datei ist Fassung ${report.version} – neue Rezepte bleiben nur im Buch, bis die Auswahl neu entschieden ist.`,
+        ]
+      : []),
+    '',
+    ...(s.repoOutside.length > 0
+      ? [
+          `Schon im Repository, jetzt aber nur im Buch (${s.repoOutside.length}, davon ${published.length} veröffentlicht) – **nicht gelöscht**. Veröffentlichte bitte über den Workflow \`content-review\` mit Status \`archived\` zurückziehen:`,
+          ...list(s.repoOutside, (o) => `\`${o.id}\` (${o.kind}, ${o.status})`, 40),
+          '',
+        ]
+      : []),
+  ];
+}
+
 /** Import-Bericht als Markdown (CI-Zusammenfassung und PR-Text, Plan 19.2). */
 export function formatAlpha5Report(report: Alpha5ImportReport): string {
   const c = report.counts;
@@ -329,7 +369,8 @@ export function formatAlpha5Report(report: Alpha5ImportReport): string {
           '',
         ]
       : []),
-    `#### Abdeckung laut Datei (Hinweis an die Gründer, K9)`,
+    ...selectionMarkdown(report),
+    `#### Abdeckung laut Datei${report.selection === null ? '' : ' (nur Rezepte der App)'} (Hinweis an die Gründer, K9)`,
     '',
     `${report.fileCoverage.meatOnly} Rezepte nur „mit Fleisch“ (inkl. Schwein; 5.4 sah höchstens 5 vor) · ${pct(report.fileCoverage.vegetarianShare)} vegetarisch/vegan (5.4: mindestens 2/3). Nur gelb, kein Hindernis.`,
     '',
@@ -353,6 +394,37 @@ export async function runAlpha5Import(
     };
   }
 
+  // App-Auswahl (Gründer 24.10.2026): fehlt die Datei, gilt die ganze Gründer-Datei (Hinweis im Bericht).
+  const selectionPath = join(deps.repoRoot, APP_SELECTION_PATH);
+  let selection: AppSelection | undefined;
+  if (existsSync(selectionPath)) {
+    try {
+      selection = parseAppSelection(
+        JSON.parse(readFileSync(selectionPath, 'utf8')),
+        parseAlpha5File(data),
+      );
+    } catch (error) {
+      return {
+        exitCode: 1,
+        markdown: `### ❌ Import abgebrochen\n\n${(error as Error).message}\n`,
+        paths: [],
+      };
+    }
+    // Liegen die Rezeptfotos im Repository, muss jedes Foto der Auswahl da sein.
+    const photoDir = join(deps.repoRoot, RECIPE_PHOTO_DIR);
+    if (existsSync(photoDir)) {
+      const present = new Set(readdirSync(photoDir));
+      const missing = Object.values(selection.fotos.dateien).filter((f) => !present.has(f));
+      if (missing.length > 0) {
+        return {
+          exitCode: 1,
+          markdown: `### ❌ Import abgebrochen\n\nFotos fehlen in \`${RECIPE_PHOTO_DIR}\`: ${missing.join(', ')}\n`,
+          paths: [],
+        };
+      }
+    }
+  }
+
   // Katalog nur LESEN (S3). Nur schema-gültige Lebensmittel zählen.
   const catalog = loadNutritionCatalog(contentDir);
   const foods = new Map(
@@ -364,7 +436,12 @@ export async function runAlpha5Import(
 
   let output: Alpha5ImportOutput;
   try {
-    output = importAlpha5({ data, foods, existing: existingFiles(contentDir) });
+    output = importAlpha5({
+      data,
+      foods,
+      existing: existingFiles(contentDir),
+      ...(selection === undefined ? {} : { selection }),
+    });
   } catch (error) {
     if (error instanceof Alpha5InputError) {
       return {

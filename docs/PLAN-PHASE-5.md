@@ -4303,3 +4303,60 @@ Ratgeber-Liste und Ratgeber ohne R21H mit Kennzeichen, `demo-wettkampf` bleibt E
 - 30 neue Zutaten in `content/food-mapping/alpha5-zuordnung.json` (KI-Vorschlag, unbestätigt). Quell-IDs nur, wo die
   Namensliste aus Lauf 38367139392 einen eindeutigen Eintrag zeigt (bzw. dieselbe Quell-ID wie eine schon zugeordnete
   Zutat); sonst `ref: null` → nächster Lauf `foods-import` im Modus „kandidaten“.
+
+## Nachtrag 24.10.2026: Nur etwa die Hälfte der Rezeptbuch-Rezepte in der App (Gründer-Entscheidung)
+
+**Entscheidung (Karsten, 24.10.2026):** Die App enthält nur rund 150 der 306 Rezepte aus `alpha5-rezepte.json`
+(Fassung 1.1) – je Kategorie/Abschnitt etwa die Hälfte –, damit das Rezeptbuch (PDF) Mehrwert behält. Die übrigen
+bleiben **nur im Buch**. **Zusatzregel (hart):** nur Rezepte, für die schon ein Foto im Rezeptbuch-Baukasten liegt.
+
+- **Auswahl-Datei:** `content/rezeptbuch-app-auswahl.json` (`format`, `version`, `entschieden: "Karsten 24.10.2026"`,
+  `quelle: "alpha5-rezepte.json@1.1"`, `regel` in Worten, `meal_prep_plaene`, `fotos.dateien` = Foto je Rezept,
+  `rezepte` = IDs in Datei-Reihenfolge). **153 Rezepte in der App, 153 nur im Buch.**
+- **Regel (deterministisch, steht wortgleich in der Datei):** gerade Gruppengröße n → n/2; ungerade n in
+  Datei-Reihenfolge abwechselnd ab-/aufgerundet (beginnend mit ab); Gruppen mit 1 Rezept behalten es; „Mit Fleisch &
+  Fisch · Abendessen“ (19) immer abgerundet, sonst läge die Summe bei 154. Innerhalb der Gruppe Punkte: alle Zutaten
+  zugeordnet (Quell-ID), schon veröffentlicht, schnell (≤ 20 Min.), günstig, glutenfreies Frühstück (vegan besonders),
+  Ernährungsform in der Gruppe noch nicht vertreten; Abzüge für gleiche Haupt-Eiweißquelle + gleiche Art, gleichen
+  Namen in zwei Kapiteln (z. B. „Teriyaki-Tofu-Bowl“ vegan/vegetarisch nur einmal) und sehr ähnliche Titel.
+- **Fotos:** Alle 306 Rezepte haben ein Foto (Branch `rezeptbuch-baukasten`, `content/rezeptbuch/fotos`, Stand
+  bc88fdf) – ausgeschlossen wurde deshalb keines. Vier Rezepte mit gleichem Namen in zwei Kapiteln heißen dort nach der
+  Baukasten-Regel `<kategorie>-<name>.jpg` statt `<id>.jpg` (`vegan-teriyaki-tofu-bowl-mit-edamame`,
+  `vegetarisch-teriyaki-tofu-bowl-mit-edamame`, `vegan-schoko-proteinpudding`, `fleisch-schoko-proteinpudding`);
+  `fotos.dateien` hält den echten Dateinamen fest.
+- **Meal-Prep-Pläne:** „vegan“ und „ohne-schwein“ kommen vollständig in die App (decken über die Ernährungsformen alle
+  vier ab: vegan/vegetarisch → vegan, ohne Schwein/mit Fleisch → beide); „vegetarisch“ und „fleisch“ (mit ihren 6
+  Rezepten) bleiben nur im Buch. Die Ratgeber verweisen auf keine Rezepte und kommen alle.
+- **Essensplan bleibt machbar:** Mindestbestand der Engine je Ernährungsform für eine Woche ohne Wiederholungs-Hinweis
+  (`MEAL_PLAN_REPEAT_LIMITS`, größtes Layout 8 Mahlzeiten): Frühstück 3, Hauptgericht 7, Snack 12. Ohne
+  Wettkampf-Rezepte, vorher → nachher:
+
+  | Ernährungsform | Frühstück | Hauptgericht |    Snack | davon „ohne Kochen“ |    Meal-Prep F/H/S |  glutenfrei F/H/S |
+  | -------------- | --------: | -----------: | -------: | ------------------: | -----------------: | ----------------: |
+  | vegan          |   16 → 10 |      35 → 17 |  39 → 20 |              12 → 9 |     3/17/9 → 3/9/4 |  2/15/26 → 2/8/13 |
+  | vegetarisch    |   33 → 18 |      66 → 31 |  87 → 38 |             33 → 16 |   7/27/19 → 5/11/8 | 4/29/48 → 3/13/22 |
+  | ohne Schwein   |   48 → 24 |     112 → 58 | 104 → 52 |             40 → 22 |  8/39/24 → 6/17/11 | 6/44/56 → 3/22/29 |
+  | mit Fleisch    |   55 → 28 |     131 → 64 | 110 → 55 |             43 → 24 | 10/45/27 → 6/18/12 | 7/55/59 → 4/25/30 |
+
+  Knapp war schon vorher: glutenfreies veganes Frühstück (2 im ganzen Buch, beide in der App) – bei Gluten-
+  Unverträglichkeit wiederholt sich vegan das Frühstück (Hinweis `recipe_repeated`, kein leerer Platz).
+
+- **Import:** `importAlpha5` übernimmt mit Auswahl nur die ausgewählten Rezepte und Meal-Prep-Pläne
+  (`app-selection.ts`: Schema, Prüfung gegen die Gründer-Datei, Foto-Regel, Pläne vollständig; ungültig → Abbruch, nichts
+  geschrieben). Liegt `content/rezeptbuch/fotos` im Repository, muss jedes Foto der Auswahl da sein. Fehlt die
+  Auswahl-Datei, gilt wie bisher die ganze Datei (Hinweis im Bericht). Der Bericht hat den Abschnitt „App-Auswahl“
+  („In der App: 153 von 306 · nur im Buch: 153“) und listet schon vorhandene Dateien, die jetzt nur im Buch sind –
+  **nie gelöscht** (R15).
+- **Schon veröffentlicht, jetzt nur im Buch (11):** `beeren-frozen-joghurt-bark`, `beeren-quark-mit-mandeln`,
+  `eierspaetzle-mit-erbsen-und-schnittlauchquark`, `knaeckebrot-mit-huettenkaese-und-gurke`,
+  `lachsbroetchen-mit-kraeuterquark`, `one-pan-eiertoast-mit-kaese-und-spinat`,
+  `raeucherforellen-brot-mit-huettenkaese-und-radieschen`, `ruehrei-mit-lachsschinken-auf-vollkornbrot`,
+  `schinken-huettenkaese-roellchen`, `teriyaki-tofu-bowl-mit-edamame-vegetarisch`, `zwieback-mit-honig-quark` →
+  **Gründer-Aufgabe:** über `content-review` (Status `archived`, IDs) zurückziehen, wenn sie aus der App sollen.
+- **Technisch noch nicht importierbar:** Mit dem aktuellen Katalog (63 Zutaten fehlen, v. a. Gewürze, Proteinpulver,
+  Sojaskyr) lassen sich 59 der 153 Rezepte bauen; die übrigen folgen mit dem nächsten `foods-import`. Beide
+  Meal-Prep-Pläne der App warten ebenfalls auf fehlende Zutaten.
+- **Danach:** Den offenen Bot-PR #164 (alle 306 Entwürfe) schließen und `alpha5-import` nach dem Merge neu starten.
+- **Tests:** `app-selection.test.ts` (echte Datei: Regel je Gruppe, 150 ± 3, Foto je Rezept, Pläne vollständig, keine
+  Namens-Dubletten, Mindestbestand der Engine ×1,5 je Ernährungsform und Mahlzeit, ≥ 5 Snacks „ohne Kochen“; Fehlerfälle),
+  `alpha5.test.ts` (Import nur der Auswahl, Pläne, Bericht, Abbruch bei ungültiger Auswahl/fehlendem Foto).
