@@ -8,6 +8,8 @@
  * - Ausgabe nur `content/recipes/`, `content/meal-prep-plans/`, `content/guides/` – alles `status: draft`,
  *   `meta.origin: manual`, `meta.source_file: alpha5-rezepte.json@<version>`. NIE `content/foods/` (S3): Nährwerte
  *   kommen nur aus dem Katalog (N2b); die Werte der Datei sind nur Gegencheck.
+ * - App-Auswahl (Gründer-Entscheidung 24.10.2026, `content/rezeptbuch-app-auswahl.json`, `app-selection.ts`): nur die
+ *   ausgewählten Rezepte (etwa die Hälfte) und Meal-Prep-Pläne kommen in die App, der Rest bleibt nur im Buch.
  * - Idempotent über die IDs, menschliche Korrekturen bleiben (`meta.import_hash`, S5), `published`/`archived` werden
  *   nie überschrieben (R15), fehlende IDs nie gelöscht.
  */
@@ -45,6 +47,7 @@ import { z } from 'zod';
 
 import { alpha5Deviations, type Deviation, hasNoReference } from '../foods/import-source';
 import { ALPHA5_ID_EXCEPTIONS } from '../foods/mapping';
+import type { AppSelection } from './app-selection';
 import { IMPORT_TOLERANCE_NOTE_DE } from './deviations';
 
 export const ALPHA5_FILE_NAME = 'alpha5-rezepte.json';
@@ -333,10 +336,13 @@ type Alpha5Recipe = Alpha5File['rezepte'][number];
 
 /** Eingabe ungültig – es wird nichts geschrieben. */
 export class Alpha5InputError extends Error {
-  constructor(readonly problems: readonly string[]) {
+  constructor(
+    readonly problems: readonly string[],
+    fileName: string = ALPHA5_FILE_NAME,
+  ) {
     super(
       [
-        `${ALPHA5_FILE_NAME} ist ungültig – Import abgebrochen, nichts geschrieben:`,
+        `${fileName} ist ungültig – Import abgebrochen, nichts geschrieben:`,
         ...problems.slice(0, 30).map((p) => `- ${p}`),
         ...(problems.length > 30 ? [`- … und ${problems.length - 30} weitere`] : []),
       ].join('\n'),
@@ -926,8 +932,25 @@ export interface Alpha5ImportReport {
   readonly heatedFalseCount: number;
   /** Umgewandelte Mengen `menge_g: 0` je Einheit. */
   readonly zeroAmounts: Readonly<Record<RecipeUnit, number>>;
-  /** Abdeckung laut Datei (K9): Rezepte nur „mit Fleisch“, Anteil vegetarisch/vegan. */
+  /** Abdeckung laut Datei (K9, nur Rezepte der App): Rezepte nur „mit Fleisch“, Anteil vegetarisch/vegan. */
   readonly fileCoverage: { readonly meatOnly: number; readonly vegetarianShare: number };
+  /** App-Auswahl (Gründer 24.10.2026); null = keine Auswahl-Datei, alle Rezepte der Datei. */
+  readonly selection: AppSelectionReport | null;
+}
+
+export interface AppSelectionReport {
+  readonly entschieden: string;
+  readonly quelle: string;
+  /** Fassung der Gründer-Datei weicht von `quelle` ab (neue Rezepte sind dann nur im Buch, bis neu entschieden). */
+  readonly versionMismatch: boolean;
+  /** Rezepte in der App (ausgewählt). */
+  readonly inApp: number;
+  /** Rezepte nur im Buch. */
+  readonly bookOnly: number;
+  readonly plansInApp: readonly string[];
+  readonly plansBookOnly: readonly string[];
+  /** Schon vorhandene importierte Dateien, die jetzt nur im Buch sind – nie gelöscht (R15). */
+  readonly repoOutside: readonly { kind: ImportedKind; id: string; status: string }[];
 }
 
 export interface Alpha5ImportInput {
@@ -935,6 +958,11 @@ export interface Alpha5ImportInput {
   readonly data: unknown;
   readonly foods: ReadonlyMap<string, Food>;
   readonly existing: ExistingFiles;
+  /**
+   * App-Auswahl (`content/rezeptbuch-app-auswahl.json`, schon mit `parseAppSelection` geprüft): nur diese Rezepte
+   * und Meal-Prep-Pläne werden gebaut und geschrieben. Fehlt sie, gilt die ganze Datei.
+   */
+  readonly selection?: AppSelection;
 }
 
 export interface Alpha5ImportOutput {
@@ -982,7 +1010,12 @@ export function importAlpha5(input: Alpha5ImportInput): Alpha5ImportOutput {
     pinch: 0,
   };
 
-  for (const rezept of file.rezepte) {
+  const selectedIds =
+    input.selection === undefined ? null : new Set<string>(input.selection.rezepte);
+  const selectedPlans =
+    input.selection === undefined ? null : new Set<string>(input.selection.meal_prep_plaene);
+  const appRecipes = file.rezepte.filter((r) => selectedIds === null || selectedIds.has(r.id));
+  for (const rezept of appRecipes) {
     const built = buildRecipe(rezept, ctx);
     for (const zutat of rezept.zutaten) {
       if (zutat.menge_g === 0) {
@@ -1046,6 +1079,7 @@ export function importAlpha5(input: Alpha5ImportInput): Alpha5ImportOutput {
 
   const plans: MealPrepPlan[] = [];
   for (const plan of file.meal_prep_plaene) {
+    if (selectedPlans !== null && !selectedPlans.has(plan.id)) continue;
     const built = buildMealPrepPlan(plan, file, recipes);
     if ('missing' in built) {
       notImported.push({
@@ -1117,17 +1151,40 @@ export function importAlpha5(input: Alpha5ImportInput): Alpha5ImportOutput {
     }
   }
 
+  // Nur im Buch, aber schon im Repository (früherer Import): nie gelöscht, nur gemeldet (R15).
+  const repoOutside: { kind: ImportedKind; id: string; status: string }[] = [];
+  if (input.selection !== undefined) {
+    const outside: Record<'recipe' | 'meal_prep_plan', Set<string>> = {
+      recipe: new Set(
+        file.rezepte.map((r) => r.id).filter((id) => !(selectedIds as Set<string>).has(id)),
+      ),
+      meal_prep_plan: new Set(
+        file.meal_prep_plaene
+          .map((p) => p.id)
+          .filter((id) => !(selectedPlans as Set<string>).has(id)),
+      ),
+    };
+    for (const kind of ['recipe', 'meal_prep_plan'] as const) {
+      for (const [id, data] of input.existing[kind]) {
+        if (!outside[kind].has(id)) continue;
+        const status = (data as { status?: unknown } | null)?.status;
+        repoOutside.push({ kind, id, status: typeof status === 'string' ? status : 'unbekannt' });
+      }
+    }
+    repoOutside.sort((a, b) => a.kind.localeCompare(b.kind) || a.id.localeCompare(b.id));
+  }
+
   // „Nur mit Fleisch“ = weder vegetarisch noch ohne Schwein geeignet (K9: 5.4 sah höchstens 5 vor).
-  const meatOnly = file.rezepte.filter(
+  const meatOnly = appRecipes.filter(
     (r) => r.ernaehrungsformen.length === 1 && r.ernaehrungsformen[0] === 'fleisch',
   );
   const vegetarianShare =
-    file.rezepte.length === 0
+    appRecipes.length === 0
       ? 0
-      : file.rezepte.filter(
+      : appRecipes.filter(
           (r) =>
             r.ernaehrungsformen.includes('vegetarisch') || r.ernaehrungsformen.includes('vegan'),
-        ).length / file.rezepte.length;
+        ).length / appRecipes.length;
 
   return {
     writes,
@@ -1157,6 +1214,23 @@ export function importAlpha5(input: Alpha5ImportInput): Alpha5ImportOutput {
       heatedFalseCount,
       zeroAmounts,
       fileCoverage: { meatOnly: meatOnly.length, vegetarianShare },
+      selection:
+        input.selection === undefined
+          ? null
+          : {
+              entschieden: input.selection.entschieden,
+              quelle: input.selection.quelle,
+              versionMismatch: input.selection.quelle !== `${ALPHA5_FILE_NAME}@${file.version}`,
+              inApp: appRecipes.length,
+              bookOnly: file.rezepte.length - appRecipes.length,
+              plansInApp: file.meal_prep_plaene
+                .map((p) => p.id)
+                .filter((id) => (selectedPlans as Set<string>).has(id)),
+              plansBookOnly: file.meal_prep_plaene
+                .map((p) => p.id)
+                .filter((id) => !(selectedPlans as Set<string>).has(id)),
+              repoOutside,
+            },
     },
   };
 }
