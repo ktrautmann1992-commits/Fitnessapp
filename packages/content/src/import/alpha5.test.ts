@@ -36,7 +36,7 @@ import { runAlpha5Import } from './alpha5-run';
 /**
  * Etappe N2c – DoD (docs/PLAN-PHASE-5.md 19.2, K8): Zweitlauf byte-gleich; Schemafehler → Abbruch ohne Schreiben;
  * `published` nie überschrieben; fehlende ID nicht gelöscht; von Hand geänderter Entwurf nicht überschrieben (S5);
- * keine Datei unter `content/foods/` (S3); Zählbericht 242/236/4/2; `heated`-Vorgabe `false` und Annahmen im Bericht.
+ * keine Datei unter `content/foods/` (S3); Zählbericht 306/266/4/4; `heated`-Vorgabe `false` und Annahmen im Bericht.
  *
  * ACHTUNG: Alle Nährwerte hier sind TESTWERTE, keine Quelldaten.
  */
@@ -387,16 +387,16 @@ function recipeOf(output: ReturnType<typeof importAlpha5>, id: string): Recipe {
 describe('Gründer-Datei (echt): Zählbericht und „Katalog fehlt“', () => {
   const data: unknown = JSON.parse(readFileSync(REAL_FILE, 'utf8'));
 
-  it('Schema strikt gültig, 242/236/4/2', () => {
+  it('Schema strikt gültig, 306/266/4/4', () => {
     const file = parseAlpha5File(data);
     const output = importAlpha5({ data, foods: new Map(), existing: NO_FILES });
     expect(output.report.counts).toEqual({
-      recipes: 242,
-      ingredients: 236,
+      recipes: 306,
+      ingredients: 266,
       mealPrepPlans: 4,
-      guides: 2,
+      guides: 4,
     });
-    expect(file.rezepte).toHaveLength(242);
+    expect(file.rezepte).toHaveLength(306);
   });
 
   it('ohne Katalog: nichts geschrieben, keine Werte erfunden, Strukturprüfung für alle Rezepte', () => {
@@ -404,8 +404,8 @@ describe('Gründer-Datei (echt): Zählbericht und „Katalog fehlt“', () => {
     expect(output.report.catalogMissing).toBe(true);
     expect(output.writes).toEqual([]);
     expect(output.built.recipes).toEqual([]);
-    expect(output.built.structureOnly).toHaveLength(242);
-    expect(output.report.missingFoods).toHaveLength(236);
+    expect(output.built.structureOnly).toHaveLength(306);
+    expect(output.report.missingFoods).toHaveLength(266);
     // Ohne Katalog keine Allergene, kein heated, keine Rolle.
     for (const recipe of output.built.structureOnly) {
       expect(recipe.declared_allergens).toEqual([]);
@@ -415,8 +415,8 @@ describe('Gründer-Datei (echt): Zählbericht und „Katalog fehlt“', () => {
       expect(recipeSchema.safeParse(recipe).success).toBe(true);
       expect(checkRecipeCategories(recipe)).toEqual([]);
     }
-    expect(output.report.fileCoverage.meatOnly).toBe(28);
-    expect(output.report.fileCoverage.vegetarianShare).toBeCloseTo(151 / 242, 5);
+    expect(output.report.fileCoverage.meatOnly).toBe(32);
+    expect(output.report.fileCoverage.vegetarianShare).toBeCloseTo(195 / 306, 5);
   });
 
   it('alle Ratgeber sind schema-gültig, Carb-Loading mit festem Hinweis', () => {
@@ -428,6 +428,28 @@ describe('Gründer-Datei (echt): Zählbericht und „Katalog fehlt“', () => {
     expect(wettkampf?.sections[0]?.notice_de).toBe(CARB_LOADING_NOTICE_DE);
     expect(wettkampf?.sections.filter((s) => s.notice_de !== undefined)).toHaveLength(1);
     expect(output.built.guides.find((g) => g.id === 'unterwegs')?.places).toHaveLength(10);
+    // Fassung 1.1: Tipps zu Sommer-Eis und Heißluftfritteuse als eigene Ratgeber.
+    expect(output.built.guides.map((g) => g.id)).toEqual([
+      'unterwegs',
+      'wettkampf',
+      'eismaschine',
+      'heissluftfritteuse',
+    ]);
+    expect(output.built.guides.find((g) => g.id === 'eismaschine')?.sections).toHaveLength(7);
+    expect(output.built.guides.find((g) => g.id === 'heissluftfritteuse')?.sections).toHaveLength(
+      7,
+    );
+  });
+
+  it('Fassung 1.1: neue Kapitel als Kategorien, Zutatenlexikon wird nicht importiert', () => {
+    const output = importAlpha5({ data, foods: new Map(), existing: NO_FILES });
+    const byCategory = (id: string) =>
+      output.built.structureOnly.filter((r) => (r.categories ?? []).includes(id as never)).length;
+    expect(byCategory('fitness-fast-food')).toBeGreaterThanOrEqual(12);
+    expect(byCategory('heissluftfritteuse')).toBeGreaterThanOrEqual(25);
+    expect(byCategory('sommer-eis')).toBeGreaterThanOrEqual(12);
+    expect(byCategory('low-carb')).toBe(20);
+    expect(JSON.stringify(output.built)).not.toContain('naehrwerte_100g');
   });
 });
 

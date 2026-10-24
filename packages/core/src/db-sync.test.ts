@@ -831,7 +831,6 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     ['gelatin_origin in (', content, [...GELATIN_ORIGINS]],
     ['shopping_category in (', content, [...SHOPPING_CATEGORIES]],
     ['meal_types <@ array[', content, [...MEAL_TYPES]],
-    ['categories <@ array[', content, [...RECIPE_CATEGORY_IDS]],
     ['unit in (', content, [...RECIPE_UNITS]],
     ['role in (', content, [...INGREDIENT_ROLES]],
     ['slot in (', plans, [...MEAL_PLAN_SLOT_KEYS]],
@@ -846,6 +845,13 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     ['p_animal && array[', seed, [...NOT_VEGETARIAN_ANIMAL_KINDS]],
   ] as const)('CHECK-Liste „%s“ entspricht packages/core', (marker, sql, expected) => {
     expect(quotedListAfter(sql, marker)).toEqual([...expected]);
+  });
+
+  it('Kategorien-CHECK (neueste Fassung, *_recipe_categories_themen.sql) entspricht RECIPE_CATEGORIES', () => {
+    expect(lastQuotedListAfter(allSql, 'categories <@ array[')).toEqual([...RECIPE_CATEGORY_IDS]);
+    expect(readMigration('_recipe_categories_themen.sql')).toContain(
+      'add constraint recipes_categories_check',
+    );
   });
 
   it('der Grund „Unverträglich“ ist nie ein gespeicherter Bewertungsgrund (Art. 9)', () => {
