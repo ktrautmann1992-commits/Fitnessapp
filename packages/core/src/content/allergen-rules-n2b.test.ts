@@ -63,6 +63,22 @@ describe('N2b: Sojaskyr', () => {
   });
 });
 
+describe('Fassung 1.1: Käsealternative (Kandidatenlauf 40093377661)', () => {
+  it('„Käsealternative … vegan“ ist kein Milchprodukt; Käse und Käseersatz bleiben dairy', () => {
+    for (const name of [
+      'Käsealternative, Basis Pflanzenfett, vegan',
+      'Käsealternative, Basis Cashewkerne, vegan',
+      'Vegane Käsealternative (gerieben)',
+    ]) {
+      expect(required(name)).not.toContain('dairy');
+      expect(required(name)).not.toContain('lactose');
+    }
+    expect(required('Reibekäse')).toEqual(expect.arrayContaining(['dairy', 'lactose']));
+    expect(required('Käseersatz')).toContain('dairy');
+    expect(required('Käse gerieben')).toContain('dairy');
+  });
+});
+
 describe('N2b: Reisessig (R9)', () => {
   it('Reisessig/Reiswein ohne 1-Tag-Grenze; Reis selbst weiter 1 Tag', () => {
     expect(checkFoodFridgeDays(food('Reisessig', 'spices_sauces'))).toEqual([]);
