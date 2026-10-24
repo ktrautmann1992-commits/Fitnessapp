@@ -823,6 +823,14 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - Favoriten erneut laufen/fahren und Zeiten vergleichen; Aufzeichnung landet automatisch im Trainingstagebuch (Abschnitt 5)
 - GPX-Export für die Uhr
 - Alles privat, kein Teilen. Standortverläufe nie an Analytics, Werbung oder Dritte
+- **E-Bike (Gründer-Wunsch 23.10.2026):** Beim Rad wählt die Person „Fahrrad | E-Bike“ (Start der Aufzeichnung,
+  Speichern, Eintragen ohne GPS/Nachtragen, Bearbeiten von Eintrag und Strecke; Standard Fahrrad, zuletzt genutzte
+  Wahl merkt sich das Gerät je Konto). Sportart bleibt „Rad“ (Spalte `e_bike` an `cardio_logs` und `tracked_routes`,
+  Migration `20261023140000_e_bike.sql`; Eintrag und verknüpfte Strecke halten die Angabe gleich). Summen zählen
+  E-Bike-Fahrten beim Rad mit und zeigen „davon E-Bike“. kcal-Schätzung mit `TRAINING_MET.eBike` (Compendium 2024:
+  01088 hohe Unterstützung 4,0 / 01084 leichte Unterstützung 6,0 MET – vor Livegang fachlich prüfen). Pläne bleiben
+  normales Rad. Uhr-Einheiten (Health Connect kennt keine E-Bike-Art) kommen als Fahrrad und sind umstellbar.
+  Abzeichen „E-Bike“ in Auswertung, Liste und Tagebuch; Story-Bild „E-Bike-Fahrt“ (keine Gesundheitsdaten).
 
 ## 11. Fortschritt & Motivation
 - Gewicht, Körperumfänge, Fotos (privat), persönliche Rekorde, Wochenumfang, Konsistenz

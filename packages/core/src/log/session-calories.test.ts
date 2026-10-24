@@ -285,6 +285,76 @@ describe('Tagebuch-Eintrag → kcal', () => {
   });
 });
 
+describe('E-Bike (TRAINING_MET.eBike, Compendium 2024 01084/01088)', () => {
+  const BIKE: SessionCaloriesInput = { ...RUN, enduranceModality: 'bike' };
+
+  it('E-Bike ohne Intensität 6,0 × 70 = 420 < Fahrrad 6,8 × 70 = 476 → 475', () => {
+    expect(sessionCalories(BIKE)).toMatchObject({ kcal: 475, met: 6.8 });
+    expect(sessionCalories({ ...BIKE, eBike: true })).toMatchObject({
+      kcal: 420,
+      met: TRAINING_MET.eBike.fallback,
+    });
+  });
+
+  it('E-Bike „sehr locker“ (effort 1–2) 4,0, „locker“ (3–4) 6,0', () => {
+    expect(sessionCalories({ ...BIKE, eBike: true, effortTarget: 1 }).kcal).toBe(280);
+    expect(sessionCalories({ ...BIKE, eBike: true, effortTarget: 4 }).kcal).toBe(420);
+  });
+
+  it('jede Stufe E-Bike liegt unter der gleichen Stufe Fahrrad', () => {
+    for (const effortTarget of [null, 1, 2, 3, 4]) {
+      const bike = sessionCalories({ ...BIKE, effortTarget }).kcal ?? 0;
+      const eBike = sessionCalories({ ...BIKE, eBike: true, effortTarget }).kcal ?? 0;
+      expect(eBike, String(effortTarget)).toBeLessThan(bike);
+    }
+  });
+
+  it('E-Bike gilt nur beim Rad (Laufen, Kraft, unbekannte Sportart unverändert)', () => {
+    expect(sessionCalories({ ...RUN, eBike: true }).kcal).toBe(490);
+    expect(sessionCalories({ ...STRENGTH, eBike: true }).kcal).toBe(280);
+    expect(sessionCalories({ ...RUN, enduranceModality: null, eBike: true }).kcal).toBe(490);
+  });
+
+  it('Grenzfälle Gewicht und Dauer: 40 kg 1 min, 250 kg 8 h (Deckel)', () => {
+    expect(sessionCalories({ ...BIKE, eBike: true, bodyWeightKg: 40, durationS: 60 }).kcal).toBe(5);
+    expect(
+      sessionCalories({ ...BIKE, eBike: true, bodyWeightKg: 250, durationS: 8 * 3600 }).kcal,
+    ).toBe(SESSION_KCAL.maxKcal);
+  });
+
+  it('Uhr-Wert geht auch beim E-Bike vor', () => {
+    expect(sessionCalories({ ...BIKE, eBike: true, measuredKcal: 512 })).toMatchObject({
+      kcal: 510,
+      source: 'watch',
+    });
+  });
+
+  it('Tagebuch-Eintrag mit cardio.e_bike → E-Bike-MET; fehlendes Feld (ältere Zeile) → Fahrrad', () => {
+    const base = {
+      log: { kind: 'endurance' as const, started_at: null, finished_at: null },
+      planned: null,
+      bodyWeightKg: 70,
+      measuredKcal: null,
+    };
+    expect(
+      sessionCaloriesForLog({
+        ...base,
+        cardio: { modality: 'bike', duration_s: 3600, e_bike: true },
+      }).kcal,
+    ).toBe(420);
+    expect(
+      sessionCaloriesForLog({ ...base, cardio: { modality: 'bike', duration_s: 3600 } }).kcal,
+    ).toBe(475);
+    // Fehlerhafte Zeile (E-Bike beim Laufen) zählt wie Laufen.
+    expect(
+      sessionCaloriesForLog({
+        ...base,
+        cardio: { modality: 'run', duration_s: 3600, e_bike: true },
+      }).kcal,
+    ).toBe(490);
+  });
+});
+
 describe('sessionCaloriesTotal', () => {
   it('summiert nur Einheiten mit Zahl', () => {
     expect(

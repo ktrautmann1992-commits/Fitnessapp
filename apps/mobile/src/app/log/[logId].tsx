@@ -11,6 +11,7 @@ import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-route
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { EBikeBadge } from '@/components/e-bike';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
   kcalFor,
@@ -176,7 +177,16 @@ export default function LogEntryScreen() {
       {detail.cardio ? (
         <Card>
           <View testID="log-cardio" style={styles.block}>
-            <Body>{t.logEntry.modality(t.workout.cardio.modalities[detail.cardio.modality])}</Body>
+            <Body>
+              {t.logEntry.modality(
+                detail.cardio.modality === 'bike' && detail.cardio.e_bike === true
+                  ? t.endurance.eBike.sport
+                  : t.workout.cardio.modalities[detail.cardio.modality],
+              )}
+            </Body>
+            {detail.cardio.modality === 'bike' && detail.cardio.e_bike === true ? (
+              <EBikeBadge testID="log-e-bike" />
+            ) : null}
             <Body accessibilityLabel={cardioDurationText(detail.cardio.duration_s).a11y}>
               {cardioDurationText(detail.cardio.duration_s).text}
             </Body>

@@ -102,6 +102,7 @@ const cardio: CardioLogRow = {
   duration_s: 1800,
   distance_m: 5000,
   elevation_m: null,
+  e_bike: false,
 };
 
 function rows(): LogRows {

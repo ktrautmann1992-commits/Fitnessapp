@@ -9,7 +9,7 @@ import { privacyTrim } from '../routes/privacy-trim';
  * Story-Bild einer einzelnen Einheit (Etappe E6, CLAUDE.md „Teilen-Ausnahme“, docs/PLAN-EINKAUFEN-AUSDAUER.md 8):
  * FESTE POSITIVLISTE – nur die Felder unten gelangen ins Bild. Nie: Puls, Körpergewicht, Körperdaten, Zyklus,
  * Gesundheits-Check, kcal, Ziele/Wunschgewicht, Uhrzeit, Ortsnamen, Notizen, App-Link mit Kennung.
- * Ausdauer: Linie nach privacyTrim (keine Kartenkacheln, EA-4), Sportart, Datum ohne Uhrzeit, Gesamt-/Bewegungszeit,
+ * Ausdauer: Linie nach privacyTrim (keine Kartenkacheln, EA-4), Sportart (beim Rad ggf. „E-Bike“), Datum ohne Uhrzeit, Gesamt-/Bewegungszeit,
  * Distanz, Ø-Pace bzw. km/h, Höhenmeter mit „ca.“. Kraft: Name der Einheit, Datum, Dauer, Anzahl Übungen (bis 5
  * Namen), Sätze, Volumen NUR aus Zusatzlast (Gewichtsübungen; Körpergewicht wird nie eingerechnet – sonst wäre das
  * Gewicht ablesbar). Erzeugt wird das Bild nur auf dem Gerät (kein Upload).
@@ -19,6 +19,7 @@ import { privacyTrim } from '../routes/privacy-trim';
 export const STORY_CARD_FIELDS = [
   'kind',
   'sport',
+  'eBike',
   'title',
   'date',
   'stats',
@@ -53,6 +54,8 @@ export type StoryLineState = 'shown' | 'hidden' | 'too_short' | 'none';
 export interface EnduranceStoryCard {
   readonly kind: 'endurance';
   readonly sport: EnduranceModality;
+  /** „E-Bike“ statt „Rad“ (nur beim Rad; kein Gesundheitsdatum). */
+  readonly eBike: boolean;
   readonly date: string | null;
   readonly stats: readonly StoryStat[];
   readonly line: readonly LatLng[] | null;
@@ -97,6 +100,8 @@ export interface EnduranceStoryInput {
   readonly elevationM: number | null;
   /** Gespeicherte Linie (dekodierte Polyline) oder null (ohne GPS). */
   readonly points: readonly LatLng[] | null;
+  /** E-Bike (nur beim Rad wirksam); fehlt = normales Rad. */
+  readonly eBike?: boolean;
 }
 
 /** Inhalt des Story-Bilds einer Ausdauer-Einheit (nur Felder der Positivliste). */
@@ -139,6 +144,7 @@ export function enduranceStoryCard(
   return {
     kind: 'endurance',
     sport: input.sport,
+    eBike: input.sport === 'bike' && input.eBike === true,
     date: options.showDate
       ? input.startedAt
         ? isoDateInTimeZone(input.startedAt)

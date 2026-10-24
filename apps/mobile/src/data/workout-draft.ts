@@ -176,6 +176,11 @@ export interface DraftCardio {
   /** Distanz in km mit Komma. */
   distanceKm: string;
   elevationM: string;
+  /**
+   * E-Bike (nur beim Rad wirksam). Fehlt = noch nicht gewählt (neuer Eintrag: die App setzt die zuletzt genutzte Wahl
+   * dieses Geräts), gespeichert wird dann normales Rad.
+   */
+  eBike?: boolean;
 }
 
 // ---------------------------------------------------------------------------------------------------------
@@ -601,6 +606,8 @@ export function draftCardioFromRow(row: {
   duration_s: number;
   distance_m: number | null;
   elevation_m: number | null;
+  /** Fehlt bei älteren lokalen Zeilen = normales Rad. */
+  e_bike?: boolean;
 }): DraftCardio {
   const { hours, minutes } = splitDuration(row.duration_s);
   return {
@@ -609,6 +616,7 @@ export function draftCardioFromRow(row: {
     minutes: String(minutes),
     distanceKm: row.distance_m === null ? '' : formatDecimal(row.distance_m / 1000),
     elevationM: row.elevation_m === null ? '' : String(row.elevation_m),
+    eBike: row.e_bike === true,
   };
 }
 
@@ -620,6 +628,7 @@ export function cardioInputOf(cardio: DraftCardio): CardioInput {
     minutes: parseDecimal(cardio.minutes),
     distanceKm: parseDecimal(cardio.distanceKm),
     elevationM: parseDecimal(cardio.elevationM),
+    eBike: cardio.eBike === true,
   };
 }
 

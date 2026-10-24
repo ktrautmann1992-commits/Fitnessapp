@@ -1027,10 +1027,10 @@ Die betroffenen Stellen weiter oben (2.2, 5.4, 17 und die Tabelle „Abbildung `
   - **`heated` (S4):** Vorgabe **`false`** für jede Zutat, die `heated` braucht (sichere Richtung → `pregnancy_caution`), außer ein Zubereitungsschritt erhitzt genau diese Zutat eindeutig (Wortliste „braten, kochen, backen, garen, dünsten, anbraten, köcheln, überbacken“ + Zutatenname im selben Schritt). Jede `heated: true`-Annahme steht in `meta.import_assumptions` und im Bericht; bestätigt wird sie bei der Freigabe (Feld `meta.import_assumptions_confirmed_by`).
   - `abschnitt` → `section_de` (Anzeige) + `meal_types`/`training_tags` (Themen-Abschnitte „Ohne Backen“, „Aus dem Ofen oder der Mikrowelle“, „Gefroren“ → `snack`; „Hauptgericht“ → `main`); `zeit_min` → `total_minutes`; Tags ohne Groß-/Kleinschreibung zusammengeführt; `kosten_eur_pro_portion` → `cost_estimate` (19.4, sichtbar erst nach Freigabe, K1); Rolle je Zutat → `role` als Vorschlag (19.4, S6).
 - **Nachrechnung:** Je Rezept berechnet der Core (`computeRecipeFacts`, N2a) die Nährwerte pro Portion aus Zutatenmengen × Katalogwerten (Quelle). Vergleich mit `naehrwerte_pro_portion` der Datei: **Abweichung > 3 %** bei kcal, Eiweiß, Kohlenhydraten oder Fett → Eintrag im Import-Bericht (gelb; Mindestabstand 5 kcal bzw. 1 g gegen Rundungsrauschen, PRODUKTENTSCHEIDUNG `ALPHA5_IMPORT_TOLERANCE` in `constants.ts`). Ebenso je Zutat `pro_100g` gegen den Quellwert. `declared_per_serving` = Datei-Werte, deshalb blockiert R3 (±10 %) große Abweichungen weiter rot. **Maßgeblich sind immer die berechneten Werte.**
-- **Import-Bericht** (CI-Zusammenfassung und PR-Text): Anzahl importierter Rezepte, Zutaten, Meal-Prep-Pläne und Ratgeber (Soll 242/236/4/2), Abweichungen > 3 %, Abweichungen Ernährungsform/Schwein, fehlende Zutaten, umgewandelte Mengen `menge_g: 0`, `heated`-Annahmen, „von Hand geändert“, Haltbarkeits-Konflikte der Meal-Prep-Pläne (R20), Abdeckung R16 inkl. Hinweis an die Gründer (z. B. 28 Rezepte nur „mit Fleisch“, ca. 62 % vegetarisch/vegan statt ≥ 2/3, K9).
+- **Import-Bericht** (CI-Zusammenfassung und PR-Text): Anzahl importierter Rezepte, Zutaten, Meal-Prep-Pläne und Ratgeber (Soll 306/266/4/4 ab Fassung 1.1 vom 23.10.2026; vorher 242/236/4/2), Abweichungen > 3 %, Abweichungen Ernährungsform/Schwein, fehlende Zutaten, umgewandelte Mengen `menge_g: 0`, `heated`-Annahmen, „von Hand geändert“, Haltbarkeits-Konflikte der Meal-Prep-Pläne (R20), Abdeckung R16 inkl. Hinweis an die Gründer (z. B. 28 Rezepte nur „mit Fleisch“, ca. 62 % vegetarisch/vegan statt ≥ 2/3, K9).
 - **Workflow** `alpha5-import.yml` (manuell, „Run workflow“ in der GitHub-App): Skript ausführen, `content:validate`, **Pull Request** mit Bericht. **Abweichung von Prompt B:** `content-seed` importiert die Datei **nicht** direkt – er spielt wie bisher nur `published` ein und kennt dafür die neuen Arten (`recipe`, `food`, `meal_prep_plan`, `guide`, später `ingredient_substitution`). Grund: KONZEPT 3.
 - **Bundle:** `FOLDERS`/`CONTENT_FOLDERS` um `foods`, `recipes`, `meal-prep-plans`, `guides` ergänzt; Quellauszüge, Erwartungs- und Ausnahmeliste ins App-Bundle (N2a-Hinweis zu R17).
-- **DoD N2c (K8):** Zweitlauf byte-gleich; Schemafehler → Abbruch ohne Schreiben; `published` nie überschrieben; fehlende ID nicht gelöscht; von Hand geänderter Entwurf nicht überschrieben (S5); keine Datei unter `content/foods/` geschrieben (S3); Zählbericht 242/236/4/2; `heated`-Vorgabe `false` und Annahmen im Bericht (Tests).
+- **DoD N2c (K8):** Zweitlauf byte-gleich; Schemafehler → Abbruch ohne Schreiben; `published` nie überschrieben; fehlende ID nicht gelöscht; von Hand geänderter Entwurf nicht überschrieben (S5); keine Datei unter `content/foods/` geschrieben (S3); Zählbericht 306/266/4/4 (Fassung 1.1; vorher 242/236/4/2); `heated`-Vorgabe `false` und Annahmen im Bericht (Tests).
 
 ### 19.3 Zuordnung Zutat → Quell-Eintrag (Etappe N2b, alle 236 Zutaten)
 
@@ -4286,3 +4286,20 @@ Grund im Bericht), core `recipe-release.test.ts` (`guideExpertReviewHits`), core
 freigegeben: Essensplan, Suche, Kühlschrank, Ratgeber gekennzeichnet; Erdnuss-Filter unverändert; Gegenprobe Entwürfe),
 Playwright `nutrition-testphase.spec.ts` (Suche, Rezeptansicht mit Allergen-Warnung, Kühlschrank-Warnung,
 Ratgeber-Liste und Ratgeber ohne R21H mit Kennzeichen, `demo-wettkampf` bleibt Entwurf; Gegenprobe Testmodus), pgTAP 53.
+
+## Nachtrag 23.10.2026: Rezeptdatei Fassung 1.1 (Rezeptbuch mit Low Carb)
+
+- `packages/content/seed/alpha5-rezepte.json` ist jetzt Fassung 1.1 aus dem Rezeptbuch-Baukasten (`content/rezeptbuch`):
+  **306 Rezepte, 266 Zutaten, 4 Meal-Prep-Pläne, 4 Ratgeber**. „Ohne Schweinefleisch“ ist kein eigenes Kapitel mehr
+  (in „Mit Fleisch & Fisch“ aufgegangen; „passt für ohne Schwein“ berechnet weiter der Core).
+- Vier neue Themen-Kategorien in `RECIPE_CATEGORIES`: `fitness-fast-food`, `heissluftfritteuse`, `sommer-eis`,
+  `low-carb` (Migration `*_recipe_categories_themen.sql` erweitert den CHECK auf `recipes.categories`).
+- Neun neue Abschnitte in `ALPHA5_SECTIONS` (Pizza & Flammkuchen, Burger & Hot Dog, Klassiker, Hauptgerichte,
+  Beilagen & Gemüse → Hauptmahlzeit; Snacks & Süßes, Protein-Eis mit Mandeldrink, Frozen Joghurt, Sorbet &
+  Erfrischung → Snack).
+- Zwei neue Ratgeber aus der Datei: „Eis selbst machen“ (`eismaschine`) und „Kochen mit der Heißluftfritteuse“
+  (`heissluftfritteuse`). Das `zutatenlexikon` der Datei ist nur fürs PDF und wird nicht importiert (Nährwerte nur aus
+  der Quelle, S3).
+- 30 neue Zutaten in `content/food-mapping/alpha5-zuordnung.json` (KI-Vorschlag, unbestätigt). Quell-IDs nur, wo die
+  Namensliste aus Lauf 38367139392 einen eindeutigen Eintrag zeigt (bzw. dieselbe Quell-ID wie eine schon zugeordnete
+  Zutat); sonst `ref: null` → nächster Lauf `foods-import` im Modus „kandidaten“.

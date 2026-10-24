@@ -195,6 +195,101 @@ describe('Ausdauer im Testmodus: Tagebuch + Strecke (gleiche Regeln wie save_tra
   });
 });
 
+describe('E-Bike im Testmodus (gleiche Regeln wie save_tracked_route/update_tracked_route/save_session_log)', () => {
+  async function ride(eBike: boolean) {
+    const { backend } = uuidBackend(planPersonRows());
+    const points = track(900, 6);
+    const summary = summarizeTrack(points, 'bike');
+    const rows = (await backend.loadRows()).rows;
+    const draft = recordingDiaryDraft(rows, summary, {
+      plannedSessionId: null,
+      ownerUserId: USER_ID,
+      today: TODAY,
+      now: NOW,
+      newId: nextUuid,
+      eBike,
+    });
+    if (!draft) throw new Error('kein Entwurf');
+    const payload = draftToPayload(draft, { writeId: nextUuid(), now: NOW, today: TODAY });
+    await backend.submitWorkout(draft, payload);
+    const route = toTrackedRoutePayload(summary, {
+      id: nextUuid(),
+      name: 'Feierabendrunde',
+      difficulty: null,
+      isFavorite: false,
+      note: null,
+      baseRouteId: null,
+      sessionLogId: draft.logId,
+      source: 'recorded',
+      eBike,
+    });
+    if (!route) throw new Error('kein Payload');
+    await backend.saveTrackedRoute(route);
+    return { backend, draft, route, payload };
+  }
+
+  it('Aufzeichnung als E-Bike: Eintrag und Strecke tragen e_bike, Aktivität „davon E-Bike“', async () => {
+    const { backend, draft, route, payload } = await ride(true);
+    expect(payload.cardio).toMatchObject({ modality: 'bike', e_bike: true });
+    const { routes } = await backend.loadTrackedRoutes();
+    expect(routes.find((r) => r.id === route.id)?.e_bike).toBe(true);
+    const rows = (await backend.loadRows()).rows;
+    expect(rows.cardioLogs.find((c) => c.session_log_id === draft.logId)?.e_bike).toBe(true);
+    const activities = activitiesFromRows(rows, routes, []);
+    expect(activities).toHaveLength(1);
+    expect(activities[0]).toMatchObject({ sport: 'bike', eBike: true });
+  });
+
+  it('Strecke auf Fahrrad umstellen → Eintrag folgt (Revision + 1); Laufen kann kein E-Bike sein', async () => {
+    const { backend, draft, route } = await ride(true);
+    const before = (await backend.loadRows()).rows.sessionLogs.find((l) => l.id === draft.logId);
+    await backend.updateTrackedRoute({
+      id: route.id,
+      name: 'Feierabendrunde',
+      difficulty: null,
+      is_favorite: false,
+      note: null,
+      e_bike: false,
+    });
+    const rows = (await backend.loadRows()).rows;
+    expect(rows.cardioLogs.find((c) => c.session_log_id === draft.logId)?.e_bike).toBe(false);
+    expect(rows.sessionLogs.find((l) => l.id === draft.logId)?.revision).toBe(
+      (before?.revision ?? 0) + 1,
+    );
+    expect((await backend.loadTrackedRoutes()).routes[0]?.e_bike).toBe(false);
+    // Ohne Angabe (ältere Fassung) bleibt es, wie es ist.
+    await backend.updateTrackedRoute({
+      id: route.id,
+      name: 'Neu',
+      difficulty: null,
+      is_favorite: false,
+      note: null,
+    });
+    expect((await backend.loadTrackedRoutes()).routes[0]?.e_bike).toBe(false);
+    const run = payloadFor(track());
+    await backend.saveTrackedRoute(run);
+    await expect(
+      backend.updateTrackedRoute({
+        id: run.id,
+        name: 'Runde',
+        difficulty: null,
+        is_favorite: false,
+        note: null,
+        e_bike: true,
+      }),
+    ).rejects.toMatchObject({ code: 'route_rejected' });
+  });
+
+  it('Fahrrad-Aufzeichnung ohne Wahl: kein e_bike im Payload, beides normales Rad', async () => {
+    const { backend, draft, payload, route } = await ride(false);
+    expect(payload.cardio).not.toHaveProperty('e_bike');
+    expect(route).not.toHaveProperty('e_bike');
+    const rows = (await backend.loadRows()).rows;
+    expect(rows.cardioLogs.find((c) => c.session_log_id === draft.logId)?.e_bike).toBe(false);
+    expect((await backend.loadTrackedRoutes()).routes[0]?.e_bike).toBe(false);
+  });
+});
+
 describe('Story-Bild: Eingaben nur aus der Positivliste', () => {
   it('Strecke und Eintrag ohne GPS', async () => {
     const { backend } = uuidBackend(planPersonRows());

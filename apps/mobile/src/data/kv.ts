@@ -156,4 +156,9 @@ export const STORAGE_KEYS = {
    * nur dieses Gerät, keine Nutzerdaten (kein Alter, kein Grund).
    */
   accessibility: 'fitnessapp.accessibility.v1',
+  /**
+   * Ausdauer: zuletzt gewählt „Fahrrad“ oder „E-Bike“ (23.10.2026) – je Konto ein Wahrheitswert, nur dieses Gerät,
+   * kein Gesundheitsdatum. Vorbelegung beim nächsten Rad-Eintrag bzw. der nächsten Aufzeichnung.
+   */
+  bikeChoice: 'fitnessapp.bike-choice.v1',
 } as const;
