@@ -30,6 +30,7 @@ import {
   type NutritionWeekResult,
   showEnergyNumbers,
 } from '@/data/nutrition-plan';
+import { useShoppingPrefs } from '@/lib/shopping-prefs';
 import { useToday } from '@/lib/use-today';
 
 import { type NutritionLibraryState, useApp } from './app-state';
@@ -69,6 +70,10 @@ export function useNutritionWeek(date?: string): NutritionView {
   }, [ensureNutritionLibrary]);
 
   const library = nutritionLibrary.kind === 'ready' ? nutritionLibrary.result.library : null;
+  // Zeitraum der Einkaufsliste (23.10.2026): erst nach dem Laden der Einstellung, sonst bleibt der gespeicherte.
+  const shoppingPrefs = useShoppingPrefs();
+  const shoppingMode = shoppingPrefs.loaded ? shoppingPrefs.mode : null;
+  const shoppingManual = shoppingPrefs.manualWeeks.includes(weekStart);
   const week = useMemo(
     () =>
       rows && backend.supportsNutrition
@@ -79,9 +84,11 @@ export function useNutritionWeek(date?: string): NutritionView {
             weekStart,
             library,
             allowDrafts: backend.mode === 'local',
+            shoppingRange:
+              shoppingMode === null ? null : { mode: shoppingMode, manual: shoppingManual },
           })
         : null,
-    [backend, library, rows, today, versions, weekStart],
+    [backend, library, rows, today, versions, weekStart, shoppingMode, shoppingManual],
   );
   const {
     persistMealPlan,

@@ -76,7 +76,9 @@ const FORBIDDEN = [
   /statt/i,
   /unverträglich|allergi|intoleran|laktoseintoleranz|zöliakie/i,
   /schwanger|stillzeit|pregnan/i,
-  /körpergewicht|\bkg\b/i,
+  // Körpergewicht nie; „kg“ nur als Packungsgröße in Klammern („1 Netz Kartoffeln (2 kg)“, 24.10.2026).
+  /körpergewicht|\bkg\b(?![^(\n]*\))/i,
+  /\b70 kg\b/i,
   /abnehmen|fat_loss|ziel/i,
   /https?:|www\.|utm_/i,
 ];

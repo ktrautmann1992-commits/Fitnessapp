@@ -2,7 +2,13 @@ import { MOCK_PRODUCT_CASES } from '@fitnessapp/core';
 import { expect, test, type Page } from '@playwright/test';
 
 import { fakeCamera } from './camera-helpers';
-import { db, onboardNutrition, openNutrition, patchDb } from './nutrition-helpers';
+import {
+  db,
+  onboardNutrition,
+  openNutrition,
+  patchDb,
+  showCheckedShoppingItems,
+} from './nutrition-helpers';
 import { heading } from './plan-helpers';
 
 /**
@@ -46,6 +52,8 @@ async function openShoppingTab(page: Page) {
   await expect(page).toHaveURL(/\/einkaufsliste$/);
   await expect(page.getByTestId('shopping-list')).toBeVisible();
   await heading(page, 'Einkaufen');
+  // Hier geht es ums Abhaken und Scannen: abgehakte Einträge sichtbar lassen (Standard: ausgeblendet).
+  await showCheckedShoppingItems(page);
 }
 
 async function addOwn(page: Page, label: string, quantity = '') {
@@ -55,6 +63,10 @@ async function addOwn(page: Page, label: string, quantity = '') {
 }
 
 const item = (page: Page, key: string) => page.getByTestId(`shopping-check-${key}`);
+const checkedOf = async (page: Page, key: string) =>
+  (await items(page)).find((i) => i.itemKey === key)?.checked;
+/** Eigene Artikel stehen unter „Sonstiges“ – ganz abgehakt klappt die Abteilung von selbst zu (23.10.2026). */
+const otherDone = (page: Page) => page.getByTestId('shopping-dept-status-other');
 const nutrition = (page: Page) => page.getByTestId('shopping-scan-nutrition');
 
 test('Menüleiste mit „Einkaufen“, Abhaken bleibt nach dem Neuladen, alle Haken zurücksetzen, eigener Artikel mit Menge', async ({
@@ -74,15 +86,18 @@ test('Menüleiste mit „Einkaufen“, Abhaken bleibt nach dem Neuladen, alle Ha
   await expect(page.getByRole('button', { name: 'Zurück', exact: true })).toHaveCount(0);
 
   // Abhaken, neu laden → Häkchen bleibt.
-  const box = page.getByTestId('shopping-items').getByRole('checkbox').first();
+  // Über die feste Test-ID: abgehakte Einträge wandern ans Ende ihrer Abteilung (24.10.2026).
+  const firstId = (await page
+    .getByTestId('shopping-items')
+    .getByRole('checkbox')
+    .first()
+    .getAttribute('data-testid')) as string;
+  const box = page.getByTestId(firstId);
   await box.click();
   await expect(box).toHaveAttribute('aria-checked', 'true');
   await expect.poll(async () => (await items(page)).filter((i) => i.checked).length).toBe(1);
   await page.reload();
-  await expect(page.getByTestId('shopping-items').getByRole('checkbox').first()).toHaveAttribute(
-    'aria-checked',
-    'true',
-  );
+  await expect(page.getByTestId(firstId)).toHaveAttribute('aria-checked', 'true');
 
   // Alle Haken zurücksetzen (mit Rückfrage).
   await page.getByTestId('shopping-uncheck-all').click();
@@ -161,7 +176,8 @@ test('Scannen im Laden: nicht auf der Liste → hinzufügen; Treffer → abgehak
   await addOwn(page, 'Müsli');
   await page.getByTestId('shopping-scan').click();
   await expect(page.getByTestId('shopping-scan-feedback')).toContainText('✓ Müsli abgehakt');
-  await expect(item(page, 'manual|müsli')).toHaveAttribute('aria-checked', 'true');
+  await expect.poll(() => checkedOf(page, 'manual|müsli')).toBe(true);
+  await expect(otherDone(page)).toHaveText('✓ erledigt');
   // Auch beim sofortigen Abhaken: Nährwerte unter „Rückgängig“.
   await expect(page.getByTestId('shopping-scan-nutrients')).toContainText('380 kcal');
   await page.getByTestId('shopping-scan-undo').click();
@@ -226,7 +242,7 @@ test('Nicht erkannt: Nummer eintippen → Auswahl aus den offenen Einträgen ode
   await page.getByTestId('shopping-scan-name').fill('Tee');
   await page.getByTestId('shopping-scan-add-yes').click();
   await expect(page.getByTestId('shopping-scan-feedback')).toContainText('Tee hinzugefügt');
-  await expect(item(page, 'manual|tee')).toHaveAttribute('aria-checked', 'true');
+  await expect.poll(() => checkedOf(page, 'manual|tee')).toBe(true);
 });
 
 test('Einkaufen ohne Essensplan (EA-2): eigene Artikel, Abhaken und Scanner gehen trotzdem', async ({
@@ -250,8 +266,13 @@ test('Einkaufen ohne Essensplan (EA-2): eigene Artikel, Abhaken und Scanner gehe
   await addOwn(page, 'Brot', '1');
   await expect(item(page, 'manual|brot')).toContainText('1 Stück Brot');
   await item(page, 'manual|brot').click();
+  // Einziger Eintrag der Abteilung abgehakt → zugeklappt; aufklappen zeigt ihn abgehakt.
+  await expect(otherDone(page)).toHaveText('✓ erledigt');
+  await page.getByTestId('shopping-dept-toggle-other').click();
   await expect(item(page, 'manual|brot')).toHaveAttribute('aria-checked', 'true');
   await page.reload();
+  await expect(otherDone(page)).toHaveText('✓ erledigt');
+  await page.getByTestId('shopping-dept-toggle-other').click();
   await expect(item(page, 'manual|brot')).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByTestId('shopping-scan-type')).toBeVisible();
 });
