@@ -16,7 +16,7 @@ import {
   NutritionGate,
   nutritionReady,
 } from '@/components/nutrition';
-import { IconChip } from '@/components/design';
+import { RecipeThumb, RecipeFlagChip } from '@/components/recipe-image';
 import { Screen } from '@/components/screen';
 import {
   Body,
@@ -30,7 +30,7 @@ import {
 } from '@/components/ui';
 import { recipeSearchForPerson, type RecipeSearchCard } from '@/data/recipe-search';
 import { t } from '@/i18n';
-import { formatKcal } from '@/lib/nutrition-format';
+import { recipeNumbersText } from '@/lib/nutrition-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
@@ -325,18 +325,26 @@ function RecipeCard({
 }) {
   const theme = useThemeColors();
   const texts = t.nutrition.search;
+  // „28 Min. · 482 kcal · 31 g Eiweiß · 40 g KH“ – Zahlen nur bei „Kalorienzahlen an“ (Werte aus packages/core).
+  const numbers =
+    showNumbers && card.perServing !== null ? recipeNumbersText(card.perServing) : null;
   const details = [
     texts.minutes(card.totalMinutes),
-    showNumbers && card.kcalPerServing !== null
-      ? texts.kcal(formatKcal(card.kcalPerServing))
-      : null,
-    card.isDraft ? texts.draft : null,
-    card.isTestphase ? texts.testphase : null,
+    numbers?.kcal ?? null,
+    numbers?.macros ?? null,
   ].filter((part): part is string => part !== null);
+  const a11y = [
+    texts.cardA11y(card.title),
+    numbers ? `${numbers.a11y}, ${texts.perServingA11y}` : null,
+    card.isDraft ? texts.draft : null,
+    card.isTestphase ? texts.testphaseA11y : null,
+  ]
+    .filter((part): part is string => part !== null)
+    .join('. ');
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={texts.cardA11y(card.title)}
+      accessibilityLabel={a11y}
       onPress={onOpen}
       testID={`recipe-search-hit-${card.id}`}
       style={({ pressed }) => [
@@ -347,12 +355,24 @@ function RecipeCard({
         },
       ]}
     >
-      {/* Design 20.10.2026: Rezeptkarten einheitlich mit grünem Rezept-Chip. */}
+      {/* Gründer-Wunsch 24.10.2026: Rezeptfoto links (ohne Foto das grüne Rezept-Symbol, Design 20.10.2026). */}
       <View style={styles.cardRow}>
-        <IconChip area="ernaehrung" icon="recipe" size={40} />
+        <RecipeThumb recipeId={card.id} testID={`recipe-search-hit-${card.id}-thumb`} />
         <View style={styles.cardText}>
           <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
           <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
+          {card.isDraft || card.isTestphase ? (
+            <View style={styles.flags}>
+              {card.isDraft ? <RecipeFlagChip label={texts.draft} a11y={texts.draft} /> : null}
+              {card.isTestphase ? (
+                <RecipeFlagChip
+                  label={texts.testphase}
+                  a11y={texts.testphaseA11y}
+                  testID={`recipe-search-hit-${card.id}-testphase`}
+                />
+              ) : null}
+            </View>
+          ) : null}
           {card.outsideProfileDiet ? (
             <Text
               style={[styles.marker, { color: theme.text, borderColor: theme.border }]}
@@ -369,6 +389,7 @@ function RecipeCard({
 
 const styles = StyleSheet.create({
   cardRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  flags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
   cardText: { flex: 1, minWidth: 0, gap: spacing.xs },
   group: { gap: spacing.xs },
   count: { fontSize: fontSize.md },

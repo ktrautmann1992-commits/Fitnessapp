@@ -1,0 +1,30 @@
+{
+  "recipe_id": "weizenbroetchen-mit-erdbeerkonfituere-und-orangensaft",
+  "alt_de": "Foto: Weizenbrötchen mit Erdbeerkonfitüre und Orangensaft",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/weizenbroetchen-mit-erdbeerkonfituere-und-orangensaft.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "weizenbroetchen-mit-erdbeerkonfituere-und-orangensaft-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "weizenbroetchen-mit-erdbeerkonfituere-und-orangensaft-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

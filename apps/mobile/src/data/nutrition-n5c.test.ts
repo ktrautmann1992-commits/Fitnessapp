@@ -215,7 +215,14 @@ describe('Rezeptsuche in der App (19.6, Wächter-Auflage N5c)', () => {
     expect(wider.cards.find((c) => c.id === 'omelett-champignons')?.outsideProfileDiet).toBe(
       'vegetarian',
     );
-    expect(own.cards.every((c) => c.kcalPerServing === null || c.kcalPerServing > 0)).toBe(true);
+    expect(own.cards.every((c) => c.perServing === null || c.perServing.kcal > 0)).toBe(true);
+    // Makros je Portion auf der Karte: nie negativ, mindestens ein Rezept mit Eiweiß und Kohlenhydraten.
+    expect(
+      own.cards.every(
+        (c) => c.perServing === null || (c.perServing.protein_g >= 0 && c.perServing.carbs_g >= 0),
+      ),
+    ).toBe(true);
+    expect(own.cards.some((c) => (c.perServing?.protein_g ?? 0) > 0)).toBe(true);
     const quick = recipeSearchForPerson({
       library: LIBRARY,
       rows: rows({ diet: 'vegan' }),

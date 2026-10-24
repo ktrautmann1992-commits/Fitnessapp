@@ -1,0 +1,30 @@
+{
+  "recipe_id": "rinderhack-zucchini-pfanne-mit-feta",
+  "alt_de": "Foto: Rinderhack-Zucchini-Pfanne mit Feta",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/rinderhack-zucchini-pfanne-mit-feta.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "rinderhack-zucchini-pfanne-mit-feta-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "rinderhack-zucchini-pfanne-mit-feta-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

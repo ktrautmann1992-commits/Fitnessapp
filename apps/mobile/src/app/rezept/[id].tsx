@@ -31,6 +31,7 @@ import {
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
 import { Text } from '@/components/text';
 import { RatingCard } from '@/components/rating';
+import { RecipeBanner } from '@/components/recipe-image';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, LoadingState, Notice } from '@/components/ui';
 import { canSwapIngredient, recipeForPerson } from '@/data/nutrition-plan';
@@ -322,6 +323,8 @@ export default function RecipeScreen() {
   return shell(
     recipe.title_de,
     <>
+      {/* Rezeptfoto (Gründer-Wunsch 24.10.2026) mit KI-Hinweis; ohne Foto nichts. */}
+      <RecipeBanner recipeId={recipe.id} />
       {/* Kopf: Zeit, Energie je Portion (nur wenn Zahlen gezeigt werden) und Portionen als Chips. */}
       <View style={styles.chips} testID="recipe-chips">
         <RecipeChip icon="stopwatch" text={texts.times(recipe.prep_minutes, recipe.cook_minutes)} />

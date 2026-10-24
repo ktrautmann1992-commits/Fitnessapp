@@ -1,0 +1,30 @@
+{
+  "recipe_id": "skyr-bowl-mit-apfel-und-walnuss",
+  "alt_de": "Foto: Skyr-Bowl mit Apfel & Walnuss",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/skyr-bowl-mit-apfel-und-walnuss.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "skyr-bowl-mit-apfel-und-walnuss-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "skyr-bowl-mit-apfel-und-walnuss-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

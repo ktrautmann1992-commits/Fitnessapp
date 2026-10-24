@@ -15,6 +15,7 @@
     "format:check": "prettier --check .",
     "content:validate": "pnpm --filter @fitnessapp/content validate",
     "illustrations": "pnpm --filter @fitnessapp/content illustrations",
+    "recipe-media": "pnpm --filter @fitnessapp/content recipe-media",
     "content:import-alpha5": "pnpm --filter @fitnessapp/content import-alpha5",
     "plan:examples": "pnpm --filter @fitnessapp/content plan:examples",
     "nutrition:examples": "pnpm --filter @fitnessapp/content nutrition:examples",

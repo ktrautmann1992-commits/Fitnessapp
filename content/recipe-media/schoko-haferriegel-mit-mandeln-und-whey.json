@@ -1,0 +1,30 @@
+{
+  "recipe_id": "schoko-haferriegel-mit-mandeln-und-whey",
+  "alt_de": "Foto: Schoko-Haferriegel mit Mandeln und Whey",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/schoko-haferriegel-mit-mandeln-und-whey.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "schoko-haferriegel-mit-mandeln-und-whey-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "schoko-haferriegel-mit-mandeln-und-whey-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

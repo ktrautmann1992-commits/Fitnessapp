@@ -1,0 +1,30 @@
+{
+  "recipe_id": "asia-nudelsuppe-mit-tofu-und-ei",
+  "alt_de": "Foto: Asia-Nudelsuppe mit Tofu & Ei",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/asia-nudelsuppe-mit-tofu-und-ei.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "asia-nudelsuppe-mit-tofu-und-ei-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "asia-nudelsuppe-mit-tofu-und-ei-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

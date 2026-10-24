@@ -50,7 +50,10 @@ test('Rezeptsuche: vorbelegte Ernährungsform, erweitern gekennzeichnet, Portion
   await expect(page.getByTestId('recipe-search-diet')).toHaveText(
     'Deine Ernährungsform: vegetarisch',
   );
-  await expect(page.getByTestId('recipe-search-results')).toContainText('kcal je Portion');
+  // „28 Min. · 482 kcal · 31 g Eiweiß · 40 g KH“ (Gründer-Wunsch 24.10.2026).
+  await expect(page.getByTestId('recipe-search-results')).toContainText(
+    /\d+\skcal\s·\s\d+\sg\sEiweiß\s·\s\d+\sg\sKH/,
+  );
   const own = await hitIds(page);
   expect(own.length).toBeGreaterThan(3);
   for (const id of MEAT_OR_PORK) expect(own).not.toContain(id);

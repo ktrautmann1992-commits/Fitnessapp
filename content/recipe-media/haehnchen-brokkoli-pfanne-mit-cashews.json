@@ -1,0 +1,30 @@
+{
+  "recipe_id": "haehnchen-brokkoli-pfanne-mit-cashews",
+  "alt_de": "Foto: Hähnchen-Brokkoli-Pfanne mit Cashews",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/haehnchen-brokkoli-pfanne-mit-cashews.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "haehnchen-brokkoli-pfanne-mit-cashews-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "haehnchen-brokkoli-pfanne-mit-cashews-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

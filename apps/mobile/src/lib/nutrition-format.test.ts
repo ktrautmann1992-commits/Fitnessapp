@@ -18,6 +18,8 @@ import {
   shoppingCategoryLabel,
   shoppingItemText,
   visibleNotices,
+  mealNumbersLine,
+  recipeNumbersText,
 } from './nutrition-format';
 
 describe('Ernährung: Zahlen und Bausteine im deutschen Format (8.4)', () => {
@@ -115,5 +117,34 @@ describe('Kochtag-Timer: Restzeit', () => {
     expect(countdownText(245)).toBe('4:05');
     expect(countdownText(3720)).toBe('1:02:00');
     expect(countdownText(-3)).toBe('0:00');
+  });
+});
+
+describe('Zahlen auf Rezeptkarten und Mahlzeiten (24.10.2026)', () => {
+  const nb = (text: string) => text.replace(/\u00a0/g, ' ');
+
+  it('Rezeptkarte: kcal und „31 g Eiweiß · 40 g KH“, nie mitten in einer Angabe umbrochen', () => {
+    const r = recipeNumbersText({ kcal: 482.4, protein_g: 31.2, carbs_g: 39.6 });
+    expect(nb(r.kcal)).toBe('482 kcal');
+    expect(nb(r.macros)).toBe('31 g Eiweiß · 40 g KH');
+    expect(r.macros).toContain('31\u00a0g\u00a0Eiweiß');
+    expect(r.a11y).toBe('482 Kilokalorien, 31 Gramm Eiweiß, 40 Gramm Kohlenhydrate');
+  });
+
+  it('Mahlzeit: Faktor nur, wenn gerundet nicht 1; kurz genug für eine Zeile auf 390 px', () => {
+    const about = mealNumbersLine(0.98, { kcal: 669, protein_g: 44.4, carbs_g: 65 });
+    expect(nb(about.text)).toBe('669 kcal · 44 g E · 65 g KH');
+    expect(about.a11y).toBe(
+      'Eine Portion: 669 Kilokalorien, 44 Gramm Eiweiß, 65 Gramm Kohlenhydrate',
+    );
+    const more = mealNumbersLine(1.27, { kcal: 870, protein_g: 55, carbs_g: 98 });
+    expect(nb(more.text)).toBe('1,3× · 870 kcal · 55 g E · 98 g KH');
+    expect(more.a11y).toContain('1,3-fache Portion: 870 Kilokalorien');
+    // Höchstens ~35 Zeichen passen neben das Vorschaubild (390 px, Schrift „klein“); nur Extremfälle mit über
+    // 1.000 kcal und dreistelligen Grammzahlen dürfen umbrechen.
+    expect(more.text.length).toBeLessThanOrEqual(35);
+    expect(nb(mealNumbersLine(0.5, { kcal: 300, protein_g: 0, carbs_g: 0 }).text)).toBe(
+      '0,5× · 300 kcal · 0 g E · 0 g KH',
+    );
   });
 });

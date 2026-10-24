@@ -21,7 +21,9 @@
     "illustrations:check": "tsx src/illustrations-cli.ts --check",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "recipe-media": "tsx src/recipe-media-cli.ts",
+    "recipe-media:check": "tsx src/recipe-media-cli.ts --check"
   },
   "dependencies": {
     "@fitnessapp/core": "workspace:*",
@@ -31,6 +33,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "sharp": "^0.35.5",
     "tsx": "^4.23.15"
   },
   "exports": {

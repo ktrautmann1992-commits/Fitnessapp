@@ -1,0 +1,30 @@
+{
+  "recipe_id": "fruehstuecks-burrito-mit-haehnchen",
+  "alt_de": "Foto: Frühstücks-Burrito mit Hähnchen",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/fruehstuecks-burrito-mit-haehnchen.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "fruehstuecks-burrito-mit-haehnchen-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "fruehstuecks-burrito-mit-haehnchen-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

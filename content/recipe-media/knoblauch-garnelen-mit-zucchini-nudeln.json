@@ -1,0 +1,30 @@
+{
+  "recipe_id": "knoblauch-garnelen-mit-zucchini-nudeln",
+  "alt_de": "Foto: Knoblauch-Garnelen mit Zucchini-Nudeln",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/knoblauch-garnelen-mit-zucchini-nudeln.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "knoblauch-garnelen-mit-zucchini-nudeln-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "knoblauch-garnelen-mit-zucchini-nudeln-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

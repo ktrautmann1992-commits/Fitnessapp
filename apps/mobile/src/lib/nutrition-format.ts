@@ -39,6 +39,55 @@ export function formatGrams(value: number): string {
   return groupThousands(value);
 }
 
+/**
+ * Zahlen einer Rezeptkarte bzw. Mahlzeit (Gründer-Wunsch 24.10.2026): „482 kcal“, „31 g Eiweiß · 40 g KH“ und die
+ * ausgeschriebene Fassung für Bildschirmleser. Nur Format – die Werte kommen aus packages/core
+ * (`recipeCardNutrients` bzw. die Portion im Essensplan).
+ */
+export function recipeNumbersText(values: {
+  readonly kcal: number;
+  readonly protein_g: number;
+  readonly carbs_g: number;
+}): { readonly kcal: string; readonly macros: string; readonly a11y: string } {
+  const protein = formatGrams(values.protein_g);
+  const carbs = formatGrams(values.carbs_g);
+  return {
+    kcal: `${formatKcal(values.kcal)}\u00a0kcal`,
+    macros: t.nutrition.macrosShort(protein, carbs),
+    a11y: `${formatKcal(values.kcal)} Kilokalorien, ${t.nutrition.macrosShortA11y(protein, carbs)}`,
+  };
+}
+
+/**
+ * Zahlenzeile einer Mahlzeit im Ernährungs-Tag – einzeilig auf 390 px (Gründer 24.10.2026): „669 kcal · 44 g E ·
+ * 65 g KH“. Der Portionsfaktor steht nur davor, wenn er gerundet nicht 1 ist („1,3× · 870 kcal · …“, eine Nachkommastelle); E/KH sind im
+ * Ernährungs-Tag durch die Übersicht („Eiweiß“, „Kohlenhydrate“) erklärt, Bildschirmleser hören alles ausgeschrieben.
+ * Nur Format – Faktor und Werte kommen aus packages/core (Essensplan).
+ */
+export function mealNumbersLine(
+  factor: number,
+  values: { readonly kcal: number; readonly protein_g: number; readonly carbs_g: number },
+): { readonly text: string; readonly a11y: string } {
+  // Eine Nachkommastelle reicht hier (genaue Portion in der Rezeptansicht).
+  const rounded = Math.round(factor * 10) / 10;
+  const showFactor = rounded !== 1;
+  const kcal = formatKcal(values.kcal);
+  const protein = formatGrams(values.protein_g);
+  const carbs = formatGrams(values.carbs_g);
+  const texts = t.nutrition.mealLine;
+  return {
+    text: [
+      showFactor ? texts.factor(formatNumberDe(rounded)) : null,
+      texts.kcal(kcal),
+      texts.protein(protein),
+      texts.carbs(carbs),
+    ]
+      .filter((part): part is string => part !== null)
+      .join(' · '),
+    a11y: texts.a11y(showFactor ? formatNumberDe(rounded) : null, kcal, protein, carbs),
+  };
+}
+
 /** Dezimalzahl mit Komma, höchstens zwei Nachkommastellen, z. B. 1.5 → „1,5“, 0.333 → „0,33“. */
 export function formatNumberDe(value: number): string {
   const rounded = Math.round(value * 100) / 100;

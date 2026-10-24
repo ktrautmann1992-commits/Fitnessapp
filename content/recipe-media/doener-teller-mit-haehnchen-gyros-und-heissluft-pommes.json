@@ -1,0 +1,30 @@
+{
+  "recipe_id": "doener-teller-mit-haehnchen-gyros-und-heissluft-pommes",
+  "alt_de": "Foto: Döner-Teller mit Hähnchen-Gyros und Heißluft-Pommes",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/doener-teller-mit-haehnchen-gyros-und-heissluft-pommes.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "doener-teller-mit-haehnchen-gyros-und-heissluft-pommes-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "doener-teller-mit-haehnchen-gyros-und-heissluft-pommes-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

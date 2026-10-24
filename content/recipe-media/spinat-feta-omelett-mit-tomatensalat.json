@@ -1,0 +1,30 @@
+{
+  "recipe_id": "spinat-feta-omelett-mit-tomatensalat",
+  "alt_de": "Foto: Spinat-Feta-Omelett mit Tomatensalat",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/spinat-feta-omelett-mit-tomatensalat.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "spinat-feta-omelett-mit-tomatensalat-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "spinat-feta-omelett-mit-tomatensalat-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

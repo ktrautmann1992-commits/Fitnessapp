@@ -17,6 +17,7 @@ import { join, relative, resolve } from 'node:path';
 
 import {
   checkExerciseMediaFiles,
+  checkRecipeMediaFiles,
   CONTENT_SEED_SETTINGS_FILE,
   type ContentFile,
   type ContentFileKind,
@@ -34,6 +35,9 @@ import {
   type NutritionContentFileKind,
   parseContentSeedSettings,
   RECIPE_COVERAGE,
+  RECIPE_MEDIA_ASSET_DIR,
+  RECIPE_MEDIA_FOLDER,
+  type RecipeMediaFile,
   recipeCoverageReport,
   type SupplementContentFile,
   type SupplementContentFileKind,
@@ -217,6 +221,69 @@ export function checkExerciseMediaFolder(
     ...problems,
     ...checkExerciseMediaFiles(files, {
       exerciseIds,
+      assetExists: (file) => existsSync(join(assetDir, file)),
+    }),
+  ];
+}
+
+/** Auswahl der Rezeptbuch-Rezepte für die App (gleiche Datei wie packages/content/src/recipe-media/build.ts). */
+const APP_SELECTION_FILE = 'rezeptbuch-app-auswahl.json';
+
+/**
+ * Rezeptfotos (`content/recipe-media/<rezept-id>.json`, docs/PLAN-PHASE-5.md Nachtrag „Rezeptbilder“): Lizenz,
+ * Quelle und KI-Hinweis Pflicht, beide Bilddateien unter `apps/mobile/assets/recipe-media/`. Das Rezept muss es in
+ * `content/recipes/` geben oder es steht in der App-Auswahl `content/rezeptbuch-app-auswahl.json` (Rezeptbuch-Import
+ * noch offen; der Import übernimmt die IDs unverändert). Jeder Befund ist ein blockierender Datei-Fehler.
+ */
+export function checkRecipeMediaFolder(
+  contentDir: string,
+  recipeIds: ReadonlySet<string>,
+  repoRoot: string | undefined,
+): string[] {
+  const dir = join(contentDir, RECIPE_MEDIA_FOLDER);
+  if (!existsSync(dir)) {
+    return [];
+  }
+  const allowed = new Set(recipeIds);
+  const problems: string[] = [];
+  const selectionPath = join(contentDir, APP_SELECTION_FILE);
+  if (existsSync(selectionPath)) {
+    try {
+      const data: unknown = JSON.parse(readFileSync(selectionPath, 'utf8'));
+      const list: unknown = Array.isArray(data)
+        ? data
+        : ((data as { ids?: unknown; rezepte?: unknown } | null)?.ids ??
+          (data as { rezepte?: unknown } | null)?.rezepte);
+      for (const entry of Array.isArray(list) ? list : []) {
+        const id = typeof entry === 'string' ? entry : (entry as { id?: unknown } | null)?.id;
+        if (typeof id === 'string') allowed.add(id);
+      }
+    } catch (error) {
+      problems.push(`${APP_SELECTION_FILE}: kein gültiges JSON (${(error as Error).message}).`);
+    }
+  }
+  const files: RecipeMediaFile[] = [];
+  for (const fileName of readdirSync(dir).sort()) {
+    if (fileName.startsWith('.')) {
+      continue;
+    }
+    if (!fileName.endsWith('.json')) {
+      problems.push(
+        `${RECIPE_MEDIA_FOLDER}/${fileName}: keine JSON-Datei – Bilder gehören nach ${RECIPE_MEDIA_ASSET_DIR}/.`,
+      );
+      continue;
+    }
+    try {
+      files.push({ fileName, data: JSON.parse(readFileSync(join(dir, fileName), 'utf8')) });
+    } catch (error) {
+      files.push({ fileName, jsonError: (error as Error).message });
+    }
+  }
+  const assetDir = join(repoRoot ?? resolve(contentDir, '..'), RECIPE_MEDIA_ASSET_DIR);
+  return [
+    ...problems,
+    ...checkRecipeMediaFiles(files, {
+      recipeIds: allowed,
       assetExists: (file) => existsSync(join(assetDir, file)),
     }),
   ];
@@ -529,6 +596,14 @@ export function validateRepository(options: {
     }),
   );
   const mediaProblems = checkExerciseMediaFolder(contentDir, exerciseIds, repoRoot);
+  // Rezeptfotos (Bild ohne Lizenz/KI-Hinweis = blockierend).
+  const recipeIds = new Set(
+    nutritionFiles.files.flatMap((file) => {
+      const id = (file.data as { id?: unknown } | undefined)?.id;
+      return file.kind === 'recipe' && typeof id === 'string' ? [id] : [];
+    }),
+  );
+  const recipeMediaProblems = checkRecipeMediaFolder(contentDir, recipeIds, repoRoot);
   return {
     result: validateContent(
       [
@@ -548,6 +623,7 @@ export function validateRepository(options: {
       ...nutrition.problems,
       ...seed.problems,
       ...mediaProblems,
+      ...recipeMediaProblems,
     ],
     versionNote,
     seedSettings: seed.settings,

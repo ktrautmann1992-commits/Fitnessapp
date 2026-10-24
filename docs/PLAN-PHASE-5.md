@@ -4304,6 +4304,45 @@ Ratgeber-Liste und Ratgeber ohne R21H mit Kennzeichen, `demo-wettkampf` bleibt E
   Namensliste aus Lauf 38367139392 einen eindeutigen Eintrag zeigt (bzw. dieselbe Quell-ID wie eine schon zugeordnete
   Zutat); sonst `ref: null` → nächster Lauf `foods-import` im Modus „kandidaten“.
 
+## Nachtrag 24.10.2026: Rezeptbilder und Eiweiß/KH auf den Rezeptkarten
+
+Gründer-Wunsch: Rezeptlisten mit Vorschaufoto und „28 Min. · 482 kcal · 31 g Eiweiß · 40 g KH“.
+
+- **Quelle der Fotos:** die Rezeptbuch-Fotos (Higgsfield, KI-Bilder der Gründer, 1800 × 771 JPG) unter
+  `content/rezeptbuch/fotos/<datei>.jpg` auf dem Branch `rezeptbuch-baukasten`. Dateiname = Rezept-ID aus
+  `packages/content/seed/alpha5-rezepte.json`; nur bei doppeltem Titel steht das Kapitel davor
+  (`vegan-schoko-proteinpudding` → `schoko-proteinpudding`, `fleisch-schoko-proteinpudding` →
+  `schoko-proteinpudding-fleisch`, ebenso die zwei Teriyaki-Tofu-Bowls). Zuordnung über `foto-auftraege.json`
+  (Titel + Kapitel), nie geraten. Gegenprobe über die Higgsfield-Titel: alle 306 Rezeptbuch-Titel haben ein Foto.
+- **Gleiches Muster wie die Übungsbilder:** Zuordnung `content/recipe-media/<rezept-id>.json` (Schema
+  `recipeMediaSchema` in `packages/core/src/content/recipe-media.ts`: Alt-Text, Herkunft, Lizenz, Quelle, bei KI-Bildern
+  Pflicht-Hinweis `ai_notice_de` = „KI-Bild, Higgsfield“), Bilder unter `apps/mobile/assets/recipe-media/` als WebP:
+  `<id>-thumb.webp` 160 × 160 (Mitte, für Listen) und `<id>-banner.webp` 1080 × 463 (21:9, Rezeptansicht).
+  `content:validate` prüft jede Zuordnung (blockierend: fehlende Lizenz/KI-Hinweis, falsche Größe, fehlende Datei,
+  unbekanntes Rezept – erlaubt sind Rezepte aus `content/recipes` und aus `content/rezeptbuch-app-auswahl.json`).
+- **App-Größe:** nur ausgewählte Rezepte kommen ins Bündel (Gründer-Entscheidung 24.10.2026: ~150 der 306). Je Rezept
+  ≈ 55 KB (Banner ≈ 50 KB, Vorschau ≈ 5 KB) → 150 Rezepte ≈ 8 MB. Ein Test begrenzt die Dateigrößen und verbietet
+  Bilddateien ohne Zuordnung.
+- **Erzeugen:** `pnpm recipe-media` liest die Auswahl `content/rezeptbuch-app-auswahl.json` (`rezepte`) plus alle
+  Rezepte aus `content/recipes` mit Rezeptbuch-Foto,
+  holt die Fotos per `git show origin/rezeptbuch-baukasten:…` (kein Download), schreibt Bilder, Zuordnungen und das
+  App-Modul `apps/mobile/src/data/recipe-media.generated.ts` (require() je Bild – Metro bündelt sie für Web-Export und
+  APK) und entfernt alles außerhalb der Auswahl. `--ids a,b` statt Auswahl-Datei, `--all` nur zum lokalen Ansehen.
+  In der Claude-Code-Sitzung: „Übernimm die Rezeptbilder für die App-Auswahl.“
+- **Stand:** 164 Rezepte mit Foto = App-Auswahl (153) ∪ die 65 Rezepte aus `content/recipes`, die schon heute in der
+  App laufen und ein Rezeptbuch-Foto haben (sonst fehlten dort Bilder bis zum Import). Zusammen 9,6 MB (Banner 8,7 MB,
+  Vorschau 0,9 MB); das App-Modul hat 60 KB. Die Foto-Dateinamen der Auswahl (`fotos.dateien`) werden gegengeprüft.
+- **Anzeige:** Rezeptsuche, „Was habe ich da?“ und die Mahlzeiten im Ernährungs-Tag zeigen links das Vorschaubild
+  (56 × 56, reiner Schmuck); ohne Foto das grüne Rezept-Symbol in gleicher Größe. Die Rezeptansicht zeigt oben das
+  Banner mit sichtbarem Hinweis „KI-Bild, Higgsfield“ (Alt-Text „Foto: <Titel>“). Das Testphase-Kennzeichen ist jetzt
+  ein kleines Schild „Testphase“; ausgeschrieben („Testphase – nicht fachlich geprüft“) im Namen für Bildschirmleser.
+- **Eiweiß/KH:** `recipeCardNutrients` in `packages/core/src/nutrition/scale.ts` (gleiche Rechnung wie die
+  Rezeptansicht: Grundrezept je Portion, Nährwerte nach der Rundung; `null` statt falscher Zahlen). Mahlzeiten nutzen
+  die schon berechnete Portion der Person. Nur bei „Kalorienzahlen an“ (sonst weder kcal noch Makros, wie bisher).
+- **Mahlzeiten im Ernährungs-Tag** einzeilig auf 390 px: „669 kcal · 44 g E · 65 g KH“; der Portionsfaktor steht nur
+  davor, wenn er gerundet nicht 1 ist („1,3× · …“, eine Nachkommastelle; genaue Portion in der Rezeptansicht).
+  E/KH erklärt die Übersicht darüber; Bildschirmleser hören „Eine Portion: 669 Kilokalorien, 44 Gramm Eiweiß, …“.
+
 ## Nachtrag 24.10.2026: Nur etwa die Hälfte der Rezeptbuch-Rezepte in der App (Gründer-Entscheidung)
 
 **Entscheidung (Karsten, 24.10.2026):** Die App enthält nur rund 150 der 306 Rezepte aus `alpha5-rezepte.json`

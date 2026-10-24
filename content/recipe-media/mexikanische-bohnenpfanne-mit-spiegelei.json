@@ -1,0 +1,30 @@
+{
+  "recipe_id": "mexikanische-bohnenpfanne-mit-spiegelei",
+  "alt_de": "Foto: Mexikanische Bohnenpfanne mit Spiegelei",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/mexikanische-bohnenpfanne-mit-spiegelei.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "mexikanische-bohnenpfanne-mit-spiegelei-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "mexikanische-bohnenpfanne-mit-spiegelei-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

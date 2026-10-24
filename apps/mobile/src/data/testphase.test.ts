@@ -87,8 +87,11 @@ describe('Testphase: freigegeben ohne Fachprüfung – nutzbar und gekennzeichne
   it('Texte: dezenter Hinweis in Rezeptansicht und Ratgeber, kurzes Kennzeichen in den Suchen', () => {
     expect(t.nutrition.recipe.testphase).toBe('Testphase – noch nicht fachlich geprüft');
     expect(t.nutrition.guides.testphase).toBe('Testphase – noch nicht fachlich geprüft');
-    expect(t.nutrition.search.testphase).toBe('Testphase – nicht fachlich geprüft');
-    expect(t.nutrition.fridge.testphase).toBe('Testphase – nicht fachlich geprüft');
+    // Kleines Kennzeichen „Testphase“ an den Karten (24.10.2026), ausgeschrieben für Bildschirmleser.
+    expect(t.nutrition.search.testphase).toBe('Testphase');
+    expect(t.nutrition.fridge.testphase).toBe('Testphase');
+    expect(t.nutrition.search.testphaseA11y).toBe('Testphase – nicht fachlich geprüft');
+    expect(t.nutrition.fridge.testphaseA11y).toBe('Testphase – nicht fachlich geprüft');
     // Wächter M2 (sichere Variante): Allergen-Warnung auch in der Testphase.
     expect(t.nutrition.fridge.testphaseAllergenWarning).toContain(
       'Allergene noch nicht fachlich geprüft',

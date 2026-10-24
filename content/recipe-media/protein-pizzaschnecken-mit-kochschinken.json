@@ -1,0 +1,30 @@
+{
+  "recipe_id": "protein-pizzaschnecken-mit-kochschinken",
+  "alt_de": "Foto: Protein-Pizzaschnecken mit Kochschinken",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/protein-pizzaschnecken-mit-kochschinken.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "protein-pizzaschnecken-mit-kochschinken-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "protein-pizzaschnecken-mit-kochschinken-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}
