@@ -20,8 +20,10 @@ import type { ScaledIngredient } from './scale';
  *
  * - Aggregation je (Lebensmittel, Grundeinheit); Ersatzprodukte statt Original (S4), weggelassene optionale
  *   Zutaten fehlen (S3), Ergänzungs-Snacks sind enthalten.
- * - EL/TL → Gramm; Milliliter bleiben Milliliter; wird ein Lebensmittel irgendwo in Stück verwendet und ist ein
- *   Stückgewicht bekannt, zählt alles in Stück (natürlicher, z. B. Eier). Prise → „nach Geschmack“.
+ * - EIN Eintrag je Produkt (Gründer-Rückmeldung 24.10.2026): Gramm, Stück, EL/TL und ml desselben Lebensmittels
+ *   (und seiner Synonyme, `SHOPPING_SAME_PRODUCT`) zählen zusammen in Gramm; nur ein Lebensmittel, das ausschließlich
+ *   in ml vorkommt (Wasser), bleibt in ml. Prise → „nach Geschmack“. Wie das im Laden gekauft wird („1 Netz
+ *   Kartoffeln (2 kg)“), rechnet `shoppingPurchase` (shopping-buy-units.ts) – reine Anzeige.
  * - Mengen AUFGERUNDET auf Kaufschritte (Gramm/ml unter 100 auf 10, sonst auf 50; Stück ganz) – nie 0.
  * - Meal-Prep: gekauft wird zum Kochtag (`cookDate`); der Sonntag vor der Woche zählt zur Woche.
  * - Stabiler Schlüssel `food_id|einheit`: Häkchen bleiben bei Neuerzeugung erhalten, Mengenänderungen markiert.
@@ -94,11 +96,12 @@ export function shoppingProductId(foodId: string, foods: FoodLookup): string {
 }
 
 interface Bucket {
+  /** Gramm aus g-, Stück- und ml-Angaben (`ScaledIngredient.grams`). */
   grams: number;
+  /** ml nur aus ml-Angaben – zählt nur, wenn das Lebensmittel sonst nirgends vorkommt (Wasser). */
   ml: number;
-  pieceGrams: number;
+  onlyMl: boolean;
   pinch: boolean;
-  usesPieces: boolean;
   substituteFor: Set<string>;
 }
 
@@ -135,25 +138,18 @@ export function buildShoppingList(
       const bucket = buckets.get(food.id) ?? {
         grams: 0,
         ml: 0,
-        pieceGrams: 0,
+        onlyMl: true,
         pinch: false,
-        usesPieces: false,
         substituteFor: new Set<string>(),
       };
       if (ingredient.originalFoodId !== null) bucket.substituteFor.add(ingredient.originalFoodId);
-      switch (ingredient.unit) {
-        case 'pinch':
-          bucket.pinch = true;
-          break;
-        case 'ml':
-          bucket.ml += ingredient.amount;
-          break;
-        case 'piece':
-          bucket.usesPieces = true;
-          bucket.pieceGrams += ingredient.grams;
-          break;
-        default:
-          bucket.grams += ingredient.grams;
+      if (ingredient.unit === 'pinch') {
+        bucket.pinch = true;
+      } else {
+        // EIN Eintrag je Produkt (24.10.2026): g, Stück und ml zählen zusammen in Gramm.
+        bucket.grams += ingredient.grams;
+        if (ingredient.unit === 'ml') bucket.ml += ingredient.amount;
+        else bucket.onlyMl = false;
       }
       buckets.set(food.id, bucket);
     }
@@ -167,10 +163,7 @@ export function buildShoppingList(
     items.push({
       itemKey: `${foodId}|${unit ?? 'pinch'}`,
       foodId,
-      labelDe:
-        unit === 'piece' && amount !== null && amount > 1 && food.name_de_plural !== undefined
-          ? food.name_de_plural
-          : food.name_de,
+      labelDe: food.name_de,
       amount,
       unit,
       category: food.shopping_category,
@@ -183,28 +176,49 @@ export function buildShoppingList(
     });
   };
   for (const [foodId, bucket] of buckets) {
-    const food = foods.get(foodId);
-    const pieceG = food?.units.piece_g;
-    let grams = bucket.grams;
-    if (bucket.usesPieces && pieceG !== undefined) {
-      push(foodId, 'piece', roundShoppingAmount((bucket.pieceGrams + grams) / pieceG, 'piece'));
-      grams = 0;
-    } else {
-      grams += bucket.pieceGrams;
-    }
-    if (grams > 0) push(foodId, 'g', roundShoppingAmount(grams, 'g'));
-    if (bucket.ml > 0) push(foodId, 'ml', roundShoppingAmount(bucket.ml, 'ml'));
-    if (
-      bucket.pinch &&
-      grams === 0 &&
-      bucket.ml === 0 &&
-      !(bucket.usesPieces && pieceG !== undefined)
-    ) {
-      // Nur in Prisen verwendet → „nach Geschmack“ (Plan 6.5).
-      push(foodId, null, null);
-    }
+    if (bucket.onlyMl && bucket.ml > 0) push(foodId, 'ml', roundShoppingAmount(bucket.ml, 'ml'));
+    else if (bucket.grams > 0) push(foodId, 'g', roundShoppingAmount(bucket.grams, 'g'));
+    // Nur in Prisen verwendet → „nach Geschmack“ (Plan 6.5).
+    else if (bucket.pinch) push(foodId, null, null);
   }
   return { from, to, usesHealthData: plan.usesHealthData, items: sortShoppingItems(items) };
+}
+
+/**
+ * Wofür ein Eintrag gebraucht wird (zweite Zeile der Liste „für Hähnchen-Bowl, Curry“, 24.10.2026): Rezept-IDs je
+ * Produkt (Schlüssel wie `ShoppingListItem.foodId`, Synonyme zusammengefasst) – aus den Mahlzeiten des Plans, die im
+ * Zeitraum gekauft werden (wie `buildShoppingList`), danach die über „Zur Einkaufsliste“ hinzugefügten Rezepte.
+ * Reihenfolge = erste Verwendung, ohne Doppelte. Nur Anzeige auf dem eigenen Gerät – nie im geteilten Text.
+ */
+export function shoppingItemRecipeIds(
+  plan: MealPlanWeek | null,
+  foods: FoodLookup,
+  range: { readonly from: string; readonly to: string },
+  extras: readonly { readonly recipeId: string; readonly foodIds: readonly string[] }[] = [],
+): ReadonlyMap<string, readonly string[]> {
+  const result = new Map<string, string[]>();
+  const add = (foodId: string, recipeId: string) => {
+    if (foods.get(foodId) === undefined) return;
+    const key = shoppingProductId(foodId, foods);
+    const list = result.get(key) ?? [];
+    if (!list.includes(recipeId)) list.push(recipeId);
+    result.set(key, list);
+  };
+  if (plan !== null) {
+    const meals = plan.days
+      .flatMap((day) => day.meals)
+      .map((meal) => ({
+        meal,
+        purchase: meal.cookDate < plan.weekStart ? plan.weekStart : meal.cookDate,
+      }))
+      .filter((m) => m.purchase >= range.from && m.purchase <= range.to)
+      .sort((a, b) => (a.purchase < b.purchase ? -1 : a.purchase > b.purchase ? 1 : 0));
+    for (const { meal } of meals) {
+      for (const ingredient of meal.ingredients) add(ingredient.foodId, meal.recipeId);
+    }
+  }
+  for (const extra of extras) for (const foodId of extra.foodIds) add(foodId, extra.recipeId);
+  return result;
 }
 
 /**
@@ -402,7 +416,10 @@ export function parseShoppingQuantity(input: unknown): ShoppingQuantityParse {
 
 export interface ShoppingDepartment {
   readonly category: ShoppingCategory;
-  /** Alle Einträge der Abteilung (Reihenfolge der Liste). */
+  /**
+   * Alle Einträge der Abteilung: erst die offenen, dann die abgehakten (wandern nach unten, 24.10.2026), jeweils in
+   * der Reihenfolge der Liste.
+   */
   readonly items: readonly ShoppingListItem[];
   readonly open: number;
   readonly checked: number;
@@ -423,7 +440,10 @@ export function shoppingDepartments(items: readonly ShoppingListItem[]): Shoppin
     return [
       {
         category,
-        items: inDepartment,
+        items: [
+          ...inDepartment.filter((i) => !i.checked),
+          ...inDepartment.filter((i) => i.checked),
+        ],
         open: inDepartment.length - checked,
         checked,
         done: checked === inDepartment.length,

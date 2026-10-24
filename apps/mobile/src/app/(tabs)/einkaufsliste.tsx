@@ -11,7 +11,9 @@ import {
   shoppingDepartments,
   type ShoppingListItem,
   shoppingItemOutsideProfileDiet,
+  shoppingItemRecipeIds,
   type ShoppingListRecipe,
+  shoppingPurchase,
   type ShoppingRangeMode,
   shoppingRangeIsAutomatic,
   shoppingRecipeOutsideProfileDiet,
@@ -22,7 +24,7 @@ import { Redirect, useLocalSearchParams, useNavigation, useRouter, type Href } f
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { Icon, useAreaColors } from '@/components/design';
+import { Icon, type IconName, useAreaColors } from '@/components/design';
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { ShoppingScanPanel } from '@/components/shopping-scan';
@@ -42,7 +44,7 @@ import {
 import { storedShoppingListRow } from '@/data/meal-plan-rows';
 import { t } from '@/i18n';
 import { formatDateDe } from '@/lib/format';
-import { shoppingCategoryLabel, shoppingItemText } from '@/lib/nutrition-format';
+import { formatAmount, shoppingCategoryLabel, shoppingItemText } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { setShoppingWeekManual, updateShoppingPrefs, useShoppingPrefs } from '@/lib/shopping-prefs';
 import { useThemeColors } from '@/lib/theme';
@@ -231,6 +233,27 @@ export default function ShoppingTabScreen() {
     shoppingItemOutsideProfileDiet(item, foods, profileDiet) !== null;
   const recipeOutside = (entry: ShoppingListRecipe) =>
     profileDiet === null ? null : shoppingRecipeOutsideProfileDiet(entry, profileDiet);
+  // Wofür gebraucht (zweite Zeile „für Hähnchen-Bowl, Curry +1“) – Regeln in packages/core, nur Anzeige.
+  const recipeIds =
+    foods === null
+      ? new Map<string, readonly string[]>()
+      : shoppingItemRecipeIds(
+          resolved?.plan ?? null,
+          foods,
+          { from: list.from, to: list.to },
+          list.recipes.map((entry) => ({
+            recipeId: entry.recipeId,
+            foodIds:
+              recipes.find((r) => r.id === entry.recipeId)?.ingredients.map((i) => i.food_id) ?? [],
+          })),
+        );
+  const usedFor = (item: ShoppingListItem): string | null => {
+    const ids = item.foodId === null ? undefined : recipeIds.get(item.foodId);
+    if (ids === undefined || ids.length === 0) return null;
+    // Gleich lautende Rezepte (z. B. vegetarische Fassung) nur einmal nennen.
+    const titles = [...new Set(ids.map(recipeTitle))];
+    return texts.forRecipes(titles.slice(0, 2), titles.length - 2);
+  };
   const days = Array.from({ length: 7 }, (_, i) => addDays(list.weekStart, i));
   const dayChoices = days.map((d) => ({ value: d, label: dayLabel(d) }));
   const visible = (item: ShoppingListItem) => !hideChecked || !item.checked;
@@ -339,6 +362,7 @@ export default function ShoppingTabScreen() {
     <ShoppingItemRow
       key={item.itemKey}
       item={item}
+      usedFor={usedFor(item)}
       outsideDiet={outsideDiet(item)}
       disabled={actions === null || busy !== null}
       onToggle={(checked) =>
@@ -484,26 +508,22 @@ export default function ShoppingTabScreen() {
         </Notice>
       ) : null}
 
-      <View style={styles.list} testID="shopping-items">
+      <View style={styles.departments} testID="shopping-items">
         {departments.map((department) => {
           const c = department.category;
           const expanded = department.done ? openDone.has(c) : !prefs.collapsed.includes(c);
           const showDone = !hideChecked || showDoneIn.has(c);
           const shown = department.items.filter((i) => showDone || !i.checked);
           return (
-            <View
-              key={c}
-              style={[styles.department, { borderTopColor: theme.cardBorder }]}
-              testID={`shopping-dept-${c}`}
-            >
+            <View key={c} style={styles.department} testID={`shopping-dept-${c}`}>
               <DepartmentHeader
                 department={department}
                 expanded={expanded}
                 onPress={() => toggleDepartment(department)}
               />
               {expanded ? (
-                <View style={styles.list} testID={`shopping-dept-items-${c}`}>
-                  {shown.map(itemRow)}
+                <View testID={`shopping-dept-items-${c}`}>
+                  {shown.length > 0 ? <RowGroup>{shown.map(itemRow)}</RowGroup> : null}
                   {hideChecked && department.checked > 0 ? (
                     <Pressable
                       accessibilityRole="button"
@@ -534,7 +554,7 @@ export default function ShoppingTabScreen() {
       ) : null}
 
       {pantry.length > 0 ? (
-        <Card>
+        <View style={styles.list}>
           <Heading level={2}>{texts.pantry}</Heading>
           <Button
             label={showPantry ? texts.pantryHide : texts.pantryShow(pantry.length)}
@@ -543,11 +563,11 @@ export default function ShoppingTabScreen() {
             testID="shopping-pantry-toggle"
           />
           {showPantry ? (
-            <View style={styles.list} testID="shopping-pantry">
-              {pantry.filter(visible).map(itemRow)}
+            <View testID="shopping-pantry">
+              <RowGroup>{pantry.filter(visible).map(itemRow)}</RowGroup>
             </View>
           ) : null}
-        </Card>
+        </View>
       ) : null}
 
       {actions && anyChecked ? (
@@ -675,9 +695,28 @@ function toggled<T>(set: ReadonlySet<T>, value: T): ReadonlySet<T> {
   return next;
 }
 
+/** Symbol je Abteilung (nur Deko, der Name steht daneben). */
+const DEPARTMENT_ICONS: Readonly<Record<ShoppingCategory, IconName>> = {
+  fruit_vegetables: 'leaf',
+  bread_bakery: 'bread',
+  chilled_dairy_eggs: 'milk',
+  chilled_plant_based: 'sprout',
+  meat_sausage: 'drumstick',
+  fish: 'fish',
+  pasta_rice_grains: 'wheat',
+  legumes_canned: 'can',
+  cereal_breakfast: 'bowl',
+  nuts_seeds_dried_fruit: 'nut',
+  oils_vinegar_sauces: 'bottle',
+  spices_baking: 'shaker',
+  frozen: 'snowflake',
+  drinks: 'cup',
+  other: 'box',
+};
+
 /**
- * Kopf einer Abteilung (23.10.2026): antippen klappt auf bzw. zu. Zeigt „x offen“ bzw. „✓ erledigt“; der Pfeil zeigt
- * nach unten, wenn aufgeklappt. Für Bildschirmleser ein Knopf mit Zustand „aufgeklappt“.
+ * Kopf einer Abteilung (23.10.2026, kompakt seit 24.10.2026): Symbol, Name, „x offen“ bzw. „✓ erledigt“, Pfeil
+ * (nach unten = aufgeklappt). Antippen klappt auf bzw. zu; für Bildschirmleser ein Knopf mit Zustand „aufgeklappt“.
  */
 function DepartmentHeader({
   department,
@@ -689,7 +728,7 @@ function DepartmentHeader({
   onPress: () => void;
 }) {
   const theme = useThemeColors();
-  const teal = useAreaColors('einkaufen');
+  const cyan = useAreaColors('einkaufen');
   const texts = t.nutrition.shopping;
   const name = shoppingCategoryLabel(department.category);
   const status = department.done ? texts.departmentDone : texts.departmentOpen(department.open);
@@ -706,99 +745,145 @@ function DepartmentHeader({
       style={styles.departmentHeader}
       testID={`shopping-dept-toggle-${department.category}`}
     >
-      <View style={[styles.chevron, expanded && styles.chevronOpen]}>
-        <Icon name="chevron" size={18} color={theme.textMuted} />
+      <View style={[styles.departmentIcon, { backgroundColor: cyan.surface }]}>
+        <Icon name={DEPARTMENT_ICONS[department.category]} size={18} color={cyan.icon} />
       </View>
       <Text style={[styles.departmentName, { color: theme.text }]} numberOfLines={2}>
         {name}
       </Text>
       <Text
-        style={[styles.departmentStatus, { color: department.done ? teal.icon : theme.textMuted }]}
+        style={[styles.departmentStatus, { color: department.done ? cyan.icon : theme.textMuted }]}
         testID={`shopping-dept-status-${department.category}`}
       >
         {status}
       </Text>
+      <View style={[styles.chevron, expanded && styles.chevronOpen]}>
+        <Icon name="chevron" size={18} color={theme.textMuted} />
+      </View>
     </Pressable>
   );
 }
 
-/** Ein Eintrag: Häkchen (großes Tippziel), Markierungen, bei eigenen Einträgen „löschen“. */
+/** Eine Abteilung als EINE Fläche mit Trennlinien (wie Bring!/Erinnerungen) statt einzelner Karten. */
+function RowGroup({ children }: { children: ReactNode }) {
+  const theme = useThemeColors();
+  return (
+    <View style={[styles.group, { backgroundColor: theme.surface, borderColor: theme.cardBorder }]}>
+      {children}
+    </View>
+  );
+}
+
+/**
+ * Ein Eintrag (24.10.2026, „wie eine echte Einkaufsliste“): runder Haken in Einkaufs-Türkis, fett die Kaufmenge
+ * („2 Packungen“), dahinter das Produkt; klein darunter Packungsgröße, wofür gebraucht und Markierungen. Die ganze
+ * Zeile ist das Tippziel (≥ 54 px). Abgehakt: durchgestrichen (die Abteilung sortiert ihn nach unten, core).
+ */
 function ShoppingItemRow({
   item,
+  usedFor,
   outsideDiet,
   disabled,
   onToggle,
   onRemove,
 }: {
   item: ShoppingListItem;
+  usedFor: string | null;
   outsideDiet: boolean;
   disabled: boolean;
   onToggle: (checked: boolean) => void;
   onRemove: (() => void) | undefined;
 }) {
   const theme = useThemeColors();
-  const teal = useAreaColors('einkaufen');
+  const cyan = useAreaColors('einkaufen');
   const texts = t.nutrition.shopping;
-  const text = shoppingItemText(item);
-  const marks = [
+  const purchase = item.isManual ? null : shoppingPurchase(item);
+  const quantity =
+    purchase !== null
+      ? purchase.quantity
+      : item.amount !== null && item.unit !== null
+        ? formatAmount(item.amount, item.unit)
+        : null;
+  const product = purchase?.product ?? item.labelDe;
+  const secondLine = [
+    purchase?.detail ?? (purchase === null && !item.isManual ? texts.toTaste : null),
+    // Markierungen vor den Rezepten (lange Rezeptnamen dürfen am Ende gekürzt werden).
     item.notInPlan ? texts.notInPlan : null,
     item.amountChanged ? texts.amountChanged : null,
     item.isManual ? texts.manual : null,
     outsideDiet ? texts.outsideDiet : null,
-  ].filter((m): m is string => m !== null);
+    // Vorrat (Öl, Gewürze): „Vorrat prüfen“ reicht – wofür, ist dort ohne Belang.
+    purchase?.kind === 'stock' ? null : usedFor,
+  ]
+    .filter((m): m is string => m !== null && m !== '')
+    .join(' · ');
+  const text = shoppingItemText(item);
   return (
     <View
-      style={[styles.item, { borderColor: theme.cardBorder, backgroundColor: theme.surface }]}
+      style={[styles.item, { borderTopColor: theme.divider }]}
       testID={`shopping-item-${item.itemKey}`}
     >
       <Pressable
         accessibilityRole="checkbox"
+        // Name = Kaufzeile (enthält die Packungsgröße); die zweite Zeile liest der Bildschirmleser danach als Text.
         accessibilityLabel={texts.checkA11y(text)}
         accessibilityState={{ checked: item.checked, disabled }}
         aria-checked={item.checked}
         disabled={disabled}
         onPress={() => onToggle(!item.checked)}
-        style={styles.itemMain}
+        style={({ pressed }) => [styles.itemMain, pressed && styles.pressed]}
         testID={`shopping-check-${item.itemKey}`}
       >
         <View
           style={[
             styles.box,
             {
-              // Design 20.10.2026: Häkchen in Einkaufs-Türkis (Kasten ≥ 3 : 1 zur Karte), Haken in Kartenfarbe.
-              borderColor: item.checked ? teal.icon : theme.textMuted,
-              backgroundColor: item.checked ? teal.icon : theme.surface,
+              // Runder Haken in Einkaufs-Türkis (Rand ≥ 3 : 1 zur Fläche), Haken in Flächenfarbe.
+              borderColor: item.checked ? cyan.icon : theme.textMuted,
+              backgroundColor: item.checked ? cyan.icon : 'transparent',
             },
           ]}
         >
           {item.checked ? (
-            <Icon name="check" size={20} strokeWidth={3} color={theme.surface} />
+            <Icon name="check" size={16} strokeWidth={3} color={theme.surface} />
           ) : null}
         </View>
         <View style={styles.flex}>
           <Text
             style={[
-              styles.itemText,
+              styles.itemLine,
               { color: item.checked ? theme.textMuted : theme.text },
               item.checked && styles.done,
             ]}
+            numberOfLines={2}
+            testID={`shopping-text-${item.itemKey}`}
           >
-            {text}
+            {quantity !== null ? <Text style={styles.itemQuantity}>{`${quantity} `}</Text> : null}
+            {product}
           </Text>
-          {marks.length > 0 ? (
-            <Text style={[styles.itemMarks, { color: theme.textMuted }]}>{marks.join(' · ')}</Text>
+          {secondLine !== '' ? (
+            <Text
+              style={[styles.itemSecond, { color: theme.textMuted }]}
+              numberOfLines={2}
+              testID={`shopping-second-${item.itemKey}`}
+            >
+              {secondLine}
+            </Text>
           ) : null}
         </View>
       </Pressable>
       {onRemove ? (
-        <Button
-          label="✕"
+        <Pressable
+          accessibilityRole="button"
           accessibilityLabel={texts.removeManual(item.labelDe)}
-          variant="secondary"
           onPress={onRemove}
           disabled={disabled}
+          hitSlop={4}
+          style={({ pressed }) => [styles.remove, pressed && styles.pressed]}
           testID={`shopping-remove-${item.itemKey}`}
-        />
+        >
+          <Icon name="trash" size={20} color={theme.textMuted} />
+        </Pressable>
       ) : null}
     </View>
   );
@@ -808,41 +893,54 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing.sm },
   flex: { flex: 1 },
   list: { gap: spacing.sm },
+  departments: { gap: spacing.md },
+  department: { gap: spacing.xs },
+  group: { borderWidth: 1, borderRadius: 14, overflow: 'hidden' },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    borderWidth: 1,
-    borderRadius: 16,
-    paddingHorizontal: spacing.sm + 4,
+    // Trennlinie statt eigener Karte; die oberste Linie verschwindet unter dem Rand der Fläche.
+    borderTopWidth: StyleSheet.hairlineWidth,
+    marginTop: -StyleSheet.hairlineWidth,
+    paddingRight: spacing.xs,
   },
   itemMain: {
     flex: 1,
-    minHeight: MIN_TOUCH + 4,
+    minHeight: 54,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.xs,
+    gap: spacing.sm + 4,
+    paddingVertical: spacing.sm,
+    paddingLeft: spacing.sm + 4,
   },
+  pressed: { opacity: 0.7 },
   box: {
-    width: 30,
-    height: 30,
+    width: 26,
+    height: 26,
     borderWidth: 2,
-    borderRadius: 9,
+    borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  itemText: { fontSize: fontSize.md },
+  itemLine: { fontSize: 17, lineHeight: 22 },
+  itemQuantity: { fontWeight: '800' },
+  itemSecond: { fontSize: fontSize.xs, lineHeight: 17, marginTop: 1 },
   done: { textDecorationLine: 'line-through' },
-  itemMarks: { fontSize: fontSize.sm },
-  department: { gap: spacing.xs, borderTopWidth: 1, paddingTop: spacing.xs },
+  remove: { width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' },
   departmentHeader: {
     minHeight: MIN_TOUCH,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
   },
-  chevron: { width: 18, height: 18 },
+  departmentIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chevron: { width: 18, height: 18, transform: [{ rotate: '0deg' }] },
   chevronOpen: { transform: [{ rotate: '90deg' }] },
   departmentName: { flex: 1, fontSize: fontSize.md, fontWeight: '700' },
   departmentStatus: { fontSize: fontSize.sm, fontWeight: '600' },

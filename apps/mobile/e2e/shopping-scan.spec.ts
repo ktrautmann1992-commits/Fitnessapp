@@ -86,15 +86,18 @@ test('Menüleiste mit „Einkaufen“, Abhaken bleibt nach dem Neuladen, alle Ha
   await expect(page.getByRole('button', { name: 'Zurück', exact: true })).toHaveCount(0);
 
   // Abhaken, neu laden → Häkchen bleibt.
-  const box = page.getByTestId('shopping-items').getByRole('checkbox').first();
+  // Über die feste Test-ID: abgehakte Einträge wandern ans Ende ihrer Abteilung (24.10.2026).
+  const firstId = (await page
+    .getByTestId('shopping-items')
+    .getByRole('checkbox')
+    .first()
+    .getAttribute('data-testid')) as string;
+  const box = page.getByTestId(firstId);
   await box.click();
   await expect(box).toHaveAttribute('aria-checked', 'true');
   await expect.poll(async () => (await items(page)).filter((i) => i.checked).length).toBe(1);
   await page.reload();
-  await expect(page.getByTestId('shopping-items').getByRole('checkbox').first()).toHaveAttribute(
-    'aria-checked',
-    'true',
-  );
+  await expect(page.getByTestId(firstId)).toHaveAttribute('aria-checked', 'true');
 
   // Alle Haken zurücksetzen (mit Rückfrage).
   await page.getByTestId('shopping-uncheck-all').click();

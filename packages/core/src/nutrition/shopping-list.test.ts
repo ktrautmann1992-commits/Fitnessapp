@@ -18,9 +18,11 @@ import {
   removeManualShoppingItem,
   roundShoppingAmount,
   setShoppingItemChecked,
+  shoppingItemRecipeIds,
   type ShoppingListItem,
   uncheckAllShoppingItems,
 } from './shopping-list';
+import { shoppingPurchase } from './shopping-buy-units';
 import { zeroNutrients } from './recipe-nutrients';
 
 const WEEK = '2026-10-12';
@@ -117,7 +119,7 @@ describe('roundShoppingAmount', () => {
 });
 
 describe('buildShoppingList', () => {
-  it('summiert über Tage und Einheiten (EL → g), Stück bleibt Stück, Prise = nach Geschmack', () => {
+  it('summiert über Tage und Einheiten (EL → g, Stück → g), Prise = nach Geschmack', () => {
     const list = buildShoppingList(
       week([
         [
@@ -135,16 +137,38 @@ describe('buildShoppingList', () => {
     const byKey = new Map(list.items.map((i) => [i.itemKey, i]));
     expect(byKey.get('reis|g')).toMatchObject({ amount: 200, unit: 'g', isPantry: true });
     expect(byKey.get('olivenoel|g')).toMatchObject({ amount: 20, unit: 'g' });
-    expect(byKey.get('huehnerei|piece')).toMatchObject({ amount: 5, unit: 'piece' });
+    const egg = N3_FOODS.get('huehnerei')?.units.piece_g ?? 1;
+    expect(byKey.get('huehnerei|g')).toMatchObject({
+      amount: roundShoppingAmount(4.5 * egg, 'g'),
+      unit: 'g',
+    });
+    expect(byKey.has('huehnerei|piece')).toBe(false);
     expect(byKey.get('salz|pinch')).toMatchObject({ amount: null, unit: null });
   });
 
-  it('Gramm-Mengen eines Stück-Lebensmittels zählen in Stück (Eier, Paprika)', () => {
+  it('EIN Eintrag je Lebensmittel: Stück, Gramm und ml zählen zusammen in Gramm (24.10.2026)', () => {
+    const pg = N3_FOODS.get('paprika')?.units.piece_g ?? 1;
     const list = buildShoppingList(
       week([[meal([ingredient('paprika', 1, 'piece'), ingredient('paprika', 100, 'g')])]]),
       N3_FOODS,
     );
-    expect(list.items.map((i) => [i.itemKey, i.amount])).toEqual([['paprika|piece', 2]]);
+    expect(list.items.map((i) => [i.itemKey, i.amount])).toEqual([
+      ['paprika|g', roundShoppingAmount(pg + 100, 'g')],
+    ]);
+    const mixed = buildShoppingList(
+      week([
+        [meal([ingredient('haferdrink', 200, 'ml'), ingredient('haferdrink', 100, 'g')])],
+        [meal([ingredient('haferdrink', 1, 'pinch')])],
+      ]),
+      N3_FOODS,
+    );
+    expect(mixed.items.map((i) => [i.itemKey, i.unit])).toEqual([['haferdrink|g', 'g']]);
+    // Nur ml (z. B. Wasser) bleibt ml.
+    const onlyMl = buildShoppingList(
+      week([[meal([ingredient('haferdrink', 250, 'ml')])]]),
+      N3_FOODS,
+    );
+    expect(onlyMl.items.map((i) => [i.itemKey, i.amount])).toEqual([['haferdrink|ml', 250]]);
   });
 
   it('nach Abteilung (feste Reihenfolge) und Name sortiert, Vorrat am Ende', () => {
@@ -378,5 +402,47 @@ describe('Gleiches Produkt im Laden (SHOPPING_SAME_PRODUCT)', () => {
     const only = new Map([['moehre', as('moehre', 'Möhre')]]);
     const list = buildShoppingList(week([[meal([g('moehre', 120)])]]), only);
     expect(list.items.map((i) => i.itemKey)).toEqual(['moehre|g']);
+  });
+});
+
+describe('Wofür gebraucht? (`shoppingItemRecipeIds`)', () => {
+  it('Rezepte je Produkt in Reihenfolge der Kochtage, ohne Doppelte, nur im Zeitraum; plus hinzugefügte', () => {
+    const plan = week([
+      [meal([ingredient('reis', 75, 'g'), ingredient('tofu', 100, 'g')], { recipeId: 'bowl' })],
+      [meal([ingredient('reis', 80, 'g')], { recipeId: 'curry' })],
+      [meal([ingredient('reis', 80, 'g')], { recipeId: 'bowl' })],
+      [meal([ingredient('reis', 80, 'g')], { recipeId: 'spaeter' })],
+    ]);
+    const map = shoppingItemRecipeIds(plan, N3_FOODS, { from: WEEK, to: addDays(WEEK, 2) }, [
+      { recipeId: 'extra', foodIds: ['reis', 'gibt-es-nicht'] },
+    ]);
+    expect(map.get('reis')).toEqual(['bowl', 'curry', 'extra']);
+    expect(map.get('tofu')).toEqual(['bowl']);
+    expect(map.has('gibt-es-nicht')).toBe(false);
+    expect(shoppingItemRecipeIds(null, N3_FOODS, { from: WEEK, to: WEEK }).size).toBe(0);
+  });
+});
+
+describe('Echter Katalog: Karotte/Karotten/Möhre → EINE Zeile in Kaufeinheiten', () => {
+  it('„1 Beutel Karotten (500 g)“ statt „5 Karotten“ und „2 Karotten“', () => {
+    const base = [...N3_FOODS.values()][0]!;
+    const food = (id: string, name: string) => ({
+      ...base,
+      id,
+      name_de: name,
+      units: {},
+      pantry: false,
+    });
+    const foods = new Map(
+      [food('karotte', 'Karotte'), food('karotten', 'Karotten'), food('moehre', 'Möhre')].map(
+        (f) => [f.id, f],
+      ),
+    );
+    const list = buildShoppingList(
+      week([[meal([ingredient('karotte', 350, 'g')])], [meal([ingredient('moehre', 100, 'g')])]]),
+      foods,
+    );
+    expect(list.items).toHaveLength(1);
+    expect(shoppingPurchase(list.items[0]!)?.text).toBe('1 Beutel Karotten (500 g)');
   });
 });

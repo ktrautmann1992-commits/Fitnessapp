@@ -2002,7 +2002,10 @@ export const SHOPPING_LIST_ROUNDING = {
  * Lebensmittel-Katalog enthält für manche Produkte mehrere Einträge (Singular/Plural, Synonyme wie Karotte/Möhre,
  * Schreibvarianten). Die Einkaufsliste zählt sie unter EINEM Eintrag zusammen (Schlüssel = Ziel-ID). Nur echte
  * Synonyme desselben Produkts – keine Ersatzprodukte, keine unterschiedlichen Fettstufen. Ist das Ziel im Katalog
- * nicht vorhanden, bleibt der ursprüngliche Eintrag. PRODUKTENTSCHEIDUNG.
+ * nicht vorhanden, bleibt der ursprüngliche Eintrag. Bewusst getrennt (verschiedene Produkte im Regal): Paprika rot/gelb,
+ * Tomate/Cherrytomaten, Spinat (Beutel zum Kochen) / Babyspinat (Salat), Romanasalat / Romanasalatherzen,
+ * Knäckebrot / Vollkorn-Knäckebrot, Schweinehack / Schweinehack mager, Gouda / Gouda gerieben (leicht).
+ * PRODUKTENTSCHEIDUNG.
  */
 export const SHOPPING_SAME_PRODUCT: Readonly<Record<string, string>> = {
   karotte: 'karotten',
@@ -2013,67 +2016,30 @@ export const SHOPPING_SAME_PRODUCT: Readonly<Record<string, string>> = {
   lauchzwiebeln: 'fruehlingszwiebeln',
   'beeren-mischung-tk': 'beerenmischung-tk',
   putenbrustaufschnitt: 'putenbrust-aufschnitt',
+  // Katalog-Prüfung 24.10.2026 (Gründer: „Same food must never appear twice“):
+  'thunfisch-im-eigenen-saft-abgetropft': 'thunfisch-dose-im-eigenen-saft-abgetropft',
+  'oliven-schwarz': 'schwarze-oliven-glas',
+  'vollkorn-tortilla': 'vollkorn-wrap',
+  backkakao: 'kakaopulver-stark-entoelt',
+  // Fertige Brühe wird aus dem Pulver gemacht – beides ist Vorrat OHNE Menge auf der Liste (`stock`), deshalb darf
+  // die (nicht vergleichbare) Grammzahl zusammengezählt werden; angezeigt wird sie nie.
+  'gemuesebruehe-zubereitet': 'gemuesebruehe-instantpulver',
 };
 
 /**
- * Einkaufs-Einheiten (Wunsch Gründer 22.10.2026: „wie im Laden“): frisches Obst/Gemüse/Kräuter erscheinen in der
- * Einkaufsliste als Stück, Bund, Knolle, Kopf, Schale bzw. Beutel; die Grammzahl steht immer dahinter und bleibt
- * maßgeblich. `grams` = typisches Gewicht EINER Einheit (Richtwerte, gerundet; Quellen: BZfE/aid
- * „Lebensmittel-Portionsgrößen“ bzw. übliche Stückgewichte im deutschen Handel, Packungsgrößen deutscher
- * Supermärkte 2026). Anzahl = aufgerundet mit `toleranceUnits` Spielraum (1,1 Zwiebeln → 1, 1,2 → 2), nie 0.
- * PRODUKTENTSCHEIDUNG – Werte ändern nur die Anzeige, nie die Mengen der Liste.
+ * Einkaufen wie im Laden (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, Gründer-Rückmeldung 24.10.2026): Jeder Eintrag aus dem
+ * Plan erscheint in Kaufeinheiten (Stück, Bund, Netz, Packung, Becher, Dose …) – Tabelle je Lebensmittel:
+ * `SHOPPING_BUY_UNITS` in nutrition/shopping-buy-unit-table.ts (mit Quellen), Rechnung `shoppingPurchase`.
+ * - `SHOPPING_BUY_UNIT_TOLERANCE`: Spielraum in Anteilen EINER Einheit – 1,1 Zwiebeln → 1 Zwiebel, 1,2 → 2; eine
+ *   500-g-Packung reicht noch für 550 g (Rezeptmengen sind Richtwerte und schon auf Kaufschritte aufgerundet).
+ * - `SHOPPING_PURCHASE_LIMITS.packPenalty`: Bei mehreren Packungsgrößen zählt jede Packung so viel „Rest“ wie dieser
+ *   Anteil der kleinsten Größe – lieber 1 × 500 g Joghurt als 3 × 150 g, aber 500 g + 250 g Quark statt 2 × 500 g.
+ * - `SHOPPING_PURCHASE_LIMITS.maxPacks`: Ab so vielen Packungen der größten Größe wird nicht mehr kombiniert (nur
+ *   Rechenschutz, kommt bei Wochenmengen nicht vor).
+ * PRODUKTENTSCHEIDUNG – reine Anzeige, die Mengen der Liste ändern sich nie.
  */
 export const SHOPPING_BUY_UNIT_TOLERANCE = 0.1;
-
-export interface ShoppingBuyUnitDefinition {
-  readonly grams: number;
-  /** Text für 1 Einheit bzw. mehrere („Zwiebel“/„Zwiebeln“, „Bund Petersilie“/„Bund Petersilie“). */
-  readonly one: string;
-  readonly many: string;
-}
-
-export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnitDefinition>> = {
-  apfel: { grams: 150, one: 'Apfel', many: 'Äpfel' },
-  avocado: { grams: 200, one: 'Avocado', many: 'Avocados' },
-  banane: { grams: 120, one: 'Banane', many: 'Bananen' },
-  basilikum: { grams: 30, one: 'Bund Basilikum', many: 'Bund Basilikum' },
-  blattsalat: { grams: 300, one: 'Kopf Blattsalat', many: 'Köpfe Blattsalat' },
-  blumenkohl: { grams: 800, one: 'Blumenkohl', many: 'Blumenkohle' },
-  brokkoli: { grams: 400, one: 'Brokkoli', many: 'Brokkoli' },
-  champignons: { grams: 250, one: 'Schale Champignons', many: 'Schalen Champignons' },
-  cherrytomaten: { grams: 250, one: 'Schale Cherrytomaten', many: 'Schalen Cherrytomaten' },
-  kirschtomaten: { grams: 250, one: 'Schale Kirschtomaten', many: 'Schalen Kirschtomaten' },
-  chinakohl: { grams: 800, one: 'Chinakohl', many: 'Chinakohle' },
-  erdbeeren: { grams: 500, one: 'Schale Erdbeeren', many: 'Schalen Erdbeeren' },
-  heidelbeeren: { grams: 125, one: 'Schale Heidelbeeren', many: 'Schalen Heidelbeeren' },
-  fruehlingszwiebel: { grams: 150, one: 'Bund Frühlingszwiebeln', many: 'Bund Frühlingszwiebeln' },
-  fruehlingszwiebeln: { grams: 150, one: 'Bund Frühlingszwiebeln', many: 'Bund Frühlingszwiebeln' },
-  lauchzwiebeln: { grams: 150, one: 'Bund Lauchzwiebeln', many: 'Bund Lauchzwiebeln' },
-  gurke: { grams: 400, one: 'Gurke', many: 'Gurken' },
-  honigmelone: { grams: 1000, one: 'Honigmelone', many: 'Honigmelonen' },
-  karotte: { grams: 80, one: 'Karotte', many: 'Karotten' },
-  karotten: { grams: 80, one: 'Karotte', many: 'Karotten' },
-  moehre: { grams: 80, one: 'Möhre', many: 'Möhren' },
-  knoblauch: { grams: 60, one: 'Knolle Knoblauch', many: 'Knollen Knoblauch' },
-  'paprika-gelb': { grams: 160, one: 'gelbe Paprika', many: 'gelbe Paprika' },
-  'paprika-rot': { grams: 160, one: 'rote Paprika', many: 'rote Paprika' },
-  'petersilie-frisch': { grams: 50, one: 'Bund Petersilie', many: 'Bund Petersilie' },
-  radieschen: { grams: 150, one: 'Bund Radieschen', many: 'Bund Radieschen' },
-  romanasalat: { grams: 300, one: 'Romanasalat', many: 'Romanasalate' },
-  'rote-zwiebel': { grams: 100, one: 'rote Zwiebel', many: 'rote Zwiebeln' },
-  rotkohl: { grams: 1000, one: 'Rotkohl', many: 'Rotkohle' },
-  rucola: { grams: 125, one: 'Schale Rucola', many: 'Schalen Rucola' },
-  salatmix: { grams: 150, one: 'Beutel Salatmix', many: 'Beutel Salatmix' },
-  'schnittlauch-frisch': { grams: 40, one: 'Bund Schnittlauch', many: 'Bund Schnittlauch' },
-  babyspinat: { grams: 125, one: 'Beutel Babyspinat', many: 'Beutel Babyspinat' },
-  spitzkohl: { grams: 800, one: 'Spitzkohl', many: 'Spitzkohle' },
-  suesskartoffel: { grams: 300, one: 'Süßkartoffel', many: 'Süßkartoffeln' },
-  tomate: { grams: 100, one: 'Tomate', many: 'Tomaten' },
-  tomaten: { grams: 100, one: 'Tomate', many: 'Tomaten' },
-  weisskohl: { grams: 1000, one: 'Weißkohl', many: 'Weißkohle' },
-  zucchini: { grams: 250, one: 'Zucchini', many: 'Zucchini' },
-  zwiebel: { grams: 100, one: 'Zwiebel', many: 'Zwiebeln' },
-};
+export const SHOPPING_PURCHASE_LIMITS = { maxPacks: 60, packPenalty: 0.25 } as const;
 
 /**
  * Übersicht und Menüleiste anpassen (docs/PLAN-EINKAUFEN-AUSDAUER.md 4, `layout.ts`): „Übersicht“ links und „Mehr“

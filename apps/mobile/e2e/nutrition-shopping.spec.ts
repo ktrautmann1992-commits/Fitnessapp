@@ -262,9 +262,17 @@ test('W22 App: „schwanger“ am Mittwoch → Plan UND Einkaufsliste angepasst,
   await page.getByTestId('shopping-range-week').click();
   await expect(page.getByTestId('shopping-range')).toContainText('12.10.2026 bis 18.10.2026');
   await showCheckedShoppingItems(page);
-  const boxes = page.getByTestId('shopping-items').getByRole('checkbox');
+  // Immer den ersten OFFENEN Eintrag abhaken (abgehakte wandern ans Ende ihrer Abteilung, 24.10.2026).
+  const open = page
+    .getByTestId('shopping-items')
+    .locator('[role="checkbox"][aria-checked="false"]');
   for (let i = 0; i < 3; i += 1) {
-    await boxes.nth(i).click();
+    const id = (await open.first().getAttribute('data-testid')) as string;
+    await page.getByTestId(id).click();
+    // Ganz erledigte Abteilungen klappen zu – deshalb über den Speicher prüfen.
+    await expect
+      .poll(async () => (await listOf(page)).items.filter((x) => x.checked).length)
+      .toBe(i + 1);
   }
   await page.getByTestId('shopping-add-label').fill('Spülmittel');
   await page.getByTestId('shopping-add').click();

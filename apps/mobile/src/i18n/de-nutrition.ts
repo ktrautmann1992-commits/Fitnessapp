@@ -605,6 +605,9 @@ export const deNutrition = {
     outsideDiet: 'passt nicht zu deiner Ernährungsform',
     manual: 'eigener Eintrag',
     checkA11y: (label: string) => `Abhaken: ${label}`,
+    /** Zweite Zeile eines Eintrags: wofür gebraucht (höchstens 2 Rezepte, Rest als „+n“, 24.10.2026). */
+    forRecipes: (titles: readonly string[], more: number) =>
+      `für ${titles.join(', ')}${more > 0 ? ` +${more}` : ''}`,
     removeManual: (label: string) => `Eintrag löschen: ${label}`,
     addTitle: 'Eigener Eintrag',
     addLabel: 'Was brauchst du noch?',

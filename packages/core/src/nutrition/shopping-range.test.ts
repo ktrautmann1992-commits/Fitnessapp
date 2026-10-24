@@ -297,6 +297,18 @@ describe('shoppingDepartments (Abteilungen auf- und zuklappen)', () => {
     expect(after?.checked).toBe(first.items.length);
   });
 
+  it('abgehakte Einträge wandern ans Ende ihrer Abteilung', () => {
+    const data = input(female, MONDAY);
+    const list = newShoppingList(buildMealPlanWeek(data), data);
+    const dept = shoppingDepartments(list.items).find((d) => d.items.length >= 2);
+    if (dept === undefined) throw new Error('Abteilung mit 2 Einträgen erwartet');
+    const firstKey = (dept.items[0] as { itemKey: string }).itemKey;
+    const ticked = setShoppingItemChecked(list, firstKey, true);
+    const after = shoppingDepartments(ticked.items).find((d) => d.category === dept.category);
+    expect(after?.items.at(-1)?.itemKey).toBe(firstKey);
+    expect(after?.items[0]?.checked).toBe(false);
+  });
+
   it('leere Liste → keine Abteilungen', () => {
     expect(shoppingDepartments([])).toEqual([]);
   });
