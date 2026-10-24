@@ -330,6 +330,7 @@ describe('applySessionLog', () => {
         duration_s: 1800,
         distance_m: 5000,
         elevation_m: null,
+        e_bike: false,
       },
     ]);
     expect(next.sessionLogs[0]).toMatchObject({
@@ -359,6 +360,7 @@ describe('Löschen und Verweise', () => {
         duration_s: 60,
         distance_m: null,
         elevation_m: null,
+        e_bike: false,
       },
     ],
   });

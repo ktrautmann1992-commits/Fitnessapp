@@ -662,6 +662,7 @@ describe('Ausdauer-Eintrag (Etappe C2)', () => {
       minutes: '33',
       distanceKm: '6',
       elevationM: '45',
+      eBike: false,
     });
     expect(edit?.editing).toBe(true);
   });

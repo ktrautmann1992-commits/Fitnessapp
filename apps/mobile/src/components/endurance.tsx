@@ -115,6 +115,12 @@ export function TotalsView({ summary }: { summary: EndurancePeriodSummary }) {
           ))}
         </View>
       ) : null}
+      {/* E-Bike zählt bei „Rad“ mit und steht hier getrennt (23.10.2026). */}
+      {summary.total.eBikeCount > 0 ? (
+        <Body muted testID="totals-e-bike">
+          {E.eBike.ofWhich(summary.total.eBikeDistanceM, summary.total.eBikeCount)}
+        </Body>
+      ) : null}
       {summary.weeks.length > 0 && summary.total.count > 0 ? (
         <View style={styles.bars}>
           {summary.weeks.map((w) => (
@@ -188,7 +194,9 @@ export function ActivityRow({
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={E.list.itemA11y(activity.name, day, distance)}
+      accessibilityLabel={`${E.list.itemA11y(activity.name, day, distance)}${
+        activity.eBike ? `, ${E.eBike.sport}` : ''
+      }`}
       testID={`endurance-item-${activity.key}`}
       style={({ pressed }) => [
         styles.row,
@@ -211,7 +219,9 @@ export function ActivityRow({
           {activity.isFavorite ? '★ ' : ''}
           {activity.name}
         </Text>
-        <Text style={{ color: theme.textMuted }}>{`${E.sports[activity.sport]} · ${day}`}</Text>
+        <Text style={{ color: theme.textMuted }}>
+          {`${activity.eBike ? E.eBike.sport : E.sports[activity.sport]} · ${day}`}
+        </Text>
         <Text style={{ color: theme.text }}>
           {`${distance} · ${durationText(activity.durationS)}`}
         </Text>

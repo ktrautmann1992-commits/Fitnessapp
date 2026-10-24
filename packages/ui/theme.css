@@ -104,6 +104,14 @@
   --hero-muted: var(--brand-grau-dunkel);
   --hero-accent: var(--brand-himmel);
   --hero-border: var(--brand-schwarz);
+  /* Ziel-Ringe auf der Hero-Karte (Ernährung, 23.10.2026): Spur, über dem Ziel Dunkelrot, Makro-Farben */
+  --hero-track: var(--brand-graphit-hell);
+  --hero-over: #dc2626;
+  --hero-over-text: #fca5a5;
+  --hero-over-badge: #991b1b;
+  --hero-macro-carbs: #7dd3fc;
+  --hero-macro-protein: #c4b5fd;
+  --hero-macro-fat: #f9a8d4;
 
   /* Karten: zarter Rand (Deko, kein Bedienelement-Rahmen) und Trennlinien in Listen */
   --card-border: #e3e7ef;
@@ -207,6 +215,13 @@
     --hero-muted: var(--brand-grau-dunkel);
     --hero-accent: var(--brand-himmel);
     --hero-border: var(--brand-graphit-hell);
+    --hero-track: #2b3242;
+    --hero-over: #dc2626;
+    --hero-over-text: #fca5a5;
+    --hero-over-badge: #991b1b;
+    --hero-macro-carbs: #7dd3fc;
+    --hero-macro-protein: #c4b5fd;
+    --hero-macro-fat: #f9a8d4;
     --card-border: var(--brand-graphit-hell);
     --card-divider: #1f2430;
     --large-text: var(--brand-hell);
@@ -266,6 +281,13 @@
   --hero-muted: var(--brand-grau-dunkel);
   --hero-accent: var(--brand-himmel);
   --hero-border: var(--brand-graphit-hell);
+  --hero-track: #2b3242;
+  --hero-over: #dc2626;
+  --hero-over-text: #fca5a5;
+  --hero-over-badge: #991b1b;
+  --hero-macro-carbs: #7dd3fc;
+  --hero-macro-protein: #c4b5fd;
+  --hero-macro-fat: #f9a8d4;
   --card-border: var(--brand-graphit-hell);
   --card-divider: #1f2430;
   --large-text: var(--brand-hell);

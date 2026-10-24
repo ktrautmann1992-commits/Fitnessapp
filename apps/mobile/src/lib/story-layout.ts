@@ -35,7 +35,12 @@ const S = t.endurance.story;
 
 export function storyLayout(card: StoryCard): StoryLayout {
   const texts: StoryText[] = [];
-  const title = card.kind === 'endurance' ? t.endurance.sportNouns[card.sport] : card.title;
+  const title =
+    card.kind === 'endurance'
+      ? card.eBike
+        ? t.endurance.eBike.noun
+        : t.endurance.sportNouns[card.sport]
+      : card.title;
   texts.push({ text: title, x: STORY_PAD, y: 420, size: 76, bold: true, muted: false });
   if (card.date) {
     texts.push({

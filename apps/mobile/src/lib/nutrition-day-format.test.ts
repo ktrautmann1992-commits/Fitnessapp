@@ -6,6 +6,7 @@ import {
   mealCardKcalText,
   mealCardPreview,
   mealCardTitle,
+  percentText,
   ringCenterText,
 } from './nutrition-day-format';
 
@@ -60,6 +61,32 @@ describe('macroText', () => {
       value: '47 / 222 g',
       a11y: 'Eiweiß: 47 von 222 Gramm gegessen',
     });
+  });
+
+  it('über dem Ziel: Ansage nennt es in Worten (Ring wird rot, Farbe nie allein)', () => {
+    const macro = macroProgress(180, 140);
+    if (!macro) throw new Error('Makro erwartet');
+    expect(macroText('Eiweiß', macro)).toEqual({
+      value: '180 / 140 g',
+      a11y: 'Eiweiß: 180 von 140 Gramm gegessen, über dem Ziel',
+    });
+  });
+
+  it('genau am Ziel ist nicht „über dem Ziel“', () => {
+    const macro = macroProgress(140, 140);
+    if (!macro) throw new Error('Makro erwartet');
+    expect(macroText('Eiweiß', macro).a11y).toBe('Eiweiß: 140 von 140 Gramm gegessen');
+  });
+});
+
+describe('percentText', () => {
+  it('ganze Prozent, gekappt und abgesichert', () => {
+    expect(percentText(0)).toBe('0 %');
+    expect(percentText(129)).toBe('129 %');
+    expect(percentText(999)).toBe('999 %');
+    expect(percentText(1000)).toBe('>999 %');
+    expect(percentText(Number.NaN)).toBe('0 %');
+    expect(percentText(-3)).toBe('0 %');
   });
 });
 

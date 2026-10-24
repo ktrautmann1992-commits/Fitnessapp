@@ -1,12 +1,13 @@
 import { findEquipment, WORKOUT_LIMITS, type Workout, workoutTileSummary } from '@fitnessapp/core';
-import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
+import { areaColors, fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { t } from '@/i18n';
+import { appFont } from '@/lib/fonts';
 import { useThemeColors } from '@/lib/theme';
 
 import { DashboardTile } from './dashboard';
-import { IconChip, StatValue, useAreaColors } from './design';
+import { HeroSurface, Icon, IconChip, StatValue, useAreaColors } from './design';
 import { Body, MIN_TOUCH } from './ui';
 import { Text } from '@/components/text';
 
@@ -157,7 +158,46 @@ export function WorkoutsTile({
   );
 }
 
+/**
+ * Kopf des Reiters „Workouts“ (Design 23.10.2026): dunkle Hero-Karte in Workout-Violett mit Bestand und heute
+ * Erledigtem (Zahlen aus packages/core `workoutTileSummary`, wie die Kachel der Übersicht).
+ */
+export function WorkoutsHero({
+  workouts,
+  logs,
+  today,
+}: {
+  workouts: readonly Workout[];
+  logs: readonly { readonly performed_on: string; readonly source: string }[];
+  today: string;
+}) {
+  const summary = workoutTileSummary(workouts, logs, today);
+  const T = t.workouts.tile;
+  // Kennzeile auf Dunkel: Violett der Dunkel-Palette (≥ 4,5 : 1, packages/ui tokens.test.ts).
+  const accent = areaColors.dark.workouts.icon;
+  return (
+    <HeroSurface area="workouts" testID="workouts-hero">
+      <View style={styles.heroEyebrow}>
+        <Icon name="stopwatch" size={16} color={accent} strokeWidth={2.2} />
+        <Text style={[styles.heroEyebrowText, appFont('bold'), { color: accent }]}>
+          {t.workouts.hero.eyebrow}
+        </Text>
+      </View>
+      <StatValue
+        value={String(summary.total)}
+        label={T.statLabel(summary.withoutEquipment)}
+        size="lg"
+      />
+      {summary.doneToday > 0 ? (
+        <Body testID="workouts-hero-done">{T.doneToday(summary.doneToday)}</Body>
+      ) : null}
+    </HeroSurface>
+  );
+}
+
 const styles = StyleSheet.create({
+  heroEyebrow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  heroEyebrowText: { fontSize: fontSize.xs, letterSpacing: 0.6, textTransform: 'uppercase' },
   cardHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   starsRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
   stars: { fontSize: fontSize.lg, letterSpacing: 2 },

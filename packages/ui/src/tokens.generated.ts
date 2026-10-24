@@ -215,6 +215,13 @@ export const heroColors = {
     muted: '#B4BDD0',
     accent: '#8DB0FF',
     border: '#0A0C10',
+    track: '#262C3A',
+    over: '#DC2626',
+    overText: '#FCA5A5',
+    overBadge: '#991B1B',
+    macroCarbs: '#7DD3FC',
+    macroProtein: '#C4B5FD',
+    macroFat: '#F9A8D4',
   },
   dark: {
     background: '#151922',
@@ -222,6 +229,13 @@ export const heroColors = {
     muted: '#B4BDD0',
     accent: '#8DB0FF',
     border: '#262C3A',
+    track: '#2B3242',
+    over: '#DC2626',
+    overText: '#FCA5A5',
+    overBadge: '#991B1B',
+    macroCarbs: '#7DD3FC',
+    macroProtein: '#C4B5FD',
+    macroFat: '#F9A8D4',
   },
 } as const;
 

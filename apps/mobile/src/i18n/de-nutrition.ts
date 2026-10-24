@@ -581,6 +581,8 @@ export const deNutrition = {
     title: 'Einkaufsliste',
     open: 'Einkaufsliste',
     range: (from: string, to: string) => `Einkauf für ${from} bis ${to}`,
+    /** Kopf „Einkaufen“ (Hero-Karte): „3 von 24 abgehakt“. */
+    progress: (checked: number, total: number) => `${checked} von ${total} abgehakt`,
     rangeTitle: 'Zeitraum',
     rangeFrom: 'Von',
     rangeTo: 'Bis',

@@ -388,6 +388,9 @@ const DAIRY_NEGATIVES = [
   // (Kandidatenlauf 38367139392). Wirkt nur auf die Trefferspanne im selben Wort – „Schlagobers“ bleibt Milch.
   'oberschale',
   'oberschenkel',
+  // Pflanzliche Käse-Alternativen: BLS „Käsealternative, Basis Pflanzenfett/Cashewkerne, vegan“ (Kandidatenlauf
+  // 40093377661). Nur das ganze Wort – „Käse“ allein und „Käseersatz“ bleiben Milch (sichere Richtung).
+  'kaesealternative',
 ] as const;
 
 /** Glutenfreie Getreide/Stärken: Vorsilben vor „Mehl/Nudeln/Grieß …“ (R2-S1). */

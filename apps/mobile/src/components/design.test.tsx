@@ -7,6 +7,7 @@ import {
   AreaButton,
   AreaProgress,
   HeroCard,
+  HeroSurface,
   Icon,
   ICON_NAMES,
   IconButton,
@@ -20,7 +21,11 @@ import {
   SectionLabel,
   StatValue,
   Tile,
+  TileTone,
 } from './design';
+import { useThemeColors } from '@/lib/theme';
+import { colors } from '@fitnessapp/ui';
+import { Text } from '@/components/text';
 import { ProgressRing as NutritionRing } from './nutrition-day-overview';
 
 afterEach(cleanup);
@@ -157,6 +162,44 @@ describe('HeroCard', () => {
   it('zeigt ohne Aktion keinen Knopf', () => {
     const view = render(<HeroCard eyebrow="Training heute" title="Ruhetag" />);
     expect(byRole(view, 'button')).toHaveLength(0);
+  });
+});
+
+describe('Farbige Hero-Flächen (Design 23.10.2026)', () => {
+  function TextColor() {
+    const theme = useThemeColors();
+    return <Text testID="probe">{theme.text}</Text>;
+  }
+
+  it('HeroSurface rendert den Inhalt in der Dunkel-Palette (lesbar auf der dunklen Fläche)', () => {
+    const view = render(
+      <HeroSurface area="ernaehrung" testID="surface">
+        <TextColor />
+      </HeroSurface>,
+    );
+    expect(view.querySelector('[data-testid="probe"]')?.textContent).toBe(colors.dark.text);
+  });
+
+  it('TileTone „hero“ macht Kacheln dunkel, ohne Rolle oder Namen zu ändern', () => {
+    const view = render(
+      <TileTone tone="hero">
+        <Tile
+          area="workouts"
+          icon="stopwatch"
+          title="Workouts"
+          onPress={() => undefined}
+          role="link"
+        />
+        <TextColor />
+      </TileTone>,
+    );
+    expect(byRole(view, 'link')[0]?.getAttribute('aria-label')).toBe('Workouts');
+    expect(view.querySelector('[data-testid="probe"]')?.textContent).toBe(colors.dark.text);
+  });
+
+  it('ohne TileTone bleibt die normale Palette', () => {
+    const view = render(<TextColor />);
+    expect(view.querySelector('[data-testid="probe"]')?.textContent).toBe(colors.light.text);
   });
 });
 

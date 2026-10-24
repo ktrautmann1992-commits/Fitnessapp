@@ -32,6 +32,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AreaButton, Icon } from '@/components/design';
+import { BikeTypeChoice, EBikeBadge, useBikeChoice } from '@/components/e-bike';
 import { RouteSketch } from '@/components/endurance';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
@@ -94,6 +95,8 @@ export default function RecordScreen() {
     demo?: string;
     base?: string;
     step?: string;
+    /** E-Bike-Wahl vom Start („1“/„0“); fehlt (z. B. nach Absturz) → zuletzt genutzte Wahl dieses Geräts. */
+    ebike?: string;
   }>();
   const router = useRouter();
   const app = useApp();
@@ -114,6 +117,7 @@ export default function RecordScreen() {
   const sport: TrackedRouteSport =
     current?.state.sport ?? (isSport(params.sport) ? params.sport : 'run');
   const demo = params.demo === '1';
+  const eBikeParam = params.ebike === '1' ? true : params.ebike === '0' ? false : null;
   // Laufende (bzw. wiederhergestellte) Aufzeichnung dieses Kontos: direkt Live-Ansicht bzw. Speichern zeigen.
   const owned = current && userId && current.state.ownerUserId === userId ? current : null;
   const phase: Phase =
@@ -318,6 +322,7 @@ export default function RecordScreen() {
       <SaveView
         onSaved={(id) => router.replace(`/ausdauer/${id}` as Href)}
         onDiscarded={() => router.replace('/ausdauer' as Href)}
+        initialEBike={eBikeParam}
         onResume={async () => {
           try {
             await resumeActiveRecording();
@@ -339,7 +344,14 @@ export default function RecordScreen() {
   const time = durationText(recordingElapsedS(current.state, now));
   const distance = stats ? distanceText(stats.distanceM) : '0,00 km';
   return (
-    <Screen area="ausdauer" icon="run" title={E.live.title(E.sports[sport])} testID="record-live">
+    <Screen
+      area="ausdauer"
+      icon="run"
+      title={E.live.title(
+        sport === 'bike' && eBikeParam === true ? E.eBike.sport : E.sports[sport],
+      )}
+      testID="record-live"
+    >
       {current.mode === 'demo' ? <Notice tone="info">{E.live.demo}</Notice> : null}
       {status === 'recording' && signal !== 'ok' ? (
         <Notice tone="warning" testID={`record-gps-${signal}`}>
@@ -464,11 +476,14 @@ function SaveView({
   onDiscarded,
   onResume,
   limitNotice,
+  initialEBike,
 }: {
   onSaved: (id: string) => void;
   onDiscarded: () => void;
   onResume: () => Promise<void>;
   limitNotice: boolean;
+  /** Wahl beim Start; null = zuletzt genutzte Wahl dieses Geräts (sonst Fahrrad). */
+  initialEBike: boolean | null;
 }) {
   const app = useApp();
   const current = useRecordingSession();
@@ -483,6 +498,10 @@ function SaveView({
   const [favorite, setFavorite] = useState(false);
   const [difficulty, setDifficulty] = useState<RouteDifficulty | 'none'>('none');
   const [note, setNote] = useState('');
+  // E-Bike (nur beim Rad): Wahl beim Start, sonst die zuletzt genutzte; hier noch änderbar.
+  const bikeChoice = useBikeChoice(app.session?.userId ?? null);
+  const [eBikePicked, setEBikePicked] = useState<boolean | null>(initialEBike);
+  const eBike = sport === 'bike' && (eBikePicked ?? bikeChoice.eBike ?? false);
   const planned = useMemo(
     () => (app.rows && summary ? plannedCandidate(app.rows, summary, today) : null),
     [app.rows, summary, today],
@@ -518,6 +537,7 @@ function SaveView({
           today,
           now: new Date().toISOString(),
           newId,
+          eBike,
         });
         if (draft) {
           const outcome = await app.submitWorkout(draft);
@@ -540,12 +560,14 @@ function SaveView({
         baseRouteId: current.state.baseRouteId,
         sessionLogId: logId,
         source: 'recorded',
+        eBike,
       });
       if (!payload) {
         setError(name.trim() === '' ? E.save.nameHint : E.save.invalid);
         return;
       }
       await app.backend.saveTrackedRoute(payload);
+      if (sport === 'bike') bikeChoice.remember(eBike);
       await endRecording();
       forgetTrackedRoutes();
       // Wächter S1 N2: save_tracked_route erhöht die Revision des Eintrags → neu laden.
@@ -574,6 +596,7 @@ function SaveView({
             <Body testID="record-save-distance">{distanceText(summary.distanceM)}</Body>
             <Body>{durationText(summary.durationS)}</Body>
             <Body muted>{averagePaceOrSpeedText(sport, summary.movingS, summary.distanceM)}</Body>
+            {eBike ? <EBikeBadge testID="record-save-e-bike" /> : null}
           </View>
         </View>
       </Card>
@@ -603,6 +626,9 @@ function SaveView({
             maxLength={TRACKED_ROUTE_LIMITS.nameMaxLength}
             testID="record-name"
           />
+          {sport === 'bike' ? (
+            <BikeTypeChoice eBike={eBike} onChange={setEBikePicked} testID="record-bike-type" />
+          ) : null}
           <Checkbox
             label={E.save.favorite}
             checked={favorite}

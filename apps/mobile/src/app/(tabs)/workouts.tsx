@@ -27,7 +27,7 @@ import {
   Notice,
   OptionButton,
 } from '@/components/ui';
-import { WorkoutCard } from '@/components/workouts';
+import { WorkoutCard, WorkoutsHero } from '@/components/workouts';
 import { t } from '@/i18n';
 import { berlinTodayIso } from '@/lib/format';
 import { useApp } from '@/state/app-state';
@@ -124,6 +124,7 @@ export default function WorkoutsScreen() {
       ) : null}
       {workouts && workouts.length > 0 ? (
         <>
+          <WorkoutsHero workouts={workouts} logs={app.rows?.sessionLogs ?? []} today={today} />
           <Card>
             <View style={styles.section} testID="workouts-filters">
               <Heading level={2}>{t.workouts.filters.title}</Heading>

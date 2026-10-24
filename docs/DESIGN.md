@@ -596,13 +596,72 @@ Bausteine in `apps/mobile/src/components/nutrition-day-overview.tsx` (eigenes Al
 kopiert; `ProgressRing` liegt seit 20.10.2026 in `components/design.tsx` und hat zusätzlich `color`/`trackColor`):
 
 - **`ProgressRing`** (react-native-svg): Spur in `--color-border`, Füllung in `--color-primary` ab 12 Uhr im
-  Uhrzeigersinn, abgerundete Enden. Über dem Ziel eine **zweite Runde in `--color-text`** (neutral, kein Rot/Orange –
-  „zu viel“ ist keine Warnung). Die Grafik ist für Bildschirmleser ausgeblendet; die Ansage kommt in Worten vom Rahmen
-  („1.391 kcal übrig von 2.869 kcal Tagesziel“). Groß 152 px (Strich 12), klein 44 px (Strich 5).
-- **`DayOverviewCard`**: Karte „Übersicht“ – links „Gegessen“, Mitte Ring mit Zahl (`displayFont`, `--font-size-xl`) und
-  „übrig“/„zu viel“, rechts „Verbrannt“ bzw. „Ziel“; darunter drei Makro-Balken nebeneinander (8 px hoch, Spur
-  `--color-border`, Füllung `--color-primary`, Text „47 / 222 g“ in `--color-text-muted`).
+  Uhrzeigersinn, abgerundete Enden. Die frühere zweite Runde in `--color-text` über dem Ziel ist **seit 23.10.2026
+  ersetzt** (Gründer-Wunsch „Ist der Wert überschritten, wird es Dunkelrot“): siehe „Ziel-Ringe Ernährung“ unten. Die
+  Grafik ist für Bildschirmleser ausgeblendet; die Ansage kommt in Worten vom Rahmen („1.391 kcal übrig von 2.869 kcal
+  Tagesziel“). Groß 152 px (Strich 12), klein 44 px (Strich 5).
+- **`DayOverviewCard`** (seit 23.10.2026 dunkle Hero-Karte, siehe unten): Kennzeile „Übersicht“ in Grün, links
+  „Gegessen“, Mitte Ring mit Zahl (`displayFont`, `--font-size-xl`) und „übrig“/„zu viel“, rechts „Verbrannt“ bzw.
+  „Ziel“; darunter drei **Makro-Ringe** (76 px, Strich 8) mit Prozent in der Mitte, Name in der Makro-Farbe und
+  „47 / 222 g“.
 - **`MealCard`**: Karte je Mahlzeit mit kleinem Ring, Titel, „317 / 606 kcal“, Vorschau (2 Zeilen) und rundem
   **„+“-Knopf** (48 × 48 px, `--color-primary`, Zeichen in `--color-primary-text`).
 - Farbe nie allein: jede Zahl steht zusätzlich als Text daneben. Alle Werte rechnet `packages/core`
   (`nutrition/day-ring.ts`); die Bausteine zeigen nur an.
+
+---
+
+## Farbige Hero-Karten und Ziel-Ringe (23.10.2026)
+
+Gründer-Wunsch: „In der Kachel Tagesansicht mit kcal noch Kreisdiagramme, wieviel g Protein, Kohlenhydrate, Fette
+bereits erreicht sind. Füllt sich für das Tagesziel. Ist der Wert überschritten, wird es Dunkelrot.“ und „Die Kacheln …
+farbig eingefärbt, wie im zweiten Anhang (‚Training heute‘). Allgemein mehr Farben.“
+
+### Muster „Hero-Karte mit Bereichsfarbe“
+
+- **`HeroSurface`** (`components/design.tsx`, Props `area`, `tint`): Fläche wie „Training heute“ (`--hero-background`:
+  hell Schwarz, dunkel Graphit), darauf die Bereichsfarbe (`areaColors.dark[area].strong`) als **Einfärbung**:
+  `tint="full"` = ganze Fläche 10 % + Schein oben rechts bis 22 % (`HERO_TINT`); `tint="corner"` = nur der Schein in
+  der Ecke (für Karten mit Ziel-Ringen, damit der rote Ring auf reiner Hero-Fläche liegt).
+- **Alles in einer Hero-Fläche rendert in der Dunkel-Palette** (`ColorSchemeOverride` in `lib/theme.ts`):
+  `useThemeColors`, `useAreaColors`, Knöpfe, Ringe und Balken darin nehmen automatisch die dunklen Werte – die
+  Dunkel-Palette ist auf genau diesen Flächen geprüft. Kennzeile/Icon in `areaColors.dark[area].icon`.
+- **`HeroCard`** hat `area` (Standard `training`), **`Tile`** und **`DashboardTile`** haben `tone="hero"`; **`TileTone`**
+  setzt das für ganze Bereiche (Übersicht), damit Kacheln wie Schritte/Ausdauer auf anderen Bildschirmen Karten bleiben.
+  Icon-Chip auf Dunkel: `IconChip solid` (Fläche in der Akzentfarbe, Icon Schwarz).
+- **Wo:** Übersicht – Training heute (blau), Wettkampf (orange), Workouts (violett), Ernährung heute (grün), Ausdauer
+  und Schritte (orange) dunkel; **Körperdaten, Fortschritt, Schnellzugriffe bleiben helle Karten** mit Farb-Chip (damit
+  nicht alles schwarz wird). Ernährung: Karte „Übersicht“ (grün). Workouts: Kopf „Deine Workout-Bibliothek“ (violett).
+  Einkaufen: Kopf „Einkaufsliste“ mit Zeitraum und „3 von 18 abgehakt“ + Balken (türkis, Zahlen aus core
+  `shoppingListProgress`). Training „Heute“: Hero-Karte mit blauem Schein (sonst unverändert).
+
+### Ziel-Ringe Ernährung (kcal und Makros)
+
+- Regel in `packages/core` (`nutrition/day-ring.ts`): **`goalFill(eaten, goal)`** bzw. `macroProgress(...).over` und
+  `calorieRing(...).state === 'over'`. Gerundet wie angezeigt, **ohne Toleranz**: genau 100 % ist nicht drüber, 1 g mehr
+  schon. Ziel fehlt/0/ungültig → kein Ring; ungültig gegessen → 0. Füllung gekappt auf 1.
+- **Über dem Ziel:** Ring **voll in Rot** (`--hero-over` `#dc2626`), Zahl in `--hero-over-text` `#fca5a5`, dazu die
+  **dunkelrote Plakette „über dem Ziel“** (`--hero-over-badge` `#991b1b`, weiße Schrift 8,3 : 1) und die Ansage
+  „…, über dem Ziel“. Warum nicht der ganze Ring in `#991b1b`: auf der dunklen Karte hätte er nur 2,4 : 1 bzw. 2,1 : 1
+  (WCAG 1.4.11 verlangt 3 : 1) – das Dunkelrot steckt deshalb in der Plakette, der Ring nimmt das kräftige Rot
+  (4,1 : 1 bzw. 3,6 : 1). Damit ist die frühere Regel „zu viel neutral, kein Rot“ für diese Ringe ersetzt; die Sprache
+  bleibt sachlich (keine Wertung wie „zu viel gegessen“).
+- **Makro-Farben** (nur auf der Hero-Karte; je ≥ 4,5 : 1, auch auf der grünen Einfärbung):
+
+  | Makro          | Token                  | Hex                              |
+  | -------------- | ---------------------- | -------------------------------- |
+  | Kohlenhydrate  | `--hero-macro-carbs`   | `#7dd3fc`                        |
+  | Eiweiß         | `--hero-macro-protein` | `#c4b5fd`                        |
+  | Fett           | `--hero-macro-fat`     | `#f9a8d4`                        |
+  | Spur der Ringe | `--hero-track`         | hell `#262c3a`, dunkel `#2b3242` |
+
+  Bewusst **kein Gelb/Bernstein** für Kohlenhydrate: Signal-Orange und `--color-caution` (Gelb) sind Warnfarben; die
+  Makro-Farbtöne liegen ≥ 30° davon und vom Rot entfernt (Test in `tokens.test.ts`).
+
+- **Übersicht-Kachel „Ernährung heute“:** kleiner kcal-Ring plus drei Mini-Ringe (34 px) mit „KH“, „EW“, „Fett“
+  (Ansage mit vollem Namen und Gramm); über dem Ziel rot mit „↑“ und „über dem Ziel“ in der Ansage.
+- **Kalorienzahlen aus / Schwangerschaft:** wie bisher keine Karte „Übersicht“ und keine Ringe – damit auch keine
+  Makro-Ringe (gleiches Verhalten wie die alten Makro-Balken).
+- Prüfungen: `packages/ui/src/tokens.test.ts` („Ziel-Ringe auf der Hero-Karte“, „Eingefärbte Hero-Flächen bleiben
+  lesbar“ mit schlimmstem Fall der Einfärbung), `packages/core/src/nutrition/day-ring.test.ts` (`goalFill`),
+  `apps/mobile/e2e/nutrition-macro-rings.spec.ts` (Eiweiß über dem Ziel: Plakette, Farbe, Ansage).

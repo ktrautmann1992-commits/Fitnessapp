@@ -224,6 +224,7 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
       duration_s: 2370,
       distance_m: 6200,
       elevation_m: 40,
+      e_bike: false,
     });
     return rows;
   }
