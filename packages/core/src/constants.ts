@@ -1226,6 +1226,13 @@ export const ACTIVITY_FACTORS = {
  * - Schwimmen 5,0 / 5,8: 5,8 = 18310 „swimming laps, freestyle, front crawl, slow, light or moderate effort“;
  *   für 5,0 ist kein Code bestätigt – prüfen.
  * - Unbekannte Sportart 7,0: PRODUKTENTSCHEIDUNG (höchster lockerer Wert, sichere Richtung).
+ * - E-Bike 4,0 / 6,0 (`eBike`, Gründer-Wunsch 23.10.2026 „Fahrrad oder E-Bike“): neu im 2024 Adult Compendium
+ *   (Herrmann 2024, Abschnitt Bicycling; in der Ausgabe 2011 gab es keine E-Bike-Codes): 01088 „e-bike, high
+ *   electronic support“ 4,0 MET (= `low`, sehr locker mit viel Unterstützung) / 01084 „e-bike, light electronic
+ *   support“ 6,0 MET (= `high`); `fallback` wie oben der höhere Wert. 01080 „e-bike, no electronic support“ 6,8 MET
+ *   entspricht dem normalen Rad und wird nicht genutzt. Nur für eigene Einträge/Aufzeichnungen mit Sportart Rad –
+ *   Pläne bleiben normales Rad. Werte aus der Suche nach dem Compendium (pacompendium.com), Wortlaut der Codes NICHT
+ *   gegen das Original geprüft – VOR LIVEGANG FACHLICH PRÜFEN.
  */
 export const TRAINING_MET = {
   strength: 3.5,
@@ -1236,6 +1243,8 @@ export const TRAINING_MET = {
     swim: { low: 5.0, high: 5.8, fallback: 5.8 },
   },
   unknownEndurance: 7.0,
+  /** Rad mit elektrischer Unterstützung (nur mit Sportart Rad, siehe oben). */
+  eBike: { low: 4.0, high: 6.0, fallback: 6.0 },
   /** `effort_target` bis einschließlich diesem Wert gilt als „sehr locker“. */
   lowEffortMax: 2,
 } as const;

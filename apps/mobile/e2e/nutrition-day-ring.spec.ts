@@ -6,7 +6,7 @@ import { heading } from './plan-helpers';
 /**
  * Tagesansicht Ernährung mit Kalorien-Ring (Gründer-Wunsch 20.10.2026, docs/HANDY-ANLEITUNG.md Teil 7r) im TESTMODUS:
  * „Heute“ + KW, Ring „übrig“ mit Ansage in Worten, Gegessen/Verbrannt, Makro-Balken, vier Mahlzeiten-Karten mit „+“
- * (vorgewählte Mahlzeit im Eintrage-Dialog), neutrale Überschreitung, künftiger Tag, offline. Fester Start: Montag,
+ * (vorgewählte Mahlzeit im Eintrage-Dialog), Überschreitung (Ring rot + „über dem Ziel“, Gründer-Wunsch 23.10.2026), künftiger Tag, offline. Fester Start: Montag,
  * 12.10.2026, 9 Uhr (Trainingstag).
  */
 
@@ -24,7 +24,7 @@ async function quickEntry(page: Page, label: string, kcal: string) {
   await page.getByTestId('food-log-quick-add').click();
 }
 
-test('Ring, Makros, Mahlzeiten-Karten mit „+“, Überschreitung neutral, künftiger Tag, offline', async ({
+test('Ring, Makros, Mahlzeiten-Karten mit „+“, Überschreitung rot mit Worten, künftiger Tag, offline', async ({
   page,
   context,
 }) => {
@@ -52,6 +52,7 @@ test('Ring, Makros, Mahlzeiten-Karten mit „+“, Überschreitung neutral, kün
   );
   await expect(page.getByTestId('nutrition-ring-eaten')).toContainText('Gegessen');
   await expect(page.getByTestId('nutrition-ring-hint')).toHaveText('Noch nichts eingetragen.');
+  await expect(page.getByTestId('nutrition-ring-over')).toHaveCount(0);
   // Montag = Trainingstag: „Verbrannt“, im Ziel enthalten.
   await expect(page.getByTestId('nutrition-ring-burned')).toContainText('im Ziel enthalten');
   for (const macro of ['carbs', 'protein', 'fat']) {
@@ -94,7 +95,7 @@ test('Ring, Makros, Mahlzeiten-Karten mit „+“, Überschreitung neutral, kün
   await expect(ring).toContainText((goal - 400).toLocaleString('de-DE'));
   await expect(page.getByTestId('nutrition-ring-hint')).toHaveCount(0);
 
-  // Snacks „+“ → 3.000 kcal → neutral „zu viel“, keine Warnung.
+  // Snacks „+“ → 3.000 kcal → „zu viel“, Ring voll in Rot und Plakette „über dem Ziel“ (Worte, nicht nur Farbe).
   await page.getByTestId('meal-card-add-snacks').click();
   await expect(
     page.getByRole('radiogroup', { name: 'Mahlzeit' }).getByRole('radio', { name: 'Snack' }),
@@ -108,6 +109,7 @@ test('Ring, Makros, Mahlzeiten-Karten mit „+“, Überschreitung neutral, kün
   await expect(ring).toContainText('zu viel');
   await expect(ring).toContainText((3400 - goal).toLocaleString('de-DE'));
   await expect(ring).toHaveAttribute('aria-label', /kcal mehr als dein Tagesziel von/);
+  await expect(page.getByTestId('nutrition-ring-over')).toHaveText('über dem Ziel');
   await expect(page.getByTestId('meal-card-kcal-snacks')).toHaveText(/^3\.000 \/ [\d.]+ kcal$/);
 
   // Offline: Hinweis, Eintragen bleibt möglich.

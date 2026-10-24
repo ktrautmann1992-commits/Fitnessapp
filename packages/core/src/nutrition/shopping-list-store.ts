@@ -163,6 +163,20 @@ export function parseStoredShoppingList(value: unknown): StoredShoppingList | nu
   return parsed.success ? parsed.data : null;
 }
 
+/**
+ * Fortschritt der Einkaufsliste für den Kopf „Einkaufen“ (Design 23.10.2026): abgehakte von allen Einträgen (auch
+ * Vorrat), Anteil 0–1 für den Balken. Leere Liste → 0 von 0, Anteil 0 (keine Division durch 0).
+ */
+export function shoppingListProgress(items: readonly { readonly checked: boolean }[]): {
+  readonly checked: number;
+  readonly total: number;
+  readonly fraction: number;
+} {
+  const total = items.length;
+  const checked = items.filter((item) => item.checked === true).length;
+  return { checked, total, fraction: total > 0 ? checked / total : 0 };
+}
+
 /** Zeitraum innerhalb der Woche Mo–So (der Sonntag vor der Woche zählt beim Einkauf zum Montag, 6.5). */
 export function shoppingListRangeValid(
   weekStart: string,

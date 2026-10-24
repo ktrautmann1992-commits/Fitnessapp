@@ -162,4 +162,9 @@ export const STORAGE_KEYS = {
    * (lib/shopping-prefs.ts).
    */
   shoppingPrefs: 'fitnessapp.shopping-prefs.v1',
+  /**
+   * Ausdauer: zuletzt gewählt „Fahrrad“ oder „E-Bike“ (23.10.2026) – je Konto ein Wahrheitswert, nur dieses Gerät,
+   * kein Gesundheitsdatum. Vorbelegung beim nächsten Rad-Eintrag bzw. der nächsten Aufzeichnung.
+   */
+  bikeChoice: 'fitnessapp.bike-choice.v1',
 } as const;

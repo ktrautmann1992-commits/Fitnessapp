@@ -119,6 +119,8 @@ export function applyWearableRouteSave(
           note: null,
           source: 'watch',
           wearable_session_log_id: logId,
+          // Health Connect kennt kein E-Bike → normales Rad (wie der Standard der Spalte).
+          e_bike: false,
           created_at: ctx.now,
         },
       ];
@@ -195,9 +197,13 @@ export function followWatchRoute(
   );
 }
 
-/** Ältere gespeicherte Zeilen (vor 23.10.2026) ohne Spalte: mit null ergänzen. */
+/** Ältere gespeicherte Zeilen (vor 23.10.2026) ohne Spalten: Uhr-Verknüpfung null, E-Bike false. */
 export function normalizeRouteRow(row: TrackedRouteRow): TrackedRouteRow {
-  return row.wearable_session_log_id === undefined
-    ? { ...row, wearable_session_log_id: null }
-    : row;
+  // Ältere lokale Zeilen: ohne Uhr-Verknüpfung bzw. ohne E-Bike-Angabe (= normales Rad).
+  if (row.wearable_session_log_id !== undefined && typeof row.e_bike === 'boolean') return row;
+  return {
+    ...row,
+    wearable_session_log_id: row.wearable_session_log_id ?? null,
+    e_bike: row.e_bike === true,
+  };
 }

@@ -5,7 +5,8 @@ import { ENDURANCE_MODALITIES, type EnduranceModality, type TrackedRouteSport } 
  * Ausdauer-Aktivitäten (Etappe E4 „Meine Läufe“, E5 Woche/Monat; docs/PLAN-EINKAUFEN-AUSDAUER.md 6–7):
  * Aufzeichnungen (tracked_routes) und Ausdauer-Einträge ohne GPS (Tagebuch) zusammengeführt – ein mit einer Strecke
  * verknüpfter Eintrag zählt nur einmal (als Strecke). Summen je Woche (Mo–So) bzw. Kalendermonat; Tag = lokales Datum
- * des Starts (Europe/Berlin). Vergleich nur neutral zur Vorperiode – keine Serien, keine Bestzeiten (W-G16). Rein.
+ * des Starts (Europe/Berlin). Vergleich nur neutral zur Vorperiode – keine Serien, keine Bestzeiten (W-G16). E-Bike-Fahrten (23.10.2026) bleiben
+ * Sportart Rad und zählen in alle Summen; die Summen weisen „davon E-Bike“ getrennt aus. Rein.
  */
 
 export interface EnduranceRouteInput {
@@ -19,6 +20,8 @@ export interface EnduranceRouteInput {
   readonly elevation_gain_m: number | null;
   readonly session_log_id: string | null;
   readonly is_favorite?: boolean;
+  /** E-Bike (nur beim Rad); fehlt = normales Rad. */
+  readonly e_bike?: boolean;
 }
 
 export interface EnduranceLogInput {
@@ -30,6 +33,8 @@ export interface EnduranceLogInput {
   readonly duration_s: number;
   readonly distance_m: number | null;
   readonly elevation_m: number | null;
+  /** E-Bike (cardio_logs.e_bike, nur beim Rad); fehlt = normales Rad. */
+  readonly e_bike?: boolean;
 }
 
 export interface EnduranceActivity {
@@ -50,6 +55,8 @@ export interface EnduranceActivity {
   readonly distanceM: number | null;
   readonly elevationM: number | null;
   readonly isFavorite: boolean;
+  /** E-Bike: Sportart bleibt „Rad“, zählt in die Rad-Summen und wird dort als „davon E-Bike“ ausgewiesen. */
+  readonly eBike: boolean;
 }
 
 /** Strecken und Einträge zusammenführen, neueste zuerst; verknüpfte Einträge nur einmal (als Strecke). */
@@ -60,6 +67,8 @@ export function enduranceActivities(
   const linked = new Set(
     routes.map((r) => r.session_log_id).filter((id): id is string => id !== null),
   );
+  // E-Bike: der verknüpfte Eintrag ist führend (die Datenbank hält beide gleich; Uhr-Routen kommen ohne Angabe).
+  const logEBike = new Map(logs.map((l) => [l.id, l.modality === 'bike' && l.e_bike === true]));
   const fromRoutes = routes.map((r): EnduranceActivity => ({
     key: `route:${r.id}`,
     source: 'route',
@@ -74,6 +83,11 @@ export function enduranceActivities(
     distanceM: r.distance_m,
     elevationM: r.elevation_gain_m,
     isFavorite: r.is_favorite === true,
+    eBike:
+      r.sport === 'bike' &&
+      (r.session_log_id !== null && logEBike.has(r.session_log_id)
+        ? logEBike.get(r.session_log_id) === true
+        : r.e_bike === true),
   }));
   const fromLogs = logs
     .filter((l) => !linked.has(l.id))
@@ -91,6 +105,7 @@ export function enduranceActivities(
       distanceM: l.distance_m,
       elevationM: l.elevation_m,
       isFavorite: false,
+      eBike: l.modality === 'bike' && l.e_bike === true,
     }));
   return [...fromRoutes, ...fromLogs].sort(
     (a, b) =>
@@ -107,6 +122,9 @@ export interface EnduranceTotals {
   readonly distanceM: number;
   readonly movingS: number;
   readonly elevationM: number;
+  /** Davon mit dem E-Bike (Anzahl bzw. Meter; schon in count/distanceM enthalten). */
+  readonly eBikeCount: number;
+  readonly eBikeDistanceM: number;
 }
 
 export interface EnduranceWeekBar {
@@ -135,7 +153,14 @@ export interface EndurancePeriodSummary {
   readonly distanceDiffM: number;
 }
 
-const EMPTY: EnduranceTotals = { count: 0, distanceM: 0, movingS: 0, elevationM: 0 };
+const EMPTY: EnduranceTotals = {
+  count: 0,
+  distanceM: 0,
+  movingS: 0,
+  elevationM: 0,
+  eBikeCount: 0,
+  eBikeDistanceM: 0,
+};
 
 function sum(activities: readonly EnduranceActivity[]): EnduranceTotals {
   return activities.reduce(
@@ -144,6 +169,8 @@ function sum(activities: readonly EnduranceActivity[]): EnduranceTotals {
       distanceM: t.distanceM + (a.distanceM ?? 0),
       movingS: t.movingS + a.movingS,
       elevationM: t.elevationM + (a.elevationM ?? 0),
+      eBikeCount: t.eBikeCount + (a.eBike ? 1 : 0),
+      eBikeDistanceM: t.eBikeDistanceM + (a.eBike ? (a.distanceM ?? 0) : 0),
     }),
     EMPTY,
   );

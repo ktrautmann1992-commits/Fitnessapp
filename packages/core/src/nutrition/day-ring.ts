@@ -46,6 +46,50 @@ export type CalorieRing =
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
+// ---------------------------------------------------------------------------------------------------------
+// Ziel-Ring (gemeinsame Regel für kcal und Makros, Gründer-Wunsch 23.10.2026)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Füllung eines Ziel-Rings: „Füllt sich für das Tagesziel. Ist der Wert überschritten, wird es Dunkelrot.“
+ * - Werte werden auf ganze Einheiten gerundet (wie angezeigt), damit Farbe und Zahl nie widersprechen.
+ * - `over` = gerundet gegessen > gerundetes Ziel – **ohne Toleranz** (genau 100 % ist nicht drüber).
+ * - Ungültiges wird abgefangen statt zu werfen (Anzeige-Hilfe): gegessen NaN/negativ/unendlich → 0;
+ *   Ziel fehlt, ≤ 0, NaN oder unendlich → null (kein Ring, keine Division durch 0).
+ */
+export interface GoalFill {
+  /** Gerundet gegessen (≥ 0). */
+  readonly eaten: number;
+  /** Gerundetes Ziel (> 0). */
+  readonly goal: number;
+  /** Gefüllter Anteil 0–1; über dem Ziel immer 1 (voller Ring). */
+  readonly fraction: number;
+  /** Gegessen in Prozent des Ziels, ganzzahlig (kann über 100 liegen). */
+  readonly percent: number;
+  /** Über dem Ziel (strikt größer). */
+  readonly over: boolean;
+}
+
+const finiteNonNegative = (value: number | null | undefined): number =>
+  typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : 0;
+
+export function goalFill(
+  eaten: number | null | undefined,
+  goal: number | null | undefined,
+): GoalFill | null {
+  const roundedGoal = Math.round(finiteNonNegative(goal));
+  if (roundedGoal <= 0) return null;
+  const roundedEaten = Math.round(finiteNonNegative(eaten));
+  const over = roundedEaten > roundedGoal;
+  return {
+    eaten: roundedEaten,
+    goal: roundedGoal,
+    fraction: over ? 1 : clamp01(roundedEaten / roundedGoal),
+    percent: Math.round((roundedEaten / roundedGoal) * 100),
+    over,
+  };
+}
+
 /** Ring der Tagesübersicht: Ziel und Gegessen → übrig bzw. zu viel, Füllung und Prozent. */
 export function calorieRing(input: {
   readonly targetKcal: number | null;
@@ -84,6 +128,8 @@ export interface MacroProgress {
   /** Über dem Ziel in ganzen Gramm (nie negativ). */
   readonly overG: number;
   readonly percent: number;
+  /** Über dem Ziel (strikt, ohne Toleranz) → Ring voll in Dunkelrot (`goalFill`). */
+  readonly over: boolean;
 }
 
 const gramsSchema = z.number().finite().min(0);
@@ -94,12 +140,14 @@ export function macroProgress(eatenG: number, targetG: number | null): MacroProg
   if (targetG === null) return null;
   const target = Math.round(gramsSchema.parse(targetG));
   if (target <= 0) return null;
+  const fill = goalFill(eaten, target);
   return {
     eatenG: eaten,
     targetG: target,
     fraction: clamp01(eaten / target),
     overG: Math.max(0, eaten - target),
     percent: Math.round((eaten / target) * 100),
+    over: fill?.over ?? false,
   };
 }
 

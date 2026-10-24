@@ -163,6 +163,33 @@ describe('updateTrackedRouteSchema', () => {
   });
 });
 
+describe('E-Bike an der Strecke (23.10.2026)', () => {
+  it('trackedRouteSchema: e_bike optional, nur beim Rad', () => {
+    expect(ok(valid({ sport: 'bike', e_bike: true }))).toBe(true);
+    expect(ok(valid({ sport: 'bike', e_bike: false }))).toBe(true);
+    expect(ok(valid({ sport: 'bike' }))).toBe(true);
+    expect(ok(valid({ sport: 'run', e_bike: true }))).toBe(false);
+    expect(ok(valid({ sport: 'walk', e_bike: true }))).toBe(false);
+    expect(ok(valid({ sport: 'run', e_bike: false }))).toBe(true);
+    expect(ok({ ...valid({ sport: 'bike' }), e_bike: 1 })).toBe(false);
+  });
+
+  it('updateTrackedRouteSchema: e_bike darf fehlen oder boolesch sein', () => {
+    const base = { id: ID, name: 'X', difficulty: null, is_favorite: false, note: null };
+    expect(updateTrackedRouteSchema.safeParse(base).success).toBe(true);
+    expect(updateTrackedRouteSchema.safeParse({ ...base, e_bike: true }).success).toBe(true);
+    expect(updateTrackedRouteSchema.safeParse({ ...base, e_bike: null }).success).toBe(false);
+  });
+
+  it('toTrackedRoutePayload: E-Bike nur beim Rad und nur, wenn gewählt', () => {
+    const s = summarizeTrack(line({ speedMps: 6, count: 40, stepS: 10 }), 'bike');
+    expect(toTrackedRoutePayload(s, { ...details, eBike: true })?.e_bike).toBe(true);
+    expect(toTrackedRoutePayload(s, details)).not.toHaveProperty('e_bike');
+    const run = summarizeTrack(line({ speedMps: 3, count: 40, stepS: 10 }), 'run');
+    expect(toTrackedRoutePayload(run, { ...details, eBike: true })).not.toHaveProperty('e_bike');
+  });
+});
+
 describe('summarizeTrack + toTrackedRoutePayload', () => {
   it('0 Punkte → zu kurz, nichts zu speichern', () => {
     const s = summarizeTrack([], 'run');

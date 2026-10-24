@@ -185,6 +185,7 @@ export type Database = {
         Row: {
           distance_m: number | null;
           duration_s: number;
+          e_bike: boolean;
           elevation_m: number | null;
           modality: Database['public']['Enums']['endurance_modality'];
           session_log_id: string;
@@ -193,6 +194,7 @@ export type Database = {
         Insert: {
           distance_m?: number | null;
           duration_s: number;
+          e_bike?: boolean;
           elevation_m?: number | null;
           modality: Database['public']['Enums']['endurance_modality'];
           session_log_id: string;
@@ -201,6 +203,7 @@ export type Database = {
         Update: {
           distance_m?: number | null;
           duration_s?: number;
+          e_bike?: boolean;
           elevation_m?: number | null;
           modality?: Database['public']['Enums']['endurance_modality'];
           session_log_id?: string;
@@ -2528,6 +2531,7 @@ export type Database = {
           difficulty: Database['public']['Enums']['route_difficulty'] | null;
           distance_m: number;
           duration_s: number;
+          e_bike: boolean;
           elevation_gain_m: number | null;
           elevation_profile: Json | null;
           id: string;
@@ -2553,6 +2557,7 @@ export type Database = {
           difficulty?: Database['public']['Enums']['route_difficulty'] | null;
           distance_m: number;
           duration_s: number;
+          e_bike?: boolean;
           elevation_gain_m?: number | null;
           elevation_profile?: Json | null;
           id?: string;
@@ -2578,6 +2583,7 @@ export type Database = {
           difficulty?: Database['public']['Enums']['route_difficulty'] | null;
           distance_m?: number;
           duration_s?: number;
+          e_bike?: boolean;
           elevation_gain_m?: number | null;
           elevation_profile?: Json | null;
           id?: string;

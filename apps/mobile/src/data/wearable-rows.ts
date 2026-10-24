@@ -288,6 +288,8 @@ export function applyWearableImport(
           duration_s: s.duration_s,
           distance_m: s.distance_m,
           elevation_m: null,
+          // Health Connect kennt kein E-Bike (nur BIKING/BIKING_STATIONARY) → normales Rad, umstellbar im Eintrag.
+          e_bike: false,
         };
         cardioLogs.push(cardio);
       }
