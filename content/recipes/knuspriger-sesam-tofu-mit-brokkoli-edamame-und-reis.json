@@ -1,0 +1,165 @@
+{
+  "id": "knuspriger-sesam-tofu-mit-brokkoli-edamame-und-reis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Knuspriger Sesam-Tofu mit Brokkoli, Edamame und Reis",
+  "description_de": "Tofuwürfel mit hauchdünner Stärkehülle werden in der Heißluft außen kross und innen zart – dazu Brokkoli mit Röstaromen und eine schnelle Ingwer-Soja-Glasur.",
+  "section_de": "Hauptgerichte",
+  "categories": ["meal-prep", "heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "180 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "speisestaerke",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sesamoel",
+      "amount": 4,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (4 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g Röschen",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 55,
+      "unit": "g",
+      "optional": false,
+      "display_de": "55 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g), gepresst",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sesam",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis nach Packungsanleitung in Salzwasser (ca. 12 Minuten).",
+    "Drücke den Tofu zwischen Küchenpapier gut aus, schneide ihn in 2 cm große Würfel, beträufle ihn mit 1 TL Sojasauce und ½ TL Sesamöl und wende ihn in der Speisestärke.",
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor und gare die Tofuwürfel in einer Lage 8 Minuten; nach 4 Minuten schütteln.",
+    "Mische Brokkoli und gefrorene Edamame mit dem restlichen Sesamöl und einer Prise Salz, gib sie zum Tofu und gare alles weitere 7–8 Minuten bei 200 °C; nach 4 Minuten erneut schütteln.",
+    "Verrühre restliche Sojasauce, Ahornsirup, Ingwer und Knoblauch, schwenke Tofu und Gemüse in einer Schüssel darin und bestreue alles mit Sesam. Mit dem Reis servieren."
+  ],
+  "tip_de": "Für Meal-Prep Tofu und Gemüse getrennt vom Reis lagern und die Glasur erst vor dem Essen untermischen, dann bleibt der Tofu länger knusprig – zum Aufknuspern 3 Minuten bei 180 °C in die Heißluftfritteuse.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 30,
+  "prep_minutes": 1,
+  "cook_minutes": 29,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 680,
+    "protein_g": 43.5,
+    "carbs_g": 68.7,
+    "fat_g": 24.1
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "sesame", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "25e195d0a9d5d35f3ab7003baf4fb6713b817f640e7b57bc80e885281e5197c9"
+  }
+}

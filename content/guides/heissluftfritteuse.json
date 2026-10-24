@@ -1,0 +1,62 @@
+{
+  "id": "heissluftfritteuse",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kochen mit der Heißluftfritteuse",
+  "sections": [
+    {
+      "heading_de": "Kurz vorheizen",
+      "body_de": [
+        "Heize die Heißluftfritteuse 3–5 Minuten auf die angegebene Temperatur vor, wenn das Rezept es vorsieht. Panierte Stücke, Tofu und Gemüse werden dann von Anfang an gleichmäßig heiß und knusprig statt weich. Teige wie Muffins oder Baked Oats gelingen dagegen auch ohne Vorheizen."
+      ]
+    },
+    {
+      "heading_de": "Eine Lage – und zwischendurch schütteln oder wenden",
+      "body_de": [
+        "Die heiße Luft muss jedes Stück umströmen können. Verteile das Gargut deshalb nur in einer Lage mit etwas Abstand und gare größere Mengen lieber in zwei Durchgängen. Kleine Stücke wie Kichererbsen, Gemüsewürfel oder Kartoffelspalten schüttelst du nach etwa der Hälfte der Zeit durch, Fleisch, Fisch und Panade wendest du einmal vorsichtig mit einer Zange."
+      ]
+    },
+    {
+      "heading_de": "Wenig Öl, gut verteilt",
+      "body_de": [
+        "Für knusprige Ergebnisse reichen meist 1–2 Teelöffel Öl pro Portion. Vermische Gemüse in einer Schüssel mit dem Öl oder reibe Fleisch und Fisch damit ein, statt Öl in den Korb zu gießen. Für Panaden eignet sich eine Sprühflasche mit Pflanzenöl: dünn einsprühen sorgt für Farbe und Biss bei wenigen Kalorien."
+      ]
+    },
+    {
+      "heading_de": "Panade, die knusprig bleibt",
+      "body_de": [
+        "Ziehe Fisch, Fleisch oder Gemüse zuerst durch eine Bindung aus verquirltem Ei oder Skyr mit etwas Senf und wälze es dann in Panko oder zerdrückten ungezuckerten Cornflakes. Drücke die Panade gut an, sprühe sie leicht mit Öl ein und wende die Stücke einmal. Ein Teig aus Kichererbsenmehl und Wasser ist eine gute eifreie Alternative."
+      ]
+    },
+    {
+      "heading_de": "Backpapier und Formen sicher verwenden",
+      "body_de": [
+        "Lege Backpapier oder Dauerbackfolie nur in den Korb, wenn Lebensmittel darauf liegen und es beschweren – nie allein beim Vorheizen, denn der Luftstrom kann es an das Heizelement wirbeln. Das Papier sollte kleiner als der Korbboden sein, damit die Luft zirkulieren kann. Für Muffins und Baked Oats eignen sich hitzefeste Silikonförmchen oder kleine Auflaufformen, die in den Korb passen."
+      ]
+    },
+    {
+      "heading_de": "Durchgaren sicher prüfen",
+      "body_de": [
+        "Geflügel muss vollständig durchgegart sein: Die Kerntemperatur an der dicksten Stelle sollte mindestens 74 °C erreichen, der Fleischsaft klar sein und das Fleisch innen nicht mehr rosa. Fisch ist bei etwa 60–63 °C Kerntemperatur gar, wenn er sich leicht zerpflücken lässt. Ein einfaches Einstichthermometer nimmt das Rätselraten ab."
+      ]
+    },
+    {
+      "heading_de": "Zeiten anpassen und das Gerät sauber halten",
+      "body_de": [
+        "Alle Zeiten sind Richtwerte für einen Korb mittlerer Größe. Geräte unterscheiden sich in Leistung und Korbgröße, beachte deshalb die Anleitung deines eigenen Geräts und prüfe gegen Ende lieber einmal mehr. Lass Korb und Einsatz nach dem Garen abkühlen, weiche festgebackene Reste kurz in warmem Spülwasser ein und reinige beschichtete Teile nur mit einem weichen Schwamm."
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "1ce2b7dfc2e95c46cfa2857ae72b7636444f302f5e81305607924cb361b9f577"
+  }
+}
