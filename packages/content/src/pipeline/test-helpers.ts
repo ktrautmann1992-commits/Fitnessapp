@@ -91,6 +91,9 @@ export function createTempRepo(
   git(root, ['config', 'user.name', 'Test']);
   git(root, ['config', 'user.email', 'test@example.invalid']);
   git(root, ['config', 'commit.gpgsign', 'false']);
+  // Keine automatische Git-Aufräumung im Hintergrund: sie schreibt sonst noch in .git/objects, während cleanup()
+  // den Ordner löscht (ENOTEMPTY in der CI).
+  git(root, ['config', 'gc.auto', '0']);
   cpSync(join(REAL_REPO_ROOT, '.prettierrc.json'), join(root, '.prettierrc.json'));
   if (options.withContent !== false) {
     const status = options.contentStatus ?? 'draft';
@@ -113,8 +116,8 @@ export function createTempRepo(
     git: (args) => git(root, args),
     showRemote: (branch, path) => git(origin, ['show', `${branch}:${path}`]),
     cleanup: () => {
-      rmSync(root, { recursive: true, force: true });
-      rmSync(origin, { recursive: true, force: true });
+      rmSync(root, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+      rmSync(origin, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
     },
   };
 }
