@@ -462,6 +462,75 @@
       "reason_de": "Zuordnung passt (Gartenbohne reif = weiße Bohne, Konserve, abgetropft, nicht in Tomatensoße). Der Gründer-Wert (100 kcal) ist grob bzw. aus einer anderen Tabelle; BLS misst 130 kcal. Wassergehalt schwankt je Dose, Quelle gilt.",
       "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
       "confirmed_at": "2026-10-14"
+    },
+    {
+      "alpha5_id": "gefluegelwuerstchen-fettreduziert",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "W212032",
+      "source_values": {
+        "kcal": 214,
+        "protein_g": 13.21,
+        "carbs_g": 0.97,
+        "fat_g": 17.25
+      },
+      "file_values": {
+        "kcal": 160,
+        "eiweiss_g": 16,
+        "kohlenhydrate_g": 1.5,
+        "fett_g": 10
+      },
+      "reason_de": "Andere Ware: Die Gründer-Datei meint fettreduzierte Geflügelwürstchen (ca. 160 kcal, 10 g Fett), BLS 4.0 hat nur normale Geflügel-Wiener (214 kcal, 17 g Fett). Quelle gilt; sichere Richtung (eher mehr Kalorien und Fett).",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-24"
+    },
+    {
+      "alpha5_id": "mandeldrink-ungesuesst",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "H800000",
+      "source_values": {
+        "kcal": 24,
+        "protein_g": 0.87,
+        "carbs_g": 0.2,
+        "fat_g": 2.159
+      },
+      "file_values": {
+        "kcal": 13,
+        "eiweiss_g": 0.4,
+        "kohlenhydrate_g": 0.1,
+        "fett_g": 1.1
+      },
+      "reason_de": "Zuordnung passt (Mandeldrink ungesüßt). Handelsware schwankt stark mit dem Mandelanteil (ca. 2–7 %): 13 kcal ist ein magerer Drink, BLS misst 24 kcal. Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-24"
+    },
+    {
+      "alpha5_id": "maracuja",
+      "source": {
+        "db": "bls",
+        "version": "4.0"
+      },
+      "source_ref": "F508100",
+      "source_values": {
+        "kcal": 57,
+        "protein_g": 0.71331,
+        "carbs_g": 9.54,
+        "fat_g": 0.2
+      },
+      "file_values": {
+        "kcal": 97,
+        "eiweiss_g": 2.4,
+        "kohlenhydrate_g": 13,
+        "fett_g": 0.4
+      },
+      "reason_de": "Zuordnung passt (Maracuja roh). Der Gründer-Wert (97 kcal, 2,4 g Eiweiß) stammt aus US-Tabellen mit Kernen und Ballaststoffen; BLS misst das Fruchtfleisch mit 57 kcal. Quelle gilt.",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-10-24"
     }
   ]
 }
