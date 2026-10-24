@@ -1,0 +1,52 @@
+{
+  "id": "wassermelone",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Wassermelone",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 35,
+    "protein_g": 0.6,
+    "carbs_g": 6.96,
+    "sugar_g": 6.72,
+    "fat_g": 0.4,
+    "sat_fat_g": 0.04911,
+    "fiber_g": 0.2,
+    "salt_g": 0.008,
+    "organic_acids_g": 0.4,
+    "alcohol_g": 0,
+    "polyols_g": 0.24
+  },
+  "units": {},
+  "groups": ["fructose"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": false,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "F535100",
+    "name": "Wassermelone roh",
+    "category": "fruit",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-24"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-24",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

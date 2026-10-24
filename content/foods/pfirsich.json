@@ -1,0 +1,52 @@
+{
+  "id": "pfirsich",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Pfirsich",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 39,
+    "protein_g": 0.7,
+    "carbs_g": 8.02,
+    "sugar_g": 6.99,
+    "fat_g": 0.11,
+    "sat_fat_g": 0.01,
+    "fiber_g": 1.7,
+    "salt_g": 0.001718,
+    "organic_acids_g": 0.57,
+    "alcohol_g": null,
+    "polyols_g": 1.03
+  },
+  "units": {},
+  "groups": ["fructose"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "F203100",
+    "name": "Pfirsich roh",
+    "category": "fruit",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-24"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-24",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

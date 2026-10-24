@@ -1,0 +1,52 @@
+{
+  "id": "butterkekse",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Butterkekse",
+  "aliases_de": [],
+  "shopping_category": "bread_bakery",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 456,
+    "protein_g": 7.54,
+    "carbs_g": 68.89,
+    "sugar_g": 27.06,
+    "fat_g": 16.12,
+    "sat_fat_g": 9.923,
+    "fiber_g": 2.41,
+    "salt_g": 0.8212,
+    "organic_acids_g": 0.209,
+    "alcohol_g": 0,
+    "polyols_g": 0.03
+  },
+  "units": {},
+  "groups": ["dairy", "eggs", "gluten", "lactose"],
+  "animal": ["dairy", "egg"],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "D630400",
+    "name": "Butterkekse/Butterplätzchen (Mürbeteig)",
+    "category": "pastries_sweets",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-24"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-24",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
