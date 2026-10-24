@@ -60,3 +60,7 @@ Erste Testbilder sind bereits erzeugt. Für diese Job-IDs nur `jobs_wait` bzw. `
 - **Mit Fleisch & Fisch** (`daten/fleisch.json`, `fleisch-2.json`, `fleisch-3.json`): enthält auch die früheren Rezepte aus „Ohne Schweinefleisch“ (`fleisch-3.json`). Rezepte ohne Schweinefleisch werden beim Bauen automatisch mit „Ohne Schwein“ markiert. In der App bleibt „ohne-schwein“ als Ernährungsform-Filter erhalten.
 - **Low Carb** (`daten/lowcarb.json`): 20 Rezepte, Hauptmahlzeiten höchstens 20 g, Snacks höchstens 10 g Kohlenhydrate pro Portion.
 - Die App-Daten (`ausgabe/alpha5-rezepte.json`) neu erzeugen mit `python3 build/make_seed.py`.
+
+## Deckblatt
+
+Das Titelbild liegt unter `build/titelbild.jpg` (Higgsfield, Modell gpt_image_2_5, ohne Schrift und Logos; Frau ohne Gesicht mit Hanteln, Shaker und fertigen Gerichten). `design.py` schneidet es auf A4 zu und lässt es oben und unten zu Schwarz verlaufen, damit Titel und Fußzeile lesbar bleiben. Ein neues Bild einfach unter demselben Namen ablegen und das Buch neu bauen.

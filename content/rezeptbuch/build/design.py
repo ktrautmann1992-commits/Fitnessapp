@@ -239,24 +239,47 @@ def page_light(c, doc): footer(c, doc)
 def page_divider(c, doc): footer(c, doc)
 b.page_recipe = page_recipe; b.page_light = page_light; b.page_divider = page_divider
 
+# Titelbild (Higgsfield, ohne Schrift/Logos); oben und unten zu Schwarz verlaufen, damit Titel und Fußzeile lesbar sind.
+COVER_FOTO = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'titelbild.jpg')
+COVER_CACHE = os.path.join(tempfile.gettempdir(), 'alpha5-titelbild.jpg')
+
+def cover_bild(src=COVER_FOTO, out=COVER_CACHE):
+    """Bild auf A4 zuschneiden (unten bündig) und mit Verläufen nach Schwarz versehen."""
+    if os.path.exists(out) and os.path.getmtime(out) >= os.path.getmtime(src) and src == COVER_FOTO:
+        return out
+    im = PILImage.open(src).convert('RGB')
+    tw = 1654; th = round(tw * H / W)
+    s = max(tw / im.width, th / im.height)
+    im = im.resize((round(im.width * s), round(im.height * s)), PILImage.LANCZOS)
+    left = (im.width - tw) // 2
+    im = im.crop((left, im.height - th, left + tw, im.height))
+    bg = PILImage.new('RGB', im.size, (10, 12, 16))
+    mask = PILImage.new('L', (1, th))
+    for y in range(th):
+        t = y / th
+        top = 1.0 if t < 0.24 else max(0.0, 1 - (t - 0.24) / 0.10)   # oben: Titelbereich dunkel
+        bot = max(0.0, (t - 0.90) / 0.10) * 0.85                     # unten: Fußzeile
+        mask.putpixel((0, y), round(255 * max(top * 0.92, bot)))
+    im = PILImage.composite(bg, im, mask.resize(im.size))
+    im.save(out, quality=88)
+    return out
+
 def page_cover(c, doc):
     c.saveState()
     c.setFillColor(SCHWARZ); c.rect(0, 0, W, H, fill=1, stroke=0)
-    p = c.beginPath(); p.moveTo(0, H * 0.30); p.lineTo(W, H * 0.47); p.lineTo(W, H * 0.47 - 30 * mm); p.lineTo(0, H * 0.30 - 30 * mm); p.close()
-    c.setFillColor(BLAU); c.drawPath(p, fill=1, stroke=0)
-    p = c.beginPath(); p.moveTo(0, H * 0.30 - 33 * mm); p.lineTo(W, H * 0.47 - 33 * mm); p.lineTo(W, H * 0.47 - 37 * mm); p.lineTo(0, H * 0.30 - 37 * mm); p.close()
-    c.setFillColor(colors.HexColor('#2cc4f5')); c.drawPath(p, fill=1, stroke=0)
-    b.draw_logo(c, M, H - 52 * mm, 24 * mm)
-    c.setFillColor(WEISS); c.setFont('C-XBIt', 82); c.drawString(M - 1 * mm, H - 88 * mm, 'Rezeptbuch')
-    c.setFont('C-BoldIt', 19); c.setFillColor(colors.HexColor('#8db0ff'))
-    c.drawString(M, H - 100 * mm, f'{sum(b.n_recipes(k) for k, *_ in b.ALL)} Rezepte für Training, Alltag und Wettkampf')
-    half = (len(b.ALL) + 1) // 2
-    for i, (key, name, txt) in enumerate(b.ALL):
-        x = M + (0 if i < half else (W - 2 * M) / 2 + 2 * mm); y = H - 116 * mm - (i % half) * 7.6 * mm
-        para(c, x, y - 0.4 * mm, 1.6 * mm, 4.6 * mm, 1.2 * mm, fill=ACC.get(key, BLAU))
-        c.setFillColor(WEISS); c.setFont('C-BoldIt', 13.5); c.drawString(x + 5 * mm, y, name.replace('&amp;', '&'))
-    c.setFillColor(colors.HexColor('#b4bdd0')); c.setFont('A-Regular', 9.5)
-    c.drawString(M, 16 * mm, f'{len(b.ALL)} Kapitel, alle Nährwerte pro Portion berechnet')
+    if os.path.exists(COVER_FOTO):
+        c.drawImage(cover_bild(), 0, 0, W, H)
+    lw = b.draw_logo(c, M, H - 36 * mm, 18 * mm)
+    para(c, M + lw + 5 * mm, H - 33.5 * mm, 1.6 * mm, 9 * mm, 1.4 * mm, fill=colors.HexColor('#2cc4f5'))
+    c.setFillColor(WEISS); c.setFont('C-BoldIt', 17); c.drawString(M + lw + 9 * mm, H - 31 * mm, 'Fitness-Ernährung')
+    c.setFillColor(WEISS); c.setFont('C-XBIt', 66); c.drawString(M - 1 * mm, H - 62 * mm, 'Rezeptbuch')
+    para(c, M, H - 69 * mm, 40 * mm, 2 * mm, 1.2 * mm, fill=BLAU)
+    c.setFont('C-BoldIt', 17); c.setFillColor(colors.HexColor('#8db0ff'))
+    c.drawString(M, H - 79 * mm, f'{sum(b.n_recipes(k) for k, *_ in b.ALL)} Rezepte für Training, Alltag und Wettkampf')
+    c.setFillColor(colors.HexColor('#d5dbe8')); c.setFont('A-Regular', 10.5)
+    c.drawString(M, H - 86.5 * mm, 'Vegan, vegetarisch, mit Fleisch & Fisch, Low Carb und mehr')
+    c.setFillColor(colors.HexColor('#c9d0de')); c.setFont('A-Regular', 9.5)
+    c.drawString(M, 14 * mm, f'{len(b.ALL)} Kapitel, alle Nährwerte pro Portion berechnet')
     c.restoreState()
 b.page_cover = page_cover
 
