@@ -1,6 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { onboardNutrition, openNutrition, patchDb } from './nutrition-helpers';
+import {
+  onboardNutrition,
+  openNutrition,
+  patchDb,
+  showCheckedShoppingItems,
+} from './nutrition-helpers';
 import { heading } from './plan-helpers';
 import { expectA4, pageHeights } from './print-helpers';
 
@@ -99,8 +104,13 @@ test('Einkaufsliste als PDF: Kästchen nach Abteilungen, abgehakte mit Haken, Vo
   await start(page);
   await page.getByTestId('nutrition-shopping').click();
   await expect(page.getByTestId('shopping-items')).toBeVisible();
+  await showCheckedShoppingItems(page);
   // Einen Eintrag abhaken – erscheint im PDF mit Haken.
-  const firstCheck = page.locator('[data-testid^="shopping-check-"]').first();
+  const firstId = (await page
+    .locator('[data-testid^="shopping-check-"]')
+    .first()
+    .getAttribute('data-testid')) as string;
+  const firstCheck = page.getByTestId(firstId);
   await firstCheck.click();
   await expect(firstCheck).toHaveAttribute('aria-checked', 'true');
   await stubPrint(page);
@@ -111,6 +121,8 @@ test('Einkaufsliste als PDF: Kästchen nach Abteilungen, abgehakte mit Haken, Vo
   await heading(page, 'Einkaufsliste als PDF');
   const preview = page.getByTestId('print-preview');
   await expect(preview).toContainText('Deine Einkaufsliste');
+  // Drucken nimmt den angezeigten Zeitraum (Standard seit 23.10.2026: heute + 2 Tage).
+  await expect(preview).toContainText('12.10.2026 – 14.10.2026');
   await expect(preview).toContainText('Hast du wahrscheinlich da');
   await expect(preview).not.toContainText('kcal');
   await expect(preview.locator('ul.checklist li').first()).toBeVisible();

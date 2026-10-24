@@ -79,13 +79,19 @@ describe('Ernährung: Zahlen und Bausteine im deutschen Format (8.4)', () => {
 });
 
 describe('Einkaufsliste: Einträge als Text (Etappe N5b)', () => {
-  it('Frisches in Einkaufs-Einheiten mit Grammzahl dahinter', () => {
+  it('Lebensmittel in Kaufeinheiten (wie im Laden, 24.10.2026)', () => {
     const fresh = (foodId: string, amount: number, labelDe: string) =>
       shoppingItemText({ amount, unit: 'g', labelDe, isManual: false, foodId });
-    expect(fresh('zwiebel', 450, 'Zwiebel')).toBe('5 Zwiebeln (450 g)');
-    expect(fresh('knoblauch', 60, 'Knoblauch')).toBe('1 Knolle Knoblauch (60 g)');
-    expect(fresh('petersilie-frisch', 40, 'Petersilie (frisch)')).toBe('1 Bund Petersilie (40 g)');
-    expect(fresh('haferflocken', 500, 'Haferflocken')).toBe('500 g Haferflocken');
+    expect(fresh('zwiebel', 450, 'Zwiebel')).toBe('6 Zwiebeln');
+    expect(fresh('knoblauch', 60, 'Knoblauch')).toBe('1 Knolle Knoblauch');
+    expect(fresh('petersilie-frisch', 40, 'Petersilie (frisch)')).toBe('1 Bund Petersilie');
+    expect(fresh('haferflocken', 500, 'Haferflocken')).toBe('1 Packung Haferflocken (500 g)');
+    expect(fresh('ingwer', 70, 'Ingwer')).toBe('1 Stück Ingwer');
+    expect(fresh('olivenoel', 30, 'Olivenöl')).toBe('Olivenöl (Vorrat prüfen)');
+    // Eigene Einträge bleiben, wie eingegeben.
+    expect(
+      shoppingItemText({ amount: 500, unit: 'g', labelDe: 'Hack', isManual: true, foodId: null }),
+    ).toBe('500 g Hack');
   });
 
   it('Menge mit Einheit, „nach Geschmack“, eigener Eintrag ohne Menge, Abteilung', () => {

@@ -139,6 +139,18 @@ export async function onboardNutrition(page: Page, person: NutritionPerson = {})
   await heading(page, 'Geschafft!');
 }
 
+/**
+ * Einkaufsliste: abgehakte Einträge sichtbar lassen. Seit 23.10.2026 (docs/PLAN-EINKAUFEN-AUSDAUER.md 3) ist
+ * „Erledigte ausblenden“ standardmäßig an – Tests, die abgehakte Einträge weiter ansehen, schalten es hier aus (die
+ * Wahl bleibt auf dem Gerät gespeichert).
+ */
+export async function showCheckedShoppingItems(page: Page) {
+  const box = page.getByTestId('shopping-hide-checked');
+  await expect(box).toBeVisible();
+  if ((await box.getAttribute('aria-checked')) === 'true') await box.click();
+  await expect(box).toHaveAttribute('aria-checked', 'false');
+}
+
 export async function openNutrition(page: Page) {
   await page.getByTestId('today-nutrition').click();
   await expect(page.getByTestId('nutrition-day')).toBeVisible();

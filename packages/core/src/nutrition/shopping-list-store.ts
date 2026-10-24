@@ -1,10 +1,15 @@
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
-import { RECIPE_SERVINGS_PICKER, SHOPPING_LIST_EXTRAS, SHOPPING_LIST_ROUNDING } from '../constants';
+import {
+  RECIPE_SERVINGS_PICKER,
+  SHOPPING_DEFAULT_DAYS,
+  SHOPPING_LIST_EXTRAS,
+  SHOPPING_LIST_ROUNDING,
+} from '../constants';
 import { SHOPPING_CATEGORIES } from '../content/food-schema';
 import { contentIdSchema } from '../content/schemas';
-import { addDays } from '../dates';
+import { addDays, daysBetween } from '../dates';
 import type { FoodLookup } from '../content/food-schema';
 import { DIET_TYPES, type DietType } from '../enums';
 import { foodAllowedForPerson } from './filter';
@@ -26,7 +31,8 @@ import { stableHash } from './stable-hash';
  * Gespeicherte Einkaufsliste einer Woche (docs/PLAN-PHASE-5.md 6.5, 6.6, 7.2, 8.2 Nr. 5, 19.6, Etappe N5b) – reine
  * Regeln, die App speichert nur:
  *
- * - Die Liste gehört zu einer Woche (Mo–So) und einem Zeitraum darin (Standard: die ganze Woche). Die Einträge aus
+ * - Die Liste gehört zu einer Woche (Mo–So) und einem Zeitraum darin (Standard seit 23.10.2026: die nächsten 3 Tage,
+ *   umschaltbar auf „Ganze Woche“ – `shoppingDefaultRange`, docs/PLAN-EINKAUFEN-AUSDAUER.md 3). Die Einträge aus
  *   dem Plan werden IMMER aus dem aktuellen Plan neu erzeugt; aus dem Gerätespeicher kommen nur Häkchen (über
  *   `item_key`), Markierungen, eigene Einträge, abgehakte „nicht mehr im Plan“-Einträge, der Zeitraum und die
  *   über „Zur Einkaufsliste“ hinzugefügten Rezepte. Ein veränderter Speicher kann so keine Plan-Zutat unterschieben.
@@ -184,6 +190,72 @@ export function shoppingListRangeValid(
   return range.from >= weekStart && range.to <= end && range.from <= range.to;
 }
 
+/** Wahl „3 Tage | Ganze Woche“ (docs/PLAN-EINKAUFEN-AUSDAUER.md 3); Standard: 3 Tage. */
+export const SHOPPING_RANGE_MODES = ['days', 'week'] as const;
+export type ShoppingRangeMode = (typeof SHOPPING_RANGE_MODES)[number];
+
+export interface ShoppingRange {
+  readonly from: string;
+  readonly to: string;
+}
+
+/**
+ * Automatischer Zeitraum der Liste (Gründer-Entscheidung 23.10.2026): Beginn = heute, wenn heute in der Woche liegt,
+ * sonst der Montag (nächste Woche – auch am Sonntag davor, 6.5 – bzw. vergangene Woche). „3 Tage“ endet nach
+ * `SHOPPING_DEFAULT_DAYS` Tagen, nie nach dem Sonntag (Samstag → nur Sa–So); „Ganze Woche“ endet am Sonntag.
+ */
+export function shoppingDefaultRange(
+  weekStart: string,
+  today: string,
+  mode: ShoppingRangeMode,
+): ShoppingRange {
+  const week = weekStartSchema.parse(weekStart);
+  const day = isoDateSchema.parse(today);
+  const end = addDays(week, 6);
+  const from = day >= week && day <= end ? day : week;
+  if (mode === 'week') return { from, to: end };
+  const to = addDays(from, SHOPPING_DEFAULT_DAYS - 1);
+  return { from, to: to <= end ? to : end };
+}
+
+/**
+ * Sieht der Zeitraum wie ein automatischer aus (`shoppingDefaultRange` an irgendeinem Tag bzw. der alte Standard
+ * „ganze Woche“, auch ab einer Neuplanung verkürzt)? Endet am Sonntag oder umfasst genau `SHOPPING_DEFAULT_DAYS`
+ * Tage. Alles andere hat die Person selbst gewählt („Eigener Zeitraum“) – das bleibt.
+ */
+export function shoppingRangeIsAutomatic(weekStart: string, range: ShoppingRange): boolean {
+  if (!shoppingListRangeValid(weekStart, range)) return false;
+  return (
+    range.to === addDays(weekStart, 6) ||
+    daysBetween(range.from, range.to) === SHOPPING_DEFAULT_DAYS - 1
+  );
+}
+
+/**
+ * Zeitraum, mit dem die Liste der Woche aufgelöst wird: null = gespeicherten Zeitraum behalten (selbst gewählt:
+ * `manual` – auf diesem Gerät über „Eigener Zeitraum“ gesetzt – bzw. nicht automatisch aussehend); sonst der
+ * automatische Zeitraum zur Wahl `mode`. Eine alte Liste mit dem früheren Standard „ganze Woche“ wird so auf den
+ * neuen Zeitraum umgestellt – Häkchen bleiben über `item_key` (`resolveShoppingList`).
+ */
+export function shoppingListTargetRange(
+  stored: Pick<StoredShoppingList, 'weekStart' | 'from' | 'to'> | null,
+  options: {
+    readonly weekStart: string;
+    readonly today: string;
+    readonly mode: ShoppingRangeMode;
+    readonly manual: boolean;
+  },
+): ShoppingRange | null {
+  if (
+    stored !== null &&
+    stored.weekStart === options.weekStart &&
+    (options.manual || !shoppingRangeIsAutomatic(stored.weekStart, stored))
+  ) {
+    return null;
+  }
+  return shoppingDefaultRange(options.weekStart, options.today, options.mode);
+}
+
 /**
  * Hinzugefügte Rezepte erneut filtern (Person, aktuelle Woche) und skalieren. Was den Filter nicht mehr besteht
  * oder nicht mehr im Bestand ist, fällt weg.
@@ -302,7 +374,7 @@ function compose(
   };
 }
 
-/** Neue Liste für die Woche des Plans (Standard: die ganze Woche, 6.5). */
+/** Neue Liste für die Woche des Plans (ohne Zeitraum: die ganze Woche, 6.5; die App gibt `shoppingDefaultRange` mit). */
 export function newShoppingList(
   plan: MealPlanWeek,
   input: PlanInput,
@@ -353,9 +425,23 @@ export function resolveShoppingList(
   stored: StoredShoppingList | null,
   plan: MealPlanWeek,
   input: PlanInput,
+  options: {
+    /**
+     * Automatischer Zeitraum (`shoppingListTargetRange`, 23.10.2026); fehlt er, bleibt der gespeicherte. Weicht er ab,
+     * wird die Liste mit ihm neu erzeugt: Häkchen bleiben über `item_key`, was außerhalb liegt, fällt weg (wie „Zeitraum
+     * wählen“) – bei gleichzeitig geändertem Plan bleiben abgehakte als „nicht mehr im Plan“ (R2-S4).
+     */
+    readonly range?: ShoppingRange | null;
+  } = {},
 ): ShoppingListResolution {
+  const target =
+    options.range !== undefined &&
+    options.range !== null &&
+    shoppingListRangeValid(plan.weekStart, options.range)
+      ? { from: options.range.from, to: options.range.to }
+      : null;
   if (stored === null || stored.weekStart !== plan.weekStart) {
-    return { action: 'new', list: newShoppingList(plan, input) };
+    return { action: 'new', list: newShoppingList(plan, input, target ?? undefined) };
   }
   const today = isoDateSchema.parse(input.today);
   const planChanged = stored.planKey !== mealPlanShoppingKey(plan);
@@ -363,10 +449,13 @@ export function resolveShoppingList(
     planChanged && today <= stored.to && stored.from < today && today >= plan.weekStart
       ? today
       : stored.from;
+  const range = target ?? { from, to: stored.to };
+  const rangeChanged = range.from !== stored.from || range.to !== stored.to;
   const list = compose(stored, plan, input, {
-    range: { from, to: stored.to },
+    range,
     recipes: stored.recipes,
     planChanged,
+    dropRemoved: target !== null && rangeChanged && !planChanged,
   });
   if (!planChanged && sameValue(list, stored)) return { action: 'stored', list: stored };
   return { action: 'rebuilt', list, planChanged };

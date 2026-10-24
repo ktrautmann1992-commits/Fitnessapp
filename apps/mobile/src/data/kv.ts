@@ -157,6 +157,12 @@ export const STORAGE_KEYS = {
    */
   accessibility: 'fitnessapp.accessibility.v1',
   /**
+   * Einkaufsliste (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, 23.10.2026): „3 Tage | Ganze Woche“, Wochen mit eigenem
+   * Zeitraum, „Erledigte ausblenden“, zugeklappte Abteilungen – nur dieses Gerät, keine Nutzerdaten
+   * (lib/shopping-prefs.ts).
+   */
+  shoppingPrefs: 'fitnessapp.shopping-prefs.v1',
+  /**
    * Ausdauer: zuletzt gewählt „Fahrrad“ oder „E-Bike“ (23.10.2026) – je Konto ein Wahrheitswert, nur dieses Gerät,
    * kein Gesundheitsdatum. Vorbelegung beim nächsten Rad-Eintrag bzw. der nächsten Aufzeichnung.
    */

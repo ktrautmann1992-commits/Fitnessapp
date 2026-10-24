@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { isoDateSchema } from '../age';
 import { SHOPPING_LIST_SHARE } from '../constants';
 import { SHOPPING_CATEGORIES, SHOPPING_CATEGORY_LABELS_DE } from '../content/food-schema';
-import { shoppingBuyHint } from './shopping-buy-units';
+import { shoppingPurchase } from './shopping-buy-units';
 import { roundShoppingAmount, type ShoppingList, type ShoppingUnit } from './shopping-list';
 import { stableHash } from './stable-hash';
 
@@ -68,7 +68,7 @@ export type ShoppingListShareOptionsInput = z.input<typeof shoppingListShareOpti
  */
 const shareableItemSchema = z.object({
   labelDe: z.string(),
-  /** Nur für die Einkaufs-Einheit („3 Zwiebeln“, `shoppingBuyHint`); erscheint selbst nicht im Text. */
+  /** Nur für die Kaufeinheit („1 Netz Kartoffeln (2 kg)“, `shoppingPurchase`); erscheint selbst nicht im Text. */
   foodId: z.string().nullable().optional(),
   amount: z.number().nullable(),
   unit: z.enum(['g', 'ml', 'piece']).nullable(),
@@ -279,8 +279,16 @@ function itemLine(item: ShareableItem, texts: ShoppingListShareTexts): string | 
   if (label.length === 0) return null;
   const amount = shareAmountText(item.amount, item.unit, texts);
   let body: string;
-  const buy = shoppingBuyHint(item.foodId, item.amount, item.unit);
-  if (buy !== null && amount !== null) body = `${buy.count} ${buy.label} (${amount})`;
+  // Lebensmittel aus dem Plan: wie im Laden („2 Packungen Hähnchenbrustfilet (à 600 g)“, „Olivenöl (Vorrat prüfen)“).
+  const purchase = item.isManual
+    ? null
+    : shoppingPurchase({
+        foodId: item.foodId,
+        labelDe: label,
+        amount: amount === null ? null : item.amount,
+        unit: item.unit,
+      });
+  if (purchase !== null) body = purchase.text;
   else if (amount !== null) body = `${amount} ${label}`;
   else if (item.isManual) body = label;
   else body = `${label} – ${texts.toTaste}`;
@@ -297,8 +305,8 @@ function selected(item: ShareableItem, options: ShoppingListShareOptions): boole
 
 /**
  * Die Einkaufsliste als Klartext zum Weitergeben (19.7 N12 `shoppingListToText`). Aufbau: Titel mit Zeitraum,
- * Abteilungen in fester Reihenfolge (5.5) mit Einträgen („- 500 g Haferflocken“, „- 3 Stück Bananen“, „- Salz – nach
- * Geschmack“, eigene Einträge ohne Menge), am Ende der Vorrat. Deterministisch (gleiche Eingabe → gleicher Text,
+ * Abteilungen in fester Reihenfolge (5.5) mit Einträgen in Kaufeinheiten („- 1 Packung Haferflocken (500 g)“, „- 3
+ * Bananen“, „- Salz (Vorrat prüfen)“, eigene Einträge wie eingegeben), am Ende der Vorrat. Deterministisch (gleiche Eingabe → gleicher Text,
  * Reihenfolge der Einträge innerhalb der Abteilung wie in der Liste). Leere Liste → `empty`.
  */
 export function shoppingListToText(

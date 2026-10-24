@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { db, onboardNutrition, openNutrition } from './nutrition-helpers';
+import { db, onboardNutrition, openNutrition, showCheckedShoppingItems } from './nutrition-helpers';
 import { heading } from './plan-helpers';
 
 /**
@@ -92,7 +92,8 @@ test('Weitergeben: Vorschau ohne Gesundheitsdaten, Hinweis vorher, Teilen-Dialog
   await openShare(page);
 
   const text = await previewText(page);
-  expect(text.startsWith('Einkaufsliste 12.10.2026 – 18.10.2026\n\n')).toBe(true);
+  // Standard seit 23.10.2026: die nächsten 3 Tage (heute Montag + 2) – Weitergeben nimmt den angezeigten Zeitraum.
+  expect(text.startsWith('Einkaufsliste 12.10.2026 – 14.10.2026\n\n')).toBe(true);
   expect(text).toMatch(/^- \d/m);
   expect(text).toContain('Vorrat (hast du wahrscheinlich da)');
   for (const word of [
@@ -156,8 +157,17 @@ test('Weitergeben: Vorschau ohne Gesundheitsdaten, Hinweis vorher, Teilen-Dialog
   // Abhaken auf der Liste → Standard nur Offenes; „Erledigte mitnehmen“ → „(erledigt)“.
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();
   await expect(page.getByTestId('shopping-items')).toBeVisible();
-  const firstCheck = page.locator('[data-testid^="shopping-check-"]').first();
+  await showCheckedShoppingItems(page);
+  const firstId = (await page
+    .locator('[data-testid^="shopping-check-"]')
+    .first()
+    .getAttribute('data-testid')) as string;
+  const firstCheck = page.getByTestId(firstId);
   await firstCheck.click();
+  await expect(firstCheck).toHaveAttribute('aria-checked', 'true');
+  // „Ganze Woche“ auf der Liste → Weitergeben nimmt diesen Zeitraum.
+  await page.getByTestId('shopping-range-week').click();
+  await expect(page.getByTestId('shopping-range')).toContainText('12.10.2026 bis 18.10.2026');
   await expect(firstCheck).toHaveAttribute('aria-checked', 'true');
   await page.getByTestId('shopping-share').click();
   await heading(page, 'Einkaufsliste weitergeben');

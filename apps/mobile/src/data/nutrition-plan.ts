@@ -12,6 +12,8 @@ import {
   resolveMealPlanWeek,
   type UnavailableMeal,
   resolveShoppingList,
+  type ShoppingRangeMode,
+  shoppingListTargetRange,
   type ShoppingListResolution,
   stableHash,
   type DietType,
@@ -369,6 +371,12 @@ export function computeNutritionWeek(input: {
   library: NutritionLibrary | null;
   /** Nur Testmodus: Entwürfe (gekennzeichnet) erlaubt. */
   allowDrafts: boolean;
+  /**
+   * Zeitraum der Einkaufsliste (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, 23.10.2026): Wahl „3 Tage | Ganze Woche“ und ob die
+   * Person für diese Woche einen eigenen Zeitraum gewählt hat (Gerätespeicher, lib/shopping-prefs.ts). Fehlt er (z. B.
+   * Einstellung noch nicht geladen), bleibt der gespeicherte Zeitraum.
+   */
+  shoppingRange?: { mode: ShoppingRangeMode; manual: boolean } | null;
 }): NutritionWeekResult {
   const inputs = nutritionInputsFromRows(input.rows, input.versions, input.today, input.weekStart);
   const profile = mealPlanProfileFromRows(input.rows, input.versions);
@@ -426,7 +434,19 @@ export function computeNutritionWeek(input: {
       (!listRow.uses_health_data || healthConsentStatus(input.rows, input.versions) === 'valid')
         ? listRow.list
         : null;
-    const shopping = resolveShoppingList(usableList, resolved.plan, engineInput);
+    // Automatischer Zeitraum nur in änderbaren Wochen; selbst gewählte Zeiträume bleiben (`shoppingListTargetRange`).
+    const shoppingTarget =
+      editable && input.shoppingRange
+        ? shoppingListTargetRange(usableList, {
+            weekStart: input.weekStart,
+            today: input.today,
+            mode: input.shoppingRange.mode,
+            manual: input.shoppingRange.manual,
+          })
+        : null;
+    const shopping = resolveShoppingList(usableList, resolved.plan, engineInput, {
+      range: shoppingTarget,
+    });
     const planState: MealPlanState = {
       action: resolved.action,
       reasons: resolved.action === 'replanned' ? resolved.reasons : [],

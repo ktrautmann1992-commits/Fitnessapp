@@ -133,14 +133,74 @@ Speicherfehler (Häkchen bleibt lokal, Hinweis), Liste leer/alles erledigt.
 Grenzen, Widerruf, Export); `db-sync` (Grenzen, Export-Liste); Playwright `shopping-scan.spec.ts` (Treffer abhaken,
 Rückgängig, Auswahl, zusätzlich hinzufügen, offline abhaken → Sync, Menüknopf „Einkaufen“).
 
-### 3.x Einkaufs-Einheiten (Gründer-Wunsch 22.10.2026)
+### 3.x Einkaufen wie im Laden (Gründer-Rückmeldung 24.10.2026, ersetzt „Einkaufs-Einheiten“ vom 22.10.)
 
-Frisches Obst, Gemüse und Kräuter stehen in der Liste so, wie man sie im Laden kauft: „5 Zwiebeln (450 g)“,
-„1 Bund Petersilie (40 g)“, „1 Knolle Knoblauch (60 g)“, „4 Zucchini (900 g)“. Die Grammzahl bleibt dahinter
-sichtbar und maßgeblich; gerechnet wird weiter in Gramm (Summe über alle Rezepte, aufgerundet). Die typischen
-Gewichte je Einheit stehen zentral in `SHOPPING_BUY_UNITS` (`packages/core/src/constants.ts`), die Umrechnung in
-`shoppingBuyHint` (`packages/core/src/nutrition/shopping-buy-units.ts`). Gilt in der App, beim Weitergeben und im
-Druck. Lebensmittel ohne Eintrag (Haferflocken, Reis, Milch …) bleiben in g/ml.
+Anlass: „Niemand kauft drei Karotten und dann noch mal fünf Karotten oder 60 g Ingwer.“ Regeln:
+
+1. **Ein Produkt = eine Zeile.** Synonyme werden zuerst zusammengelegt (`SHOPPING_SAME_PRODUCT` in
+   `packages/core/src/constants.ts`: Karotte/Karotten/Möhre, Tomate/Tomaten, Kirsch-/Cherrytomaten,
+   Frühlingszwiebel(n)/Lauchzwiebeln, beide Beerenmischungen, beide Putenbrust-Aufschnitte, beide Thunfisch-Dosen,
+   beide schwarzen Oliven, Vollkorn-Tortilla → Vollkorn-Wrap, Backkakao → Kakaopulver stark entölt, fertige
+   Gemüsebrühe → Brühpulver). Bewusst getrennt: Paprika rot/gelb, Tomate/Cherrytomaten, Spinat/Babyspinat (Beutel zum
+   Kochen bzw. Salat), Romanasalat/-herzen, Knäckebrot/Vollkorn-Knäckebrot, Hack normal/mager, Gouda/Gouda gerieben.
+   Danach zählen Gramm, Stück, EL/TL und ml desselben Produkts zusammen in Gramm (`buildShoppingList`; nur ein Produkt,
+   das ausschließlich in ml vorkommt – Wasser – bleibt ml).
+2. **Jedes Lebensmittel hat eine Kaufeinheit** – Tabelle `SHOPPING_BUY_UNITS` in
+   `packages/core/src/nutrition/shopping-buy-unit-table.ts` (alle 203 Einträge aus `content/foods`, freigegeben und
+   Entwurf; typische Größen bei REWE/Edeka/Aldi/Lidl 2026). Eine Regel je Lebensmittel:
+   - **lose Stück** („3 Äpfel“, „2 rote Paprika“, „1 Zitrone (für den Saft)“) – Anzahl = Bedarf ÷ Stückgewicht;
+   - **Einheit ohne Größe** („1 Stück Ingwer“, „1 Bund Petersilie“, „1 Knolle Knoblauch“, „2 Köpfe Brokkoli“, „1 Topf
+     Basilikum“);
+   - **Packung mit Größe** („1 Netz Kartoffeln (1,5 kg)“, „1 Beutel Karotten (500 g)“, „2 Packungen Hähnchenbrustfilet
+     (à 600 g)“, „1 Packung Eier (10 Stück)“, „1 Dose Kichererbsen (400 g)“, „1 Packung Milch 1,5 % (1 l)“). Mehrere
+     übliche Größen: gewählt wird die Kombination mit der kleinsten Bewertung „Menge + ¼ kleinste Größe je Packung“
+     (wenig Rest, aber nicht 3 kleine Becher statt eines großen; `SHOPPING_PURCHASE_LIMITS`);
+   - **Vorrat ohne Menge** (Öle, Essig, Saucen, Gewürze, Honig/Sirup): „Olivenöl – Vorrat prüfen“.
+     Spielraum 0,1 Einheit (`SHOPPING_BUY_UNIT_TOLERANCE`): 210 g passen in eine 200-g-Packung, 230 g nicht. Winziger
+     Bedarf → trotzdem 1 Einheit. Unbekanntes Lebensmittel → „1 Packung … (insgesamt … g)“ (der Test
+     `packages/content/src/foods/buy-units.test.ts` lässt CI scheitern, wenn ein neues Lebensmittel keine Kaufeinheit hat).
+     Eigene Einträge bleiben, wie eingegeben.
+3. **Aussehen** (Reiter „Einkaufen“): je Abteilung Kopf mit Symbol, Name, „x offen“ (zuklappbar); darunter EINE Fläche
+   mit Trennlinien. Zeile ≥ 54 px: runder Haken in Einkaufs-Türkis, fett die Kaufmenge („2 Packungen“), dann das
+   Produkt; klein darunter Packungsgröße, Markierungen und wofür („für Teriyaki-Bowl, Hummus-Teller +1“,
+   `shoppingItemRecipeIds`, nur auf dem eigenen Gerät, nie im geteilten Text). Abgehakt: durchgestrichen, ans Ende der
+   Abteilung (bzw. ausgeblendet). Hell und dunkel.
+4. **Weitergeben und PDF** nutzen denselben Text (`shoppingPurchase(...).text`).
+5. Reine Anzeige: Mengen, `item_key` und Häkchen der gespeicherten Liste bleiben Gramm – keine Migration. Einträge,
+   die früher in Stück oder ml standen (`…|piece`, `…|ml` neben `…|g`), heißen jetzt `…|g`; ihre Häkchen gehen einmalig
+   verloren (betraf nur Testdaten – im Katalog hat kein Lebensmittel ein Stückgewicht).
+
+Tests: `shopping-buy-units.test.ts` (Gründer-Beispiele, Screenshot-Zeilen, 5 g, genaues Vielfaches, knapp darüber,
+Größenkombinationen, ml, Stück, Vorrat, eigene, unbekannt, alle Tabelleneinträge), `shopping-list.test.ts` (eine Zeile
+je Produkt, Karotten), `n12-share.test.ts`; Playwright `shopping-units.spec.ts` (echter Katalog: „1 Stück Ingwer“,
+keine Zeile „<Zahl> g …“, Karotten genau einmal, Abhaken ans Ende, Weitergeben gleiche Worte).
+
+### 3.y Kürzere Liste: „3 Tage | Ganze Woche“ und Abteilungen zum Zuklappen (Gründer-Entscheidung 23.10.2026)
+
+Anlass: „Da steht viel zu viel drauf auf der Liste.“ Entscheidung „Beides“:
+
+- **Standard-Zeitraum 3 Tage** (`SHOPPING_DEFAULT_DAYS = 3`, `shoppingDefaultRange` in
+  `packages/core/src/nutrition/shopping-list-store.ts`): von `max(Wochenbeginn, heute)` bis `min(Sonntag, heute + 2)`.
+  Samstag → nur Sa–So, Sonntag → nur So. Liegt heute nicht in der Woche (nächste Woche – auch am Sonntag davor, 6.5 –
+  bzw. vergangene Woche), gelten die ersten 3 Tage der Woche. Oben auf dem Reiter die Wahl **„3 Tage | Ganze Woche“**
+  („Ganze Woche“ = ab heute bis Sonntag); die Wahl merkt sich das Gerät. Das 3-Tage-Fenster wandert täglich mit.
+- **„Eigener Zeitraum“** (Link unter der Wahl) öffnet den bisherigen Von/Bis-Wähler. Ein selbst gewählter Zeitraum
+  bleibt (auf dem Gerät je Woche gemerkt bzw. erkennbar, weil er weder am Sonntag endet noch 3 Tage lang ist –
+  `shoppingRangeIsAutomatic`/`shoppingListTargetRange`).
+- **Alte Listen:** Eine gespeicherte Liste mit dem früheren Standard „ganze Woche“ wird beim Öffnen auf den neuen
+  Zeitraum umgestellt; Häkchen bleiben über `item_key` für alles, was im neuen Zeitraum steht. Was nur außerhalb liegt,
+  fällt weg (wie bisher beim Zeitraum-Wählen) – ändert sich gleichzeitig der Plan, bleiben abgehakte als „nicht mehr
+  im Plan“ (R2-S4).
+- **Abteilungen zuklappbar** (`shoppingDepartments`): Kopf mit Pfeil, Name und „x offen“; antippen klappt auf/zu
+  (gemerkt). Ist alles einer Abteilung abgehakt, klappt sie von selbst zu und zeigt „✓ erledigt“.
+- **„Erledigte ausblenden“ ist standardmäßig an** (gemerkt); je Abteilung „x erledigt – anzeigen“.
+- Der Scanner steht jetzt unter der Liste. Drucken (PDF) und Weitergeben nehmen denselben Zeitraum wie die Liste.
+- Gerätespeicher: `fitnessapp.shopping-prefs.v1` (`apps/mobile/src/lib/shopping-prefs.ts`) – nur Wahl, Wochen-Daten,
+  Abteilungsnamen; keine Gesundheitsdaten. Keine Migration nötig (`from`/`to` gab es schon).
+- Tests: `packages/core/src/nutrition/shopping-range.test.ts` (Montag, Mittwoch, Samstag, Sonntag, Sonntag davor,
+  nächste/vergangene Woche, alte Wochenliste mit Häkchen, eigener Zeitraum, Abteilungen); Playwright
+  `nutrition-shopping.spec.ts` (Standard 3 Tage, „Ganze Woche“ zeigt mehr und bleibt gemerkt, Abteilungen auf/zu,
+  ganz erledigt → zu).
 
 ## 4. Etappe E2 – Dashboard bearbeiten (Kacheln + Menüleiste)
 

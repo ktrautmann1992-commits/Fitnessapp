@@ -42,7 +42,7 @@ const WEEK = '2026-10-12';
 function item(labelDe: string, extra: Partial<ShoppingListItem> = {}): ShoppingListItem {
   return {
     itemKey: `${labelDe}|g`,
-    foodId: `test-${labelDe.toLowerCase()}`, // ohne Einkaufs-Einheit (eigene Tests unten)
+    foodId: null, // ohne Kaufeinheit (eigene Tests unten): Text mit Menge wie gespeichert
     labelDe,
     amount: 100,
     unit: 'g',
@@ -490,7 +490,8 @@ describe('keine Gesundheitsdaten im Text (19.8 Nr. 8, KONZEPT 6.13)', () => {
       usesHealthData: true,
       items: base.items.map((i) => ({
         ...i,
-        foodId: `geheim-${i.foodId ?? ''}`,
+        // Die Lebensmittel-ID steuert nur die Kaufeinheit; ohne Tabellen-Eintrag bleibt der Text gleich.
+        foodId: i.foodId,
         itemKey: `geheim|${i.itemKey}`,
         substituteFor: ['erdnuesse', 'schwangerschaft'],
         amountChanged: !i.amountChanged,
@@ -540,7 +541,8 @@ describe('keine Gesundheitsdaten im Text (19.8 Nr. 8, KONZEPT 6.13)', () => {
     expect(text).toContain(names('haferdrink'));
     expect(text).not.toContain(names('vollmilch'));
     expect(text).not.toContain(names('tofu'));
-    expect(text).toContain('nach Geschmack');
+    expect(text).toContain('Salz (Vorrat prüfen)');
+    expect(text).toContain('1 Packung Eier (6 Stück)');
     expect(text).not.toMatch(/statt|kcal/i);
   });
 });
@@ -807,8 +809,8 @@ describe('Händler-Modul (K5): Schnittstelle hinter Feature-Flag, ohne Händler'
   });
 });
 
-describe('Einkaufs-Einheiten im Text', () => {
-  it('Frisches in Stück/Bund mit Grammzahl, foodId selbst steht nicht im Text', () => {
+describe('Kaufeinheiten im Text (wie im Laden, 24.10.2026)', () => {
+  it('Lebensmittel in Kaufeinheiten, nie Gramm vorn; foodId selbst steht nicht im Text', () => {
     const text = textOf(
       list([
         item('Zwiebel', { foodId: 'zwiebel', amount: 450, category: 'fruit_vegetables' }),
@@ -817,12 +819,27 @@ describe('Einkaufs-Einheiten im Text', () => {
           amount: 40,
           category: 'fruit_vegetables',
         }),
+        item('Ingwer', { foodId: 'ingwer', amount: 70, category: 'fruit_vegetables' }),
+        item('Kartoffeln', { foodId: 'kartoffeln', amount: 1200, category: 'fruit_vegetables' }),
         item('Haferflocken', { foodId: 'haferflocken', amount: 500 }),
+        item('Olivenöl', { foodId: 'olivenoel', amount: 30, isPantry: true }),
+        item('Kerzen', { foodId: null, amount: null, unit: null, isManual: true }),
       ]),
     );
-    expect(text).toContain('- 5 Zwiebeln (450 g)');
-    expect(text).toContain('- 1 Bund Petersilie (40 g)');
-    expect(text).toContain('- 500 g Haferflocken');
+    expect(text).toContain('- 6 Zwiebeln');
+    expect(text).toContain('- 1 Bund Petersilie');
+    expect(text).toContain('- 1 Stück Ingwer');
+    expect(text).toContain('- 1 Netz Kartoffeln (1,5 kg)');
+    expect(text).toContain('- 1 Packung Haferflocken (500 g)');
+    expect(text).toContain('- Olivenöl (Vorrat prüfen)');
+    expect(text).toContain('- Kerzen');
+    expect(text).not.toMatch(/^- \d+ (g|ml) /mu);
     expect(text).not.toContain('petersilie-frisch');
+  });
+
+  it('unbekanntes Lebensmittel → „1 Packung …“ mit Bedarf, ohne ID', () => {
+    const text = textOf(list([item('Drachenfrucht', { foodId: 'geheim-drache', amount: 350 })]));
+    expect(text).toContain('- 1 Packung Drachenfrucht (insgesamt 350 g)');
+    expect(text).not.toContain('geheim');
   });
 });
