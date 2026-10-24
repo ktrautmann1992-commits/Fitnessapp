@@ -32,6 +32,7 @@ import {
   parseZeroAmount,
 } from './alpha5';
 import { runAlpha5Import } from './alpha5-run';
+import { APP_SELECTION_PATH, type AppSelection, RECIPE_PHOTO_DIR } from './app-selection';
 
 /**
  * Etappe N2c – DoD (docs/PLAN-PHASE-5.md 19.2, K8): Zweitlauf byte-gleich; Schemafehler → Abbruch ohne Schreiben;
@@ -933,5 +934,162 @@ describe('Ablauf mit Dateien (content:import-alpha5)', () => {
     expect(result.markdown).not.toContain('pull/4');
     expect(snapshot(root, 'content/recipes')).toEqual({});
     expect(calls.some((c) => c.path === '/git/blobs')).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------
+// App-Auswahl (Gründer-Entscheidung 24.10.2026): nur ausgewählte Rezepte und Meal-Prep-Pläne kommen in die App.
+// ---------------------------------------------------------------------------------------------------------
+
+function selectionFor(ids: readonly string[], plans: readonly string[] = []): AppSelection {
+  return {
+    format: 'rezeptbuch-app-auswahl',
+    version: 1,
+    entschieden: 'Test 24.10.2026',
+    quelle: 'alpha5-rezepte.json@1.0',
+    regel: 'Testauswahl.',
+    meal_prep_plaene: [...plans],
+    fotos: { quelle: 'Test', dateien: Object.fromEntries(ids.map((id) => [id, `${id}.jpg`])) },
+    rezepte: [...ids],
+  };
+}
+
+describe('App-Auswahl im Import (importAlpha5)', () => {
+  it('nur ausgewählte Rezepte, Plan ohne Auswahl bleibt nur im Buch; Bericht zählt „nur im Buch“', () => {
+    const output = importAlpha5({
+      data: smallFile(),
+      foods: CATALOG,
+      existing: NO_FILES,
+      selection: selectionFor(['haferbrei-schnell', 'omelett-natur']),
+    });
+    expect(output.built.recipes.map((r) => r.id).sort()).toEqual([
+      'haferbrei-schnell',
+      'omelett-natur',
+    ]);
+    expect(output.built.mealPrepPlans).toEqual([]);
+    expect(
+      output.writes
+        .filter((w) => w.kind === 'recipe')
+        .map((w) => w.id)
+        .sort(),
+    ).toEqual(['haferbrei-schnell', 'omelett-natur']);
+    expect(output.writes.some((w) => w.kind === 'meal_prep_plan')).toBe(false);
+    // Ratgeber kommen unabhängig von der Auswahl.
+    expect(output.writes.filter((w) => w.kind === 'guide')).toHaveLength(2);
+    expect(output.report.counts.recipes).toBe(4);
+    expect(output.report.selection).toMatchObject({
+      inApp: 2,
+      bookOnly: 2,
+      plansInApp: [],
+      plansBookOnly: ['fisch-woche'],
+      versionMismatch: false,
+      repoOutside: [],
+    });
+    // Nicht ausgewählte Rezepte gelten nicht als „nicht importiert“ (kein Katalog-Fehler).
+    expect(output.report.notImported).toEqual([]);
+  });
+
+  it('Plan in der Auswahl → Plan und seine Rezepte werden gebaut', () => {
+    const output = importAlpha5({
+      data: smallFile(),
+      foods: CATALOG,
+      existing: NO_FILES,
+      selection: selectionFor(['lachs-mit-reis'], ['fisch-woche']),
+    });
+    expect(output.built.mealPrepPlans.map((p) => p.id)).toEqual(['fisch-woche']);
+    expect(output.report.selection?.plansInApp).toEqual(['fisch-woche']);
+  });
+
+  it('schon vorhandene Dateien, die jetzt nur im Buch sind: nie gelöscht, im Bericht mit Status', () => {
+    const existing = existingFrom(run());
+    (existing.recipe.get('lachs-tatar') as { status: string }).status = 'published';
+    const output = importAlpha5({
+      data: smallFile(),
+      foods: CATALOG,
+      existing,
+      selection: selectionFor(['haferbrei-schnell', 'omelett-natur']),
+    });
+    expect(output.writes.filter((w) => w.kind !== 'guide')).toEqual([]);
+    expect(output.report.selection?.repoOutside).toEqual([
+      { kind: 'meal_prep_plan', id: 'fisch-woche', status: 'draft' },
+      { kind: 'recipe', id: 'lachs-mit-reis', status: 'draft' },
+      { kind: 'recipe', id: 'lachs-tatar', status: 'published' },
+    ]);
+    expect(output.report.removedIds).toEqual([]);
+  });
+
+  it('Auswahl für eine andere Fassung → Hinweis versionMismatch', () => {
+    const output = importAlpha5({
+      data: { ...smallFile(), version: '1.2' },
+      foods: CATALOG,
+      existing: NO_FILES,
+      selection: selectionFor(['haferbrei-schnell']),
+    });
+    expect(output.report.selection?.versionMismatch).toBe(true);
+  });
+});
+
+describe('App-Auswahl im Ablauf mit Dateien', () => {
+  const dirs: string[] = [];
+  afterEach(() => {
+    for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
+  });
+
+  function repoWith(selection: unknown, photos?: readonly string[]): string {
+    const root = mkdtempSync(join(tmpdir(), 'alpha5-sel-'));
+    dirs.push(root);
+    const put = (path: string, data: unknown) => {
+      mkdirSync(dirname(join(root, path)), { recursive: true });
+      writeFileSync(join(root, path), `${JSON.stringify(data, null, 2)}\n`);
+    };
+    put('packages/content/seed/alpha5-rezepte.json', smallFile());
+    for (const food of FOODS) put(`content/foods/${food.id}.json`, food);
+    if (selection !== undefined) put(APP_SELECTION_PATH, selection);
+    if (photos !== undefined) {
+      mkdirSync(join(root, RECIPE_PHOTO_DIR), { recursive: true });
+      for (const photo of photos) writeFileSync(join(root, RECIPE_PHOTO_DIR, photo), 'jpg');
+    }
+    return root;
+  }
+  const deps = (repoRoot: string) => ({ repoRoot, runId: '8', refName: 'main' });
+
+  it('schreibt nur die ausgewählten Rezepte; Bericht nennt „nur im Buch“', async () => {
+    const root = repoWith(selectionFor(['haferbrei-schnell', 'omelett-natur']));
+    const result = await runAlpha5Import('schreiben', deps(root));
+    expect(result.exitCode).toBe(0);
+    expect(readdirSync(join(root, 'content/recipes')).sort()).toEqual([
+      'haferbrei-schnell.json',
+      'omelett-natur.json',
+    ]);
+    expect(existsSync(join(root, 'content/meal-prep-plans'))).toBe(false);
+    expect(result.markdown).toContain('In der App: **2 von 4 Rezepten** · **nur im Buch: 2**');
+    expect(result.markdown).toContain('nur im Buch: fisch-woche');
+  });
+
+  it('ohne Auswahl-Datei: alle Rezepte, sichtbarer Hinweis', async () => {
+    const root = repoWith(undefined);
+    const result = await runAlpha5Import('bericht', deps(root));
+    expect(result.exitCode).toBe(0);
+    expect(result.markdown).toContain('fehlt – **alle** Rezepte');
+  });
+
+  it('ungültige Auswahl (unbekanntes Rezept, Plan unvollständig) → Abbruch, nichts geschrieben', async () => {
+    const root = repoWith(selectionFor(['haferbrei-schnell', 'gibt-es-nicht'], ['fisch-woche']));
+    const result = await runAlpha5Import('schreiben', deps(root));
+    expect(result.exitCode).toBe(1);
+    expect(result.markdown).toContain('rezeptbuch-app-auswahl.json ist ungültig');
+    expect(result.markdown).toContain('„gibt-es-nicht“ fehlt');
+    expect(result.markdown).toContain('Plan „fisch-woche“ braucht auch „lachs-mit-reis“');
+    expect(existsSync(join(root, 'content/recipes'))).toBe(false);
+  });
+
+  it('Fotos im Repository: fehlt ein Foto der Auswahl → Abbruch', async () => {
+    const root = repoWith(selectionFor(['haferbrei-schnell', 'omelett-natur']), [
+      'haferbrei-schnell.jpg',
+    ]);
+    const result = await runAlpha5Import('schreiben', deps(root));
+    expect(result.exitCode).toBe(1);
+    expect(result.markdown).toContain('omelett-natur.jpg');
+    expect(existsSync(join(root, 'content/recipes'))).toBe(false);
   });
 });
