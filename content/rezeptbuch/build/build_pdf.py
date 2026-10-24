@@ -181,6 +181,7 @@ UNTERWEGS_CH = ('unterwegs', 'Unterwegs essen', 'Kein Rezept, sondern ein Ratgeb
 LEXIKON_CH = ('lexikon', 'Zutatenlexikon', 'Die Basics der Fitness-Küche: was Kartoffeln, Reis, Getreide, Hülsenfrüchte, Nüsse, Saaten, Eiweißquellen und Öle können und für wen sie passen.')
 COVER_TXT['lexikon'] = '59 Grundnahrungsmittel kurz erklärt.'
 LEX_HOOK = None; LEX_PAGE = None; INTRO_PAGES = None
+BACK_PAGE = None  # Rückseite (design.py setzt sie)
 ALL = [SCHNELL] + [t[:3] for t in TRAINING] + [t[:3] for t in MORE] + GROUPS + [UNTERWEGS_CH, LEXIKON_CH]
 def n_recipes(k): return len(data[k]['recipes']) if k in data else 0
 
@@ -588,6 +589,7 @@ def build():
                           PageTemplate('divider', [full], onPageEnd=page_divider), PageTemplate('recipe', [rec], onPageEnd=page_recipe),
                           PageTemplate('shophead', [Frame(M, H - 26 * mm - 34 * mm, W - 2 * M, 34 * mm, id='sh', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0), Frame(M, 16 * mm, (W - 2 * M - 8 * mm) / 2, H - 26 * mm - 34 * mm - 16 * mm, id='c1', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0), Frame(M + (W - 2 * M + 8 * mm) / 2, 16 * mm, (W - 2 * M - 8 * mm) / 2, H - 26 * mm - 34 * mm - 16 * mm, id='c2', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)], onPageEnd=page_recipe),
                           PageTemplate('shop', [Frame(M, 16 * mm, (W - 2 * M - 8 * mm) / 2, H - 26 * mm - 16 * mm, id='c3', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0), Frame(M + (W - 2 * M + 8 * mm) / 2, 16 * mm, (W - 2 * M - 8 * mm) / 2, H - 26 * mm - 16 * mm, id='c4', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)], onPageEnd=page_recipe)])
+    if BACK_PAGE: doc.addPageTemplates([PageTemplate('back', [full], onPage=BACK_PAGE)])
     if LEX_PAGE: doc.addPageTemplates([PageTemplate('lex', [Frame(M, 16 * mm, W - 2 * M, H - 14 * mm - 12 * mm - 16 * mm, id='lx', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)], onPageEnd=LEX_PAGE)])
     story = [Spacer(0, 1), NextPageTemplate('light'), PageBreak(), ] + (INTRO_PAGES() if INTRO_PAGES else [KeepInFrame(W - 2 * M, H - 16 * mm - 26 * mm - 2 * mm, intro(), mode='shrink')])
     for key, gname, gtxt in ALL:
@@ -618,6 +620,7 @@ def build():
         if key == 'schnell':
             story += [NextPageTemplate('shophead'), PageBreak()] + mehr_schnell()
         story += [NextPageTemplate('shophead'), PageBreak()] + shopping(key, gname, d)
+    if BACK_PAGE: story += [NextPageTemplate('back'), PageBreak(), Spacer(0, 1)]
     doc.build(story)
 
 if __name__ == '__main__':

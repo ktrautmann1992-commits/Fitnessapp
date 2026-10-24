@@ -64,3 +64,7 @@ Erste Testbilder sind bereits erzeugt. Für diese Job-IDs nur `jobs_wait` bzw. `
 ## Deckblatt
 
 Das Titelbild liegt unter `build/titelbild.jpg` (Higgsfield, Modell gpt_image_2_5, ohne Schrift und Logos; Frau ohne Gesicht mit Hanteln, Shaker und fertigen Gerichten). `design.py` schneidet es auf A4 zu und lässt es oben und unten zu Schwarz verlaufen, damit Titel und Fußzeile lesbar bleiben. Ein neues Bild einfach unter demselben Namen ablegen und das Buch neu bauen.
+
+## Rückseite
+
+Die letzte Seite ist die Rückseite (`page_back` in `design.py`): Werbetext, Foto `build/rueckseite.jpg` (Higgsfield, Meal-Prep-Boxen mit Hantel und Shaker, ohne Schrift und Logos), Kapitelliste, drei Vorteile, α5-Logo und Hinweis „ersetzt keine ärztliche oder ernährungsfachliche Beratung“. Nur das Rezeptbuch hat sie; Gratis-PDF und Lexikon nicht.

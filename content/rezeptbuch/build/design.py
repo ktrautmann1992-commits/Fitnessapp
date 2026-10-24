@@ -283,6 +283,54 @@ def page_cover(c, doc):
     c.restoreState()
 b.page_cover = page_cover
 
+# Rückseite: Werbetext, Foto (Higgsfield, ohne Schrift/Logos), Kapitel, Vorteile, Hinweis.
+BACK_FOTO = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rueckseite.jpg')
+BACK_CACHE = os.path.join(tempfile.gettempdir(), 'alpha5-rueckseite.jpg')
+
+def back_bild(h):
+    """Foto auf Satzbreite und Höhe h mittig zuschneiden."""
+    tw = 1600; th = round(tw * h / (W - 2 * M))
+    im = PILImage.open(BACK_FOTO).convert('RGB')
+    s = max(tw / im.width, th / im.height)
+    im = im.resize((round(im.width * s), round(im.height * s)), PILImage.LANCZOS)
+    l = (im.width - tw) // 2; t = (im.height - th) // 2
+    im.crop((l, t, l + tw, t + th)).save(BACK_CACHE, quality=88)
+    return BACK_CACHE
+
+def page_back(c, doc):
+    c.saveState()
+    c.setFillColor(SCHWARZ); c.rect(0, 0, W, H, fill=1, stroke=0)
+    n = sum(b.n_recipes(k) for k, *_ in b.ALL)
+    c.setFillColor(WEISS); c.setFont('C-XBIt', 30)
+    c.drawString(M, H - 30 * mm, 'Essen, das zu deinem'); c.drawString(M, H - 41 * mm, 'Training passt.')
+    para(c, M, H - 47 * mm, 34 * mm, 1.8 * mm, 1.1 * mm, fill=BLAU)
+    txt = (f'{n} Rezepte für jedes Ziel: vom schnellen Frühstück über Pre- und Post-Workout bis zum Wettkampftag. '
+           'Mit Meal-Prep-Plänen, Einkaufslisten, Low Carb, Heißluftfritteuse, Sommer-Eis und einem Zutatenlexikon.')
+    pp = Paragraph(txt, st('bk', fontName='A-Regular', fontSize=11, leading=15.5, textColor=colors.HexColor('#d5dbe8')))
+    _, ph = pp.wrap(W - 2 * M, 40 * mm); pp.drawOn(c, M, H - 53 * mm - ph)
+    fh = 70 * mm; fy = H - 78 * mm - fh
+    if os.path.exists(BACK_FOTO):
+        c.drawImage(back_bild(fh), M, fy, W - 2 * M, fh)
+    c.setFillColor(b.HIMMEL); c.setFont('C-BoldIt', 15); c.drawString(M, fy - 11 * mm, f'{len(b.ALL)} Kapitel')
+    half = (len(b.ALL) + 1) // 2
+    for i, (key, name, _) in enumerate(b.ALL):
+        x = M + (0 if i < half else (W - 2 * M) / 2 + 2 * mm); y = fy - 21 * mm - (i % half) * 7.4 * mm
+        para(c, x, y - 0.4 * mm, 1.4 * mm, 4 * mm, 1.1 * mm, fill=ACC.get(key, BLAU))
+        c.setFillColor(WEISS); c.setFont('C-BoldIt', 11.5); c.drawString(x + 4.5 * mm, y, name.replace('&amp;', '&'))
+    vy = 34 * mm; vw = (W - 2 * M - 8 * mm) / 3
+    for i, v in enumerate(['Alle Nährwerte pro Portion berechnet', 'Vegan, vegetarisch, mit Fleisch &amp; Fisch', 'Mit Einkaufslisten und Meal-Prep-Plänen']):
+        x = M + i * (vw + 4 * mm)
+        c.setFillColor(b.GRAPHIT_H); c.roundRect(x, vy, vw, 12 * mm, 2 * mm, fill=1, stroke=0)
+        para(c, x + 3 * mm, vy + 3.5 * mm, 1.2 * mm, 5 * mm, 1 * mm, fill=BLAU)
+        q = Paragraph(v, st('bv%d' % i, fontName='C-BoldIt', fontSize=10, leading=12, textColor=WEISS))
+        _, qh = q.wrap(vw - 9 * mm, 12 * mm); q.drawOn(c, x + 6.5 * mm, vy + (12 * mm - qh) / 2)
+    b.draw_logo(c, M, 12 * mm, 7 * mm)
+    c.setFillColor(colors.HexColor('#8a93a6')); c.setFont('A-Regular', 7.5)
+    c.drawRightString(W - M, 16.5 * mm, 'Allgemeine Informationen zu Ernährung und Training. Ersetzt keine ärztliche')
+    c.drawRightString(W - M, 13 * mm, 'oder ernährungsfachliche Beratung, z. B. bei Vorerkrankungen oder in der Schwangerschaft.')
+    c.restoreState()
+b.BACK_PAGE = page_back
+
 # ---------- Rezeptseite ----------
 def ing_table(r, width):
     rows = []
