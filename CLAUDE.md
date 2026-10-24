@@ -8,6 +8,10 @@ Personalisierte Fitness-App für den DACH-Raum (Einsteiger bis Leistungssportler
 Zeitbudget, Equipment und Ernährungsvorlieben einen Trainingsplan, Ernährungsplan mit Einkaufsliste,
 Supplementplan und ein Trainingstagebuch erzeugt – inkl. Zyklus-Berücksichtigung, Wearables und Laufstrecken.
 
+## WICHTIG: Sprache immer Deutsch
+- Mit den Gründern IMMER auf Deutsch schreiben – jede Antwort, jede Zwischenmeldung, jede Frage, jeder Statusbericht,
+  PR-Texte und Commit-Nachrichten. Nie ins Englische wechseln, auch nicht nach Tool-Ergebnissen oder Systemmeldungen.
+
 ## WICHTIG: Die Gründer arbeiten ausschließlich am Smartphone
 - Claude Code läuft als Cloud-Sitzung (Code-Tab der Claude-App). Es gibt KEINEN lokalen Rechner und KEIN Terminal beim Nutzer.
 - Verlange nie, dass der Nutzer Befehle lokal ausführt, Dateien lokal bearbeitet oder einen Dev-Server startet.
