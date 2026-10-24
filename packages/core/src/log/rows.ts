@@ -97,6 +97,8 @@ export interface CardioLogRow {
   duration_s: number;
   distance_m: number | null;
   elevation_m: number | null;
+  /** E-Bike (nur beim Rad; Spalte seit 20261023140000). Ältere lokale Zeilen ohne Feld gelten als false. */
+  e_bike: boolean;
 }
 
 /** Zeile aus exercise_start_weights. */
@@ -222,6 +224,7 @@ export function applySessionLog<T extends LogAndSessionRows>(
           duration_s: payload.cardio.duration_s,
           distance_m: payload.cardio.distance_m,
           elevation_m: payload.cardio.elevation_m,
+          e_bike: payload.cardio.modality === 'bike' && payload.cardio.e_bike === true,
         },
       ]
     : [];

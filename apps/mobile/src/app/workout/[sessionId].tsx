@@ -26,6 +26,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { IntervalTimer } from '@/components/competition';
+import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
 import { AreaProgress, HeroCard, IconChip, Tile, useAreaColors } from '@/components/design';
 import { RestEndNotificationOffer } from '@/components/notifications';
 import { MuscleMapThumbnail, StartPositionImage } from '@/components/muscle-map';
@@ -1308,6 +1309,15 @@ function EnduranceCard({
       : null;
   const speed = errors.duration ? null : cardioSpeed(cardio.modality, durationS, distanceM);
   const durationError = errors.duration ? t.workout.cardio.errors[errors.duration] : undefined;
+  // E-Bike (23.10.2026): neuer Rad-Eintrag ohne Wahl → zuletzt genutzte Wahl dieses Geräts (sonst Fahrrad).
+  const app = useApp();
+  const bikeChoice = useBikeChoice(app.session?.userId ?? null);
+  const needsDefault =
+    cardio.modality === 'bike' && cardio.eBike === undefined && bikeChoice.loaded;
+  useEffect(() => {
+    if (needsDefault) onChange({ eBike: bikeChoice.eBike === true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- nur beim ersten Mal je Entwurf vorbelegen
+  }, [needsDefault]);
   return (
     <Card>
       <View testID="workout-cardio" style={styles.exercise}>
@@ -1326,6 +1336,16 @@ function EnduranceCard({
           onChange={(modality) => onChange({ modality })}
           horizontal
         />
+        {cardio.modality === 'bike' ? (
+          <BikeTypeChoice
+            eBike={cardio.eBike === true}
+            onChange={(eBike) => {
+              bikeChoice.remember(eBike);
+              onChange({ eBike });
+            }}
+            testID="workout-cardio-bike-type"
+          />
+        ) : null}
         <Body style={styles.setLabel}>{t.workout.cardio.duration}</Body>
         <View style={styles.steppers}>
           <TextField

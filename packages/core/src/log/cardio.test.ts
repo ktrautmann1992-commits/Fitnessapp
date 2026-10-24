@@ -15,6 +15,7 @@ import {
   paceSecondsPerKm,
   speedKmh,
 } from './cardio';
+import { cardioLogSchema } from './schemas';
 
 describe('Pace und Geschwindigkeit (Abschnitt 5.3)', () => {
   it('5 km in 30 min → 6:00 min/km, 10 km/h', () => {
@@ -189,5 +190,41 @@ describe('Ausdauer-Eintrag im Trainingsmodus (Etappe C2)', () => {
     expect(talkTestLevel(8)).toBe('few_words');
     expect(talkTestLevel(9)).toBe('no_talking');
     expect(talkTestLevel(10)).toBe('no_talking');
+  });
+});
+
+describe('E-Bike im Ausdauer-Eintrag (23.10.2026)', () => {
+  const base = { hours: 1, minutes: 0, distanceKm: 20, elevationM: null };
+
+  it('Rad + E-Bike → e_bike: true; Rad ohne Wahl bzw. Fahrrad → Feld fehlt (= normales Rad)', () => {
+    expect(cardioLogFromInput({ ...base, modality: 'bike', eBike: true })).toMatchObject({
+      ok: true,
+      cardio: { modality: 'bike', e_bike: true },
+    });
+    const plain = cardioLogFromInput({ ...base, modality: 'bike', eBike: false });
+    expect(plain.ok && 'e_bike' in plain.cardio).toBe(false);
+    const missing = cardioLogFromInput({ ...base, modality: 'bike' });
+    expect(missing.ok && 'e_bike' in missing.cardio).toBe(false);
+  });
+
+  it('E-Bike bei Laufen/Gehen/Schwimmen wird nie gesendet', () => {
+    for (const modality of ['run', 'walk', 'swim'] as const) {
+      const result = cardioLogFromInput({ ...base, distanceKm: 5, modality, eBike: true });
+      expect(result.ok && 'e_bike' in result.cardio, modality).toBe(false);
+    }
+  });
+
+  it('cardioLogSchema: e_bike optional, nur beim Rad erlaubt', () => {
+    const row = { modality: 'bike', duration_s: 3600, distance_m: 20_000, elevation_m: null };
+    expect(cardioLogSchema.safeParse(row).success).toBe(true);
+    expect(cardioLogSchema.safeParse({ ...row, e_bike: true }).success).toBe(true);
+    expect(cardioLogSchema.safeParse({ ...row, e_bike: false }).success).toBe(true);
+    expect(cardioLogSchema.safeParse({ ...row, modality: 'run', e_bike: true }).success).toBe(
+      false,
+    );
+    expect(cardioLogSchema.safeParse({ ...row, modality: 'run', e_bike: false }).success).toBe(
+      true,
+    );
+    expect(cardioLogSchema.safeParse({ ...row, e_bike: 'ja' }).success).toBe(false);
   });
 });

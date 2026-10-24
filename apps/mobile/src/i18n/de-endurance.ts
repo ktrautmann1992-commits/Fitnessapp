@@ -34,6 +34,18 @@ export const deEndurance = {
   moreEntry: 'Ausdauer: Laufen, Rad, Gehen aufzeichnen',
   sports: { run: 'Laufen', bike: 'Rad', walk: 'Gehen', swim: 'Schwimmen' },
   sportNouns: { run: 'Lauf', bike: 'Radfahrt', walk: 'Spaziergang', swim: 'Schwimmen' },
+  /** E-Bike (23.10.2026): Sportart bleibt „Rad“, Auswahl „Fahrrad | E-Bike“. */
+  eBike: {
+    label: 'Womit fährst du?',
+    bike: 'Fahrrad',
+    eBike: 'E-Bike',
+    hint: 'E-Bike zählt bei „Rad“ mit. Die kcal werden niedriger geschätzt (Motor hilft mit).',
+    badge: 'E-Bike',
+    sport: 'E-Bike',
+    noun: 'E-Bike-Fahrt',
+    ofWhich: (meters: number, count: number) =>
+      `davon E-Bike: ${km(meters)} · ${count} ${count === 1 ? 'Fahrt' : 'Fahrten'}`,
+  },
   record: {
     title: 'Aufzeichnen',
     chooseSport: 'Was zeichnest du auf?',

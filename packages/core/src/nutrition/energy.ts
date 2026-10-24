@@ -113,11 +113,17 @@ export function activityFactor(level: ActivityLevel | null): number {
 
 /** MET-Wert einer Einheit (lückenlos für `effort_target` 1–4 und fehlend, Plan 4.4, S11b). */
 export function metForSession(
-  session: Pick<NutritionSession, 'kind' | 'enduranceModality' | 'effortTarget'>,
+  session: Pick<NutritionSession, 'kind' | 'enduranceModality' | 'effortTarget'> & {
+    /** E-Bike (nur bei Sportart Rad wirksam, sonst ignoriert); fehlt = normales Rad. */
+    readonly eBike?: boolean;
+  },
 ): number {
   if (session.kind === 'strength') return TRAINING_MET.strength;
   if (session.enduranceModality === null) return TRAINING_MET.unknownEndurance;
-  const table = TRAINING_MET.endurance[session.enduranceModality];
+  const table =
+    session.enduranceModality === 'bike' && session.eBike === true
+      ? TRAINING_MET.eBike
+      : TRAINING_MET.endurance[session.enduranceModality];
   if (session.effortTarget === null) return table.fallback;
   return session.effortTarget <= TRAINING_MET.lowEffortMax ? table.low : table.high;
 }

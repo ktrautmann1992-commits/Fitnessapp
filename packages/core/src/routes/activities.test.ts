@@ -100,6 +100,71 @@ function activities(): EnduranceActivity[] {
   );
 }
 
+describe('E-Bike (Gründer-Wunsch 23.10.2026)', () => {
+  it('E-Bike bleibt Rad, zählt in die Rad-Summe und wird als „davon E-Bike“ ausgewiesen', () => {
+    const list = enduranceActivities(
+      [
+        route(1, '2026-10-19T06:00:00Z', 20_000, { sport: 'bike', e_bike: true }),
+        route(2, '2026-10-20T06:00:00Z', 30_000, { sport: 'bike' }),
+      ],
+      [
+        log(1, '2026-10-21', 12_000, { modality: 'bike', e_bike: true }),
+        log(2, '2026-10-22', 5_000),
+      ],
+    );
+    expect(list.filter((a) => a.eBike)).toHaveLength(2);
+    const s = enduranceTotals(list, { period: 'week', anchor: '2026-10-22' });
+    expect(s.total).toMatchObject({ count: 4, distanceM: 67_000, eBikeCount: 2 });
+    expect(s.total.eBikeDistanceM).toBe(32_000);
+    const bike = s.bySport.find((x) => x.sport === 'bike')?.totals;
+    expect(bike).toMatchObject({
+      count: 3,
+      distanceM: 62_000,
+      eBikeCount: 2,
+      eBikeDistanceM: 32_000,
+    });
+    const run = s.bySport.find((x) => x.sport === 'run')?.totals;
+    expect(run).toMatchObject({ count: 1, eBikeCount: 0, eBikeDistanceM: 0 });
+  });
+
+  it('e_bike bei anderer Sportart (fehlerhafte Zeile) wird ignoriert; E-Bike ohne Distanz zählt nur die Anzahl', () => {
+    const list = enduranceActivities(
+      [route(1, '2026-10-19T06:00:00Z', 5_000, { e_bike: true })],
+      [log(1, '2026-10-20', null, { modality: 'bike', e_bike: true })],
+    );
+    expect(list.find((a) => a.source === 'route')?.eBike).toBe(false);
+    const s = enduranceTotals(list, { period: 'week', anchor: '2026-10-20' });
+    expect(s.total.eBikeCount).toBe(1);
+    expect(s.total.eBikeDistanceM).toBe(0);
+  });
+
+  it('Strecke mit verknüpftem Eintrag: der Eintrag ist führend (z. B. Uhr-Route ohne Angabe)', () => {
+    const ride = log(1, '2026-10-19', 20_000, { modality: 'bike', e_bike: true });
+    const watchRoute = route(1, '2026-10-19T06:00:00Z', 20_000, {
+      sport: 'bike',
+      session_log_id: ride.id,
+    });
+    expect(enduranceActivities([watchRoute], [ride])[0]?.eBike).toBe(true);
+    const plain = log(2, '2026-10-19', 20_000, { modality: 'bike', e_bike: false });
+    const stale = route(2, '2026-10-19T07:00:00Z', 20_000, {
+      sport: 'bike',
+      e_bike: true,
+      session_log_id: plain.id,
+    });
+    expect(enduranceActivities([stale], [plain])[0]?.eBike).toBe(false);
+    // Eintrag nicht geladen → Angabe der Strecke.
+    expect(enduranceActivities([stale], [])[0]?.eBike).toBe(true);
+  });
+
+  it('nur Fahrrad bzw. ältere Zeilen ohne Feld → davon E-Bike 0', () => {
+    const s = enduranceTotals(
+      enduranceActivities([route(1, '2026-10-19T06:00:00Z', 9_000, { sport: 'bike' })], []),
+      { period: 'week', anchor: '2026-10-19' },
+    );
+    expect(s.total).toMatchObject({ count: 1, eBikeCount: 0, eBikeDistanceM: 0 });
+  });
+});
+
 describe('enduranceTotals', () => {
   it('Woche Mo–So mit Summen je Sportart und neutralem Vergleich zur Vorwoche', () => {
     const s = enduranceTotals(activities(), { period: 'week', anchor: '2026-10-22' });
@@ -110,6 +175,8 @@ describe('enduranceTotals', () => {
       distanceM: 17_000,
       movingS: 1_700 * 2 + 1_200,
       elevationM: 120,
+      eBikeCount: 0,
+      eBikeDistanceM: 0,
     });
     expect(s.bySport.map((x) => x.sport)).toEqual(['run', 'walk', 'bike']);
     expect(s.previous.total.distanceM).toBe(3_000);
@@ -136,7 +203,14 @@ describe('enduranceTotals', () => {
 
   it('leere Periode und Februar im Schaltjahr', () => {
     const s = enduranceTotals(activities(), { period: 'month', anchor: '2028-02-10' });
-    expect(s.total).toEqual({ count: 0, distanceM: 0, movingS: 0, elevationM: 0 });
+    expect(s.total).toEqual({
+      count: 0,
+      distanceM: 0,
+      movingS: 0,
+      elevationM: 0,
+      eBikeCount: 0,
+      eBikeDistanceM: 0,
+    });
     expect(s.to).toBe('2028-02-29');
     expect(s.bySport).toEqual([]);
   });

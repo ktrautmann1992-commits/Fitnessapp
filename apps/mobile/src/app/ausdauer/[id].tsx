@@ -25,6 +25,7 @@ import { useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { LiveRegion } from '@/components/calendar';
+import { BikeTypeChoice, EBikeBadge, useBikeChoice } from '@/components/e-bike';
 import { SectionLabel, StatValue } from '@/components/design';
 import {
   ElevationArea,
@@ -143,6 +144,13 @@ export default function RouteDetailScreen() {
   const watch = saved?.source === 'watch';
   const wearableRows = wearables.state.kind === 'ready' ? wearables.state.result.rows : null;
   const logId = info.session_log_id;
+  // E-Bike: der verknüpfte Eintrag ist führend (wie enduranceActivities), sonst die Angabe der Strecke.
+  const linkedCardio = logId
+    ? (app.rows.cardioLogs.find((c) => c.session_log_id === logId) ?? null)
+    : null;
+  const eBike =
+    info.sport === 'bike' &&
+    (linkedCardio ? linkedCardio.e_bike === true : (saved?.e_bike ?? info.e_bike) === true);
   const heart =
     watch && logId
       ? (wearableRows?.heartRates.find((h) => h.session_log_id === logId) ?? null)
@@ -205,7 +213,7 @@ export default function RouteDetailScreen() {
     <Screen area="ausdauer" icon="run" title={info.name} footer={back} testID="route-detail">
       <LiveRegion text={live.text} version={live.version} />
       <RunHero
-        meta={`${E.sports[info.sport]} · ${formatDateDe(day)}${watch ? ` · ${WR.heroSource}` : ''}${
+        meta={`${eBike ? E.eBike.sport : E.sports[info.sport]} · ${formatDateDe(day)}${watch ? ` · ${WR.heroSource}` : ''}${
           info.is_favorite ? ` · ★ ${D.favorite}` : ''
         }${difficulty ? ` · ${E.save.difficulties[difficulty]}` : ''}`}
         distance={distanceText(info.distance_m)}
@@ -228,6 +236,7 @@ export default function RouteDetailScreen() {
           />
         ) : null}
       </RunHero>
+      {eBike ? <EBikeBadge testID="route-e-bike" /> : null}
       {pending ? (
         <Notice tone={pending.state === 'rejected' ? 'warning' : 'info'}>
           {pending.state === 'rejected' ? E.list.rejectedHint : E.save.queued}
@@ -276,6 +285,7 @@ export default function RouteDetailScreen() {
               enduranceModality: info.sport,
               effortTarget: null,
               durationS: info.moving_s,
+              eBike,
             }}
             logId={info.session_log_id}
           />
@@ -333,6 +343,7 @@ export default function RouteDetailScreen() {
       {saved && editing ? (
         <EditRoute
           route={saved}
+          eBike={eBike}
           onDone={async (text) => {
             setEditing(false);
             forgetTrackedRoutes();
@@ -420,12 +431,17 @@ function compareFor(route: TrackedRouteRow, routes: readonly TrackedRouteRow[]):
 
 function EditRoute({
   route,
+  eBike: initialEBike,
   onDone,
 }: {
   route: TrackedRouteRow;
+  /** Aktuelle E-Bike-Angabe (verknüpfter Eintrag bzw. Strecke). */
+  eBike: boolean;
   onDone: (message: string | null) => Promise<void>;
 }) {
   const app = useApp();
+  const bikeChoice = useBikeChoice(app.session?.userId ?? null);
+  const [eBike, setEBike] = useState(initialEBike);
   const [name, setName] = useState(route.name);
   const [favorite, setFavorite] = useState(route.is_favorite);
   const [difficulty, setDifficulty] = useState<RouteDifficulty | 'none'>(
@@ -445,7 +461,14 @@ function EditRoute({
         difficulty: difficulty === 'none' ? null : difficulty,
         is_favorite: favorite,
         note: note.trim() === '' ? null : note.trim(),
+        // Nur beim Rad senden (sonst fehlt das Feld = unverändert).
+        ...(route.sport === 'bike' ? { e_bike: eBike } : {}),
       });
+      if (route.sport === 'bike' && eBike !== initialEBike) {
+        bikeChoice.remember(eBike);
+        // Der verknüpfte Eintrag folgt (Revision + 1) → Tagebuch neu laden.
+        await app.reload().catch(() => undefined);
+      }
       await onDone(D.updated);
     } catch (caught) {
       setError(errorText(caught));
@@ -465,6 +488,9 @@ function EditRoute({
           maxLength={TRACKED_ROUTE_LIMITS.nameMaxLength}
           testID="route-edit-name"
         />
+        {route.sport === 'bike' ? (
+          <BikeTypeChoice eBike={eBike} onChange={setEBike} testID="route-edit-bike-type" />
+        ) : null}
         <Checkbox label={E.save.favorite} checked={favorite} onChange={setFavorite} />
         <ChoiceList<RouteDifficulty | 'none'>
           label={E.save.difficulty}

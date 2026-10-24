@@ -44,6 +44,8 @@ export function recordingDiaryDraft(
     today: string;
     now: string;
     newId: () => string;
+    /** E-Bike (nur beim Rad wirksam); fehlt = normales Rad. */
+    eBike?: boolean;
   },
 ): WorkoutDraft | null {
   const values = diaryValuesFromSummary(summary);
@@ -78,6 +80,7 @@ export function recordingDiaryDraft(
       // Meter genau (3 Nachkommastellen), damit die Distanz zur Strecke passt.
       distanceKm: (values.distanceM / 1000).toFixed(3).replace('.', ','),
       elevationM: values.elevationM === null ? '' : String(values.elevationM),
+      eBike: values.modality === 'bike' && options.eBike === true,
     },
     options.now,
   );
