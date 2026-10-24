@@ -1,0 +1,52 @@
+{
+  "id": "panko",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Panko",
+  "aliases_de": ["Panko-Paniermehl"],
+  "shopping_category": "bread_bakery",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 364,
+    "protein_g": 11.6,
+    "carbs_g": 67.48,
+    "sugar_g": 5.3,
+    "fat_g": 3.97,
+    "sat_fat_g": 0.914,
+    "fiber_g": 5.34,
+    "salt_g": 1.8968,
+    "organic_acids_g": 0.294,
+    "alcohol_g": 0,
+    "polyols_g": 0.012
+  },
+  "units": {},
+  "groups": ["gluten"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "B821000",
+    "name": "Paniermehl/Semmelbrösel/Semmelmehl",
+    "category": "bread_bakery",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-24"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-24",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

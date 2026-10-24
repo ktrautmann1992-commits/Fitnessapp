@@ -1,0 +1,52 @@
+{
+  "id": "aubergine",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Aubergine",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 19,
+    "protein_g": 0.57,
+    "carbs_g": 3.02,
+    "sugar_g": 2.69,
+    "fat_g": 0.18,
+    "sat_fat_g": 0.039,
+    "fiber_g": 1.4,
+    "salt_g": 0.01,
+    "organic_acids_g": 0.18,
+    "alcohol_g": 0,
+    "polyols_g": 0.11
+  },
+  "units": {},
+  "groups": ["histamine"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": false,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "G510100",
+    "name": "Aubergine roh",
+    "category": "vegetables",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-24"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-24",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
