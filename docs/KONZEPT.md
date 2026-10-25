@@ -843,6 +843,10 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Art.-9-Einwilligung beider Personen; gemeinsame Mahlzeiten mit eigener Portion je Person und gemeinsamer
   Einkaufsliste – keine Zahlen zu Zielen oder Körperdaten, Portionen lassen aber Rückschlüsse zu.
 - Wettkampf-Countdown, Erfolge (dezent, nicht ans Gewicht gekoppelt)
+- **Gewichtstrend, Monatsrückblick, Trainings im Handy-Kalender** (Gründer-Freigabe 25.10.2026): geglättete
+  Gewichtslinie mit Tempo und vorsichtiger Schätzung nur innerhalb der Schutzgrenzen, privater Monatsrückblick (PDF,
+  Gesundheitsdaten nur per Schalter), opt-in Termine im Handy-Kalender bzw. .ics-Datei im Browser. Details:
+  `docs/PLAN-TREND-RUECKBLICK-KALENDER.md`.
 
 ### 11.1 Körperumfänge mit Mess-Erinnerung (Gratis) – Grundlage in Phase 1 umgesetzt
 - Erfassung: Oberarm, Brust, Schulter, Taille, Bauch, Oberschenkel, optional Hüfte, Wade; links/rechts wo sinnvoll
