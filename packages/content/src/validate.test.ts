@@ -304,6 +304,34 @@ describe('Versionsregel mit git', () => {
     });
   }
 
+  it('--content in einem anderen Repo: Bilddateien werden in dessen Checkout gesucht (sources-integrity)', () => {
+    const image = {
+      kind: 'start_position',
+      file: 'kniebeuge-test-start.svg',
+      alt_de: 'Person steht aufrecht, Füße schulterbreit, Arme vor der Brust.',
+      origin: 'own_work',
+      license: { name: 'eigene Illustration', attribution_de: null },
+      source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+      reviewed_by: null,
+    };
+    // „main“-Checkout (Code) ohne die neue Bilddatei.
+    const codeRoot = contentDir({ 'content/exercises/.keep': '' });
+    git(codeRoot, 'init', '-q');
+    // PR-Stand als Daten: Inhalt und Bilddatei.
+    const dataRoot = contentDir({
+      'content/exercises/kniebeuge-test.json': exercise(),
+      'content/exercise-media/kniebeuge-test.json': {
+        exercise_id: 'kniebeuge-test',
+        images: [image],
+      },
+      'apps/mobile/assets/exercise-media/kniebeuge-test-start.svg': '<svg/>',
+    });
+    git(dataRoot, 'init', '-q');
+    const result = runValidate(['--content', join(dataRoot, 'content')], codeRoot);
+    expect(result.output).not.toContain('kniebeuge-test-start.svg fehlt');
+    expect(result.exitCode).toBe(0);
+  });
+
   it('geänderter freigegebener Inhalt ohne höhere Version → Exit 1; mit höherer Version → Exit 0', () => {
     const published = exercise({ status: 'published', meta: REVIEWED });
     const dir = contentDir({ 'content/exercises/kniebeuge-test.json': published });
