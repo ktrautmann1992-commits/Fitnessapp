@@ -20,7 +20,7 @@ import type { EnduranceActivity } from '../routes/activities';
  * - Kilometer je Schuh = Start-Kilometer + Distanz aller ihm zugeordneten Läufe (ohne Distanz zählt 0).
  * - Hinweis „Bald wechseln“ ab 75 % der Wechsel-Grenze (Standard 800 km → 600 km), „Wechsel empfohlen“ ab der Grenze
  *   (SHOE_MILEAGE, Material-Faustregel, keine medizinische Aussage).
- * Kein Gesundheitsdatum (Ausrüstung). Gespeichert über `save_shoe_data` (Migration 20261025120000_shoes.sql).
+ * Kein Gesundheitsdatum (Ausrüstung). Gespeichert über `save_shoe_data` (Migration 20261025120400_shoes.sql).
  */
 
 export const SHOE_SPORTS = ['run', 'walk', 'bike'] as const;

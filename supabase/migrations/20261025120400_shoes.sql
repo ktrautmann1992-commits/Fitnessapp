@@ -320,7 +320,7 @@ begin
       'user_supplements', (select coalesce(jsonb_agg(to_jsonb(t) order by t.supplement_id), '[]'::jsonb) from public.user_supplements t where t.user_id = current_user_id)
     -- jsonb_build_object nimmt höchstens 100 Argumente (= 50 Tabellen): weitere Tabellen in einem zweiten Objekt.
     ) || jsonb_build_object(
-      -- Schuh-Kilometerzähler (20261025120000_shoes.sql): Schuhe, Standard je Sportart, Wahl je Lauf.
+      -- Schuh-Kilometerzähler (20261025120400_shoes.sql): Schuhe, Standard je Sportart, Wahl je Lauf.
       'shoes', (select coalesce(jsonb_agg(to_jsonb(t) order by t.created_at, t.id), '[]'::jsonb) from public.shoes t where t.user_id = current_user_id),
       'shoe_defaults', (select coalesce(jsonb_agg(to_jsonb(t) order by t.sport, t.valid_from), '[]'::jsonb) from public.shoe_defaults t where t.user_id = current_user_id),
       'shoe_assignments', (select coalesce(jsonb_agg(to_jsonb(t) order by t.activity_key), '[]'::jsonb) from public.shoe_assignments t where t.user_id = current_user_id)

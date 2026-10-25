@@ -3362,7 +3362,7 @@ export const RACE_PACE_PLAN = {
  * Hinweis ab 600 km. Gängige Faustregel von Herstellern und Laufmagazinen: Laufschuhe nach etwa 500–800 km ersetzen
  * (Dämpfung und Profil lassen nach). Das ist eine Material-Faustregel, KEINE medizinische Aussage – es gibt keinen
  * gesicherten Beleg, dass ein Wechsel nach Kilometern Verletzungen verhindert (Fachprüfung vor Livegang). Die Grenze
- * ist je Schuh einstellbar (`replaceKmLimits`). Datenmodell: 20261025120000_shoes.sql (CHECKs, db-sync.test.ts).
+ * ist je Schuh einstellbar (`replaceKmLimits`). Datenmodell: 20261025120400_shoes.sql (CHECKs, db-sync.test.ts).
  * PRODUKTENTSCHEIDUNG.
  */
 export const SHOE_MILEAGE = {

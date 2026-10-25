@@ -723,7 +723,7 @@ Herz bzw. „Nie wieder“ gilt, bis die Person es zurücknimmt. Beide wirken ü
   Kaskade, im Datenexport. **Kein Gesundheitsdatum** (kein Grund, kein Bezug zu Unverträglichkeiten) → offline-first:
   Testmodus im Gerätespeicher, Supabase-Modus über die normale Warteschlange (`set_recipe_preference`, letzter Stand je
   Rezept); bleibt beim Widerruf der Gesundheits-Einwilligung bestehen. Privat: nie angezeigt außer der eigenen Vorliebe,
-  nie aggregiert, nie Analytics/Logs. Migration `20261025120000_recipe_preferences.sql`, pgTAP `75_recipe_preferences`.
+  nie aggregiert, nie Analytics/Logs. Migration `20261025120200_recipe_preferences.sql`, pgTAP `75_recipe_preferences`.
 
 ### 6.11 Resteverwertung (Kühlschrank-Suche gratis, automatische Resteplanung Premium)
 - **Kühlschrank-Suche (Gratis):** „Was habe ich da?“ – Zutaten auswählen → Rezepte sortiert nach Übereinstimmung

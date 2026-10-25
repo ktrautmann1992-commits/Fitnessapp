@@ -1197,11 +1197,33 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_recipe_preferences.sql (Rezept-Favoriten 25.10.2026, davor Phase 6 SU3, Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_export_my_data_integration.sql (Rezept-Favoriten + Vorratsschrank + Schuhe 25.10.2026, davor Phase 6 SU3, Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_recipe_preferences\.sql$/,
+      /_export_my_data_integration\.sql$/,
     );
+  });
+
+  it('export_my_data() (Integration 25.10.2026): Obermenge aller drei parallelen Fassungen, höchstens 50 Tabellen je jsonb_build_object', () => {
+    const marker = 'create or replace function public.export_my_data()';
+    const bodyOf = (suffix: string) => {
+      const sql = readMigration(suffix);
+      const start = sql.lastIndexOf(marker);
+      return sql.slice(start, sql.indexOf('$$;', start));
+    };
+    const tablesOf = (body: string) =>
+      [...body.matchAll(/^\s+'([a-z_]+)', \(select coalesce/gm)].map((m) => m[1] as string);
+    const latest = tablesOf(bodyOf('_export_my_data_integration.sql'));
+    for (const suffix of ['_recipe_preferences.sql', '_pantry_items.sql', '_shoes.sql']) {
+      expect(tablesOf(bodyOf(suffix)).filter((t) => !latest.includes(t)), suffix).toEqual([]);
+    }
+    expect(new Set(latest).size).toBe(latest.length);
+    expect(latest).toHaveLength(54);
+    // Jedes jsonb_build_object(...) in 'data' hat höchstens 50 Schlüssel (100 Argumente, FUNC_MAX_ARGS).
+    const objects = bodyOf('_export_my_data_integration.sql').split(/jsonb_build_object\(/).slice(2);
+    for (const part of objects) {
+      expect(tablesOf(part).length).toBeLessThanOrEqual(50);
+    }
   });
 });
 
@@ -1327,15 +1349,18 @@ describe('Vorratsschrank (Gründer-Freigabe 25.10.2026, nutrition/pantry.ts)', (
     expect(fnBody('public.delete_pantry_item')).not.toContain('has_valid_consent');
   });
 
-  it('Widerruf health_data über eigenen Trigger; Export enthält pantry_items (50 Schlüssel = 100 Argumente)', () => {
+  it('Widerruf health_data über eigenen Trigger; Export enthält pantry_items (höchstens 50 Schlüssel je Objekt)', () => {
     expect(sql).toContain("new.consent_type = 'health_data'");
     expect(fnBody('private.consents_after_revoke_pantry')).toContain(
       'delete from public.pantry_items where user_id = new.user_id;',
     );
     expect(sql).not.toContain('create or replace function private.consents_after_revoke()');
     expect(DATA_EXPORT_TABLES).toContain('pantry_items');
-    // jsonb_build_object nimmt höchstens 100 Argumente.
-    expect(DATA_EXPORT_TABLES.length * 2).toBeLessThanOrEqual(100);
+    // jsonb_build_object nimmt höchstens 100 Argumente: diese Fassung hat 50 Tabellen in einem Objekt. Seit der
+    // Integration 25.10.2026 stehen neuere Tabellen im zweiten Objekt (*_export_my_data_integration.sql, eigener Test).
+    expect(
+      [...fnBody('public.export_my_data').matchAll(/'([a-z_]+)', \(select coalesce/g)].length,
+    ).toBeLessThanOrEqual(50);
   });
 });
 
@@ -2920,7 +2945,8 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
     for (const [marker, newestFile] of [
       [revokeMarker, /_supplement_user_data\.sql$/],
-      [exportMarker, /_recipe_preferences\.sql$/],
+      // Export seit der Integration 25.10.2026 (Rezept-Favoriten, Vorratsschrank, Schuhe) in *_export_my_data_integration.sql.
+      [exportMarker, /_export_my_data_integration\.sql$/],
     ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
       // Widerruf und Export seit Phase 6 SU3 in *_supplement_user_data.sql (davor Phase 8, Einkaufen E1, E2, 4b Etappe B,
@@ -3960,7 +3986,7 @@ describe('Rezept-Favoriten in der Datenbank (Gründer-Freigabe 25.10.2026, KONZE
     const keys = (body: string) =>
       [...body.matchAll(/'([a-z_]+)', \(select coalesce/g)].map((m) => m[1]);
     expect(keys(after)).toEqual([...keys(before), 'recipe_preferences']);
-    expect(DATA_EXPORT_TABLES.at(-1)).toBe('recipe_preferences');
+    expect(DATA_EXPORT_TABLES).toContain('recipe_preferences');
     expect(sql).not.toContain('function private.consents_after_revoke()');
   });
 });

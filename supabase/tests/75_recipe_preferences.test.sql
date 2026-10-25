@@ -1,4 +1,4 @@
--- Rezept-Favoriten (Migration 20261025120000_recipe_preferences.sql, Gründer-Freigabe 25.10.2026, KONZEPT 6.10a):
+-- Rezept-Favoriten (Migration 20261025120200_recipe_preferences.sql, Gründer-Freigabe 25.10.2026, KONZEPT 6.10a):
 -- recipe_preferences mit RLS (A sieht und ändert nur Eigenes, anon nichts), CHECK der Arten, eine Vorliebe je Rezept,
 -- Datum nicht in der Zukunft, Höchstzahl 2.000 (Ändern einer vorhandenen geht immer), Profil-Pflicht, Export nur der
 -- eigenen Zeilen, Konto löschen per Kaskade. „Heute“ = Sonntag, 25.10.2026.

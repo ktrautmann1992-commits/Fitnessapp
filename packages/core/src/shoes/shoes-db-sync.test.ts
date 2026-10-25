@@ -1,5 +1,5 @@
 /**
- * Schuh-Kilometerzähler: Code (packages/core) und Datenbank (20261025120000_shoes.sql) nutzen dieselben Grenzen und
+ * Schuh-Kilometerzähler: Code (packages/core) und Datenbank (20261025120400_shoes.sql) nutzen dieselben Grenzen und
  * Felder. Eigene Datei (statt db-sync.test.ts), damit parallele Etappen nicht in derselben Datei arbeiten.
  */
 import { readdirSync, readFileSync } from 'node:fs';
@@ -22,7 +22,7 @@ const sql = file ? readFileSync(new URL(file, dir), 'utf8') : '';
 
 describe('Schuhe: Datenbank = Core', () => {
   it('Migration vorhanden, nur additiv', () => {
-    expect(file).toBe('20261025120000_shoes.sql');
+    expect(file).toBe('20261025120400_shoes.sql');
     expect(sql).not.toMatch(/drop table|alter column|rename |disable row/i);
   });
 

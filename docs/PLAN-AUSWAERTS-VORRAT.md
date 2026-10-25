@@ -203,7 +203,7 @@ Ernährung → „Vorratsschrank“ (`/ernaehrung/vorrat`), Link auch auf der Ei
 - **Kühlschrank-Suche/Vorschläge** (`fridge-search.ts`): Vorrat zählt als vorhanden („fast leer“ halb), ohne Auswahl
   „Passt zu deinem Vorrat“, bei Gleichstand zuerst mehr Vorrats-Zutaten; abschaltbar. Der Essensplan wird NICHT
   gewichtet (bewusst – parallele Arbeit an Favoriten im Planer).
-- **Daten:** Tabelle `pantry_items` (Migration `20261025120000_pantry_items.sql`): RLS (nur eigene lesen), Schreiben nur
+- **Daten:** Tabelle `pantry_items` (Migration `20261025120300_pantry_items.sql`): RLS (nur eigene lesen), Schreiben nur
   über `save_pantry_item` (Einwilligung `health_data`, letzter Stand gewinnt über den Geräte-Zeitpunkt, `stale`/`limit`)
   und `delete_pantry_item` (immer). Widerruf `health_data` löscht über eigenen Trigger, Export `export_my_data()` enthält
   `pantry_items` (damit 50 Schlüssel = 100 Argumente von `jsonb_build_object` – der nächste Schlüssel braucht ein

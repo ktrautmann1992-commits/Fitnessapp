@@ -2155,7 +2155,7 @@ Branch `claude/schuhe-pace`. Keine Echtzeit-KI. Alle Zahlen in `constants.ts` (�
   sonst „✓ Gut in Schuss“ – immer Zeichen + Wort. Quelle: gängige Faustregel 500–800 km (Material: Dämpfung, Profil);
   ausdrücklich **keine medizinische Aussage**, kein Verletzungsversprechen.
 
-**Datenbank (`20261025120000_shoes.sql`, nur additiv):** Tabellen `shoes`, `shoe_defaults`, `shoe_assignments`, RLS
+**Datenbank (`20261025120400_shoes.sql`, nur additiv):** Tabellen `shoes`, `shoe_defaults`, `shoe_assignments`, RLS
 (nur eigene Zeilen lesen), kein direktes Schreiben; `save_shoe_data(p_data)` ersetzt den ganzen Stand atomar (prüft
 Felder, Grenzen, fremde IDs; Fremdschlüssel: Standard nur mit Schuh derselben Sportart, gelöschter Schuh → Standard null,
 Wahl entfällt), `delete_my_shoe_data()`. Kein Gesundheitsdatum: bleibt beim Widerruf, Konto löschen per Kaskade.

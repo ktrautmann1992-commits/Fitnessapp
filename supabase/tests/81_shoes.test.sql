@@ -1,4 +1,4 @@
--- Schuh-Kilometerzähler (20261025120000_shoes.sql): RLS (nur eigene Zeilen lesen, kein direktes Schreiben),
+-- Schuh-Kilometerzähler (20261025120400_shoes.sql): RLS (nur eigene Zeilen lesen, kein direktes Schreiben),
 -- save_shoe_data (ersetzt den Stand, prüft Form und Grenzen, Standard nur mit Schuh derselben Sportart, keine fremden
 -- Schuhe), Löschen eines Schuhs (Standard → null, Wahl entfällt), delete_my_shoe_data, Export, Konto löschen.
 begin;
