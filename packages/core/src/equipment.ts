@@ -97,6 +97,41 @@ export const EQUIPMENT = [
     homeSelectable: true,
   },
   {
+    // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.3): Barren bzw. Dip-Station – seit 26.10.2026 auch zu Hause
+    // wählbar (vorher nur Studio). Kategorie `bodyweight`: kein Kraft-Gerät im Sinne von isStrengthEquipment.
+    id: 'dip_station',
+    nameDe: 'Barren/Dip-Station',
+    category: 'bodyweight',
+    hasWeights: false,
+    sortOrder: 62,
+    homeSelectable: true,
+  },
+  {
+    id: 'gymnastic_rings',
+    nameDe: 'Turnringe',
+    category: 'bodyweight',
+    hasWeights: false,
+    sortOrder: 64,
+    homeSelectable: true,
+  },
+  {
+    id: 'parallettes',
+    nameDe: 'Parallettes',
+    category: 'bodyweight',
+    hasWeights: false,
+    sortOrder: 66,
+    homeSelectable: true,
+  },
+  {
+    // Ort statt Gerät: steht für Klimmzugstange, Barren und niedrige Stange draußen (EQUIPMENT_IMPLIES).
+    id: 'calisthenics_park',
+    nameDe: 'Calisthenics-Park draußen',
+    category: 'bodyweight',
+    hasWeights: false,
+    sortOrder: 68,
+    homeSelectable: true,
+  },
+  {
     id: 'resistance_bands',
     nameDe: 'Widerstandsbänder',
     category: 'bands',
@@ -106,8 +141,9 @@ export const EQUIPMENT = [
   },
   {
     // Schlingentrainer (markenneutral; Gründer-Wunsch 25.10.2026, docs/PLAN-TRAINING-MODI.md 4). Kategorie
-    // `bodyweight` (wie die Klimmzugstange): zählt NICHT als Kraft-Gerät, solange es keine Schlingentrainer-Übungen
-    // gibt – wer nur ihn hat, bekommt den Körpergewicht-Plan. Übungen folgen in einem eigenen Paket.
+    // `bodyweight` (wie die Klimmzugstange). Er zählt als Kraft-Gerät, sobald die Bibliothek genug nutzbare
+    // Schlingentrainer-Übungen hat (suspensionTrainerReady, docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – im Supabase-Modus
+    // also erst nach der Freigabe; bis dahin bekommt, wer nur ihn hat, den Körpergewicht-Plan.
     id: 'suspension_trainer',
     nameDe: 'Schlingentrainer',
     category: 'bodyweight',
@@ -197,14 +233,6 @@ export const EQUIPMENT = [
     homeSelectable: false,
   },
   {
-    id: 'dip_station',
-    nameDe: 'Dip-Station',
-    category: 'bodyweight',
-    hasWeights: false,
-    sortOrder: 270,
-    homeSelectable: false,
-  },
-  {
     id: 'other',
     nameDe: 'Sonstiges',
     category: 'other',
@@ -215,6 +243,26 @@ export const EQUIPMENT = [
 ] as const satisfies readonly EquipmentItem[];
 
 export type EquipmentId = (typeof EQUIPMENT)[number]['id'];
+
+/**
+ * Geräte, die weitere Geräte mitbringen (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.3): Ein Calisthenics-Park hat
+ * Klimmzugstange(n) und Barren. Nur für die Machbarkeit (equipmentProfile, Reise-Modus), nie gespeichert.
+ * Quelle: übliche Ausstattung öffentlicher Calisthenics-Anlagen – PRODUKTENTSCHEIDUNG.
+ */
+export const EQUIPMENT_IMPLIES: Readonly<Record<string, readonly string[]>> = {
+  calisthenics_park: ['pull_up_bar', 'dip_station'],
+};
+
+/** Geräte-IDs inklusive der mitgebrachten (EQUIPMENT_IMPLIES), ohne Doppel, Reihenfolge stabil. */
+export function withImpliedEquipment(ids: Iterable<string>): string[] {
+  const out: string[] = [];
+  for (const id of ids) {
+    for (const item of [id, ...(EQUIPMENT_IMPLIES[id] ?? [])]) {
+      if (!out.includes(item)) out.push(item);
+    }
+  }
+  return out;
+}
 
 /** „Sonstiges“: nur hier ist (und muss) ein Freitext angegeben werden. */
 export const OTHER_EQUIPMENT_ID = 'other' satisfies EquipmentId;

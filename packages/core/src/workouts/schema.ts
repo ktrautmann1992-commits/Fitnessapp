@@ -20,6 +20,9 @@ export const WORKOUT_CATEGORIES = [
   'hiit_cardio',
   'mobility',
   'back_fit',
+  // Lauf-Kraft & Lauf-ABC (15-min-Einheiten zum Laufplan, docs/PLAN-CALISTHENICS-SCHLINGE.md 4; Datenbank per
+  // `alter type … add value` in 20261026120000_calisthenics_enums.sql).
+  'run_strength',
 ] as const;
 export type WorkoutCategory = (typeof WORKOUT_CATEGORIES)[number];
 

@@ -3558,7 +3558,8 @@ export type Database = {
         | 'muscle_gain'
         | 'general_fitness'
         | 'endurance'
-        | 'active_aging';
+        | 'active_aging'
+        | 'calisthenics';
       load_type: 'weight' | 'bodyweight' | 'band' | 'time';
       log_source: 'manual' | 'gps' | 'gpx_import' | 'workout' | 'health_connect';
       mealprep_slot_mode: 'lunch' | 'lunch_dinner';
@@ -3657,13 +3658,21 @@ export type Database = {
         | 'legs_glutes'
         | 'hiit_cardio'
         | 'mobility'
-        | 'back_fit';
+        | 'back_fit'
+        | 'run_strength';
       wearable_connection_status: 'connected' | 'permission_missing';
       wearable_provider: 'health_connect';
       body_region:
         'knee' | 'shoulder' | 'lower_back' | 'elbow' | 'wrist' | 'hip' | 'ankle' | 'neck';
       pain_intensity: 'mild' | 'moderate' | 'severe';
-      travel_equipment: 'bodyweight' | 'dumbbells' | 'hotel_gym' | 'band' | 'suspension_trainer';
+      travel_equipment:
+        | 'bodyweight'
+        | 'dumbbells'
+        | 'hotel_gym'
+        | 'band'
+        | 'suspension_trainer'
+        | 'rings'
+        | 'outdoor_park';
       workout_format: 'circuit' | 'interval' | 'sets_reps';
     };
     CompositeTypes: {
@@ -3877,6 +3886,7 @@ export const Constants = {
         'general_fitness',
         'endurance',
         'active_aging',
+        'calisthenics',
       ],
       load_type: ['weight', 'bodyweight', 'band', 'time'],
       log_source: ['manual', 'gps', 'gpx_import', 'workout', 'health_connect'],
@@ -3981,12 +3991,21 @@ export const Constants = {
         'hiit_cardio',
         'mobility',
         'back_fit',
+        'run_strength',
       ],
       wearable_connection_status: ['connected', 'permission_missing'],
       wearable_provider: ['health_connect'],
       body_region: ['knee', 'shoulder', 'lower_back', 'elbow', 'wrist', 'hip', 'ankle', 'neck'],
       pain_intensity: ['mild', 'moderate', 'severe'],
-      travel_equipment: ['bodyweight', 'dumbbells', 'hotel_gym', 'band', 'suspension_trainer'],
+      travel_equipment: [
+        'bodyweight',
+        'dumbbells',
+        'hotel_gym',
+        'band',
+        'suspension_trainer',
+        'rings',
+        'outdoor_park',
+      ],
       workout_format: ['circuit', 'interval', 'sets_reps'],
     },
   },

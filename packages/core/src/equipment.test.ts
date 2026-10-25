@@ -33,7 +33,6 @@ describe('Geräte-Katalog', () => {
       'machine_chest_press',
       'leg_curl_machine',
       'leg_extension_machine',
-      'dip_station',
     ]);
     expect(HOME_SELECTABLE_EQUIPMENT.map((item) => item.id)).not.toContain('cable_station');
     expect(HOME_SELECTABLE_EQUIPMENT.map((item) => item.id)).toContain('dumbbells');
