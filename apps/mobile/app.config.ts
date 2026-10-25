@@ -44,6 +44,12 @@ export const LOCATION_WHEN_IN_USE_TEXT =
 export const LOCATION_ALWAYS_TEXT =
   'Alpha5 braucht keinen Standort „Immer“. Der Standort wird nur während einer Aufzeichnung genutzt, die du selbst startest und beendest.';
 
+// Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 4, opt-in): iOS-Abfrage „Kalender“
+// (NSCalendarsUsageDescription + NSCalendarsFullAccessUsageDescription ab iOS 17 – voller Zugriff, weil die App einen
+// EIGENEN Kalender „Alpha5 Training“ anlegt; „nur hinzufügen“ kann keine Kalender anlegen). Keine Erinnerungen.
+export const CALENDAR_PERMISSION_TEXT =
+  'Alpha5 trägt deine geplanten Trainings als Termine in einen eigenen Kalender „Alpha5 Training“ ein – nur Name der Einheit, Tag und Uhrzeit, keine Gesundheitsangaben. Andere Termine liest Alpha5 nicht.';
+
 /**
  * Smartwatch über Health Connect (Phase 8, docs/PLAN-PHASE-8.md 2–3; W8-2 Datenumfang, W8-3 nur lesen, W8-7 kein
  * Hintergrund-Abgleich): je genutztem Datentyp GENAU eine Leseberechtigung (= WEARABLE_DATA_TYPES in packages/core bzw.
@@ -211,6 +217,7 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
     // keine Bewegungsdaten, keine Health-Daten. Drucken (expo-print), Ordner-Auswahl (expo-file-system), Vibration (expo-haptics),
     // Bildschirm-an (expo-keep-awake), Schlüsselbund (expo-secure-store) und expo-crypto brauchen keine
     // Berechtigung. Kommt später eine dazu (z. B. HealthKit, Phase 8), hier deutschen Text ergänzen.
+    // Kalender (NSCalendars…UsageDescription): Plugin expo-calendar unten, Text CALENDAR_PERMISSION_TEXT (opt-in).
     // Kamera ist keine „Required Reason API“ (kein Eintrag unten); Kamerabilder verlassen das Gerät nicht, sind also
     // keine „gesammelten Daten“ im Sinne von NSPrivacyCollectedDataTypes.
     //
@@ -357,6 +364,10 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
         androidForegroundServiceIcon: './assets/images/android-icon-monochrome.png',
       },
     ],
+    // Trainings im Handy-Kalender (opt-in): Android READ_CALENDAR + WRITE_CALENDAR (Lesen nur, um den eigenen Kalender
+    // wiederzufinden), iOS Text oben. Keine Erinnerungen (remindersPermission: false). Neues natives Modul → neuer
+    // EAS-Build nötig.
+    ['expo-calendar', { calendarPermission: CALENDAR_PERMISSION_TEXT, remindersPermission: false }],
     // Smartwatch über Health Connect (Phase 8): react-native-health-connect 4.1.3 bringt sein Config-Plugin selbst mit
     // (app.plugin.js): Android ≤ 13 – Intent-Filter ACTION_SHOW_PERMISSIONS_RATIONALE an der MainActivity, Android 14+
     // – activity-alias ViewPermissionUsageActivity (VIEW_PERMISSION_USAGE, Kategorie HEALTH_PERMISSIONS, geschützt durch

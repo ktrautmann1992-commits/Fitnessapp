@@ -337,6 +337,9 @@ describe('Struktur (Wächter N1 K2, erweitert in N3, N9, N11 und N13): Essenspla
         'nutrition/limits.ts',
         'nutrition/eligibility.ts',
         'nutrition/schemas.ts',
+        // Gewichtstrend (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 2): liest die Abnehm-Grenze nur für den Hinweis
+        // „zu schnell“ und um keine Prognose zu zeigen – rechnet keine Kalorien, kein Band, keine eigene Grenze.
+        'review/weight-trend.ts',
       ].map((file) => join(root, 'packages/core/src', file)),
     );
     const pattern =

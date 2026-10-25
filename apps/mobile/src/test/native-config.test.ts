@@ -14,6 +14,7 @@ import { WEARABLE_DATA_TYPES } from '@fitnessapp/core';
 
 import appConfig, {
   ANDROID_MIN_SDK,
+  CALENDAR_PERMISSION_TEXT,
   CAMERA_PERMISSION_TEXT,
   HEALTH_CONNECT_BLOCKED_PERMISSIONS,
   HEALTH_CONNECT_READ_PERMISSIONS,
@@ -52,6 +53,9 @@ const ALLOWED_ANDROID_PERMISSIONS = [
   'android.permission.health.READ_HEART_RATE_VARIABILITY',
   // Routen der Uhr (Gründer-Entscheidung 23.10.2026).
   'android.permission.health.READ_EXERCISE_ROUTES',
+  // Trainings im Handy-Kalender (opt-in, Gründer-Freigabe 25.10.2026): eigener Kalender „Alpha5 Training“.
+  'android.permission.READ_CALENDAR',
+  'android.permission.WRITE_CALENDAR',
 ];
 const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.READ_EXTERNAL_STORAGE',
@@ -342,10 +346,17 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
         .filter((key) => key.endsWith('UsageDescription'))
         .sort(),
     ).toEqual([
+      'NSCalendarsFullAccessUsageDescription',
+      'NSCalendarsUsageDescription',
       'NSCameraUsageDescription',
       'NSLocationAlwaysAndWhenInUseUsageDescription',
       'NSLocationWhenInUseUsageDescription',
     ]);
+    expect(plist.NSCalendarsUsageDescription).toBe(CALENDAR_PERMISSION_TEXT);
+    expect(plist.NSCalendarsFullAccessUsageDescription).toBe(CALENDAR_PERMISSION_TEXT);
+    // Keine Erinnerungen (Reminders).
+    expect(plist).not.toHaveProperty('NSRemindersUsageDescription');
+    expect(plist).not.toHaveProperty('NSRemindersFullAccessUsageDescription');
     expect(plist.NSCameraUsageDescription).toBe(CAMERA_PERMISSION_TEXT);
     expect(plist.NSLocationWhenInUseUsageDescription).toBe(LOCATION_WHEN_IN_USE_TEXT);
     expect(plist.NSLocationAlwaysAndWhenInUseUsageDescription).toBe(LOCATION_ALWAYS_TEXT);

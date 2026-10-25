@@ -551,6 +551,11 @@ Stand 13.10.2026: F1, F5, F7 und F12 haben die Gründer entschieden (Abschnitt 0
 | F14 | Ampel auch zeigen, wenn „Kalorienzahlen anzeigen“ aus ist?                                                   | **Ja.** Die Ampel zeigt keine kcal, nur Stufe und Wochen. Beim Einschalten eines konkreten Ziels mit ausgeblendeten Zahlen eine ruhige Rückfrage (K6).                                                                                                                                                                                                                                                          | Wie empfohlen (nicht gefragt, gilt bis Widerspruch).                                                                                                       |
 | F15 | Disziplin und Wettkampfdatum auch beim Nebenziel Ausdauer?                                                   | **Ja**, Disziplin wirkt sofort (Modalität), das Datum ab Phase 10.                                                                                                                                                                                                                                                                                                                                              | Wie empfohlen (nicht gefragt, gilt bis Widerspruch).                                                                                                       |
 
+> **Nachtrag zu F13, 25.10.2026 (Gründer-Freigabe):** Für den Reiter „Fortschritt“ gibt es jetzt einen
+> Gewichtstrend mit vorsichtiger Schätzung (ohne Ziellinie, ohne Balken, nur innerhalb der Schutzgrenzen, nie in der
+> Schwangerschaft) – siehe `docs/PLAN-TREND-RUECKBLICK-KALENDER.md` Abschnitt 2. Das Wunschgewicht bleibt nur unter
+> Einstellungen sichtbar.
+
 ---
 
 ## 9. Risiken

@@ -38,10 +38,16 @@ describe('Erlaubnis-Abfrage nie beim App-Start oder im Onboarding', () => {
 
   it('nur die Abläufe (lib/notifications.ts) rufen requestPermission() auf – in enable…()', () => {
     // lib/cook-alerts.ts: Browser-Mitteilung beim Kochtag (Etappe N5b, eigene Abfrage erst beim Start des Kochtags).
+    // lib/device-calendar.ts: Kalender-Erlaubnis (Trainings im Handy-Kalender) nur in enable() – siehe unten.
     expect(filesMatching(/\.requestPermission\(/)).toEqual([
       'lib/cook-alerts.ts',
+      'lib/device-calendar.ts',
       'lib/notifications.ts',
     ]);
+  });
+
+  it('Kalender-Erlaubnis nur nach Tipp und Erklärung im Bildschirm „Trainings im Handy-Kalender“', () => {
+    expect(filesMatching(/deviceCalendar\.enable\(/)).toEqual(['app/handy-kalender.tsx']);
   });
 
   it('Einschalten (fragt ggf. nach) nur aus den Bausteinen in components/notifications.tsx', () => {

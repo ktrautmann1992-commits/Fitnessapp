@@ -38,6 +38,7 @@ import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
 import { deTrainingWeek } from './de-training-week';
 import { deWidget } from './de-widget';
+import { deDeviceCalendar, deMonthReview, deWeightTrend } from './de-review';
 
 export const de = {
   common: {
@@ -1642,6 +1643,9 @@ export const de = {
   tabs: deTabs,
   dashboard: deDashboard,
   progressHub: deProgressHub,
+  weightTrend: deWeightTrend,
+  monthReview: deMonthReview,
+  deviceCalendar: deDeviceCalendar,
   more: deMore,
   menuBar: deMenuBar,
   konto: deKonto,

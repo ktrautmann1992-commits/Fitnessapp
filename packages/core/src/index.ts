@@ -53,3 +53,5 @@ export * from './supplements/text-rules';
 export * from './supplements/user-data';
 export * from './supplements/profile-inputs';
 export * from './supplements/overview';
+// Gewichtstrend, Monatsrückblick, Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md).
+export * from './review';

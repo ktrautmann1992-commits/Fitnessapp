@@ -2,8 +2,10 @@ import { weekTrainingProgress } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
 
 import { DashboardTile } from '@/components/dashboard';
+import { MonthReviewTile } from '@/components/month-review-tile';
 import { Screen } from '@/components/screen';
 import { Body, Button, LoadingState } from '@/components/ui';
+import { WeightTrendSection } from '@/components/weight-trend';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { useToday } from '@/lib/use-today';
@@ -12,7 +14,8 @@ import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * Reiter „Fortschritt“ (docs/PLAN-DASHBOARD.md 2.5): Wochenzahlen und Wege zu Wochenauswertung, Trainingswoche,
- * Verlauf und Kalender. Kein Wunschgewicht, keine Kurve zum Ziel (docs/PLAN-ZIELE.md F13). Alles bleibt privat.
+ * Verlauf und Kalender, dazu Monatsrückblick und Gewichtstrend (Gründer-Freigabe 25.10.2026, ersetzt hier F13 aus
+ * docs/PLAN-ZIELE.md: Trend ohne Ziellinie, Schätzung nur unter den Schutzregeln). Alles bleibt privat.
  */
 export default function ProgressScreen() {
   const router = useRouter();
@@ -58,6 +61,9 @@ export default function ProgressScreen() {
           testID="progress-week-eval"
         />
       </DashboardTile>
+      {/* Monatsrückblick und Gewichtstrend (docs/PLAN-TREND-RUECKBLICK-KALENDER.md, Gründer-Freigabe 25.10.2026). */}
+      <MonthReviewTile />
+      <WeightTrendSection />
       <Button
         label={texts.trainingWeek}
         variant="secondary"

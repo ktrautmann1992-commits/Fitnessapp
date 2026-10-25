@@ -4299,3 +4299,68 @@ export const WIDGET_SNAPSHOT = {
   days: 7,
   maxNameLength: 60,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Gewichtstrend, Monatsrückblick, Trainings im Handy-Kalender (Gründer-Freigabe 25.10.2026,
+// docs/PLAN-TREND-RUECKBLICK-KALENDER.md)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Gewichtstrend (Fortschritt): geglättete Linie über die täglichen Werte, Tempo je Woche und vorsichtige Prognose.
+ * - `smoothingPerDay` 0,1: exponentiell geglätteter gleitender Durchschnitt (EMA) mit 10 % Gewicht für den neuen Wert
+ *   je Tag (≈ 10 Tage Zeitkonstante; gleicht Wasser-, Salz- und Zyklus-Schwankungen von 1–2 kg aus). Quellen: Walker J,
+ *   „The Hacker's Diet“ (1991/2005), Kapitel „Signal and Noise“ (10-%-Glättung des Waagen-Werts); Hunter JS (1986),
+ *   „The Exponentially Weighted Moving Average“, J Qual Technol 18(4):203–210. Bei Lücken wirkt ein neuer Wert so
+ *   stark wie die Tage seit dem letzten Wert zusammen: α = 1 − (1 − 0,1)^Tage (gleiche Glättung pro Kalendertag).
+ * - `resetAfterGapDays` 28: Nach mehr als 4 Wochen ohne Wert beginnt der Trend neu beim neuen Wert (der alte Stand sagt
+ *   nichts mehr). PRODUKTENTSCHEIDUNG.
+ * - `windowDays` 90: Anzeige der letzten 90 Tage (≈ 3 Monate, wie WEIGHT_OUTDATED_AFTER_DAYS). PRODUKTENTSCHEIDUNG.
+ * - `rateWindowDays` 14 / `rateMinValues` 5 / `rateMinSpanDays` 10: Tempo je Woche erst, wenn in den letzten 14 Tagen
+ *   (bis zum letzten Wert) mindestens 5 Werte über mindestens 10 Tage liegen – sonst schwankt die Zahl zu stark.
+ *   PRODUKTENTSCHEIDUNG.
+ * - `stableBandFraction` 0,001: unter ±0,1 % Körpergewicht je Woche gilt der Trend als „etwa gleich“. PRODUKTENTSCHEIDUNG.
+ * - Prognose zum Wunschgewicht nur bei passender Richtung UND Tempo innerhalb MAX_WEEKLY_WEIGHT_LOSS_FRACTION
+ *   (CLAUDE.md, ~1 %/Woche; Fit im Alter + Abnehmen 0,5 %, ACTIVE_AGING_NUTRITION); schneller → Hinweis statt Prognose
+ *   (kein Lob für zu schnelles Abnehmen). `forecastMinFractionPerWeek` 0,001: langsamer als 0,1 %/Woche keine Prognose
+ *   (das Datum wäre Raterei). `forecastMaxWeeks` 52: weiter als ein Jahr → keine Prognose. Schwangerschaft/Stillzeit →
+ *   nie Prognose und nie Tempo. PRODUKTENTSCHEIDUNG.
+ */
+export const WEIGHT_TREND = {
+  smoothingPerDay: 0.1,
+  resetAfterGapDays: 28,
+  windowDays: 90,
+  rateWindowDays: 14,
+  rateMinValues: 5,
+  rateMinSpanDays: 10,
+  stableBandFraction: 0.001,
+  forecastMinFractionPerWeek: 0.001,
+  forecastMaxWeeks: 52,
+} as const;
+
+/**
+ * Monatsrückblick (Fortschritt): wird vom 1. bis zum `offerDays`. Tag eines Monats für den Vormonat angeboten, bis er
+ * geöffnet wurde (nur auf dem Gerät gemerkt); auf Wunsch jederzeit. `strengthTop`: höchstens 3 Übungen mit der größten
+ * Steigerung des geschätzten Maximums (E1RM_ESTIMATE, nur Sätze mit Gewicht und Wdh. ≤ maxRepsPlusReserve) gegenüber
+ * allen früheren Einträgen; `strengthMinGainFraction` 0,01: unter 1 % zählt nicht (Messrauschen). PRODUKTENTSCHEIDUNG.
+ */
+export const MONTH_REVIEW = {
+  offerDays: 7,
+  strengthTop: 3,
+  strengthMinGainFraction: 0.01,
+} as const;
+
+/**
+ * Trainings im Handy-Kalender (opt-in): geplante Einheiten des aktiven Plans ab heute für die nächsten `horizonDays`
+ * Tage. Start = Trainingszeit aus dem Ernährungs-Setup (TRAINING_TIME_START_MINUTES), sonst die gewählte Uhrzeit,
+ * Standard `defaultStartMinutes` 1080 (18:00). Dauer = geschätzte Minuten der Einheit, begrenzt auf
+ * `minDurationMinutes`–`maxDurationMinutes`. Titel immer „Alpha5: <Einheit>“ (höchstens `titleMaxLength` Zeichen),
+ * ohne Gesundheitsangaben, ohne Notizen. PRODUKTENTSCHEIDUNG.
+ */
+export const DEVICE_CALENDAR = {
+  horizonDays: 28,
+  defaultStartMinutes: 1080,
+  minDurationMinutes: 15,
+  maxDurationMinutes: 300,
+  titlePrefix: 'Alpha5: ',
+  titleMaxLength: 80,
+} as const;
