@@ -24,6 +24,8 @@ export const WEARABLE_DATA_TYPES = [
   'resting_heart_rate',
   'sleep',
   'steps',
+  // „Erholung aus der Uhr“ (25.10.2026): Herzfrequenzvariabilität (RMSSD) – nur ein Tageswert, nie Einzelmessungen.
+  'hrv',
 ] as const;
 export type WearableDataType = (typeof WEARABLE_DATA_TYPES)[number];
 
@@ -154,18 +156,28 @@ export const wearableSessionImportSchema = z
   });
 export type WearableSessionImport = z.infer<typeof wearableSessionImportSchema>;
 
-/** Tageswerte (Tabelle daily_metrics): Ruhepuls, Schlafdauer (Aufwachtag), Schritte – mindestens einer. */
+/**
+ * Tageswerte (Tabelle daily_metrics): Ruhepuls, Schlafdauer (Aufwachtag), Schritte, HRV (RMSSD, seit 25.10.2026) –
+ * mindestens einer. Die Datenbank nimmt `hrv_rmssd_ms` auch FEHLEND an (ältere App-Fassungen); die App schickt es
+ * immer mit (null = kein Wert).
+ */
 export const dailyMetricImportSchema = z
   .object({
     day: isoDateSchema,
     resting_hr_bpm: int(DAILY_METRIC_LIMITS.restingHrBpm).nullable(),
     sleep_min: int(DAILY_METRIC_LIMITS.sleepMin).nullable(),
     steps: int(DAILY_METRIC_LIMITS.steps).nullable(),
+    hrv_rmssd_ms: int(DAILY_METRIC_LIMITS.hrvRmssdMs).nullable(),
   })
   .strict()
-  .refine((d) => d.resting_hr_bpm !== null || d.sleep_min !== null || d.steps !== null, {
-    message: 'empty_day',
-  });
+  .refine(
+    (d) =>
+      d.resting_hr_bpm !== null ||
+      d.sleep_min !== null ||
+      d.steps !== null ||
+      d.hrv_rmssd_ms !== null,
+    { message: 'empty_day' },
+  );
 export type DailyMetricImport = z.infer<typeof dailyMetricImportSchema>;
 
 /** Ein Abgleich (ein Aufruf von import_wearable_batch). */

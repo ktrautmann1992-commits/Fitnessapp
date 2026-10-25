@@ -3965,11 +3965,16 @@ export const HR_ZONE_PERCENTS = [50, 60, 70, 80, 90, 100] as const;
  * - Ruhepuls 30–120 /min = BODY_METRIC_LIMITS.restingHeartRateBpm (Onboarding/Körperdaten),
  * - Schlaf 0–1.440 min (ein Tag), Schritte 0–100.000 je Tag (darüber Messfehler; Ultra-Läufe ausgenommen –
  *   PRODUKTENTSCHEIDUNG).
+ * - HRV (RMSSD, Health Connect `HeartRateVariabilityRmssd`, „Erholung aus der Uhr“, Gründer-Freigabe 25.10.2026)
+ *   5–300 ms: Ruhewerte gesunder Erwachsener liegen meist bei ca. 10–150 ms (Shaffer F, Ginsberg JP, „An Overview of
+ *   Heart Rate Variability Metrics and Norms“, Front Public Health 2017;5:258); darunter bzw. darüber sind es fast
+ *   immer Messfehler (Bewegung, Fehlschläge) – wie docs/PLAN-PHASE-8B.md 4.2. PRODUKTENTSCHEIDUNG.
  */
 export const DAILY_METRIC_LIMITS = {
   restingHrBpm: BODY_METRIC_LIMITS.restingHeartRateBpm,
   sleepMin: { min: 0, max: 1440 },
   steps: { min: 0, max: 100_000 },
+  hrvRmssdMs: { min: 5, max: 300 },
 } as const;
 
 /**
@@ -3982,6 +3987,49 @@ export const DAILY_METRIC_LIMITS = {
  *   (sync: CHECK von app_layout_settings.step_goal und save_app_layout). PRODUKTENTSCHEIDUNG.
  */
 export const STEP_GOAL = { default: 8000, min: 1000, max: 30_000, step: 500 } as const;
+
+/**
+ * „Erholung aus der Uhr“ (Gründer-Freigabe 25.10.2026, `wearables/recovery.ts`, docs/PLAN-PHASE-8.md 15): täglicher
+ * Status gut / mittel / niedrig aus Schlaf der letzten Nacht, Ruhepuls und HRV – jede Person nur mit sich selbst
+ * verglichen. Keine Diagnose, keine Bewertung der Gesundheit; Ergebnis ist höchstens ein ANGEBOT „leichter trainieren“.
+ * ALLE Schwellen: PRODUKTENTSCHEIDUNG – VOR DEM ÖFFENTLICHEN LIVEGANG FACHLICH PRÜFEN (Sportwissenschaft/-medizin,
+ * docs/PLAN-PHASE-8B.md 4 und 22).
+ * - Persönliche Basis = MEDIAN der Tageswerte der `baselineDays` 14 Tage VOR dem Tag (der Tag selbst zählt nie mit),
+ *   frühestens ab `baselineMinValues` 7 Werten – vorher „Wir lernen deine Werte noch“. Median statt Mittelwert, damit
+ *   einzelne Ausreißer (Messfehler, eine durchfeierte Nacht) die Basis nicht verschieben. Tageswert gegen persönliche
+ *   Basis: Kiviniemi AM et al., Eur J Appl Physiol 2007;101:743–751; Buchheit M, „Monitoring training status with HR
+ *   measures: do all roads lead to Rome?“, Front Physiol 2014;5:73 (Ruhepuls und HRV nur im Vergleich zum eigenen
+ *   Verlauf aussagekräftig). 14 statt 28 Tage (Plan 8B 4.5): Health Connect liefert beim ersten Abgleich nur 30 Tage
+ *   (WEARABLE_SYNC.firstSyncDays) – so gibt es nach einer Woche eine Einschätzung.
+ * - Schlaf (letzte Nacht, Aufwachtag = heute): auffällig unter `sleepShortMin.adult` 6 h; unter 18 Jahren
+ *   (`adultFromAge`) unter `sleepShortMin.under18` 7 h. Empfehlung ≥ 7 h für Erwachsene: Watson NF et al., Sleep
+ *   2015;38(6):843–844; 8–10 h für 13–18 Jahre: Paruthi S et al., J Clin Sleep Med 2016;12(6):785–786. Die Schwelle
+ *   liegt bewusst 1 h UNTER der Empfehlung (vorsichtig: nur deutlich kurze Nächte zählen).
+ * - Ruhepuls: auffällig ab Basis + `restingHrAboveBpm` 5 /min. Tag-zu-Tag-Schwankung des Ruhepulses liegt bei wenigen
+ *   Schlägen (Buchheit 2014); +5 /min liegt darüber (Plan 8B 4.5: +3 bis +7 /min als Bereich). Ohne Mindestbasis
+ *   kein Vergleich.
+ * - HRV (RMSSD): auffällig, wenn der Tageswert höchstens `hrvBelowShare` 80 % der Basis erreicht (ln-Abstand ca. −0,22).
+ *   Die „kleinste bedeutsame Änderung“ von ln(RMSSD) liegt bei ca. 0,5 SD bzw. wenigen Prozent (Plews DJ et al.,
+ *   Eur J Appl Physiol 2012;112:3729–3741; Sports Med 2013;43(9):773–781) – 20 % ist bewusst deutlich darüber.
+ * - `sleepCountedMinMin` 120: kürzer erfasster Schlaf zählt nicht als Nacht (z. B. nur ein Mittagsschlaf, Uhr nachts
+ *   abgelegt) – sonst wäre jeder solche Tag „auffällig“. PRODUKTENTSCHEIDUNG.
+ * - Status: 0 auffällige Werte = gut, 1 = mittel, ab `lowMinFlags` 2 = niedrig. Ein EINZELNER Wert ergibt nie
+ *   „niedrig“ (Plan 8B 4.5 „ein einzelner Messwert allein nie“). Ohne bewertbaren Wert: keine Einschätzung.
+ * - Medikamente (Gesundheits-Check-Flag `medication`, z. B. Betablocker) verändern Puls und HRV: dann zählen Ruhepuls
+ *   und HRV NICHT, nur der Schlaf (Plan 8B WE-G25).
+ * - `trendDays` 7: Mini-Verlauf auf der Übersicht.
+ */
+export const RECOVERY = {
+  baselineDays: 14,
+  baselineMinValues: 7,
+  sleepShortMin: { adult: 360, under18: 420 },
+  sleepCountedMinMin: 120,
+  adultFromAge: 18,
+  restingHrAboveBpm: 5,
+  hrvBelowShare: 0.8,
+  lowMinFlags: 2,
+  trendDays: 7,
+} as const;
 
 /**
  * Abgleich mit Health Connect (W8-7, W8-8, docs/PLAN-PHASE-8.md 7.1):
