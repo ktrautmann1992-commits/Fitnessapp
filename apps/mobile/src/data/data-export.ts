@@ -232,6 +232,10 @@ export function localDataExport(
     // Phase 6 SU3/SU4: Supplement-Check und „Meine Supplements“ (Gesundheitsdaten, Testmodus aus dem Gerätespeicher).
     supplement_screening: [...(extra.supplementScreening ?? [])],
     user_supplements: [...(extra.userSupplements ?? [])],
+    // Schuh-Kilometerzähler: im Testmodus ergänzt attachShoes (data/shoes.ts) die Zeilen aus dem Gerätespeicher.
+    shoes: [],
+    shoe_defaults: [],
+    shoe_assignments: [],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

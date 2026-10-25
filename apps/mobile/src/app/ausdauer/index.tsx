@@ -14,6 +14,7 @@ import { AreaButton } from '@/components/design';
 import { LiveRegion } from '@/components/calendar';
 import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
 import { ActivityRow, TotalsView } from '@/components/endurance';
+import { ShoeOverview } from '@/components/shoes';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { Body, Button, Card, ChoiceList, Heading, LoadingState, Notice } from '@/components/ui';
 import { activitiesFromRows, routePoints } from '@/data/endurance-rows';
@@ -294,6 +295,9 @@ export default function EnduranceScreen() {
           </View>
         </View>
       </Card>
+
+      {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 21): Kacheln „Meine Schuhe“. */}
+      <ShoeOverview />
 
       <Heading level={2}>{E.list.title}</Heading>
       {result?.offline ? <Notice tone="warning">{E.list.offline}</Notice> : null}

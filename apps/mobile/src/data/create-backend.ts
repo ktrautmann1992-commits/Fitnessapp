@@ -16,6 +16,7 @@ import { createDeviceProtectedStores } from './device-protected-store';
 import type { KeyValueStore } from './kv';
 import { createLocalBackend } from './local-backend';
 import { readWebUrl } from './food-photo-remote';
+import { attachShoes, createLocalShoes, createRemoteShoes } from './shoes';
 import { createSupabaseBackend } from './supabase-backend';
 import type { ConsentPlatform } from './types';
 
@@ -83,6 +84,16 @@ export function createBackend(): Backend {
       // Etappe E3: Gericht per Foto über apps/web (fehlt die Adresse, ist „Per Foto“ nicht verfügbar).
       webUrl: readWebUrl(process.env.EXPO_PUBLIC_WEB_URL),
     });
+    // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 21): eigene Schnittstelle wie das Zyklus-Modul.
+    attachShoes(
+      backend,
+      createRemoteShoes({
+        client,
+        store: deviceStore,
+        backend,
+        logWindowStart: () => backend.logHistoryStart() ?? todayIso(),
+      }),
+    );
     return attachCycle(backend, createRemoteCycle({ client, stores: cycleStores }));
   }
   // Testmodus: einzige Stelle, an der die Plan-Engine Entwürfe nutzen darf (allowDrafts in createLocalBackend).
@@ -97,5 +108,6 @@ export function createBackend(): Backend {
     // Etappe E4: laufende Aufzeichnung (Standortdaten) im eigenen geschützten Speicher.
     routeRecordingStore: stores.routeRecording,
   });
+  attachShoes(local, createLocalShoes(deviceStore, local));
   return attachCycle(local, createLocalCycle(cycleStores));
 }
