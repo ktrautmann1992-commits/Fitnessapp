@@ -40,6 +40,9 @@ function log(id: string, extra: Partial<SessionLogRow> = {}): SessionLogRow {
     client_updated_at: `${DAY}T18:00:00Z`,
     created_at: `${DAY}T18:00:00Z`,
     updated_at: `${DAY}T18:00:00Z`,
+    sport: null,
+    sport_duration_s: null,
+    sport_distance_m: null,
     ...extra,
   };
 }

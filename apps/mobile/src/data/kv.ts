@@ -167,4 +167,9 @@ export const STORAGE_KEYS = {
    * kein Gesundheitsdatum. Vorbelegung beim nächsten Rad-Eintrag bzw. der nächsten Aufzeichnung.
    */
   bikeChoice: 'fitnessapp.bike-choice.v1',
+  /**
+   * Sportarten Stufe 2: Sportart der laufenden GPS-Aufzeichnung (z. B. Skilanglauf) je Aufzeichnungs-id – nur dieses
+   * Gerät, kein Gesundheitsdatum; nach dem Speichern bzw. Verwerfen gelöscht.
+   */
+  gpsSportRecording: 'fitnessapp.gps-sport-recording.v1',
 } as const;

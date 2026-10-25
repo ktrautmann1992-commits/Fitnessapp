@@ -3,6 +3,7 @@ import {
   SESSION_LOG_LIMITS,
   SESSION_RPE_LIMITS,
   SPORT_CATALOGUE,
+  SPORT_LOG_LIMITS,
 } from '../constants';
 import type { LogSource, PlannedSessionKind, SportId } from '../enums';
 import { type CardioInputError, cardioLogFromInput } from '../log/cardio';
@@ -187,4 +188,44 @@ export function sportSessionLogFromInput(input: SportEntryInput): SportEntryResu
     return { ok: false, errors: ['invalid'] };
   }
   return { ok: true, payload };
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// GPS-Aufzeichnung → Eintrag
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Werte für den Sportart-Eintrag aus einer GPS-Aufzeichnung (Skilanglauf, Skitour, Inline-Skaten, SUP, Kajak/Kanu):
+ * Dauer in ganzen Minuten aus der Bewegungszeit (ohne Bewegung: Gesamtdauer; mindestens 1 min, höchstens 12 h),
+ * Distanz in km (Meter genau; unter 1 m = ohne), Beginn und Ende. null ohne Beginn bzw. Dauer. Rein.
+ */
+export function sportEntryFromRecording(summary: {
+  readonly startedAt: string | null;
+  readonly durationS: number;
+  readonly movingS: number;
+  readonly distanceM: number;
+}): {
+  hours: number;
+  minutes: number;
+  distanceKm: number | null;
+  startedAt: string;
+  finishedAt: string;
+} | null {
+  if (summary.startedAt === null || summary.durationS <= 0) return null;
+  const start = Date.parse(summary.startedAt);
+  if (!Number.isFinite(start)) return null;
+  const base = summary.movingS >= 60 ? summary.movingS : summary.durationS;
+  const maxMinutes = SPORT_LOG_LIMITS.durationS.max / 60;
+  const totalMinutes = Math.min(maxMinutes, Math.max(1, Math.round(base / 60)));
+  const distanceM = Math.min(
+    Math.max(0, Math.floor(summary.distanceM)),
+    SPORT_LOG_LIMITS.distanceM.max,
+  );
+  return {
+    hours: Math.floor(totalMinutes / 60),
+    minutes: totalMinutes % 60,
+    distanceKm: distanceM >= 1 ? distanceM / 1000 : null,
+    startedAt: new Date(start).toISOString(),
+    finishedAt: new Date(start + summary.durationS * 1000).toISOString(),
+  };
 }

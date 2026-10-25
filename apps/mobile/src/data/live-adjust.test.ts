@@ -99,6 +99,9 @@ async function logStrength(device: Device, from: string, to: string, rpe: number
     client_updated_at: `${s.scheduled_on}T18:00:00Z`,
     created_at: `${s.scheduled_on}T18:00:00Z`,
     updated_at: `${s.scheduled_on}T18:00:00Z`,
+    sport: null,
+    sport_duration_s: null,
+    sport_distance_m: null,
   }));
   const ids = new Set(planned.map((s) => s.id));
   await writeJson(device.store, STORAGE_KEYS.localDb, {

@@ -3,6 +3,8 @@ import {
   type LogAssignment,
   logAssignmentSchema,
   parseStoredLogAssignments,
+  sportForLog,
+  sportLogDurationS,
   weekStatus,
   type WeekStatus,
   type WeekStatusLog,
@@ -51,6 +53,8 @@ export function weekStatusInputs(
   const cardio = new Map(rows.cardioLogs.map((c) => [c.session_log_id, c] as const));
   const logs = rows.sessionLogs.map((l): WeekStatusLog => {
     const c = cardio.get(l.id);
+    // Sportarten Stufe 2: Sportart, Dauer und Distanz aus dem Eintrag (bzw. Titel der Uhr-Einheit).
+    const sport = c ? null : sportForLog(l);
     return {
       id: l.id,
       planned_session_id: l.planned_session_id,
@@ -61,8 +65,9 @@ export function weekStatusInputs(
       is_free: l.is_free === true,
       source: l.source,
       modality: c?.modality ?? null,
-      duration_s: c?.duration_s ?? null,
-      distance_m: c?.distance_m ?? null,
+      duration_s: c?.duration_s ?? (sport ? sportLogDurationS(l) : null),
+      distance_m: c?.distance_m ?? (sport ? (l.sport_distance_m ?? null) : null),
+      sport,
       done_sets: doneSets.get(l.id) ?? 0,
       kcal: kcalOf(l.id),
       started_at: l.started_at,

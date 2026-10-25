@@ -216,6 +216,9 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
       client_updated_at: NOW,
       created_at: NOW,
       updated_at: NOW,
+      sport: null,
+      sport_duration_s: null,
+      sport_distance_m: null,
     });
     rows.cardioLogs.push({
       session_log_id: uuid(100),

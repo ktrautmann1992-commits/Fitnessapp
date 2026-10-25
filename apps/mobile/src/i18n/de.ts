@@ -32,6 +32,7 @@ import { deWeekEval } from './de-week-eval';
 import { deWearables } from './de-wearables';
 import { deSteps } from './de-steps';
 import { deSessionKcal } from './de-session-kcal';
+import { deSports } from './de-sports';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
 import { deTrainingWeek } from './de-training-week';
@@ -1689,6 +1690,7 @@ export const de = {
   /** Smartwatch über Health Connect (Phase 8). */
   wearables: deWearables,
   sessionKcal: deSessionKcal,
+  sports: deSports,
   // Supplement-Modul (docs/PLAN-PHASE-6.md, Etappe SU4)
   supplements: deSupplements,
   // Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5)

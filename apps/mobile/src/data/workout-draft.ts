@@ -30,6 +30,7 @@ import {
 } from '@fitnessapp/core';
 
 import { formatDecimal, parseDecimal } from '../lib/format';
+import { type DraftSport, sportDraftPayload } from './sport-entry';
 import type { UserRows } from './types';
 
 /**
@@ -162,6 +163,8 @@ export interface WorkoutDraft {
   workoutId?: string;
   /** Workout-Timer: Ende des Laufs (finished_at); fehlt = Zeitpunkt des Sendens. */
   finishedAt?: string;
+  /** Sportart-Eintrag (Sportarten Stufe 2, data/sport-entry.ts); fehlt = Kraft/Ausdauer. */
+  sport?: DraftSport;
   updatedAt: string;
 }
 
@@ -965,6 +968,8 @@ export function draftToPayload(
   draft: WorkoutDraft,
   options: { writeId: string; now: string; today?: string },
 ): SessionLogPayload {
+  // Sportart (Stufe 2): nur über packages/core (sportSessionLogFromInput).
+  if (draft.sport) return sportDraftPayload({ ...draft, sport: draft.sport }, options);
   if (draft.isFree === true) {
     // Freie Einheit: nur über packages/core (Regeln von save_session_log). Ungültig → Eintrag, den das Schema
     // ablehnt (isValidPayload), damit nie eine ungeprüfte freie Fassung gesendet wird.
