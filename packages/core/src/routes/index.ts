@@ -3,6 +3,8 @@ export * from './compare';
 export * from './elevation-profile';
 export * from './format';
 export * from './gpx';
+export * from './loop';
+export * from './loop-mock';
 export * from './polyline';
 export * from './privacy-trim';
 export * from './recording';

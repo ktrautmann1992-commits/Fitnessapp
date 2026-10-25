@@ -3647,6 +3647,49 @@ export const ROUTE_PRIVACY_TRIM = {
 export const ROUTE_PRIVACY_TRIM_M = ROUTE_PRIVACY_TRIM.trimM;
 
 /**
+ * Rundkurs-Vorschlag (Gründer-Freigabe 25.10.2026, docs/PLAN-RUNDKURS.md): Die App schlägt 2–3 Runden auf
+ * OpenStreetMap-Wegen vor (Routing-Dienst openrouteservice über den eigenen Server, routes/loop.ts). Feste Regeln,
+ * keine KI.
+ * - `distanceKm`/`distanceOptionsKm`: wählbare Distanz 3–30 km (Gründer-Vorgabe), Auswahl als Knöpfe.
+ * - `startRoundingM`: Startpunkt wird VOR dem Senden auf ein 50-m-Raster gerundet (Datenminimierung, Gründer-Vorgabe);
+ *   der Server rundet noch einmal.
+ * - `providerCandidates`: so viele Runden (verschiedene Zufallswerte „seed“) fragt der Server je Tipp an; danach
+ *   werden schlechte aussortiert und höchstens `maxSuggestions` gezeigt. `requestLengthFactor`: der Dienst liefert
+ *   erfahrungsgemäß etwas längere Runden als bestellt – wir bestellen 8 % kürzer. `roundTripPoints`: Stützpunkte im
+ *   Kreis (mehr = runder). Quelle: openrouteservice-Doku/-Forum „round_trip“ (length, points, seed), 2026.
+ * - Bewertung (`loopScore`): Abweichung von der Wunschdistanz (bis `distanceTolerance` gilt als „passt“, über
+ *   `distanceMaxDeviation` fällt die Runde weg), Anteil doppelt gelaufener Wege („hin und zurück“, Abtastung alle
+ *   `overlap.sampleM` m, gleiche Stelle = näher als `overlap.nearM`, aber auf der Runde mindestens `overlap.minGapM`
+ *   auseinander; über `overlap.maxShare` fällt die Runde weg) und Untergrund-Wunsch. `weights` in Punkten (0–100).
+ *   `similarMaxShare`: zwei Runden, die zu mehr als 70 % gleich verlaufen, gelten als dieselbe (nur die bessere).
+ * - `rateLimit`: je Person höchstens 6 Anfragen in 10 Minuten und 30 am Tag, insgesamt höchstens 10 je Minute (der
+ *   kostenlose openrouteservice-Schlüssel erlaubt 40 Routen/Minute und 2.000/Tag; 4 Routen je Anfrage).
+ * - `timeoutMs`: Dienst 8 s je Runde, App 20 s insgesamt. `maxBodyBytes`: Körper der Anfrage an den Server.
+ * - `variantMax`: „Andere Runden“ höchstens 20-mal (danach wiederholen sich die Zufallswerte nicht mehr sinnvoll).
+ * - `maxPoints`: Punkte je vorgeschlagener Linie nach dem Vereinfachen (hält die Antwort klein).
+ * Alle Zahlen PRODUKTENTSCHEIDUNG (Vorschlag), mit echten Anfragen nachjustieren.
+ */
+export const LOOP_ROUTE = {
+  distanceKm: { min: 3, max: 30 },
+  distanceOptionsKm: [3, 5, 8, 10, 12, 15, 21, 30],
+  startRoundingM: 50,
+  providerCandidates: 4,
+  maxSuggestions: 3,
+  requestLengthFactor: 0.92,
+  roundTripPoints: 5,
+  distanceTolerance: 0.15,
+  distanceMaxDeviation: 0.35,
+  overlap: { sampleM: 25, nearM: 20, minGapM: 150, maxSamples: 1_200, maxShare: 0.5 },
+  weights: { distance: 100, overlap: 60, surface: 30 },
+  similarMaxShare: 0.7,
+  rateLimit: { perUserWindowMs: 600_000, perUserWindow: 6, perUserDay: 30, globalPerMinute: 10 },
+  timeoutMs: { provider: 8_000, client: 20_000 },
+  maxBodyBytes: 256,
+  variantMax: 20,
+  maxPoints: 1_500,
+} as const;
+
+/**
  * Aufzeichnung in der App (Etappe E4, Plan S1 „App“/„Zustände“):
  * - `checkpointIntervalS`: Rohpunkte alle 30 s verschlüsselt sichern (Plan S1 „Offline“),
  * - `minSaveDistanceM`: unter 100 m nachfragen („zu kurz“, Plan S1); unter 1 min Dauer kein Speichern (Schema),

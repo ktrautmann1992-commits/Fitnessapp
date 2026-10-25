@@ -970,6 +970,35 @@ den Knopf einfach nicht (kein Absturz), dort geht nur „Nummer eintippen“.
    Strichcode von Lebensmitteln zu lesen …“ → **Erlauben** → scannen.
 4. Verweigert → Hinweis mit **„Einstellungen öffnen“** (dort Kamera für Alpha5 einschalten).
 
+## Teil 7rk – Rundkurs-Vorschlag (25.10.2026)
+
+**Im Testmodus (sofort, ohne Schlüssel):** Vorschau-Link öffnen → **Ausdauer** → **„Rundkurs vorschlagen“**.
+
+1. Distanz (z. B. **10 km**) und Untergrund (**Wald- und Feldwege**) antippen.
+2. **„Beispiel-Start Köln (Testmodus)“** tippen (oder „Meinen Standort verwenden“ und im Browser erlauben).
+3. **„Runden vorschlagen“** → 2–3 Runden mit Distanz, Höhenmetern und Untergrund. Im Testmodus sind es **ausgedachte**
+   Runden (keine echten Wege) – sie prüfen nur den Ablauf.
+4. Eine Runde antippen → sie wird auf der Karte farbig. **„Als Meine Strecke merken“** → Name → **Merken**: Sie steht
+   unten unter „Gemerkte Runden“ (nur auf diesem Gerät).
+5. **„Andere Runden“** → neue Vorschläge. **„Diese Runde laufen“** → die Demo-Aufzeichnung startet, oben die Runde als
+   Leitlinie und „Noch ca. … km bis zum Start“. Beim Speichern ist der Name vorbelegt und „Favorit“ angehakt – so wird
+   die Runde zu einer „Meinen Strecke“.
+
+**Echte Runden (Vercel-Projekt „Web“, einmalig, ca. 5 Minuten):**
+
+1. Im Handy-Browser **openrouteservice.org** öffnen → oben **„Sign up“** → Konto anlegen (E-Mail bestätigen).
+2. Nach dem Anmelden: **Dashboard** → bei **„Request a token“** Typ **Standard** wählen, Name „Alpha5“ → **Create
+   token**. Den langen Schlüssel **kopieren** (nicht in den Chat schreiben!).
+3. **vercel.com** öffnen → Projekt **„Web“** (fitnessapp-web) → **Settings** → **Environment Variables**.
+4. **Key:** `ORS_API_KEY`, **Value:** Schlüssel einfügen, **Environments:** Production und Preview anhaken →
+   **Save**. (Keinen Namen mit `NEXT_PUBLIC_` oder `EXPO_PUBLIC_` – der Schlüssel bleibt auf dem Server.)
+5. **Deployments** → beim obersten Eintrag **⋯** → **Redeploy** → bestätigen.
+6. In der App mit Konto (nicht Testmodus): Ausdauer → „Rundkurs vorschlagen“ → „Meinen Standort verwenden“ →
+   „Runden vorschlagen“. Ohne Schlüssel steht dort „Rundkurs-Vorschläge sind gerade nicht verfügbar“.
+
+**Nur zum Testen ohne Schlüssel:** Statt Schritt 1–4 die Variable `LOOP_ROUTING_PROVIDER` mit dem Wert `attrappe`
+anlegen (nur Preview) → ausgedachte Runden auch mit Konto. Vor dem Livegang wieder löschen.
+
 ## Teil 7g – „Dein Tag“ testen (Etappe A2, Testmodus)
 Die Tagesauswertung braucht keine Einstellung und keine Datenbank-Änderung. Das Essen erscheint vorerst nur im
 **Testmodus** (mit Konto folgt es mit N7 Teil 2), der Trainingsteil geht in beiden Modi.

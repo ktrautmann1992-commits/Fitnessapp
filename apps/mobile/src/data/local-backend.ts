@@ -136,6 +136,7 @@ import {
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
+import { localLoopRoutes } from './loop-routing';
 import { consentRecordsFromRows, type ConsentVersions, versionsFromDocuments } from './mapping';
 import {
   applyWearableConnect,
@@ -986,6 +987,9 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         )
       ).body;
     },
+
+    // --- Rundkurs-Vorschlag (docs/PLAN-RUNDKURS.md): Testmodus immer mit der Attrappe, ohne Netz -------------
+    planLoopRoutes: (request) => localLoopRoutes(request),
 
     // --- Produktabfrage (Etappe E4a): Testmodus immer mit der Attrappe, gleiche Kette wie der Server ---------
     lookupFoodProduct: async (code) => {

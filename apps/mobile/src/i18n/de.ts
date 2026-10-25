@@ -20,6 +20,7 @@ import {
 } from './de-dashboard';
 import { deDay } from './de-day';
 import { deEndurance } from './de-endurance';
+import { deLoop } from './de-loop';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
@@ -1697,6 +1698,8 @@ export const de = {
   /** Kachel „Schritte“ mit Tagesziel und Schrittziel (22.10.2026). */
   stepCounter: deSteps,
   recovery: deRecovery,
+  /** Rundkurs-Vorschlag (docs/PLAN-RUNDKURS.md, 25.10.2026). */
+  loop: deLoop,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */
