@@ -93,7 +93,7 @@ export function HeartRatePanel({ summary }: { summary: HeartRateSummaryRow }) {
  * Farben der fünf Pulszonen im gestapelten Balken (sehr leicht → maximal): Blau, Grün, Gelb, Orange, Rot – wie in
  * Uhr-Apps üblich. Die Minuten stehen immer auch als Text darunter (nie nur Farbe).
  */
-const ZONE_COLORS = ['#93C5FD', '#34D399', '#FBBF24', '#F97316', '#EF4444'] as const;
+export const ZONE_COLORS = ['#93C5FD', '#34D399', '#FBBF24', '#F97316', '#EF4444'] as const;
 
 /** Pulszonen als ein gestapelter Balken mit Text „Zone 3: 51 min · …“ (Läufe der Uhr, Mockup 23.10.2026). */
 export function HeartZonesBar({ summary }: { summary: HeartRateSummaryRow }) {

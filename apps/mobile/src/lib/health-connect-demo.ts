@@ -157,6 +157,8 @@ export function demoRead(today: string, from: string, to: string): HcReadResult 
           kcal: 380 + i * 5,
           heartRateSamples: heartRateSamples(start, 35, 150),
           route,
+          // Lauf-Paket 2: Schritte im Zeitraum → Ø Kadenz ca. 168–172 Schritte/min.
+          steps: 5880 + i * 35,
         },
       });
     }

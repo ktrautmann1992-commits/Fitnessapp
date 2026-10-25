@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog, Screen } from '@/components/screen';
+import { PulseZoneSettingsCard } from '@/components/runner';
 import { StepGoalCard } from '@/components/steps';
 import { RecoveryDetails } from '@/components/recovery';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
@@ -314,6 +315,8 @@ export default function SmartwatchScreen() {
           <RecoveryDetails today={todayIso()} />
           {/* Schrittziel für die Kachel „Schritte“ auf der Übersicht (22.10.2026). */}
           <StepGoalCard />
+          {/* Lauf-Paket 2: Pulszonen (eigener Maximalpuls, Herzfrequenz-Reserve). */}
+          <PulseZoneSettingsCard />
           {daily}
           <Button
             label={W.disconnect}

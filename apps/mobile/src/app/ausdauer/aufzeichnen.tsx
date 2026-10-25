@@ -35,6 +35,7 @@ import { StyleSheet, View } from 'react-native';
 import { AreaButton, Icon } from '@/components/design';
 import { BikeTypeChoice, EBikeBadge, useBikeChoice } from '@/components/e-bike';
 import { RouteSketch } from '@/components/endurance';
+import { DarknessNotice } from '@/components/runner';
 import { LoopGuideCard } from '@/components/loop-guide-card';
 import { SportRecordingSave, useGpsSportart } from '@/components/sport-recording';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -391,6 +392,7 @@ export default function RecordScreen() {
   const speedMode = usesSpeed(sport);
   const paceText = stats ? averagePaceOrSpeedText(sport, stats.movingS, stats.distanceM) : '–';
   const time = durationText(recordingElapsedS(current.state, now));
+  const firstPoint = current.state.segments.find((seg) => seg.points.length > 0)?.points[0] ?? null;
   const distance = stats ? distanceText(stats.distanceM) : '0,00 km';
   return (
     <Screen
@@ -406,6 +408,8 @@ export default function RecordScreen() {
       testID="record-live"
     >
       {current.mode === 'demo' ? <Notice tone="info">{E.live.demo}</Notice> : null}
+      {/* Lauf-Paket 2: Hinweis „Es wird dunkel“ aus dem ersten Punkt dieser Aufzeichnung (grob, ohne Netz). */}
+      <DarknessNotice position={firstPoint} basis="current" testID="record-darkness" />
       {status === 'recording' && signal !== 'ok' ? (
         <Notice tone="warning" testID={`record-gps-${signal}`}>
           {signal === 'searching' ? E.live.searching : E.live.weak}

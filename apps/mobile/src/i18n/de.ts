@@ -24,6 +24,7 @@ import { deEndurance } from './de-endurance';
 import { deLoop } from './de-loop';
 import { deRacePace } from './de-race-pace';
 import { deShoes } from './de-shoes';
+import { deRunner } from './de-runner';
 import { deHydration } from './de-hydration';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
@@ -1706,6 +1707,7 @@ export const de = {
   endurance: deEndurance,
   // Schuh-Kilometerzähler und Renn-Pace-Plan (docs/PLAN-PHASE-10.md Abschnitt 22).
   shoes: deShoes,
+  runner: deRunner,
   racePace: deRacePace,
   hydration: deHydration,
   // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
