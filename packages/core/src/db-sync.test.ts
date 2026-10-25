@@ -20,6 +20,7 @@ import {
   SUPPLEMENT_SCREENING_QUESTIONS,
 } from './supplements/screening';
 import { USER_SUPPLEMENT_STATUSES } from './supplements/user-data';
+import { RECIPE_PREFERENCE_KINDS } from './nutrition/recipe-preferences';
 import {
   CARDIO_LOG_LIMITS,
   ENDURANCE_SESSION_LIMITS,
@@ -83,6 +84,7 @@ import {
   PACKAGE_SIZE_LIMITS,
   PORTION_SCALE_LIMITS,
   RECIPE_RATING_RULES,
+  RECIPE_PREFERENCE_RULES,
   RECIPE_SCHEMA_LIMITS,
   RECIPE_SERVINGS_PICKER,
   SHOPPING_LIST_EXTRAS,
@@ -1194,10 +1196,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_supplement_user_data.sql (Phase 6 SU3, davor Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_recipe_preferences.sql (Rezept-Favoriten 25.10.2026, davor Phase 6 SU3, Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_supplement_user_data\.sql$/,
+      /_recipe_preferences\.sql$/,
     );
   });
 });
@@ -2865,7 +2867,7 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
     for (const [marker, newestFile] of [
       [revokeMarker, /_supplement_user_data\.sql$/],
-      [exportMarker, /_supplement_user_data\.sql$/],
+      [exportMarker, /_recipe_preferences\.sql$/],
     ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
       // Widerruf und Export seit Phase 6 SU3 in *_supplement_user_data.sql (davor Phase 8, Einkaufen E1, E2, 4b Etappe B,
@@ -3807,5 +3809,42 @@ describe('E-Bike in der Datenbank (20261023140000_e_bike.sql)', () => {
       expect(sql).toContain(`revoke all on function public.${name}(jsonb) from public, anon;`);
       expect(sql).toContain(`grant execute on function public.${name}(jsonb) to authenticated;`);
     }
+  });
+});
+
+describe('Rezept-Favoriten in der Datenbank (Gründer-Freigabe 25.10.2026, KONZEPT 6.10a)', () => {
+  const sql = readMigration('_recipe_preferences.sql');
+
+  it('recipe_preferences: Arten = RECIPE_PREFERENCE_KINDS, Höchstzahl = RECIPE_PREFERENCE_RULES', () => {
+    expect(quotedListAfter(sql, 'kind text not null check (kind in (')).toEqual([
+      ...RECIPE_PREFERENCE_KINDS,
+    ]);
+    expect(sql).toContain(`max_entries constant integer := ${RECIPE_PREFERENCE_RULES.maxEntries};`);
+    expect(sql).toContain('primary key (user_id, recipe_id)');
+    expect(sql).toContain('references auth.users (id) on delete cascade');
+  });
+
+  it('RLS: eigene Zeilen, Einfügen nur mit Profil, kein anon', () => {
+    expect(sql).toContain('alter table public.recipe_preferences enable row level security;');
+    expect(sql).toContain(
+      'revoke all on table public.recipe_preferences from anon, authenticated;',
+    );
+    expect(sql.match(/user_id = \(select auth\.uid\(\)\)/g)?.length).toBeGreaterThanOrEqual(5);
+    expect(sql).toContain('exists (select 1 from public.profiles p');
+  });
+
+  it('Export: Obermenge der Supplement-Fassung plus genau recipe_preferences; Widerruf unangetastet', () => {
+    const marker = 'create or replace function public.export_my_data()';
+    const fnBody = (text: string) => {
+      const start = text.lastIndexOf(marker);
+      return text.slice(start, text.indexOf('$$;', start));
+    };
+    const before = fnBody(readMigration('_supplement_user_data.sql'));
+    const after = fnBody(sql);
+    const keys = (body: string) =>
+      [...body.matchAll(/'([a-z_]+)', \(select coalesce/g)].map((m) => m[1]);
+    expect(keys(after)).toEqual([...keys(before), 'recipe_preferences']);
+    expect(DATA_EXPORT_TABLES.at(-1)).toBe('recipe_preferences');
+    expect(sql).not.toContain('function private.consents_after_revoke()');
   });
 });

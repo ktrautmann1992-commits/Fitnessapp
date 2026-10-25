@@ -2070,6 +2070,35 @@ export type Database = {
           },
         ];
       };
+      recipe_preferences: {
+        Row: {
+          kind: string;
+          recipe_id: string;
+          set_on: string;
+          user_id: string;
+        };
+        Insert: {
+          kind: string;
+          recipe_id: string;
+          set_on: string;
+          user_id?: string;
+        };
+        Update: {
+          kind?: string;
+          recipe_id?: string;
+          set_on?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'recipe_preferences_recipe_id_fkey';
+            columns: ['recipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'recipes';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       recipe_ratings: {
         Row: {
           rated_on: string;
