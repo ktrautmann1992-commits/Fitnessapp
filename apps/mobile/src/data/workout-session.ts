@@ -4,6 +4,7 @@ import {
   type EquipmentProfile,
   type ExerciseProgress,
   experienceLevelSchema,
+  lighterSessionVariant,
   type PlanLibrary,
   type PlanSafetyRules,
   planWorkout,
@@ -64,10 +65,17 @@ export function workoutView(
      * → Gratis-Vorgabe, unverändert.
      */
     stateOverrides?: ReadonlyMap<string, ExerciseProgress>;
+    /**
+     * „Leichter trainieren“ (Erholung aus der Uhr, 25.10.2026): die Einheit wird vor ALLEN weiteren Schritten über
+     * lighterSessionVariant (packages/core, je Übung 1 Satz weniger, RPE −1, gleiche Gewichte) leichter gemacht – die
+     * Sicherheitsregeln laufen danach unverändert. Nur für heute; der gespeicherte Plan bleibt.
+     */
+    lighter?: boolean;
   } = {},
 ): WorkoutView | null {
   const active = activePlan(rows);
-  const stored = active?.sessions.find((s) => s.id === sessionId);
+  const planned = active?.sessions.find((s) => s.id === sessionId);
+  const stored = planned && options.lighter ? lighterSessionVariant(planned) : planned;
   const birthDate = rows.profile?.birth_date;
   const level = experienceLevelSchema.safeParse(rows.profile?.experience_level);
   if (!active || !stored || !birthDate || !level.success) return null;
@@ -251,11 +259,14 @@ export function newEnduranceDraft(
     newId: () => string;
     /** Nachtragen (A1b): an diesem Tag trainiert (sonst heute). */
     performedOn?: string;
+    /** „Leichter trainieren“ (Erholung, 25.10.2026): locker und kürzer (lighterSessionVariant). */
+    lighter?: boolean;
   },
 ): WorkoutDraft | null {
   const active = activePlan(rows);
-  const session = active?.sessions.find((s) => s.id === sessionId);
-  if (!active || !session || session.kind !== 'endurance') return null;
+  const planned = active?.sessions.find((s) => s.id === sessionId);
+  if (!active || !planned || planned.kind !== 'endurance') return null;
+  const session = meta.lighter ? lighterSessionVariant(planned) : planned;
   return createEnduranceDraft({
     ownerUserId: meta.ownerUserId,
     session,

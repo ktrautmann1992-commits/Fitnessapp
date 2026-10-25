@@ -776,3 +776,48 @@ describe('Tausch-Untergrenze im Trainingsmodus (Etappe T1, Wächter T1-S1)', () 
     expect(withoutFloor).toBeGreaterThan(0);
   });
 });
+
+describe('Erholung aus der Uhr: „Leichter trainieren“ (25.10.2026)', () => {
+  it('Kraft: je Übung 1 Satz weniger (mind. 1), RPE höchstens wie geplant; Plan unverändert', async () => {
+    const s = await setup();
+    const session = todaysSession(s.rows);
+    const normal = workoutView(s.rows, s.library, s.rules, session.id, MONDAY);
+    const lighter = workoutView(s.rows, s.library, s.rules, session.id, MONDAY, { lighter: true });
+    if (!normal || !lighter) throw new Error('Keine Ansicht');
+    expect(lighter.stored.exercises.map((e) => e.sets)).toEqual(
+      normal.stored.exercises.map((e) => Math.max(1, e.sets - 1)),
+    );
+    lighter.stored.exercises.forEach((e, i) => {
+      expect(e.rpe_target).toBeLessThanOrEqual(normal.stored.exercises[i]?.rpe_target ?? 10);
+    });
+    const meta = { ownerUserId: USER_ID, today: MONDAY, now: NOW, newId: randomUUID };
+    const draft = newWorkoutDraft(s.rows, lighter, meta);
+    const plain = newWorkoutDraft(s.rows, normal, meta);
+    const totalSets = (d: WorkoutDraft | null) =>
+      (d?.exercises ?? []).reduce((sum, e) => sum + e.sets.length, 0);
+    expect(totalSets(draft)).toBeLessThan(totalSets(plain));
+    // Der gespeicherte Plan bleibt (nur die Vorgabe für heute ist leichter).
+    expect(activePlan(s.rows)?.sessions.find((x) => x.id === session.id)?.exercises).toEqual(
+      normal.stored.exercises,
+    );
+  });
+
+  it('Ausdauer: Dauer × 0,8 (mind. 10 min) im Entwurf', async () => {
+    const s = await setup(
+      planPersonRows({
+        slots: [
+          { user_id: USER_ID, slot_no: 1, weekday: 1, kind: 'endurance', minutes: 30 },
+          { user_id: USER_ID, slot_no: 2, weekday: 3, kind: 'strength_gym', minutes: 60 },
+        ],
+      }),
+    );
+    const session = todaysSession(s.rows);
+    const meta = { ownerUserId: USER_ID, today: MONDAY, now: NOW, newId: randomUUID };
+    const normal = newEnduranceDraft(s.rows, session.id, meta);
+    const lighter = newEnduranceDraft(s.rows, session.id, { ...meta, lighter: true });
+    const minutes = (d: WorkoutDraft | null) =>
+      Number(d?.cardio?.hours ?? 0) * 60 + Number(d?.cardio?.minutes ?? 0);
+    expect(minutes(normal)).toBeGreaterThan(0);
+    expect(minutes(lighter)).toBe(Math.max(10, Math.floor(minutes(normal) * 0.8)));
+  });
+});

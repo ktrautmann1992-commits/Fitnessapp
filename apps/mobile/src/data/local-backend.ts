@@ -946,6 +946,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
 
     // Testphase „alles offen“ (KONZEPT 13): ohne Server ist im Testmodus alles offen.
     testPhaseOpen: async () => true,
+    // Erholung (25.10.2026): Angebot nur mit „Live-Anpassung einschalten“ – wie die Live-Anpassung selbst.
+    liveAdjustmentActive: async () => simulatePremiumOn(await load()),
 
     // --- Gericht per Foto (Etappe E3): Testmodus immer mit der Attrappe, gleiche Kette wie der Server ---------
     foodPhotoStatus: async () => {

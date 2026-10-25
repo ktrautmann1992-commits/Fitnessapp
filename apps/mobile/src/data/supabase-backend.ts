@@ -2082,6 +2082,20 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         return false;
       }
     },
+    // Erholung (25.10.2026): gleiche Server-Prüfung wie die Live-Anpassung (Feature-Flag + Premium); nie blockierend.
+    liveAdjustmentActive: async () => {
+      try {
+        const { data, error } = await client.rpc('live_adjustment_status');
+        return (
+          !error &&
+          typeof data === 'object' &&
+          data !== null &&
+          (data as { active?: unknown }).active === true
+        );
+      } catch {
+        return false;
+      }
+    },
     signIn: {
       kind: 'email_code',
       requestCode: async (email) => {
