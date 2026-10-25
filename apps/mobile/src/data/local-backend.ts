@@ -1517,6 +1517,14 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     // Testmodus: das ganze Tagebuch liegt auf dem Gerät – nichts nachzuladen.
     logHistoryStart: () => null,
     loadOlderLogs: async () => ({ logs: EMPTY_LOG_ROWS, nextBefore: null }),
+    // Testmodus: alle Körperdaten liegen im Gerätespeicher.
+    loadWeightHistory: async (from) => {
+      const db = await load();
+      return (db.rows?.bodyMetrics ?? [])
+        .filter((r) => r.weight_kg !== null && r.measured_on >= from)
+        .map((r) => ({ measured_on: r.measured_on, weight_kg: r.weight_kg as number }))
+        .sort((a, b) => a.measured_on.localeCompare(b.measured_on));
+    },
     // Workout-Bibliothek (docs/PLAN-WORKOUTS.md): aus dem Bündel, geprüft wie content:validate.
     loadWorkoutLibrary: async () => {
       const { CONTENT_BUNDLE } = await import('../generated/content-files');

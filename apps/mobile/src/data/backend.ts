@@ -167,6 +167,12 @@ export interface OlderLogsPage {
  * Wo „Ab jetzt immer“ gewählt wurde (für die Prüfung canExclude im Testmodus, docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 9):
  * Einheit des aktiven Plans, gespeicherte Position und die Übungen, die dort gerade angezeigt werden.
  */
+/** Ein Tag mit Gewicht (body_metrics.measured_on, weight_kg). SENSIBEL. */
+export interface WeightHistoryRow {
+  readonly measured_on: string;
+  readonly weight_kg: number;
+}
+
 export interface PreferenceSwapContext {
   sessionId: string;
   storedOrderNo: number;
@@ -576,6 +582,12 @@ export interface Backend {
   logHistoryStart(): string | null;
   /** Ältere Einträge vor `before` nachladen (nur online, je bis zu 20 Einheiten; 4.5). */
   loadOlderLogs(before: string): Promise<OlderLogsPage>;
+  /**
+   * Gewichtsverlauf für den Gewichtstrend (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 2): alle Tage mit Gewicht ab `from`,
+   * aufsteigend. SENSIBEL (Art. 9) – nur im Arbeitsspeicher, nie zwischengespeichert, nie geloggt. Supabase: nur online
+   * (Fehler `online_only`), RLS liefert nur eigene Zeilen; Testmodus: aus dem Gerätespeicher.
+   */
+  loadWeightHistory(from: string): Promise<WeightHistoryRow[]>;
   /**
    * Datenexport (Recht auf Auskunft, 3.7): alle eigenen Zeilen aller Tabellen (export_my_data) plus Konto-E-Mail.
    * Nur online. Enthält Gesundheitsdaten – nie loggen, nie zwischenspeichern.

@@ -398,6 +398,9 @@ const IN_CHUNK = 80;
 /** Einheiten je nachgeladener Verlaufs-Seite. */
 const OLDER_LOGS_PAGE = HISTORY_PAGE_SIZE;
 
+/** Gewichtsverlauf: höchstens so viele Tage auf einmal (Fenster + Vorlauf zum Einschwingen, ein Wert je Tag). */
+const WEIGHT_HISTORY_MAX_ROWS = 400;
+
 function chunks<T>(items: readonly T[], size: number): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
@@ -2888,6 +2891,28 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         const code = classifySupabaseError(error);
         throw new BackendError(code === 'network' ? 'online_only' : code, { cause: error });
       }
+    },
+    loadWeightHistory: async (from) => {
+      const session = await requireSession();
+      const { data, error } = await client
+        .from('body_metrics')
+        .select('measured_on, weight_kg')
+        .eq('user_id', session.userId)
+        .not('weight_kg', 'is', null)
+        .gte('measured_on', from)
+        .order('measured_on', { ascending: true })
+        .limit(WEIGHT_HISTORY_MAX_ROWS);
+      if (error) {
+        // Nur der Code – nie Werte (Gesundheitsdaten).
+        const code = classifySupabaseError(error, true);
+        throw new BackendError(code === 'network' ? 'online_only' : code, {
+          sensitive: true,
+          cause: error,
+        });
+      }
+      return (data ?? []).flatMap((row) =>
+        row.weight_kg === null ? [] : [{ measured_on: row.measured_on, weight_kg: row.weight_kg }],
+      );
     },
     exportMyData: async () => {
       const session = await requireSession();
