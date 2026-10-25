@@ -15,8 +15,8 @@ select results_eq(
   'Studio-Geräte sind nicht zu Hause auswählbar'
 );
 select is(
-  (select count(*)::int from public.equipment where home_selectable), 11,
-  'die 11 Geräte aus Phase 1 bleiben zu Hause auswählbar'
+  (select count(*)::int from public.equipment where home_selectable), 12,
+  'die 11 Geräte aus Phase 1 und der Schlingentrainer sind zu Hause auswählbar'
 );
 
 set local role authenticated;

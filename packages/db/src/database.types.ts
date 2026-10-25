@@ -1627,6 +1627,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      pain_episodes: {
+        Row: {
+          created_at: string;
+          duration_days: number;
+          ended_early_on: string | null;
+          id: string;
+          intensity: Database['public']['Enums']['pain_intensity'];
+          region: Database['public']['Enums']['body_region'];
+          started_on: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          duration_days: number;
+          ended_early_on?: string | null;
+          id?: string;
+          intensity: Database['public']['Enums']['pain_intensity'];
+          region: Database['public']['Enums']['body_region'];
+          started_on: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          duration_days?: number;
+          ended_early_on?: string | null;
+          id?: string;
+          intensity?: Database['public']['Enums']['pain_intensity'];
+          region?: Database['public']['Enums']['body_region'];
+          started_on?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       plan_templates: {
         Row: {
           created_at: string;
@@ -2712,6 +2748,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      travel_modes: {
+        Row: {
+          created_at: string;
+          ends_on: string;
+          equipment: Database['public']['Enums']['travel_equipment'];
+          id: string;
+          max_minutes: number | null;
+          starts_on: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          ends_on: string;
+          equipment: Database['public']['Enums']['travel_equipment'];
+          id?: string;
+          max_minutes?: number | null;
+          starts_on: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          ends_on?: string;
+          equipment?: Database['public']['Enums']['travel_equipment'];
+          id?: string;
+          max_minutes?: number | null;
+          starts_on?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       user_equipment: {
         Row: {
           bar_kg: number | null;
@@ -3591,6 +3660,17 @@ export type Database = {
         | 'back_fit';
       wearable_connection_status: 'connected' | 'permission_missing';
       wearable_provider: 'health_connect';
+      body_region:
+        | 'knee'
+        | 'shoulder'
+        | 'lower_back'
+        | 'elbow'
+        | 'wrist'
+        | 'hip'
+        | 'ankle'
+        | 'neck';
+      pain_intensity: 'mild' | 'moderate' | 'severe';
+      travel_equipment: 'bodyweight' | 'dumbbells' | 'hotel_gym' | 'band' | 'suspension_trainer';
       workout_format: 'circuit' | 'interval' | 'sets_reps';
     };
     CompositeTypes: {
@@ -3911,6 +3991,9 @@ export const Constants = {
       ],
       wearable_connection_status: ['connected', 'permission_missing'],
       wearable_provider: ['health_connect'],
+      body_region: ['knee', 'shoulder', 'lower_back', 'elbow', 'wrist', 'hip', 'ankle', 'neck'],
+      pain_intensity: ['mild', 'moderate', 'severe'],
+      travel_equipment: ['bodyweight', 'dumbbells', 'hotel_gym', 'band', 'suspension_trainer'],
       workout_format: ['circuit', 'interval', 'sets_reps'],
     },
   },

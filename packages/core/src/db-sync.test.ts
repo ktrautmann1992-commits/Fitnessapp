@@ -388,7 +388,11 @@ describe('Listen', () => {
     const catalog = new Map<string, Record<string, unknown>>();
     const rowPattern =
       /\('([a-z_]+)', '([^']+)', '([a-z_]+)', (true|false), (\d+)(?:, (true|false))?\)/g;
-    for (const suffix of ['_seed_equipment.sql', '_equipment_home_selectable.sql']) {
+    for (const suffix of [
+      '_seed_equipment.sql',
+      '_equipment_home_selectable.sql',
+      '_suspension_trainer.sql',
+    ]) {
       for (const m of readMigration(suffix).matchAll(rowPattern)) {
         catalog.set(m[1] as string, {
           id: m[1],
@@ -996,11 +1000,11 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     expect(body.slice(0, end)).toContain(
       'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
     );
-    // Neueste Fassung seit Phase 6 SU3 in *_supplement_user_data.sql (davor Phase 8 Smartwatch, Einkaufen E1, 4b
+    // Neueste Fassung seit den Trainings-Modi in *_training_modes_revoke_export.sql (davor Phase 6 SU3, davor Phase 8 Smartwatch, Einkaufen E1, 4b
     // Etappe B, Zusammenführung E4a + Z3; E1: Tagebuch-Einträge, E2: eigene Gerichte, WP3: Plan-Bezug der Wettkämpfe
     // leeren, E4a: eigene Produkte und Produkt-Favoriten, Z3: Wunschgewicht, 4b: Plan-Anpassungen).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_supplement_user_data\.sql$/,
+      /_training_modes_revoke_export\.sql$/,
     );
   });
 
@@ -1194,10 +1198,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_supplement_user_data.sql (Phase 6 SU3, davor Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_training_modes_revoke_export.sql (Trainings-Modi, davor Phase 6 SU3, davor Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_supplement_user_data\.sql$/,
+      /_training_modes_revoke_export\.sql$/,
     );
   });
 });
@@ -2864,8 +2868,8 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
 
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
     for (const [marker, newestFile] of [
-      [revokeMarker, /_supplement_user_data\.sql$/],
-      [exportMarker, /_supplement_user_data\.sql$/],
+      [revokeMarker, /_training_modes_revoke_export\.sql$/],
+      [exportMarker, /_training_modes_revoke_export\.sql$/],
     ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
       // Widerruf und Export seit Phase 6 SU3 in *_supplement_user_data.sql (davor Phase 8, Einkaufen E1, E2, 4b Etappe B,
@@ -2914,6 +2918,8 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
         // Phase 6 SU3: Supplement-Check und „Meine Supplements“.
         'supplement_screening',
         'user_supplements',
+        // Trainings-Modi: Schmerz-/Verletzungsmodus.
+        'pain_episodes',
       ].sort(),
     );
     for (const name of sensitive) {
