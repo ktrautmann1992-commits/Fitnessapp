@@ -55,6 +55,8 @@ export function errorText(error: unknown): string {
       return t.foodProduct.errors.limit;
     case 'user_product_rejected':
       return t.foodProduct.errors.rejected;
+    case 'pantry_limit':
+      return t.pantry.errors.limit;
     case 'temporary':
       return t.errors.temporary;
     case 'delete_unavailable':

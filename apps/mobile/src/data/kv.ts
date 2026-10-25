@@ -163,6 +163,11 @@ export const STORAGE_KEYS = {
    */
   shoppingPrefs: 'fitnessapp.shopping-prefs.v1',
   /**
+   * Reiter „Unterwegs“ (Auswärts essen, 25.10.2026): Favoriten und „Zuletzt“ – nur Gericht-IDs und Portion, ohne Datum
+   * oder Werte, je Konto (lib/eating-out-picks.ts).
+   */
+  eatingOutPicks: 'fitnessapp.eating-out-picks.v1',
+  /**
    * Ausdauer: zuletzt gewählt „Fahrrad“ oder „E-Bike“ (23.10.2026) – je Konto ein Wahrheitswert, nur dieses Gerät,
    * kein Gesundheitsdatum. Vorbelegung beim nächsten Rad-Eintrag bzw. der nächsten Aufzeichnung.
    */

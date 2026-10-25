@@ -728,6 +728,9 @@ export function applyHealthDataRevocation(
     userFoodProducts: [],
     // Einkaufen E1: gelernte Zuordnungen Strichcode → Lebensmittel (Konsum) – wie consents_after_revoke.
     shoppingProductLinks: [],
+    // Vorratsschrank (25.10.2026): Konsum, kann auf Unverträglichkeiten schließen lassen – wie
+    // private.consents_after_revoke_pantry ganz gelöscht.
+    pantryItems: [],
     // Wettkämpfe (Phase 10): der Wettkampf bleibt (kein Gesundheitsdatum, W-G15), der Plan-Bezug wird geleert – wie
     // private.consents_after_revoke.
     competitions: rows.competitions.map(withoutPlanBasis),

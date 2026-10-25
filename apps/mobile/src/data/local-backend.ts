@@ -38,7 +38,7 @@ import {
 } from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
-import { applyShoppingProductLink } from './nutrition-sync';
+import { applyPantryItems, applyShoppingProductLink, checkPantrySave } from './nutrition-sync';
 import {
   BackendError,
   type Backend,
@@ -311,6 +311,8 @@ const SERIALIZED_METHODS = [
   'saveUserFoodProduct',
   'deleteUserFoodProduct',
   'saveShoppingProductLink',
+  'savePantryItems',
+  'deletePantryItem',
   'saveAppLayout',
   'saveTrackedRoute',
   'updateTrackedRoute',
@@ -1051,6 +1053,26 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         userId: session.userId,
         now: options.now(),
       });
+      await save({ ...db, rows: next });
+      return next;
+    },
+
+    // Vorratsschrank (25.10.2026): dieselben Regeln wie save_pantry_item (Einwilligung, Schema, Grenze). Lebensmittel
+    // und Mengen nie in Meldungen oder Logs.
+    savePantryItems: async (items) => {
+      const { db, rows, session } = await requireProfile();
+      if (healthConsentStatus(rows, LOCAL_VERSIONS) !== 'valid') {
+        throw new BackendError('consent_required', { sensitive: true });
+      }
+      const parsed = checkPantrySave(rows, items);
+      const next = applyPantryItems(rows, parsed, { userId: session.userId, now: options.now() });
+      await save({ ...db, rows: next });
+      return next;
+    },
+    // Löschen geht immer (Recht auf Löschung).
+    deletePantryItem: async (foodId) => {
+      const { db, rows } = await requireProfile();
+      const next = { ...rows, pantryItems: rows.pantryItems.filter((p) => p.food_id !== foodId) };
       await save({ ...db, rows: next });
       return next;
     },

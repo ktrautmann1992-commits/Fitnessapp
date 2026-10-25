@@ -24,6 +24,7 @@ import {
   type CompetitionFeasibility,
   type SaveCompetitionPayload,
   type CustomMeal,
+  type PantryItem,
   type ShoppingProductLink,
   type StoredAppLayout,
   type UserFoodProduct,
@@ -370,6 +371,9 @@ export interface AppContextValue {
   saveAppLayout: (layout: StoredAppLayout) => Promise<void>;
   /** Einkaufen E1: Zuordnung Strichcode → Lebensmittel lernen (nur mit Einwilligung; Fehler ohne Nummer/Namen). */
   saveShoppingProductLink: (link: ShoppingProductLink) => Promise<void>;
+  /** Vorratsschrank (25.10.2026): Einträge setzen bzw. löschen (offline-first, siehe Backend). */
+  savePantryItems: (items: readonly PantryItem[]) => Promise<void>;
+  deletePantryItem: (foodId: string) => Promise<void>;
 
   // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
   /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
@@ -1024,6 +1028,28 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.saveAppLayout(layout, rows));
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
+  );
+
+  const savePantryItems = useCallback(
+    async (items: readonly PantryItem[]) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.savePantryItems(items, rows));
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
+  );
+
+  const deletePantryItem = useCallback(
+    async (foodId: string) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.deletePantryItem(foodId, rows));
       refreshPending();
     },
     [backend, refreshPending, rows],
@@ -1864,6 +1890,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveUserFoodProduct,
       deleteUserFoodProduct,
       saveShoppingProductLink,
+      savePantryItems,
+      deletePantryItem,
       saveAppLayout,
       liveAdjust,
       setSimulatePremium,
@@ -1955,6 +1983,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveUserFoodProduct,
       deleteUserFoodProduct,
       saveShoppingProductLink,
+      savePantryItems,
+      deletePantryItem,
       saveAppLayout,
       liveAdjust,
       setSimulatePremium,

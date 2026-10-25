@@ -11,6 +11,7 @@ import {
   foodLogSaveResponseSchema,
   type MealPlanWeek,
   mealPlanRetentionStart,
+  pantryItemSchema,
   shoppingProductLinkSchema,
   type StoredShoppingList,
   toMealPlanPayload,
@@ -138,7 +139,10 @@ import {
   type NutritionSendResult,
   readNutritionCache,
   shoppingListRowsFromDb,
+  applyPantryItems,
   applyShoppingProductLink,
+  checkPantrySave,
+  pantryItemRowsFromDb,
   shoppingProductLinkRowsFromDb,
   withPreservedPastItems,
   writeNutritionCache,
@@ -1299,6 +1303,29 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         }
         return { kind: 'done' };
       }
+      // Vorratsschrank (25.10.2026): letzter Stand gewinnt auch auf dem Server (`p_at`); ein älterer Stand („stale“)
+      // ist erledigt. Grenze erreicht → abgelehnt (bleibt lokal mit Hinweis), Einwilligung fehlt → abgelehnt.
+      case 'pantry_save': {
+        const item = pantryItemSchema.safeParse(op.item);
+        if (!item.success) return { kind: 'rejected', reason: 'invalid' };
+        const { data, error, status } = await client.rpc('save_pantry_item', {
+          p_food_id: item.data.food_id,
+          p_count: item.data.count,
+          p_pack_size: item.data.pack_size,
+          p_low: item.data.low,
+          p_at: op.at,
+        });
+        if (error) return nutritionSendErrorResult({ ...error, status });
+        const result = (data as { result?: unknown } | null)?.result;
+        if (result === 'saved' || result === 'stale') return { kind: 'done' };
+        if (result === 'limit') return { kind: 'rejected', reason: 'limit' };
+        return { kind: 'transient' };
+      }
+      case 'pantry_delete': {
+        const { error, status } = await client.rpc('delete_pantry_item', { p_food_id: op.foodId });
+        if (error) return nutritionSendErrorResult({ ...error, status });
+        return { kind: 'done' };
+      }
     }
   }
 
@@ -1746,8 +1773,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
    */
   async function fetchNutritionRows(userId: string): Promise<NutritionRows> {
     const cutoff = mealPlanRetentionStart(today());
-    const [plans, lists, entries, favorites, meals, userProducts, productLinks] = await Promise.all(
-      [
+    const [plans, lists, entries, favorites, meals, userProducts, productLinks, pantry] =
+      await Promise.all([
         client
           .from('meal_plans')
           .select(
@@ -1782,9 +1809,19 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
           .select('*')
           .eq('user_id', userId)
           .then(emptyIfMissing),
-      ],
-    );
-    for (const result of [plans, lists, entries, favorites, meals, userProducts, productLinks]) {
+        // Vorratsschrank (25.10.2026) – Tabelle fehlt vor db-migrate: leer.
+        client.from('pantry_items').select('*').eq('user_id', userId).then(emptyIfMissing),
+      ]);
+    for (const result of [
+      plans,
+      lists,
+      entries,
+      favorites,
+      meals,
+      userProducts,
+      productLinks,
+      pantry,
+    ]) {
       if (result.error) throw result.error;
     }
     const planRows = (plans.data ?? []) as unknown as DbMealPlan[];
@@ -1835,6 +1872,9 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       ),
       shoppingProductLinks: shoppingProductLinkRowsFromDb(
         (productLinks.data ?? []) as unknown as Record<string, unknown>[],
+      ),
+      pantryItems: pantryItemRowsFromDb(
+        (pantry.data ?? []) as unknown as Record<string, unknown>[],
       ),
     };
   }
@@ -2748,6 +2788,34 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         [queued],
         'user_product',
       );
+    },
+    // Vorratsschrank (25.10.2026, offline-first): Regeln vorab wie im Testmodus (Einwilligung, Schema, Grenze), dann
+    // sofort lokal und über die verschlüsselte Ernährungs-Warteschlange an save_pantry_item (letzter Stand gewinnt).
+    // Lebensmittel und Mengen nie in Meldungen oder Logs.
+    savePantryItems: async (items, rows) => {
+      const session = await requireSession();
+      const versions = await requireVersions();
+      if (healthConsentStatus(rows, versions) !== 'valid') {
+        throw new BackendError('consent_required', { sensitive: true });
+      }
+      const parsed = checkPantrySave(rows, items);
+      const now = options.now();
+      for (const item of parsed) {
+        await enqueueNutrition({ kind: 'pantry_save', item, at: now }, session.userId);
+      }
+      void nutritionQueue.flush().catch(() => 'later');
+      const next = applyPantryItems(rows, parsed, { userId: session.userId, now });
+      await writeCache(session.userId, next);
+      return next;
+    },
+    deletePantryItem: async (foodId, rows) => {
+      const session = await requireSession();
+      const now = options.now();
+      await enqueueNutrition({ kind: 'pantry_delete', foodId, at: now }, session.userId);
+      void nutritionQueue.flush().catch(() => 'later');
+      const next = { ...rows, pantryItems: rows.pantryItems.filter((p) => p.food_id !== foodId) };
+      await writeCache(session.userId, next);
+      return next;
     },
     // Etappe E2: Anordnung – sofort lokal, Senden über die Warteschlange (kein Gesundheitsdatum, offline möglich).
     saveAppLayout: async (layout, rows) => {

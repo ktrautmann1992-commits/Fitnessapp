@@ -232,6 +232,10 @@ export function localDataExport(
     // Phase 6 SU3/SU4: Supplement-Check und „Meine Supplements“ (Gesundheitsdaten, Testmodus aus dem Gerätespeicher).
     supplement_screening: [...(extra.supplementScreening ?? [])],
     user_supplements: [...(extra.userSupplements ?? [])],
+    // Vorratsschrank (25.10.2026) – Spalten und Sortierung wie export_my_data().
+    pantry_items: [...rows.pantryItems].sort((a, b) =>
+      a.food_id < b.food_id ? -1 : a.food_id > b.food_id ? 1 : 0,
+    ),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

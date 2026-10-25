@@ -551,6 +551,14 @@ export default function NutritionDayScreen() {
           testID="nutrition-fridge-search"
         />
       ) : null}
+      {/* Vorratsschrank (25.10.2026). */}
+      <Button
+        label={t.pantry.open}
+        accessibilityHint={t.pantry.openHint}
+        variant="secondary"
+        onPress={() => router.push('/ernaehrung/vorrat' as Href)}
+        testID="nutrition-pantry"
+      />
       {(readable?.length ?? 0) > 0 ? (
         <Button
           label={t.nutrition.guides.open}

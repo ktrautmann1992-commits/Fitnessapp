@@ -233,6 +233,20 @@ export interface ShoppingProductLinkRow {
 }
 
 /**
+ * Vorratsschrank (Gründer-Freigabe 25.10.2026, KONZEPT 6.13) – Spalten wie `pantry_items`. SENSIBEL (Konsum): nur mit
+ * Einwilligung health_data, beim Widerruf gelöscht, im Export, nie loggen. Regeln in packages/core (`pantry.ts`).
+ */
+export interface PantryItemRow {
+  user_id: string;
+  food_id: string;
+  /** Menge in Kaufeinheiten; null = „da“, ohne Menge. */
+  count: number | null;
+  pack_size: number | null;
+  low: boolean;
+  updated_at: string;
+}
+
+/**
  * Anordnung der Übersicht und der Menüleiste (Etappe E2, docs/PLAN-EINKAUFEN-AUSDAUER.md 4) – Spalten wie
  * `app_layout_settings`. Kein Gesundheitsdatum. Angezeigt wird immer `normalizeLayout` (packages/core).
  */
@@ -328,6 +342,8 @@ export interface UserRows {
   userFoodProducts: UserFoodProductRow[];
   /** Gelernte Zuordnungen Strichcode → Lebensmittel (Einkaufen E1; Testmodus und Supabase-Modus). SENSIBEL. */
   shoppingProductLinks: ShoppingProductLinkRow[];
+  /** Vorratsschrank (25.10.2026; Testmodus und Supabase-Modus, offline über die Ernährungs-Warteschlange). SENSIBEL. */
+  pantryItems: PantryItemRow[];
   /** Anordnung der Übersicht und der Menüleiste (Etappe E2; null = Standard). */
   appLayout: AppLayoutRow | null;
   /** Wettkämpfe (Phase 10 WP3; App und Testmodus ab WP4 – bis dahin immer leer). */
@@ -368,6 +384,7 @@ export function emptyUserRows(): UserRows {
     customMealItems: [],
     userFoodProducts: [],
     shoppingProductLinks: [],
+    pantryItems: [],
     appLayout: null,
     competitions: [],
   };

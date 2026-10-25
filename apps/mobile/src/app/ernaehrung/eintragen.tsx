@@ -41,6 +41,7 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { CustomMealPicker } from '@/components/custom-meals';
+import { EatingOutTab } from '@/components/eating-out';
 import { NutritionGate, nutritionReady } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { TestPhaseBadge } from '@/components/test-phase';
@@ -81,8 +82,8 @@ import { useCustomMeals } from '@/state/use-custom-meals';
 import { useFoodLogActions, useFoodLogDay } from '@/state/use-food-log';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
-type Tab = 'recent' | 'favorites' | 'search' | 'quick';
-const TABS: readonly Tab[] = ['recent', 'favorites', 'search', 'quick'];
+type Tab = 'recent' | 'favorites' | 'search' | 'out' | 'quick';
+const TABS: readonly Tab[] = ['recent', 'favorites', 'search', 'out', 'quick'];
 
 type Message = { text: string; tone: 'success' | 'danger' | 'warning' };
 
@@ -194,7 +195,7 @@ export default function FoodLogEntryScreen() {
   const library = view.library.result.library;
   const showNumbers = view.showNumbers;
 
-  async function store(entry: FoodLogEntry, confirmed = false) {
+  async function store(entry: FoodLogEntry, confirmed = false, savedName?: string) {
     if (!confirmed && needsFoodLogConfirmation(entry)) {
       setPending(entry);
       return;
@@ -206,7 +207,11 @@ export default function FoodLogEntryScreen() {
       await actions.save([entry]);
       setLastSaved(editId ? null : entry);
       setMessage({
-        text: editId ? t.foodLog.updated : t.foodLog.saved(titleOf(entry)),
+        text: editId
+          ? t.foodLog.updated
+          : savedName !== undefined
+            ? t.eatingOut.saved(savedName)
+            : t.foodLog.saved(titleOf(entry)),
         tone: 'success',
       });
     } catch (error) {
@@ -528,6 +533,25 @@ export default function FoodLogEntryScreen() {
           onRecipe={(recipe, servings) =>
             submit(entryFromRecipe(recipe, library.foods, servings, target()))
           }
+        />
+      ) : null}
+      {/* Auswärts essen (25.10.2026): typische Gerichte mit Portion, Schätzwerte aus dem Katalog. */}
+      {tab === 'out' ? (
+        <EatingOutTab
+          foods={library.foods}
+          allowDrafts={app.backend.mode === 'local'}
+          showNumbers={showNumbers}
+          busy={busy}
+          userId={app.session?.userId ?? null}
+          target={target}
+          onQuick={() => setTab('quick')}
+          onSubmit={(build, name) => {
+            if (!build.ok) {
+              setMessage({ text: buildErrorText(build.reason), tone: 'warning' });
+              return;
+            }
+            void store(build.entry, false, name);
+          }}
         />
       ) : null}
       {tab === 'quick' ? (

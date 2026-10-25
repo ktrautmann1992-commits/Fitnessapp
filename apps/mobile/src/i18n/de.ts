@@ -19,6 +19,7 @@ import {
   deTabs,
 } from './de-dashboard';
 import { deDay } from './de-day';
+import { deEatingOut } from './de-eating-out';
 import { deEndurance } from './de-endurance';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
@@ -28,6 +29,7 @@ import { deGoalChoice, deWeightGoal, deWeightGoalLife } from './de-goals';
 import { deMuscleMap } from './de-muscle-map';
 import { deNutrition } from './de-nutrition';
 import { deNutritionDay } from './de-nutrition-day';
+import { dePantry } from './de-pantry';
 import { deWeekEval } from './de-week-eval';
 import { deWearables } from './de-wearables';
 import { deSteps } from './de-steps';
@@ -1629,6 +1631,10 @@ export const de = {
   foodPhoto: deFoodPhoto,
   foodProduct: deFoodProduct,
   customMeals: deCustomMeals,
+  /** Auswärts essen – Reiter „Unterwegs“ beim Eintragen (25.10.2026). */
+  eatingOut: deEatingOut,
+  /** Vorratsschrank (25.10.2026). */
+  pantry: dePantry,
   competition: deCompetition,
   /** Wettkampf-Ernährung (Phase 10, Etappe W1). */
   competitionNutrition: deCompetitionNutrition,

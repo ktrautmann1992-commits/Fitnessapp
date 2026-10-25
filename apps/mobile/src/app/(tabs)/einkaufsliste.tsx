@@ -2,6 +2,9 @@ import {
   addDays,
   isoDateSchema,
   mealPlanWeekEditable,
+  type PantryItem,
+  pantryAfterShopping,
+  type PantryShoppingStatus,
   parseShoppingQuantity,
   planlessShoppingList,
   SHOPPING_CATEGORIES,
@@ -14,6 +17,7 @@ import {
   shoppingItemRecipeIds,
   shoppingListProgress,
   type ShoppingListRecipe,
+  shoppingPantryView,
   shoppingPurchase,
   type ShoppingRangeMode,
   shoppingRangeIsAutomatic,
@@ -44,6 +48,7 @@ import {
 } from '@/components/ui';
 import { storedShoppingListRow } from '@/data/meal-plan-rows';
 import { t } from '@/i18n';
+import { errorText } from '@/lib/error-text';
 import { formatDateDe } from '@/lib/format';
 import { appFont } from '@/lib/fonts';
 import { formatAmount, shoppingCategoryLabel, shoppingItemText } from '@/lib/nutrition-format';
@@ -131,6 +136,7 @@ export default function ShoppingTabScreen() {
   const [showDoneIn, setShowDoneIn] = useState<ReadonlySet<ShoppingCategory>>(() => new Set());
   const theme = useThemeColors();
   const [showPantry, setShowPantry] = useState(false);
+  const [showInPantry, setShowInPantry] = useState(false);
   const [rangeOpen, setRangeOpen] = useState(false);
   const [draftFrom, setDraftFrom] = useState<string | null>(null);
   const [draftTo, setDraftTo] = useState<string | null>(null);
@@ -259,14 +265,32 @@ export default function ShoppingTabScreen() {
   const days = Array.from({ length: 7 }, (_, i) => addDays(list.weekStart, i));
   const dayChoices = days.map((d) => ({ value: d, label: dayLabel(d) }));
   const visible = (item: ShoppingListItem) => !hideChecked || !item.checked;
-  const pantry = list.items.filter((i) => i.isPantry);
-  const departments = shoppingDepartments(list.items);
+  // Vorratsschrank (25.10.2026): was laut Vorrat reicht, steht unter „Schon im Vorrat“; Restmengen und „fast leer“
+  // bleiben auf der Liste. Reine Anzeige (packages/core `shoppingPantryView`) – Häkchen und Mengen der Liste bleiben.
+  const consentOk = healthConsentStatus(app.rows, app.versions) === 'valid';
+  const pantryItems: PantryItem[] = consentOk
+    ? app.rows.pantryItems.map((p) => ({
+        food_id: p.food_id,
+        count: p.count,
+        pack_size: p.pack_size,
+        low: p.low,
+      }))
+    : [];
+  const pantryView = shoppingPantryView(
+    list.items,
+    pantryItems,
+    (id) => foods?.get(id)?.units.piece_g,
+  );
+  const pantryStatus = new Map(pantryView.toBuy.map((line) => [line.item.itemKey, line.status]));
+  const buyItems = pantryView.toBuy.map((line) => line.display);
+  const pantry = buyItems.filter((i) => i.isPantry);
+  const departments = shoppingDepartments(buyItems);
   // Eigener Zeitraum: auf diesem Gerät gewählt oder kein automatischer Zeitraum (`shoppingRangeIsAutomatic`).
   const customRange =
     prefs.manualWeeks.includes(list.weekStart) || !shoppingRangeIsAutomatic(list.weekStart, list);
   const rangeControls = actions !== null && !actions.planless;
   const nothingToBuy = list.items.length === 0;
-  const allDone = !nothingToBuy && list.items.every((i) => i.checked);
+  const allDone = !nothingToBuy && buyItems.every((i) => i.checked);
 
   async function run(key: string, action: () => Promise<ShoppingActionOutcome>) {
     setBusy(key);
@@ -319,7 +343,7 @@ export default function ShoppingTabScreen() {
     if (outcome?.kind === 'ok') setMessage({ text: texts.uncheckAllDone, tone: 'success' });
   }
   const anyChecked = list.items.some((i) => i.checked);
-  const progress = shoppingListProgress(list.items);
+  const progress = shoppingListProgress(buyItems);
   // Kennzeile auf der dunklen Hero-Fläche: Türkis der Dunkel-Palette (≥ 4,5 : 1, tokens.test.ts).
   const heroAccent = areaColors.dark.einkaufen.icon;
 
@@ -363,10 +387,41 @@ export default function ShoppingTabScreen() {
     }));
   }
 
+  async function updatePantryAfterShopping() {
+    if (foods === null) return;
+    const result = pantryAfterShopping(pantryItems, list.items, foods);
+    const changed = new Set([...result.added, ...result.updated]);
+    setBusy('pantry');
+    setMessage(null);
+    try {
+      if (changed.size > 0) {
+        await app.savePantryItems(result.items.filter((i) => changed.has(i.food_id)));
+      }
+      setMessage({
+        text: [
+          t.pantry.shopping.updated(
+            result.added.length,
+            result.updated.length,
+            result.skippedFresh.length,
+          ),
+          result.skippedFull.length > 0 ? t.pantry.shopping.full : null,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        tone: 'success',
+      });
+    } catch (error) {
+      setMessage({ text: errorText(error), tone: 'danger' });
+    } finally {
+      setBusy(null);
+    }
+  }
+
   const itemRow = (item: ShoppingListItem) => (
     <ShoppingItemRow
       key={item.itemKey}
       item={item}
+      pantryStatus={pantryStatus.get(item.itemKey) ?? 'buy'}
       usedFor={usedFor(item)}
       outsideDiet={outsideDiet(item)}
       disabled={actions === null || busy !== null}
@@ -597,6 +652,56 @@ export default function ShoppingTabScreen() {
         </View>
       ) : null}
 
+      {/* Vorratsschrank (25.10.2026): was laut Vorrat reicht – eingeklappt, nur Anzeige. */}
+      {pantryView.inPantry.length > 0 ? (
+        <View style={styles.list} testID="shopping-in-pantry">
+          <Heading level={2}>{t.pantry.shopping.inPantryTitle}</Heading>
+          <Button
+            label={
+              showInPantry
+                ? t.pantry.shopping.inPantryHide
+                : t.pantry.shopping.inPantryShow(pantryView.inPantry.length)
+            }
+            variant="secondary"
+            onPress={() => setShowInPantry((v) => !v)}
+            testID="shopping-in-pantry-toggle"
+          />
+          {showInPantry ? (
+            <View style={styles.list} testID="shopping-in-pantry-items">
+              <Body muted>{t.pantry.shopping.inPantryHint}</Body>
+              {pantryView.inPantry.map((line) => (
+                <Body key={line.item.itemKey} testID={`shopping-in-pantry-${line.item.itemKey}`}>
+                  {`${shoppingItemText(line.item)} – ${
+                    line.status === 'covered'
+                      ? t.pantry.shopping.covered
+                      : t.pantry.shopping.checkAmount
+                  }`}
+                </Body>
+              ))}
+            </View>
+          ) : null}
+        </View>
+      ) : null}
+      {consentOk && anyChecked && foods !== null ? (
+        <Card>
+          <Body muted>{t.pantry.shopping.updateHint}</Body>
+          <Button
+            label={t.pantry.shopping.update}
+            variant="secondary"
+            loading={busy === 'pantry'}
+            disabled={busy !== null}
+            onPress={() => void updatePantryAfterShopping()}
+            testID="shopping-pantry-update"
+          />
+        </Card>
+      ) : null}
+      <Button
+        label={t.pantry.shopping.link}
+        variant="secondary"
+        onPress={() => router.push('/ernaehrung/vorrat' as Href)}
+        testID="shopping-pantry-link"
+      />
+
       {actions && anyChecked ? (
         <Button
           label={texts.uncheckAll}
@@ -808,6 +913,7 @@ function RowGroup({ children }: { children: ReactNode }) {
  */
 function ShoppingItemRow({
   item,
+  pantryStatus,
   usedFor,
   outsideDiet,
   disabled,
@@ -815,6 +921,8 @@ function ShoppingItemRow({
   onRemove,
 }: {
   item: ShoppingListItem;
+  /** Abgleich mit dem Vorratsschrank (Restmenge bzw. „fast leer“). */
+  pantryStatus: PantryShoppingStatus;
   usedFor: string | null;
   outsideDiet: boolean;
   disabled: boolean;
@@ -835,6 +943,11 @@ function ShoppingItemRow({
   const secondLine = [
     purchase?.detail ?? (purchase === null && !item.isManual ? texts.toTaste : null),
     // Markierungen vor den Rezepten (lange Rezeptnamen dürfen am Ende gekürzt werden).
+    pantryStatus === 'partial'
+      ? t.pantry.shopping.partial
+      : pantryStatus === 'low'
+        ? t.pantry.shopping.low
+        : null,
     item.notInPlan ? texts.notInPlan : null,
     item.amountChanged ? texts.amountChanged : null,
     item.isManual ? texts.manual : null,
