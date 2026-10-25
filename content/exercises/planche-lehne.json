@@ -1,0 +1,51 @@
+{
+  "id": "planche-lehne",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Planche-Lehne",
+  "name_en": "Planche Lean",
+  "aliases_de": ["Planche Lean"],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["front_delts"],
+  "secondary_muscles": ["chest", "triceps", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": [],
+  "description_de": "Im hohen Liegestütz die Schultern langsam vor die Hände schieben und halten. Gewöhnt Handgelenke und Schultern an die Planche-Stellung.",
+  "steps_de": [
+    "Hoher Liegestütz, Finger zeigen leicht nach außen oder hinten.",
+    "Schultern langsam nach vorn über die Hände hinaus schieben.",
+    "Arme gestreckt, Rücken leicht rund, Bauch fest – halten."
+  ],
+  "tips_de": [
+    "Leichter: nur wenige Zentimeter nach vorn lehnen.",
+    "Schwerer: weiter lehnen, später auf Parallettes."
+  ],
+  "common_mistakes_de": ["Ellbogen beugen sich.", "Hüfte sackt ab."],
+  "safety_note_de": "Handgelenke vorher aufwärmen (kreisen, sanft dehnen). Bei Schmerzen in Handgelenk, Ellbogen oder Schulter die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "pseudo-planche-liegestuetz",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

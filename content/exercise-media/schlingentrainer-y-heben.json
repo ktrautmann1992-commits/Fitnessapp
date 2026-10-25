@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-y-heben",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-y-heben-start.svg",
+      "alt_de": "Ausgangsposition: Gesicht zum Anker, Griffe vor der Brust, Arme gestreckt, Körper leicht nach hinten gelehnt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

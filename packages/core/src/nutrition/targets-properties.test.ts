@@ -49,6 +49,8 @@ const SELECTIONS: readonly (readonly [GoalType, GoalType | null])[] = [
   ['endurance', 'muscle_gain'],
   // Fit im Alter (docs/PLAN-FIT-IM-ALTER.md 11, FA-G6): −10 %.
   ['active_aging', 'fat_loss'],
+  // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): −15 %.
+  ['calisthenics', 'fat_loss'],
 ];
 const DEFICIT_SELECTIONS = new Set([
   'fat_loss>',
@@ -61,6 +63,7 @@ const DEFICIT_SELECTIONS = new Set([
   'endurance>fat_loss',
   'endurance>definition',
   'active_aging>fat_loss',
+  'calisthenics>fat_loss',
 ]);
 const SURPLUS_SELECTIONS = new Set(['muscle_gain>', 'muscle_gain>endurance']);
 
@@ -199,7 +202,10 @@ function checkWeek(input: NutritionInputsInput, monday: string, adjustmentKcal: 
       ceiling = Math.max(floor, tdee * (1 + surplusCap));
     }
     if (ceiling - floor >= 10) expect(t).toBeLessThanOrEqual(ceiling + EPS);
-    else expect(t).toBe(Math.ceil(floor / 10 - 1e-9) * 10);
+    // Gleitkomma-Rest an der Untergrenze (z. B. 7810,000000000001): die Rundung geht bewusst nie darunter
+    // (roundWithin, Wächter N1 K5) – dann ist das nächste Vielfache richtig. Seit Calisthenics (neues Ziel) zieht der
+    // feste Seed andere Personen und trifft genau diesen Fall.
+    else expect([Math.ceil(floor / 10 - 1e-9) * 10, Math.ceil(floor / 10) * 10]).toContain(t);
     // Mindestbreite des Bands 20 kcal (Plan 4.6.1, Wächter N3 S1) – unabhängig hier als Zahl.
     expect(day.band!.max).toBeLessThanOrEqual(Math.max(ceiling, t, day.band!.min + 20) + EPS);
     expect(day.band!.max - day.band!.min).toBeGreaterThanOrEqual(20 - EPS);

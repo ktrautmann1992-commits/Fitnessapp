@@ -1,0 +1,51 @@
+{
+  "id": "schlingentrainer-fallout",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schlingentrainer-Fallout",
+  "name_en": "Suspension Fallout",
+  "aliases_de": ["Rollout im Stand"],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["lats", "front_delts"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["overhead"],
+  "description_de": "Rücken zum Anker, mit gestreckten Armen nach vorn oben „fallen“ und mit dem Bauch zurückziehen. Wie ein Bauchroller im Stand.",
+  "steps_de": [
+    "Rücken zum Anker, Arme gestreckt vor dem Körper, leicht nach vorn lehnen.",
+    "Arme über den Kopf führen, der Körper kippt gerade nach vorn.",
+    "Nur so weit, wie kein Hohlkreuz entsteht.",
+    "Mit Bauchspannung die Arme zurückziehen."
+  ],
+  "tips_de": [
+    "Rücken zum Anker: Füße weiter nach hinten (Körper flacher) = schwerer, näher zum Anker = leichter."
+  ],
+  "common_mistakes_de": ["Hohlkreuz am Umkehrpunkt.", "Arme beugen sich."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schlingentrainer-unterarmstuetz",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "unterarmstuetz",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

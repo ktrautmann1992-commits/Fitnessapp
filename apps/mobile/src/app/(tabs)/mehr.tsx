@@ -101,6 +101,16 @@ export default function MoreScreen() {
       onPress: open('/uebungen'),
       testID: 'more-exercises',
     },
+    // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.5): Stufenleitern mit aktueller Stufe und nächstem Ziel.
+    {
+      key: 'skill-paths',
+      label: t.calisthenics.skills.entry,
+      detail: t.calisthenics.skills.entryDetail,
+      area: 'training',
+      icon: 'trend',
+      onPress: open('/skill-pfade'),
+      testID: 'more-skill-paths',
+    },
   ];
   const food: Entry[] = [...hiddenOf(FOOD_AREAS)];
   if (nutrition) {

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "lauf-abc-skippings",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "lauf-abc-skippings-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht auf einem Bein, das andere Knie leicht nach vorn gehoben, Arme angewinkelt wie beim Laufen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

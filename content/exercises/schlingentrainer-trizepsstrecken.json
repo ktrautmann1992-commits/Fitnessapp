@@ -1,0 +1,61 @@
+{
+  "id": "schlingentrainer-trizepsstrecken",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schlingentrainer-Trizepsstrecken",
+  "name_en": "Suspension Triceps Extension",
+  "aliases_de": [],
+  "movement_pattern": "elbow_extension",
+  "primary_muscles": ["triceps"],
+  "secondary_muscles": ["abs"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Rücken zum Anker nach vorn lehnen, die Hände neben die Stirn sinken lassen und durch Strecken der Ellbogen zurückdrücken.",
+  "steps_de": [
+    "Rücken zum Anker, Arme gestreckt vor dem Körper, nach vorn lehnen.",
+    "Ellbogen beugen, die Hände kommen neben die Stirn.",
+    "Oberarme bleiben ruhig.",
+    "Durch Strecken der Ellbogen zurück in die Ausgangslage."
+  ],
+  "tips_de": [
+    "Rücken zum Anker: Füße weiter nach hinten (Körper flacher) = schwerer, näher zum Anker = leichter."
+  ],
+  "common_mistakes_de": ["Ellbogen wandern weit auseinander.", "Hohlkreuz."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "trizeps-liegestuetz-eng",
+      "reason": "home",
+      "priority": 1
+    },
+    {
+      "alternative_id": "trizepsdruecken-band",
+      "reason": "other_equipment",
+      "priority": 2
+    },
+    {
+      "alternative_id": "trizepsdruecken-kabel",
+      "reason": "other_equipment",
+      "priority": 3
+    },
+    {
+      "alternative_id": "trizepsstrecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 4
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

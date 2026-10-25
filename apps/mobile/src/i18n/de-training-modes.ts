@@ -107,13 +107,17 @@ export const deModes = {
     hotel_gym: 'Hotel-Gym',
     band: 'Widerstandsband',
     suspension_trainer: 'Schlingentrainer',
+    rings: 'Turnringe',
+    outdoor_park: 'Calisthenics-Park',
   } satisfies Record<TravelEquipment, string>,
   equipmentHints: {
     bodyweight: 'Keine Geräte',
     dumbbells: 'Ein Paar Kurzhanteln',
     hotel_gym: 'Kurzhanteln, Bank, Laufband oder Rad',
     band: 'Ein Widerstandsband',
-    suspension_trainer: 'Noch ohne eigene Übungen – vorerst Körpergewicht',
+    suspension_trainer: 'Gurte mit Griffen, Anker an Tür oder Stange',
+    rings: 'Ringe zum Aufhängen',
+    outdoor_park: 'Klimmzugstange und Barren draußen',
   } satisfies Record<TravelEquipment, string>,
   travel: {
     title: 'Reise-Modus',

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "klimmzug-negativ",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "klimmzug-negativ-start.svg",
+      "alt_de": "Ausgangsposition: oben an der Klimmzugstange, Kinn über der Stange, Ellbogen gebeugt und nah am Körper, Beine angewinkelt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

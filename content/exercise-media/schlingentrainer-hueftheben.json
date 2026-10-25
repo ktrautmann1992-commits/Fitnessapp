@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-hueftheben",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-hueftheben-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, Fersen in den Schlaufen, Knie leicht gebeugt, Arme seitlich am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

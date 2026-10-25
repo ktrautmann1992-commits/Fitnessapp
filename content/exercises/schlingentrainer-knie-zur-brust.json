@@ -1,0 +1,50 @@
+{
+  "id": "schlingentrainer-knie-zur-brust",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Knie zur Brust am Schlingentrainer",
+  "name_en": "Suspension Knee Tuck",
+  "aliases_de": [],
+  "movement_pattern": "core_flexion",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["front_delts", "obliques"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "Im Liegestütz mit den Füßen in den Schlaufen die Knie zur Brust ziehen und wieder strecken.",
+  "steps_de": [
+    "Füße in die Schlaufen, hoher Liegestütz.",
+    "Knie zur Brust ziehen, Rücken leicht rund.",
+    "Beine wieder strecken, bis der Körper gerade ist."
+  ],
+  "tips_de": [
+    "Füße in den Schlaufen: Hände weiter vom Ankerpunkt weg = schwerer; Schlaufen etwa 30 cm über dem Boden."
+  ],
+  "common_mistakes_de": ["Hüfte hängt beim Strecken.", "Schultern weichen nach hinten."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schlingentrainer-pike",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "knieheben-haengend",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

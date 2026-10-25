@@ -1,5 +1,9 @@
 import { MAX_STRENGTH_SESSIONS_PER_WEEK, PLAN_MATCH_WEIGHTS } from '../constants';
-import { isBodyweightTemplate } from '../content/checks';
+import {
+  isBodyweightTemplate,
+  isCalisthenicsTemplate,
+  isSuspensionTemplate,
+} from '../content/checks';
 import type { PlanTemplate } from '../content/schemas';
 import {
   LEVEL_TEMPLATE_MAPPING,
@@ -9,7 +13,12 @@ import {
 } from '../enums';
 import { goalTemplate } from '../goals/profile';
 import type { PlanLibrary } from './content-pool';
-import { type EquipmentProfile, findSubstitute, isBodyweightOnly } from './equipment-profile';
+import {
+  type EquipmentProfile,
+  findSubstitute,
+  isBodyweightOnly,
+  isSuspensionOnly,
+} from './equipment-profile';
 import type { PlanInputs } from './inputs';
 import type { PlanSafetyRules } from './safety';
 
@@ -52,22 +61,40 @@ export interface MatchContext {
   readonly rules: PlanSafetyRules;
 }
 
+/** Zusätzliche Angaben für die harten Ausschlüsse (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.4/3.4). */
+export interface EligibilityOptions {
+  /** Ziel der Vorlagen aus dem Ziel-Profil: Calisthenics-Vorlagen nur bei `calisthenics`. */
+  readonly templateGoal?: string;
+  /** „Nur Schlingentrainer“-Profil (isSuspensionOnly): nur dann Schlingentrainer-Vorlagen. */
+  readonly suspensionOnly?: boolean;
+}
+
 /**
  * Harte Ausschlüsse: Geschlecht der Vorlage, Einsteiger/vorsichtig nur Einsteiger-Vorlagen, Körpergewicht-Regel
  * (docs/PLAN-KOERPERGEWICHT.md §5.3, A2/A3): `bodyweightOnly` (alle Kraft-Tage zu Hause ohne Kraft-Geräte) → NUR
  * Körpergewicht-Vorlagen; alle anderen Profile → Körpergewicht-Vorlagen NIE (auch nicht über die Punkte).
+ * Calisthenics-Vorlagen (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.4) nur beim Ziel Calisthenics – dann aber für jedes
+ * Profil (sie brauchen Stange/Barren, sonst tauscht findSubstitute); Schlingentrainer-Vorlagen nur bei „nur
+ * Schlingentrainer“ (3.4).
  */
 export function isTemplateEligible(
   template: PlanTemplate,
   inputs: Pick<MatchInputs, 'sex'>,
   rules: Pick<PlanSafetyRules, 'beginnerTemplatesOnly'>,
   bodyweightOnly = false,
+  options: EligibilityOptions = {},
 ): boolean {
   if (template.sex !== null && template.sex !== inputs.sex) {
     return false;
   }
   if (rules.beginnerTemplatesOnly && template.experience_level !== 'beginner') {
     return false;
+  }
+  if (isCalisthenicsTemplate(template)) {
+    return options.templateGoal === 'calisthenics';
+  }
+  if (isSuspensionTemplate(template)) {
+    return options.suspensionOnly === true && !bodyweightOnly;
   }
   return isBodyweightTemplate(template) === bodyweightOnly;
 }
@@ -131,7 +158,7 @@ export function scoreTemplate(
   const level = template.experience_level === wantedLevel ? W.level : 12;
   const days = daysScore(template, inputs.sessionsPerWeek);
   const location =
-    template.location === ctx.profile.location
+    template.location === ctx.profile.location || isCalisthenicsTemplate(template)
       ? W.location
       : inputs.trainingLocation === 'both' && template.location === 'home'
         ? 6
@@ -171,9 +198,13 @@ export interface MatchResult {
  * die ergänzt generateTrainingPlan). null = keine Vorlage.
  */
 export function matchTemplate(inputs: MatchInputs, ctx: MatchContext): MatchResult | null {
+  const options: EligibilityOptions = {
+    templateGoal: templateGoalOf(inputs).goal,
+    suspensionOnly: inputs.trainingLocation === 'home' && isSuspensionOnly(ctx.profile),
+  };
   const rank = (bodyweight: boolean) =>
     ctx.library.templates
-      .filter((t) => isTemplateEligible(t, inputs, ctx.rules, bodyweight))
+      .filter((t) => isTemplateEligible(t, inputs, ctx.rules, bodyweight, options))
       .map((t) => scoreTemplate(t, inputs, ctx))
       .sort(
         (a, b) =>
@@ -194,7 +225,9 @@ export function matchTemplate(inputs: MatchInputs, ctx: MatchContext): MatchResu
   const goalMap = templateGoalOf(inputs);
   // Ausdauer-Hinweise (goal_endurance_not_yet / endurance_basic_only) setzt generateTrainingPlan.
   const goalOk = template.goal_type === goalMap.goal && goalMap.kind !== 'fallback';
-  const locationOk = template.location === ctx.profile.location && !bodyweightFallback;
+  const locationOk =
+    (template.location === ctx.profile.location || isCalisthenicsTemplate(template)) &&
+    !bodyweightFallback;
   if (!locationOk) {
     notes.add('location_mismatch');
   }

@@ -48,10 +48,14 @@ function runToEnd(active: ReturnType<typeof startActiveRun>) {
 }
 
 describe('Workout-Bibliothek im Testmodus', () => {
-  it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand 20–30)', async () => {
+  it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand 20–30) plus Lauf-Kraft-Entwürfe', async () => {
     const s = await setup();
-    expect(s.workouts.length).toBeGreaterThanOrEqual(20);
-    expect(s.workouts.length).toBeLessThanOrEqual(30);
+    const published = s.workouts.filter((w) => w.status === 'published');
+    expect(published.length).toBeGreaterThanOrEqual(20);
+    expect(published.length).toBeLessThanOrEqual(30);
+    expect(
+      s.workouts.filter((w) => w.status === 'draft').every((w) => w.category === 'run_strength'),
+    ).toBe(true);
     expect(new Set(s.workouts.map((w) => w.difficulty))).toEqual(new Set([1, 2, 3, 4, 5]));
     expect(s.workouts.some((w) => w.equipment_ids.length === 0)).toBe(true);
     for (const w of s.workouts) {
@@ -61,7 +65,7 @@ describe('Workout-Bibliothek im Testmodus', () => {
     }
   });
 
-  it('workoutsFromBundle: Entwürfe und Workouts mit blockierendem Befund fehlen', () => {
+  it('workoutsFromBundle: Entwürfe (außer Lauf-Kraft) und Workouts mit blockierendem Befund fehlen', () => {
     const [first, second] = CONTENT_BUNDLE.workoutFiles;
     if (!first || !second) throw new Error('Bündel ohne Workouts');
     const draft = { ...first, data: { ...(first.data as Workout), status: 'draft' } };
@@ -79,6 +83,17 @@ describe('Workout-Bibliothek im Testmodus', () => {
     expect(ids).toEqual([]);
     expect(workoutsFromBundle(CONTENT_BUNDLE.files, [first]).map((w) => w.id)).toEqual([
       (first.data as Workout).id,
+    ]);
+    // Lauf-Kraft-Entwürfe (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) sind im Testmodus dabei.
+    const runStrength = CONTENT_BUNDLE.workoutFiles.filter(
+      (f) => (f.data as Workout).category === 'run_strength',
+    );
+    expect(runStrength.length).toBe(4);
+    expect(workoutsFromBundle(CONTENT_BUNDLE.files, runStrength).map((w) => w.status)).toEqual([
+      'draft',
+      'draft',
+      'draft',
+      'draft',
     ]);
   });
 

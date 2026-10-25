@@ -1,0 +1,55 @@
+{
+  "id": "toter-hang",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Toter Hang",
+  "name_en": "Dead Hang",
+  "aliases_de": ["Passiver Hang"],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["forearms"],
+  "secondary_muscles": ["lats", "upper_back"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Einfach an der Stange hängen: Griffkraft und Schultern gewöhnen sich an das eigene Körpergewicht. Erste Stufe auf dem Weg zum Klimmzug.",
+  "steps_de": [
+    "Stange schulterbreit im Obergriff fassen, Daumen umschließen die Stange.",
+    "Füße vom Boden lösen und mit gestreckten Armen hängen.",
+    "Schultern leicht nach unten ziehen, Bauch fest, ruhig weiteratmen.",
+    "Zum Ende kontrolliert mit den Füßen zurück auf den Boden."
+  ],
+  "tips_de": [
+    "Leichter: Füße bleiben leicht am Boden oder auf einer Stufe und tragen etwas Gewicht.",
+    "Schwerer: länger hängen oder später einarmig mit Hilfe der zweiten Hand."
+  ],
+  "common_mistakes_de": [
+    "Schultern hängen ganz locker bis zu den Ohren.",
+    "Mit Schwung abspringen statt ruhig zu hängen."
+  ],
+  "safety_note_de": "Stange vorher auf festen Sitz prüfen und nur mit sicherem Griff hängen. Kontrolliert ab- und aufsteigen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "skapula-klimmzug",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "handtuch-latziehen",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

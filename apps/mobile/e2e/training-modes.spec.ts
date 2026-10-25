@@ -203,7 +203,7 @@ test('Reise-Modus: Banner, Körpergewicht-Übungen, 30 Minuten, Schlingentrainer
   await openSettingsEntry(page, 'settings-travel-mode', 'Reise-Modus');
   await page.getByTestId('travel-equipment-suspension_trainer').click();
   await expect(page.getByTestId('travel-suspension-note')).toContainText(
-    'noch keine eigenen Übungen',
+    'stellt deine Einheiten auf Schlingentrainer-Übungen um',
   );
   await page.getByTestId('travel-equipment-bodyweight').click();
   await page.getByTestId('travel-minutes-30').click();

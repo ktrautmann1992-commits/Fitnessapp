@@ -60,6 +60,8 @@ import type { WorkoutDraft } from '@/data/workout-draft';
 import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
 import { planNoticeFor } from '@/data/training-attention';
 import { routineFor } from '@/data/training-routine';
+import { runStrengthFor } from '@/data/run-strength';
+import { useWorkoutLibrary } from '@/state/use-workouts';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
@@ -157,6 +159,8 @@ export default function TodayScreen() {
   useEffect(() => {
     void ensureLibrary();
   }, [ensureLibrary]);
+  // Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4): Einheiten aus der Workout-Bibliothek.
+  const workoutLibrary = useWorkoutLibrary();
   useEffect(() => {
     // Folgeblock automatisch, sobald die letzte Woche des Blocks beginnt (5.10).
     if (library.kind === 'ready') void appendNextBlockIfDue();
@@ -977,6 +981,21 @@ export default function TodayScreen() {
               {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
               paceProfile={paceProfile}
               swapPaused={display?.modeActive === true && selectedSession.kind === 'strength'}
+              runStrength={
+                selectedSession.kind === 'endurance' && selectedSession.status !== 'skipped'
+                  ? runStrengthFor({
+                      date: selectedSession.scheduled_on,
+                      sessions: active.sessions,
+                      library: lib,
+                      workouts: workoutLibrary.kind === 'ready' ? workoutLibrary.workouts : null,
+                      rules,
+                      modes: trainingModes.state,
+                    })
+                  : null
+              }
+              onOpenRunStrength={(workoutId) =>
+                router.push(`/workouts/${encodeURIComponent(workoutId)}` as Href)
+              }
               routine={
                 warmupSetting.enabled
                   ? routineFor({

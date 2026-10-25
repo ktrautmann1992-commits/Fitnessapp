@@ -1908,11 +1908,30 @@ Chrome am Handy, Vorschau-Link aus dem Pull Request, **Inkognito-Tab**. Onboardi
    **Beenden** → auf „Heute“ ist wieder der normale Plan.
 4. **Einstellungen → „Reise-Modus“** → heute bis in 6 Tagen, **Nur Körpergewicht**, **30 min** → Speichern →
    auf „Heute“ steht „Reise-Modus bis …“, die Übungen gehen ohne Geräte. **Schlingentrainer** zeigt den Hinweis
-   „noch keine eigenen Übungen“.
+   zum Anker (im Testmodus gibt es Schlingen-Übungen als Testinhalt; siehe Teil 9u).
 5. **Training starten** → oben „Aufwärmen (ca. 5 min)“, unten „Dehnen danach“, jeweils **Überspringen**. In den
    Einstellungen **„Aufwärmen & Dehnen“** ausschalten → im Training kein Block mehr.
 
 Rückmeldung an Claude z. B. „Training-Modi: 1–5 ok, Körperkarte zu klein“.
+
+## Teil 9u – Calisthenics, Schlingentrainer, Lauf-Kraft testen (25.10.2026, Testmodus)
+
+Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle neuen Übungen sind Entwürfe und als „Testinhalt“ markiert.
+
+1. Onboarding: Ziel **„Calisthenics / Körperbeherrschung“**, Einsteiger, 3 Tage **Kraft zu Hause**, Equipment
+   **Klimmzugstange** und **Barren/Dip-Station** → „Heute“ zeigt Übungen mit Stange/Barren.
+2. **Mehr → „Skill-Pfade“** → je Pfad „Aktuell: …“ und die Stufen. Handstand, Muscle-up und Hebel sind gesperrt
+   („Erst für Fortgeschrittene“), beim Muscle-up stehen die Voraussetzungen (8 Klimmzüge, 10 Dips). Stufe antippen →
+   Übungsseite.
+3. Einstellungen → **Testdaten löschen**, neu: Muskelaufbau, 3 Tage Kraft zu Hause, Equipment **Kurzhanteln** (4 kg,
+   8 kg) und **Schlingentrainer** → z. B. bei der Goblet-Kniebeuge **Tauschen** → „Kniebeuge am Schlingentrainer“ steht in
+   der Liste. Übungsseite einer Schlingen-Übung: „Schwierigkeit über den Körperwinkel“ und der Anker-Hinweis.
+4. **Einstellungen → Reise-Modus** → **Calisthenics-Park** zeigt einen Hinweis; **Schlingentrainer** wählen und
+   speichern → auf „Heute“ Schlingen-Übungen.
+5. Testdaten löschen, neu: Ziel **Ausdauer**, Fortgeschritten, Halbmarathon, Montag/Mittwoch/Samstag Ausdauer – am
+   Montag öffnen: unter dem Lauf **„Lauf-Kraft danach (15 min)“** → „Einheit mit Timer öffnen“.
+
+Rückmeldung an Claude z. B. „Calisthenics: 1–5 ok, Skill-Pfade zu lang“.
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.

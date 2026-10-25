@@ -1,0 +1,48 @@
+{
+  "id": "skapula-klimmzug",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schulterblatt-Klimmzug",
+  "name_en": "Scapular Pull-up",
+  "aliases_de": ["Skapula-Klimmzug"],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["upper_back"],
+  "secondary_muscles": ["lats", "forearms"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Im Hang nur die Schulterblätter nach unten und zusammen ziehen – die Arme bleiben gestreckt. Lehrt den ersten Teil jedes Klimmzugs.",
+  "steps_de": [
+    "Im toten Hang an der Stange beginnen, Arme gestreckt.",
+    "Schulterblätter nach unten ziehen, der Körper hebt sich ein paar Zentimeter.",
+    "Kurz halten, dann langsam zurück in den Hang sinken."
+  ],
+  "tips_de": ["Vorstellung: die Schultern in die hinteren Hosentaschen schieben."],
+  "common_mistakes_de": ["Arme beugen sich mit.", "Bewegung mit Schwung aus den Beinen."],
+  "safety_note_de": "Stange vorher auf festen Sitz prüfen und nur mit sicherem Griff hängen. Kontrolliert ab- und aufsteigen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "toter-hang",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "klimmzug-negativ",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

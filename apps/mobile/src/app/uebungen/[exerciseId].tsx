@@ -1,4 +1,9 @@
-import { exerciseMuscleTiles, glossaryEntry } from '@fitnessapp/core';
+import {
+  exerciseMuscleTiles,
+  glossaryEntry,
+  skillStagesOf,
+  suspensionSetupFor,
+} from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo } from 'react';
@@ -99,6 +104,8 @@ export default function GlossaryDetailScreen() {
   const hasHistory = historyExercises(
     mergeLogRows(logRowsOf(app.rows), app.olderLogs?.logs ?? EMPTY_LOG_ROWS),
   ).some((e) => e.exerciseId === entry.id);
+  const sling = suspensionSetupFor(entry.id);
+  const inSkillPath = skillStagesOf(entry.id).length > 0;
   const list = (items: readonly string[], testID: string) => (
     <View style={styles.list} testID={testID}>
       {items.map((item, index) => (
@@ -212,6 +219,20 @@ export default function GlossaryDetailScreen() {
         </View>
       </Card>
 
+      {/* Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3.1): Schwierigkeit über den Körperwinkel, Anker sichern. */}
+      {sling ? (
+        <View testID="glossary-sling">
+          <Card>
+            <Heading level={2}>{t.calisthenics.sling.title}</Heading>
+            <Body>{t.calisthenics.sling.positions[sling.position]}</Body>
+            {sling.angleDeg ? (
+              <Body muted>{t.calisthenics.sling.angle(sling.angleDeg[0], sling.angleDeg[1])}</Body>
+            ) : null}
+            <Notice tone="info">{t.calisthenics.sling.anchor}</Notice>
+          </Card>
+        </View>
+      ) : null}
+
       <Card>
         <Heading level={2}>{t.glossary.tipsTitle}</Heading>
         {list(entry.tips, 'glossary-tips')}
@@ -239,6 +260,15 @@ export default function GlossaryDetailScreen() {
             />
           ))}
         </View>
+      ) : null}
+
+      {inSkillPath ? (
+        <Button
+          label={t.calisthenics.hint.open}
+          variant="secondary"
+          onPress={() => router.push('/skill-pfade' as Href)}
+          testID="glossary-skill-paths"
+        />
       ) : null}
 
       {hasHistory ? (

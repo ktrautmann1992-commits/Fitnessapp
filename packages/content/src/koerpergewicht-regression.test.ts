@@ -24,7 +24,18 @@ import { describe, expect, it } from 'vitest';
 import { loadContentFiles } from './validate';
 
 const contentDir = join(import.meta.dirname, '..', '..', '..', 'content');
-const { files } = loadContentFiles(contentDir);
+/**
+ * Die Entwürfe aus docs/PLAN-CALISTHENICS-SCHLINGE.md (Calisthenics, Schlingentrainer, Lauf-Kraft) bleiben hier außen
+ * vor: Dieser Test hält den Stand K1–K3 fest; ihre Wirkung auf den Tausch prüfen die Snapshots in packages/core
+ * (log/workout.test.ts, plan/swap-properties.test.ts) und calisthenics/suspension.test.ts.
+ */
+const isCalisthenicsPackage = (file: ContentFile) =>
+  String(
+    (file.data as { meta?: { review_note?: unknown } } | undefined)?.meta?.review_note ?? '',
+  ).includes('PLAN-CALISTHENICS-SCHLINGE');
+const files = loadContentFiles(contentDir).files.filter((file) => !isCalisthenicsPackage(file));
+/** Ziele der 24 bestehenden Vorlagen (ohne Calisthenics). */
+const GOALS = TEMPLATE_GOAL_TYPES.filter((goal) => goal !== 'calisthenics');
 const TODAY = '2026-10-05';
 
 /** Neue Übungen aus Etappe K1 (27) und K2 (Handtuch-Latziehen). */
@@ -221,7 +232,7 @@ function compare() {
   const changed: Record<string, { before: string[]; after: string[] }> = {};
   let count = 0;
   for (const [name, profile] of Object.entries(PROFILES)) {
-    for (const goal of TEMPLATE_GOAL_TYPES) {
+    for (const goal of GOALS) {
       for (const level of TEMPLATE_EXPERIENCE_LEVELS) {
         for (const days of [3, 4]) {
           for (const minutes of MINUTES) {
@@ -271,7 +282,7 @@ describe('Regression K1–K3: bestehende Vorlagen × typische Profile', () => {
   });
 
   it('ohne Geräte gibt es jetzt immer eine Zug-Übung – mit und ohne Körpergewicht-Vorlagen', () => {
-    for (const goal of TEMPLATE_GOAL_TYPES) {
+    for (const goal of GOALS) {
       for (const level of TEMPLATE_EXPERIENCE_LEVELS) {
         for (const days of [2, 3, 4]) {
           for (const profile of [

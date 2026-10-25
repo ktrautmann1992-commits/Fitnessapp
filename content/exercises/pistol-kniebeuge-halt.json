@@ -1,0 +1,49 @@
+{
+  "id": "pistol-kniebeuge-halt",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Einbeinige Kniebeuge mit Halt",
+  "name_en": "Assisted Pistol Squat",
+  "aliases_de": ["Pistol mit Halt"],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": ["deep_hip_flexion"],
+  "description_de": "Einbeinige Kniebeuge, die Hände halten sich am Türrahmen oder an einer Stange. Die Arme helfen nur so viel wie nötig.",
+  "steps_de": [
+    "Seitlich neben einen Türrahmen stellen und ihn auf Hüfthöhe greifen.",
+    "Auf einem Bein stehen, das andere Bein leicht nach vorn heben.",
+    "Langsam so tief wie sauber möglich absenken, Knie über den Zehen.",
+    "Mit dem Standbein nach oben drücken, Seite wechseln."
+  ],
+  "tips_de": ["Weniger mit den Händen ziehen = schwerer."],
+  "common_mistakes_de": ["Knie fällt nach innen.", "Ferse hebt ab."],
+  "safety_note_de": "Nur so tief gehen, wie das Knie über den Zehen bleibt und die Bewegung kontrolliert ist. Bei Schmerzen in Knie oder Hüfte die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "kniebeuge-koerpergewicht",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "pistol-kniebeuge-kasten",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

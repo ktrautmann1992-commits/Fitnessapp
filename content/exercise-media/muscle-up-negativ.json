@@ -1,0 +1,20 @@
+{
+  "exercise_id": "muscle-up-negativ",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "muscle-up-negativ-start.svg",
+      "alt_de": "Ausgangsposition: im Stütz über der Stange, Arme gestreckt, Stange auf Hüfthöhe; die Füße stehen noch auf einem Kasten.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

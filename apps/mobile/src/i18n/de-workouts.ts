@@ -17,6 +17,7 @@ export const deWorkouts = {
     'Fertige Workouts mit Timer – einzeln machen, wann du willst. Nach dem Abschluss steht das Workout in deinem Tagebuch am heutigen Tag.',
   more: 'Workouts',
   testPhase: 'Testphase – noch nicht fachlich geprüft',
+  testContent: 'Testinhalt – Entwurf, noch nicht freigegeben',
   offlineCached: 'Offline: gespeicherte Workout-Liste.',
   loading: 'Workouts werden geladen …',
   loadFailed: 'Die Workouts konnten nicht geladen werden.',
@@ -50,6 +51,7 @@ export const deWorkouts = {
     hiit_cardio: 'HIIT & Cardio',
     mobility: 'Mobilität',
     back_fit: 'Rücken-fit',
+    run_strength: 'Lauf-Kraft',
   },
   formats: {
     circuit: 'Zirkel',

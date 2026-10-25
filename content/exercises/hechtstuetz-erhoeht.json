@@ -1,0 +1,48 @@
+{
+  "id": "hechtstuetz-erhoeht",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hechtstütz mit erhöhten Füßen",
+  "name_en": "Elevated Pike Hold",
+  "aliases_de": ["Pike-Halten erhöht"],
+  "movement_pattern": "vertical_push",
+  "primary_muscles": ["front_delts"],
+  "secondary_muscles": ["triceps", "upper_back", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["overhead"],
+  "description_de": "Füße auf einem Stuhl, Hüfte hoch, Arme gestreckt über dem Kopf: Die Schultern tragen schon einen großen Teil des Körpergewichts wie im Handstand.",
+  "steps_de": [
+    "Füße auf einen stabilen Stuhl, Hände schulterbreit am Boden.",
+    "Hände nah zum Stuhl setzen, bis die Hüfte über den Schultern ist.",
+    "Arme gestreckt, Kopf zwischen den Armen, halten."
+  ],
+  "tips_de": ["Leichter: Füße am Boden (Hechtstütz).", "Schwerer: Hände näher an den Stuhl."],
+  "common_mistakes_de": ["Schultern schieben nicht aus.", "Rücken hohl."],
+  "safety_note_de": "Nur auf freier, weicher Fläche üben und das Aussteigen vorher üben. Bei Schwindel, Druckgefühl im Kopf oder Schmerzen in Handgelenk oder Schulter sofort beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "pike-liegestuetz",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "wandlaufen",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-einbeinige-kniebeuge",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-einbeinige-kniebeuge-start.svg",
+      "alt_de": "Ausgangsposition: auf einem Bein stehen, Gesicht zum Anker, Griffe vor der Brust, das andere Bein leicht nach vorn gehoben.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

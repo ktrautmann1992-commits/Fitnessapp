@@ -23,6 +23,8 @@ export interface Person {
   targetDate?: [string, string, string];
   /** Feste Tage: [Wochentag, Art, Minuten]; leer = Vorschlag (Ziel Ausdauer) übernehmen. */
   days: [string, string, number][];
+  /** Equipment zu Hause (genaue Namen der Kästchen); leer/fehlend = nur Körpergewicht. */
+  homeEquipment?: string[];
 }
 
 /** Onboarding im Testmodus bis „Geschafft!“ (Plan wird dort erzeugt). */
@@ -105,6 +107,9 @@ export async function onboard(page: Page, person: Person) {
   if (person.days.some(([, kind]) => kind === 'Kraft zu Hause')) {
     // Equipment: nichts auswählen = nur Körpergewicht.
     await heading(page, 'Equipment zu Hause');
+    for (const name of person.homeEquipment ?? []) {
+      await page.getByRole('checkbox', { name, exact: true }).click();
+    }
     await next(page);
   }
   await heading(page, 'Deine Ernährung');

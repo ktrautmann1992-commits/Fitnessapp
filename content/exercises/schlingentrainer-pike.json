@@ -1,0 +1,47 @@
+{
+  "id": "schlingentrainer-pike",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schlingentrainer-Pike",
+  "name_en": "Suspension Pike",
+  "aliases_de": [],
+  "movement_pattern": "core_flexion",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["front_delts", "obliques"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "Aus dem Liegestütz mit den Füßen in den Schlaufen die Hüfte mit gestreckten Beinen hoch ziehen, bis der Körper ein umgedrehtes V bildet.",
+  "steps_de": [
+    "Füße in die Schlaufen, hoher Liegestütz.",
+    "Mit gestreckten Beinen die Hüfte nach oben ziehen.",
+    "Schultern bleiben über den Händen.",
+    "Langsam zurück in den geraden Liegestütz."
+  ],
+  "tips_de": [
+    "Füße in den Schlaufen: Hände weiter vom Ankerpunkt weg = schwerer; Schlaufen etwa 30 cm über dem Boden.",
+    "Leichter: Knie zur Brust statt Hüfte hoch."
+  ],
+  "common_mistakes_de": ["Schultern wandern nach hinten.", "Hüfte sackt beim Zurückgehen ab."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schlingentrainer-knie-zur-brust",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

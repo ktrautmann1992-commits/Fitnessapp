@@ -1,0 +1,49 @@
+{
+  "id": "pseudo-planche-liegestuetz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Pseudo-Planche-Liegestütz",
+  "name_en": "Pseudo Planche Push-up",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["front_delts", "chest"],
+  "secondary_muscles": ["triceps", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["high_skill"],
+  "description_de": "Liegestütz aus der Planche-Lehne: Die Hände stehen auf Hüfthöhe, die Schultern bleiben vor den Händen. Sehr schwer für Schultern und Handgelenke.",
+  "steps_de": [
+    "Hände auf Höhe der Hüfte aufsetzen, Finger zeigen nach außen.",
+    "Schultern nach vorn über die Hände schieben.",
+    "Brust absenken, die Schultern bleiben vorn.",
+    "Nach oben drücken, ohne die Lehne aufzugeben."
+  ],
+  "tips_de": ["Erst, wenn die Planche-Lehne 30 Sekunden ruhig sitzt."],
+  "common_mistakes_de": ["Schultern rutschen beim Absenken zurück.", "Handgelenke schmerzen."],
+  "safety_note_de": "Handgelenke vorher aufwärmen (kreisen, sanft dehnen). Bei Schmerzen in Handgelenk, Ellbogen oder Schulter die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "planche-lehne",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "archer-liegestuetz",
+      "reason": "easier",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "front-lever",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Front Lever",
+  "name_en": "Front Lever",
+  "aliases_de": ["Waage vorlings"],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["abs", "upper_back", "rear_delts"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["high_skill"],
+  "description_de": "Körper komplett gestreckt und waagerecht unter der Stange, Arme gestreckt. Eine der schwersten Halteübungen im Calisthenics.",
+  "steps_de": [
+    "Aus dem Hang über den gehockten Front Lever hineingehen.",
+    "Beide Beine gestreckt nach hinten, Körper wie ein Brett.",
+    "Kurz halten und kontrolliert absenken."
+  ],
+  "tips_de": ["Zwischenstufe: Beine gegrätscht."],
+  "common_mistakes_de": ["Hohlkreuz.", "Arme beugen sich."],
+  "safety_note_de": "Stange vorher auf festen Sitz prüfen und nur mit sicherem Griff hängen. Kontrolliert ab- und aufsteigen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "front-lever-einbeinig",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

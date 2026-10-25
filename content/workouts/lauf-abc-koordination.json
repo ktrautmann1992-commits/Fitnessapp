@@ -1,0 +1,84 @@
+{
+  "id": "lauf-abc-koordination",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Lauf-ABC: Koordination",
+  "summary_de": "15 Minuten Lauf-ABC für Fußaufsatz, Kniehub und Rhythmus: jede Übung etwa 20 Meter, locker zurückgehen ist die Pause. Mit kleinen Sprüngen.",
+  "category": "run_strength",
+  "difficulty": 2,
+  "minutes": 15,
+  "format": "interval",
+  "rounds": 2,
+  "round_rest_s": 90,
+  "equipment_ids": [],
+  "warmup_de": "Am besten direkt nach dem lockeren Lauf, solange die Muskeln warm sind: Füße, Knie und Hüfte kurz kreisen.",
+  "cooldown_de": "Zum Schluss 2–3 Minuten ruhig gehen, Waden und Hüfte sanft dehnen und locker durchatmen.",
+  "exercises": [
+    {
+      "exercise_id": "lauf-abc-fussgelenksarbeit",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "lauf-abc-skippings",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "lauf-abc-anfersen",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "lauf-abc-kniehebelauf",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "lauf-abc-hopserlauf",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "lauf-abc-seitgalopp",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "lauf-abc-ueberkreuzlauf",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}
