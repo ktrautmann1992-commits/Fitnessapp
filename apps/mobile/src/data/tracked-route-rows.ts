@@ -272,7 +272,7 @@ export type RouteMatchAction = 'auto' | 'confirmed' | 'rejected' | 'clear';
 export type RouteMatchOutcome = RouteMatchAction | 'unchanged';
 
 /**
- * set_route_match im TESTMODUS (20261025120000_route_match.sql): gleiche Regeln – eigene Strecke, Ziel eigener
+ * set_route_match im TESTMODUS (20261025120900_route_match.sql): gleiche Regeln – eigene Strecke, Ziel eigener
  * Favorit derselben Sportart, ±10 %, nicht sie selbst, der Lauf selbst keine „Meine Strecke“, kein Kreis; „auto“
  * überschreibt keine Entscheidung; „Nein“ gemerkt (höchstens 20); „Rückgängig“ = clear.
  */

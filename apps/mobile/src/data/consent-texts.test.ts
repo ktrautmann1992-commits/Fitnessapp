@@ -25,7 +25,7 @@ const migration = [
   read('20261023120100_wearable_routes.sql'),
   read('20261025120000_recovery_hrv.sql'),
   // Trainings-Modi: Entwurf health_data Fassung 2 um den Schmerz-/Verletzungsmodus ergänzt (überschreibt den Entwurf).
-  read('20261025120300_health_consent_v2_training_modes.sql'),
+  read('20261025120800_health_consent_v2_training_modes.sql'),
 ].join('\n');
 
 /** Liest (Art, Version, Titel, Text) aus der Seed-Migration. */

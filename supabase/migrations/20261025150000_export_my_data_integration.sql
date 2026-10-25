@@ -1,10 +1,12 @@
 -- Integration 25.10.2026 (Branch claude/integration-1): Rezept-Favoriten (20261025120200_recipe_preferences.sql),
--- Vorratsschrank (20261025120300_pantry_items.sql) und Schuh-Kilometerzähler (20261025120400_shoes.sql) wurden
--- parallel entwickelt; jede dieser Migrationen definiert export_my_data() als Obermenge von
+-- Vorratsschrank (20261025120300_pantry_items.sql), Schuh-Kilometerzähler (20261025120400_shoes.sql),
+-- Trainings-Modi (20261025120700_training_modes_revoke_export.sql) und Trinken-Tracker (20261025140000_hydration.sql)
+-- wurden parallel entwickelt; jede dieser Migrationen definiert export_my_data() als Obermenge von
 -- 20261021130200_supplement_user_data.sql plus nur die eigenen Tabellen. NUR ADDITIV: Diese letzte Fassung ist die
--- Obermenge aller drei (Grundlage: Fassung aus *_shoes.sql) und exportiert zusätzlich recipe_preferences und
--- pantry_items. jsonb_build_object nimmt höchstens 100 Argumente (= 50 Tabellen): das erste Objekt bleibt bei 50
--- Tabellen, alle neueren Tabellen stehen im zweiten Objekt (|| jsonb_build_object(…)). Zusammen 55 Tabellen.
+-- Obermenge aller fünf und exportiert alle 57 Tabellen. jsonb_build_object nimmt höchstens 100 Argumente
+-- (= 50 Tabellen): das erste Objekt hat 50 Tabellen (bis hydration_logs, Zeilen wie in *_hydration.sql), alle
+-- weiteren stehen im zweiten Objekt (|| jsonb_build_object(…)). Widerruf (private.consents_after_revoke, neueste
+-- Fassung *_training_modes_revoke_export.sql, plus eigener Trigger consents_after_revoke_pantry) bleibt unverändert.
 
 create or replace function public.export_my_data()
 returns jsonb
@@ -85,13 +87,18 @@ begin
       'daily_metrics', (select coalesce(jsonb_agg(to_jsonb(t) order by t.day, t.provider), '[]'::jsonb) from public.daily_metrics t where t.user_id = current_user_id),
       -- Phase 6 SU3 (Plan 7.3): Supplement-Check und „Meine Supplements“ (Gesundheitsdaten, Art. 9).
       'supplement_screening', (select coalesce(jsonb_agg(to_jsonb(t)), '[]'::jsonb) from public.supplement_screening t where t.user_id = current_user_id),
-      'user_supplements', (select coalesce(jsonb_agg(to_jsonb(t) order by t.supplement_id), '[]'::jsonb) from public.user_supplements t where t.user_id = current_user_id)
+      'user_supplements', (select coalesce(jsonb_agg(to_jsonb(t) order by t.supplement_id), '[]'::jsonb) from public.user_supplements t where t.user_id = current_user_id),
+      -- Trinken-Tracker (25.10.2026): getrunkene Mengen je Tag.
+      'hydration_logs', (select coalesce(jsonb_agg(to_jsonb(t) order by t.day, t.created_at, t.id), '[]'::jsonb) from public.hydration_logs t where t.user_id = current_user_id)
     -- jsonb_build_object nimmt höchstens 100 Argumente (= 50 Tabellen): weitere Tabellen in einem zweiten Objekt.
     ) || jsonb_build_object(
       -- Rezept-Favoriten (20261025120200_recipe_preferences.sql): „Lieblingsgericht“ und „Nie wieder“ je Rezept.
       'recipe_preferences', (select coalesce(jsonb_agg(to_jsonb(t) order by t.recipe_id), '[]'::jsonb) from public.recipe_preferences t where t.user_id = current_user_id),
       -- Vorratsschrank (20261025120300_pantry_items.sql): Lebensmittel, Menge in Kaufeinheiten, „fast leer“.
       'pantry_items', (select coalesce(jsonb_agg(to_jsonb(t) order by t.food_id), '[]'::jsonb) from public.pantry_items t where t.user_id = current_user_id),
+      -- Trainings-Modi (20261025120600_training_modes.sql): Schmerz-/Verletzungsmodus (Art. 9) und Reise-Modus.
+      'pain_episodes', (select coalesce(jsonb_agg(to_jsonb(t) order by t.started_on, t.created_at), '[]'::jsonb) from public.pain_episodes t where t.user_id = current_user_id),
+      'travel_modes', (select coalesce(jsonb_agg(to_jsonb(t) order by t.starts_on, t.created_at), '[]'::jsonb) from public.travel_modes t where t.user_id = current_user_id),
       -- Schuh-Kilometerzähler (20261025120400_shoes.sql): Schuhe, Standard je Sportart, Wahl je Lauf.
       'shoes', (select coalesce(jsonb_agg(to_jsonb(t) order by t.created_at, t.id), '[]'::jsonb) from public.shoes t where t.user_id = current_user_id),
       'shoe_defaults', (select coalesce(jsonb_agg(to_jsonb(t) order by t.sport, t.valid_from), '[]'::jsonb) from public.shoe_defaults t where t.user_id = current_user_id),

@@ -1,4 +1,4 @@
--- „Meine Strecken“ (Migration 20261025120000_route_match.sql, Gründer-Entscheidung 25.10.2026):
+-- „Meine Strecken“ (Migration 20261025120900_route_match.sql, Gründer-Entscheidung 25.10.2026):
 -- - Spalten route_match (CHECK), match_rejected_ids (höchstens 20), auto_match (Standard true), Bestand → repeat,
 -- - Trigger: Verweis ohne Herkunft → repeat, Verweis leer (auch Löschen des Favoriten) → Herkunft leer,
 -- - set_route_match: nur eigene Strecken (fremd/anon abgelehnt), Ziel eigener Favorit derselben Sportart, ±10 %,

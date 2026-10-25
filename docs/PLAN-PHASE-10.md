@@ -2161,7 +2161,7 @@ Felder, Grenzen, fremde IDs; Fremdschlüssel: Standard nur mit Schuh derselben S
 Wahl entfällt), `delete_my_shoe_data()`. Kein Gesundheitsdatum: bleibt beim Widerruf, Konto löschen per Kaskade.
 `export_my_data` als Obermenge plus drei Tabellen – **wichtig für spätere Migrationen:** `jsonb_build_object` nimmt
 höchstens 100 Argumente (50 Tabellen); weitere Tabellen hängen im zweiten Objekt (`|| jsonb_build_object(…)`).
-pgTAP `81_shoes.test.sql`, Abgleich `shoes/shoes-db-sync.test.ts`.
+pgTAP `82_shoes.test.sql`, Abgleich `shoes/shoes-db-sync.test.ts`.
 
 **App:** eigene Schnittstelle `data/shoes.ts` (wie das Zyklus-Modul über `attachShoes` in `create-backend.ts`, damit
 `backend.ts`, `local-backend.ts` und `supabase-backend.ts` unberührt bleiben). **Offline-first:** jede Änderung sofort
@@ -2203,7 +2203,7 @@ Verpflegungs-Zeilen), Hinweis „Die Anstrengung hat Vorrang …“, Link zur We
 **Tests:** Core `race-pace.test.ts` (5 km, 10 km, Halbmarathon, Marathon, Triathlon-Laufteil, negativ, Höhenprofil,
 Strecke zu lang, Verpflegung je Stufe, nur allgemein, unplausibel, Referenz zu weit weg, Grenzen, Checkpoint),
 `shoes.test.ts`, `shoes-db-sync.test.ts`; App `shoe-format.test.ts`, `race-pace-format.test.ts`, `data/shoes.test.ts`
-(Testmodus, offline/online, Ablehnung, Export); Playwright `shoes-pace.spec.ts`; pgTAP `81_shoes.test.sql`.
+(Testmodus, offline/online, Ablehnung, Export); Playwright `shoes-pace.spec.ts`; pgTAP `82_shoes.test.sql`.
 
 **Offen / Gründer-Fragen:**
 
@@ -2235,12 +2235,12 @@ id. Konstanten: `ROUTE_MATCH` in `constants.ts` (Quellen dort). `autoMatchRoutes
 („Ø Pace 5:38 → 5:24 /km“, Rad km/h). Übersichten in `my-routes.ts` (`myRouteTiles`, `routeMatchInfo`,
 `latestAutoMatch`).
 
-**Datenbank** (`20261025120000_route_match.sql`, nur additiv, RLS unverändert): `tracked_routes.route_match`
+**Datenbank** (`20261025120900_route_match.sql`, nur additiv, RLS unverändert): `tracked_routes.route_match`
 (CHECK repeat/auto/confirmed/rejected, Bestand mit Verweis → repeat), `match_rejected_ids uuid[]` (höchstens 20),
 `auto_match boolean default true`; Trigger hält Herkunft und Verweis stimmig (auch beim Löschen der Strecke);
 `set_route_match(p_route, p_favorite, p_state)` (auto | confirmed | rejected | clear; eigene Strecke, Ziel eigener
 Favorit derselben Sportart, ±10 %, kein Kreis; „auto“ überschreibt keine Entscheidung) und `set_route_auto_match`.
-Export über `export_my_data` automatisch (ganze Zeile). pgTAP: `supabase/tests/68_route_match.test.sql`. Testmodus:
+Export über `export_my_data` automatisch (ganze Zeile). pgTAP: `supabase/tests/76_route_match.test.sql`. Testmodus:
 gleiche Regeln in `apps/mobile/src/data/tracked-route-rows.ts`.
 
 **App**: Ausdauer → Hinweis „Lauf von der Uhr (…) passt vermutlich zu …“ und Kacheln „Meine Strecken“ (zuletzt
@@ -2279,7 +2279,7 @@ nächsten Öffnen (höchstens 10 Läufe je Durchgang).
 - Core: `routes/weather.ts` (`weatherRequest`, `parseWeatherResponse`, `routeWeatherSchema`, `weatherCodeText`,
   `weatherLine`, `routesNeedingWeather`), Konstanten `ROUTE_WEATHER`.
 - DB: `20261025130000_route_weather.sql` – `tracked_routes.weather jsonb` mit CHECK `private.route_weather_valid`,
-  `set_route_weather(p_route, p_weather)` (nur eigene, null löscht); Export automatisch; pgTAP `69_route_weather`.
+  `set_route_weather(p_route, p_weather)` (nur eigene, null löscht); Export automatisch; pgTAP `77_route_weather`.
 - App: Wetter-Karte auf der Lauf-Seite, Wetter-Zeile in „Alle Läufe“ der Strecken-Seite, Schalter in den
   Einstellungen (`components/route-weather.tsx`, `data/route-weather.ts`). Kein CSP in `vercel.json` vorhanden – nichts
   zu ergänzen; falls später eine CSP kommt: `connect-src https://api.open-meteo.com https://archive-api.open-meteo.com`.
@@ -2307,4 +2307,4 @@ gesperrtem Bildschirm am Gerät prüfen (Android-Audiofokus bei TTS).
 „Letzten Eintrag zurücknehmen“, Ring (Wasser-Türkis) auf Heute und Ernährung, 7 Tage als Balken. DB:
 `20261025140000_hydration.sql` (Tabelle `hydration_logs`, RLS nur eigene, `add_hydration` mit gleicher id = kein Doppel,
 heute bis 14 Tage zurück, 40 je Tag; `delete_hydration`, `delete_all_hydration`; `export_my_data` Obermenge mit
-`hydration_logs`), pgTAP `75_hydration`. App offline-first (Warteschlange auf dem Gerät, `data/hydration.ts`).
+`hydration_logs`), pgTAP `78_hydration`. App offline-first (Warteschlange auf dem Gerät, `data/hydration.ts`).

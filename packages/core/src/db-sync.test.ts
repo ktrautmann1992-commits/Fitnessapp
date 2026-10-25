@@ -1208,7 +1208,7 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_export_my_data_integration.sql (Rezept-Favoriten + Vorratsschrank + Schuhe 25.10.2026, davor Phase 6 SU3, Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_export_my_data_integration.sql (Rezept-Favoriten + Vorratsschrank + Schuhe + Trainings-Modi + Trinken 25.10.2026, davor Phase 6 SU3, Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
       /_export_my_data_integration\.sql$/,
@@ -1234,7 +1234,7 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     );
   });
 
-  it('export_my_data() (Integration 25.10.2026): Obermenge aller drei parallelen Fassungen, höchstens 50 Tabellen je jsonb_build_object', () => {
+  it('export_my_data() (Integration 25.10.2026): Obermenge aller fünf parallelen Fassungen, höchstens 50 Tabellen je jsonb_build_object', () => {
     const marker = 'create or replace function public.export_my_data()';
     const bodyOf = (suffix: string) => {
       const sql = readMigration(suffix);
@@ -1244,14 +1244,20 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     const tablesOf = (body: string) =>
       [...body.matchAll(/^\s+'([a-z_]+)', \(select coalesce/gm)].map((m) => m[1] as string);
     const latest = tablesOf(bodyOf('_export_my_data_integration.sql'));
-    for (const suffix of ['_recipe_preferences.sql', '_pantry_items.sql', '_shoes.sql']) {
+    for (const suffix of [
+      '_recipe_preferences.sql',
+      '_pantry_items.sql',
+      '_shoes.sql',
+      '_training_modes_revoke_export.sql',
+      '_hydration.sql',
+    ]) {
       expect(
         tablesOf(bodyOf(suffix)).filter((t) => !latest.includes(t)),
         suffix,
       ).toEqual([]);
     }
     expect(new Set(latest).size).toBe(latest.length);
-    expect(latest).toHaveLength(54);
+    expect(latest).toHaveLength(57);
     // Jedes jsonb_build_object(...) in 'data' hat höchstens 50 Schlüssel (100 Argumente, FUNC_MAX_ARGS).
     const objects = bodyOf('_export_my_data_integration.sql')
       .split(/jsonb_build_object\(/)
@@ -4059,7 +4065,7 @@ describe('Trainings-Modi in der Datenbank (docs/PLAN-TRAINING-MODI.md 7)', () =>
   });
 });
 
-describe('Meine Strecken (20261025120000_route_match.sql)', () => {
+describe('Meine Strecken (20261025120900_route_match.sql)', () => {
   const sql = readMigration('_route_match.sql');
 
   it('route_match: CHECK = ROUTE_MATCH_STATES; set_route_match kennt dieselben Zustände + clear', () => {

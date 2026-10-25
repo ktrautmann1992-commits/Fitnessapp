@@ -5,7 +5,7 @@
 --    TRAVEL_EQUIPMENT_OPTIONS in packages/core/src/enums.ts, db-sync.test.ts).
 -- 2. pain_episodes – GESUNDHEITSDATEN (Art. 9 DSGVO): Region, Stärke, Dauer, Beginn, vorzeitiges Ende. Kein Freitext,
 --    keine Diagnose. Schreiben nur mit gültiger Einwilligung health_data (RLS); Widerruf löscht und Export enthält sie
---    (private.consents_after_revoke / export_my_data in 20261025120200_training_modes_revoke_export.sql); nach
+--    (private.consents_after_revoke / export_my_data in 20261025120700_training_modes_revoke_export.sql); nach
 --    PAIN_MODE.historyDays (365) Tagen automatisch gelöscht.
 -- 3. travel_modes – kein Gesundheitsdatum (Zeitraum + Geräte); nur die eigene Person (RLS), im Export.
 -- Beide Tabellen hängen per on delete cascade am Konto (Konto löschen).
@@ -67,7 +67,7 @@ create policy "Nutzer löschen eigene Schmerz-Einträge"
   using (user_id = (select auth.uid()));
 
 -- Einwilligung: gültige health_data in Fassung ≥ 2 (sync: PAIN_MODE_HEALTH_CONSENT_MIN_VERSION, db-sync.test.ts) –
--- erst Fassung 2 nennt den Schmerz-/Verletzungsmodus (20261025120300_health_consent_v2_training_modes.sql). Solange
+-- erst Fassung 2 nennt den Schmerz-/Verletzungsmodus (20261025120800_health_consent_v2_training_modes.sql). Solange
 -- Fassung 2 in der Datenbank ein unveröffentlichter Entwurf ist, kann niemand Schmerz-Einträge speichern (die App
 -- zeigt dann „kommt nach der rechtlichen Prüfung“); der Testmodus nutzt Fassung 2 schon.
 -- Regeln, die eine CHECK-Bedingung nicht kann (heutiges Datum, andere Zeilen). Fehler ohne Inhalte, nur Codes.

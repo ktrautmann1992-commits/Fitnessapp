@@ -43,7 +43,7 @@ Grenzwerte in `packages/core/src/constants.ts` (`PAIN_REGION_LOAD`, `PAIN_MODE`,
    plötzlichen Schmerzen. Keine Diagnose, keine Behandlungsaussagen (Textregeln-Test).
 6. **Einwilligung:** Schmerz-Einträge sind Gesundheitsdaten → Einwilligung `health_data` in **Fassung ≥ 2**. Der
    unveröffentlichte Entwurf von Fassung 2 (Supplement-Modul) nennt jetzt auch den Schon-Modus
-   (`20261025120300_health_consent_v2_training_modes.sql`, ändert nur den Entwurf). Folge: Im Supabase-Modus ist der
+   (`20261025120800_health_consent_v2_training_modes.sql`, ändert nur den Entwurf). Folge: Im Supabase-Modus ist der
    Schon-Modus gesperrt, bis Fassung 2 juristisch geprüft und veröffentlicht ist (App: „wird gerade rechtlich
    geprüft“); im Testmodus nutzbar. Fassung 1 nennt den Modus nicht – deshalb bewusst keine Nutzung unter Fassung 1.
 7. **Reise-Modus:** Hotel-Gym = Kurzhanteln, Flachbank, Laufband, Rad-Ergometer (bewusst knapp). Höchstens 42 Tage,

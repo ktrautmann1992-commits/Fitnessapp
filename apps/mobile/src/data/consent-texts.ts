@@ -7,7 +7,7 @@ import type { ConsentDocument } from './types';
  * 20261016160100_ai_food_photo.sql (ai_food_photo, Etappe E3), 20261023120100_wearable_routes.sql (wearable_data Fassung 2 mit Routen, 23.10.2026),
  * 20261025120000_recovery_hrv.sql (wearable_data Fassung 3 mit HRV und „Erholung“, 25.10.2026)
  * 20261021130200_supplement_user_data.sql (health_data Fassung 2, Supplement-Modul SU3; Entwurf ergänzt in
- * 20261025120300_health_consent_v2_training_modes.sql um den Schmerz-/Verletzungsmodus) und
+ * 20261025120800_health_consent_v2_training_modes.sql um den Schmerz-/Verletzungsmodus) und
  * 20261021140000_cycle_module.sql (cycle_data, Phase 9) – consent-texts.test.ts
  * bricht ab, wenn sie auseinanderlaufen. In der Datenbank ist health_data Fassung 2 bis zur juristischen Prüfung ein
  * unveröffentlichter Entwurf; der Testmodus nutzt sie schon (Supplement-Check testbar, Testschalter „Einwilligung nur

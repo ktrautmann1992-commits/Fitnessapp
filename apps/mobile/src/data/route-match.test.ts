@@ -11,7 +11,7 @@ import { normalizeRouteRow } from './wearable-route-rows';
 
 /**
  * „Meine Strecken“ im Testmodus (25.10.2026): dieselben Regeln wie set_route_match / set_route_auto_match und der
- * Trigger tracked_routes_route_match (supabase/tests/68_route_match.test.sql), plus der Erkennungs-Durchgang.
+ * Trigger tracked_routes_route_match (supabase/tests/76_route_match.test.sql), plus der Erkennungs-Durchgang.
  */
 
 const ME = '11111111-1111-4111-8111-111111111111';

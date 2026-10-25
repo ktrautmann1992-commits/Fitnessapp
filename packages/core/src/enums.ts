@@ -366,7 +366,7 @@ export type TrackedRouteSource = (typeof TRACKED_ROUTE_SOURCES)[number];
 
 /**
  * Herkunft der Verknüpfung eines Laufs mit einer „Meinen Strecke“ (tracked_routes.route_match, „Meine Strecken“
- * 25.10.2026, 20261025120000_route_match.sql – Text mit CHECK, kein Enum-Typ):
+ * 25.10.2026, 20261025120900_route_match.sql – Text mit CHECK, kein Enum-Typ):
  * - `repeat`: über „Erneut laufen“ aufgezeichnet (base_route_id beim Speichern),
  * - `auto`: von der Erkennung auf dem Gerät vorläufig zugeordnet (zählt mit, bis die Person „Nein“ sagt),
  * - `confirmed`: von der Person bestätigt („Ja“ bzw. „Andere Strecke wählen“),
@@ -421,7 +421,7 @@ export type WearableConnectionStatus = (typeof WEARABLE_CONNECTION_STATUSES)[num
 
 // ---------------------------------------------------------------------------------------------------------
 // Trainings-Modi (docs/PLAN-TRAINING-MODI.md; Gründer-Freigabe 25.10.2026,
-// 20261025120000_training_modes.sql): Schmerz-/Verletzungsmodus, Reise-Modus.
+// 20261025120600_training_modes.sql): Schmerz-/Verletzungsmodus, Reise-Modus.
 // ---------------------------------------------------------------------------------------------------------
 
 /**

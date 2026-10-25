@@ -4824,7 +4824,7 @@ export const PAIN_MODE = {
 
 /**
  * Mindestfassung der Einwilligung `health_data` für den Schmerz-/Verletzungsmodus: erst Fassung 2 nennt die Einträge
- * (20261025120300_health_consent_v2_training_modes.sql). Solange Fassung 2 in der Datenbank ein unveröffentlichter
+ * (20261025120800_health_consent_v2_training_modes.sql). Solange Fassung 2 in der Datenbank ein unveröffentlichter
  * Entwurf ist, ist der Modus im Supabase-Modus gesperrt (Server-Prüfung in pain_episodes, sync: db-sync.test.ts);
  * der Testmodus nutzt Fassung 2 schon. Wie SUPPLEMENT_HEALTH_CONSENT_MIN_VERSION. Rechtsgrundlage: Art. 9 Abs. 2
  * lit. a DSGVO (Zweckbindung, Art. 5 Abs. 1 lit. b).
