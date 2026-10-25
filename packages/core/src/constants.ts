@@ -3279,6 +3279,66 @@ export const COMPETITION_PACE = {
 } as const;
 
 /**
+ * Renn-Pace-Plan (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 21): Zwischenzeiten zur Zielzeit eines
+ * Wettkampfs. Die Summe aller Abschnitte ist immer genau die Zielzeit – die Regeln verteilen nur um:
+ * - `splitEveryM`: bis `longRaceFromM` (25 km) je Kilometer, darüber (Marathon) je 5 km; der letzte Abschnitt ist der
+ *   Rest (z. B. 0,1 km beim Halbmarathon, 2,2 km beim Marathon).
+ * - Gleichmäßig (Standard): gleiches Tempo auf der ganzen Strecke – auf flacher Strecke die gängige, vorsichtige
+ *   Empfehlung (gleichmäßige Belastung; Abbiss CR, Laursen PB (2008), „Describing and understanding pacing strategies
+ *   during athletic competition“, Sports Med 38(3):239–252).
+ * - Negativ: zweite Hälfte um `negativeSplitShare` (2 %) schneller als die erste („etwas schneller“, ohne Tempowechsel
+ *   mitten im Rennen). Gängige Wettkampf-Empfehlung, Wert PRODUKTENTSCHEIDUNG.
+ * - Höhenprofil (nur mit gespeicherter Strecke): je Prozent Steigung `uphillPerPercent` (3 %) mehr Zeit, je Prozent
+ *   Gefälle `downhillPerPercent` (1,5 %) weniger – bergab gewinnt man weniger, als man bergauf verliert; Gefälle zählt
+ *   nur bis `downhillBenefitMaxGrade` (5 %), Steigungen werden bei `maxGrade` (15 %) gekappt (GPS-Ausreißer).
+ *   Orientierung an den Energiekosten beim Laufen bergauf/bergab: Minetti AE et al. (2002), „Energy cost of walking and
+ *   running at extreme uphill and downhill slopes“, J Appl Physiol 93(3):1039–1046 – stark vereinfacht und vorsichtig.
+ *   Die Strecke darf höchstens `courseLengthTolerance` (10 %) von der Renn-Distanz abweichen; sie wird dann auf die
+ *   Renn-Distanz gestreckt. Gerechnet wird in `stepM` (100 m) Schritten.
+ * - `paceSPerKm`: Plausibilität der Eingabe (2:30–15:00 min/km), keine Bewertung der Person.
+ * - Sprach-Ansagen (Etappe „Sprache & Trinken“): „im Plan“ bei höchstens `checkpointToleranceS` (10 s) Abweichung.
+ * Zielzeit-Plausibilität: dieselbe Regel wie im Plan (COMPETITION_PACE.goalTimeMaxImprovement, goalTimePlausible).
+ * Verpflegung: dieselbe Rechnung wie die Wettkampf-Ernährung (COMPETITION_NUTRITION.fueling, raceFuelingPlan) – keine
+ * neuen Mengen. Keine Heilversprechen, keine Leistungsversprechen.
+ * PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const RACE_PACE_PLAN = {
+  splitEveryM: 1000,
+  longRaceSplitEveryM: 5000,
+  longRaceFromM: 25000,
+  negativeSplitShare: 0.02,
+  uphillPerPercent: 0.03,
+  downhillPerPercent: 0.015,
+  downhillBenefitMaxGrade: 0.05,
+  maxGrade: 0.15,
+  courseLengthTolerance: 0.1,
+  stepM: 100,
+  distanceM: { min: 1000, max: 50000 },
+  paceSPerKm: { min: 150, max: 900 },
+  checkpointToleranceS: 10,
+} as const;
+
+/**
+ * Schuh-Kilometerzähler (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 21): Hinweis „Bald wechseln“
+ * ab `warnShare` (75 %) der Wechsel-Grenze, „Wechsel empfohlen“ ab der Grenze. Standard-Grenze `replaceKm` 800 km →
+ * Hinweis ab 600 km. Gängige Faustregel von Herstellern und Laufmagazinen: Laufschuhe nach etwa 500–800 km ersetzen
+ * (Dämpfung und Profil lassen nach). Das ist eine Material-Faustregel, KEINE medizinische Aussage – es gibt keinen
+ * gesicherten Beleg, dass ein Wechsel nach Kilometern Verletzungen verhindert (Fachprüfung vor Livegang). Die Grenze
+ * ist je Schuh einstellbar (`replaceKmLimits`). Datenmodell: 20261025120000_shoes.sql (CHECKs, db-sync.test.ts).
+ * PRODUKTENTSCHEIDUNG.
+ */
+export const SHOE_MILEAGE = {
+  replaceKm: 800,
+  warnShare: 0.75,
+  replaceKmLimits: { min: 200, max: 2000 },
+  startKmMax: 5000,
+  nameMaxLength: 40,
+  brandMaxLength: 40,
+  maxShoes: 30,
+  maxAssignments: 10000,
+} as const;
+
+/**
  * Anstrengung geplanter Einheiten im Wettkampfplan: CHECK `effort_target between 1 and 8` seit WP3
  * (20261016140100_competitions.sql), „> 4 (`easyMax`) nur bei harter Art“; serverseitig zusätzlich unter 18 ≤ 7 und ab
  * 65 ≤ 6 (COMPETITION_INTENSITY.hardEffortCap, private.insert_plan_sessions) – Wächter N2, db-sync.test.ts. Ohne Art
