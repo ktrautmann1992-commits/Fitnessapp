@@ -25,6 +25,8 @@ export * from './retail';
 export * from './routes';
 export * from './share';
 export * from './dashboard';
+// Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md).
+export * from './widget';
 export * from './layout';
 export * from './notifications';
 // Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5).
