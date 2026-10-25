@@ -53,6 +53,7 @@ import { healthConsentStatus } from '../state/flow';
 import { type ConsentVersions, weightGoalFromRow } from './mapping';
 import { storedMealPlanRow, storedShoppingListRow } from './meal-plan-rows';
 import { dislikedFoodsFromRows, ratingsFromRows } from './rating-rows';
+import { recipePreferencesFromRows } from './recipe-preference-rows';
 import { healthScreeningForPlan } from './training-plan';
 import type { UserRows } from './types';
 
@@ -406,6 +407,8 @@ export function computeNutritionWeek(input: {
       substitutions: input.library.substitutions,
       // Bewertungen nach dem Essen (Etappe N10): nur Vorschläge/Reihenfolge, nie Filter, Energie oder Grenzen.
       ratings: ratingsFromRows(input.rows),
+      // Rezept-Favoriten (25.10.2026): „Nie wieder“ wird nie vorgeschlagen, das Herz gibt einen gedeckelten Bonus.
+      recipePreferences: recipePreferencesFromRows(input.rows),
       // Resteplanung (Etappe N14, Premium mit Phase 7 – Testphase offen, 19.9): Reste-Score aus den Packungsgrößen (N11),
       // NUR Reihenfolge der Vorschläge. Ohne Packungsgrößen fehlt das Feld → Plan genau wie vorher.
       leftovers: safeLeftoverPlanningInput(input.library, input.allowDrafts),
@@ -454,7 +457,12 @@ export function computeNutritionWeek(input: {
       ratedDownSuggested:
         editable &&
         resolved.action === 'stored' &&
-        mealPlanHasRatedDownRecipes(resolved.plan, engineInput.ratings, input.today),
+        mealPlanHasRatedDownRecipes(
+          resolved.plan,
+          engineInput.ratings,
+          input.today,
+          engineInput.recipePreferences,
+        ),
       // Nur in änderbaren Wochen (dort gibt es „Verstanden“; Wächter N5a K1).
       autoAdjusted:
         editable &&

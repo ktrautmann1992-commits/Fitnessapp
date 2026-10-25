@@ -262,6 +262,13 @@ export default function SettingsScreen() {
               description={t.nutrition.foodDislikes.settingsText}
               onPress={() => router.push('/ernaehrung/abneigungen' as Href)}
               testID="settings-food-dislikes"
+            />
+            <ListRow
+              icon="eye-off"
+              label={t.nutrition.favorites.manageHidden}
+              description={t.nutrition.favorites.settingsText}
+              onPress={() => router.push('/ernaehrung/ausgeblendet' as Href)}
+              testID="settings-hidden-recipes"
               last
             />
           </ListGroup>

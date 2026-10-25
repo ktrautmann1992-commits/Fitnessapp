@@ -232,6 +232,10 @@ export function localDataExport(
     // Phase 6 SU3/SU4: Supplement-Check und „Meine Supplements“ (Gesundheitsdaten, Testmodus aus dem Gerätespeicher).
     supplement_screening: [...(extra.supplementScreening ?? [])],
     user_supplements: [...(extra.userSupplements ?? [])],
+    // Rezept-Favoriten (25.10.2026): Herz und „Nie wieder“ je Rezept – Spalten wie recipe_preferences.
+    recipe_preferences: [...rows.recipePreferences].sort((a, b) =>
+      a.recipe_id.localeCompare(b.recipe_id),
+    ),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

@@ -156,6 +156,7 @@ export const deNutrition = {
     not_no_cook: 'nur ohne Kochen',
     above_ceiling: 'Tag sonst über deinem Bedarf',
     rated_down: 'passende Rezepte hast du abgelehnt (Daumen runter)',
+    recipe_hidden: 'passende Rezepte hast du ausgeblendet („Nie wieder“)',
   },
 
   // --- Hinweis-Codes der Engine (4.4–4.9) ----------------------------------------------------------------------
@@ -560,6 +561,47 @@ export const deNutrition = {
       'Alle Bewertungen löschen? Abgelehnte Rezepte können danach wieder vorgeschlagen werden. Deine ausgeschlossenen Lebensmittel bleiben.',
     ratingsDeleted: 'Alle Bewertungen sind gelöscht.',
     failed: 'Das hat gerade nicht geklappt. Bitte versuche es noch einmal.',
+    back: 'Zurück',
+  },
+
+  // --- Rezept-Favoriten (Gründer-Freigabe 25.10.2026, KONZEPT 6.10a) ------------------------------------------------
+  favorites: {
+    heading: 'Dein Geschmack',
+    intro:
+      'Lieblingsgerichte schlagen wir dir öfter vor – Abwechslung, deine Ernährungsform, Unverträglichkeiten und deine Kaloriengrenzen gelten weiter. „Nie wieder“ blendet ein Gericht dauerhaft aus.',
+    favorite: 'Lieblingsgericht',
+    favoriteA11y: (title: string) => `${title} als Lieblingsgericht merken`,
+    unfavoriteA11y: (title: string) => `${title} nicht mehr als Lieblingsgericht merken`,
+    hide: 'Nie wieder',
+    hideLong: 'Nie wieder vorschlagen',
+    hideA11y: (title: string) => `${title} nie wieder vorschlagen`,
+    hiddenState: 'Ausgeblendet – wird dir nicht mehr vorgeschlagen.',
+    unhide: 'Wieder zulassen',
+    unhideA11y: (title: string) => `${title} wieder zulassen`,
+    savedFavorite: 'Als Lieblingsgericht gemerkt.',
+    removedFavorite: 'Nicht mehr als Lieblingsgericht gemerkt.',
+    savedHidden: (title: string) => `„${title}“ schlagen wir dir nicht mehr vor.`,
+    hiddenInPlan:
+      'In deinem Plan dieser Woche bleibt es stehen – mit „Tauschen“ ersetzt du es. Ab der nächsten Planung kommt es nicht mehr vor.',
+    allowed: (title: string) => `„${title}“ ist wieder erlaubt.`,
+    failed: 'Das hat gerade nicht geklappt. Bitte versuche es noch einmal.',
+    limit: 'Du hast schon 2.000 Gerichte markiert. Entferne zuerst eines.',
+    menuA11y: (title: string) => `Mehr zu ${title}: Lieblingsgericht oder nie wieder`,
+    menuClose: 'Schließen',
+    favoriteMark: 'Lieblingsgericht',
+    filter: 'Nur Lieblingsgerichte',
+    filterEmpty:
+      'Du hast noch keine Lieblingsgerichte. Tippe bei einem Rezept auf das Herz, um es zu merken.',
+    hiddenCount: (n: number) =>
+      n === 1 ? '1 Gericht ist ausgeblendet.' : `${n} Gerichte sind ausgeblendet.`,
+    manageHidden: 'Ausgeblendete Gerichte',
+    hiddenTitle: 'Ausgeblendete Gerichte',
+    hiddenIntro:
+      'Diese Gerichte schlagen wir dir nicht mehr vor und zeigen sie nicht in der Rezeptsuche. Mit „Wieder zulassen“ kommen sie zurück.',
+    hiddenEmpty: 'Du hast keine Gerichte ausgeblendet. Das geht in jedem Rezept mit „Nie wieder“.',
+    hiddenSince: (date: string) => `Ausgeblendet am ${date}`,
+    unknownRecipe: 'Rezept nicht mehr im Bestand',
+    settingsText: 'Gerichte, die du mit „Nie wieder“ ausgeblendet hast – hier holst du sie zurück.',
     back: 'Zurück',
   },
 

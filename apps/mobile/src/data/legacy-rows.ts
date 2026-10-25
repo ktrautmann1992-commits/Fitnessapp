@@ -21,6 +21,7 @@ import {
 } from '@fitnessapp/core';
 
 import { toTrainingSlotRows, toWeightGoalRow, weightGoalFromRow } from './mapping';
+import { storedRecipePreferences } from './recipe-preference-rows';
 import { userFoodProductRowsFrom, withValidUserProductRefs } from './user-food-product-rows';
 import type {
   CustomMealItemRow,
@@ -468,6 +469,8 @@ export function upgradeStoredRows(stored: UserRows): UserRows {
     mealPlans: storedMealPlans(stored),
     shoppingLists: storedShoppingLists(stored),
     recipeRatings: storedRecipeRatings(stored),
+    // Vor den Rezept-Favoriten (25.10.2026) gab es keine; nur gültige Zeilen des eigenen Kontos.
+    recipePreferences: storedRecipePreferences(stored, stored.profile?.user_id),
     foodDislikes: storedFoodDislikes(stored),
     foodLogFavorites: storedFoodLogFavorites(stored),
     ...storedCustomMeals(stored, storedFoodLogEntries(stored)),

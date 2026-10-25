@@ -149,6 +149,7 @@ import {
   checkFoodDislikesSave,
   checkRecipeRatingSave,
 } from './rating-rows';
+import { checkRecipePreference } from './recipe-preference-rows';
 import { RouteQueue, type RouteSendResult } from './route-queue';
 import { SyncQueue } from './sync-queue';
 import { effectiveSafetyRules } from './training-plan';
@@ -163,6 +164,7 @@ import {
   type ExerciseLogRow,
   type FoodDislikeRow,
   type NutritionPrefsRow,
+  type RecipePreferenceRow,
   type RecipeRatingRow,
   type SessionLogRow,
   type SetLogRow,
@@ -762,6 +764,24 @@ export async function executeWriteOp(
           .eq('user_id', userId)
           .eq('fav_key', op.favKey),
       );
+      return;
+    // Rezept-Favoriten (25.10.2026) direkt per PostgREST (RLS: eigene Zeilen, Profil-Pflicht; Höchstzahl per Trigger).
+    case 'set_recipe_preference':
+      if (op.row === null) {
+        check(
+          await client
+            .from('recipe_preferences')
+            .delete()
+            .eq('user_id', userId)
+            .eq('recipe_id', op.recipeId),
+        );
+      } else {
+        check(
+          await client
+            .from('recipe_preferences')
+            .upsert({ ...op.row, user_id: userId }, { onConflict: 'user_id,recipe_id' }),
+        );
+      }
       return;
   }
 }
@@ -1920,6 +1940,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       reminder,
       ratingsResult,
       dislikesResult,
+      recipePreferencesResult,
       weightGoalResult,
       competitionsResult,
       layoutResult,
@@ -1952,6 +1973,11 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         .select('user_id, recipe_id, value, reason, rated_on')
         .eq('user_id', userId),
       client.from('food_dislikes').select('user_id, food_id').eq('user_id', userId),
+      // Rezept-Favoriten (25.10.2026) – kein Gesundheitsdatum; vor `db-migrate` leer.
+      client
+        .from('recipe_preferences')
+        .select('user_id, recipe_id, kind, set_on')
+        .eq('user_id', userId),
       // Wunschgewicht (Etappe Z3): Gesundheitsdatum, nur im Arbeitsspeicher (cacheableRows).
       client.from('weight_goals').select('*').eq('user_id', userId).limit(1),
       // Wettkämpfe (Phase 10 WP3/WP4) – kein Gesundheitsdatum; der Plan-Bezug kommt nie in den normalen Zwischenspeicher.
@@ -1967,6 +1993,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     // Etappe N7 (Wächter N7 S1): vor `db-migrate` gibt es die Tabellen noch nicht – dann leer, Anmeldung läuft weiter.
     const ratings = emptyIfMissing(ratingsResult);
     const dislikes = emptyIfMissing(dislikesResult);
+    const recipePreferences = emptyIfMissing(recipePreferencesResult);
     // Etappe Z3: vor `db-migrate` gibt es weight_goals noch nicht – dann kein Wunschgewicht.
     const weightGoal = emptyIfMissing(weightGoalResult);
     const competitions = emptyIfMissing(competitionsResult);
@@ -1992,6 +2019,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       reminder,
       ratings,
       dislikes,
+      recipePreferences,
       weightGoal,
       competitions,
       layout,
@@ -2022,6 +2050,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       exercisePreferences: [],
       recipeRatings: (ratings.data ?? []) as RecipeRatingRow[],
       foodDislikes: (dislikes.data ?? []) as FoodDislikeRow[],
+      recipePreferences: (recipePreferences.data ?? []) as RecipePreferenceRow[],
       // Essenspläne, Einkaufslisten, Ernährungstagebuch, Favoriten und eigene Gerichte (Etappe N7 Teil 2).
       ...(await fetchNutritionRows(userId)),
       // Wettkämpfe (Phase 10 WP4): eigene Zeilen (RLS), vor `db-migrate` leer.
@@ -2542,6 +2571,24 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     updateExercisePreferences: async () => {
       // Kein halbfertiger Zustand: Die App bietet „Ab jetzt immer“ ohne supportsExercisePreferences nicht an.
       throw new BackendError('preference_rejected');
+    },
+    setRecipePreference: async (recipeId, kind, rows) => {
+      const session = await requireSession();
+      const check = checkRecipePreference(
+        rows,
+        { recipeId, kind },
+        { userId: session.userId, today: today() },
+      );
+      if (!check.ok) {
+        throw new BackendError(check.reason === 'limit' ? 'recipe_preference_limit' : 'unknown');
+      }
+      // Kein Gesundheitsdatum: sofort auf dem Gerät, gesendet über die normale Warteschlange (geht offline).
+      const op: WriteOp = { kind: 'set_recipe_preference', recipeId, row: check.row };
+      const next = applyWriteOps(rows, [op], displayContext());
+      await writeCache(session.userId, next);
+      await queue.add([op]);
+      void queue.flush();
+      return next;
     },
     setStartWeight: async (exerciseId, weightKg, rows) => {
       const session = await requireSession();

@@ -108,6 +108,7 @@ import {
   revertAllowed,
 } from './live-adjust';
 import { checkSessionLog, isValidOp, isValidPlanOp, isValidPreferenceOp } from './local-rules';
+import { checkRecipePreference } from './recipe-preference-rows';
 import { markWorkoutSource, workoutsFromBundle } from './workout-library';
 import {
   applyTrackedRouteDelete,
@@ -293,6 +294,7 @@ const SERIALIZED_METHODS = [
   'deleteSessionLog',
   'updateExercisePreferences',
   'setStartWeight',
+  'setRecipePreference',
   'revokeHealthData',
   'deleteStoredIntolerances',
   'saveMealPlan',
@@ -1241,6 +1243,22 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     setStartWeight: async (exerciseId, weightKg) => {
       const { db, rows } = await requireProfile();
       const next = applyChecked(rows, { kind: 'set_exercise_start_weight', exerciseId, weightKg });
+      await save({ ...db, rows: next });
+      return next;
+    },
+    setRecipePreference: async (recipeId, kind) => {
+      // Wie recipe_preferences (RLS: eigene Zeile, Profil-Pflicht, Höchstzahl) – geht ohne Netz (Gerätespeicher).
+      const { db, rows } = await requireProfile();
+      const userId = rows.profile?.user_id ?? '';
+      const check = checkRecipePreference(
+        rows,
+        { recipeId, kind },
+        { userId, today: options.today() },
+      );
+      if (!check.ok) {
+        throw new BackendError(check.reason === 'limit' ? 'recipe_preference_limit' : 'unknown');
+      }
+      const next = applyChecked(rows, { kind: 'set_recipe_preference', recipeId, row: check.row });
       await save({ ...db, rows: next });
       return next;
     },

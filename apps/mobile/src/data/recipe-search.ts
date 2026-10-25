@@ -16,6 +16,7 @@ import {
 
 import type { ConsentVersions } from './mapping';
 import { mealPlanProfileFromRows, type NutritionWeekResult } from './nutrition-plan';
+import { recipePreferencesFromRows } from './recipe-preference-rows';
 import type { UserRows } from './types';
 
 /**
@@ -40,6 +41,8 @@ export interface RecipeSearchCard {
   isDraft: boolean;
   /** Freigegeben ohne Fachprüfung (Testphase, Gründer 19.10.2026) → kleines Kennzeichen „Testphase …“. */
   isTestphase: boolean;
+  /** „Lieblingsgericht“ (Herz, Rezept-Favoriten 25.10.2026). */
+  favorite: boolean;
 }
 
 export type RecipeSearchResult =
@@ -55,6 +58,10 @@ export type RecipeSearchResult =
       sections: string[];
       hasReviewedCosts: boolean;
       cards: RecipeSearchCard[];
+      /** Mit „Nie wieder“ ausgeblendete Rezepte (nie in der Liste; zurückholen unter „Ausgeblendete Gerichte“). */
+      hiddenCount: number;
+      /** Anzahl der Lieblingsgerichte (für den Filter „Nur Lieblingsgerichte“). */
+      favoriteCount: number;
     };
 
 export function recipeSearchForPerson(input: {
@@ -69,6 +76,8 @@ export function recipeSearchForPerson(input: {
   if (profile.kind === 'incomplete') return { kind: 'incomplete' };
   if (profile.kind === 'blocked') return { kind: 'blocked', reason: profile.reason };
   const profileDiet = profile.profile.diet;
+  const preferences = recipePreferencesFromRows(input.rows);
+  const known = new Set(input.library.recipes.map((r) => r.id));
   const hits = searchRecipes(
     {
       recipes: input.library.recipes,
@@ -76,6 +85,7 @@ export function recipeSearchForPerson(input: {
       profile: profile.profile,
       excludePregnancyCaution: weekExcludesPregnancyCaution(input.week.targets),
       allowDrafts: input.allowDrafts,
+      preferences,
     },
     input.query,
   );
@@ -85,6 +95,8 @@ export function recipeSearchForPerson(input: {
     profileDiet,
     dietOptions: recipeSearchDietOptions(profileDiet),
     ...facets,
+    hiddenCount: preferences.filter((p) => p.kind === 'hidden' && known.has(p.recipeId)).length,
+    favoriteCount: preferences.filter((p) => p.kind === 'favorite' && known.has(p.recipeId)).length,
     cards: hits.map((hit) => {
       const recipe = hit.variant.recipe;
       return {
@@ -96,6 +108,7 @@ export function recipeSearchForPerson(input: {
         perServing: recipeCardNutrients(hit.variant, input.library.foods),
         isDraft: recipe.status === 'draft',
         isTestphase: isPublishedWithoutExpertReview(recipe),
+        favorite: hit.favorite,
       };
     }),
   };

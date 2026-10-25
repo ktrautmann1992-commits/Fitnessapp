@@ -56,6 +56,9 @@ export function queueKey(op: WriteOp): string {
       return `food_log_favorite:${op.row.fav_key}`;
     case 'delete_food_log_favorite':
       return `food_log_favorite:${op.favKey}`;
+    // Rezept-Favoriten (25.10.2026): letzter Stand je Rezept gewinnt.
+    case 'set_recipe_preference':
+      return `recipe_preference:${op.recipeId}`;
     default:
       return op.kind;
   }

@@ -9,6 +9,7 @@ import type {
   DataExportFile,
   FoodLogEntry,
   MealPlanWeek,
+  RecipePreferenceKind,
   RecipeRating,
   StoredShoppingList,
   NutritionLibrary,
@@ -415,6 +416,16 @@ export interface Backend {
   /** Eigenes Startgewicht (nur ohne Eintrag sinnvoll); null = entfernen. */
   setStartWeight(exerciseId: string, weightKg: number | null, rows: UserRows): Promise<UserRows>;
   /**
+   * Rezept-Favoriten (Gründer-Freigabe 25.10.2026): „Lieblingsgericht“ (`favorite`) bzw. „Nie wieder“ (`hidden`) setzen
+   * oder zurücknehmen (`null`). Kein Gesundheitsdatum – offline-first: Testmodus Gerätespeicher, Supabase-Modus
+   * normale Warteschlange (`set_recipe_preference`, Tabelle `recipe_preferences`). Fehler `recipe_preference_limit`.
+   */
+  setRecipePreference(
+    recipeId: string,
+    kind: RecipePreferenceKind | null,
+    rows: UserRows,
+  ): Promise<UserRows>;
+  /**
    * Widerruf health_data (R3): Senden der Tagebuch-Warteschlange sperren, Einträge aus Gesundheits-Plänen in
    * Warteschlange, Entwurf und Zwischenspeicher bereinigen (neutralisieren bzw. bei `deleteLogs` entfernen), dann
    * revoke_health_data(deleteLogs) in EINER Transaktion.
@@ -707,6 +718,8 @@ export type BackendErrorCode =
   | 'food_log_rejected'
   /** Höchstens 100 Favoriten (FOOD_LOG_LIMITS.maxFavorites). */
   | 'favorite_limit'
+  /** Rezept-Favoriten: höchstens RECIPE_PREFERENCE_RULES.maxEntries (Herz und „Nie wieder“ zusammen). */
+  | 'recipe_preference_limit'
   /** Eigene Gerichte (E2): höchstens 100 (CUSTOM_MEAL_LIMITS.maxMeals). */
   | 'custom_meal_limit'
   /** Eigene Gerichte (E2): ungültige Angaben (ohne Namen, ohne Werte gemeldet). */
