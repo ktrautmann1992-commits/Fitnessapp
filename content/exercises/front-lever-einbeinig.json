@@ -1,0 +1,49 @@
+{
+  "id": "front-lever-einbeinig",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Front Lever einbeinig",
+  "name_en": "One-Leg Front Lever",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["abs", "upper_back", "rear_delts"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["high_skill"],
+  "description_de": "Wie der gehockte Front Lever, aber ein Bein ist gestreckt. Der längere Hebel macht die Haltung deutlich schwerer.",
+  "steps_de": [
+    "In den gehockten Front Lever gehen.",
+    "Ein Bein nach hinten strecken, das andere bleibt angezogen.",
+    "Körper waagerecht halten, Arme gestreckt.",
+    "Bein wechseln im nächsten Versuch."
+  ],
+  "tips_de": ["Erst halten, dann die Beinstreckung langsam steigern."],
+  "common_mistakes_de": ["Hüfte sinkt ab.", "Gestrecktes Bein zieht nach unten."],
+  "safety_note_de": "Stange vorher auf festen Sitz prüfen und nur mit sicherem Griff hängen. Kontrolliert ab- und aufsteigen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "front-lever-gehockt",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "front-lever",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

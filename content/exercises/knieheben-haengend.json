@@ -1,0 +1,51 @@
+{
+  "id": "knieheben-haengend",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Knieheben im Hang",
+  "name_en": "Hanging Knee Raise",
+  "aliases_de": [],
+  "movement_pattern": "core_flexion",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques", "forearms"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "An der Stange hängen und die Knie kontrolliert zur Brust ziehen. Kräftigt den Bauch für L-Sitz und Hebel.",
+  "steps_de": [
+    "Im ruhigen Hang an der Stange beginnen, Schultern leicht aktiv.",
+    "Knie ohne Schwung zur Brust ziehen, Becken rollt leicht ein.",
+    "Langsam absenken, bis die Beine wieder hängen."
+  ],
+  "tips_de": ["Schwerer: Beine gestreckt anheben."],
+  "common_mistakes_de": [
+    "Pendeln und Schwung holen.",
+    "Nur die Oberschenkel heben, Becken bleibt hohl."
+  ],
+  "safety_note_de": "Stange vorher auf festen Sitz prüfen und nur mit sicherem Griff hängen. Kontrolliert ab- und aufsteigen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "l-sitz-gehockt",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "schlingentrainer-knie-zur-brust",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

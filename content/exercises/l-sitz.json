@@ -1,0 +1,44 @@
+{
+  "id": "l-sitz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "L-Sitz",
+  "name_en": "L-Sit",
+  "aliases_de": [],
+  "movement_pattern": "core_flexion",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["triceps", "quadriceps"],
+  "equipment_ids": ["parallettes"],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": [],
+  "description_de": "Stütz auf Parallettes mit gestreckten Beinen waagerecht nach vorn – der Körper bildet ein „L“. Kraft für Bauch, Hüftbeuger und Arme.",
+  "steps_de": [
+    "Zwischen den Parallettes sitzen und die Griffe fassen.",
+    "Arme strecken, Schultern nach unten drücken.",
+    "Beine gestreckt anheben, bis sie etwa waagerecht sind.",
+    "Halten, Zehen strecken."
+  ],
+  "tips_de": ["Leichter: ein Bein gebeugt (einbeiniger L-Sitz).", "Auch am Barren möglich."],
+  "common_mistakes_de": ["Knie beugen sich.", "Rücken fällt zurück."],
+  "safety_note_de": "Handgelenke vorher aufwärmen (kreisen, sanft dehnen). Bei Schmerzen in Handgelenk, Ellbogen oder Schulter die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "l-sitz-gehockt",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

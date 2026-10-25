@@ -1,0 +1,72 @@
+{
+  "id": "schlingentrainer-rudern",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schlingentrainer-Rudern",
+  "name_en": "Suspension Row",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["upper_back", "lats"],
+  "secondary_muscles": ["biceps", "rear_delts"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Zurückgelehnt an den Griffen den Körper zum Anker ziehen. Je flacher du stehst, desto schwerer – so passt die Übung für Einsteiger wie Fortgeschrittene.",
+  "steps_de": [
+    "Griffe fassen, Gesicht zum Anker, Gurte gespannt.",
+    "Zurücklehnen, Körper gerade, Arme gestreckt.",
+    "Brust zu den Griffen ziehen, Schulterblätter zusammen.",
+    "Langsam zurück, bis die Arme gestreckt sind."
+  ],
+  "tips_de": [
+    "Gesicht zum Anker: Füße weiter nach vorn (unter den Anker) = schwerer, weiter zurück = leichter.",
+    "Variante: Handflächen zueinander oder nach unten."
+  ],
+  "common_mistakes_de": ["Hüfte knickt ein.", "Schultern ziehen zu den Ohren."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "tuerrahmen-rudern",
+      "reason": "home",
+      "priority": 1
+    },
+    {
+      "alternative_id": "schlingentrainer-rudern-einarmig",
+      "reason": "harder",
+      "priority": 2
+    },
+    {
+      "alternative_id": "kabelrudern",
+      "reason": "other_equipment",
+      "priority": 3
+    },
+    {
+      "alternative_id": "vorgebeugtes-rudern-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 4
+    },
+    {
+      "alternative_id": "langhantelrudern",
+      "reason": "other_equipment",
+      "priority": 5
+    },
+    {
+      "alternative_id": "rudern-band",
+      "reason": "other_equipment",
+      "priority": 6
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

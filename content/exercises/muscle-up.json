@@ -1,0 +1,44 @@
+{
+  "id": "muscle-up",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Muscle-up an der Stange",
+  "name_en": "Bar Muscle-up",
+  "aliases_de": ["Muscle-up"],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats", "triceps"],
+  "secondary_muscles": ["chest", "biceps", "forearms", "abs"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["high_skill"],
+  "description_de": "Vom Hang mit einem kraftvollen Zug über die Stange in den Stütz. Erst angehen, wenn 8 saubere Klimmzüge und 10 Barren-Dips sitzen.",
+  "steps_de": [
+    "Aus dem Hang mit leichtem, kontrolliertem Schwung beginnen.",
+    "Explosiv zur Hüfte ziehen, die Stange bleibt nah am Körper.",
+    "Oben die Handgelenke schnell über die Stange bringen.",
+    "In den Stütz drücken, dann kontrolliert zurück in den Hang."
+  ],
+  "tips_de": ["Erst einzelne, saubere Wiederholungen; Pausen von 2 bis 3 Minuten."],
+  "common_mistakes_de": ["Ein Arm kommt deutlich früher über die Stange.", "Zu viel Schwung."],
+  "safety_note_de": "Stange vorher auf festen Sitz prüfen und nur mit sicherem Griff hängen. Kontrolliert ab- und aufsteigen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "muscle-up-negativ",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

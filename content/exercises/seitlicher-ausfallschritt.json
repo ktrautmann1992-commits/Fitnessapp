@@ -1,0 +1,44 @@
+{
+  "id": "seitlicher-ausfallschritt",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Seitlicher Ausfallschritt",
+  "name_en": "Lateral Lunge",
+  "aliases_de": [],
+  "movement_pattern": "lunge",
+  "primary_muscles": ["quadriceps", "adductors"],
+  "secondary_muscles": ["glutes"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Großer Schritt zur Seite, ein Knie beugt, das andere Bein bleibt gestreckt. Kräftigt Oberschenkel-Innenseite und Hüfte für die seitliche Stabilität.",
+  "steps_de": [
+    "Hüftbreit stehen, Hände vor der Brust.",
+    "Großer Schritt zur Seite, dieses Knie beugen, Gesäß nach hinten.",
+    "Anderes Bein bleibt gestreckt, beide Füße flach am Boden.",
+    "Zurück in den Stand drücken, Seite wechseln."
+  ],
+  "tips_de": ["Leichter: kleinerer Schritt."],
+  "common_mistakes_de": ["Knie schiebt weit über die Zehen.", "Rücken rundet stark."],
+  "safety_note_de": "Nur so tief gehen, wie das Knie über den Zehen bleibt und die Bewegung kontrolliert ist. Bei Schmerzen in Knie oder Hüfte die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "split-kniebeuge",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

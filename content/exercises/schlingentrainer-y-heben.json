@@ -1,0 +1,52 @@
+{
+  "id": "schlingentrainer-y-heben",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schlingentrainer-Y-Heben",
+  "name_en": "Suspension Y-Raise",
+  "aliases_de": [],
+  "movement_pattern": "shoulder_isolation",
+  "primary_muscles": ["upper_back"],
+  "secondary_muscles": ["rear_delts", "side_delts"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["overhead"],
+  "description_de": "Zurückgelehnt mit gestreckten Armen die Griffe schräg nach oben führen, bis der Körper ein „Y“ bildet. Kräftigt den oberen Rücken.",
+  "steps_de": [
+    "Gesicht zum Anker, Griffe vor der Brust, leicht zurücklehnen.",
+    "Arme fast gestreckt schräg nach oben zu einem Y führen.",
+    "Schulterblätter nach unten und zusammen.",
+    "Langsam zurück in die Ausgangslage."
+  ],
+  "tips_de": [
+    "Gesicht zum Anker: Füße weiter nach vorn (unter den Anker) = schwerer, weiter zurück = leichter.",
+    "Wenig Neigung reicht – die Schultern arbeiten mit kleinem Hebel."
+  ],
+  "common_mistakes_de": ["Schultern ziehen zu den Ohren.", "Hohlkreuz."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schlingentrainer-t-heben",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "y-t-w-vorgebeugt",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

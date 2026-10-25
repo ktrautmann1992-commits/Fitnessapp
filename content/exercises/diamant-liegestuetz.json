@@ -1,0 +1,49 @@
+{
+  "id": "diamant-liegestuetz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Diamant-Liegestütz",
+  "name_en": "Diamond Push-up",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["triceps", "chest"],
+  "secondary_muscles": ["front_delts", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Liegestütz mit eng aufgesetzten Händen (Daumen und Zeigefinger bilden eine Raute). Mehr Arbeit für den Trizeps als beim normalen Liegestütz.",
+  "steps_de": [
+    "Hände unter der Brust aufsetzen, Daumen und Zeigefinger berühren sich.",
+    "Körper gerade vom Kopf bis zu den Fersen.",
+    "Brust zu den Händen senken, Ellbogen bleiben nah am Körper.",
+    "Kraftvoll nach oben drücken."
+  ],
+  "tips_de": ["Leichter: Hände etwas auseinander oder auf einer Erhöhung."],
+  "common_mistakes_de": ["Ellbogen zeigen weit nach außen.", "Hüfte hängt durch."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "archer-liegestuetz",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}
