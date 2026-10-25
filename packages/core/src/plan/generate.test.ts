@@ -34,7 +34,14 @@ describe('generateTrainingPlan – Grundfall', () => {
     expect(p.sessions.filter((s) => s.is_deload)).toHaveLength(3);
     expect(p.uses_health_data).toBe(true);
     expect(p.medical_notice).toBe(false);
-    expect(p.uses_draft_content).toBe(library.containsDrafts);
+    // Nur, wenn der Plan selbst Entwürfe nutzt (Aufwärm-/Dehn-Entwürfe stehen in keiner Vorlage).
+    const template = library.templates.find((t) => t.id === p.template_id);
+    expect(p.uses_draft_content).toBe(
+      template?.status === 'draft' ||
+        p.sessions.some((s) =>
+          s.exercises.some((e) => library.exercises.get(e.exercise_id)?.status === 'draft'),
+        ),
+    );
     expect(p.sessions.every((s) => s.exercises.every((e) => e.target_weight_kg === null))).toBe(
       true,
     );

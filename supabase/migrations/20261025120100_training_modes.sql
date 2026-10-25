@@ -49,16 +49,30 @@ create policy "Nutzer sehen eigene Schmerz-Einträge"
   using (user_id = (select auth.uid()));
 create policy "Nutzer speichern eigene Schmerz-Einträge nur mit Einwilligung"
   on public.pain_episodes for insert to authenticated
-  with check (user_id = (select auth.uid()) and public.has_valid_consent('health_data'));
+  with check (
+    user_id = (select auth.uid())
+    and public.has_valid_consent('health_data')
+    and coalesce(public.current_consent_version('health_data'), 0) >= 2
+  );
 create policy "Nutzer beenden eigene Schmerz-Einträge nur mit Einwilligung"
   on public.pain_episodes for update to authenticated
   using (user_id = (select auth.uid()))
-  with check (user_id = (select auth.uid()) and public.has_valid_consent('health_data'));
+  with check (
+    user_id = (select auth.uid())
+    and public.has_valid_consent('health_data')
+    and coalesce(public.current_consent_version('health_data'), 0) >= 2
+  );
 create policy "Nutzer löschen eigene Schmerz-Einträge"
   on public.pain_episodes for delete to authenticated
   using (user_id = (select auth.uid()));
 
+-- Einwilligung: gültige health_data in Fassung ≥ 2 (sync: PAIN_MODE_HEALTH_CONSENT_MIN_VERSION, db-sync.test.ts) –
+-- erst Fassung 2 nennt den Schmerz-/Verletzungsmodus (20261025120300_health_consent_v2_training_modes.sql). Solange
+-- Fassung 2 in der Datenbank ein unveröffentlichter Entwurf ist, kann niemand Schmerz-Einträge speichern (die App
+-- zeigt dann „kommt nach der rechtlichen Prüfung“); der Testmodus nutzt Fassung 2 schon.
 -- Regeln, die eine CHECK-Bedingung nicht kann (heutiges Datum, andere Zeilen). Fehler ohne Inhalte, nur Codes.
+-- - Einwilligung sperren (FOR SHARE, wie require_supplement_consent): ein gleichzeitiger Widerruf wartet auf das
+--   Speichern und löscht danach – nie bleibt ein Eintrag ohne Einwilligung zurück.
 -- - Beginn = heute (Europe/Berlin) ± 1 Tag (Zeitzonen der Geräte).
 -- - Höchstens 20 neue Einträge je Konto und Tag (Schutz vor Missbrauch).
 -- - Ändern: nur das vorzeitige Ende setzen (einmal, nicht zurücknehmen, höchstens bis morgen) – Region, Stärke,
@@ -70,8 +84,16 @@ security definer
 set search_path = ''
 as $$
 declare
+  -- sync: PAIN_MODE_HEALTH_CONSENT_MIN_VERSION in packages/core/src/constants.ts (db-sync.test.ts)
+  min_version constant integer := 2;
   today date := private.berlin_today();
 begin
+  perform 1 from public.consents c
+  where c.user_id = new.user_id and c.consent_type = 'health_data' and c.revoked_at is null
+  for share;
+  if not found or coalesce(public.current_consent_version('health_data'), 0) < min_version then
+    raise exception 'pain_consent_missing' using errcode = 'insufficient_privilege';
+  end if;
   if tg_op = 'INSERT' then
     if new.started_on < today - 1 or new.started_on > today + 1 then
       raise exception 'pain_start_invalid' using errcode = 'check_violation';

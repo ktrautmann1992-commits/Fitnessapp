@@ -3,7 +3,7 @@
 -- Export und Konto-Löschung.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(42);
+select plan(44);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -31,6 +31,27 @@ select lives_ok(
 );
 
 insert into public.consents (consent_type, version, platform) values ('health_data', 1, 'web');
+
+-- Fassung 1 (heute veröffentlicht) nennt den Schmerz-Modus nicht → auch mit gültiger Einwilligung abgelehnt.
+select throws_ok(
+  $$ insert into public.pain_episodes (region, intensity, duration_days, started_on)
+     select 'knee', 'mild', 3, d from t_today $$,
+  '42501', null, 'nur Fassung 1 veröffentlicht: Schmerz-Eintrag abgelehnt (Fassung ≥ 2 nötig)'
+);
+
+-- Fassung 2 veröffentlichen (nur in diesem Test, rollback) und ihr zustimmen.
+reset role;
+update public.consent_documents set published_at = now()
+where consent_type = 'health_data' and version = 2;
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}';
+select ok(
+  (select body_de like '%Schmerz-/Verletzungsmodus: Körperregion%' from public.consent_documents
+   where consent_type = 'health_data' and version = 2),
+  'Fassung 2 nennt den Schmerz-/Verletzungsmodus'
+);
+update public.consents set revoked_at = now() where consent_type = 'health_data';
+insert into public.consents (consent_type, version, platform) values ('health_data', 2, 'web');
 
 -- ---------------------------------------------------------------------------------------------------------
 -- pain_episodes: Werte
@@ -204,9 +225,9 @@ select is((select count(*)::int from public.travel_modes), 2, 'Widerruf lässt R
 -- Aufräumen nach 365 Tagen und Konto löschen
 -- ---------------------------------------------------------------------------------------------------------
 reset role;
+alter table public.pain_episodes disable trigger pain_episodes_guard;
 insert into public.pain_episodes (user_id, region, intensity, duration_days, started_on, created_at)
   select '22222222-2222-4222-8222-222222222222', 'hip', 'mild', 3, d, now() from t_today;
-alter table public.pain_episodes disable trigger pain_episodes_guard;
 insert into public.pain_episodes (user_id, region, intensity, duration_days, started_on)
   select '22222222-2222-4222-8222-222222222222', 'hip', 'mild', 3, d - 400 from t_today;
 alter table public.pain_episodes enable trigger pain_episodes_guard;

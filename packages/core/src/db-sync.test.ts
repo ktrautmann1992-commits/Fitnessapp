@@ -7,7 +7,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 import { MEASUREMENT_SITES } from './body-measurements';
-import { PAIN_MODE, TRAVEL_MODE } from './constants';
+import { PAIN_MODE, PAIN_MODE_HEALTH_CONSENT_MIN_VERSION, TRAVEL_MODE } from './constants';
 import { BODY_REGIONS, PAIN_INTENSITIES, TRAVEL_EQUIPMENT_OPTIONS } from './enums';
 import { CURRENT_CONSENT_VERSIONS } from './consent';
 import {
@@ -3837,8 +3837,12 @@ describe('Trainings-Modi in der Datenbank (docs/PLAN-TRAINING-MODI.md 7)', () =>
   });
 
   it('Schmerz-Einträge nur mit Einwilligung health_data; RLS an beiden Tabellen', () => {
+    expect(sql).toContain("and public.has_valid_consent('health_data')");
     expect(sql).toContain(
-      "with check (user_id = (select auth.uid()) and public.has_valid_consent('health_data'));",
+      `coalesce(public.current_consent_version('health_data'), 0) >= ${PAIN_MODE_HEALTH_CONSENT_MIN_VERSION}`,
+    );
+    expect(sql).toContain(
+      `min_version constant integer := ${PAIN_MODE_HEALTH_CONSENT_MIN_VERSION};`,
     );
     expect(sql).toContain('alter table public.pain_episodes enable row level security;');
     expect(sql).toContain('alter table public.travel_modes enable row level security;');
