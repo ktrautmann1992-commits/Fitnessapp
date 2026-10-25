@@ -59,10 +59,10 @@ select results_eq(
      from unnest(enum_range(null::public.goal_type)) p, unnest(enum_range(null::public.goal_type)) s
      where private.goal_pair_allowed(p, s)
      order by 1 $$,
-  $$ values ('active_aging>fat_loss'), ('definition>endurance'), ('endurance>definition'), ('endurance>fat_loss'),
+  $$ values ('active_aging>fat_loss'), ('calisthenics>fat_loss'), ('definition>endurance'), ('endurance>definition'), ('endurance>fat_loss'),
             ('endurance>muscle_gain'), ('fat_loss>endurance'), ('fat_loss>muscle_gain'), ('general_fitness>endurance'),
             ('general_fitness>fat_loss'), ('muscle_gain>endurance'), ('muscle_gain>fat_loss') $$,
-  'genau die 11 erlaubten Paare (seit Fit im Alter FA1: active_aging > fat_loss)'
+  'genau die 12 erlaubten Paare (seit FA1: active_aging > fat_loss; Calisthenics: calisthenics > fat_loss)'
 );
 select is(
   (select count(*)::int from unnest(enum_range(null::public.goal_type)) g where private.goal_pair_allowed(g, g)),

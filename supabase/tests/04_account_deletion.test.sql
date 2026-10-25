@@ -239,7 +239,7 @@ select ok(
 );
 
 -- Kataloge bleiben erhalten.
-select is((select count(*) from public.equipment), 20::bigint, 'Geräte-Katalog bleibt erhalten');
+select is((select count(*) from public.equipment), 23::bigint, 'Geräte-Katalog bleibt erhalten');
 
 select * from finish();
 rollback;

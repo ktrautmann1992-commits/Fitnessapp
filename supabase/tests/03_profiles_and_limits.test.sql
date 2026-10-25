@@ -229,7 +229,7 @@ select throws_ok(
 -- ---------------------------------------------------------------------------------------------------------
 -- Kataloge sind für Nutzer schreibgeschützt.
 -- ---------------------------------------------------------------------------------------------------------
-select is((select count(*) from public.equipment), 20::bigint, 'Geräte-Katalog lesbar (20 Einträge: 11 aus Phase 1, 8 Studio-Geräte aus Phase 2, Schlingentrainer)');
+select is((select count(*) from public.equipment), 23::bigint, 'Geräte-Katalog lesbar (23 Einträge: 11 aus Phase 1, 8 Studio-Geräte aus Phase 2, Schlingentrainer, Turnringe, Parallettes, Calisthenics-Park)');
 select throws_ok(
   $$ insert into public.equipment (id, name_de, category) values ('sled', 'Schlitten', 'other') $$,
   '42501', null, 'Nutzer können den Geräte-Katalog nicht ändern'
