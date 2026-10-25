@@ -310,7 +310,7 @@ export default function RouteDetailScreen() {
       {watch ? mapCard : null}
       {heart ? (
         <Card>
-          <PulseZonesDetail summary={heart} />
+          <PulseZonesDetail summary={heart} externalId={wearableSession?.external_id ?? null} />
         </Card>
       ) : null}
 

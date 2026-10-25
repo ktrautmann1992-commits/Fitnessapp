@@ -143,30 +143,47 @@ export function pulseZoneRows(
 }
 
 /**
- * Zonen für die Anzeige einer gespeicherten Einheit: Die Zeiten je Zone wurden beim Abgleich mit dem damaligen HFmax
- * (`hf_max_used`) gerechnet. Mit heutigem Ruhepuls und `useRestingHr` die Karvonen-Grenzen zu diesem HFmax, sonst
- * % HFmax.
+ * Zonen für die Anzeige einer gespeicherten Einheit: Die Zeiten je Zone wurden beim Abgleich mit `hf_max_used` und –
+ * bei Herzfrequenz-Reserve – mit dem damaligen Ruhepuls gerechnet (`restingUsed`, gemerkt auf dem Gerät). Ohne
+ * Ruhepuls bzw. zu kleine Reserve: % HFmax. `hfMaxOverride` nur für den Hinweis „eigener Wert“.
  */
 export function zonesForSummary(input: {
   readonly hfMaxUsed: number;
-  readonly settings: PulseZoneSettings;
-  readonly restingBpm: number | null;
+  readonly restingUsed: number | null;
+  readonly hfMaxOverride: number | null;
 }): PulseZones {
-  if (input.settings.useRestingHr && input.restingBpm !== null) {
-    const zones = reserveZones(input.hfMaxUsed, input.restingBpm);
-    if (zones) {
-      return {
-        ...zones,
-        method: 'reserve',
-        restingBpm: input.restingBpm,
-        hfMaxOwn: input.settings.hfMaxOverride === input.hfMaxUsed,
-      };
-    }
+  const hfMaxOwn = input.hfMaxOverride === input.hfMaxUsed;
+  if (input.restingUsed !== null) {
+    const zones = reserveZones(input.hfMaxUsed, input.restingUsed);
+    if (zones) return { ...zones, method: 'reserve', restingBpm: input.restingUsed, hfMaxOwn };
   }
-  return {
-    ...hrZones(input.hfMaxUsed),
-    method: 'hf_max',
-    restingBpm: null,
-    hfMaxOwn: input.settings.hfMaxOverride === input.hfMaxUsed,
-  };
+  return { ...hrZones(input.hfMaxUsed), method: 'hf_max', restingBpm: null, hfMaxOwn };
+}
+
+/**
+ * Gemerkte Grundlage der Zonen je Uhr-Einheit (nur auf dem Gerät, Schlüssel = Health-Connect-id): verwendeter
+ * Ruhepuls bei Herzfrequenz-Reserve, null = % HFmax. So zeigt die App die Bereiche, mit denen die Zeit je Zone beim
+ * Abgleich gerechnet wurde – auch wenn sich Einstellung oder Ruhepuls später ändern. Fehlt eine Einheit (älterer
+ * Abgleich, anderes Gerät) → % HFmax wie vor dem Lauf-Paket 2.
+ */
+export const zoneBasisStoreSchema = z.record(
+  z.string().min(1).max(200),
+  z
+    .number()
+    .int()
+    .min(BODY_METRIC_LIMITS.restingHeartRateBpm.min)
+    .max(BODY_METRIC_LIMITS.restingHeartRateBpm.max)
+    .nullable(),
+);
+export type ZoneBasisStore = z.infer<typeof zoneBasisStoreSchema>;
+
+/** Gespeicherte Grundlagen prüfen – kaputte Einträge fallen weg. */
+export function parseZoneBasisStore(raw: unknown): ZoneBasisStore {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const out: ZoneBasisStore = {};
+  for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
+    const one = zoneBasisStoreSchema.safeParse({ [key]: value });
+    if (one.success) Object.assign(out, one.data);
+  }
+  return out;
 }

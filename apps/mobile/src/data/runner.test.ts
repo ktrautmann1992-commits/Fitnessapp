@@ -13,9 +13,11 @@ import {
   forgetRunnerDeviceData,
   loadRatioFromRows,
   mergeCadence,
+  mergeZoneBasis,
   racePredictionFromActivities,
   readCadence,
   readPulseZoneSettings,
+  readZoneBasis,
   restingBpmFromRows,
   writePulseZoneSettings,
 } from './runner';
@@ -55,7 +57,11 @@ describe('Geräte-Einstellungen je Konto', () => {
     await mergeCadence(store, 'a', {});
     expect(await readCadence(store, 'a')).toEqual({ 'hc-1': 172, 'hc-2': 168 });
     await writePulseZoneSettings(store, 'a', { hfMaxOverride: 190, useRestingHr: true });
+    await mergeZoneBasis(store, 'a', { 'hc-1': 55, 'hc-2': null });
+    await mergeZoneBasis(store, 'a', { 'hc-1': 52 });
+    expect(await readZoneBasis(store, 'a')).toEqual({ 'hc-1': 52, 'hc-2': null });
     await forgetRunnerDeviceData(store, 'a');
+    expect(await readZoneBasis(store, 'a')).toEqual({});
     expect(await readCadence(store, 'a')).toEqual({});
     expect(await readPulseZoneSettings(store, 'a')).toEqual(DEFAULT_PULSE_ZONE_SETTINGS);
     expect(await readCadence(store, 'b')).toEqual({ 'hc-9': 150 });
@@ -167,9 +173,16 @@ describe('Abgleich: Kadenz und Pulszonen (Beispiel-Uhr)', () => {
     const cadence = Object.values(outcome.cadence ?? {});
     expect(cadence.length).toBe(3);
     expect(cadence.every((spm) => spm >= 160 && spm <= 180)).toBe(true);
+    // Grundlage der Zonen je Einheit mit Puls: Ruhepuls aus den gerade gelesenen Tageswerten der Uhr (Median 14 Tage,
+    // 53–56) – vor den Körperdaten (50).
+    const basis = Object.values(outcome.zoneBasis ?? {});
+    expect(basis).toHaveLength(4);
+    expect(new Set(basis).size).toBe(1);
+    expect(basis[0]).toBeGreaterThanOrEqual(53);
+    expect(basis[0]).toBeLessThanOrEqual(56);
     const w = (await backend.wearables.load()).rows;
     expect(w.heartRates.every((h) => h.hf_max_used === 190)).toBe(true);
-    // Demo-Lauf um 150 /min: nach Karvonen (Ruhe 50, HFmax 190) liegt 150 in Zone 3 (148–161).
+    // Demo-Lauf um 150 /min: nach Karvonen (Ruhe ca. 54, HFmax 190) liegt 150 in Zone 3 (ca. 149–162).
     const run = w.heartRates.find((h) => (h.zone_s[2] ?? 0) > 600);
     expect(run).toBeDefined();
   });

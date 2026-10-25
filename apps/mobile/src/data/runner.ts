@@ -5,11 +5,13 @@ import {
   loadRatio,
   parseCadenceStore,
   parsePulseZoneSettings,
+  parseZoneBasisStore,
   predictRaceTimes,
   type PulseZoneSettings,
   type RacePredictionResult,
   restingHeartRateFor,
   type WearableRows,
+  type ZoneBasisStore,
 } from '@fitnessapp/core';
 
 import { readJson, STORAGE_KEYS, type KeyValueStore, writeJson } from './kv';
@@ -69,9 +71,28 @@ export async function mergeCadence(
   });
 }
 
+/** Grundlage der Pulszonen je Uhr-Einheit (Health-Connect-id → Ruhepuls bzw. null) dieses Kontos. */
+export async function readZoneBasis(store: KeyValueStore, userId: string): Promise<ZoneBasisStore> {
+  return parseZoneBasisStore((await readPerUser(store, STORAGE_KEYS.runZoneBasis))[userId]);
+}
+
+export async function mergeZoneBasis(
+  store: KeyValueStore,
+  userId: string,
+  entries: ZoneBasisStore,
+): Promise<void> {
+  if (Object.keys(entries).length === 0) return;
+  const base = await readPerUser(store, STORAGE_KEYS.runZoneBasis);
+  const current = parseZoneBasisStore(base[userId]);
+  await writeJson(store, STORAGE_KEYS.runZoneBasis, {
+    ...base,
+    [userId]: { ...current, ...parseZoneBasisStore(entries) },
+  });
+}
+
 /** Abmelden, Konto löschen, Widerruf health_data: Einträge dieses Kontos entfernen (andere Konten bleiben). */
 export async function forgetRunnerDeviceData(store: KeyValueStore, userId: string): Promise<void> {
-  for (const key of [STORAGE_KEYS.pulseZones, STORAGE_KEYS.runCadence]) {
+  for (const key of [STORAGE_KEYS.pulseZones, STORAGE_KEYS.runCadence, STORAGE_KEYS.runZoneBasis]) {
     const base = await readPerUser(store, key);
     if (!(userId in base)) continue;
     const rest = Object.fromEntries(Object.entries(base).filter(([id]) => id !== userId));
@@ -90,7 +111,12 @@ export function bodyRestingBpm(rows: Pick<UserRows, 'bodyMetrics'>): number | nu
 /** Ruhepuls für die Pulszonen: Uhr (Median 14 Tage) vor Körperdaten. */
 export function restingBpmFromRows(
   rows: Pick<UserRows, 'bodyMetrics'>,
-  wearable: Pick<WearableRows, 'dailyMetrics'> | null,
+  wearable: {
+    readonly dailyMetrics: readonly Pick<
+      WearableRows['dailyMetrics'][number],
+      'day' | 'resting_hr_bpm'
+    >[];
+  } | null,
   today: string,
 ): number | null {
   return restingHeartRateFor({

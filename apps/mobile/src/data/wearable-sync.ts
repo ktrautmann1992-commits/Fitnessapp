@@ -18,6 +18,7 @@ import {
   type WearableImportResult,
   type WearableRoutePayload,
   type WearableRows,
+  type ZoneBasisStore,
 } from '@fitnessapp/core';
 
 import type { HcAvailability, HealthConnectDriver } from '../lib/health-connect-driver.types';
@@ -46,11 +47,14 @@ export type WearableSyncOutcome =
       readonly routeConsentRequired?: number;
       /** Lauf-Paket 2: Ø Kadenz je Einheit (Health-Connect-id → Schritte/min), nur für dieses Gerät. */
       readonly cadence?: CadenceStore;
+      /** Lauf-Paket 2: Grundlage der Pulszonen je Einheit mit Puls (Ruhepuls bzw. null = % HFmax). */
+      readonly zoneBasis?: ZoneBasisStore;
     }
   | {
       readonly kind: 'queued';
       readonly routeConsentRequired?: number;
       readonly cadence?: CadenceStore;
+      readonly zoneBasis?: ZoneBasisStore;
     };
 
 export interface WearableSyncInput {
@@ -92,15 +96,34 @@ export async function runWearableSync(input: WearableSyncInput): Promise<Wearabl
   const readWindow = input.routeBackfill ? syncWindow(null, now) : window;
   const raw = await driver.read(readWindow, granted, days);
   const birthDate = rows.profile?.birth_date ?? null;
-  // Lauf-Paket 2: Zonen mit eigenem HFmax bzw. nach Herzfrequenz-Reserve (Ruhepuls: Uhr vor Körperdaten).
+  const dailies = aggregateDailyMetrics({
+    restingHeartRates: raw.restingHeartRates,
+    sleepSessions: raw.sleepSessions,
+    steps: raw.steps,
+    heartRateVariabilities: raw.heartRateVariabilities,
+    from: days[0] ?? today,
+    to: today,
+  });
+  // Lauf-Paket 2: Zonen mit eigenem HFmax bzw. nach Herzfrequenz-Reserve. Ruhepuls: Tageswerte der Uhr (gespeicherte
+  // und gerade gelesene, neue zuerst) vor Körperdaten.
   const zones = birthDate
     ? pulseZonesFor({
         age: ageInYears(birthDate, today),
         settings: input.pulseZones ?? DEFAULT_PULSE_ZONE_SETTINGS,
-        restingBpm: restingBpmFromRows({ bodyMetrics: rows.bodyMetrics ?? [] }, wearable, today),
+        restingBpm: restingBpmFromRows(
+          { bodyMetrics: rows.bodyMetrics ?? [] },
+          {
+            dailyMetrics: [
+              ...dailies,
+              ...wearable.dailyMetrics.filter((d) => !dailies.some((n) => n.day === d.day)),
+            ],
+          },
+          today,
+        ),
       })
     : null;
   const cadence: CadenceStore = {};
+  const zoneBasis: ZoneBasisStore = {};
   // Gespeicherte Routen der Uhr je external_id (über die übernommene Einheit).
   const externalByLog = new Map(wearable.sessions.map((w) => [w.session_log_id, w.external_id]));
   const storedRoutes = new Map<string, { distance_m: number; polyline: string }>();
@@ -134,17 +157,12 @@ export async function runWearableSync(input: WearableSyncInput): Promise<Wearabl
       ? averageCadence({ steps: extras.steps, durationS: result.session.duration_s, sport })
       : null;
     if (spm !== null) cadence[record.id] = spm;
+    if (result.session.heart_rate && zones) {
+      zoneBasis[record.id] = zones.method === 'reserve' ? zones.restingBpm : null;
+    }
     if (result.routeStatus === 'consent_required') routeConsentRequired += 1;
     if (result.route && result.route.polyline !== stored?.polyline) routes.push(result.route);
     return [result.session];
-  });
-  const dailies = aggregateDailyMetrics({
-    restingHeartRates: raw.restingHeartRates,
-    sleepSessions: raw.sleepSessions,
-    steps: raw.steps,
-    heartRateVariabilities: raw.heartRateVariabilities,
-    from: days[0] ?? today,
-    to: today,
   });
   const candidates = candidatesFromLogRows(
     rows.sessionLogs,
@@ -160,11 +178,12 @@ export async function runWearableSync(input: WearableSyncInput): Promise<Wearabl
     chunkImportBatches(granted, items, dailies),
     routes.slice(0, WEARABLE_SYNC.maxSessionsPerBatch),
   );
-  if (outcome.kind === 'queued') return { ...outcome, routeConsentRequired, cadence };
+  if (outcome.kind === 'queued') return { ...outcome, routeConsentRequired, cadence, zoneBasis };
   return {
     kind: 'imported',
     result: { ...outcome.result, skipped: outcome.result.skipped + skippedOnDevice },
     routeConsentRequired,
     cadence,
+    zoneBasis,
   };
 }

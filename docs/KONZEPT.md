@@ -196,6 +196,11 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   schneller) oder nach dem Höhenprofil einer gespeicherten Strecke (GPX); Summe immer = Zielzeit. Verpflegungspunkte
   aus der Wettkampf-Ernährung (gleiche Mengen), Hinweis bei unplausibler Zielzeit (gleiche Regel wie die Ampel),
   Druckansicht/PDF. `racePaceCheckpoint` liefert den Stand für spätere Sprach-Ansagen.
+- **Lauf-Paket 2 (Gründer-Freigabe „Baue alles“ 25.10.2026, `docs/PLAN-LAUF-PAKET-2.md`):** Pulszonen nach
+  Herzfrequenz-Reserve (Karvonen) bzw. % HFmax mit eigenem Maximalpuls, Zonen-Tabelle je Lauf; Belastungs-Ampel
+  (7 zu 28 Tage, 10-%-Regel, keine medizinische Aussage); Zeitprognose 5 km bis Marathon (Riegel, Bereich, nicht bei
+  zu wenig Daten); bergbereinigtes Tempo (GAP, Minetti); Kadenz aus den Schritten der Uhr; Hinweis „Es wird dunkel“
+  (Sonnenstand nach NOAA auf dem Gerät). Alles auf dem Gerät gerechnet, keine neue Tabelle, nie auf dem Story-Bild.
 - Ausdauer-Ziel klarer (Gründer-Feedback „Ziel Marathon → Plan für allgemeine Fitness“): Beim Ziel Ausdauer belegt
   „Deine Trainingstage“ Ausdauer-Tage vor (`suggestedTrainingSlots`, Werte `ENDURANCE_GOAL_SUGGESTION`: 3 Ausdauer + 2 Kraft,
   Leistungssport 4 + 2, vorsichtig 2 + 1, Triathlon mehr Ausdauer; Deckel wie oben) – nur ohne gewählte Tage, änderbar

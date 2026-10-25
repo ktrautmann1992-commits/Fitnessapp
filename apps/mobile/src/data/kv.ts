@@ -211,4 +211,10 @@ export const STORAGE_KEYS = {
    * beim Abgleich aus den Schritten gerechnet, nur dieses Gerät, nie an den Server.
    */
   runCadence: 'fitnessapp.run-cadence.v1',
+  /**
+   * Lauf-Paket 2 (docs/PLAN-LAUF-PAKET-2.md 2): Grundlage der Pulszonen je Uhr-Einheit (Ruhepuls bei
+   * Herzfrequenz-Reserve, null = % HFmax) je Konto – damit die angezeigten Bereiche zu den beim Abgleich gerechneten
+   * Zeiten passen. Nur dieses Gerät, gelöscht beim Abmelden bzw. Widerruf.
+   */
+  runZoneBasis: 'fitnessapp.run-zone-basis.v1',
 } as const;

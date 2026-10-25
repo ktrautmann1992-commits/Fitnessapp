@@ -58,7 +58,7 @@ export const deRunner = {
       'Noch kein Ruhepuls bekannt – trag ihn in deinen Körperdaten ein oder gib „Ruhepuls“ in Health Connect frei.',
     preview: 'So sehen deine Zonen aus:',
     save: 'Pulszonen speichern',
-    saved: 'Gespeichert. Gilt ab dem nächsten Abgleich der Uhr.',
+    saved: 'Gespeichert. Gilt für Einheiten, die ab jetzt von der Uhr abgeglichen werden.',
     needsConsent:
       'Pulszonen brauchen deine Einwilligung für Gesundheitsdaten (Einstellungen → Einwilligungen).',
   },
@@ -70,7 +70,7 @@ export const deRunner = {
       low: 'Weniger als gewohnt – passt gut für eine Erholungswoche.',
       yellow:
         'Etwas mehr als gewohnt. Achte auf Schlaf und leichte Tage und steigere lieber in kleinen Schritten.',
-      red: 'Deutlich mehr als gewohnt. Gönn dir ein paar leichtere Tage – dein Körper braucht Zeit, sich anzupassen.',
+      red: 'Gönn dir ein paar leichtere Tage – dein Körper braucht Zeit, sich anzupassen.',
     },
     volume: (pct: number, current: string, previous: string) =>
       `Deine Lauf-Kilometer sind um ${pct} % gestiegen (${current} statt ${previous} km). Faustregel: höchstens etwa 10 % mehr pro Woche.`,
@@ -106,8 +106,8 @@ export const deRunner = {
       'Bergbereinigt (GAP): So schnell wärst du mit gleicher Anstrengung auf flacher Strecke gewesen – berechnet aus dem Höhenprofil (ungefähr, GPS-Höhen sind ungenau).',
   },
   cadence: {
-    label: 'Ø Kadenz',
-    value: (spm: number) => `${spm} Schritte/min`,
+    label: 'Ø Kadenz (Schritte/min)',
+    value: (spm: number) => String(spm),
     hints: CADENCE_HINTS,
     source: 'Aus den Schritten deiner Uhr während der Einheit (inkl. Pausen).',
   },

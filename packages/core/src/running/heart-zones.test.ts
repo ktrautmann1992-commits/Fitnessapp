@@ -5,6 +5,7 @@ import { hrZones, summarizeHeartRate } from '../wearables/heart-rate';
 import {
   DEFAULT_PULSE_ZONE_SETTINGS,
   parsePulseZoneSettings,
+  parseZoneBasisStore,
   pulseZoneRows,
   pulseZonesFor,
   reserveZones,
@@ -146,25 +147,28 @@ describe('pulseZoneRows und zonesForSummary', () => {
     expect(pulseZoneRows(hrZones(180), [Number.NaN, -5, 10, 0, 0])[2]?.share).toBe(1);
   });
 
-  it('gespeicherter HFmax + heutiger Ruhepuls', () => {
-    const z = zonesForSummary({
-      hfMaxUsed: 186,
-      settings: DEFAULT_PULSE_ZONE_SETTINGS,
-      restingBpm: 56,
+  it('gespeicherte Grundlage: HFmax und Ruhepuls des Abgleichs', () => {
+    const z = zonesForSummary({ hfMaxUsed: 186, restingUsed: 56, hfMaxOverride: null });
+    expect(z).toMatchObject({ method: 'reserve', hfMax: 186, restingBpm: 56, hfMaxOwn: false });
+    expect(z.bounds).toEqual([121, 134, 147, 160, 173, 186]);
+    expect(zonesForSummary({ hfMaxUsed: 186, restingUsed: null, hfMaxOverride: null }).method).toBe(
+      'hf_max',
+    );
+    // Reserve zu klein → % HFmax; eigener Wert erkannt.
+    expect(zonesForSummary({ hfMaxUsed: 150, restingUsed: 100, hfMaxOverride: 150 })).toMatchObject(
+      { method: 'hf_max', hfMaxOwn: true },
+    );
+  });
+});
+
+describe('parseZoneBasisStore', () => {
+  it('nur gültige Einträge (Ruhepuls 30–120 oder null)', () => {
+    expect(parseZoneBasisStore({ a: 55, b: null, c: 20, d: 'x', e: 55.5 })).toEqual({
+      a: 55,
+      b: null,
     });
-    expect(z.method).toBe('reserve');
-    expect(z.hfMax).toBe(186);
-    expect(
-      zonesForSummary({ hfMaxUsed: 186, settings: DEFAULT_PULSE_ZONE_SETTINGS, restingBpm: null })
-        .method,
-    ).toBe('hf_max');
-    expect(
-      zonesForSummary({
-        hfMaxUsed: 186,
-        settings: { hfMaxOverride: 186, useRestingHr: false },
-        restingBpm: 56,
-      }),
-    ).toMatchObject({ method: 'hf_max', hfMaxOwn: true });
+    expect(parseZoneBasisStore(undefined)).toEqual({});
+    expect(parseZoneBasisStore([1])).toEqual({});
   });
 });
 

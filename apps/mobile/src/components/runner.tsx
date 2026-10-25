@@ -13,6 +13,7 @@ import {
   pulseZonesFor,
   type PulseZoneSettings,
   pulseZoneSettingsSchema,
+  type ZoneBasisStore,
   zonesForSummary,
 } from '@fitnessapp/core';
 import { fontSize, radius, spacing } from '@fitnessapp/ui';
@@ -30,6 +31,7 @@ import {
   racePredictionFromActivities,
   readCadence,
   readPulseZoneSettings,
+  readZoneBasis,
   restingBpmFromRows,
   writePulseZoneSettings,
 } from '@/data/runner';
@@ -99,6 +101,26 @@ export function useRunCadence(): CadenceStore {
   return cadence;
 }
 
+/** Grundlage der Pulszonen je Uhr-Einheit (nur dieses Gerät). */
+export function useZoneBasis(): ZoneBasisStore {
+  const app = useApp();
+  const userId = app.session?.userId ?? null;
+  const [basis, setBasis] = useState<ZoneBasisStore>({});
+  useEffect(() => {
+    if (!userId) return;
+    let alive = true;
+    void readZoneBasis(deviceStore, userId)
+      .then((value) => {
+        if (alive) setBasis(value);
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [userId]);
+  return basis;
+}
+
 /** Gültige Einwilligung health_data (Pulszonen-Einstellung). */
 function useHealthConsent(): boolean {
   const app = useApp();
@@ -130,12 +152,23 @@ function useRestingBpm(): number | null {
  * Pulszonen eines Laufs: gestapelter Balken (Farbe + Text), Tabelle „Zone · Bereich · Zeit“, Herkunft der Grenzen
  * (Herzfrequenz-Reserve bzw. % HFmax) und Link zu den Einstellungen. testIDs `hr-zone-bar`/`hr-zone-text` wie vorher.
  */
-export function PulseZonesDetail({ summary }: { summary: HeartRateSummaryRow }) {
+export function PulseZonesDetail({
+  summary,
+  externalId,
+}: {
+  summary: HeartRateSummaryRow;
+  /** Health-Connect-id der Uhr-Einheit (für die gemerkte Grundlage); null = unbekannt → % HFmax. */
+  externalId: string | null;
+}) {
   const theme = useThemeColors();
   const router = useRouter();
   const { settings } = usePulseZoneSettings();
-  const resting = useRestingBpm();
-  const zones = zonesForSummary({ hfMaxUsed: summary.hf_max_used, settings, restingBpm: resting });
+  const basis = useZoneBasis();
+  const zones = zonesForSummary({
+    hfMaxUsed: summary.hf_max_used,
+    restingUsed: externalId ? (basis[externalId] ?? null) : null,
+    hfMaxOverride: settings.hfMaxOverride,
+  });
   const rows = pulseZoneRows(zones, summary.zone_s);
   if (rows.every((r) => r.share === 0)) return null;
   const minutes = (s: number) => Math.round(s / 60);

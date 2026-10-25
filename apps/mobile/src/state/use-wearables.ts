@@ -8,7 +8,7 @@ import { deviceStore } from '@/data/create-backend';
 import { STORAGE_KEYS } from '@/data/kv';
 import { consentRecordsFromRows } from '@/data/mapping';
 import { applyAutoMatches } from '@/data/route-match';
-import { mergeCadence, readPulseZoneSettings } from '@/data/runner';
+import { mergeCadence, mergeZoneBasis, readPulseZoneSettings } from '@/data/runner';
 import { runWearableSync, type WearableSyncOutcome } from '@/data/wearable-sync';
 import { todayIso } from '@/lib/format';
 import { createDemoHealthConnectDriver } from '@/lib/health-connect-demo';
@@ -122,7 +122,9 @@ export function syncWearables(
       routeBackfill,
     });
     if (outcome.kind === 'imported' || outcome.kind === 'queued') {
-      // Lauf-Paket 2: Kadenz je Uhr-Einheit nur auf diesem Gerät merken.
+      // Lauf-Paket 2: Kadenz und Grundlage der Pulszonen je Uhr-Einheit nur auf diesem Gerät merken.
+      if (outcome.zoneBasis)
+        await mergeZoneBasis(deviceStore, userId, outcome.zoneBasis).catch(() => undefined);
       if (outcome.cadence)
         await mergeCadence(deviceStore, userId, outcome.cadence).catch(() => undefined);
       if (routeBackfill && outcome.kind === 'imported') await writeBackfill(userId);
