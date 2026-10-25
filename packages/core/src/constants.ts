@@ -5404,3 +5404,133 @@ export const HYDRATION = {
   historyDays: 7,
   backfillDays: 14,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------------
+// Lauf-Paket 2 (Gründer-Freigabe „Baue alles“, 25.10.2026, docs/PLAN-LAUF-PAKET-2.md): Pulszonen nach
+// Herzfrequenz-Reserve, Belastungs-Ampel, Zeitprognose, GAP, Kadenz, Dunkelheit. Alles auf dem Gerät gerechnet.
+// ---------------------------------------------------------------------------------------------------------------
+
+/**
+ * Pulszonen nach Herzfrequenz-Reserve (Karvonen-Methode): Grenze = Ruhepuls + Anteil × (HFmax − Ruhepuls), mit
+ * denselben Anteilen wie HR_ZONE_PERCENTS (50/60/70/80/90/100 %). Quelle: Karvonen MJ, Kentala E, Mustala O (1957),
+ * „The effects of training on heart rate; a longitudinal study“, Ann Med Exp Biol Fenn 35(3):307–315; ACSM's
+ * Guidelines for Exercise Testing and Prescription, 11. Aufl. (2021): Intensität über % HFR (moderat 40–59 %,
+ * intensiv 60–89 %).
+ * - `restingWindowDays` / `restingMinValues`: Ruhepuls = Median der Tageswerte der Uhr der letzten 14 Tage (mind. 3
+ *   Werte), sonst der Ruhepuls aus den Körperdaten (Onboarding) – PRODUKTENTSCHEIDUNG.
+ * - `minReserveBpm`: Liegen HFmax und Ruhepuls weniger als 60 /min auseinander (Messfehler, Medikamente), rechnet die
+ *   App wieder mit % HFmax – sonst wären die Zonen zu schmal. PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const HR_RESERVE_ZONES = {
+  restingWindowDays: 14,
+  restingMinValues: 3,
+  minReserveBpm: 60,
+} as const;
+
+/**
+ * Belastungs-Ampel (Verhältnis akute : chronische Belastung, „acute:chronic workload ratio“): akut = Summe der
+ * Belastungspunkte (SPORT_LOAD, Session-RPE) der letzten 7 Tage, chronisch = Summe der letzten 28 Tage ÷ 4 (Wochen-
+ * Mittel, gekoppelt). Quellen: Hulin BT et al. (2016), Br J Sports Med 50(4):231–236; Gabbett TJ (2016), „The
+ * training–injury prevention paradox“, Br J Sports Med 50(5):273–280 („sweet spot“ 0,8–1,3, ab 1,5 deutlich
+ * erhöhtes Risiko). EHRLICH: Die Methode ist umstritten (Impellizzeri FM et al. (2020), Int J Sports Physiol Perform
+ * 15(6):907–913) – darum nur als sanfter Hinweis, nie als medizinische Aussage, nie als Verbot.
+ * - `greenMax` 1,3 / `yellowMax` 1,5: über 1,3 gelb, über 1,5 rot. Unter `lowBelow` 0,8: grün mit Text „weniger als
+ *   gewohnt“ (z. B. Erholungswoche).
+ * - `minHistoryDays` 21: Erst ab drei Wochen Tagebuch gibt es eine Ampel (sonst ist „gewohnt“ unbekannt).
+ * - `minChronicWeeklyLoad` 60 Punkte (≈ 2 × 30 min locker): darunter keine Ampel (kleine Zahlen schwanken zu stark).
+ * - Die 10-%-Regel (MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION) fließt ein: Steigen die Lauf-Kilometer der letzten
+ *   7 Tage um mehr als 10 % gegenüber den 7 Tagen davor (Vorwoche mind. `volumeMinPreviousKm` km), wird Grün zu Gelb.
+ * Schwellen PRODUKTENTSCHEIDUNG nach den Quellen, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const LOAD_RATIO = {
+  acuteDays: 7,
+  chronicDays: 28,
+  greenMax: 1.3,
+  yellowMax: 1.5,
+  lowBelow: 0.8,
+  minHistoryDays: 21,
+  minChronicWeeklyLoad: 60,
+  volumeMinPreviousKm: 5,
+} as const;
+
+/**
+ * Zeitprognose für Wettkampf-Distanzen nach Riegel: t2 = t1 × (d2 / d1)^1,06 – dieselbe Formel und derselbe Exponent
+ * wie die Wettkampf-Pace (COMPETITION_PACE.riegelExponent, Quelle: Riegel PS (1981), „Athletic records and human
+ * endurance“, American Scientist 69(3):285–290, gültig etwa 3,5–230 min) und dieselbe Grenze: höchstens Faktor 4
+ * zwischen Lauf und Ziel-Distanz (COMPETITION_PACE.maxRiegelDistanceFactor; Marathon erst ab ca. 10,5 km,
+ * Halbmarathon ab 5,3 km). Bekannte Schwäche: Für Freizeitläufer ist die Marathon-Prognose oft zu optimistisch
+ * (Vickers AJ, Vertosick EA (2016), BMC Sports Sci Med Rehabil 8:26) – darum ein breiter Bereich.
+ * - `windowDays` 56 (8 Wochen), `minEffortM` 3.000 m, `minEfforts` 2: Grundlage sind eigene Läufe (Sportart Laufen)
+ *   ab 3 km der letzten 8 Wochen; weniger als zwei solche Läufe → keine Prognose.
+ * - `paceS`: nur plausible Läufe (2:30–12:00 min/km), sonst eher Gehen oder ein Messfehler.
+ * - Unsicherheit (± Anteil): `baseUncertainty` 3 % + `uncertaintyPerDoubling` 4 % je Verdopplung der Distanz, dazu
+ *   `fewEffortsExtra` 2 %, wenn weniger als `fewEffortsBelow` Läufe vorliegen. Gerundet auf `roundS` Sekunden.
+ * Werte außer Formel/Exponent: PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const RACE_PREDICTION = {
+  windowDays: 56,
+  minEffortM: 3_000,
+  minEfforts: 2,
+  paceS: { min: 150, max: 720 },
+  baseUncertainty: 0.03,
+  uncertaintyPerDoubling: 0.04,
+  fewEffortsBelow: 4,
+  fewEffortsExtra: 0.02,
+  targets: [
+    { id: '5k', distanceM: 5_000, roundS: 5 },
+    { id: '10k', distanceM: 10_000, roundS: 10 },
+    { id: 'half', distanceM: 21_097.5, roundS: 30 },
+    { id: 'marathon', distanceM: 42_195, roundS: 60 },
+  ],
+} as const;
+
+/**
+ * Bergbereinigtes Tempo (GAP, „grade-adjusted pace“) nach der Energiekosten-Kurve des Laufens von Minetti:
+ * C(i) = 155,4 i⁵ − 30,4 i⁴ − 43,3 i³ + 46,3 i² + 19,5 i + 3,6 (J je kg und m, i = Steigung als Anteil, gültig
+ * −0,45 … +0,45). Quelle: Minetti AE, Moia C, Roi GS, Susta D, Ferretti G (2002), „Energy cost of walking and running
+ * at extreme uphill and downhill slopes“, J Appl Physiol 93(3):1039–1046. GAP = Zeit ÷ „flache“ Distanz
+ * (Σ Teilstück × C(i) / C(0)).
+ * - `maxGrade` 0,45: Steigungen darüber werden auf den Gültigkeitsbereich begrenzt.
+ * - `minSegmentM` 50: Steigung über mind. 50 m Strecke rechnen (GPS-Höhen springen sonst).
+ * - `minDistanceM` 1.000: GAP erst ab 1 km mit Höhenprofil.
+ * EHRLICH: Minetti misst auf dem Laufband mit trainierten Läufern; bergab überschätzt die Kurve die Ersparnis bei
+ * steilen Gefällen (Strava hat sie deshalb angepasst). Darum nur als Orientierung. VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const GAP_MINETTI = {
+  coefficients: [155.4, -30.4, -43.3, 46.3, 19.5, 3.6],
+  maxGrade: 0.45,
+  minSegmentM: 50,
+  minDistanceM: 1_000,
+} as const;
+
+/**
+ * Laufkadenz (Schritte je Minute) aus den Schritten im Zeitraum der Uhr-Einheit (Health Connect, Datentyp „Schritte“,
+ * schon freigegeben) ÷ Dauer. Nur Hinweis-Bereiche, keine Regel: Die „180er-Kadenz“ ist kein allgemeines Ziel; eine
+ * Erhöhung um 5–10 % senkt die Belastung von Knie und Hüfte (Heiderscheit BC et al. (2011), „Effects of step rate
+ * manipulation on joint mechanics during running“, Med Sci Sports Exerc 43(2):296–302); Freizeitläufer laufen meist
+ * ca. 150–180 Schritte/min.
+ * - `plausibleSpm`: außerhalb ist es ein Messfehler (Uhr abgelegt, Pausen) → keine Anzeige.
+ * - `hint`: Laufen unter 150 → Hinweis „kürzere, schnellere Schritte probieren“, 150–185 üblich, darüber hoch (passt
+ *   bei schnellem Tempo). Gehen ohne Bewertung. `minDurationS`: erst ab 5 min. PRODUKTENTSCHEIDUNG.
+ */
+export const CADENCE = {
+  plausibleSpm: { run: { min: 100, max: 230 }, walk: { min: 50, max: 160 } },
+  hint: { lowBelow: 150, highAbove: 185 },
+  minDurationS: 300,
+} as const;
+
+/**
+ * Dunkelheit beim Laufen draußen: Sonnenauf- und -untergang nach dem Rechenweg der NOAA (Global Monitoring Laboratory,
+ * „General Solar Position Calculations“, Näherung über das Bruchjahr, Genauigkeit ca. 1–2 min), ganz auf dem Gerät aus
+ * gerundeter Position und Datum – kein Netz.
+ * - `zenithDeg` 90,833° (Sonnenmittelpunkt inkl. Refraktion und Sonnenradius), `civilZenithDeg` 96° (bürgerliche
+ *   Dämmerung: danach ist es ohne Licht dunkel).
+ * - `positionRoundingDeg` 0,1° (ca. 11 km): genauer braucht es nicht (Fehler unter 1 min), die Position bleibt grob.
+ * - `leadMin` 60: Hinweis, wenn der Sonnenuntergang in höchstens 60 min ist (übliche Laufdauer). PRODUKTENTSCHEIDUNG.
+ */
+export const DAYLIGHT = {
+  zenithDeg: 90.833,
+  civilZenithDeg: 96,
+  positionRoundingDeg: 0.1,
+  leadMin: 60,
+} as const;

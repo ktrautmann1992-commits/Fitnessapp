@@ -23,6 +23,8 @@ export * from './nutrition';
 export * from './evaluation';
 export * from './retail';
 export * from './routes';
+// Lauf-Paket 2: Pulszonen, Belastungs-Ampel, Zeitprognose, GAP, Kadenz, Dunkelheit (docs/PLAN-LAUF-PAKET-2.md).
+export * from './running';
 // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md Abschnitt 22).
 export * from './shoes';
 export * from './share';
