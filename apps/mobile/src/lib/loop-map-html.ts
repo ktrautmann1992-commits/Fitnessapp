@@ -107,7 +107,7 @@ export function loopMapHtml(input: {
       ? `bounds: ${JSON.stringify([
           [num(west), num(south)],
           [num(east), num(north)],
-        ])}, fitBoundsOptions: { padding: 28, maxZoom: 16 }`
+        ])}, fitBoundsOptions: { padding: { top: 28, right: 28, bottom: 64, left: 28 }, maxZoom: 16 }`
       : `center: ${startJson}, zoom: 14`;
   const safeLabel = input.label.replace(/[<>&"']/g, '');
   return `<!doctype html>

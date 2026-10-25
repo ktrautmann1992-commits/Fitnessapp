@@ -42,7 +42,7 @@ export const deLoop = {
   ascentA11y: (m: number) => `${m} Höhenmeter bergauf`,
   ascentUnknown: 'Höhenmeter unbekannt',
   surfaceShare: (paved: number, unpaved: number) =>
-    `${Math.round(paved * 100)} % Asphalt · ${Math.round(unpaved * 100)} % Wald-/Feldweg`,
+    `${Math.round(paved * 100)}\u00a0% Asphalt · ${Math.round(unpaved * 100)}\u00a0% Wald-/Feldweg`,
   longer: 'etwas länger als gewünscht',
   shorter: 'etwas kürzer als gewünscht',
   overlapHint: 'teils gleicher Weg hin und zurück',
