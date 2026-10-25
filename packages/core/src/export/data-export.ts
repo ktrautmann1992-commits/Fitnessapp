@@ -81,6 +81,9 @@ export const DATA_EXPORT_TABLES = [
   // Widerruf gelöscht)
   'supplement_screening',
   'user_supplements',
+  // Vorratsschrank (Gründer-Freigabe 25.10.2026, KONZEPT 6.13): Lebensmittel, Menge in Kaufeinheiten, „fast leer“
+  // (sensibel wie gelernte Strichcode-Zuordnungen, beim Widerruf gelöscht)
+  'pantry_items',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];
