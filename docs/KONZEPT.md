@@ -191,6 +191,11 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   App, Ansage für den Bildschirmleser). Ergebnis ab dem Renntag als freie Einheit; Absagen mit Bestätigung, danach
   „Plan neu erstellen“. Endet der Wettkampfplan, schlägt die App einen neuen (vorsichtigen) Plan vor statt eines
   Folgeblocks von der Spitze aus.
+- **Renn-Pace-Plan (Gründer-Freigabe 25.10.2026, `docs/PLAN-PHASE-10.md` 21):** In „Mein Wettkampf“ (Laufen mit
+  Zielzeit oder Referenzzeit) Zwischenzeiten je km (ab 25 km je 5 km): gleichmäßig, „negativ“ (2. Hälfte ~2 %
+  schneller) oder nach dem Höhenprofil einer gespeicherten Strecke (GPX); Summe immer = Zielzeit. Verpflegungspunkte
+  aus der Wettkampf-Ernährung (gleiche Mengen), Hinweis bei unplausibler Zielzeit (gleiche Regel wie die Ampel),
+  Druckansicht/PDF. `racePaceCheckpoint` liefert den Stand für spätere Sprach-Ansagen.
 - Ausdauer-Ziel klarer (Gründer-Feedback „Ziel Marathon → Plan für allgemeine Fitness“): Beim Ziel Ausdauer belegt
   „Deine Trainingstage“ Ausdauer-Tage vor (`suggestedTrainingSlots`, Werte `ENDURANCE_GOAL_SUGGESTION`: 3 Ausdauer + 2 Kraft,
   Leistungssport 4 + 2, vorsichtig 2 + 1, Triathlon mehr Ausdauer; Deckel wie oben) – nur ohne gewählte Tage, änderbar
@@ -831,6 +836,11 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   01088 hohe Unterstützung 4,0 / 01084 leichte Unterstützung 6,0 MET – vor Livegang fachlich prüfen). Pläne bleiben
   normales Rad. Uhr-Einheiten (Health Connect kennt keine E-Bike-Art) kommen als Fahrrad und sind umstellbar.
   Abzeichen „E-Bike“ in Auswertung, Liste und Tagebuch; Story-Bild „E-Bike-Fahrt“ (keine Gesundheitsdaten).
+- **Schuh-Kilometerzähler (Gründer-Freigabe 25.10.2026, Details docs/PLAN-PHASE-10.md 21):** eigene Schuhe je
+  Sportart (Laufen, Gehen/Wandern, Rad) mit Start-km und Standard-Schuh je Sportart; jeder Lauf (Aufzeichnung,
+  Uhr, Eintrag) bekommt automatisch den Standard seines Tages, änderbar am Lauf („Schuh: Pegasus 41 (412 km)“).
+  Hinweis „Bald wechseln“ ab 600 km, „Wechsel empfohlen“ ab 800 km (je Schuh einstellbar; Material-Faustregel,
+  keine Gesundheitsaussage). Kein Gesundheitsdatum; RLS, Export, Löschen.
 
 ## 11. Fortschritt & Motivation
 - Gewicht, Körperumfänge, Fotos (privat), persönliche Rekorde, Wochenumfang, Konsistenz
