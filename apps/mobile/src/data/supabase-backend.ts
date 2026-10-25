@@ -32,6 +32,7 @@ import {
   type TrackedRoutePayload,
   type TrackedRouteRow,
   updateTrackedRouteSchema,
+  routeWeatherSchema,
   type DailyMetricRow,
   type HeartRateSummaryRow,
   type WearableConnectionRow,
@@ -2958,6 +2959,16 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       return data === 'auto' || data === 'confirmed' || data === 'rejected' || data === 'clear'
         ? data
         : 'unchanged';
+    },
+    setRouteWeather: async (routeId, weather) => {
+      await requireSession();
+      const parsed = weather === null ? null : routeWeatherSchema.safeParse(weather);
+      if (parsed && !parsed.success) throw new BackendError('route_rejected');
+      const { error } = await client.rpc('set_route_weather', {
+        p_route: routeId,
+        p_weather: parsed ? toJson(parsed.data) : null,
+      });
+      if (error) throw routeError(error);
     },
     setRouteAutoMatch: async (routeId, enabled) => {
       await requireSession();

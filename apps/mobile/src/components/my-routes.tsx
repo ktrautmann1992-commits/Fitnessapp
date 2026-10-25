@@ -13,6 +13,7 @@ import {
   speedText,
   type TrackedRouteRow,
   usesSpeed,
+  weatherLine,
 } from '@fitnessapp/core';
 import { areaColors, fontSize, heroColors, radius, spacing } from '@fitnessapp/ui';
 import { useState, type ReactNode } from 'react';
@@ -643,7 +644,7 @@ export function RouteRunList({
             accessibilityRole="button"
             accessibilityLabel={`${R.listItemA11y(day, durationText(a.movingS), info, source)}${
               auto ? `, ${R.listAutoA11y}` : ''
-            }`}
+            }${r?.weather ? `, ${weatherLine(r.weather)}` : ''}`}
             testID={`route-run-${a.routeId}`}
             style={({ pressed }) => [
               styles.runRow,
@@ -669,10 +670,20 @@ export function RouteRunList({
             >
               {durationText(a.movingS)}
             </Text>
-            <Text style={[styles.runInfo, { color: theme.textMuted }]}>
-              {info}
-              {auto ? ` · ${R.listAuto}` : ''}
-            </Text>
+            <View style={styles.runInfo}>
+              <Text style={[styles.small, { color: theme.textMuted }]}>
+                {info}
+                {auto ? ` · ${R.listAuto}` : ''}
+              </Text>
+              {r?.weather ? (
+                <Text
+                  style={[styles.small, { color: theme.textMuted }]}
+                  testID={`route-run-weather-${a.routeId}`}
+                >
+                  {weatherLine(r.weather)}
+                </Text>
+              ) : null}
+            </View>
             <SourceBadge label={source} watch={r?.source === 'watch'} />
           </Pressable>
         );
@@ -785,7 +796,7 @@ const styles = StyleSheet.create({
   },
   runDay: { width: 72, fontSize: fontSize.sm },
   runTime: { width: 54, fontSize: fontSize.sm },
-  runInfo: { flex: 1, fontSize: fontSize.sm },
+  runInfo: { flex: 1 },
   badge: { borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 },
   badgeText: { fontSize: fontSize.xs },
   toggleRow: {

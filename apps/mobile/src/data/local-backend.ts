@@ -112,6 +112,7 @@ import { markWorkoutSource, workoutsFromBundle } from './workout-library';
 import {
   applyRouteAutoMatch,
   applyRouteMatch,
+  applyRouteWeather,
   applyTrackedRouteDelete,
   applyTrackedRouteSave,
   applyTrackedRouteUpdate,
@@ -318,6 +319,7 @@ const SERIALIZED_METHODS = [
   'updateTrackedRoute',
   'setRouteMatch',
   'setRouteAutoMatch',
+  'setRouteWeather',
   'deleteTrackedRoute',
   'deleteAllTrackedRoutes',
   'saveSupplementScreening',
@@ -1652,6 +1654,17 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       if (result.kind === 'reject') throw new BackendError('route_rejected');
       if (result.outcome !== 'unchanged') await save({ ...db, trackedRoutes: result.routes });
       return result.outcome;
+    },
+    setRouteWeather: async (routeId, weather) => {
+      const { db, session } = await requireUser();
+      const next = applyRouteWeather(
+        (db.trackedRoutes ?? []).map(normalizeRouteRow),
+        routeId,
+        weather,
+        { userId: session.userId, now: options.now() },
+      );
+      if (next === 'invalid' || next === 'not_found') throw new BackendError('route_rejected');
+      await save({ ...db, trackedRoutes: next });
     },
     setRouteAutoMatch: async (routeId, enabled) => {
       const { db, session } = await requireUser();

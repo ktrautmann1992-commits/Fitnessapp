@@ -124,6 +124,7 @@ export function applyWearableRouteSave(
           route_match: null,
           match_rejected_ids: [],
           auto_match: true,
+          weather: null,
           created_at: ctx.now,
         },
       ];
@@ -210,7 +211,8 @@ export function normalizeRouteRow(row: TrackedRouteRow): TrackedRouteRow {
     typeof row.e_bike === 'boolean' &&
     row.route_match !== undefined &&
     Array.isArray(row.match_rejected_ids) &&
-    typeof row.auto_match === 'boolean'
+    typeof row.auto_match === 'boolean' &&
+    row.weather !== undefined
   ) {
     return row;
   }
@@ -221,5 +223,6 @@ export function normalizeRouteRow(row: TrackedRouteRow): TrackedRouteRow {
     route_match: row.route_match ?? (row.base_route_id ? 'repeat' : null),
     match_rejected_ids: Array.isArray(row.match_rejected_ids) ? row.match_rejected_ids : [],
     auto_match: row.auto_match !== false,
+    weather: row.weather ?? null,
   };
 }

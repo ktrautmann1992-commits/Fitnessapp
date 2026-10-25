@@ -15,6 +15,7 @@ import { LiveAdjustSettings } from '@/components/live-adjust';
 import { EatingHelpNotice } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { CycleSettingsSection } from '@/components/cycle-entry';
+import { WeatherSettings } from '@/components/route-weather';
 import { ListGroup, ListRow, SectionLabel } from '@/components/design';
 import { Body, Button, Card, Checkbox, LoadingState, Notice, TextField } from '@/components/ui';
 import { activePlan } from '@/data/training-plan';
@@ -337,6 +338,9 @@ export default function SettingsScreen() {
           last
         />
       </ListGroup>
+
+      {/* Wetter zu Läufen (25.10.2026): Abruf bei Open-Meteo nur mit gerundeter Startposition. */}
+      <WeatherSettings />
 
       {/* Phase 9: Zyklus-Modul (sichtbar, wenn angeboten oder schon eingeschaltet – auch nach Wechsel auf „männlich“). */}
       <CycleSettingsSection onPress={() => router.push('/zyklus/einstellungen' as Href)} />

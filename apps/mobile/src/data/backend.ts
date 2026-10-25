@@ -23,6 +23,7 @@ import type {
   StoredAppLayout,
   TrackedRoutePayload,
   TrackedRouteRow,
+  RouteWeather,
   UpdateTrackedRoutePayload,
   WearableDataType,
   WearableImportBatch,
@@ -607,6 +608,11 @@ export interface Backend {
     favoriteId: string | null,
     state: 'auto' | 'confirmed' | 'rejected' | 'clear',
   ): Promise<'auto' | 'confirmed' | 'rejected' | 'clear' | 'unchanged'>;
+  /**
+   * Wetter zum Start eines eigenen Laufs speichern (set_route_weather; null löscht). Das Gerät holt es vorher selbst
+   * bei Open-Meteo (data/route-weather.ts). Nur online; Fehler `route_rejected`.
+   */
+  setRouteWeather(routeId: string, weather: RouteWeather | null): Promise<void>;
   /** „Neue Läufe automatisch zuordnen“ einer eigenen Strecke (set_route_auto_match). Nur online. */
   setRouteAutoMatch(routeId: string, enabled: boolean): Promise<void>;
   /** Strecke endgültig löschen (delete_tracked_route; wartende: aus der Warteschlange). Nur online. */

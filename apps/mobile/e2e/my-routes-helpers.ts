@@ -75,6 +75,7 @@ function route(
     match?: TrackedRouteRow['route_match'];
     source?: TrackedRouteRow['source'];
     elevation?: number | null;
+    weather?: TrackedRouteRow['weather'];
   },
 ): TrackedRouteRow {
   const km = Math.floor(o.distanceM / 1000);
@@ -106,6 +107,7 @@ function route(
     route_match: o.match ?? (o.base ? 'repeat' : null),
     match_rejected_ids: [],
     auto_match: true,
+    weather: o.weather ?? null,
     created_at: o.startedAt,
     updated_at: o.startedAt,
   };
@@ -161,6 +163,16 @@ export function demoRoutes(userId: string): TrackedRouteRow[] {
       startedAt: '2026-10-05T06:10:00Z',
       distanceM: 5190,
       movingS: 1810,
+      weather: {
+        hour: '2026-10-05T06:00:00Z',
+        temp_c: 9.2,
+        feels_c: 5.8,
+        wind_kmh: 24.5,
+        precip_mm: 1.2,
+        humidity_pct: 91,
+        code: 63,
+        source: 'archive',
+      },
       splits: [350, 349, 351, 348, 350],
     }),
     route(userId, park().slice(0, 120), {
@@ -179,6 +191,16 @@ export function demoRoutes(userId: string): TrackedRouteRow[] {
       startedAt: '2026-10-17T06:10:00Z',
       distanceM: 5200,
       movingS: 1757,
+      weather: {
+        hour: '2026-10-17T06:00:00Z',
+        temp_c: 11.4,
+        feels_c: 10.2,
+        wind_kmh: 8.3,
+        precip_mm: 0,
+        humidity_pct: 76,
+        code: 2,
+        source: 'archive',
+      },
       splits: [330, 342, 348, 335, 339],
     }),
     // Neuer Uhr-Lauf, automatisch erkannt (noch ohne Antwort).

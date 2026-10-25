@@ -3624,6 +3624,29 @@ export const ROUTE_MATCH = {
 } as const;
 
 /**
+ * Wetter je Lauf (routes/weather.ts, Gründer-Wunsch 25.10.2026): Quelle Open-Meteo (kostenlos, ohne Schlüssel,
+ * Lizenz CC BY 4.0 – https://open-meteo.com/en/terms). Datenschutz: an Open-Meteo gehen NUR die auf `roundDeg` Grad
+ * gerundete Startposition (Raster ca. 7–11 km in DACH) sowie Tag und Stunde – nie die Strecke. Bis `forecastMaxAgeDays`
+ * Tage zurück die Forecast-API (vergangene Tage enthalten), älter die Archiv-API (ERA5, einige Tage Verzug).
+ * `maxPerPass`: so viele Läufe holt ein Durchgang höchstens (Rest beim nächsten Öffnen, offline später). Wertebereiche
+ * (Prüfung der Antwort und CHECK der Spalte): Temperatur −60…60 °C, Wind 0…300 km/h, Niederschlag 0…500 mm/h,
+ * Luftfeuchte 0…100 %, WMO-Wettercode 0…99 (WMO-Codetabelle 4677). Quelle: Open-Meteo-Dokumentation
+ * (https://open-meteo.com/en/docs, https://open-meteo.com/en/docs/historical-weather-api); Schwellen PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_WEATHER = {
+  roundDeg: 0.1,
+  forecastMaxAgeDays: 5,
+  maxPerPass: 10,
+  forecastUrl: 'https://api.open-meteo.com/v1/forecast',
+  archiveUrl: 'https://archive-api.open-meteo.com/v1/archive',
+  tempC: { min: -60, max: 60 },
+  windKmh: { min: 0, max: 300 },
+  precipMm: { min: 0, max: 500 },
+  humidityPct: { min: 0, max: 100 },
+  code: { min: 0, max: 99 },
+} as const;
+
+/**
  * „Dein Fortschritt“ – auch OHNE gleiche Strecke (routes/progress.ts, Gründer-Wunsch 25.10.2026): Vergleich nur mit
  * eigenen Einheiten derselben Sportart und ÄHNLICHER Länge. Entscheidung: relative Spanne statt fester Klassen
  * (0–5/5–10/… km) – feste Grenzen trennen 4,9 km von 5,1 km, obwohl beide gleich lang sind; ±`similarShare` (20 %)

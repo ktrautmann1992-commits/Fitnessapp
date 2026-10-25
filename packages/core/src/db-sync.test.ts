@@ -98,6 +98,7 @@ import {
   CARDIO_PLAUSIBILITY_KMH,
   ROUTE_ELEVATION_PROFILE,
   ROUTE_MATCH,
+  ROUTE_WEATHER,
   ROUTE_FILTER,
   TRACKED_ROUTE_LIMITS,
   TRACKED_ROUTE_LOG_MATCH,
@@ -125,6 +126,7 @@ import {
   dailyMetricImportSchema,
   wearableImportBatchSchema,
 } from './wearables/schema';
+import { routeWeatherSchema } from './routes/weather';
 import { wearableRoutePayloadSchema } from './wearables/route';
 import { DASHBOARD_TILES, FIXED_FIRST_TAB, FIXED_LAST_TAB, NAV_AREAS } from './layout';
 import { serverDayKcalFloor } from './nutrition/plausibility';
@@ -3836,5 +3838,24 @@ describe('Meine Strecken (20261025120000_route_match.sql)', () => {
     expect(sql).not.toMatch(/create or replace function public\.(save|update)_tracked_route\(/);
     expect(sql).not.toContain('create or replace function public.save_wearable_route(');
     expect(sql).not.toMatch(/drop (table|column|function)/i);
+  });
+});
+
+describe('Wetter je Lauf (20261025130000_route_weather.sql)', () => {
+  const sql = readMigration('_route_weather.sql');
+  const W = ROUTE_WEATHER;
+
+  it('Felder = routeWeatherSchema, Bereiche = ROUTE_WEATHER', () => {
+    expect(quotedListAfter(sql, 'weather_keys constant text[] := array[')).toEqual(
+      Object.keys(routeWeatherSchema.shape),
+    );
+    expect(sql).toContain(`'temp_c', ${W.tempC.min}, ${W.tempC.max}, 1)`);
+    expect(sql).toContain(`'wind_kmh', ${W.windKmh.min}, ${W.windKmh.max}, 1)`);
+    expect(sql).toContain(`'precip_mm', ${W.precipMm.min}, ${W.precipMm.max}, 1)`);
+    expect(sql).toContain(`'humidity_pct', ${W.humidityPct.min}, ${W.humidityPct.max}, 1)`);
+    expect(sql).toContain(`'code', ${W.code.min}, ${W.code.max}, 0)`);
+    expect(quotedListAfter(sql, "p_weather ->> 'source' in (")).toEqual([
+      ...routeWeatherSchema.shape.source.options,
+    ]);
   });
 });
