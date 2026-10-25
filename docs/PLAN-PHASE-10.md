@@ -2127,3 +2127,184 @@ Anzeigename max. 30) und RPC-Antworten. Grenzwerte in
 
 **Mockups (LB0):** Aufzeichnen mit Blatt „Live-Begleitung“, Lauf mit Banner/SOS/Beenden, Begleit-Seite im Browser,
 Einstellungen → Notfallkontakte (PNG-Tafeln, nicht im Repository).
+
+---
+
+## 22. Schuh-Kilometerzähler und Renn-Pace-Plan (Gründer-Freigabe 25.10.2026)
+
+Branch `claude/schuhe-pace`. Keine Echtzeit-KI. Alle Zahlen in `constants.ts` („VOR LIVEGANG FACHLICH PRÜFEN“).
+
+### 22.1 Schuh-Kilometerzähler (Punkt 4)
+
+**Regeln (`packages/core/src/shoes/shoes.ts`, `SHOE_MILEAGE`):**
+
+- Schuhe je Sportart **Laufen, Gehen/Wandern, Rad** (`SHOE_SPORTS`): Name (1–40), Marke freiwillig (≤ 40), Start-km
+  (0–5.000, „schon gelaufen“), eigene Wechsel-Grenze (200–2.000 km, leer = 800 km), „In Gebrauch seit“, ausgemustert ab.
+  Höchstens 30 Schuhe, 10.000 Wahlen.
+- **Standard-Schuh je Sportart mit Beginn-Datum** (`shoe_defaults`: Sportart, gültig ab, Schuh oder null). Ein Lauf
+  bekommt automatisch den Standard **seines Tages** – ein späterer Wechsel des Standards ändert frühere Läufe nicht. Ein
+  ausgemusterter Schuh bekommt nach seinem Ausmusterungstag nichts mehr automatisch; war er Standard, gilt ab dem Tag
+  danach „kein Standard“ (die Seite bittet um einen neuen).
+- **Wahl je Lauf** (`shoe_assignments`, Schlüssel wie `EnduranceActivity.key`: `route:<id>` / `log:<id>`; null = „ohne
+  Schuh“; „Automatisch“ löscht die Wahl). Eine Strecke findet auch die Wahl ihres verknüpften Eintrags. Laufen und Gehen
+  bieten Lauf- und Wanderschuhe an, Rad nur Radschuhe, Schwimmen keine.
+- **Kilometer** = Start-km + Distanz aller zugeordneten Läufe (App-Aufzeichnungen, Uhr-Importe, Einträge ohne GPS; ohne
+  Distanz zählt 0; jede Aktivität einmal). Einträge vor dem Tagebuch-Fenster der App (12 Wochen) lädt die App online ab
+  dem ersten Schuh-Tag nach (nur Datum, Art, Distanz; nie gespeichert).
+- **Hinweis**: „! Bald wechseln“ ab 75 % der Grenze (Standard 600 km), „‼ Wechsel empfohlen“ ab der Grenze (800 km),
+  sonst „✓ Gut in Schuss“ – immer Zeichen + Wort. Quelle: gängige Faustregel 500–800 km (Material: Dämpfung, Profil);
+  ausdrücklich **keine medizinische Aussage**, kein Verletzungsversprechen.
+
+**Datenbank (`20261025120400_shoes.sql`, nur additiv):** Tabellen `shoes`, `shoe_defaults`, `shoe_assignments`, RLS
+(nur eigene Zeilen lesen), kein direktes Schreiben; `save_shoe_data(p_data)` ersetzt den ganzen Stand atomar (prüft
+Felder, Grenzen, fremde IDs; Fremdschlüssel: Standard nur mit Schuh derselben Sportart, gelöschter Schuh → Standard null,
+Wahl entfällt), `delete_my_shoe_data()`. Kein Gesundheitsdatum: bleibt beim Widerruf, Konto löschen per Kaskade.
+`export_my_data` als Obermenge plus drei Tabellen – **wichtig für spätere Migrationen:** `jsonb_build_object` nimmt
+höchstens 100 Argumente (50 Tabellen); weitere Tabellen hängen im zweiten Objekt (`|| jsonb_build_object(…)`).
+pgTAP `82_shoes.test.sql`, Abgleich `shoes/shoes-db-sync.test.ts`.
+
+**App:** eigene Schnittstelle `data/shoes.ts` (wie das Zyklus-Modul über `attachShoes` in `create-backend.ts`, damit
+`backend.ts`, `local-backend.ts` und `supabase-backend.ts` unberührt bleiben). **Offline-first:** jede Änderung sofort
+im Gerätespeicher (`fitnessapp.shoes.v1`, je Konto), als „wartend“ markiert und beim nächsten Laden/Speichern mit
+Verbindung gesendet (der neueste Stand gewinnt). Abmelden, Konto löschen und Gerätedaten löschen leeren den Speicher.
+Ausdauer → **„Meine Schuhe“** (Kacheln mit Fortschrittsbalken), Seite `/ausdauer/schuhe` (anlegen, bearbeiten, als
+Standard, ausmustern/wieder verwenden, löschen, alle Schuh-Angaben löschen), Chip **„Schuh: Pegasus 41 (412 km)“** an
+Strecke und Tagebuch-Eintrag (Tippen → Auswahl: automatisch / Schuh / ohne Schuh). Aufzeichnung und Uhr-Import bleiben
+unverändert: die Zuordnung rechnet die App (kein Eingriff in den Aufnahme-Bildschirm).
+
+### 22.2 Renn-Pace-Plan (Punkt 5)
+
+**Regeln (`packages/core/src/plan/race-pace.ts`, `RACE_PACE_PLAN`):**
+
+- `racePacePlan({ distanceM, targetTimeS, strategy, elevationProfile, fueling, discipline, reference })`: Abschnitte je
+  km, ab 25 km je 5 km (Marathon: 8 × 5 km + 2,195 km). **Summe immer = Zielzeit** (Uhrzeit auf Sekunden gerundet,
+  Tempo aus der ungerundeten Zeit).
+- **Gleichmäßig** (Standard), **Negativ** (zweite Hälfte 2 % schneller), **Höhenprofil**: Strecke aus „Meine Strecken“
+  mit Höhenprofil (GPX-Import oder Aufzeichnung, ±10 % der Renn-Distanz, wird auf die Distanz gestreckt): +3 % Zeit je %
+  Steigung, −1,5 % je % Gefälle (Gefälle zählt nur bis 5 %, Steigung gekappt bei 15 %), in 100-m-Schritten –
+  vereinfacht nach Minetti 2002. Passt die Strecke nicht: flach mit Hinweis.
+- **Verpflegung**: dieselbe Rechnung wie die Wettkampf-Ernährung (`raceFuelingPlan` mit der Zielzeit als Dauer): unter
+  60 min nichts, bis 120 min bis 30 g/h, 120–150 min 30–60 g/h, darüber 60–90 g/h nur Fortgeschrittene/Leistungssport;
+  Portion alle 30 min → Stelle auf der Strecke (auf 100 m). Unter 18 bzw. ohne Einwilligung nur allgemein (keine
+  Gramm). Gramm nur mit „Kalorienzahlen anzeigen“.
+- **Plausibilität**: dieselbe Regel wie die Ampel (`goalTimePlausible`: Zielzeit höchstens 5 % schneller als die
+  Riegel-Vorhersage) → Hinweis „Die Zielzeit passt nicht zu deiner Referenzzeit“ + Knopf „Plan mit der Vorhersage
+  zeigen“. Tempo außerhalb 2:30–15:00 min/km → kein Plan.
+- **Für die Sprach-Ansagen** (Etappe „Sprache & Trinken“): `racePaceCheckpoint(plan, distanceM, elapsedS)` → Soll-Zeit
+  an der Stelle (`targetElapsedS`), Abweichung `deltaS` (+ = hinter dem Plan), `status` `ahead | on_target | behind`
+  (±10 s), aktueller Abschnitt und dessen Soll-Tempo, nächster Verpflegungspunkt, Rest-Distanz. Rein; die Sätze
+  formuliert die App.
+
+**App:** Karte „Dein Pace-Plan“ in „Mein Wettkampf“ (nur Laufen; mit Zielzeit, sonst Vorhersage aus der Referenzzeit):
+Aufteilung, Strecke, Balken-Grafik (Tempo je Abschnitt, ◆ = Verpflegung), Tabelle (Abschnitt, Tempo, Uhr, Höhenmeter,
+Verpflegungs-Zeilen), Hinweis „Die Anstrengung hat Vorrang …“, Link zur Wettkampf-Ernährung, **Druckansicht/PDF**
+`/pace-plan` (gleicher Druck-Renderer wie Trainings- und Essensplan; keine Gesundheitsangaben).
+
+**Tests:** Core `race-pace.test.ts` (5 km, 10 km, Halbmarathon, Marathon, Triathlon-Laufteil, negativ, Höhenprofil,
+Strecke zu lang, Verpflegung je Stufe, nur allgemein, unplausibel, Referenz zu weit weg, Grenzen, Checkpoint),
+`shoes.test.ts`, `shoes-db-sync.test.ts`; App `shoe-format.test.ts`, `race-pace-format.test.ts`, `data/shoes.test.ts`
+(Testmodus, offline/online, Ablehnung, Export); Playwright `shoes-pace.spec.ts`; pgTAP `82_shoes.test.sql`.
+
+**Offen / Gründer-Fragen:**
+
+- **SP-G1** Grenzen 600/800 km und Steigungsfaktoren 3 %/1,5 % fachlich prüfen lassen.
+- **SP-G2** Triathlon-Laufteil: Core kann ihn (5 km/10 km), aber Triathlon hat keine Zielzeit (W-G6) – Pace-Plan dort
+  erst, wenn ihr eine Laufteil-Zielzeit wollt.
+- **SP-G3** Gewählte Aufteilung/Strecke merkt sich die Karte nur bis zum Verlassen (nicht gespeichert).
+- **SP-G4** Mehrere Geräte offline gleichzeitig: der zuletzt gesendete Schuh-Stand gewinnt.
+
+---
+
+## Nachtrag 25.10.2026 – „Meine Strecken“ (gleiche Strecke wiedererkennen)
+
+Gründer-Entscheidungen (Vorschlag 24.10.2026, Standardwerte übernommen): (1) Läufe ohne Antwort zählen **vorläufig**
+mit (Kennzeichnung „automatisch“), bis „Nein“ getippt wird; (2) eine Runde **andersherum** ist eine eigene Strecke;
+(3) Rundkurs mit **anderem Startpunkt**: erst später; (4) „Favorit“ heißt in der Oberfläche **„Meine Strecke“**
+(technisch bleibt `is_favorite`).
+
+**Erkennung** (`packages/core/src/routes/match.ts`, feste Regeln auf dem Gerät, keine KI, gratis): gleiche Person
+und Sportart → nicht abgelehnt → Distanz ±10 % → Rahmen (bbox + 200 m) überlappen → Start und Ende je ≤ 150 m →
+beide Linien vereinfacht, alle 25 m neu abgetastet (höchstens 200 Punkte), überstehende Anfangs-/Endstücke bis 150 m
+abgeschnitten (verspäteter GPS-Start der Uhr) → diskreter Fréchet-Abstand ≤ 60 m; passt die umgedrehte Linie um mehr
+als 10 m besser, ist es „andersherum“ (kein Treffer). Mehrere Treffer → kleinster Abstand, dann älteste Strecke, dann
+id. Konstanten: `ROUTE_MATCH` in `constants.ts` (Quellen dort). `autoMatchRoutes` läuft nach jedem Laden der Strecken
+(App-Aufzeichnung, GPX) und direkt nach dem Abgleich mit der Uhr (`apps/mobile/src/data/route-match.ts`).
+
+**Vergleich** (`compare.ts`): `compareAttempts` zählt Läufe mit `route_match` repeat/auto/confirmed (nie rejected);
+`routeHistory` (Verlauf, zeitlich, nicht vergleichbare markiert, kein Feld „best“), `attemptPaceText`
+(„Ø Pace 5:38 → 5:24 /km“, Rad km/h). Übersichten in `my-routes.ts` (`myRouteTiles`, `routeMatchInfo`,
+`latestAutoMatch`).
+
+**Datenbank** (`20261025120900_route_match.sql`, nur additiv, RLS unverändert): `tracked_routes.route_match`
+(CHECK repeat/auto/confirmed/rejected, Bestand mit Verweis → repeat), `match_rejected_ids uuid[]` (höchstens 20),
+`auto_match boolean default true`; Trigger hält Herkunft und Verweis stimmig (auch beim Löschen der Strecke);
+`set_route_match(p_route, p_favorite, p_state)` (auto | confirmed | rejected | clear; eigene Strecke, Ziel eigener
+Favorit derselben Sportart, ±10 %, kein Kreis; „auto“ überschreibt keine Entscheidung) und `set_route_auto_match`.
+Export über `export_my_data` automatisch (ganze Zeile). pgTAP: `supabase/tests/76_route_match.test.sql`. Testmodus:
+gleiche Regeln in `apps/mobile/src/data/tracked-route-rows.ts`.
+
+**App**: Ausdauer → Hinweis „Lauf von der Uhr (…) passt vermutlich zu …“ und Kacheln „Meine Strecken“ (zuletzt
+gelaufen zuerst); Lauf-Detail → Vorschlag „Gleiche Strecke wie …“ mit Ja / Nein / Andere Strecke wählen, nach „Nein“
+Rückgängig, nach „Ja“ „Gehört zu …“ + „Zum letzten Mal“; ohne Zuordnung „Als neue Strecke merken“ (Name, „Künftige
+Läufe automatisch zuordnen“); Strecken-Seite `/ausdauer/strecke/[id]` mit Karte, Zum letzten Mal, Verlauf
+(Zeit/Pace), Kilometer im Vergleich (türkis = schneller, orange = langsamer), Liste aller Läufe (anders lang grau),
+Verwalten (automatisch zuordnen, Erneut laufen, Umbenennen, nicht mehr merken – Läufe bleiben).
+
+**Regeln**: nur eigene Läufe, keine Rangliste, keine Bestzeit, keine Serien, Reihenfolge nach Datum; Puls/kcal nicht
+auf der Strecken-Seite; Streckenname nie auf Teilen-Bildern; Koordinaten nie in Logs. Offen: Schwellen mit echten
+Uhr-Läufen nachjustieren; „Nachträglich zuordnen“ für Altbestand läuft automatisch mit (höchstens 50 je Durchgang).
+
+### Nachtrag 25.10.2026 – „Dein Fortschritt“ (auch ohne gleiche Strecke)
+
+`packages/core/src/routes/progress.ts` (Konstanten `ROUTE_PROGRESS`): Vergleich nur mit eigenen Einheiten derselben
+Sportart und **ähnlicher Länge ±20 %** (Entscheidung: relative Spanne statt fester Klassen 0–5/5–10/… km, weil feste
+Grenzen 4,9 km und 5,1 km trennen würden). `runProgress`: Ø-Pace (Rad: km/h) gegen den Schnitt der letzten 4 Wochen
+davor (ab 2 Einheiten) und gegen die letzte vergleichbare Einheit, „etwa gleich“ bis 3 s/km bzw. 0,3 km/h,
+Höhenmeter-Hinweis „mit 120 Hm mehr als sonst“ (ab 40 m und 30 % über dem Schnitt). `progressTrend`: Ø-Pace je
+Kalenderwoche der letzten 8 Wochen (zeitlich, Wochen ohne Einheit = Lücke). `progressVolume`: km dieser Woche/dieses
+Monats. App: Karte „Dein Fortschritt“ auf Ausdauer (neueste Einheit) und auf der Seite jedes Laufs
+(`apps/mobile/src/components/progress-card.tsx`). Neutral: keine Bestzeit, keine Rangliste, nur mit sich selbst.
+
+### Nachtrag 25.10.2026 – Wetter je Lauf (Open-Meteo)
+
+Das **Gerät** holt das Wetter zum Start eines Laufs direkt bei Open-Meteo (Web und App, kein eigener Server, kostenlos,
+ohne Schlüssel): Temperatur, gefühlte Temperatur, Wind (km/h), Niederschlag, Luftfeuchte, Wetterlage (WMO-Code →
+deutscher Text + Symbol). **Datenschutz:** übermittelt werden nur die auf **0,1°** gerundete Startposition (Raster ca.
+7–11 km) sowie Tag und Stunde – nie die Strecke; erst nach einem **einmaligen Hinweis** mit Ja/Nein auf der Seite eines
+Laufs (Standard danach an), jederzeit in den Einstellungen abschaltbar (je Konto auf diesem Gerät,
+`fitnessapp.route-weather.v1`). Datenschutzerklärung (apps/web) Abschnitt 9 ergänzt. Bis 5 Tage zurück Forecast-API,
+älter Archiv-API. Kein Gesundheitsdatum, nie in Logs; Fehler/offline still („Wetter nicht verfügbar“), nachgeholt beim
+nächsten Öffnen (höchstens 10 Läufe je Durchgang).
+
+- Core: `routes/weather.ts` (`weatherRequest`, `parseWeatherResponse`, `routeWeatherSchema`, `weatherCodeText`,
+  `weatherLine`, `routesNeedingWeather`), Konstanten `ROUTE_WEATHER`.
+- DB: `20261025130000_route_weather.sql` – `tracked_routes.weather jsonb` mit CHECK `private.route_weather_valid`,
+  `set_route_weather(p_route, p_weather)` (nur eigene, null löscht); Export automatisch; pgTAP `77_route_weather`.
+- App: Wetter-Karte auf der Lauf-Seite, Wetter-Zeile in „Alle Läufe“ der Strecken-Seite, Schalter in den
+  Einstellungen (`components/route-weather.tsx`, `data/route-weather.ts`). Kein CSP in `vercel.json` vorhanden – nichts
+  zu ergänzen; falls später eine CSP kommt: `connect-src https://api.open-meteo.com https://archive-api.open-meteo.com`.
+- Teilen-Bild: Wetter bewusst **nicht** aufgenommen (Gründer: „im Zweifel weglassen“ – Wetter + Datum + Uhrzeit könnte
+  den Ort eingrenzen).
+
+### Nachtrag 25.10.2026 – Sprachansagen beim Aufzeichnen und Trinken-Tracker
+
+**Sprachansagen** (`packages/core/src/routes/voice-cues.ts`, Konstanten `VOICE_CUES`): offline über die
+Sprachausgabe des Geräts (expo-speech, Deutsch), Standard aus. Abstand je km (Rad je 5 km), je 0,5 km (Rad 2,5 km)
+oder alle 5 Minuten; Inhalte Pace/Tempo, Zeit, Puls (nur mit Einwilligung health_data UND Live-Wert – den gibt es
+während der App-Aufzeichnung derzeit nicht). Auf einer „Meinen Strecke“ (Erneut laufen) an vollen km zusätzlich
+„10 Sekunden schneller als beim letzten Mal“ (neutral). Intervall-Einheiten aus dem Plan (`workout_steps`): Ansage bei
+jedem Wechsel (Einlaufen/Belastung/Pause/Auslaufen, „Einheit geschafft“). Die App hört auf neue Punkte der Aufzeichnung
+(`apps/mobile/src/lib/voice-coach.ts`, auch im Hintergrund über den Standort-Dienst). **Audio-Ducking:** expo-audio
+(`setAudioModeAsync`, `interruptionMode: 'duckOthers'`, `shouldPlayInBackground`), iOS-Hintergrundmodus `audio`
+(`IOS_BACKGROUND_MODES`), kein Mikrofon, kein eigener Wiedergabe-Dienst auf Android (der Vordergrund-Dienst der
+Aufzeichnung hält die App am Leben). **Neues natives Modul → neuer EAS-Build nötig;** Ducking und Ansagen bei
+gesperrtem Bildschirm am Gerät prüfen (Android-Audiofokus bei TTS).
+
+**Trinken** (`packages/core/src/nutrition/hydration.ts`, Konstanten `HYDRATION`): Richtwert für Getränke = Gewicht ×
+35 ml/kg (ab 51 Jahren 30 ml/kg, D-A-CH) × 0,6 Getränkeanteil + 8 ml je Trainingsminute + Wärme-Zuschlag (ab 25 °C
+500 ml, ab 30 °C 750 ml laut gespeichertem Wetter der Läufe des Tages), Rahmen 1,2–4 l. Bei Herzerkrankung
+(Gesundheits-Check) oder Nierenerkrankung (Supplement-Check) kein Ziel, nur notieren. Schnell-Knöpfe +250/+500 ml,
+„Letzten Eintrag zurücknehmen“, Ring (Wasser-Türkis) auf Heute und Ernährung, 7 Tage als Balken. DB:
+`20261025140000_hydration.sql` (Tabelle `hydration_logs`, RLS nur eigene, `add_hydration` mit gleicher id = kein Doppel,
+heute bis 14 Tage zurück, 40 je Tag; `delete_hydration`, `delete_all_hydration`; `export_my_data` Obermenge mit
+`hydration_logs`), pgTAP `78_hydration`. App offline-first (Warteschlange auf dem Gerät, `data/hydration.ts`).

@@ -114,7 +114,15 @@ describe('Smartwatch im Testmodus: Import wie import_wearable_batch', () => {
             heart_rate: null,
           }),
         ],
-        [{ day: '2026-10-20', resting_hr_bpm: 52, sleep_min: 430, steps: 9000 }],
+        [
+          {
+            day: '2026-10-20',
+            resting_hr_bpm: 52,
+            sleep_min: 430,
+            steps: 9000,
+            hrv_rmssd_ms: null,
+          },
+        ],
       ),
     ]);
     expect(outcome).toEqual({
@@ -148,13 +156,29 @@ describe('Smartwatch im Testmodus: Import wie import_wearable_batch', () => {
     await backend.wearables.importBatches([
       batch(
         [session('hc-1')],
-        [{ day: '2026-10-20', resting_hr_bpm: 52, sleep_min: null, steps: 9000 }],
+        [
+          {
+            day: '2026-10-20',
+            resting_hr_bpm: 52,
+            sleep_min: null,
+            steps: 9000,
+            hrv_rmssd_ms: null,
+          },
+        ],
       ),
     ]);
     const again = await backend.wearables.importBatches([
       batch(
         [session('hc-1', { distance_m: 6100, heart_rate: null })],
-        [{ day: '2026-10-20', resting_hr_bpm: null, sleep_min: 400, steps: null }],
+        [
+          {
+            day: '2026-10-20',
+            resting_hr_bpm: null,
+            sleep_min: 400,
+            steps: null,
+            hrv_rmssd_ms: null,
+          },
+        ],
       ),
     ]);
     expect(again).toMatchObject({ result: { created: 0, updated: 1 } });
@@ -183,7 +207,15 @@ describe('Smartwatch im Testmodus: Import wie import_wearable_batch', () => {
             performed_on: '2026-10-21',
           }),
         ],
-        [{ day: '2026-07-01', resting_hr_bpm: 50, sleep_min: null, steps: null }],
+        [
+          {
+            day: '2026-07-01',
+            resting_hr_bpm: 50,
+            sleep_min: null,
+            steps: null,
+            hrv_rmssd_ms: null,
+          },
+        ],
       ),
     ]);
     expect(outcome).toMatchObject({ result: { created: 0, skipped: 4, days: 0 } });
@@ -216,6 +248,9 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
       client_updated_at: NOW,
       created_at: NOW,
       updated_at: NOW,
+      sport: null,
+      sport_duration_s: null,
+      sport_distance_m: null,
     });
     rows.cardioLogs.push({
       session_log_id: uuid(100),
@@ -352,7 +387,15 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
             performed_on: '2026-10-19',
           }),
         ],
-        [{ day: '2026-10-20', resting_hr_bpm: 52, sleep_min: null, steps: null }],
+        [
+          {
+            day: '2026-10-20',
+            resting_hr_bpm: 52,
+            sleep_min: null,
+            steps: null,
+            hrv_rmssd_ms: null,
+          },
+        ],
       ),
     ]);
     expect(await backend.wearables.disconnect(true)).toBe(2);
@@ -371,7 +414,15 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
     await backend.wearables.importBatches([
       batch(
         [session('r1')],
-        [{ day: '2026-10-20', resting_hr_bpm: 52, sleep_min: null, steps: null }],
+        [
+          {
+            day: '2026-10-20',
+            resting_hr_bpm: 52,
+            sleep_min: null,
+            steps: null,
+            hrv_rmssd_ms: null,
+          },
+        ],
       ),
     ]);
     const file = await backend.exportMyData();
@@ -394,7 +445,15 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
     await backend.wearables.importBatches([
       batch(
         [session('h1')],
-        [{ day: '2026-10-20', resting_hr_bpm: 52, sleep_min: null, steps: null }],
+        [
+          {
+            day: '2026-10-20',
+            resting_hr_bpm: 52,
+            sleep_min: null,
+            steps: null,
+            hrv_rmssd_ms: null,
+          },
+        ],
       ),
     ]);
     await backend.revokeConsent('health_data');

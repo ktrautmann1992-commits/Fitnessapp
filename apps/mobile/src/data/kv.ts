@@ -89,6 +89,8 @@ export const STORAGE_KEYS = {
   logAssignments: 'fitnessapp.log-assignments.v1',
   /** Geräte-Einstellung „Bildschirm im Training anlassen“ (true/false, keine Nutzerdaten). */
   keepAwake: 'fitnessapp.keep-awake.v1',
+  /** Geräte-Einstellung „Aufwärmen & Dehnen“ (true/false, Standard an; docs/PLAN-TRAINING-MODI.md 5). */
+  warmupRoutine: 'fitnessapp.warmup-routine.v1',
   /**
    * Geräte-Einstellung lokale Benachrichtigungen (docs/PLAN-PHASE-4B.md 7, Etappe E): Opt-in Mess-Erinnerung und
    * Pausenende sowie „schon gefragt“ (true/false, keine Nutzerdaten). Abmelden und Konto löschen setzen sie zurück.
@@ -163,8 +165,40 @@ export const STORAGE_KEYS = {
    */
   shoppingPrefs: 'fitnessapp.shopping-prefs.v1',
   /**
+   * Reiter „Unterwegs“ (Auswärts essen, 25.10.2026): Favoriten und „Zuletzt“ – nur Gericht-IDs und Portion, ohne Datum
+   * oder Werte, je Konto (lib/eating-out-picks.ts).
+   */
+  eatingOutPicks: 'fitnessapp.eating-out-picks.v1',
+  /**
    * Ausdauer: zuletzt gewählt „Fahrrad“ oder „E-Bike“ (23.10.2026) – je Konto ein Wahrheitswert, nur dieses Gerät,
    * kein Gesundheitsdatum. Vorbelegung beim nächsten Rad-Eintrag bzw. der nächsten Aufzeichnung.
    */
   bikeChoice: 'fitnessapp.bike-choice.v1',
+  /**
+   * Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md, 25.10.2026): Schalter an/aus (true/false, Standard aus) – nur
+   * dieses Gerät, keine Nutzerdaten. Abmelden, Konto löschen und „Testdaten löschen“ setzen ihn zurück.
+   */
+  widgetEnabled: 'fitnessapp.widget-enabled.v1',
+  /**
+   * Widget: zuletzt geschriebener Stand (Trainingsnamen, Schritte, kcal übrig – teils Gesundheitsdaten). NUR Android
+   * und NUR verschlüsselt (AES-256-GCM, eigener Schlüssel im Keystore, widget/widget-store.android.ts); gelöscht, sobald
+   * das Widget ausgeschaltet wird, beim Abmelden und beim Löschen des Kontos.
+   */
+  widgetSnapshot: 'fitnessapp.widget-snapshot.v1',
+  widgetSnapshotKey: 'fitnessapp.widget-snapshot-key.v1',
+  /**
+   * Wetter zu Läufen (25.10.2026): je Konto true/false nach dem einmaligen Hinweis (gerundete Startposition geht an
+   * Open-Meteo); fehlt = noch nicht gefragt (dann kein Abruf). Nur dieses Gerät, kein Gesundheitsdatum.
+   */
+  routeWeather: 'fitnessapp.route-weather.v1',
+  /**
+   * Sprachansagen beim Aufzeichnen (25.10.2026): je Konto Ein/Aus, Abstand (km, 0,5 km, 5 min) und Inhalte – nur
+   * dieses Gerät, kein Gesundheitsdatum (Puls wird nur angesagt, nie gespeichert).
+   */
+  voiceCues: 'fitnessapp.voice-cues.v1',
+  /**
+   * Sportarten Stufe 2: Sportart der laufenden GPS-Aufzeichnung (z. B. Skilanglauf) je Aufzeichnungs-id – nur dieses
+   * Gerät, kein Gesundheitsdatum; nach dem Speichern bzw. Verwerfen gelöscht.
+   */
+  gpsSportRecording: 'fitnessapp.gps-sport-recording.v1',
 } as const;

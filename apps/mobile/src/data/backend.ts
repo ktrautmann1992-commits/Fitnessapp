@@ -11,6 +11,7 @@ import type {
   DataExportFile,
   FoodLogEntry,
   MealPlanWeek,
+  RecipePreferenceKind,
   RecipeRating,
   StoredShoppingList,
   NutritionLibrary,
@@ -21,10 +22,12 @@ import type {
   SavePlanPayload,
   SavePlanSession,
   SessionLogPayload,
+  PantryItem,
   ShoppingProductLink,
   StoredAppLayout,
   TrackedRoutePayload,
   TrackedRouteRow,
+  RouteWeather,
   UpdateTrackedRoutePayload,
   WearableDataType,
   WearableImportBatch,
@@ -169,6 +172,12 @@ export interface OlderLogsPage {
  * Wo „Ab jetzt immer“ gewählt wurde (für die Prüfung canExclude im Testmodus, docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md 9):
  * Einheit des aktiven Plans, gespeicherte Position und die Übungen, die dort gerade angezeigt werden.
  */
+/** Ein Tag mit Gewicht (body_metrics.measured_on, weight_kg). SENSIBEL. */
+export interface WeightHistoryRow {
+  readonly measured_on: string;
+  readonly weight_kg: number;
+}
+
 export interface PreferenceSwapContext {
   sessionId: string;
   storedOrderNo: number;
@@ -417,6 +426,16 @@ export interface Backend {
   /** Eigenes Startgewicht (nur ohne Eintrag sinnvoll); null = entfernen. */
   setStartWeight(exerciseId: string, weightKg: number | null, rows: UserRows): Promise<UserRows>;
   /**
+   * Rezept-Favoriten (Gründer-Freigabe 25.10.2026): „Lieblingsgericht“ (`favorite`) bzw. „Nie wieder“ (`hidden`) setzen
+   * oder zurücknehmen (`null`). Kein Gesundheitsdatum – offline-first: Testmodus Gerätespeicher, Supabase-Modus
+   * normale Warteschlange (`set_recipe_preference`, Tabelle `recipe_preferences`). Fehler `recipe_preference_limit`.
+   */
+  setRecipePreference(
+    recipeId: string,
+    kind: RecipePreferenceKind | null,
+    rows: UserRows,
+  ): Promise<UserRows>;
+  /**
    * Widerruf health_data (R3): Senden der Tagebuch-Warteschlange sperren, Einträge aus Gesundheits-Plänen in
    * Warteschlange, Entwurf und Zwischenspeicher bereinigen (neutralisieren bzw. bei `deleteLogs` entfernen), dann
    * revoke_health_data(deleteLogs) in EINER Transaktion.
@@ -520,6 +539,13 @@ export interface Backend {
    */
   testPhaseOpen(): Promise<boolean>;
   /**
+   * Live-Anpassung (Premium, KONZEPT 4.1) für dieses Konto aktiv? Grundlage des Angebots „Leichter trainieren“ der
+   * Erholung aus der Uhr (25.10.2026). Supabase-Modus: `live_adjustment_status()` vom SERVER (Feature-Flag
+   * `live_adjustment` + Premium-Berechtigung, die Prüfung liegt auf dem Server); Fehler/offline → false (kein Angebot,
+   * nie blockierend). Testmodus: Schalter „Live-Anpassung einschalten“ (simulatePremium).
+   */
+  liveAdjustmentActive(): Promise<boolean>;
+  /**
    * Ein Foto auswerten lassen (Etappe E3). Supabase-Modus: POST /api/ernaehrung/foto in apps/web (Login-Token,
    * Premium/Limit/Einwilligung prüft der Server); Testmodus: dieselbe Kette mit der Attrappe auf dem Gerät. Das Foto
    * wird nie gespeichert. Antwort = feste Codes bzw. geprüfte Bestandteile (Zod, `foodPhotoResponseSchema`); ohne
@@ -557,6 +583,14 @@ export interface Backend {
    */
   saveShoppingProductLink(link: ShoppingProductLink, rows: UserRows): Promise<UserRows>;
   /**
+   * Vorratsschrank (25.10.2026): Einträge setzen (neu oder ersetzen). Nur mit gültiger Einwilligung health_data (sonst
+   * `consent_required`), höchstens PANTRY.itemsMax (sonst `pantry_limit`). Supabase-Modus: sofort lokal, Senden über
+   * die verschlüsselte Ernährungs-Warteschlange (offline möglich, letzter Stand gewinnt).
+   */
+  savePantryItems(items: readonly PantryItem[], rows: UserRows): Promise<UserRows>;
+  /** Vorrats-Eintrag löschen – geht immer (auch ohne Einwilligung), offline über die Warteschlange. */
+  deletePantryItem(foodId: string, rows: UserRows): Promise<UserRows>;
+  /**
    * Anordnung der Übersicht und der Menüleiste speichern (Etappe E2). Testmodus: Gerätespeicher; Supabase-Modus: sofort
    * lokal, Senden über die Warteschlange (offline möglich). Fehler `unknown` bei ungültiger Anordnung.
    */
@@ -585,6 +619,12 @@ export interface Backend {
   /** Ältere Einträge vor `before` nachladen (nur online, je bis zu 20 Einheiten; 4.5). */
   loadOlderLogs(before: string): Promise<OlderLogsPage>;
   /**
+   * Gewichtsverlauf für den Gewichtstrend (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 2): alle Tage mit Gewicht ab `from`,
+   * aufsteigend. SENSIBEL (Art. 9) – nur im Arbeitsspeicher, nie zwischengespeichert, nie geloggt. Supabase: nur online
+   * (Fehler `online_only`), RLS liefert nur eigene Zeilen; Testmodus: aus dem Gerätespeicher.
+   */
+  loadWeightHistory(from: string): Promise<WeightHistoryRow[]>;
+  /**
    * Datenexport (Recht auf Auskunft, 3.7): alle eigenen Zeilen aller Tabellen (export_my_data) plus Konto-E-Mail.
    * Nur online. Enthält Gesundheitsdaten – nie loggen, nie zwischenspeichern.
    */
@@ -604,6 +644,24 @@ export interface Backend {
   saveTrackedRoute(payload: TrackedRoutePayload): Promise<'saved' | 'queued'>;
   /** Name, Schwierigkeit, Favorit, Notiz ändern (update_tracked_route). Nur online. */
   updateTrackedRoute(payload: UpdateTrackedRoutePayload): Promise<void>;
+  /**
+   * „Meine Strecken“ (25.10.2026): Lauf einer gemerkten Strecke zuordnen (set_route_match; Testmodus: gleiche Regeln
+   * in tracked-route-rows.ts). 'auto' = Erkennung auf dem Gerät (ändert keine Entscheidung → 'unchanged'),
+   * 'confirmed' = „Ja“/„Andere Strecke wählen“, 'rejected' = „Nein“, 'clear' = „Rückgängig“. Nur online; Fehler
+   * `route_rejected`.
+   */
+  setRouteMatch(
+    routeId: string,
+    favoriteId: string | null,
+    state: 'auto' | 'confirmed' | 'rejected' | 'clear',
+  ): Promise<'auto' | 'confirmed' | 'rejected' | 'clear' | 'unchanged'>;
+  /**
+   * Wetter zum Start eines eigenen Laufs speichern (set_route_weather; null löscht). Das Gerät holt es vorher selbst
+   * bei Open-Meteo (data/route-weather.ts). Nur online; Fehler `route_rejected`.
+   */
+  setRouteWeather(routeId: string, weather: RouteWeather | null): Promise<void>;
+  /** „Neue Läufe automatisch zuordnen“ einer eigenen Strecke (set_route_auto_match). Nur online. */
+  setRouteAutoMatch(routeId: string, enabled: boolean): Promise<void>;
   /** Strecke endgültig löschen (delete_tracked_route; wartende: aus der Warteschlange). Nur online. */
   deleteTrackedRoute(id: string): Promise<void>;
   /** Alle eigenen Strecken löschen (delete_all_tracked_routes) samt Warteschlange → Anzahl. Nur online. */
@@ -715,6 +773,8 @@ export type BackendErrorCode =
   | 'food_log_rejected'
   /** Höchstens 100 Favoriten (FOOD_LOG_LIMITS.maxFavorites). */
   | 'favorite_limit'
+  /** Rezept-Favoriten: höchstens RECIPE_PREFERENCE_RULES.maxEntries (Herz und „Nie wieder“ zusammen). */
+  | 'recipe_preference_limit'
   /** Eigene Gerichte (E2): höchstens 100 (CUSTOM_MEAL_LIMITS.maxMeals). */
   | 'custom_meal_limit'
   /** Eigene Gerichte (E2): ungültige Angaben (ohne Namen, ohne Werte gemeldet). */
@@ -727,6 +787,8 @@ export type BackendErrorCode =
   | 'user_product_limit'
   /** Eigene Produkte (E4a): ungültige Angaben (ohne Namen, ohne Werte gemeldet). */
   | 'user_product_rejected'
+  /** Vorratsschrank: höchstens PANTRY.itemsMax Lebensmittel. */
+  | 'pantry_limit'
   /** Vorübergehend (Zeitlimit, Sperrkonflikt, Server 5xx, Drosselung) – „bitte gleich noch einmal“. */
   | 'temporary'
   /** Wettkampf abgelehnt (save/cancel/complete/delete_competition) – Grund in `competitionReason`. */

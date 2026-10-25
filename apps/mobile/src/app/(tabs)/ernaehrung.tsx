@@ -35,12 +35,15 @@ import {
 } from '@/components/nutrition';
 import { CompetitionNutritionCard } from '@/components/competition-nutrition';
 import { CustomMealDaySection } from '@/components/custom-meals';
+import { HydrationCard } from '@/components/hydration';
 import { DayOverviewCard, MealCard } from '@/components/nutrition-day-overview';
 import { FoodLogDaySection, PlanMealEaten } from '@/components/food-log';
 import { useReadableGuides } from '@/components/guides';
+import { MealPreferenceMenu } from '@/components/recipe-preference';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
 import { showEnergyNumbers } from '@/data/nutrition-plan';
+import { preferenceForRecipe } from '@/data/recipe-preference-rows';
 import { t } from '@/i18n';
 import { mealCardPreview, mealCardTitle } from '@/lib/nutrition-day-format';
 import { useOnline } from '@/lib/use-online';
@@ -353,6 +356,11 @@ export default function NutritionDayScreen() {
         </Body>
       ) : null}
 
+      {/* Trinken (25.10.2026): nur am heutigen Tag. */}
+      {picked === null || picked === today ? (
+        <HydrationCard today={today} testID="nutrition-hydration" />
+      ) : null}
+
       <NutritionNotices
         notices={notices}
         planNotices={[...(day?.notices ?? []), ...(plan?.notices ?? [])]}
@@ -417,20 +425,29 @@ export default function NutritionDayScreen() {
               {day !== null
                 ? meals.map((meal) => (
                     <View key={meal.slot} style={{ gap: 4 }}>
-                      <MealRow
-                        meal={meal}
-                        showNumbers={view.showNumbers && day.status !== 'no_targets'}
-                        foodName={foodName}
-                        leftover={(() => {
-                          const hint = leftoverBySlot.get(`${day.date}|${meal.slot}`);
-                          return hint ? leftoverHintView(hint, foodName) : undefined;
-                        })()}
-                        onOpen={() =>
-                          router.push(
-                            `/rezept/${encodeURIComponent(meal.recipeId)}?tag=${day.date}&platz=${meal.slot}` as Href,
-                          )
-                        }
-                      />
+                      {/* Rezept-Favoriten (25.10.2026): „⋯“ oben rechts – Lieblingsgericht oder Nie wieder. */}
+                      <MealPreferenceMenu
+                        recipeId={meal.recipeId}
+                        title={meal.titleDe}
+                        testID={`meal-${meal.slot}-pref`}
+                      >
+                        <MealRow
+                          meal={meal}
+                          showNumbers={view.showNumbers && day.status !== 'no_targets'}
+                          foodName={foodName}
+                          favorite={preferenceForRecipe(rows, meal.recipeId) === 'favorite'}
+                          reserveTrailing
+                          leftover={(() => {
+                            const hint = leftoverBySlot.get(`${day.date}|${meal.slot}`);
+                            return hint ? leftoverHintView(hint, foodName) : undefined;
+                          })()}
+                          onOpen={() =>
+                            router.push(
+                              `/rezept/${encodeURIComponent(meal.recipeId)}?tag=${day.date}&platz=${meal.slot}` as Href,
+                            )
+                          }
+                        />
+                      </MealPreferenceMenu>
                       {eatenAllowed ? (
                         <PlanMealEaten
                           meal={meal}
@@ -551,6 +568,14 @@ export default function NutritionDayScreen() {
           testID="nutrition-fridge-search"
         />
       ) : null}
+      {/* Vorratsschrank (25.10.2026). */}
+      <Button
+        label={t.pantry.open}
+        accessibilityHint={t.pantry.openHint}
+        variant="secondary"
+        onPress={() => router.push('/ernaehrung/vorrat' as Href)}
+        testID="nutrition-pantry"
+      />
       {(readable?.length ?? 0) > 0 ? (
         <Button
           label={t.nutrition.guides.open}

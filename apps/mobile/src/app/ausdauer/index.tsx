@@ -1,6 +1,8 @@
 import {
   type EndurancePeriod,
   enduranceTotals,
+  latestAutoMatch,
+  myRouteTiles,
   shiftPeriod,
   TRACKED_ROUTE_SPORTS,
   type TrackedRouteSport,
@@ -10,10 +12,14 @@ import { Redirect, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
-import { AreaButton } from '@/components/design';
+import { AreaButton, SectionLabel } from '@/components/design';
+import { MyRouteTiles, shortDayDe } from '@/components/my-routes';
+import { ProgressCard } from '@/components/progress-card';
+import { VoiceCueSettingsCard } from '@/components/voice-cues';
 import { LiveRegion } from '@/components/calendar';
 import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
 import { ActivityRow, TotalsView } from '@/components/endurance';
+import { ShoeOverview } from '@/components/shoes';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { Body, Button, Card, ChoiceList, Heading, LoadingState, Notice } from '@/components/ui';
 import { activitiesFromRows, routePoints } from '@/data/endurance-rows';
@@ -33,6 +39,7 @@ import { wearableBadgeText } from '@/components/wearables';
 import { useWearables } from '@/state/use-wearables';
 
 const E = t.endurance;
+const R = t.endurance.routes;
 
 /**
  * Bereich „Ausdauer“ (Etappen E4/E5, docs/PLAN-EINKAUFEN-AUSDAUER.md 6–7): Aufzeichnen (Laufen/Rad/Gehen), Summen der
@@ -79,6 +86,7 @@ export default function EnduranceScreen() {
   }, [active, app.backend, userId]);
 
   const result = state.kind === 'ready' ? state.result : null;
+  const userIdForRoutes = app.session?.userId ?? null;
   const activities = useMemo(
     () => activitiesFromRows(app.rows, result?.routes ?? [], result?.pending ?? []),
     [app.rows, result],
@@ -89,6 +97,20 @@ export default function EnduranceScreen() {
     for (const p of result?.pending ?? []) map.set(p.payload.id, routePoints(p.payload.polyline));
     return map;
   }, [result]);
+  const tiles = useMemo(
+    () => (result && userIdForRoutes ? myRouteTiles(userIdForRoutes, result.routes) : []),
+    [result, userIdForRoutes],
+  );
+  const autoMatch = useMemo(
+    () => (result && userIdForRoutes ? latestAutoMatch(userIdForRoutes, result.routes) : null),
+    [result, userIdForRoutes],
+  );
+  // „Dein Fortschritt“: neueste Einheit mit Distanz (ohne Schwimmen – keine Pace pro km vergleichbar).
+  const latestActivity = useMemo(
+    () =>
+      activities.find((a) => a.sport !== 'swim' && (a.distanceM ?? 0) > 0 && a.movingS > 0) ?? null,
+    [activities],
+  );
   const summary = useMemo(
     () => enduranceTotals(activities, { period, anchor }),
     [activities, period, anchor],
@@ -248,6 +270,14 @@ export default function EnduranceScreen() {
                 <Body muted>{E.record.demoHint}</Body>
               </>
             ) : null}
+            {/* Sportarten Stufe 2: Skilanglauf, Skitour, Inline-Skaten, SUP, Kajak/Kanu mit GPS. */}
+            <Button
+              label={t.sports.gpsButton}
+              variant="secondary"
+              onPress={() => router.push(`/sportart?gps=1&date=${today}` as Href)}
+              testID="endurance-gps-sport"
+            />
+            <Body muted>{t.sports.gpsHint}</Body>
             <Button
               label={E.record.manual}
               variant="secondary"
@@ -267,6 +297,57 @@ export default function EnduranceScreen() {
           </View>
         </Card>
       )}
+
+      {/* Sprachansagen (25.10.2026): Ein/Aus gleich beim Aufzeichnen, Details in den Einstellungen. */}
+      {!active && !recovered && (!isWeb || testMode) ? <VoiceCueSettingsCard compact /> : null}
+
+      {/* „Meine Strecken“ (25.10.2026): Hinweis auf neuen Treffer, Kacheln (zuletzt gelaufen zuerst). */}
+      {autoMatch ? (
+        <Notice tone="warning" silent testID="my-routes-notice">
+          <View style={styles.noticeRow}>
+            <View style={styles.flex}>
+              <Body>
+                {autoMatch.route.source === 'watch'
+                  ? R.noticeWatch(shortDayDe(autoMatch.route.started_at), autoMatch.favorite.name)
+                  : R.noticeApp(shortDayDe(autoMatch.route.started_at), autoMatch.favorite.name)}
+              </Body>
+            </View>
+            <Button
+              label={R.noticeCheck}
+              variant="secondary"
+              accessibilityLabel={R.noticeCheckA11y(autoMatch.favorite.name)}
+              onPress={() => router.push(`/ausdauer/${autoMatch.route.id}` as Href)}
+              testID="my-routes-notice-check"
+            />
+          </View>
+        </Notice>
+      ) : null}
+      {state.kind === 'ready' ? (
+        <View style={styles.section} accessibilityLabel={R.sectionA11y(tiles.length)}>
+          <SectionLabel>{`${R.title.toUpperCase()} · ${tiles.length}`}</SectionLabel>
+          {tiles.length === 0 ? (
+            <Body muted testID="my-routes-empty">
+              {R.empty}
+            </Body>
+          ) : (
+            <MyRouteTiles
+              tiles={tiles}
+              points={points}
+              onOpen={(id) => router.push(`/ausdauer/strecke/${id}` as Href)}
+            />
+          )}
+        </View>
+      ) : null}
+
+      {latestActivity ? (
+        <ProgressCard
+          activity={latestActivity}
+          activities={activities}
+          today={berlinTodayIso()}
+          showLatest
+          testID="endurance-progress"
+        />
+      ) : null}
 
       <Card>
         <View style={styles.section}>
@@ -303,6 +384,9 @@ export default function EnduranceScreen() {
           </View>
         </View>
       </Card>
+
+      {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 22): Kacheln „Meine Schuhe“. */}
+      <ShoeOverview />
 
       <Heading level={2}>{E.list.title}</Heading>
       {result?.offline ? <Notice tone="warning">{E.list.offline}</Notice> : null}
@@ -380,4 +464,6 @@ const styles = StyleSheet.create({
   section: { gap: spacing.sm },
   list: { gap: spacing.sm },
   paging: { flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between' },
+  noticeRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
+  flex: { flex: 1, minWidth: 180 },
 });

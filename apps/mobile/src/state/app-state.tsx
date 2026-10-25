@@ -8,6 +8,7 @@ import {
   upsertDaySwap,
   type GeneratedPlan,
   type MealPlanWeek,
+  type RecipePreferenceKind,
   type RecipeRating,
   type StoredShoppingList,
   type PlanLibrary,
@@ -24,6 +25,7 @@ import {
   type CompetitionFeasibility,
   type SaveCompetitionPayload,
   type CustomMeal,
+  type PantryItem,
   type ShoppingProductLink,
   type StoredAppLayout,
   type UserFoodProduct,
@@ -94,6 +96,7 @@ import { appNotifications } from '@/lib/app-notifications';
 import { berlinTodayIso, todayIso } from '@/lib/format';
 import { deviceTimeZone } from '@/lib/notifications';
 import { supabaseConfig } from '@/lib/supabase';
+import { resetHomeWidget } from '@/widget/reset';
 
 import { healthConsentStatus, resolveEntryRoute, type EntryRoute } from './flow';
 
@@ -350,6 +353,11 @@ export interface AppContextValue {
   saveRecipeRating: (recipeId: string, rating: RecipeRating | null) => Promise<void>;
   /** Alle eigenen Bewertungen löschen (Etappe N10). */
   deleteRecipeRatings: () => Promise<void>;
+  /**
+   * Rezept-Favoriten (25.10.2026): „Lieblingsgericht“ bzw. „Nie wieder“ setzen oder zurücknehmen (`null`). Offline-first
+   * (Gerätespeicher bzw. Warteschlange). Fehler `recipe_preference_limit`.
+   */
+  setRecipePreference: (recipeId: string, kind: RecipePreferenceKind | null) => Promise<void>;
   /** „Mag ich nicht“ je Lebensmittel ersetzen (Etappe N10). */
   saveFoodDislikes: (foodIds: readonly string[]) => Promise<void>;
   /** Ernährungstagebuch (Etappe E1): Einträge neu anlegen bzw. ersetzen (Testmodus; Supabase ab N7 Teil 2). */
@@ -370,6 +378,9 @@ export interface AppContextValue {
   saveAppLayout: (layout: StoredAppLayout) => Promise<void>;
   /** Einkaufen E1: Zuordnung Strichcode → Lebensmittel lernen (nur mit Einwilligung; Fehler ohne Nummer/Namen). */
   saveShoppingProductLink: (link: ShoppingProductLink) => Promise<void>;
+  /** Vorratsschrank (25.10.2026): Einträge setzen bzw. löschen (offline-first, siehe Backend). */
+  savePantryItems: (items: readonly PantryItem[]) => Promise<void>;
+  deletePantryItem: (foodId: string) => Promise<void>;
 
   // --- Übungstausch (docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md, Etappe T2) ---
   /** „Nur heute“-Tausche vor dem Training (Gerätespeicher, nur dieses Konto; geprüft bei jeder Anzeige im Core). */
@@ -908,6 +919,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [backend, rows],
   );
 
+  const setRecipePreference = useCallback(
+    async (recipeId: string, kind: RecipePreferenceKind | null) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.setRecipePreference(recipeId, kind, rows));
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
+  );
+
   const deleteRecipeRatings = useCallback(async () => {
     if (!rows) {
       throw new BackendError('not_signed_in');
@@ -1024,6 +1046,28 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         throw new BackendError('not_signed_in');
       }
       setRows(await backend.saveAppLayout(layout, rows));
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
+  );
+
+  const savePantryItems = useCallback(
+    async (items: readonly PantryItem[]) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.savePantryItems(items, rows));
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
+  );
+
+  const deletePantryItem = useCallback(
+    async (foodId: string) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.deletePantryItem(foodId, rows));
       refreshPending();
     },
     [backend, refreshPending, rows],
@@ -1736,6 +1780,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     await forgetDaySwaps();
     // Etappe E: alle geplanten Benachrichtigungen stornieren, Geräte-Einstellung zurücksetzen.
     await appNotifications.reset().catch(() => undefined);
+    // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3): Schalter aus, Stand löschen.
+    await resetHomeWidget();
     resetUser();
   }, [backend, forgetDaySwaps, resetUser]);
 
@@ -1756,6 +1802,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       await backend.signOut();
       await forgetDaySwaps();
       await appNotifications.reset().catch(() => undefined);
+      // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3): Schalter aus, Stand löschen.
+      await resetHomeWidget();
       resetUser();
       return { kind: 'signed_out' };
     },
@@ -1772,6 +1820,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const clearDeviceData = useCallback(async () => {
     await backend.clearDeviceData();
     await appNotifications.reset().catch(() => undefined);
+    // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3): Schalter aus, Stand löschen.
+    await resetHomeWidget();
     setPendingBirthDateState(null);
     resetUser();
   }, [backend, resetUser]);
@@ -1855,6 +1905,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveCookDayStart,
       saveRecipeRating,
       deleteRecipeRatings,
+      setRecipePreference,
       saveFoodDislikes,
       saveFoodLogEntries,
       deleteFoodLogEntry,
@@ -1864,6 +1915,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveUserFoodProduct,
       deleteUserFoodProduct,
       saveShoppingProductLink,
+      savePantryItems,
+      deletePantryItem,
       saveAppLayout,
       liveAdjust,
       setSimulatePremium,
@@ -1946,6 +1999,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveCookDayStart,
       saveRecipeRating,
       deleteRecipeRatings,
+      setRecipePreference,
       saveFoodDislikes,
       saveFoodLogEntries,
       deleteFoodLogEntry,
@@ -1955,6 +2009,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveUserFoodProduct,
       deleteUserFoodProduct,
       saveShoppingProductLink,
+      savePantryItems,
+      deletePantryItem,
       saveAppLayout,
       liveAdjust,
       setSimulatePremium,

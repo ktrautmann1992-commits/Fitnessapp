@@ -16,7 +16,15 @@ import { createDeviceProtectedStores } from './device-protected-store';
 import type { KeyValueStore } from './kv';
 import { createLocalBackend } from './local-backend';
 import { readWebUrl } from './food-photo-remote';
+import { attachShoes, createLocalShoes, createRemoteShoes } from './shoes';
+import { attachHydration, createLocalHydration, createRemoteHydration } from './hydration';
 import { createSupabaseBackend } from './supabase-backend';
+import {
+  attachTrainingModes,
+  createLocalTrainingModes,
+  createRemoteTrainingModes,
+} from './training-modes';
+import { createTrainingModesStore } from './training-modes-store';
 import type { ConsentPlatform } from './types';
 
 /** Gerätespeicher: AsyncStorage (im Browser localStorage). */
@@ -83,7 +91,30 @@ export function createBackend(): Backend {
       // Etappe E3: Gericht per Foto über apps/web (fehlt die Adresse, ist „Per Foto“ nicht verfügbar).
       webUrl: readWebUrl(process.env.EXPO_PUBLIC_WEB_URL),
     });
-    return attachCycle(backend, createRemoteCycle({ client, stores: cycleStores }));
+    // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 22): eigene Schnittstelle wie das Zyklus-Modul.
+    attachShoes(
+      backend,
+      createRemoteShoes({
+        client,
+        store: deviceStore,
+        backend,
+        logWindowStart: () => backend.logHistoryStart() ?? todayIso(),
+      }),
+    );
+    attachHydration(
+      backend,
+      createRemoteHydration({
+        client,
+        store: deviceStore,
+        userId: async () => (await backend.getSession())?.userId ?? null,
+        now,
+      }),
+    );
+    // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 7): Tabellen pain_episodes/travel_modes, eigener geschützter Speicher.
+    return attachTrainingModes(
+      attachCycle(backend, createRemoteCycle({ client, stores: cycleStores })),
+      createRemoteTrainingModes({ client, store: createTrainingModesStore(), newId }),
+    );
   }
   // Testmodus: einzige Stelle, an der die Plan-Engine Entwürfe nutzen darf (allowDrafts in createLocalBackend).
   const local = createLocalBackend(deviceStore, {
@@ -97,5 +128,18 @@ export function createBackend(): Backend {
     // Etappe E4: laufende Aufzeichnung (Standortdaten) im eigenen geschützten Speicher.
     routeRecordingStore: stores.routeRecording,
   });
-  return attachCycle(local, createLocalCycle(cycleStores));
+  attachShoes(local, createLocalShoes(deviceStore, local));
+  attachHydration(
+    local,
+    createLocalHydration({
+      store: deviceStore,
+      userId: async () => (await local.getSession())?.userId ?? null,
+      now,
+      today: () => todayIso(),
+    }),
+  );
+  return attachTrainingModes(
+    attachCycle(local, createLocalCycle(cycleStores)),
+    createLocalTrainingModes({ store: createTrainingModesStore(), now, newId }),
+  );
 }

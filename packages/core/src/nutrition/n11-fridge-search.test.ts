@@ -54,7 +54,7 @@ describe('Eingabe und leere Auswahl', () => {
   it('keine Zutat → keine Treffer; Schema strikt, doppelte zählen einmal, höchstens 100', () => {
     expect(searchFridge(input())).toEqual([]);
     expect(searchFridge(input(), { foodIds: [] })).toEqual([]);
-    expect(fridgeSearchQuerySchema.parse(undefined)).toEqual({ foodIds: [] });
+    expect(fridgeSearchQuerySchema.parse(undefined)).toEqual({ foodIds: [], pantry: [] });
     expect(() =>
       searchFridge(input(), { foodIds: Array.from({ length: 101 }, (_, i) => `zutat-${i}`) }),
     ).toThrow();

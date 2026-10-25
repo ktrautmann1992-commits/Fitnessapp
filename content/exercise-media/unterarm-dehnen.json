@@ -1,0 +1,20 @@
+{
+  "exercise_id": "unterarm-dehnen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "unterarm-dehnen-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, ein Arm gestreckt nach vorn, die Finger zeigen nach oben, die andere Hand fasst die Finger.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -35,3 +35,4 @@ export * from './interval-timer';
 export * from './multisport';
 export * from './competition-outline';
 export * from './week-status';
+export * from './race-pace';

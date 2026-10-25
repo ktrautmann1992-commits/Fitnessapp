@@ -26,6 +26,7 @@ import {
   LoadingState,
   MIN_TOUCH,
   Notice,
+  Checkbox,
   OptionButton,
   TextField,
 } from '@/components/ui';
@@ -38,7 +39,7 @@ import { t } from '@/i18n';
 import { recipeNumbersText } from '@/lib/nutrition-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek } from '@/state/use-nutrition';
 import { Text } from '@/components/text';
 
@@ -70,6 +71,16 @@ export default function FridgeSearchScreen() {
   const [filter, setFilter] = useState('');
   const [limitHit, setLimitHit] = useState(false);
   const [shownCount, setShownCount] = useState<number>(FRIDGE_SEARCH.pageSize);
+  // Vorratsschrank (25.10.2026): standardmäßig mitzählen (nur mit gültiger Einwilligung, sonst leer).
+  const [usePantry, setUsePantry] = useState(true);
+  const pantryRows = app.rows?.pantryItems;
+  const pantry = useMemo(
+    () =>
+      usePantry && app.rows !== null && healthConsentStatus(app.rows, app.versions) === 'valid'
+        ? (pantryRows ?? []).map((p) => ({ foodId: p.food_id, low: p.low }))
+        : [],
+    [app.rows, app.versions, pantryRows, usePantry],
+  );
 
   // Einmal je Profil/Woche/Bestand – NICHT je Antippen (Wächter N11 S2): gefilterte Rezepte und Auswahlliste.
   const result = useMemo(() => {
@@ -91,11 +102,11 @@ export default function FridgeSearchScreen() {
   const found = useMemo(() => {
     if (result === null || result === 'error' || result.kind !== 'ok') return null;
     try {
-      return fridgeSearchResults(result, selected, shownCount);
+      return fridgeSearchResults(result, selected, shownCount, pantry);
     } catch {
       return 'error' as const;
     }
-  }, [result, selected, shownCount]);
+  }, [pantry, result, selected, shownCount]);
 
   if (app.status.kind === 'loading') {
     return (
@@ -252,9 +263,35 @@ export default function FridgeSearchScreen() {
         />
       ) : null}
 
+      {(pantryRows?.length ?? 0) > 0 ? (
+        <View style={styles.group} testID="fridge-pantry">
+          <Checkbox
+            label={t.pantry.fridge.usePantry}
+            checked={usePantry}
+            onChange={(value) => {
+              setUsePantry(value);
+              setShownCount(FRIDGE_SEARCH.pageSize);
+            }}
+            testID="fridge-use-pantry"
+          />
+          {usePantry && pantry.length > 0 ? (
+            <Body muted>{t.pantry.fridge.usePantryHint(pantry.length)}</Body>
+          ) : null}
+        </View>
+      ) : null}
+
       <View style={styles.group}>
-        <Heading level={2}>{texts.resultsTitle}</Heading>
-        {active.length === 0 ? (
+        <Heading level={2}>
+          {active.length === 0 && pantry.length > 0
+            ? t.pantry.fridge.pantryOnly
+            : texts.resultsTitle}
+        </Heading>
+        {active.length === 0 && pantry.length > 0 && total > 0 ? (
+          <Body muted testID="fridge-pantry-only">
+            {t.pantry.fridge.pantryOnlyHint}
+          </Body>
+        ) : null}
+        {active.length === 0 && pantry.length === 0 ? (
           <Notice tone="info" testID="fridge-empty-selection">
             {texts.emptySelection}
           </Notice>
@@ -374,12 +411,24 @@ function FridgeCard({
           </View>
         </View>
       </View>
-      <Text style={[styles.detail, { color: theme.text }]}>{texts.have(card.have.join(', '))}</Text>
+      {card.have.length > 0 ? (
+        <Text style={[styles.detail, { color: theme.text }]}>
+          {texts.have(card.have.join(', '))}
+        </Text>
+      ) : null}
       <Text style={[styles.detail, { color: theme.text }]} testID={`fridge-hit-${card.id}-missing`}>
         {card.missing.length === 0
           ? texts.missingNone
           : texts.missing(card.missing.join(', '), card.missingMore)}
       </Text>
+      {card.fromPantry.length > 0 ? (
+        <Text
+          style={[styles.detail, { color: theme.text }]}
+          testID={`fridge-hit-${card.id}-pantry`}
+        >
+          {t.pantry.fridge.fromPantry(card.fromPantry.join(', '))}
+        </Text>
+      ) : null}
       {card.missingMinor.length > 0 ? (
         <Text style={[styles.detail, { color: theme.textMuted }]}>
           {texts.missingMinor(card.missingMinor.join(', '))}

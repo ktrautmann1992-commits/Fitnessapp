@@ -25,6 +25,10 @@ describe('Anzeige der Smartwatch-Daten', () => {
     expect(dailyParts({ steps: null, sleep_min: null, resting_hr_bpm: 60 })).toBe(
       'Ruhepuls 60/min',
     );
+    // HRV (25.10.2026); ältere Zeilen ohne Feld bleiben wie bisher.
+    expect(dailyParts({ steps: null, sleep_min: 420, resting_hr_bpm: 55, hrv_rmssd_ms: 61 })).toBe(
+      '7 h 00 min Schlaf · Ruhepuls 55/min · HRV 61 ms',
+    );
     const row = (day: string) => ({
       user_id: 'u',
       day,
@@ -32,6 +36,7 @@ describe('Anzeige der Smartwatch-Daten', () => {
       resting_hr_bpm: null,
       sleep_min: null,
       steps: 100,
+      hrv_rmssd_ms: null,
       updated_at: '2026-10-21T00:00:00Z',
     });
     const lines = recentDailyLines(

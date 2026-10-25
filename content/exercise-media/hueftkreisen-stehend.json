@@ -1,0 +1,20 @@
+{
+  "exercise_id": "hueftkreisen-stehend",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "hueftkreisen-stehend-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht neben einer Wand stehen, eine Hand an der Wand, das andere Knie auf Hüfthöhe angehoben.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { FRIDGE_SEARCH } from '../constants';
+import { FRIDGE_SEARCH, PANTRY } from '../constants';
 import {
   type Food,
   type FoodLookup,
@@ -36,8 +36,16 @@ export const fridgeSearchQuerySchema = z
   .strictObject({
     /** Ausgewählte Lebensmittel (Katalog-IDs); doppelte zählen einmal. */
     foodIds: z.array(contentIdSchema).max(FRIDGE_SEARCH.maxSelectedFoods).default([]),
+    /**
+     * Vorratsschrank (Gründer-Freigabe 25.10.2026, `pantry.ts`): Lebensmittel aus dem Vorrat zählen als vorhanden –
+     * „fast leer“ nur mit `PANTRY.lowWeight`. Ausgewählte Zutaten gehen vor (zählen voll).
+     */
+    pantry: z
+      .array(z.strictObject({ foodId: contentIdSchema, low: z.boolean() }))
+      .max(PANTRY.itemsMax)
+      .default([]),
   })
-  .default({ foodIds: [] });
+  .default({ foodIds: [], pantry: [] });
 export type FridgeSearchQuery = z.input<typeof fridgeSearchQuerySchema>;
 
 export interface FridgeSearchInput {
@@ -61,6 +69,8 @@ export interface FridgeSearchHit {
   readonly missing: readonly string[];
   /** Fehlende Zutaten aus Vorrat und Gewürzen („hast du wahrscheinlich da“). */
   readonly missingMinor: readonly string[];
+  /** Vorhandene Zutaten, die (nur) aus dem Vorratsschrank kommen (Teilmenge von `have`). */
+  readonly fromPantry: readonly string[];
 }
 
 export interface FridgeFoodOption {
@@ -164,24 +174,32 @@ export function fridgeSearchFoodOptions(
   );
 }
 
-/** Übereinstimmung eines Rezepts mit der Auswahl (Zutaten mit Gewicht, Plan 19.7 N11). */
+/**
+ * Übereinstimmung eines Rezepts mit der Auswahl (Zutaten mit Gewicht, Plan 19.7 N11). `pantry` = Vorratsschrank
+ * (Lebensmittel → Anteil 1 bzw. `PANTRY.lowWeight` bei „fast leer“): eine Zutat aus dem Vorrat zählt mit diesem Anteil
+ * als vorhanden, eine ausgewählte immer voll. Ohne Vorrat genau wie bisher.
+ */
 export function fridgeMatch(
   variant: FilteredRecipe,
   foods: FoodLookup,
   selected: ReadonlySet<string>,
+  pantry: ReadonlyMap<string, number> = new Map(),
 ): Omit<FridgeSearchHit, 'variant'> & { readonly hasMainMatch: boolean } {
   let total = 0;
   let present = 0;
   let hasMainMatch = false;
   const have: string[] = [];
+  const fromPantry: string[] = [];
   const missing: string[] = [];
   const missingMinor: string[] = [];
   for (const { foodId, food, grams } of usedIngredients(variant, foods)) {
     const weight = grams * (isMinorFridgeFood(food) ? FRIDGE_SEARCH.minorWeight : 1);
     total += weight;
-    if (selected.has(foodId)) {
-      present += weight;
+    const share = selected.has(foodId) ? 1 : (pantry.get(foodId) ?? 0);
+    if (share > 0) {
+      present += weight * share;
       have.push(foodId);
+      if (!selected.has(foodId)) fromPantry.push(foodId);
       if (!isSeasoningFood(food)) hasMainMatch = true;
     } else if (isMinorFridgeFood(food)) {
       missingMinor.push(foodId);
@@ -195,8 +213,21 @@ export function fridgeMatch(
     have: unique(have),
     missing: unique(missing),
     missingMinor: unique(missingMinor),
+    fromPantry: unique(fromPantry),
     hasMainMatch,
   };
+}
+
+/** Vorrat als Anteile je Lebensmittel (1 bzw. `PANTRY.lowWeight` bei „fast leer“). */
+export function pantryShares(
+  pantry: readonly { readonly foodId: string; readonly low: boolean }[],
+): Map<string, number> {
+  const shares = new Map<string, number>();
+  for (const item of pantry) {
+    const share = item.low ? PANTRY.lowWeight : 1;
+    shares.set(item.foodId, Math.max(shares.get(item.foodId) ?? 0, share));
+  }
+  return shares;
 }
 
 /** Übereinstimmung auf feste Stellen gerundet, damit die Sortierung nicht an Rundungsresten hängt. */
@@ -205,8 +236,9 @@ function sortKey(match: number): number {
 }
 
 /**
- * Kühlschrank-Suche: Treffer für die ausgewählten Zutaten. Leere Auswahl → keine Treffer (die App zeigt dann den
- * Hinweis „Wähle aus, was du da hast“). Gelistet erst ab 1 % Übereinstimmung (abgerundet, wie angezeigt) – keine
+ * Kühlschrank-Suche: Treffer für die ausgewählten Zutaten und den Vorratsschrank. Leere Auswahl und leerer Vorrat →
+ * keine Treffer (die App zeigt dann den Hinweis „Wähle aus, was du da hast“). Nur Vorrat → „Passt zu deinem Vorrat“.
+ * Bei gleicher Übereinstimmung und gleich vielen fehlenden Hauptzutaten zuerst Rezepte mit mehr Vorrats-Zutaten. Gelistet erst ab 1 % Übereinstimmung (abgerundet, wie angezeigt) – keine
  * Karten mit „0 % passt“, z. B. nur Öl ausgewählt (Wächter N11 S1; Gewichtung unverändert, G2 offen).
  * `variants` = schon gefilterte Varianten aus `fridgeSearchVariants(input)` (dieselbe Eingabe!).
  */
@@ -217,10 +249,11 @@ export function searchFridge(
 ): FridgeSearchHit[] {
   const query = fridgeSearchQuerySchema.parse(rawQuery);
   const selected = new Set(query.foodIds);
-  if (selected.size === 0) return [];
+  const pantry = pantryShares(query.pantry);
+  if (selected.size === 0 && pantry.size === 0) return [];
   const hits: FridgeSearchHit[] = [];
   for (const variant of variants ?? fridgeSearchVariants(input)) {
-    const { hasMainMatch, ...result } = fridgeMatch(variant, input.foods, selected);
+    const { hasMainMatch, ...result } = fridgeMatch(variant, input.foods, selected, pantry);
     if (!hasMainMatch || fridgeMatchPercent(result.match) < FRIDGE_SEARCH.minPercent) continue;
     hits.push({ variant, ...result });
   }
@@ -228,6 +261,7 @@ export function searchFridge(
     (a, b) =>
       sortKey(b.match) - sortKey(a.match) ||
       a.missing.length - b.missing.length ||
+      b.fromPantry.length - a.fromPantry.length ||
       a.variant.recipe.title_de.localeCompare(b.variant.recipe.title_de, 'de') ||
       (a.variant.recipe.id < b.variant.recipe.id ? -1 : 1),
   );

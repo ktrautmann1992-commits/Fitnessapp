@@ -99,15 +99,15 @@ test('Übersicht bearbeiten: ausblenden, verschieben mit Ansage, bleibt nach dem
   // Ernährung dreimal nach oben (Knopf mit Namen für den Bildschirmleser), Ansage der neuen Stelle.
   await page.getByRole('button', { name: 'Ernährung heute nach oben' }).click();
   await expect(page.getByTestId('overview-edit-live')).toHaveText(
-    'Ernährung heute ist jetzt an Stelle 3 von 9.',
+    'Ernährung heute ist jetzt an Stelle 3 von 10.',
   );
   await page.getByRole('button', { name: 'Ernährung heute nach oben' }).click();
   await expect(page.getByTestId('overview-edit-live')).toHaveText(
-    'Ernährung heute ist jetzt an Stelle 2 von 9.',
+    'Ernährung heute ist jetzt an Stelle 2 von 10.',
   );
   await page.getByRole('button', { name: 'Ernährung heute nach oben' }).click();
   await expect(page.getByTestId('overview-edit-live')).toHaveText(
-    'Ernährung heute ist jetzt an Stelle 1 von 9.',
+    'Ernährung heute ist jetzt an Stelle 1 von 10.',
   );
   await page.getByTestId('overview-edit-done').click();
   await expect(page.getByTestId('overview-edit')).toHaveCount(0);
@@ -135,6 +135,7 @@ test('Übersicht bearbeiten: ausblenden, verschieben mit Ansage, bleibt nach dem
     'Fortschritt',
     'Ausdauer',
     'Schritte',
+    'Erholung',
     'Schnell zu',
   ]) {
     await page.getByRole('checkbox', { name: `${name} anzeigen` }).click();

@@ -23,10 +23,10 @@ const bodyweight = result.templates.filter((t) => isBodyweightTemplate(t));
 const standard = result.templates.filter((t) => !isBodyweightTemplate(t));
 
 describe('Startbestand (content/)', () => {
-  it('ca. 80 Übungen (Startbestand + Körpergewicht K1/K2) und 24 + 18 Plan-Vorlagen, alle mit gültigem Schema', () => {
+  it('ca. 96 Übungen (Startbestand + Körpergewicht K1/K2 + Aufwärmen/Dehnen) und 24 + 18 Plan-Vorlagen, alle mit gültigem Schema', () => {
     expect(strayFiles).toEqual([]);
     expect(result.exercises.length).toBeGreaterThanOrEqual(45);
-    expect(result.exercises.length).toBeLessThanOrEqual(90);
+    expect(result.exercises.length).toBeLessThanOrEqual(110);
     expect(result.templates).toHaveLength(42);
     expect(result.exercises.length + result.templates.length).toBe(files.length);
   });

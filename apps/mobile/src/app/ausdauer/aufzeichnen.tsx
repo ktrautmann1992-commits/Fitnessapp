@@ -11,6 +11,7 @@ import {
   recordingSaveCheck,
   recordingSummary,
   ROUTE_DIFFICULTIES,
+  sportName,
   type RouteDifficulty,
   toTrackedRoutePayload,
   TRACKED_ROUTE_LIMITS,
@@ -35,6 +36,7 @@ import { AreaButton, Icon } from '@/components/design';
 import { BikeTypeChoice, EBikeBadge, useBikeChoice } from '@/components/e-bike';
 import { RouteSketch } from '@/components/endurance';
 import { LoopGuideCard } from '@/components/loop-guide-card';
+import { SportRecordingSave, useGpsSportart } from '@/components/sport-recording';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
   Body,
@@ -47,8 +49,8 @@ import {
   Notice,
   TextField,
 } from '@/components/ui';
-import { newId } from '@/data/create-backend';
-import { plannedCandidate, recordingDiaryDraft } from '@/data/route-diary';
+import { deviceStore, newId } from '@/data/create-backend';
+import { plannedCandidate, plannedSteps, recordingDiaryDraft } from '@/data/route-diary';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { berlinTodayIso, formatDateDe } from '@/lib/format';
@@ -63,6 +65,7 @@ import {
   stopActiveRecording,
 } from '@/lib/recording-controller';
 import { recordingSession, useRecordingSession } from '@/lib/recording-session';
+import { previousSplitsFor, readVoiceSettings, startVoiceCoach } from '@/lib/voice-coach';
 import { appFont, displayFont } from '@/lib/fonts';
 import { useColorSchemeName } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
@@ -101,6 +104,8 @@ export default function RecordScreen() {
     ebike?: string;
     /** Rundkurs-Vorschlag: id der Leitlinie (lib/loop-guide.ts) – Karte mit der Runde beim Laufen. */
     guide?: string;
+    /** Sportart mit GPS (Sportarten Stufe 2, z. B. Skilanglauf); fehlt = Laufen/Rad/Gehen. */
+    sportart?: string;
   }>();
   const router = useRouter();
   const app = useApp();
@@ -122,6 +127,8 @@ export default function RecordScreen() {
     current?.state.sport ?? (isSport(params.sport) ? params.sport : 'run');
   const demo = params.demo === '1';
   const eBikeParam = params.ebike === '1' ? true : params.ebike === '0' ? false : null;
+  // Sportarten Stufe 2: GPS-Sportart dieser Aufzeichnung (gemerkt je Aufzeichnung, components/sport-recording.tsx).
+  const gpsSportart = useGpsSportart(params.sportart, current?.state.id ?? null);
   // Laufende (bzw. wiederhergestellte) Aufzeichnung dieses Kontos: direkt Live-Ansicht bzw. Speichern zeigen.
   const owned = current && userId && current.state.ownerUserId === userId ? current : null;
   const phase: Phase =
@@ -167,6 +174,28 @@ export default function RecordScreen() {
       else setPhase({ kind: 'blocked', reason: permission });
     });
   }, [app.backend, demo, params.base, params.sport, params.step, router, userId]);
+
+  // Sprachansagen (25.10.2026): einmal je Aufzeichnung starten (Einstellung, letzte Zeiten der „Meinen Strecke“,
+  // Intervall-Schritte der heute geplanten Einheit). Läuft weiter, bis die Aufzeichnung gespeichert/verworfen ist.
+  const recordingId = owned?.state.id ?? null;
+  const baseRouteId = owned?.state.baseRouteId ?? null;
+  useEffect(() => {
+    if (phase.kind !== 'live' || !recordingId || !userId || !app.rows) return;
+    const rows = app.rows;
+    void (async () => {
+      const settings = await readVoiceSettings(deviceStore, userId);
+      if (!settings.enabled) return;
+      const routes = baseRouteId
+        ? ((await app.backend.loadTrackedRoutes().catch(() => null))?.routes ?? [])
+        : [];
+      await startVoiceCoach({
+        recordingId,
+        settings,
+        previousSplitsS: previousSplitsFor(baseRouteId, routes),
+        steps: plannedSteps(rows, sport, berlinTodayIso()),
+      });
+    })();
+  }, [app.backend, app.rows, baseRouteId, phase.kind, recordingId, sport, userId]);
 
   // Uhr für die großen Zahlen (1 s) und Grenze 12 h.
   useEffect(() => {
@@ -321,6 +350,21 @@ export default function RecordScreen() {
   }
 
   // --- Speichern ---------------------------------------------------------------------------------------------
+  if (phase.kind === 'save' && gpsSportart) {
+    return (
+      <Screen area="ausdauer" icon="run" title={sportName(gpsSportart)} testID="record-save-sport">
+        <SportRecordingSave
+          sport={gpsSportart}
+          onSaved={(day) => router.replace(`/tag/${day}` as Href)}
+          onDiscarded={() => router.replace('/ausdauer' as Href)}
+          onResume={async () => {
+            await resumeActiveRecording();
+            setPhase({ kind: 'live' });
+          }}
+        />
+      </Screen>
+    );
+  }
   if (phase.kind === 'save') {
     return (
       <SaveView
@@ -353,7 +397,11 @@ export default function RecordScreen() {
       area="ausdauer"
       icon="run"
       title={E.live.title(
-        sport === 'bike' && eBikeParam === true ? E.eBike.sport : E.sports[sport],
+        gpsSportart
+          ? sportName(gpsSportart)
+          : sport === 'bike' && eBikeParam === true
+            ? E.eBike.sport
+            : E.sports[sport],
       )}
       testID="record-live"
     >

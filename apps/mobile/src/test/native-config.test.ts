@@ -14,9 +14,11 @@ import { WEARABLE_DATA_TYPES } from '@fitnessapp/core';
 
 import appConfig, {
   ANDROID_MIN_SDK,
+  CALENDAR_PERMISSION_TEXT,
   CAMERA_PERMISSION_TEXT,
   HEALTH_CONNECT_BLOCKED_PERMISSIONS,
   HEALTH_CONNECT_READ_PERMISSIONS,
+  HOME_WIDGET,
   IOS_BACKGROUND_MODES,
   LOCATION_ALWAYS_TEXT,
   LOCATION_WHEN_IN_USE_TEXT,
@@ -39,6 +41,8 @@ const ALLOWED_ANDROID_PERMISSIONS = [
   'android.permission.ACCESS_FINE_LOCATION',
   'android.permission.FOREGROUND_SERVICE',
   'android.permission.FOREGROUND_SERVICE_LOCATION',
+  // Sprachansagen (expo-audio, 25.10.2026): Audio-Modus setzen (andere Musik leiser) – kein Mikrofon.
+  'android.permission.MODIFY_AUDIO_SETTINGS',
   // Smartwatch (Phase 8): nur Leserechte von Health Connect.
   'android.permission.health.READ_EXERCISE',
   'android.permission.health.READ_DISTANCE',
@@ -47,8 +51,13 @@ const ALLOWED_ANDROID_PERMISSIONS = [
   'android.permission.health.READ_RESTING_HEART_RATE',
   'android.permission.health.READ_SLEEP',
   'android.permission.health.READ_STEPS',
+  // „Erholung aus der Uhr“ (25.10.2026): HRV je Tag.
+  'android.permission.health.READ_HEART_RATE_VARIABILITY',
   // Routen der Uhr (Gründer-Entscheidung 23.10.2026).
   'android.permission.health.READ_EXERCISE_ROUTES',
+  // Trainings im Handy-Kalender (opt-in, Gründer-Freigabe 25.10.2026): eigener Kalender „Alpha5 Training“.
+  'android.permission.READ_CALENDAR',
+  'android.permission.WRITE_CALENDAR',
 ];
 const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.READ_EXTERNAL_STORAGE',
@@ -67,6 +76,7 @@ const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.health.WRITE_RESTING_HEART_RATE',
   'android.permission.health.WRITE_SLEEP',
   'android.permission.health.WRITE_STEPS',
+  'android.permission.health.WRITE_HEART_RATE_VARIABILITY',
 ];
 
 function config(): ExpoConfig {
@@ -217,6 +227,27 @@ describe('app.config.ts', () => {
     expect(ANDROID_MIN_SDK).toBe(26);
   });
 
+  it('Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md): nur Android, Name wie im Code, Vorschaubild vorhanden', async () => {
+    const plugin = config().plugins?.find(
+      (entry) => Array.isArray(entry) && entry[0] === 'react-native-android-widget',
+    );
+    expect(plugin).toEqual(['react-native-android-widget', { widgets: [HOME_WIDGET] }]);
+    const { TODAY_WIDGET_NAME } = await import('../widget/widget-names');
+    expect(HOME_WIDGET.name).toBe(TODAY_WIDGET_NAME);
+    expect(existsSync(join(APP_DIR, HOME_WIDGET.previewImage))).toBe(true);
+    // Höchstens stündlich (Akku); Android erlaubt nicht unter 30 min.
+    expect(HOME_WIDGET.updatePeriodMillis).toBeGreaterThanOrEqual(60 * 60 * 1000);
+    // Bild-Provider mit Zufallsnamen erst ab 0.24.0 (vorher für andere Apps erratbar).
+    const pkg = JSON.parse(readFileSync(join(APP_DIR, 'package.json'), 'utf8')) as {
+      dependencies: Record<string, string>;
+      main: string;
+    };
+    expect(pkg.dependencies['react-native-android-widget']).toBe('0.24.0');
+    // Einstieg meldet die Hintergrund-Aufgabe des Widgets an (index.ts).
+    expect(pkg.main).toBe('index.ts');
+    expect(readFileSync(join(APP_DIR, 'index.ts'), 'utf8')).toContain('registerHomeWidget()');
+  });
+
   it('Datenschutz-Manifest: kein Tracking, nur Zweck App-Funktion', () => {
     const manifest = config().ios?.privacyManifests;
     expect(manifest?.NSPrivacyTracking).toBe(false);
@@ -317,10 +348,17 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
         .filter((key) => key.endsWith('UsageDescription'))
         .sort(),
     ).toEqual([
+      'NSCalendarsFullAccessUsageDescription',
+      'NSCalendarsUsageDescription',
       'NSCameraUsageDescription',
       'NSLocationAlwaysAndWhenInUseUsageDescription',
       'NSLocationWhenInUseUsageDescription',
     ]);
+    expect(plist.NSCalendarsUsageDescription).toBe(CALENDAR_PERMISSION_TEXT);
+    expect(plist.NSCalendarsFullAccessUsageDescription).toBe(CALENDAR_PERMISSION_TEXT);
+    // Keine Erinnerungen (Reminders).
+    expect(plist).not.toHaveProperty('NSRemindersUsageDescription');
+    expect(plist).not.toHaveProperty('NSRemindersFullAccessUsageDescription');
     expect(plist.NSCameraUsageDescription).toBe(CAMERA_PERMISSION_TEXT);
     expect(plist.NSLocationWhenInUseUsageDescription).toBe(LOCATION_WHEN_IN_USE_TEXT);
     expect(plist.NSLocationAlwaysAndWhenInUseUsageDescription).toBe(LOCATION_ALWAYS_TEXT);
@@ -355,7 +393,7 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
     );
   });
 
-  it('iOS: Hintergrundmodus nur „location“ (Aufzeichnung), kein „fetch“ (E3)', () => {
+  it('iOS: Hintergrundmodi nur „location“ (Aufzeichnung) und „audio“ (Sprachansagen), kein „fetch“ (E3)', () => {
     expect(result._internal.modResults.ios.infoPlist.UIBackgroundModes).toEqual([
       ...IOS_BACKGROUND_MODES,
     ]);
@@ -392,6 +430,17 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
     expect(alias?.['intent-filter']?.[0]?.category?.[0]?.$['android:name']).toBe(
       'android.intent.category.HEALTH_PERMISSIONS',
     );
+  });
+
+  it('AndroidManifest: Widget-Empfänger nicht exportiert, keine neue Berechtigung (docs/PLAN-WIDGET.md)', () => {
+    const manifest = result._internal.modResults.android.manifest.manifest as unknown as {
+      application: { receiver?: { $: Record<string, string> }[] }[];
+    };
+    const receiver = (manifest.application[0]?.receiver ?? []).find(
+      (entry) => entry.$['android:name'] === `.widget.${HOME_WIDGET.name}`,
+    );
+    expect(receiver?.$['android:exported']).toBe('false');
+    expect(receiver?.$['android:label']).toBe(HOME_WIDGET.label);
   });
 
   it('AndroidManifest: Symbol der Benachrichtigung „Aufzeichnung läuft“ (E3)', () => {

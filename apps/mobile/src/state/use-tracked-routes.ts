@@ -2,6 +2,9 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 
 import type { TrackedRoutesResult } from '@/data/backend';
+import { deviceStore } from '@/data/create-backend';
+import { applyAutoMatches } from '@/data/route-match';
+import { applyWeatherPass, readWeatherSetting } from '@/data/route-weather';
 import { useApp } from '@/state/app-state';
 
 /**
@@ -27,7 +30,22 @@ export function useTrackedRoutes(): { state: TrackedRoutesState; reload: () => P
   const reload = useCallback(async () => {
     if (!userId) return;
     try {
-      const result = await backend.loadTrackedRoutes();
+      let result = await backend.loadTrackedRoutes();
+      // „Meine Strecken“: neue Läufe (App, Uhr) gleich auf dem Gerät erkennen – vorläufig zugeordnet (auto).
+      if (!result.offline && (await applyAutoMatches(backend, userId, result.routes)) > 0) {
+        result = await backend.loadTrackedRoutes();
+      }
+      // Wetter je Lauf (nur nach Zustimmung): fehlendes Wetter der neuesten Läufe nachholen, still bei Fehlern.
+      if (!result.offline && (await readWeatherSetting(deviceStore, userId)) === true) {
+        const saved = await applyWeatherPass(
+          backend,
+          userId,
+          result.routes,
+          new Date().toISOString(),
+          (url) => fetch(url),
+        ).catch(() => 0);
+        if (saved > 0) result = await backend.loadTrackedRoutes();
+      }
       memory = { userId, result };
       setState({ kind: 'ready', result });
     } catch {

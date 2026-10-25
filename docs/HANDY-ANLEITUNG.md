@@ -1276,6 +1276,26 @@ ist** (geschützter Speicher) – Tab schließen = Anpassungen weg, der Plan ist
 Die Fälle über mehrere Wochen (Schritte 4 und 5, Stillstand → Übung getauscht, abgelaufener Vorschlag) prüft der
 automatische Test `e2e/live-adjust.spec.ts` mit festem Datum – im Pull Request unter **Checks → ci** grün.
 
+## Teil 7v – Lieblingsgerichte und Kraft-Entwicklung testen (25.10.2026, Testmodus)
+Beides gratis, ohne KI, alles bleibt privat auf dem Handy bzw. Konto.
+
+**Lieblingsgerichte und „Nie wieder“**
+1. Vorschau-Link im Handy-Browser öffnen → **Testmodus starten** → Onboarding mit Ernährung → **Ernährung**.
+2. An einer Mahlzeit oben rechts auf **⋯** tippen → **Lieblingsgericht** → unter dem Titel steht „Lieblingsgericht“.
+3. **Rezepte suchen** → jedes Rezept hat rechts ein Herz; **Nur Lieblingsgerichte** zeigt nur eure Herzen.
+4. Ein Rezept öffnen → Karte **Dein Geschmack** → **Nie wieder** → zurück: das Rezept fehlt in der Suche, unten steht
+   „1 Gericht ist ausgeblendet.“ → **Ausgeblendete Gerichte** → **Wieder zulassen**.
+5. Den Weg gibt es auch unter **Mehr → Einstellungen → Ernährung → Ausgeblendete Gerichte**.
+6. Ab der nächsten Woche plant die App das ausgeblendete Gericht nicht mehr ein; die laufende Woche bleibt (mit
+   **Tauschen** ersetzt ihr es sofort).
+
+**Kraft-Entwicklung**
+1. Zwei bis drei Krafttrainings im Trainingsmodus eintragen (für den Test auch an verschiedenen Tagen).
+2. **Fortschritt** → Kachel **Kraft-Entwicklung** mit Mini-Kurve je Übung → antippen.
+3. Oben die Kurve: **Gewicht / Volumen / Wiederholungen** und **4 W / 3 M / Alles** umschalten.
+4. **Verlauf** → ein Training öffnen → unter jeder Übung z. B. „Kniebeuge: +5 kg gegenüber vor 4 Wochen“.
+Es gibt bewusst keine Bestleistungen, Rekorde oder Abzeichen und keine geschätzte Maximalkraft.
+
 ## Teil 7o – Workouts mit Sternen und Timer testen (20.10.2026, Testmodus)
 Fertige Workouts (1 Stern leicht – 5 Sterne sehr schwer) mit Timer; nach dem Abschluss stehen sie als Eintrag am
 heutigen Tag. Alle 27 Workouts sind **Testphase – noch nicht fachlich geprüft** (so steht es auch in der App).
@@ -1786,6 +1806,27 @@ einen **neuen Build** (Leserecht „Trainingsrouten“ und Patch der Health-Conn
 7. **Trennen** (egal ob „behalten“ oder „löschen“) und **Widerruf** der Einwilligung löschen alle Routen der Uhr;
    eigene Aufzeichnungen bleiben.
 
+**D – Erholung aus der Uhr (seit 25.10.2026): Status gut / mittel / niedrig und „Leichter trainieren“**
+Im **Handy-Browser (Vorschau, Testmodus)** sofort testbar mit der Beispiel-Uhr (21 Tage Werte; „heute“ ist absichtlich
+eine kurze Nacht mit höherem Ruhepuls und niedrigerer HRV):
+1. Onboarding mit Einwilligung Gesundheitsdaten und einem **Trainingstag heute** → **Zum Plan**.
+2. **Übersicht** → Kachel **Erholung**: ohne Uhr Hinweis + **Uhr verbinden** (auch in der Kachel **Schritte** steht
+   „Uhr verbinden“ jetzt in **einer** Zeile).
+3. **Uhr verbinden** → Einwilligung (Fassung 3 nennt HRV und die Erholung) → **Beispiel-Uhr verbinden**.
+4. Zurück zur **Übersicht** → Kachel **Erholung**: „● niedrig“, „Schlaf kurz · Ruhepuls erhöht · HRV niedriger“,
+   „Deine Werte sprechen für einen leichteren Tag.“ und 7 Säulen (vorgestern mittel, heute niedrig). Antippen →
+   Smartwatch-Seite mit Werten heute, „So entsteht die Erholung“ und dem Hinweis „keine Bewertung deiner Gesundheit“.
+5. **Training (Heute)** → Karte **„Heute leichter trainieren?“** → **Wie geplant** (Hinweis, „Doch leichter“) bzw.
+   **Leichter trainieren** → **Training starten** → oben „Heute leichter: …“, je Übung ein Satz weniger.
+6. **Einstellungen** → „Live-Anpassung einschalten (Testmodus)“ **aus** → **Heute** zeigt nur noch den Hinweis
+   „Erholung heute: niedrig“ ohne Knöpfe (das Angebot gehört zur Live-Anpassung/Premium; der Status bleibt gratis).
+
+Mit der **echten Galaxy Watch** (neuer Build nötig – neues Leserecht HRV): Samsung Health → Einstellungen → Health
+Connect → auch **Herzfrequenzvariabilität** und **Ruhepuls** schreiben lassen → Alpha5 → Smartwatch → **Neuer Fassung
+zustimmen** → **Berechtigungen öffnen** → „Herzfrequenzvariabilität“ erlauben. Die Erholung braucht **7 Tage** Werte
+für Ruhepuls/HRV („Wir lernen deine Werte noch“); bis dahin zählt nur der Schlaf. Bitte mitteilen, ob **HRV** und
+**Ruhepuls** ankommen (ohne Werte zu nennen).
+
 Ergebnis bitte Claude schreiben, z. B. „9c Android 14, Galaxy Watch 6: 1–10 ok, Ruhepuls fehlt“ (ohne Passwörter,
 Codes oder Gesundheitswerte). **Wichtig für den Spike:** Bitte mitteilen, ob **Ruhepuls**, **Distanz** und **kcal**
 bei euren Einheiten ankommen – das klärt, was Samsung wirklich nach Health Connect schreibt.
@@ -1812,6 +1853,66 @@ Bedienungshilfen → Anzeige & Textgröße → Größerer Text; Android: Einstel
 nacheinander **Onboarding, Heute, Training, Übung, Einstellungen** öffnen: Nichts abgeschnitten, Knöpfe erreichbar,
 kein Text überlappt. Zusätzlich mit „Große Ansicht“ an. Ergebnis bitte Claude schreiben, z. B. „FA5 Android: 1–6 ok,
 Training: Pausen-Timer abgeschnitten“.
+
+## Teil 9d – Widget auf dem Startbildschirm (25.10.2026, nur Android-App)
+Ein Widget „**Alpha5 – Heute**“ zeigt auf dem Startbildschirm euer **Training heute** (Name oder „Ruhetag“), einen
+**Schritte-Ring** (Schritte / Ziel) und „**kcal übrig**“. Antippen öffnet die App auf **Heute**. Plan und Hintergründe:
+docs/PLAN-WIDGET.md. **Braucht eine neue APK** (neues natives Modul) – im Browser gibt es nur den Hinweis in den
+Einstellungen, auf dem iPhone kommt es später.
+
+**A – Neue APK bauen (einmal)**
+1. GitHub-App → Repository → **Actions** → **eas-build** → **Run workflow**.
+2. Branch: der Branch des Pull Requests (z. B. `claude/widget`), Plattform **android**, Profil **preview** →
+   **Run workflow**.
+3. Nach ca. 15–30 Minuten: im Lauf unten **Zusammenfassung** → Link zur Build-Seite antippen → **Install** → APK
+   öffnen → installieren (die alte Alpha5-App wird ersetzt, eure Daten bleiben).
+
+**B – Widget einschalten (in der App)**
+1. Alpha5 öffnen → **Mehr → Einstellungen** → bis **Startbildschirm** wischen.
+2. Häkchen **Widget auf dem Startbildschirm** setzen. Hinweis lesen: Was im Widget steht, sieht jeder, der euer
+   entsperrtes Handy sieht. Standard ist **aus**.
+
+**C – Widget hinzufügen (Android, Samsung)**
+1. Auf dem Startbildschirm eine freie Stelle **lange gedrückt halten**.
+2. **Widgets** antippen → nach unten zu **Alpha5** wischen (oder oben „Alpha5“ suchen) → antippen.
+3. **Alpha5 – Heute** antippen bzw. gedrückt halten und auf den Startbildschirm ziehen → **Hinzufügen**.
+4. Größe ändern: Widget lange drücken → an den blauen Punkten ziehen. Ab 4 Feldern Breite liegen Schritte und kcal als
+   eigene Kacheln neben dem Training.
+
+**D – Prüfen**
+1. Widget zeigt das Training von heute (bzw. „Ruhetag“). Ohne verbundene Uhr **kein** Schritte-Ring, mit
+   „Kalorienzahlen anzeigen“ = aus **keine** kcal – beides gewollt.
+2. Ein Lebensmittel eintragen → App in den Hintergrund (Home-Taste) → „kcal übrig“ im Widget hat sich geändert.
+3. Widget antippen → App öffnet sich auf **Heute**.
+4. Einstellungen → Häkchen weg → Widget zeigt „Widget aus“ (keine Zahlen mehr). Wieder an → App einmal öffnen.
+5. Handy dunkel stellen (Einstellungen → Anzeige → Dunkel) → Widget wird dunkel.
+6. App 1 Tag nicht öffnen → nach Mitternacht steht das neue Training da, aber ohne Schritte/kcal von gestern; nach
+   über 24 Stunden steht nur noch „App öffnen zum Aktualisieren“.
+
+**iPhone:** noch kein Widget. Unter Einstellungen steht „Das Widget gibt es zuerst in der Android-App …“. Es kommt mit
+einem späteren Update (docs/PLAN-WIDGET.md Abschnitt 7). Später so hinzufügen: Startbildschirm lange drücken → oben
+links **+** → **Alpha5** → Größe wählen → **Widget hinzufügen**.
+
+Ergebnis bitte Claude schreiben, z. B. „9d Android 14: A–D ok, Widget 2×2 Text abgeschnitten“ (ohne Gesundheitswerte,
+gern mit Bildschirmfoto vom Widget **ohne** echte Zahlen).
+
+## Teil 9t – Schon-Modus, Reise-Modus, Aufwärmen testen (25.10.2026, Testmodus)
+
+Chrome am Handy, Vorschau-Link aus dem Pull Request, **Inkognito-Tab**. Onboarding mit Einwilligung
+„Gesundheitsdaten“ und Kraft im Studio.
+
+1. **Heute → Einstellungen → „Schmerz-/Verletzungsmodus“** → auf der Figur das **Knie** antippen (oder unten in der
+   Liste), **mittel**, **7 Tage** → **„Schon-Modus starten“**.
+2. **Zurück zu Heute:** oben „Schon-Modus bis …“, an der Einheit „heute geschont“, keine Kniebeugen mehr.
+3. Wieder in den Schon-Modus → Knie **stark** → vor dem Speichern erscheint „Bitte ärztlich abklären lassen“.
+   **Beenden** → auf „Heute“ ist wieder der normale Plan.
+4. **Einstellungen → „Reise-Modus“** → heute bis in 6 Tagen, **Nur Körpergewicht**, **30 min** → Speichern →
+   auf „Heute“ steht „Reise-Modus bis …“, die Übungen gehen ohne Geräte. **Schlingentrainer** zeigt den Hinweis
+   „noch keine eigenen Übungen“.
+5. **Training starten** → oben „Aufwärmen (ca. 5 min)“, unten „Dehnen danach“, jeweils **Überspringen**. In den
+   Einstellungen **„Aufwärmen & Dehnen“** ausschalten → im Training kein Block mehr.
+
+Rückmeldung an Claude z. B. „Training-Modi: 1–5 ok, Körperkarte zu klein“.
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.

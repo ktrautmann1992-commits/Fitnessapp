@@ -15,10 +15,14 @@ import { LiveAdjustSettings } from '@/components/live-adjust';
 import { EatingHelpNotice } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { CycleSettingsSection } from '@/components/cycle-entry';
+import { WeatherSettings } from '@/components/route-weather';
+import { VoiceCueSettingsCard } from '@/components/voice-cues';
 import { ListGroup, ListRow, SectionLabel } from '@/components/design';
 import { Body, Button, Card, Checkbox, LoadingState, Notice, TextField } from '@/components/ui';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
+import { deModes } from '@/i18n/de-training-modes';
+import { useWarmupSetting } from '@/state/use-training-modes';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe } from '@/lib/format';
 import { useAccessibility } from '@/lib/accessibility';
@@ -26,6 +30,7 @@ import { useKeepAwakeSetting } from '@/lib/keep-awake';
 import { useToday } from '@/lib/use-today';
 import { planTitleText } from '@/lib/plan-title';
 import { useApp } from '@/state/app-state';
+import { WidgetSettings } from '@/widget/widget-settings';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
 
 /**
@@ -36,6 +41,7 @@ type DialogKind = 'clear' | 'recreate' | null;
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const warmupSetting = useWarmupSetting();
   const app = useApp();
   const [dialog, setDialog] = useState<DialogKind>(null);
   const [busy, setBusy] = useState(false);
@@ -262,6 +268,13 @@ export default function SettingsScreen() {
               description={t.nutrition.foodDislikes.settingsText}
               onPress={() => router.push('/ernaehrung/abneigungen' as Href)}
               testID="settings-food-dislikes"
+            />
+            <ListRow
+              icon="eye-off"
+              label={t.nutrition.favorites.manageHidden}
+              description={t.nutrition.favorites.settingsText}
+              onPress={() => router.push('/ernaehrung/ausgeblendet' as Href)}
+              testID="settings-hidden-recipes"
               last
             />
           </ListGroup>
@@ -325,6 +338,35 @@ export default function SettingsScreen() {
         ) : null}
       </ListGroup>
 
+      {/* Trainings-Modi (docs/PLAN-TRAINING-MODI.md): Schon-Modus, Reise-Modus, Aufwärmen & Dehnen. */}
+      <SectionLabel>{deModes.settings.section}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="alert"
+          label={deModes.settings.pain}
+          description={deModes.settings.painDescription}
+          onPress={() => router.push('/schmerz-modus' as Href)}
+          testID="settings-pain-mode"
+        />
+        <ListRow
+          icon="map"
+          label={deModes.settings.travel}
+          description={deModes.settings.travelDescription}
+          onPress={() => router.push('/reise-modus' as Href)}
+          testID="settings-travel-mode"
+          last
+        />
+      </ListGroup>
+      <Card>
+        <Checkbox
+          label={deModes.settings.warmup}
+          checked={warmupSetting.enabled}
+          onChange={(value) => void warmupSetting.setEnabled(value).catch(() => undefined)}
+          testID="settings-warmup"
+        />
+        <Body muted>{deModes.settings.warmupHint}</Body>
+      </Card>
+
       {/* Phase 8: Smartwatch (Galaxy Watch über Health Connect). */}
       <SectionLabel>{t.wearables.settingsTitle}</SectionLabel>
       <ListGroup>
@@ -337,6 +379,25 @@ export default function SettingsScreen() {
           last
         />
       </ListGroup>
+
+      {/* Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 4): opt-in, eigener Kalender. */}
+      <SectionLabel>{t.deviceCalendar.settingsTitle}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="calendar"
+          label={t.deviceCalendar.settingsLink}
+          description={t.deviceCalendar.settingsText}
+          onPress={() => router.push('/handy-kalender' as Href)}
+          testID="settings-device-calendar"
+          last
+        />
+      </ListGroup>
+
+      {/* Wetter zu Läufen (25.10.2026): Abruf bei Open-Meteo nur mit gerundeter Startposition. */}
+      <WeatherSettings />
+
+      {/* Sprachansagen beim Aufzeichnen (25.10.2026): nur dieses Gerät. */}
+      <VoiceCueSettingsCard />
 
       {/* Phase 9: Zyklus-Modul (sichtbar, wenn angeboten oder schon eingeschaltet – auch nach Wechsel auf „männlich“). */}
       <CycleSettingsSection onPress={() => router.push('/zyklus/einstellungen' as Href)} />
@@ -410,6 +471,9 @@ export default function SettingsScreen() {
         />
         <Body muted>{t.settings.keepAwakeHint}</Body>
       </Card>
+
+      {/* Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3, Gründer-Entscheidung 25.10.2026): Standard aus. */}
+      <WidgetSettings />
 
       <SectionLabel>{t.settings.reminder}</SectionLabel>
       <Card>

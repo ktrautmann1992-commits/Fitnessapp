@@ -11,6 +11,7 @@ import {
   foodLogSaveResponseSchema,
   type MealPlanWeek,
   mealPlanRetentionStart,
+  pantryItemSchema,
   shoppingProductLinkSchema,
   type StoredShoppingList,
   toMealPlanPayload,
@@ -32,6 +33,7 @@ import {
   type TrackedRoutePayload,
   type TrackedRouteRow,
   updateTrackedRouteSchema,
+  routeWeatherSchema,
   type DailyMetricRow,
   type HeartRateSummaryRow,
   type WearableConnectionRow,
@@ -139,7 +141,10 @@ import {
   type NutritionSendResult,
   readNutritionCache,
   shoppingListRowsFromDb,
+  applyPantryItems,
   applyShoppingProductLink,
+  checkPantrySave,
+  pantryItemRowsFromDb,
   shoppingProductLinkRowsFromDb,
   withPreservedPastItems,
   writeNutritionCache,
@@ -150,6 +155,7 @@ import {
   checkFoodDislikesSave,
   checkRecipeRatingSave,
 } from './rating-rows';
+import { checkRecipePreference } from './recipe-preference-rows';
 import { RouteQueue, type RouteSendResult } from './route-queue';
 import { SyncQueue } from './sync-queue';
 import { effectiveSafetyRules } from './training-plan';
@@ -164,6 +170,7 @@ import {
   type ExerciseLogRow,
   type FoodDislikeRow,
   type NutritionPrefsRow,
+  type RecipePreferenceRow,
   type RecipeRatingRow,
   type SessionLogRow,
   type SetLogRow,
@@ -398,6 +405,9 @@ const IN_CHUNK = 80;
 
 /** Einheiten je nachgeladener Verlaufs-Seite. */
 const OLDER_LOGS_PAGE = HISTORY_PAGE_SIZE;
+
+/** Gewichtsverlauf: höchstens so viele Tage auf einmal (Fenster + Vorlauf zum Einschwingen, ein Wert je Tag). */
+const WEIGHT_HISTORY_MAX_ROWS = 400;
 
 function chunks<T>(items: readonly T[], size: number): T[][] {
   const out: T[][] = [];
@@ -763,6 +773,24 @@ export async function executeWriteOp(
           .eq('user_id', userId)
           .eq('fav_key', op.favKey),
       );
+      return;
+    // Rezept-Favoriten (25.10.2026) direkt per PostgREST (RLS: eigene Zeilen, Profil-Pflicht; Höchstzahl per Trigger).
+    case 'set_recipe_preference':
+      if (op.row === null) {
+        check(
+          await client
+            .from('recipe_preferences')
+            .delete()
+            .eq('user_id', userId)
+            .eq('recipe_id', op.recipeId),
+        );
+      } else {
+        check(
+          await client
+            .from('recipe_preferences')
+            .upsert({ ...op.row, user_id: userId }, { onConflict: 'user_id,recipe_id' }),
+        );
+      }
       return;
   }
 }
@@ -1300,6 +1328,29 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         }
         return { kind: 'done' };
       }
+      // Vorratsschrank (25.10.2026): letzter Stand gewinnt auch auf dem Server (`p_at`); ein älterer Stand („stale“)
+      // ist erledigt. Grenze erreicht → abgelehnt (bleibt lokal mit Hinweis), Einwilligung fehlt → abgelehnt.
+      case 'pantry_save': {
+        const item = pantryItemSchema.safeParse(op.item);
+        if (!item.success) return { kind: 'rejected', reason: 'invalid' };
+        const { data, error, status } = await client.rpc('save_pantry_item', {
+          p_food_id: item.data.food_id,
+          p_count: item.data.count,
+          p_pack_size: item.data.pack_size,
+          p_low: item.data.low,
+          p_at: op.at,
+        });
+        if (error) return nutritionSendErrorResult({ ...error, status });
+        const result = (data as { result?: unknown } | null)?.result;
+        if (result === 'saved' || result === 'stale') return { kind: 'done' };
+        if (result === 'limit') return { kind: 'rejected', reason: 'limit' };
+        return { kind: 'transient' };
+      }
+      case 'pantry_delete': {
+        const { error, status } = await client.rpc('delete_pantry_item', { p_food_id: op.foodId });
+        if (error) return nutritionSendErrorResult({ ...error, status });
+        return { kind: 'done' };
+      }
     }
   }
 
@@ -1747,8 +1798,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
    */
   async function fetchNutritionRows(userId: string): Promise<NutritionRows> {
     const cutoff = mealPlanRetentionStart(today());
-    const [plans, lists, entries, favorites, meals, userProducts, productLinks] = await Promise.all(
-      [
+    const [plans, lists, entries, favorites, meals, userProducts, productLinks, pantry] =
+      await Promise.all([
         client
           .from('meal_plans')
           .select(
@@ -1783,9 +1834,19 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
           .select('*')
           .eq('user_id', userId)
           .then(emptyIfMissing),
-      ],
-    );
-    for (const result of [plans, lists, entries, favorites, meals, userProducts, productLinks]) {
+        // Vorratsschrank (25.10.2026) – Tabelle fehlt vor db-migrate: leer.
+        client.from('pantry_items').select('*').eq('user_id', userId).then(emptyIfMissing),
+      ]);
+    for (const result of [
+      plans,
+      lists,
+      entries,
+      favorites,
+      meals,
+      userProducts,
+      productLinks,
+      pantry,
+    ]) {
       if (result.error) throw result.error;
     }
     const planRows = (plans.data ?? []) as unknown as DbMealPlan[];
@@ -1836,6 +1897,9 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       ),
       shoppingProductLinks: shoppingProductLinkRowsFromDb(
         (productLinks.data ?? []) as unknown as Record<string, unknown>[],
+      ),
+      pantryItems: pantryItemRowsFromDb(
+        (pantry.data ?? []) as unknown as Record<string, unknown>[],
       ),
     };
   }
@@ -1921,6 +1985,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       reminder,
       ratingsResult,
       dislikesResult,
+      recipePreferencesResult,
       weightGoalResult,
       competitionsResult,
       layoutResult,
@@ -1953,6 +2018,11 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         .select('user_id, recipe_id, value, reason, rated_on')
         .eq('user_id', userId),
       client.from('food_dislikes').select('user_id, food_id').eq('user_id', userId),
+      // Rezept-Favoriten (25.10.2026) – kein Gesundheitsdatum; vor `db-migrate` leer.
+      client
+        .from('recipe_preferences')
+        .select('user_id, recipe_id, kind, set_on')
+        .eq('user_id', userId),
       // Wunschgewicht (Etappe Z3): Gesundheitsdatum, nur im Arbeitsspeicher (cacheableRows).
       client.from('weight_goals').select('*').eq('user_id', userId).limit(1),
       // Wettkämpfe (Phase 10 WP3/WP4) – kein Gesundheitsdatum; der Plan-Bezug kommt nie in den normalen Zwischenspeicher.
@@ -1968,6 +2038,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     // Etappe N7 (Wächter N7 S1): vor `db-migrate` gibt es die Tabellen noch nicht – dann leer, Anmeldung läuft weiter.
     const ratings = emptyIfMissing(ratingsResult);
     const dislikes = emptyIfMissing(dislikesResult);
+    const recipePreferences = emptyIfMissing(recipePreferencesResult);
     // Etappe Z3: vor `db-migrate` gibt es weight_goals noch nicht – dann kein Wunschgewicht.
     const weightGoal = emptyIfMissing(weightGoalResult);
     const competitions = emptyIfMissing(competitionsResult);
@@ -1993,6 +2064,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       reminder,
       ratings,
       dislikes,
+      recipePreferences,
       weightGoal,
       competitions,
       layout,
@@ -2023,6 +2095,7 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       exercisePreferences: [],
       recipeRatings: (ratings.data ?? []) as RecipeRatingRow[],
       foodDislikes: (dislikes.data ?? []) as FoodDislikeRow[],
+      recipePreferences: (recipePreferences.data ?? []) as RecipePreferenceRow[],
       // Essenspläne, Einkaufslisten, Ernährungstagebuch, Favoriten und eigene Gerichte (Etappe N7 Teil 2).
       ...(await fetchNutritionRows(userId)),
       // Wettkämpfe (Phase 10 WP4): eigene Zeilen (RLS), vor `db-migrate` leer.
@@ -2081,6 +2154,20 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       try {
         const { data, error } = await client.rpc('premium_open_active');
         return !error && data === true;
+      } catch {
+        return false;
+      }
+    },
+    // Erholung (25.10.2026): gleiche Server-Prüfung wie die Live-Anpassung (Feature-Flag + Premium); nie blockierend.
+    liveAdjustmentActive: async () => {
+      try {
+        const { data, error } = await client.rpc('live_adjustment_status');
+        return (
+          !error &&
+          typeof data === 'object' &&
+          data !== null &&
+          (data as { active?: unknown }).active === true
+        );
       } catch {
         return false;
       }
@@ -2546,6 +2633,24 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       // Kein halbfertiger Zustand: Die App bietet „Ab jetzt immer“ ohne supportsExercisePreferences nicht an.
       throw new BackendError('preference_rejected');
     },
+    setRecipePreference: async (recipeId, kind, rows) => {
+      const session = await requireSession();
+      const check = checkRecipePreference(
+        rows,
+        { recipeId, kind },
+        { userId: session.userId, today: today() },
+      );
+      if (!check.ok) {
+        throw new BackendError(check.reason === 'limit' ? 'recipe_preference_limit' : 'unknown');
+      }
+      // Kein Gesundheitsdatum: sofort auf dem Gerät, gesendet über die normale Warteschlange (geht offline).
+      const op: WriteOp = { kind: 'set_recipe_preference', recipeId, row: check.row };
+      const next = applyWriteOps(rows, [op], displayContext());
+      await writeCache(session.userId, next);
+      await queue.add([op]);
+      void queue.flush();
+      return next;
+    },
     setStartWeight: async (exerciseId, weightKg, rows) => {
       const session = await requireSession();
       const op: WriteOp = { kind: 'set_exercise_start_weight', exerciseId, weightKg };
@@ -2752,6 +2857,34 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         'user_product',
       );
     },
+    // Vorratsschrank (25.10.2026, offline-first): Regeln vorab wie im Testmodus (Einwilligung, Schema, Grenze), dann
+    // sofort lokal und über die verschlüsselte Ernährungs-Warteschlange an save_pantry_item (letzter Stand gewinnt).
+    // Lebensmittel und Mengen nie in Meldungen oder Logs.
+    savePantryItems: async (items, rows) => {
+      const session = await requireSession();
+      const versions = await requireVersions();
+      if (healthConsentStatus(rows, versions) !== 'valid') {
+        throw new BackendError('consent_required', { sensitive: true });
+      }
+      const parsed = checkPantrySave(rows, items);
+      const now = options.now();
+      for (const item of parsed) {
+        await enqueueNutrition({ kind: 'pantry_save', item, at: now }, session.userId);
+      }
+      void nutritionQueue.flush().catch(() => 'later');
+      const next = applyPantryItems(rows, parsed, { userId: session.userId, now });
+      await writeCache(session.userId, next);
+      return next;
+    },
+    deletePantryItem: async (foodId, rows) => {
+      const session = await requireSession();
+      const now = options.now();
+      await enqueueNutrition({ kind: 'pantry_delete', foodId, at: now }, session.userId);
+      void nutritionQueue.flush().catch(() => 'later');
+      const next = { ...rows, pantryItems: rows.pantryItems.filter((p) => p.food_id !== foodId) };
+      await writeCache(session.userId, next);
+      return next;
+    },
     // Etappe E2: Anordnung – sofort lokal, Senden über die Warteschlange (kein Gesundheitsdatum, offline möglich).
     saveAppLayout: async (layout, rows) => {
       const session = await requireSession();
@@ -2892,6 +3025,28 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
         throw new BackendError(code === 'network' ? 'online_only' : code, { cause: error });
       }
     },
+    loadWeightHistory: async (from) => {
+      const session = await requireSession();
+      const { data, error } = await client
+        .from('body_metrics')
+        .select('measured_on, weight_kg')
+        .eq('user_id', session.userId)
+        .not('weight_kg', 'is', null)
+        .gte('measured_on', from)
+        .order('measured_on', { ascending: true })
+        .limit(WEIGHT_HISTORY_MAX_ROWS);
+      if (error) {
+        // Nur der Code – nie Werte (Gesundheitsdaten).
+        const code = classifySupabaseError(error, true);
+        throw new BackendError(code === 'network' ? 'online_only' : code, {
+          sensitive: true,
+          cause: error,
+        });
+      }
+      return (data ?? []).flatMap((row) =>
+        row.weight_kg === null ? [] : [{ measured_on: row.measured_on, weight_kg: row.weight_kg }],
+      );
+    },
     exportMyData: async () => {
       const session = await requireSession();
       const { data, error } = await client.rpc('export_my_data');
@@ -2948,6 +3103,36 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       const parsed = updateTrackedRouteSchema.safeParse(payload);
       if (!parsed.success) throw new BackendError('route_rejected');
       const { error } = await client.rpc('update_tracked_route', { p_route: toJson(parsed.data) });
+      if (error) throw routeError(error);
+    },
+    setRouteMatch: async (routeId, favoriteId, state) => {
+      await requireSession();
+      const { data, error } = await client.rpc('set_route_match', {
+        p_route: routeId,
+        p_favorite: favoriteId,
+        p_state: state,
+      });
+      if (error) throw routeError(error);
+      return data === 'auto' || data === 'confirmed' || data === 'rejected' || data === 'clear'
+        ? data
+        : 'unchanged';
+    },
+    setRouteWeather: async (routeId, weather) => {
+      await requireSession();
+      const parsed = weather === null ? null : routeWeatherSchema.safeParse(weather);
+      if (parsed && !parsed.success) throw new BackendError('route_rejected');
+      const { error } = await client.rpc('set_route_weather', {
+        p_route: routeId,
+        p_weather: parsed ? toJson(parsed.data) : null,
+      });
+      if (error) throw routeError(error);
+    },
+    setRouteAutoMatch: async (routeId, enabled) => {
+      await requireSession();
+      const { error } = await client.rpc('set_route_auto_match', {
+        p_route: routeId,
+        p_enabled: enabled,
+      });
       if (error) throw routeError(error);
     },
     deleteTrackedRoute: async (id) => {

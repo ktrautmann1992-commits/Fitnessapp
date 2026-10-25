@@ -6,6 +6,7 @@ import {
 } from '@fitnessapp/core';
 
 import { t } from '@/i18n';
+import { deModes } from '@/i18n/de-training-modes';
 
 /**
  * Texte zum Übungstausch (Etappe T2) – nur Auswahl des passenden deutschen Texts, keine Regeln. Sicherheits-Ersatz
@@ -23,6 +24,11 @@ export function markText(mark: ExerciseMark, later: boolean): string | null {
       return t.swap.markPreference;
     case 'day_swap':
       return later ? t.swap.markDaySwapLater : t.swap.markDaySwap;
+    // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 6): ohne Gesundheitsbezug in Worten („heute geschont“).
+    case 'travel_swap':
+      return deModes.marks.travel;
+    case 'pain_swap':
+      return deModes.marks.pain;
     case null:
       return null;
   }

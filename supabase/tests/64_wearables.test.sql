@@ -123,8 +123,8 @@ select ok(
   and (select position('for share' in p.prosrc) < position('has_valid_consent' in p.prosrc)
    from pg_proc p where p.oid = 'private.wearable_consents_locked(uuid)'::regprocedure),
   'Import: Einwilligung FOR SHARE → prüfen → Advisory-Sperre');
-select is((select count(*)::integer from public.consent_documents where consent_type = 'wearable_data'), 2,
-  'Einwilligungstexte wearable_data Version 1 und 2 (Routen, 23.10.2026)');
+select is((select count(*)::integer from public.consent_documents where consent_type = 'wearable_data'), 3,
+  'Einwilligungstexte wearable_data Version 1–3 (Routen 23.10.2026, HRV/Erholung 25.10.2026)');
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Anmeldung, Profil, Einwilligung, Aufbau

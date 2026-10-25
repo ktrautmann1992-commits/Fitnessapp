@@ -3,6 +3,7 @@ import {
   blockWeekFor,
   competitionCountdown,
   type DaySwap,
+  modesBanner,
   nextPlannedSession,
   planInfoNotices,
   type PreferenceChange,
@@ -12,10 +13,18 @@ import {
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { CycleTodayCard } from '@/components/cycle-entry';
+import { RecoveryTodayCard } from '@/components/recovery';
+import {
+  recoveryChoiceFor,
+  recoveryChoiceSnapshot,
+  subscribeRecoveryChoice,
+} from '@/data/recovery-choice';
+import { ModesBanner } from '@/components/training-modes';
+import { deModes } from '@/i18n/de-training-modes';
 import { CountdownCard, PhaseBand } from '@/components/competition';
 import { FewerDaysCard, SessionAdjustedNotice } from '@/components/live-adjust';
 import { NutritionTodayCard } from '@/components/nutrition';
@@ -50,6 +59,7 @@ import { logForSession } from '@/data/log-rows';
 import type { WorkoutDraft } from '@/data/workout-draft';
 import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
 import { planNoticeFor } from '@/data/training-attention';
+import { routineFor } from '@/data/training-routine';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
@@ -70,9 +80,11 @@ import {
   PLAN_RECREATE_NEEDED,
   useApp,
 } from '@/state/app-state';
+import { HydrationCard } from '@/components/hydration';
 import { healthConsentStatus, isReminderDue, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { useLargeView } from '@/lib/accessibility';
+import { useTrainingModes, useWarmupSetting } from '@/state/use-training-modes';
 
 const W = t.trainingWeek;
 
@@ -94,6 +106,9 @@ function scrollToTestId(testID: string): void {
 export default function TodayScreen() {
   const router = useRouter();
   const app = useApp();
+  // Trainings-Modi (docs/PLAN-TRAINING-MODI.md): Reise-/Schon-Modus und Aufwärmen & Dehnen.
+  const trainingModes = useTrainingModes();
+  const warmupSetting = useWarmupSetting();
   const theme = useThemeColors();
   const today = todayIso();
   const clock = new Date();
@@ -105,6 +120,8 @@ export default function TodayScreen() {
   const [sheetDate, setSheetDate] = useState<string | null>(null);
   const [answerBusy, setAnswerBusy] = useState(false);
   const week = useWeekStatus(today);
+  // „Leichter trainieren“ (Erholung aus der Uhr, 25.10.2026): Wahl nur im Arbeitsspeicher – neu zeichnen bei Änderung.
+  useSyncExternalStore(subscribeRecoveryChoice, recoveryChoiceSnapshot, recoveryChoiceSnapshot);
   // „Übungen ansehen“ aus der Woche: /today?tag=… zeigt die Einheit dieses Tages (Zustand beim Rendern angleichen).
   const [paramSeen, setParamSeen] = useState(dayParam);
   if (dayParam !== paramSeen) {
@@ -527,6 +544,7 @@ export default function TodayScreen() {
           today,
           daySwaps: app.daySwaps,
           ownerUserId,
+          modes: trainingModes.state,
         })
       : null;
     // Phase 4: berechnete Vorgabe aus dem Tagebuch (packages/core planWorkout) – nur Kraft, mit Bibliothek.
@@ -538,6 +556,12 @@ export default function TodayScreen() {
             ownerUserId,
             // Live-Anpassung (Phase 4b): wirksame Zustands-Vorgaben (Testmodus mit „Premium simulieren“).
             stateOverrides: stateOverridesFor(rows, app.liveAdjust.adjustments),
+            // Erholung: gewählte leichtere Variante heute (Vorgabe wie im Trainingsmodus).
+            lighter:
+              session.scheduled_on === today &&
+              !logForSession(rows, session.id) &&
+              recoveryChoiceFor(ownerUserId, today, session.id) === 'lighter',
+            modes: trainingModes.state,
           })
         : null;
     return {
@@ -786,6 +810,12 @@ export default function TodayScreen() {
       <FewerDaysCard today={today} />
       {/* Phase 9: neutraler Kurzweg zum Tages-Check (ohne Zyklus-Wort, nur bei aktivem Modul, K7). */}
       <CycleTodayCard />
+      {/* Trainings-Modi: „Reise-Modus bis …“ / „Schon-Modus bis …“ (docs/PLAN-TRAINING-MODI.md 6). */}
+      <ModesBanner
+        banner={modesBanner(trainingModes.state, today)}
+        onTravel={() => router.push('/reise-modus' as Href)}
+        onPain={() => router.push('/schmerz-modus' as Href)}
+      />
       {notice.kind !== 'none' ? (
         <Notice
           tone={notice.kind === 'offer' ? 'info' : 'danger'}
@@ -825,6 +855,14 @@ export default function TodayScreen() {
 
       {/* Arzt-Hinweis vor JEDER Einheit – das Feld liegt am Plan (auch offline). */}
       {plan.medical_notice && (todayOpen || selectedSession) ? <MedicalNotice /> : null}
+      {/* Erholung aus der Uhr (25.10.2026): bei niedriger Erholung „Leichter trainieren“ / „Wie geplant“ (nie Pflicht). */}
+      {todayOpen && todayOpen.scheduled_on === today && todayInfo?.start === 'today' ? (
+        <RecoveryTodayCard
+          today={today}
+          session={todayOpen}
+          locked={todayInfo.hasDraft || Boolean(logForSession(rows, todayOpen.id))}
+        />
+      ) : null}
       <TodayHero
         day={todayDay}
         session={todayOpen}
@@ -938,6 +976,18 @@ export default function TodayScreen() {
               }
               {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
               paceProfile={paceProfile}
+              swapPaused={display?.modeActive === true && selectedSession.kind === 'strength'}
+              routine={
+                warmupSetting.enabled
+                  ? routineFor({
+                      shown: shown.session,
+                      display,
+                      library: lib,
+                      rules,
+                      modes: trainingModes.state,
+                    })
+                  : null
+              }
               onOpenExercise={(exerciseId) =>
                 router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href)
               }
@@ -1023,6 +1073,9 @@ export default function TodayScreen() {
           </Card>
         ) : null}
       </View>
+
+      {/* Trinken (25.10.2026): Ring, +250/+500 ml, 7 Tage. */}
+      <HydrationCard today={today} testID="today-hydration" />
 
       <Card>
         {planNameLine(plan) ? <Body testID="plan-name">{planNameLine(plan)}</Body> : null}
@@ -1134,9 +1187,12 @@ function TodayHero({
 }) {
   if (session && info) {
     const shown = info.display?.shown ?? null;
+    // Trainings-Modi: Dauer und Zahl der Übungen der ANGEZEIGTEN Einheit (Reise-Minuten, entfallene Übungen).
+    const modeShown = shown?.modeNotices && shown.modeNotices.length > 0 ? shown.session : null;
+    const count = modeShown ? modeShown.exercises.length : exerciseCount;
     const meta = [
-      W.hero.minutes(session.estimated_minutes),
-      session.kind === 'strength' && exerciseCount > 0 ? W.hero.exercises(exerciseCount) : null,
+      W.hero.minutes(modeShown ? modeShown.estimated_minutes : session.estimated_minutes),
+      session.kind === 'strength' && count > 0 ? W.hero.exercises(count) : null,
     ].filter((v): v is string => v !== null);
     const startLabel =
       session.kind === 'endurance'
@@ -1146,7 +1202,9 @@ function TodayHero({
         : info.start === 'today'
           ? t.today.startWorkout
           : t.today.catchUp;
-    const emptyStart = session.kind === 'strength' && shown?.emptyByPreference === true;
+    const emptyStart =
+      session.kind === 'strength' &&
+      (shown?.emptyByPreference === true || shown?.emptyByMode === true);
     const libraryMissing =
       session.kind === 'strength' && (shown === null || shown.libraryMissing || !info.view);
     const canStart = info.start !== null && !info.hasDraft;
@@ -1159,7 +1217,9 @@ function TodayHero({
         testID="today-hero"
         note={
           canStart && emptyStart
-            ? t.swap.emptyStartDisabled
+            ? shown?.emptyByMode
+              ? deModes.notices.pain_session_empty
+              : t.swap.emptyStartDisabled
             : canStart && libraryMissing
               ? t.today.libraryMissingStart
               : null

@@ -12,6 +12,7 @@ import {
   ROUTE_DIFFICULTIES,
   TRACKED_ROUTE_SPORTS,
   type RouteDifficulty,
+  type RouteMatchState,
   type TrackedRouteSource,
   type TrackedRouteSport,
 } from '../enums';
@@ -23,6 +24,7 @@ import {
 } from './elevation-profile';
 import { boundingBox, decodePolyline, encodePolyline } from './polyline';
 import { simplifyTrack } from './simplify';
+import type { RouteWeather } from './weather';
 import {
   elevationGain,
   filterTrackPoints,
@@ -178,6 +180,17 @@ export interface TrackedRouteRow {
    * haben – dort beim Lesen mit false ergänzt.
    */
   e_bike: boolean;
+  /**
+   * „Meine Strecken“ (25.10.2026): Herkunft der Verknüpfung base_route_id (repeat/auto/confirmed) bzw. „Nein“
+   * (rejected, dann base_route_id null); null = nicht zugeordnet. Ältere Zeilen im Testmodus: beim Lesen ergänzt.
+   */
+  route_match: RouteMatchState | null;
+  /** Von der Person abgelehnte Strecken („Nein“) – werden diesem Lauf nie wieder vorgeschlagen (höchstens 20). */
+  match_rejected_ids: string[];
+  /** Nur bei „Meinen Strecken“ (Favoriten) wirksam: neue Läufe automatisch zuordnen (Standard an). */
+  auto_match: boolean;
+  /** Wetter zum Start (Open-Meteo, 25.10.2026); null = (noch) keins. Ältere Zeilen im Testmodus: beim Lesen ergänzt. */
+  weather: RouteWeather | null;
   created_at: string;
   updated_at: string;
 }

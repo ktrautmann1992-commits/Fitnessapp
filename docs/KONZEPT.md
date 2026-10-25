@@ -191,6 +191,11 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   App, Ansage für den Bildschirmleser). Ergebnis ab dem Renntag als freie Einheit; Absagen mit Bestätigung, danach
   „Plan neu erstellen“. Endet der Wettkampfplan, schlägt die App einen neuen (vorsichtigen) Plan vor statt eines
   Folgeblocks von der Spitze aus.
+- **Renn-Pace-Plan (Gründer-Freigabe 25.10.2026, `docs/PLAN-PHASE-10.md` 21):** In „Mein Wettkampf“ (Laufen mit
+  Zielzeit oder Referenzzeit) Zwischenzeiten je km (ab 25 km je 5 km): gleichmäßig, „negativ“ (2. Hälfte ~2 %
+  schneller) oder nach dem Höhenprofil einer gespeicherten Strecke (GPX); Summe immer = Zielzeit. Verpflegungspunkte
+  aus der Wettkampf-Ernährung (gleiche Mengen), Hinweis bei unplausibler Zielzeit (gleiche Regel wie die Ampel),
+  Druckansicht/PDF. `racePaceCheckpoint` liefert den Stand für spätere Sprach-Ansagen.
 - Ausdauer-Ziel klarer (Gründer-Feedback „Ziel Marathon → Plan für allgemeine Fitness“): Beim Ziel Ausdauer belegt
   „Deine Trainingstage“ Ausdauer-Tage vor (`suggestedTrainingSlots`, Werte `ENDURANCE_GOAL_SUGGESTION`: 3 Ausdauer + 2 Kraft,
   Leistungssport 4 + 2, vorsichtig 2 + 1, Triathlon mehr Ausdauer; Deckel wie oben) – nur ohne gewählte Tage, änderbar
@@ -312,6 +317,20 @@ Datenbank noch App.
 - Der Server prüft dieselben Grenzen mit Schutz-Triggern auf `planned_exercises`/`planned_sessions` (jeder Schreibweg)
   und in `private.fast_increase_exclusion` (pgTAP `80_active_aging.test.sql`).
 
+### 4.3 Trainings-Modi: Schon-Modus, Reise-Modus, Aufwärmen & Dehnen (Gratis, ohne KI)
+Gründer-Freigabe 25.10.2026, Details und Entscheidungen: `docs/PLAN-TRAINING-MODI.md`, Logik `packages/core/src/modes/`.
+- **Schon-Modus (Schmerz/Verletzung):** Stelle (Knie, Schulter, unterer Rücken, Ellenbogen, Handgelenk, Hüfte,
+  Sprunggelenk, Nacken) auf der Körperkarte oder in der Liste, Stärke leicht/mittel/stark, 3/7/14 Tage. Die Anzeige
+  tauscht belastende Übungen gegen schonendere (`PAIN_REGION_LOAD`), senkt Sätze/RPE und endet automatisch. „stark“,
+  mehr als 14 Tage am Stück oder wiederkehrend → „Bitte ärztlich abklären lassen“ und konservativer Plan. Keine
+  Diagnose. Gesundheitsdatum: Einwilligung `health_data` Fassung ≥ 2, Tabelle `pain_episodes` mit RLS, Widerruf
+  löscht, Export, Löschung nach 12 Monaten.
+- **Reise-Modus:** Zeitraum + Geräte (nur Körpergewicht, Kurzhanteln, Hotel-Gym, Widerstandsband, Schlingentrainer –
+  ohne eigene Übungen vorerst wie Körpergewicht) + optional kürzere Einheiten; Banner „Reise-Modus bis …“; der Plan
+  bleibt gespeichert, die Anzeige gilt nur im Zeitraum.
+- **Aufwärmen & Dehnen:** je Kraft-Einheit ~5 min davor und ~5 min danach aus der Bibliothek, Schalter in den
+  Einstellungen, „Überspringen“ im Training; ohne freigegebene Übungen der Vorlagen-Text.
+
 ## 5. Tagesansicht & Trainingstagebuch
 
 **App-Aufbau seit 18.10.2026 (`docs/PLAN-DASHBOARD.md`):** Ohne Sitzung zeigt die App den **Startbildschirm** mit zwei
@@ -339,7 +358,8 @@ Konto** (E-Mail, Abmelden mit Rückfrage, Einwilligungen, Datenexport, Konto lö
 Entwurf und Tagebuch-Warteschlange), Pausentimer, Bildschirm an; **Woche** (`app/week.tsx`: Mo–So mit Status-Zeichen
 und Wort – erledigt, teilweise, verpasst, gestrichen, geplant, entfallen –, Summen Einheiten/Kraft-Sätze/Ausdauer-Minuten
 und -km, Blättern; nachgeholte Einheiten am tatsächlichen Datum), **Verlauf** (`app/history/`: nach Wochen, je 20 weitere,
-ältere als 12 Wochen online nachladen; Verlauf je Übung mit bestem Satz „Gewicht × Wiederholungen“, keine 1RM),
+ältere als 12 Wochen online nachladen; Verlauf je Übung mit bestem Satz „Gewicht × Wiederholungen“, keine 1RM;
+seit 25.10.2026 mit Kurve der Kraft-Entwicklung, Abschnitt 11.4),
 **Eintrag** (`app/log/[logId].tsx`: ansehen, ändern im Datumsfenster, löschen nur online) und **Datenexport** „Meine Daten“
 (seit 18.10.2026 unter „Mein Konto“; JSON aller eigenen Daten inkl. Konto-E-Mail und Einwilligungs-Verlauf; Browser: Download, App: Ordner
 wählen – kein Teilen-Dialog). Regeln in `packages/core/src/log/summary.ts` und `packages/core/src/export/data-export.ts`.
@@ -433,6 +453,17 @@ unter 1 Minute bzw. über 8 Stunden keine Zahl, Deckel 6.000 kcal (`SESSION_KCAL
 bzw. ohne Gewicht keine Zahl, nur „Für kcal: Gewicht im Profil angeben“ mit Weg zur Eingabe; bei „Kalorienzahlen
 anzeigen“ aus oder Schwangerschaft gar nichts. kcal stehen **nie** auf dem Story-Bild (`STORY_CARD_FIELDS` ist eine
 Positivliste). Regeln in `packages/core/src/log/session-calories.ts`.
+
+**Sportarten Stufe 2 (Gründer-Freigabe 25.10.2026):** Bouldern, Klettern, Fußball, Padel, Tennis, Badminton,
+Tischtennis, Basketball, Volleyball, Handball, Crosstrainer, Spinning, HIIT/Zirkel, Boxen, Kickboxen, Judo/BJJ, Karate,
+Kampfsport (sonstige), Skilanglauf, Skitour, Ski alpin, Snowboard, Inline-Skaten, SUP, Kajak/Kanu, Tanzen und „Sonstige
+Sportart“ lassen sich eintragen („+ Einheit“ → „Andere Sportart“) bzw. – Skilanglauf, Skitour, Inline-Skaten, SUP,
+Kajak/Kanu – mit GPS aufzeichnen; Uhr-Einheiten dieser Arten werden zugeordnet. **Ohne eigene Trainingspläne.** Je
+Einheit Dauer, Anstrengung 0–10, ggf. Distanz; kcal mit der Formel oben und dem MET der Sportart (Ainsworth 2011, je
+Anstrengung zwischen niedrigem und hohem Wert), Trainingsbelastung = Minuten × Anstrengung (Session-RPE). Sportarten
+zählen nie für geplante Einheiten, erscheinen aber in Tag, Woche („Sportarten diese Woche“) und Tagebuch. Nach Sport mit
+hoher Beinbelastung (z. B. Fußball) bekommt die harte Bein-/Intervall-Einheit am Folgetag einen sanften Hinweis (nur
+Vorschlag). Schwimmen bleibt Ausdauer-Art. Details, MET-Tabelle und offene Punkte: `docs/PLAN-SPORTARTEN.md`.
 
 ### 5.1 Workout-Bibliothek mit Sternen und Timer (Gratis, ohne KI)
 Eigener Reiter **„Workouts“**: fertige, vorab erstellte und geprüfte Workouts (Kategorien Ganzkörper, Bauch & Rumpf,
@@ -528,6 +559,19 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
   Seite „Lizenzen und Quellen“ (App und Website). Unbekannt/unbrauchbar → **eigenes Produkt** (Abschnitt 6.2). Noch ohne
   Kamera (E4b, neuer Build). Feature-Flag `food_product_lookup` (Standard aus) und Vercel-Variable `OFF_CONTACT_EMAIL`
   (SETUP Teil M).
+
+- **Auswärts essen (Reiter „Unterwegs“, Gründer-Freigabe 25.10.2026, `docs/PLAN-AUSWAERTS-VORRAT.md`):** Ernährung →
+  Eintragen → „Unterwegs“: typische DACH-Gerichte aus Restaurant, Imbiss, Kantine, Bäckerei, Café und Fast Food
+  (Tabelle mit 111 Gerichten) mit Portion klein/normal/groß, halbe/ganze Pizza bzw. 1/2 Stück, Suche, „Zuletzt
+  unterwegs“ und Favoriten (nur Gerät, nur IDs). **Keine erfundenen Nährwerte:** Jedes Gericht ist eine Zutatenliste
+  (Gramm je normaler Portion, wie eigene Gerichte aus Zutaten 6.2), die Werte rechnet `computeRecipeFacts` aus dem
+  Lebensmittel-Katalog (BLS). Fehlt eine wesentliche Zutat im Katalog (Butter, Bratwurst, Mozzarella, Fladenbrot …),
+  ist das Gericht ein Entwurf ohne Werte und erscheint nicht. Werte gerundet (10 kcal, ganze Gramm), immer „ca.“ und
+  Kennzeichen „Schätzwert“. Ins Tagebuch als Schnelleintrag „Auswärts gegessen“ (feste Bezeichnung, kein Freitext, keine
+  Datenbank-Änderung); im Tagesverlauf mit „ca.“. Sichtbar: im Testmodus alle berechenbaren Entwürfe (Kennzeichen
+  „Entwurf“), im Supabase-Modus nur von den Gründern freigegebene Gerichte aus veröffentlichten, katalog-geprüften
+  Lebensmitteln (R19 wie `filter.ts`). Logik `packages/core/src/nutrition/eating-out.ts`, Tabelle `eating-out-table.ts`,
+  Grenzen `EATING_OUT` in `constants.ts`.
 
 ### 6.2 Standardgerichte (Gratis)
 - Eigene Gerichte anlegen („Mein Porridge“, „Shake nach dem Training“) mit kcal und Makros – direkt eingegeben oder aus Zutaten berechnet
@@ -679,6 +723,33 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Einstellungen „Abgelehnte Lebensmittel und Bewertungen“. Eine Bewertung plant den laufenden Plan nicht um; sie wirkt
   ab der nächsten Planung. Details in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N10.
 
+### 6.10a Rezept-Favoriten: „Lieblingsgericht“ und „Nie wieder“ (Gratis, ohne KI, privat)
+**Gründer-Freigabe 25.10.2026.** Ergänzt die Bewertung nach dem Essen (6.10) um eine **dauerhafte** Entscheidung je
+Rezept – ohne sie zu doppeln: Daumen hoch/runter ist der Eindruck nach einer Mahlzeit (Daumen runter = 8 Wochen Pause),
+Herz bzw. „Nie wieder“ gilt, bis die Person es zurücknimmt. Beide wirken über denselben Index der Plan-Engine.
+- **Wo:** Rezeptansicht (Karte „Dein Geschmack“: Lieblingsgericht / Nie wieder bzw. Wieder zulassen), Rezeptsuche (Herz
+  je Treffer, Filter „Nur Lieblingsgerichte“, Hinweis „N Gerichte sind ausgeblendet“ mit Weg zur Liste), Mahlzeiten des
+  Essensplans („⋯“ oben rechts klappt beide Aktionen auf; Kennzeichen „Lieblingsgericht“ mit Herz und Wort),
+  Einstellungen → Ernährung → **„Ausgeblendete Gerichte“** (alphabetisch, „Wieder zulassen“).
+- **Regeln (deterministisch, `packages/core/src/nutrition/recipe-preferences.ts` und `ratings.ts`):**
+  - „Nie wieder“ wird **nie** vorgeschlagen – weder geplant noch als Ergänzungs-Snack, beim „Rezept tauschen“, im
+    Meal-Prep-Wochenplan (Plan wird dann nicht angeboten) oder bei geteilten Mahlzeiten; es fehlt auch in Rezeptsuche
+    und Kühlschrank-Suche. Gibt es für einen Platz dann **keine Alternative**, bleibt er leer mit dem Grund
+    „passende Rezepte hast du ausgeblendet („Nie wieder“)“ (`recipe_hidden`) – das Planband und alle
+    Kalorien-Schutzgrenzen bleiben unverändert (Ergänzungs-Snacks wie immer, sonst Hinweis „unter dem Mindestbedarf“).
+  - Herz: Bonus `MEAL_PLAN_SCORING.ratingFavorite` (1,25) – **nur Reihenfolge**, gedeckelt zusammen mit allen
+    Bewertungs-Boni (`ratingMaxTotal` < Wiederholungs-Abzug), Herz und Daumen hoch addieren sich nicht. Ernährungsform,
+    Schwein, Unverträglichkeiten, „mag ich nicht“, Schwangerschaft, Zeitlimit, Wiederholungsgrenzen und Planband gelten
+    unverändert (Eigenschaftstest). Ein Herz für alle Rezepte ergibt denselben Plan wie keins.
+  - Wie bei Bewertungen: Die **laufende Woche** wird nicht automatisch neu geplant (K7); eine noch nicht begonnene
+    gespeicherte Woche mit einem ausgeblendeten Rezept bietet „Plan aktualisieren“ an.
+- **Speicher:** Tabelle `recipe_preferences` (user_id, recipe_id, kind `favorite`|`hidden`, set_on) mit RLS (nur eigene
+  Zeilen, Einfügen nur mit Profil, kein anon), höchstens 2.000 je Person (`RECIPE_PREFERENCE_RULES`), Konto löschen per
+  Kaskade, im Datenexport. **Kein Gesundheitsdatum** (kein Grund, kein Bezug zu Unverträglichkeiten) → offline-first:
+  Testmodus im Gerätespeicher, Supabase-Modus über die normale Warteschlange (`set_recipe_preference`, letzter Stand je
+  Rezept); bleibt beim Widerruf der Gesundheits-Einwilligung bestehen. Privat: nie angezeigt außer der eigenen Vorliebe,
+  nie aggregiert, nie Analytics/Logs. Migration `20261025120200_recipe_preferences.sql`, pgTAP `75_recipe_preferences`.
+
 ### 6.11 Resteverwertung (Kühlschrank-Suche gratis, automatische Resteplanung Premium)
 - **Kühlschrank-Suche (Gratis):** „Was habe ich da?“ – Zutaten auswählen → Rezepte sortiert nach Übereinstimmung
   (Anteil der vorhandenen Zutaten, gewichtet nach Menge), gefiltert nach Ernährungsform und allen Ausschlüssen.
@@ -776,6 +847,26 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Händler, kein Netzwerkaufruf, kein Knopf in der App. Bis zur Gründer-Entscheidung G7 (PLAN-PHASE-5 N12) gingen
   Ersatz-Einträge und Listen aus Plänen mit Gesundheitsbezug nie an einen Händler.
 
+### 6.14 Vorratsschrank (Gratis, Gründer-Freigabe 25.10.2026, `docs/PLAN-AUSWAERTS-VORRAT.md`)
+- Ernährung → „Vorratsschrank“: Lebensmittel aus dem Katalog per Suche oder Strichcode (gleiche Abfrage wie im Laden,
+  Zuordnung `matchScannedPantryFood` gegen den ganzen Katalog, nichts ohne Tipp), wahlweise mit Menge in Kaufeinheiten
+  (Tabelle `SHOPPING_BUY_UNITS`: „2 Packungen à 1 kg“, „3 Äpfel“, „1 Bund Petersilie“; 0,5–99 in halben Schritten) und
+  „fast leer“. Öl, Essig, Gewürze („Vorrat prüfen“) nur „da“/„fast leer“.
+- **Einkaufsliste** (`shoppingPantryView`, reine Anzeige – Mengen, Häkchen, Schlüssel der Liste bleiben): reicht der
+  Vorrat (Spielraum 10 % einer Einheit) → Abschnitt „Schon im Vorrat“; teilweise → Restmenge mit Hinweis; „fast leer“
+  bleibt auf der Liste („Vorrat fast leer“); Vorrat ohne Menge zählt als da („Menge prüfen“). „Vorrat nach Einkauf
+  aktualisieren“ (`pantryAfterShopping`): abgehakte, haltbare Lebensmittel (Katalog-Kennzeichen `pantry`, Tiefkühl,
+  Vorrat ohne Menge) kommen mit der gekauften Menge in den Vorrat (gleiche Lebensmittel addiert, „fast leer“ aufgehoben);
+  Frisches bleibt draußen.
+- **Kühlschrank-Suche und Vorschläge** (`fridge-search.ts`): Vorrats-Zutaten zählen als vorhanden („fast leer“ halb,
+  `PANTRY.lowWeight`), ausgewählte voll; ohne Auswahl „Passt zu deinem Vorrat“; bei gleicher Übereinstimmung zuerst
+  Rezepte mit mehr Vorrats-Zutaten. Abschaltbar („Meinen Vorrat mitzählen“). Der Essensplan bleibt unverändert.
+- Datenschutz: Vorrat verrät Konsum (ggf. Unverträglichkeiten) – SENSIBEL wie gelernte Strichcode-Zuordnungen: nur mit
+  Einwilligung `health_data`, Löschen immer, Widerruf löscht (eigener Trigger), im Export, Konto löschen per Kaskade.
+  Tabelle `pantry_items` (RLS, Schreiben nur über `save_pantry_item`/`delete_pantry_item`, letzter Stand gewinnt),
+  offline-first über die verschlüsselte Ernährungs-Warteschlange. Logik `packages/core/src/nutrition/pantry.ts`, Grenzen
+  `PANTRY` in `constants.ts`, pgTAP `81_pantry_items.test.sql`.
+
 ## 7. Supplement-Modul
 - Nur evidenzbasiert: Proteinpulver (wenn Eiweißziel über Ernährung schwer erreichbar), Kreatin-Monohydrat, Koffein (vor Training, mit Tageslimit und Hinweis auf Schlaf), Vitamin D (Hinweis: Spiegel ärztlich prüfen lassen), bei Ausdauer: Kohlenhydrat-Gels/Elektrolyte; Omega-3 optional
 - Zeitplan: vor Training / nach Training / vor dem Schlafen / täglich
@@ -806,8 +897,15 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - **Stand Etappe 1 (Phase 8, 21.10.2026, docs/PLAN-PHASE-8.md):** Galaxy Watch über Health Connect (nur Android-App,
   nur lesen, kein Hintergrund-Abgleich): Einheiten ins Tagebuch (Doppel mit App-Aufzeichnung werden zusammengeführt),
   Puls je Einheit nur als Zusammenfassung (Ø, Max, Zeit je Zone, HFmax nach Tanaka), Ruhepuls/Schlaf/Schritte als
-  Tageswerte; eigene Einwilligung `wearable_data`, Widerruf löscht Puls und Tageswerte. Readiness, HRV, Apple Health,
-  Strava und Garmin folgen in späteren Etappen.
+  Tageswerte; eigene Einwilligung `wearable_data`, Widerruf löscht Puls und Tageswerte. Apple Health, Strava und Garmin
+  folgen in späteren Etappen.
+- **Stand „Erholung aus der Uhr“ (25.10.2026, docs/PLAN-PHASE-8.md 15):** HRV (RMSSD) als Tageswert dazu
+  (`daily_metrics.hrv_rmssd_ms`, Einwilligung `wearable_data` Fassung 3). Täglicher Status **gut / mittel / niedrig**
+  aus Schlaf (< 6 h, unter 18: < 7 h), Ruhepuls (≥ eigene 14-Tage-Basis + 5 /min) und HRV (≤ 80 % der Basis) –
+  `packages/core/src/wearables/recovery.ts`, Schwellen in `RECOVERY` (vor Livegang fachlich prüfen); ein Wert allein
+  nie „niedrig“. Status gratis (Kachel „Erholung“ auf der Übersicht, 7-Tage-Verlauf); bei „niedrig“ an einem
+  Trainingstag Angebot „Leichter trainieren“ / „Wie geplant“ über `lighterSessionVariant` (nie automatisch, Plan
+  unverändert) – nur mit Live-Anpassung (Abschnitt 4.1, Premium, Server prüft). Der Status wird nicht gespeichert.
 
 ## 10. Strecken
 - Vorschläge im Umkreis des Standorts nach Disziplin, Distanz, Höhenmetern, Untergrund
@@ -831,6 +929,11 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   01088 hohe Unterstützung 4,0 / 01084 leichte Unterstützung 6,0 MET – vor Livegang fachlich prüfen). Pläne bleiben
   normales Rad. Uhr-Einheiten (Health Connect kennt keine E-Bike-Art) kommen als Fahrrad und sind umstellbar.
   Abzeichen „E-Bike“ in Auswertung, Liste und Tagebuch; Story-Bild „E-Bike-Fahrt“ (keine Gesundheitsdaten).
+- **Schuh-Kilometerzähler (Gründer-Freigabe 25.10.2026, Details docs/PLAN-PHASE-10.md 21):** eigene Schuhe je
+  Sportart (Laufen, Gehen/Wandern, Rad) mit Start-km und Standard-Schuh je Sportart; jeder Lauf (Aufzeichnung,
+  Uhr, Eintrag) bekommt automatisch den Standard seines Tages, änderbar am Lauf („Schuh: Pegasus 41 (412 km)“).
+  Hinweis „Bald wechseln“ ab 600 km, „Wechsel empfohlen“ ab 800 km (je Schuh einstellbar; Material-Faustregel,
+  keine Gesundheitsaussage). Kein Gesundheitsdatum; RLS, Export, Löschen.
 
 ### 10.2 Live-Begleitung / Notfallkontakt (Gründer-Entscheidung 25.10.2026, geplant, Gratis)
 - Ausnahme vom „Kein Teilen“ (CLAUDE.md): Während einer laufenden Aufzeichnung kann die Person auf eigenen Tipp ihren
@@ -856,6 +959,10 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Art.-9-Einwilligung beider Personen; gemeinsame Mahlzeiten mit eigener Portion je Person und gemeinsamer
   Einkaufsliste – keine Zahlen zu Zielen oder Körperdaten, Portionen lassen aber Rückschlüsse zu.
 - Wettkampf-Countdown, Erfolge (dezent, nicht ans Gewicht gekoppelt)
+- **Gewichtstrend, Monatsrückblick, Trainings im Handy-Kalender** (Gründer-Freigabe 25.10.2026): geglättete
+  Gewichtslinie mit Tempo und vorsichtiger Schätzung nur innerhalb der Schutzgrenzen, privater Monatsrückblick (PDF,
+  Gesundheitsdaten nur per Schalter), opt-in Termine im Handy-Kalender bzw. .ics-Datei im Browser. Details:
+  `docs/PLAN-TREND-RUECKBLICK-KALENDER.md`.
 
 ### 11.1 Körperumfänge mit Mess-Erinnerung (Gratis) – Grundlage in Phase 1 umgesetzt
 - Erfassung: Oberarm, Brust, Schulter, Taille, Bauch, Oberschenkel, optional Hüfte, Wade; links/rechts wo sinnvoll
@@ -888,6 +995,25 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - Abzeichen nach Abschluss, **privat** – keine Ranglisten, kein Vergleich mit anderen
 - Optional Sponsor (Supplement-Hersteller, Partnerstudio) mit Rabattcode – klar als „Werbung“ gekennzeichnet; Sponsor
   sieht keine Teilnehmer- oder Gesundheitsdaten
+
+### 11.4 Kraft-Entwicklung je Übung (Gratis, ohne KI, privat)
+**Gründer-Freigabe 25.10.2026.** Krafttraining sichtbar machen – nur aus dem eigenen Tagebuch, nur eigene frühere Werte.
+- **Kurve je Übung** im Verlauf der Übung (`app/history/[exerciseId].tsx`, über dem bisherigen „bester Satz je
+  Training“): immer **chronologisch** (x = Datum), Umschalter **Gewicht** (schwerster abgehakter Satz) / **Volumen**
+  (Gewicht × Wdh. aller Sätze) / **Wiederholungen** (gesamt) – bei Halteübungen **Haltezeit** –, Zeitraum **4 W / 3 M /
+  Alles**. Übungen mit eigenem Körpergewicht oder Band: Wiederholungen statt Gewicht. Erholungswochen als hohle Punkte,
+  Wechsel der Belastungsart als Lücke. Gleiche Kurvenform wie der Tempo-Verlauf der Lauf-Auswertung.
+- **Eintrag** (`app/log/[logId].tsx`): je Übung z. B. „Kniebeuge: +5 kg gegenüber vor 4 Wochen“ (Bezug: letzte
+  Einheit derselben Belastungsart, die mindestens 4 Wochen zurückliegt, sonst die früheste ab 7 Tagen; nie eine
+  Erholungswoche); in einer Erholungswoche „Erholungswoche – bewusst leichter.“
+- **Kachel „Kraft-Entwicklung“** unter Fortschritt: die (höchstens 3) meist trainierten Übungen der letzten 3 Monate
+  mit Mini-Kurve, letztem Wert und Vergleich; antippen öffnet die Übung; leer ein Hinweis.
+- **Neutral (wie W-G16):** keine „Bestleistung“, kein „Rekord“, keine Abzeichen, keine Wertung; ein Minus ist so
+  sachlich wie ein Plus. **Keine geschätzte Maximalkraft (1RM)** – Abschnitt 5 „keine 1RM“ und Regel V4 „keine
+  Maximaltests“ bleiben; `E1RM_ESTIMATE` dient weiter nur der Berechnung von Arbeitsgewichten.
+- Regeln in `packages/core/src/log/strength-progress.ts` (`STRENGTH_PROGRESS` in `constants.ts`), Darstellung in
+  `apps/mobile/src/components/strength-chart.tsx`. Kein neues Datenfeld, keine Migration; Grundlage wie im Verlauf (Supabase:
+  12 Wochen geladen, ältere online nachladbar).
 
 ## 12. Datenmodell (Kern, Postgres)
 - `profiles` (user_id, sex, birth_date, height_cm, experience_level, locale) – `height_cm` **geändert, siehe Abweichungen** (steht in `body_metrics`)
@@ -1241,6 +1367,7 @@ Workflow `beta-grant` → Funktion `premium_open` → `flag_aus` (danach gilt wi
 | Monats-Challenges | Ja | Ja |
 | Einfache Progression (Gewicht steigt bei geschafften Wdh.) | Ja | Ja |
 | Live-Anpassung des Plans (alle Regeln aus Abschnitt 4.1) | Nein | Ja |
+| Schon-Modus, Reise-Modus, Aufwärmen & Dehnen (4.3, feste Regeln ohne KI) | Ja | Ja |
 | Gerichte vor, während und nach dem Training | Nein | Ja |
 | Kalorien per Foto (KI) | Nein | Ja |
 | Körperfoto-Analyse (KI) | Nein | Ja |

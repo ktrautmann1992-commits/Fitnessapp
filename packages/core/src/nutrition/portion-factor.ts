@@ -335,7 +335,7 @@ export function planSharedMeals(request: SharedMealsRequest): SharedMealsResult 
       p.input.allowDrafts,
       p.input.redRecipeIds,
       p.input.substitutions,
-      recipeRatingIndex(p.input.ratings),
+      recipeRatingIndex(p.input.ratings, p.input.recipePreferences),
     ),
   }));
   const meals = parsed.meals;

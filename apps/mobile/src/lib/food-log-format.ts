@@ -61,15 +61,31 @@ export function entryAmountText(
   return null;
 }
 
-/** Detailzeile: Menge · kcal (kcal nur mit Zahlen und nur, wenn bekannt). */
+/**
+ * Schnelleintrag „Auswärts gegessen“ (auch aus dem Reiter „Unterwegs“): Werte sind immer Schätzungen → „ca.“
+ * (Gründer-Freigabe 25.10.2026).
+ */
+export function isEstimateEntry(entry: {
+  readonly source: string;
+  readonly title_de?: string;
+}): boolean {
+  return entry.source === 'quick' && entry.title_de === 'Auswärts gegessen';
+}
+
+/** Detailzeile: Menge · kcal (kcal nur mit Zahlen und nur, wenn bekannt; „ca.“ bei Schätzwerten). */
 export function entryDetailText(
-  entry: Pick<FoodLogEntry, 'amount' | 'unit' | 'portion' | 'kcal' | 'source'>,
+  entry: Pick<FoodLogEntry, 'amount' | 'unit' | 'portion' | 'kcal' | 'source'> & {
+    readonly title_de?: string;
+  },
   showNumbers: boolean,
 ): string {
   const parts: string[] = [];
   const amount = entryAmountText(entry);
   if (amount !== null) parts.push(amount);
-  if (showNumbers && entry.kcal !== null) parts.push(t.foodLog.kcal(formatKcal(entry.kcal)));
+  if (showNumbers && entry.kcal !== null) {
+    const kcal = t.foodLog.kcal(formatKcal(entry.kcal));
+    parts.push(isEstimateEntry(entry) ? `ca. ${kcal}` : kcal);
+  }
   if (entry.source === 'plan_item') parts.push(t.foodLog.fromPlan);
   return parts.join(' · ');
 }

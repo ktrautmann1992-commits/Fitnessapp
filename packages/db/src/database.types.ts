@@ -460,6 +460,7 @@ export type Database = {
       daily_metrics: {
         Row: {
           day: string;
+          hrv_rmssd_ms: number | null;
           provider: Database['public']['Enums']['wearable_provider'];
           resting_hr_bpm: number | null;
           sleep_min: number | null;
@@ -469,6 +470,7 @@ export type Database = {
         };
         Insert: {
           day: string;
+          hrv_rmssd_ms?: number | null;
           provider: Database['public']['Enums']['wearable_provider'];
           resting_hr_bpm?: number | null;
           sleep_min?: number | null;
@@ -478,6 +480,7 @@ export type Database = {
         };
         Update: {
           day?: string;
+          hrv_rmssd_ms?: number | null;
           provider?: Database['public']['Enums']['wearable_provider'];
           resting_hr_bpm?: number | null;
           sleep_min?: number | null;
@@ -1627,6 +1630,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      pain_episodes: {
+        Row: {
+          created_at: string;
+          duration_days: number;
+          ended_early_on: string | null;
+          id: string;
+          intensity: Database['public']['Enums']['pain_intensity'];
+          region: Database['public']['Enums']['body_region'];
+          started_on: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          duration_days: number;
+          ended_early_on?: string | null;
+          id?: string;
+          intensity: Database['public']['Enums']['pain_intensity'];
+          region: Database['public']['Enums']['body_region'];
+          started_on: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          duration_days?: number;
+          ended_early_on?: string | null;
+          id?: string;
+          intensity?: Database['public']['Enums']['pain_intensity'];
+          region?: Database['public']['Enums']['body_region'];
+          started_on?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       plan_templates: {
         Row: {
           created_at: string;
@@ -2070,6 +2109,35 @@ export type Database = {
           },
         ];
       };
+      recipe_preferences: {
+        Row: {
+          kind: string;
+          recipe_id: string;
+          set_on: string;
+          user_id: string;
+        };
+        Insert: {
+          kind: string;
+          recipe_id: string;
+          set_on: string;
+          user_id?: string;
+        };
+        Update: {
+          kind?: string;
+          recipe_id?: string;
+          set_on?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'recipe_preferences_recipe_id_fkey';
+            columns: ['recipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'recipes';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       recipe_ratings: {
         Row: {
           rated_on: string;
@@ -2175,6 +2243,9 @@ export type Database = {
           revision: number;
           session_rpe: number | null;
           source: Database['public']['Enums']['log_source'];
+          sport: Database['public']['Enums']['sport_type'] | null;
+          sport_distance_m: number | null;
+          sport_duration_s: number | null;
           started_at: string | null;
           status: Database['public']['Enums']['session_log_status'];
           updated_at: string;
@@ -2198,6 +2269,9 @@ export type Database = {
           revision?: number;
           session_rpe?: number | null;
           source?: Database['public']['Enums']['log_source'];
+          sport?: Database['public']['Enums']['sport_type'] | null;
+          sport_distance_m?: number | null;
+          sport_duration_s?: number | null;
           started_at?: string | null;
           status: Database['public']['Enums']['session_log_status'];
           updated_at?: string;
@@ -2221,6 +2295,9 @@ export type Database = {
           revision?: number;
           session_rpe?: number | null;
           source?: Database['public']['Enums']['log_source'];
+          sport?: Database['public']['Enums']['sport_type'] | null;
+          sport_distance_m?: number | null;
+          sport_duration_s?: number | null;
           started_at?: string | null;
           status?: Database['public']['Enums']['session_log_status'];
           updated_at?: string;
@@ -2276,6 +2353,90 @@ export type Database = {
             referencedColumns: ['id', 'user_id'];
           },
         ];
+      };
+      shoe_assignments: {
+        Row: {
+          activity_key: string;
+          shoe_id: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          activity_key: string;
+          shoe_id?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          activity_key?: string;
+          shoe_id?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      shoe_defaults: {
+        Row: {
+          shoe_id: string | null;
+          sport: Database['public']['Enums']['endurance_modality'];
+          user_id: string;
+          valid_from: string;
+        };
+        Insert: {
+          shoe_id?: string | null;
+          sport: Database['public']['Enums']['endurance_modality'];
+          user_id: string;
+          valid_from: string;
+        };
+        Update: {
+          shoe_id?: string | null;
+          sport?: Database['public']['Enums']['endurance_modality'];
+          user_id?: string;
+          valid_from?: string;
+        };
+        Relationships: [];
+      };
+      shoes: {
+        Row: {
+          brand: string | null;
+          created_at: string;
+          id: string;
+          in_use_since: string;
+          name: string;
+          replace_km: number | null;
+          retired_on: string | null;
+          sport: Database['public']['Enums']['endurance_modality'];
+          start_km: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          brand?: string | null;
+          created_at?: string;
+          id: string;
+          in_use_since: string;
+          name: string;
+          replace_km?: number | null;
+          retired_on?: string | null;
+          sport: Database['public']['Enums']['endurance_modality'];
+          start_km?: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          brand?: string | null;
+          created_at?: string;
+          id?: string;
+          in_use_since?: string;
+          name?: string;
+          replace_km?: number | null;
+          retired_on?: string | null;
+          sport?: Database['public']['Enums']['endurance_modality'];
+          start_km?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
       };
       shopping_list_items: {
         Row: {
@@ -2393,6 +2554,41 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'meal_plans';
             referencedColumns: ['id', 'user_id'];
+          },
+        ];
+      };
+      pantry_items: {
+        Row: {
+          count: number | null;
+          food_id: string;
+          low: boolean;
+          pack_size: number | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          count?: number | null;
+          food_id: string;
+          low?: boolean;
+          pack_size?: number | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          count?: number | null;
+          food_id?: string;
+          low?: boolean;
+          pack_size?: number | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pantry_items_food_id_fkey';
+            columns: ['food_id'];
+            isOneToOne: false;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
           },
         ];
       };
@@ -2523,6 +2719,30 @@ export type Database = {
           },
         ];
       };
+      hydration_logs: {
+        Row: {
+          amount_ml: number;
+          created_at: string;
+          day: string;
+          id: string;
+          user_id: string;
+        };
+        Insert: {
+          amount_ml: number;
+          created_at?: string;
+          day: string;
+          id: string;
+          user_id?: string;
+        };
+        Update: {
+          amount_ml?: number;
+          created_at?: string;
+          day?: string;
+          id?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       tracked_routes: {
         Row: {
           base_route_id: string | null;
@@ -2536,12 +2756,15 @@ export type Database = {
           elevation_profile: Json | null;
           id: string;
           is_favorite: boolean;
+          auto_match: boolean;
           km_splits: Json;
+          match_rejected_ids: string[];
           moving_s: number;
           name: string;
           note: string | null;
           point_count: number;
           polyline: string;
+          route_match: string | null;
           session_log_id: string | null;
           source: Database['public']['Enums']['tracked_route_source'];
           sport: Database['public']['Enums']['endurance_modality'];
@@ -2549,6 +2772,7 @@ export type Database = {
           updated_at: string;
           user_id: string;
           wearable_session_log_id: string | null;
+          weather: Json | null;
         };
         Insert: {
           base_route_id?: string | null;
@@ -2562,12 +2786,15 @@ export type Database = {
           elevation_profile?: Json | null;
           id?: string;
           is_favorite?: boolean;
+          auto_match?: boolean;
           km_splits?: Json;
+          match_rejected_ids?: string[];
           moving_s: number;
           name: string;
           note?: string | null;
           point_count: number;
           polyline: string;
+          route_match?: string | null;
           session_log_id?: string | null;
           source: Database['public']['Enums']['tracked_route_source'];
           sport: Database['public']['Enums']['endurance_modality'];
@@ -2575,6 +2802,7 @@ export type Database = {
           updated_at?: string;
           user_id?: string;
           wearable_session_log_id?: string | null;
+          weather?: Json | null;
         };
         Update: {
           base_route_id?: string | null;
@@ -2588,12 +2816,15 @@ export type Database = {
           elevation_profile?: Json | null;
           id?: string;
           is_favorite?: boolean;
+          auto_match?: boolean;
           km_splits?: Json;
+          match_rejected_ids?: string[];
           moving_s?: number;
           name?: string;
           note?: string | null;
           point_count?: number;
           polyline?: string;
+          route_match?: string | null;
           session_log_id?: string | null;
           source?: Database['public']['Enums']['tracked_route_source'];
           sport?: Database['public']['Enums']['endurance_modality'];
@@ -2601,6 +2832,7 @@ export type Database = {
           updated_at?: string;
           user_id?: string;
           wearable_session_log_id?: string | null;
+          weather?: Json | null;
         };
         Relationships: [
           {
@@ -2709,6 +2941,39 @@ export type Database = {
           status?: Database['public']['Enums']['content_status'];
           updated_at?: string;
           version?: number;
+        };
+        Relationships: [];
+      };
+      travel_modes: {
+        Row: {
+          created_at: string;
+          ends_on: string;
+          equipment: Database['public']['Enums']['travel_equipment'];
+          id: string;
+          max_minutes: number | null;
+          starts_on: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          ends_on: string;
+          equipment: Database['public']['Enums']['travel_equipment'];
+          id?: string;
+          max_minutes?: number | null;
+          starts_on: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          ends_on?: string;
+          equipment?: Database['public']['Enums']['travel_equipment'];
+          id?: string;
+          max_minutes?: number | null;
+          starts_on?: string;
+          updated_at?: string;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -3248,6 +3513,7 @@ export type Database = {
       delete_tracked_route: { Args: { p_id: string }; Returns: undefined };
       delete_user_food_product: { Args: { p_id: string }; Returns: Json };
       delete_shopping_product_link: { Args: { p_code: string }; Returns: undefined };
+      delete_pantry_item: { Args: { p_food_id: string }; Returns: undefined };
       disconnect_wearable: {
         Args: {
           p_delete_imported: boolean;
@@ -3350,6 +3616,16 @@ export type Database = {
         Args: { p_code: string; p_food_id: string };
         Returns: undefined;
       };
+      save_pantry_item: {
+        Args: {
+          p_food_id: string;
+          p_count: number | null;
+          p_pack_size: number | null;
+          p_low: boolean;
+          p_at: string;
+        };
+        Returns: Json;
+      };
       save_user_food_product: { Args: { p_product: Json }; Returns: Json };
       seed_content: { Args: { p_content: Json }; Returns: Json };
       seed_nutrition_content: {
@@ -3366,6 +3642,8 @@ export type Database = {
         Returns: undefined;
       };
       delete_my_supplement_data: { Args: never; Returns: undefined };
+      save_shoe_data: { Args: { p_data: Json }; Returns: undefined };
+      delete_my_shoe_data: { Args: never; Returns: number };
       seed_workouts: {
         Args: { p_content: Json; p_require_expert_review?: boolean };
         Returns: Json;
@@ -3375,6 +3653,15 @@ export type Database = {
         Returns: undefined;
       };
       update_tracked_route: { Args: { p_route: Json }; Returns: undefined };
+      add_hydration: { Args: { p_entry: Json }; Returns: string };
+      delete_hydration: { Args: { p_id: string }; Returns: undefined };
+      delete_all_hydration: { Args: never; Returns: number };
+      set_route_weather: { Args: { p_route: string; p_weather: Json | null }; Returns: undefined };
+      set_route_auto_match: { Args: { p_enabled: boolean; p_route: string }; Returns: undefined };
+      set_route_match: {
+        Args: { p_favorite: string | null; p_route: string; p_state: string };
+        Returns: string;
+      };
       waitlist_add_unsubscribe_token: {
         Args: { p_token_hash: string; p_waitlist_id: string };
         Returns: undefined;
@@ -3559,6 +3846,34 @@ export type Database = {
       route_difficulty: 'easy' | 'medium' | 'hard';
       session_focus: 'full_body' | 'upper' | 'lower' | 'balance';
       session_log_status: 'completed' | 'partial';
+      sport_type:
+        | 'bouldering'
+        | 'climbing'
+        | 'football'
+        | 'padel'
+        | 'tennis'
+        | 'badminton'
+        | 'table_tennis'
+        | 'basketball'
+        | 'volleyball'
+        | 'handball'
+        | 'cross_trainer'
+        | 'indoor_cycling'
+        | 'hiit'
+        | 'boxing'
+        | 'kickboxing'
+        | 'judo_bjj'
+        | 'karate'
+        | 'martial_arts'
+        | 'cross_country_skiing'
+        | 'ski_touring'
+        | 'alpine_skiing'
+        | 'snowboarding'
+        | 'inline_skating'
+        | 'sup'
+        | 'kayaking'
+        | 'dancing'
+        | 'other';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
       supplement_category: 'sport' | 'food' | 'diet_season' | 'safety_info';
       supplement_evidence: 'a' | 'b' | 'c';
@@ -3591,6 +3906,10 @@ export type Database = {
         | 'back_fit';
       wearable_connection_status: 'connected' | 'permission_missing';
       wearable_provider: 'health_connect';
+      body_region:
+        'knee' | 'shoulder' | 'lower_back' | 'elbow' | 'wrist' | 'hip' | 'ankle' | 'neck';
+      pain_intensity: 'mild' | 'moderate' | 'severe';
+      travel_equipment: 'bodyweight' | 'dumbbells' | 'hotel_gym' | 'band' | 'suspension_trainer';
       workout_format: 'circuit' | 'interval' | 'sets_reps';
     };
     CompositeTypes: {
@@ -3877,6 +4196,35 @@ export const Constants = {
       session_focus: ['full_body', 'upper', 'lower', 'balance'],
       route_difficulty: ['easy', 'medium', 'hard'],
       session_log_status: ['completed', 'partial'],
+      sport_type: [
+        'bouldering',
+        'climbing',
+        'football',
+        'padel',
+        'tennis',
+        'badminton',
+        'table_tennis',
+        'basketball',
+        'volleyball',
+        'handball',
+        'cross_trainer',
+        'indoor_cycling',
+        'hiit',
+        'boxing',
+        'kickboxing',
+        'judo_bjj',
+        'karate',
+        'martial_arts',
+        'cross_country_skiing',
+        'ski_touring',
+        'alpine_skiing',
+        'snowboarding',
+        'inline_skating',
+        'sup',
+        'kayaking',
+        'dancing',
+        'other',
+      ],
       sex: ['male', 'female', 'diverse', 'unspecified'],
       supplement_category: ['sport', 'food', 'diet_season', 'safety_info'],
       supplement_evidence: ['a', 'b', 'c'],
@@ -3911,6 +4259,9 @@ export const Constants = {
       ],
       wearable_connection_status: ['connected', 'permission_missing'],
       wearable_provider: ['health_connect'],
+      body_region: ['knee', 'shoulder', 'lower_back', 'elbow', 'wrist', 'hip', 'ankle', 'neck'],
+      pain_intensity: ['mild', 'moderate', 'severe'],
+      travel_equipment: ['bodyweight', 'dumbbells', 'hotel_gym', 'band', 'suspension_trainer'],
       workout_format: ['circuit', 'interval', 'sets_reps'],
     },
   },

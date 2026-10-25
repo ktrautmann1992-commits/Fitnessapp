@@ -15,6 +15,7 @@ import { useRouter, type Href } from 'expo-router';
 import { type ReactNode, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { FavoriteMark } from '@/components/recipe-preference';
 import { RecipeThumb } from '@/components/recipe-image';
 import { ConfirmDialog } from '@/components/screen';
 import {
@@ -419,6 +420,8 @@ export function MealRow({
   foodName,
   onOpen,
   leftover,
+  favorite = false,
+  reserveTrailing = false,
 }: {
   meal: PlannedMeal;
   showNumbers: boolean;
@@ -426,6 +429,10 @@ export function MealRow({
   onOpen: () => void;
   /** Hinweis „Nutzt deinen Rest“ (Etappe N14) – ohne Mengen und Packungszahlen. */
   leftover?: LeftoverHintView | undefined;
+  /** Lieblingsgericht (Rezept-Favoriten 25.10.2026): kleines Kennzeichen mit Herz und Wort. */
+  favorite?: boolean;
+  /** Platz oben rechts für den „⋯“-Knopf (`MealPreferenceMenu`) frei halten. */
+  reserveTrailing?: boolean;
 }) {
   const theme = useThemeColors();
   const role = roleLabel(meal.role);
@@ -450,6 +457,7 @@ export function MealRow({
       accessibilityRole="button"
       accessibilityLabel={[
         t.nutrition.openRecipe(meal.titleDe),
+        favorite ? t.nutrition.favorites.favoriteMark : null,
         numbers?.a11y ?? null,
         leftover ? leftoverAccessibilityText(leftover) : null,
       ]
@@ -466,13 +474,14 @@ export function MealRow({
       ]}
     >
       {/* Gründer-Wunsch 24.10.2026: Rezeptfoto links (ohne Foto das grüne Rezept-Symbol). */}
-      <View style={styles.mealRow}>
+      <View style={[styles.mealRow, reserveTrailing ? { paddingRight: 48 } : null]}>
         <RecipeThumb recipeId={meal.recipeId} testID={`meal-${meal.slot}-thumb`} />
         <View style={styles.mealText}>
           <Text style={[styles.slot, { color: theme.textMuted }]}>
             {role ? `${slotLabel(meal.slot)} · ${role}` : slotLabel(meal.slot)}
           </Text>
           <Text style={[styles.title, { color: theme.text }]}>{meal.titleDe}</Text>
+          {favorite ? <FavoriteMark testID={`meal-${meal.slot}-favorite`} /> : null}
           <Text
             style={[styles.detail, { color: theme.textMuted }]}
             testID={`meal-${meal.slot}-numbers`}

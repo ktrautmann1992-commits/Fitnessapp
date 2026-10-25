@@ -23,6 +23,9 @@ const migration = [
   read('20261021130200_supplement_user_data.sql'),
   read('20261021140000_cycle_module.sql'),
   read('20261023120100_wearable_routes.sql'),
+  read('20261025120000_recovery_hrv.sql'),
+  // Trainings-Modi: Entwurf health_data Fassung 2 um den Schmerz-/Verletzungsmodus ergänzt (überschreibt den Entwurf).
+  read('20261025120800_health_consent_v2_training_modes.sql'),
 ].join('\n');
 
 /** Liest (Art, Version, Titel, Text) aus der Seed-Migration. */
@@ -38,8 +41,12 @@ function seedDocuments() {
 
 describe('Einwilligungstexte im Testmodus', () => {
   it('sind wörtlich identisch mit der jeweils höchsten Fassung aus den Seed-Migrationen', () => {
-    const seed = seedDocuments();
-    expect(seed).toHaveLength(8);
+    const all = seedDocuments();
+    expect(all).toHaveLength(10);
+    // Gleiche Art und Fassung mehrfach (Entwurf überschrieben, on conflict do update): die spätere Migration gilt.
+    const seed = all.filter(
+      (doc, i) => !all.some((o, j) => j > i && o.type === doc.type && o.version === doc.version),
+    );
     const latest = seed.filter(
       (doc) => !seed.some((other) => other.type === doc.type && other.version > doc.version),
     );
@@ -54,6 +61,13 @@ describe('Einwilligungstexte im Testmodus', () => {
     expect(doc?.body).toContain('Supplement-Check');
     expect(doc?.body).toContain('„Meine Supplements“');
     expect(doc?.body).toContain('Shops und Partnernetzwerke erhalten keine dieser Angaben.');
+  });
+
+  it('health_data Fassung 2 (Trainings-Modi): nennt den Schmerz-/Verletzungsmodus, ohne Diagnose, mit Löschung', () => {
+    const doc = LOCAL_CONSENT_DOCUMENTS.find((d) => d.type === 'health_data');
+    expect(doc?.body).toContain('Schmerz-/Verletzungsmodus: Körperregion');
+    expect(doc?.body).toContain('ohne Freitext und ohne Diagnose');
+    expect(doc?.body).toContain('die Einträge im Schmerz-/Verletzungsmodus');
   });
 
   it('entsprechen den aktuellen Versionen in packages/core', () => {

@@ -23,6 +23,7 @@ import type {
   NutritionSetupStep,
   NutritionStep,
   OnboardingStep,
+  RecipePreferenceKind,
   RecipeRating,
   Sex,
   TrainingSchedule,
@@ -172,6 +173,18 @@ export interface RecipeRatingRow {
 }
 
 /**
+ * Rezept-Favoriten (Gründer-Freigabe 25.10.2026, KONZEPT 6.10a) – Spalten wie `recipe_preferences` (user_id, recipe_id,
+ * kind, set_on). Je Rezept höchstens eine Zeile: „Lieblingsgericht“ (`favorite`) oder „Nie wieder“ (`hidden`). Kein
+ * Gesundheitsdatum, aber privat: nie an Analytics oder Logs, in Export und Löschung enthalten.
+ */
+export interface RecipePreferenceRow {
+  user_id: string;
+  recipe_id: string;
+  kind: RecipePreferenceKind;
+  set_on: string;
+}
+
+/**
  * „Mag ich nicht“ je Lebensmittel (`food_dislikes`, 19.7 N10; Tabelle seit N7, ohne Zeitstempel). Hart wie die
  * Gruppen-Abneigungen. Kein Gesundheitsdatum (ohne Grund gespeichert), nie an Analytics oder Logs.
  */
@@ -229,6 +242,20 @@ export interface ShoppingProductLinkRow {
   user_id: string;
   code: string;
   food_id: string;
+  updated_at: string;
+}
+
+/**
+ * Vorratsschrank (Gründer-Freigabe 25.10.2026, KONZEPT 6.13) – Spalten wie `pantry_items`. SENSIBEL (Konsum): nur mit
+ * Einwilligung health_data, beim Widerruf gelöscht, im Export, nie loggen. Regeln in packages/core (`pantry.ts`).
+ */
+export interface PantryItemRow {
+  user_id: string;
+  food_id: string;
+  /** Menge in Kaufeinheiten; null = „da“, ohne Menge. */
+  count: number | null;
+  pack_size: number | null;
+  low: boolean;
   updated_at: string;
 }
 
@@ -310,6 +337,8 @@ export interface UserRows {
   shoppingLists: ShoppingListRow[];
   /** Bewertungen nach dem Essen (Testmodus ab Etappe N10; Supabase-Modus seit N7 aus recipe_ratings). */
   recipeRatings: RecipeRatingRow[];
+  /** Rezept-Favoriten (Herz / „Nie wieder“, 25.10.2026; Testmodus und Supabase-Modus aus recipe_preferences). */
+  recipePreferences: RecipePreferenceRow[];
   /** „Mag ich nicht“ je Lebensmittel (Testmodus ab Etappe N10; Supabase-Modus seit N7 aus food_dislikes). */
   foodDislikes: FoodDislikeRow[];
   /**
@@ -328,6 +357,8 @@ export interface UserRows {
   userFoodProducts: UserFoodProductRow[];
   /** Gelernte Zuordnungen Strichcode → Lebensmittel (Einkaufen E1; Testmodus und Supabase-Modus). SENSIBEL. */
   shoppingProductLinks: ShoppingProductLinkRow[];
+  /** Vorratsschrank (25.10.2026; Testmodus und Supabase-Modus, offline über die Ernährungs-Warteschlange). SENSIBEL. */
+  pantryItems: PantryItemRow[];
   /** Anordnung der Übersicht und der Menüleiste (Etappe E2; null = Standard). */
   appLayout: AppLayoutRow | null;
   /** Wettkämpfe (Phase 10 WP3; App und Testmodus ab WP4 – bis dahin immer leer). */
@@ -361,6 +392,7 @@ export function emptyUserRows(): UserRows {
     mealPlans: [],
     shoppingLists: [],
     recipeRatings: [],
+    recipePreferences: [],
     foodDislikes: [],
     foodLogEntries: [],
     foodLogFavorites: [],
@@ -368,6 +400,7 @@ export function emptyUserRows(): UserRows {
     customMealItems: [],
     userFoodProducts: [],
     shoppingProductLinks: [],
+    pantryItems: [],
     appLayout: null,
     competitions: [],
   };

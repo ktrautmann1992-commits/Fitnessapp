@@ -43,6 +43,8 @@ export function errorText(error: unknown): string {
       return t.foodLog.errors.rejected;
     case 'favorite_limit':
       return t.foodLog.errors.favoriteLimit;
+    case 'recipe_preference_limit':
+      return t.nutrition.favorites.limit;
     case 'custom_meal_limit':
       return t.customMeals.errors.limit;
     case 'custom_meal_rejected':
@@ -55,6 +57,8 @@ export function errorText(error: unknown): string {
       return t.foodProduct.errors.limit;
     case 'user_product_rejected':
       return t.foodProduct.errors.rejected;
+    case 'pantry_limit':
+      return t.pantry.errors.limit;
     case 'temporary':
       return t.errors.temporary;
     case 'delete_unavailable':

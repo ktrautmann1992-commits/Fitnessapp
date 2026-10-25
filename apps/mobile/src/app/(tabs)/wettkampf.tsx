@@ -24,6 +24,7 @@ import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 import { CompetitionOutlineCard, CountdownCard, FeasibilityCard } from '@/components/competition';
+import { RacePaceCard } from '@/components/race-pace';
 import { ConfirmDialog, DateInput, Screen } from '@/components/screen';
 import {
   Body,
@@ -1042,6 +1043,10 @@ export default function CompetitionScreen() {
               outline={outline}
               onOpenWeek={(monday) => router.push(`/kalender?woche=${monday}` as Href)}
             />
+          ) : null}
+          {/* Renn-Pace-Plan (docs/PLAN-PHASE-10.md 22): Zwischenzeiten, Grafik, Verpflegung, Druck. */}
+          {shownEntry.row.status === 'planned' ? (
+            <RacePaceCard competition={comp} rows={rows} raceDate={comp.raceDate} />
           ) : null}
           {/* Ampel direkt in der Übersicht (Grundlagen-Plan bzw. Plan passt nicht mehr) – wie im Formular. */}
           {overviewAmpel && overviewShown ? (

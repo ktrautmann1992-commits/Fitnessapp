@@ -23,8 +23,12 @@ export * from './nutrition';
 export * from './evaluation';
 export * from './retail';
 export * from './routes';
+// Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md Abschnitt 22).
+export * from './shoes';
 export * from './share';
 export * from './dashboard';
+// Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md).
+export * from './widget';
 export * from './layout';
 export * from './notifications';
 // Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5).
@@ -34,8 +38,12 @@ export * from './cycle';
 export * from './plan/day-variant';
 // Workout-Bibliothek (docs/PLAN-WORKOUTS.md).
 export * from './workouts';
+// Trainings-Modi: Schmerz-/Verletzungsmodus, Reise-Modus, Aufwärmen & Dehnen (docs/PLAN-TRAINING-MODI.md).
+export * from './modes';
 // Phase 8 · Wearables: Galaxy Watch über Health Connect (docs/PLAN-PHASE-8.md).
 export * from './wearables';
+// Sportarten Stufe 2 (docs/PLAN-SPORTARTEN.md).
+export * from './sports';
 // Supplement-Modul (docs/PLAN-PHASE-6.md, Etappe SU1). Im Ordner `supplements/` gibt es bewusst KEIN index.ts
 // (Wächter S1): Die Dateien werden hier einzeln weitergereicht; Affiliate (SU5) wird hier nie weitergereicht.
 export * from './supplement-ids';
@@ -51,3 +59,5 @@ export * from './supplements/text-rules';
 export * from './supplements/user-data';
 export * from './supplements/profile-inputs';
 export * from './supplements/overview';
+// Gewichtstrend, Monatsrückblick, Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md).
+export * from './review';

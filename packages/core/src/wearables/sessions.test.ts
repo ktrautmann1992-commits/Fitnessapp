@@ -276,6 +276,7 @@ describe('chunkImportBatches', () => {
       resting_hr_bpm: null,
       sleep_min: null,
       steps: i,
+      hrv_rmssd_ms: null,
     }));
     const batches = chunkImportBatches(['exercise'], sessions, days);
     expect(batches.map((b) => [b.sessions.length, b.days.length])).toEqual([

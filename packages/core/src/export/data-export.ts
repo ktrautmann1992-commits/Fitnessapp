@@ -81,6 +81,24 @@ export const DATA_EXPORT_TABLES = [
   // Widerruf gelöscht)
   'supplement_screening',
   'user_supplements',
+  // Trinken-Tracker (25.10.2026): getrunkene Mengen je Tag. Reihenfolge = export_my_data()
+  // (*_export_my_data_integration.sql: erstes Objekt bis hydration_logs, danach das zweite Objekt).
+  'hydration_logs',
+  // Rezept-Favoriten (Gründer-Freigabe 25.10.2026, KONZEPT 6.10a): „Lieblingsgericht“/„Nie wieder“ je Rezept (kein
+  // Gesundheitsdatum, bleibt beim Widerruf)
+  'recipe_preferences',
+  // Vorratsschrank (Gründer-Freigabe 25.10.2026, KONZEPT 6.13): Lebensmittel, Menge in Kaufeinheiten, „fast leer“
+  // (sensibel wie gelernte Strichcode-Zuordnungen, beim Widerruf gelöscht)
+  'pantry_items',
+  // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 7): Schmerz-Einträge (Gesundheitsdaten, beim Widerruf gelöscht) und
+  // Reise-Zeiträume
+  'pain_episodes',
+  'travel_modes',
+  // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md Abschnitt 22): Schuhe, Standard je Sportart, Wahl je Lauf (kein
+  // Gesundheitsdatum)
+  'shoes',
+  'shoe_defaults',
+  'shoe_assignments',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

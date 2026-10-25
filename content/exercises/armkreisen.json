@@ -1,0 +1,37 @@
+{
+  "id": "armkreisen",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Armkreisen",
+  "name_en": "Arm Circles",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["side_delts", "front_delts"],
+  "secondary_muscles": ["rear_delts", "upper_back"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Große, langsame Kreise mit gestreckten Armen. Bereitet die Schultern auf Drücken und Ziehen vor.",
+  "steps_de": [
+    "Aufrecht stehen, Arme seitlich locker hängen lassen.",
+    "Arme gestreckt in großen Kreisen nach vorn führen.",
+    "Nach der Hälfte der Wiederholungen die Richtung wechseln."
+  ],
+  "tips_de": ["Kreise erst klein, dann größer werden lassen."],
+  "common_mistakes_de": ["Schultern zu den Ohren hochziehen."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, nur im angenehmen Bewegungsumfang. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Trainings-Modi (Aufwärmen & Dehnen, docs/PLAN-TRAINING-MODI.md 5) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

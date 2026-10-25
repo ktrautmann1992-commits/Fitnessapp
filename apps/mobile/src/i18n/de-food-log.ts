@@ -67,7 +67,13 @@ export const deFoodLog = {
   // Bildschirm „Eintragen“
   screenTitle: 'Eintragen',
   editTitle: 'Eintrag ändern',
-  tabs: { recent: 'Zuletzt', favorites: 'Favoriten', search: 'Suche', quick: 'Schnell' },
+  tabs: {
+    recent: 'Zuletzt',
+    favorites: 'Favoriten',
+    search: 'Suche',
+    out: 'Unterwegs',
+    quick: 'Schnell',
+  },
   tabsLabel: 'Wie möchtest du eintragen?',
   recentEmpty:
     'Hier erscheint, was du zuletzt eingetragen hast. Nutze die Suche oder den Schnelleintrag.',

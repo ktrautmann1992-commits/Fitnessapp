@@ -1,0 +1,20 @@
+{
+  "exercise_id": "marschieren-auf-der-stelle",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "marschieren-auf-der-stelle-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – aufrecht stehen, Füße hüftbreit, Arme locker neben dem Körper.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

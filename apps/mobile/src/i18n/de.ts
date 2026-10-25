@@ -19,8 +19,12 @@ import {
   deTabs,
 } from './de-dashboard';
 import { deDay } from './de-day';
+import { deEatingOut } from './de-eating-out';
 import { deEndurance } from './de-endurance';
 import { deLoop } from './de-loop';
+import { deRacePace } from './de-race-pace';
+import { deShoes } from './de-shoes';
+import { deHydration } from './de-hydration';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
@@ -29,13 +33,19 @@ import { deGoalChoice, deWeightGoal, deWeightGoalLife } from './de-goals';
 import { deMuscleMap } from './de-muscle-map';
 import { deNutrition } from './de-nutrition';
 import { deNutritionDay } from './de-nutrition-day';
+import { dePantry } from './de-pantry';
 import { deWeekEval } from './de-week-eval';
 import { deWearables } from './de-wearables';
 import { deSteps } from './de-steps';
+import { deRecovery } from './de-recovery';
+import { deStrength } from './de-strength';
 import { deSessionKcal } from './de-session-kcal';
+import { deSports } from './de-sports';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
 import { deTrainingWeek } from './de-training-week';
+import { deWidget } from './de-widget';
+import { deDeviceCalendar, deMonthReview, deWeightTrend } from './de-review';
 
 export const de = {
   common: {
@@ -1630,6 +1640,10 @@ export const de = {
   foodPhoto: deFoodPhoto,
   foodProduct: deFoodProduct,
   customMeals: deCustomMeals,
+  /** Auswärts essen – Reiter „Unterwegs“ beim Eintragen (25.10.2026). */
+  eatingOut: deEatingOut,
+  /** Vorratsschrank (25.10.2026). */
+  pantry: dePantry,
   competition: deCompetition,
   /** Wettkampf-Ernährung (Phase 10, Etappe W1). */
   competitionNutrition: deCompetitionNutrition,
@@ -1640,6 +1654,11 @@ export const de = {
   tabs: deTabs,
   dashboard: deDashboard,
   progressHub: deProgressHub,
+  weightTrend: deWeightTrend,
+  monthReview: deMonthReview,
+  deviceCalendar: deDeviceCalendar,
+  /** Kraft-Entwicklung je Übung (Gründer-Freigabe 25.10.2026). */
+  strength: deStrength,
   more: deMore,
   menuBar: deMenuBar,
   konto: deKonto,
@@ -1685,19 +1704,27 @@ export const de = {
   adjust: deAdjust,
   /** Ausdauer: Aufzeichnen, Meine Läufe, Auswertung, Story-Bild (Etappen E3–E6). */
   endurance: deEndurance,
+  // Schuh-Kilometerzähler und Renn-Pace-Plan (docs/PLAN-PHASE-10.md Abschnitt 22).
+  shoes: deShoes,
+  racePace: deRacePace,
+  hydration: deHydration,
   // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
   workouts: deWorkouts,
   /** Smartwatch über Health Connect (Phase 8). */
   wearables: deWearables,
   sessionKcal: deSessionKcal,
+  sports: deSports,
   // Supplement-Modul (docs/PLAN-PHASE-6.md, Etappe SU4)
   supplements: deSupplements,
   // Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5)
   accessibility: deAccessibility,
   /** Kachel „Schritte“ mit Tagesziel und Schrittziel (22.10.2026). */
   stepCounter: deSteps,
+  recovery: deRecovery,
   /** Rundkurs-Vorschlag (docs/PLAN-RUNDKURS.md, 25.10.2026). */
   loop: deLoop,
+  /** Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md, 25.10.2026). */
+  widget: deWidget,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

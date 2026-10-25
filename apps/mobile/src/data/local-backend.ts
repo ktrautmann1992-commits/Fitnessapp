@@ -38,7 +38,7 @@ import {
 } from '@fitnessapp/core';
 
 import { healthConsentStatus } from '../state/flow';
-import { applyShoppingProductLink } from './nutrition-sync';
+import { applyPantryItems, applyShoppingProductLink, checkPantrySave } from './nutrition-sync';
 import {
   BackendError,
   type Backend,
@@ -108,8 +108,12 @@ import {
   revertAllowed,
 } from './live-adjust';
 import { checkSessionLog, isValidOp, isValidPlanOp, isValidPreferenceOp } from './local-rules';
+import { checkRecipePreference } from './recipe-preference-rows';
 import { markWorkoutSource, workoutsFromBundle } from './workout-library';
 import {
+  applyRouteAutoMatch,
+  applyRouteMatch,
+  applyRouteWeather,
   applyTrackedRouteDelete,
   applyTrackedRouteSave,
   applyTrackedRouteUpdate,
@@ -134,6 +138,7 @@ import {
   pruneExpiredNutritionWeeks,
 } from './meal-plan-rows';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
+import { HYDRATION_KEYS } from './hydration';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
 import { localLoopRoutes } from './loop-routing';
@@ -294,6 +299,7 @@ const SERIALIZED_METHODS = [
   'deleteSessionLog',
   'updateExercisePreferences',
   'setStartWeight',
+  'setRecipePreference',
   'revokeHealthData',
   'deleteStoredIntolerances',
   'saveMealPlan',
@@ -312,9 +318,14 @@ const SERIALIZED_METHODS = [
   'saveUserFoodProduct',
   'deleteUserFoodProduct',
   'saveShoppingProductLink',
+  'savePantryItems',
+  'deletePantryItem',
   'saveAppLayout',
   'saveTrackedRoute',
   'updateTrackedRoute',
+  'setRouteMatch',
+  'setRouteAutoMatch',
+  'setRouteWeather',
   'deleteTrackedRoute',
   'deleteAllTrackedRoutes',
   'saveSupplementScreening',
@@ -947,6 +958,8 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
 
     // Testphase „alles offen“ (KONZEPT 13): ohne Server ist im Testmodus alles offen.
     testPhaseOpen: async () => true,
+    // Erholung (25.10.2026): Angebot nur mit „Live-Anpassung einschalten“ – wie die Live-Anpassung selbst.
+    liveAdjustmentActive: async () => simulatePremiumOn(await load()),
 
     // --- Gericht per Foto (Etappe E3): Testmodus immer mit der Attrappe, gleiche Kette wie der Server ---------
     foodPhotoStatus: async () => {
@@ -1055,6 +1068,26 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         userId: session.userId,
         now: options.now(),
       });
+      await save({ ...db, rows: next });
+      return next;
+    },
+
+    // Vorratsschrank (25.10.2026): dieselben Regeln wie save_pantry_item (Einwilligung, Schema, Grenze). Lebensmittel
+    // und Mengen nie in Meldungen oder Logs.
+    savePantryItems: async (items) => {
+      const { db, rows, session } = await requireProfile();
+      if (healthConsentStatus(rows, LOCAL_VERSIONS) !== 'valid') {
+        throw new BackendError('consent_required', { sensitive: true });
+      }
+      const parsed = checkPantrySave(rows, items);
+      const next = applyPantryItems(rows, parsed, { userId: session.userId, now: options.now() });
+      await save({ ...db, rows: next });
+      return next;
+    },
+    // Löschen geht immer (Recht auf Löschung).
+    deletePantryItem: async (foodId) => {
+      const { db, rows } = await requireProfile();
+      const next = { ...rows, pantryItems: rows.pantryItems.filter((p) => p.food_id !== foodId) };
       await save({ ...db, rows: next });
       return next;
     },
@@ -1245,6 +1278,22 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     setStartWeight: async (exerciseId, weightKg) => {
       const { db, rows } = await requireProfile();
       const next = applyChecked(rows, { kind: 'set_exercise_start_weight', exerciseId, weightKg });
+      await save({ ...db, rows: next });
+      return next;
+    },
+    setRecipePreference: async (recipeId, kind) => {
+      // Wie recipe_preferences (RLS: eigene Zeile, Profil-Pflicht, Höchstzahl) – geht ohne Netz (Gerätespeicher).
+      const { db, rows } = await requireProfile();
+      const userId = rows.profile?.user_id ?? '';
+      const check = checkRecipePreference(
+        rows,
+        { recipeId, kind },
+        { userId, today: options.today() },
+      );
+      if (!check.ok) {
+        throw new BackendError(check.reason === 'limit' ? 'recipe_preference_limit' : 'unknown');
+      }
+      const next = applyChecked(rows, { kind: 'set_recipe_preference', recipeId, row: check.row });
       await save({ ...db, rows: next });
       return next;
     },
@@ -1521,6 +1570,14 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
     // Testmodus: das ganze Tagebuch liegt auf dem Gerät – nichts nachzuladen.
     logHistoryStart: () => null,
     loadOlderLogs: async () => ({ logs: EMPTY_LOG_ROWS, nextBefore: null }),
+    // Testmodus: alle Körperdaten liegen im Gerätespeicher.
+    loadWeightHistory: async (from) => {
+      const db = await load();
+      return (db.rows?.bodyMetrics ?? [])
+        .filter((r) => r.weight_kg !== null && r.measured_on >= from)
+        .map((r) => ({ measured_on: r.measured_on, weight_kg: r.weight_kg as number }))
+        .sort((a, b) => a.measured_on.localeCompare(b.measured_on));
+    },
     // Workout-Bibliothek (docs/PLAN-WORKOUTS.md): aus dem Bündel, geprüft wie content:validate.
     loadWorkoutLibrary: async () => {
       const { CONTENT_BUNDLE } = await import('../generated/content-files');
@@ -1588,6 +1645,12 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           trackedRoutes: (db.trackedRoutes ?? []).filter((r) => r.user_id === session.userId),
           wearables: wearableRowsFor(db.wearables ?? EMPTY_LOCAL_WEARABLES, rows, session.userId),
           ...localSupplementExport(db.supplements ?? [], session.userId),
+          // Trinken (25.10.2026): eigener Gerätespeicher (data/hydration.ts), nur eigene Zeilen.
+          hydrationLogs: (
+            (await readJson<{ user_id?: unknown }[]>(store, HYDRATION_KEYS.local).catch(
+              () => null,
+            )) ?? []
+          ).filter((r) => r && r.user_id === session.userId),
         }),
         {
           email: session.email,
@@ -1641,6 +1704,39 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       const nextRows =
         payload.e_bike !== undefined && route ? routeEBikeToLog(rows, route, now) : rows;
       await save({ ...db, rows: nextRows, trackedRoutes: next });
+    },
+    setRouteMatch: async (routeId, favoriteId, state) => {
+      const { db, session } = await requireUser();
+      const result = applyRouteMatch(
+        (db.trackedRoutes ?? []).map(normalizeRouteRow),
+        { routeId, favoriteId, state },
+        { userId: session.userId, now: options.now() },
+      );
+      if (result.kind === 'reject') throw new BackendError('route_rejected');
+      if (result.outcome !== 'unchanged') await save({ ...db, trackedRoutes: result.routes });
+      return result.outcome;
+    },
+    setRouteWeather: async (routeId, weather) => {
+      const { db, session } = await requireUser();
+      const next = applyRouteWeather(
+        (db.trackedRoutes ?? []).map(normalizeRouteRow),
+        routeId,
+        weather,
+        { userId: session.userId, now: options.now() },
+      );
+      if (next === 'invalid' || next === 'not_found') throw new BackendError('route_rejected');
+      await save({ ...db, trackedRoutes: next });
+    },
+    setRouteAutoMatch: async (routeId, enabled) => {
+      const { db, session } = await requireUser();
+      const next = applyRouteAutoMatch(
+        (db.trackedRoutes ?? []).map(normalizeRouteRow),
+        routeId,
+        enabled,
+        { userId: session.userId, now: options.now() },
+      );
+      if (next === 'not_found') throw new BackendError('route_rejected');
+      await save({ ...db, trackedRoutes: next });
     },
     deleteTrackedRoute: async (id) => {
       const { db, session } = await requireUser();

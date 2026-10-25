@@ -5,13 +5,20 @@
  * Die Schutzgrenzen sind fest im Code und NICHT durch Nutzer abschaltbar.
  */
 import type {
+  BodyRegion,
   CautionTag,
   EquipmentCategory,
   ExperienceLevel,
   GoalType,
+  LoadType,
   MovementPattern,
   MuscleGroup,
+  PainIntensity,
+  SportCategory,
+  SportId,
+  TrackedRouteSport,
   TrainingSlotKind,
+  TravelEquipment,
 } from './enums';
 
 /**
@@ -543,6 +550,26 @@ export const PARTIAL_START_WEEK_MIN_SHARE = 0.5;
  * 30(1):267–275. Grenze 12: PRODUKTENTSCHEIDUNG (Schätzformeln werden mit vielen Wdh. ungenau).
  */
 export const E1RM_ESTIMATE = { epleyDivisor: 30, maxRepsPlusReserve: 12 } as const;
+
+/**
+ * Kraft-Entwicklung je Übung (Gründer-Freigabe 25.10.2026, KONZEPT 11.4) – PRODUKTENTSCHEIDUNG, keine Schutzgrenze:
+ * - `rangeDays`: Zeiträume „4W“ (28 Tage) und „3M“ (91 Tage = 13 Wochen) bis einschließlich heute; „Alles“ ohne Grenze.
+ * - `compareWeeks`: Vergleich „gegenüber vor 4 Wochen“ – Bezug ist die letzte Einheit, die mindestens so lange zurück-
+ *   liegt; gibt es keine, die früheste Einheit, wenn sie mindestens `compareMinDays` zurückliegt (sonst kein Vergleich).
+ *   Erholungswochen (Deload) zählen nie als Bezug; Einheiten mit anderer Belastungsart (z. B. vorher ohne Gewicht) auch
+ *   nicht.
+ * - `overviewLimit`/`overviewMinSessions`: Kachel „Kraft-Entwicklung“ zeigt höchstens 3 Übungen mit mindestens 2
+ *   Einheiten im Zeitraum „3M“ (am häufigsten trainierte zuerst).
+ * Bewusst KEINE geschätzte Maximalkraft (1RM) in der Anzeige: KONZEPT 5 „keine 1RM“ und Regel V4 „keine
+ * Maximaltests“ – gezeigt wird der schwerste tatsächlich gemachte Satz (`E1RM_ESTIMATE` bleibt nur für Arbeitsgewichte).
+ */
+export const STRENGTH_PROGRESS = {
+  rangeDays: { '4w': 28, '3m': 91 },
+  compareWeeks: 4,
+  compareMinDays: 7,
+  overviewLimit: 3,
+  overviewMinSessions: 2,
+} as const;
 
 /**
  * Doppelte Progression (PLAN-PHASE-3 Abschnitt 5.9).
@@ -1278,6 +1305,458 @@ export const SESSION_KCAL = {
   maxKcal: 6000,
 } as const;
 
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 2 (Gründer-Freigabe 25.10.2026, docs/PLAN-SPORTARTEN.md): eintragen bzw. von der Uhr übernehmen,
+// mit kcal und Trainingsbelastung – OHNE eigene Trainingspläne. Rechnung in packages/core/src/sports/.
+// ---------------------------------------------------------------------------------------------------------
+
+/** Icon-Schlüssel einer Sportart (Strich-Icons der App, apps/mobile/src/components/design.tsx). */
+export type SportIcon =
+  | 'mountain'
+  | 'ball'
+  | 'racket'
+  | 'glove'
+  | 'snowflake'
+  | 'waves'
+  | 'music'
+  | 'bike'
+  | 'stopwatch'
+  | 'dots';
+
+/** Beinbelastung für den Plan-Hinweis (LEG_LOAD_HINT): hoch = Sprints, Sprünge, Richtungswechsel bzw. Beine im Dauerzug. */
+export type SportLegLoad = 'high' | 'moderate' | 'low';
+
+export interface SportDefinition {
+  /** Name in der App und im Tagebuch (`session_logs.name_de`, feste Liste – kein Freitext). */
+  readonly nameDe: string;
+  readonly category: SportCategory;
+  readonly icon: SportIcon;
+  /** Mit GPS aufzeichnen (Distanz) – nur Sportarten draußen mit Strecke. */
+  readonly gps: boolean;
+  /** Auswertung einer GPS-Aufzeichnung wie diese Strecken-Sportart (Geschwindigkeitsgrenze, Pace bzw. km/h). */
+  readonly gpsProfile: TrackedRouteSport | null;
+  /** MET bei geringer bzw. hoher Anstrengung (Codes siehe SPORT_CATALOGUE). */
+  readonly met: { readonly low: number; readonly high: number };
+  /** Übliche Anstrengung 0–10 (Borg-CR10), wenn die Person keine angibt – nur für die Trainingsbelastung. */
+  readonly typicalEffort: number;
+  readonly legLoad: SportLegLoad;
+  /** Stoßbelastung (Sprünge, Sprints, Stürze) – nur Anzeige/Erklärung, keine Regel. */
+  readonly impact: boolean;
+  /** Weitere Suchbegriffe (klein geschrieben, ohne Name). */
+  readonly searchTerms: readonly string[];
+}
+
+/**
+ * Katalog der Sportarten Stufe 2. MET = metabolisches Äquivalent (brutto, inkl. Ruheumsatz) aus dem Compendium of
+ * Physical Activities: Ainsworth BE et al. (2011), „2011 Compendium of Physical Activities: a second update of codes
+ * and MET values“, Med Sci Sports Exerc 43(8):1575–1581 (Code in Klammern; Wortlaut der Codes aus dem Gedächtnis,
+ * NICHT gegen das Original geprüft – VOR LIVEGANG FACHLICH PRÜFEN, ggf. auf das 2024 Adult Compendium (Herrmann SD et
+ * al. (2024), J Sport Health Sci 13(1):6–12) umstellen).
+ * - Bouldern / Klettern 5,8 / 8,0: 15535 „rock climbing, ascending or traversing rock, low-to-moderate difficulty“ /
+ *   15533 „rock climbing, ascending rock, high difficulty“. Bouldern hat 2011 keinen eigenen Code (Analogie).
+ * - Fußball 7,0 / 10,0: 15610 „soccer, casual, general“ / 15605 „soccer, competitive“.
+ * - Padel 6,0 / 7,3: kein Code (2011) – Analogie Tennis 15680 „tennis, doubles“ / 15675 „tennis, general“.
+ * - Tennis 6,0 / 8,0: 15680 „tennis, doubles“ / 15690 „tennis, singles“.
+ * - Badminton 5,5 / 7,0: 15030 „badminton, social singles and doubles, general“ / 15020 „badminton, competitive“.
+ * - Tischtennis 4,0 / 4,0: 15660 „table tennis, ping pong“ (nur ein Code – Anstrengung ändert die kcal nicht).
+ * - Basketball 6,0 / 8,0: 15050 „basketball, non-game, general“ / 15040 „basketball, game“.
+ * - Volleyball 3,0 / 6,0: 15720 „volleyball, non-competitive, 6–9 member team, general“ / 15711 „volleyball,
+ *   competitive, in gymnasium“ (Beach 15725 mit 8,0 nicht genutzt).
+ * - Handball 8,0 / 12,0: 15330 „handball, team“ / 15320 „handball, general“.
+ * - Crosstrainer 5,0 / 6,8: 02048 „elliptical trainer, moderate effort“ / für „kräftig“ kein Code (2011) – Annahme
+ *   wie 02012 „bicycling, stationary, 90–100 watts, moderate to vigorous effort“.
+ * - Spinning/Indoor-Cycling 6,8 / 8,5: 02012 (s. o.) / 02019 „bicycling, stationary, RPM/Spin bike class“.
+ * - HIIT/Zirkel 4,3 / 8,0: 02045 „circuit training, moderate effort“ / 02040 „circuit training, including kettlebells,
+ *   some aerobic movement with minimal rest, general, vigorous intensity“.
+ * - Boxen 5,5 / 7,8: 15110 „boxing, punching bag“ / 15120 „boxing, sparring“ (15100 „in ring“ 12,8 nicht genutzt).
+ * - Kickboxen, Judo/BJJ, Karate, Kampfsport (sonstige) 5,3 / 10,3: 15425 „martial arts, different types, slower
+ *   pace, novice performers, practice“ / 15430 „martial arts, different types, moderate pace (e.g., judo, jujitsu,
+ *   karate, kick boxing, tae kwan do, tai-bo, Muay Thai boxing)“.
+ * - Skilanglauf 6,8 / 9,0: 19160 „skiing, cross country, 2.5 mph, slow or light effort, ski walking“ / 19170
+ *   „skiing, cross country, 4.0–4.9 mph, moderate speed and effort, general“ (19180 „brisk“ 12,5 nicht genutzt).
+ * - Skitour 6,8 / 9,0: kein eigener Code (2011) – Analogie Skilanglauf 19160 / 19170 (Aufstieg mit Fellen ist oft
+ *   härter, Abfahrt leichter; bewusst vorsichtig).
+ * - Ski alpin / Snowboard 4,3 / 5,3: 19190 „skiing, downhill, alpine or snowboarding, light effort, active time
+ *   only“ / 19192 „… moderate effort, general, active time only“ (19200 „vigorous effort, racing“ 8,0 nicht genutzt).
+ *   Die Werte gelten für aktive Zeit – Liftzeiten nicht mitzählen (Hinweis in der App).
+ * - Inline-Skaten 7,5 / 9,8: 15591 „rollerblading, in-line skating, 14.4 km/h, recreational pace“ / 15592
+ *   „… 17.7 km/h, moderate pace, exercise training“.
+ * - SUP 3,5 / 6,0: 18365 „paddle boarding, standing“ (= hoch) / für „locker“ kein Code – Analogie 18070 „canoeing,
+ *   rowing, 2.0–3.9 mph, light effort“.
+ * - Kajak/Kanu 3,5 / 5,8: 18070 (s. o.) / 18080 „canoeing, rowing, 4.0–5.9 mph, moderate effort“ (Wettkampf 18090
+ *   12,5 nicht genutzt).
+ * - Tanzen 4,5 / 7,8: 03025 „ethnic or cultural dancing (e.g., … salsa, merengue, … swing)“ / 03031 „general
+ *   dancing (e.g., disco, folk, Irish step dancing, line dancing, polka, contra, country)“.
+ * - Sonstige Sportart 4,0 / 6,0: kein Code – PRODUKTENTSCHEIDUNG (Bereich „moderat“ 3–6 MET nach ACSM; Garber CE et
+ *   al. (2011), Med Sci Sports Exerc 43(7):1334–1359).
+ * `typicalEffort`, `legLoad`, `impact`, `gps`/`gpsProfile` und die Suchbegriffe: PRODUKTENTSCHEIDUNG (sportpraktische
+ * Einschätzung), VOR LIVEGANG FACHLICH PRÜFEN. Schwimmen bleibt Ausdauer-Art (TRAINING_MET.endurance.swim).
+ */
+export const SPORT_CATALOGUE = {
+  bouldering: {
+    nameDe: 'Bouldern',
+    category: 'climb',
+    icon: 'mountain',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.8, high: 8.0 },
+    typicalEffort: 6,
+    legLoad: 'low',
+    impact: true,
+    searchTerms: ['boulder', 'kletterhalle'],
+  },
+  climbing: {
+    nameDe: 'Klettern',
+    category: 'climb',
+    icon: 'mountain',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.8, high: 8.0 },
+    typicalEffort: 5,
+    legLoad: 'low',
+    impact: false,
+    searchTerms: ['halle', 'fels', 'sportklettern', 'kletterhalle', 'klettersteig'],
+  },
+  football: {
+    nameDe: 'Fußball',
+    category: 'ball',
+    icon: 'ball',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 7.0, high: 10.0 },
+    typicalEffort: 7,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: ['fussball', 'soccer', 'kicken', 'futsal'],
+  },
+  padel: {
+    nameDe: 'Padel',
+    category: 'racket',
+    icon: 'racket',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 6.0, high: 7.3 },
+    typicalEffort: 6,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: ['padel-tennis', 'paddel'],
+  },
+  tennis: {
+    nameDe: 'Tennis',
+    category: 'racket',
+    icon: 'racket',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 6.0, high: 8.0 },
+    typicalEffort: 6,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: [],
+  },
+  badminton: {
+    nameDe: 'Badminton',
+    category: 'racket',
+    icon: 'racket',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.5, high: 7.0 },
+    typicalEffort: 6,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: ['federball'],
+  },
+  table_tennis: {
+    nameDe: 'Tischtennis',
+    category: 'racket',
+    icon: 'racket',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.0, high: 4.0 },
+    typicalEffort: 4,
+    legLoad: 'moderate',
+    impact: false,
+    searchTerms: ['ping pong', 'pingpong'],
+  },
+  basketball: {
+    nameDe: 'Basketball',
+    category: 'ball',
+    icon: 'ball',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 6.0, high: 8.0 },
+    typicalEffort: 7,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: ['streetball', 'korbball'],
+  },
+  volleyball: {
+    nameDe: 'Volleyball',
+    category: 'ball',
+    icon: 'ball',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 3.0, high: 6.0 },
+    typicalEffort: 5,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: ['beachvolleyball'],
+  },
+  handball: {
+    nameDe: 'Handball',
+    category: 'ball',
+    icon: 'ball',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 8.0, high: 12.0 },
+    typicalEffort: 7,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: [],
+  },
+  cross_trainer: {
+    nameDe: 'Crosstrainer',
+    category: 'indoor_cardio',
+    icon: 'stopwatch',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.0, high: 6.8 },
+    typicalEffort: 5,
+    legLoad: 'moderate',
+    impact: false,
+    searchTerms: ['ellipsentrainer', 'elliptical', 'stepper'],
+  },
+  indoor_cycling: {
+    nameDe: 'Spinning',
+    category: 'indoor_cardio',
+    icon: 'bike',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 6.8, high: 8.5 },
+    typicalEffort: 7,
+    legLoad: 'high',
+    impact: false,
+    searchTerms: ['indoor-cycling', 'indoor cycling', 'radkurs', 'rpm', 'spinningkurs'],
+  },
+  hiit: {
+    nameDe: 'HIIT/Zirkel',
+    category: 'indoor_cardio',
+    icon: 'stopwatch',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.3, high: 8.0 },
+    typicalEffort: 8,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['zirkeltraining', 'tabata', 'bootcamp', 'intervalltraining', 'kurs'],
+  },
+  boxing: {
+    nameDe: 'Boxen',
+    category: 'combat',
+    icon: 'glove',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.5, high: 7.8 },
+    typicalEffort: 7,
+    legLoad: 'moderate',
+    impact: false,
+    searchTerms: ['sandsack', 'sparring'],
+  },
+  kickboxing: {
+    nameDe: 'Kickboxen',
+    category: 'combat',
+    icon: 'glove',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.3, high: 10.3 },
+    typicalEffort: 7,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['muay thai', 'thaiboxen'],
+  },
+  judo_bjj: {
+    nameDe: 'Judo/BJJ',
+    category: 'combat',
+    icon: 'glove',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.3, high: 10.3 },
+    typicalEffort: 7,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['judo', 'bjj', 'jiu-jitsu', 'jiu jitsu', 'ringen', 'grappling'],
+  },
+  karate: {
+    nameDe: 'Karate',
+    category: 'combat',
+    icon: 'glove',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.3, high: 10.3 },
+    typicalEffort: 6,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['taekwondo', 'kung fu'],
+  },
+  martial_arts: {
+    nameDe: 'Kampfsport',
+    category: 'combat',
+    icon: 'glove',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.3, high: 10.3 },
+    typicalEffort: 6,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['kampfkunst', 'selbstverteidigung', 'mma', 'krav maga'],
+  },
+  cross_country_skiing: {
+    nameDe: 'Skilanglauf',
+    category: 'winter',
+    icon: 'snowflake',
+    gps: true,
+    gpsProfile: 'bike',
+    met: { low: 6.8, high: 9.0 },
+    typicalEffort: 6,
+    legLoad: 'high',
+    impact: false,
+    searchTerms: ['langlauf', 'loipe', 'skating', 'klassisch'],
+  },
+  ski_touring: {
+    nameDe: 'Skitour',
+    category: 'winter',
+    icon: 'snowflake',
+    gps: true,
+    gpsProfile: 'bike',
+    met: { low: 6.8, high: 9.0 },
+    typicalEffort: 6,
+    legLoad: 'high',
+    impact: false,
+    searchTerms: ['skitouren', 'tourenski', 'skibergsteigen'],
+  },
+  alpine_skiing: {
+    nameDe: 'Ski alpin',
+    category: 'winter',
+    icon: 'snowflake',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.3, high: 5.3 },
+    typicalEffort: 4,
+    legLoad: 'high',
+    impact: false,
+    searchTerms: ['skifahren', 'abfahrt', 'piste', 'ski'],
+  },
+  snowboarding: {
+    nameDe: 'Snowboard',
+    category: 'winter',
+    icon: 'snowflake',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.3, high: 5.3 },
+    typicalEffort: 4,
+    legLoad: 'moderate',
+    impact: false,
+    searchTerms: ['snowboarden', 'piste'],
+  },
+  inline_skating: {
+    nameDe: 'Inline-Skaten',
+    category: 'indoor_cardio',
+    icon: 'stopwatch',
+    gps: true,
+    gpsProfile: 'bike',
+    met: { low: 7.5, high: 9.8 },
+    typicalEffort: 5,
+    legLoad: 'moderate',
+    impact: false,
+    searchTerms: ['inliner', 'skaten', 'rollerblade', 'rollschuh'],
+  },
+  sup: {
+    nameDe: 'SUP',
+    category: 'water',
+    icon: 'waves',
+    gps: true,
+    gpsProfile: 'run',
+    met: { low: 3.5, high: 6.0 },
+    typicalEffort: 4,
+    legLoad: 'low',
+    impact: false,
+    searchTerms: ['stand-up-paddling', 'stand up paddle', 'paddeln', 'paddleboard'],
+  },
+  kayaking: {
+    nameDe: 'Kajak/Kanu',
+    category: 'water',
+    icon: 'waves',
+    gps: true,
+    gpsProfile: 'run',
+    met: { low: 3.5, high: 5.8 },
+    typicalEffort: 5,
+    legLoad: 'low',
+    impact: false,
+    searchTerms: ['kajak', 'kanu', 'paddeln', 'canadier'],
+  },
+  dancing: {
+    nameDe: 'Tanzen',
+    category: 'dance',
+    icon: 'music',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.5, high: 7.8 },
+    typicalEffort: 5,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['tanz', 'zumba', 'salsa', 'ballett', 'tanzkurs'],
+  },
+  other: {
+    nameDe: 'Sonstige Sportart',
+    category: 'other',
+    icon: 'dots',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.0, high: 6.0 },
+    typicalEffort: 5,
+    legLoad: 'low',
+    impact: false,
+    searchTerms: ['andere', 'sonstiges'],
+  },
+} as const satisfies Readonly<Record<SportId, SportDefinition>>;
+
+/**
+ * Anstrengung (0–10, Borg-CR10) → MET zwischen `met.low` und `met.high` einer Sportart: bis `lowEffortMax` der niedrige
+ * Wert, ab `highEffortMin` der hohe, dazwischen linear. Ohne Angabe der HOHE Wert (wie TRAINING_MET.fallback; so wird
+ * die Trainingsenergie fürs Tagesziel nie unterschätzt). Grenzen 3/8 in Anlehnung an die CR10-Stufen „moderat“ (3) und
+ * „sehr hart“ (7–8): Borg GA (1982), Med Sci Sports Exerc 14(5):377–381; Zuordnung PRODUKTENTSCHEIDUNG.
+ */
+export const SPORT_INTENSITY = { lowEffortMax: 3, highEffortMin: 8 } as const;
+
+/**
+ * Trainingsbelastung je Einheit (Session-RPE-Methode): Minuten × Anstrengung 0–10 (Borg-CR10) = Belastungspunkte.
+ * Ohne Angabe der Anstrengung gilt SPORT_CATALOGUE[…].typicalEffort (andere Einheiten: `fallbackEffort`). Die Woche ist
+ * die Summe aller Einheiten. Quellen: Foster C (1998), Med Sci Sports Exerc 30(7):1164–1168; Foster C et al. (2001), „A
+ * new approach to monitoring exercise training“, J Strength Cond Res 15(1):109–115. `maxPointsPerSession`: Deckel gegen
+ * Tippfehler (8 h × 10 = 4.800) – PRODUKTENTSCHEIDUNG. `fallbackEffort` 5 (Ausdauer/Kraft ohne Angabe):
+ * PRODUKTENTSCHEIDUNG. VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const SPORT_LOAD = { maxPointsPerSession: 4800, fallbackEffort: 5 } as const;
+
+/**
+ * Plan-Hinweis nach Sport mit hoher Beinbelastung (nur Vorschlag, keine Plan-Änderung): war gestern eine Sportart mit
+ * `legLoad` „high“ mit mindestens `minMinutes` Minuten und Anstrengung ≥ `minEffort` (ohne Angabe typicalEffort),
+ * bekommt eine heute geplante harte Bein-/Intervall-Einheit den sanften Hinweis „lieber locker oder tauschen“. Hart =
+ * Kraft mit Fokus aus `strengthFocus` bzw. Ausdauer mit harter Einheiten-Art (HARD_WORKOUT_TYPES) oder Anstrengung über
+ * ENDURANCE_EFFORT.easyMax. Grundlage: 24–72 h erhöhte Ermüdung nach Mannschafts-/Rückschlagsportarten (Nédélec M et
+ * al. (2012), „Recovery in soccer: part I“, Sports Med 42(12):997–1015). Schwellen PRODUKTENTSCHEIDUNG.
+ */
+export const LEG_LOAD_HINT = {
+  minMinutes: 30,
+  minEffort: 5,
+  strengthFocus: ['lower', 'full_body'],
+} as const;
+
+/** Grenzen eines Sportart-Eintrags (wie CARDIO_LOG_LIMITS; gleiche CHECKs in der Datenbank, db-sync.test.ts). */
+export const SPORT_LOG_LIMITS = {
+  durationS: { min: 60, max: 12 * 60 * 60 },
+  distanceM: { min: 0, max: 500_000 },
+} as const;
+
 /**
  * Zielanpassung vom Grundbedarf OHNE Trainingsenergie (Plan 4.5, S2): Vorschlag = Grundbedarf × (1 + Anpassung)
  * + Trainingsenergie + 4b-Versatz. Startwerte, PRODUKTENTSCHEIDUNG – fachlich zu prüfen.
@@ -1927,6 +2406,12 @@ export const MEAL_PLAN_SCORING = {
   ratingQuick: 1,
   ratingSatiety: 1,
   ratingCheaper: 1,
+  /**
+   * Lieblingsgericht (Herz, Gründer-Freigabe 25.10.2026, `RECIPE_PREFERENCE_RULES`): stärker als Daumen hoch, aber
+   * im selben Deckel `ratingMaxTotal` – Herz und Daumen hoch addieren sich NICHT (es zählt der größere Wert), damit
+   * Abwechslung (`repeat`) und Passung (`kcalFit`) Vorrang behalten. Nur Reihenfolge, nie Filter oder Grenzen.
+   */
+  ratingFavorite: 1.25,
   ratingMaxTotal: 1.25,
 } as const;
 
@@ -1950,6 +2435,18 @@ export const RECIPE_RATING_RULES = {
   costReferenceEurPerServing: 5,
   maxRatings: 2000,
   maxFoodDislikes: 300,
+} as const;
+
+/**
+ * Rezept-Favoriten (Gründer-Freigabe 25.10.2026, KONZEPT 6.10a) – PRODUKTENTSCHEIDUNG, keine Schutzgrenze:
+ * - „Lieblingsgericht“ (Herz): Bonus `MEAL_PLAN_SCORING.ratingFavorite` im Essensplan (nur Reihenfolge).
+ * - „Nie wieder“: das Rezept wird dauerhaft nicht mehr vorgeschlagen (bis die Person es unter „Ausgeblendete
+ *   Gerichte“ wieder zulässt) und erscheint nicht mehr in Rezeptlisten. Passt dann für einen Platz nichts mehr, bleibt
+ *   er leer mit Grund `recipe_hidden` – Planband und Kalorien-Schutzgrenzen bleiben unberührt.
+ * - `maxEntries`: Obergrenze je Person (Gerätespeicher- und Datenbank-Schutz, wie `RECIPE_RATING_RULES.maxRatings`).
+ */
+export const RECIPE_PREFERENCE_RULES = {
+  maxEntries: 2000,
 } as const;
 
 /**
@@ -3279,6 +3776,66 @@ export const COMPETITION_PACE = {
 } as const;
 
 /**
+ * Renn-Pace-Plan (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 22): Zwischenzeiten zur Zielzeit eines
+ * Wettkampfs. Die Summe aller Abschnitte ist immer genau die Zielzeit – die Regeln verteilen nur um:
+ * - `splitEveryM`: bis `longRaceFromM` (25 km) je Kilometer, darüber (Marathon) je 5 km; der letzte Abschnitt ist der
+ *   Rest (z. B. 0,1 km beim Halbmarathon, 2,2 km beim Marathon).
+ * - Gleichmäßig (Standard): gleiches Tempo auf der ganzen Strecke – auf flacher Strecke die gängige, vorsichtige
+ *   Empfehlung (gleichmäßige Belastung; Abbiss CR, Laursen PB (2008), „Describing and understanding pacing strategies
+ *   during athletic competition“, Sports Med 38(3):239–252).
+ * - Negativ: zweite Hälfte um `negativeSplitShare` (2 %) schneller als die erste („etwas schneller“, ohne Tempowechsel
+ *   mitten im Rennen). Gängige Wettkampf-Empfehlung, Wert PRODUKTENTSCHEIDUNG.
+ * - Höhenprofil (nur mit gespeicherter Strecke): je Prozent Steigung `uphillPerPercent` (3 %) mehr Zeit, je Prozent
+ *   Gefälle `downhillPerPercent` (1,5 %) weniger – bergab gewinnt man weniger, als man bergauf verliert; Gefälle zählt
+ *   nur bis `downhillBenefitMaxGrade` (5 %), Steigungen werden bei `maxGrade` (15 %) gekappt (GPS-Ausreißer).
+ *   Orientierung an den Energiekosten beim Laufen bergauf/bergab: Minetti AE et al. (2002), „Energy cost of walking and
+ *   running at extreme uphill and downhill slopes“, J Appl Physiol 93(3):1039–1046 – stark vereinfacht und vorsichtig.
+ *   Die Strecke darf höchstens `courseLengthTolerance` (10 %) von der Renn-Distanz abweichen; sie wird dann auf die
+ *   Renn-Distanz gestreckt. Gerechnet wird in `stepM` (100 m) Schritten.
+ * - `paceSPerKm`: Plausibilität der Eingabe (2:30–15:00 min/km), keine Bewertung der Person.
+ * - Sprach-Ansagen (Etappe „Sprache & Trinken“): „im Plan“ bei höchstens `checkpointToleranceS` (10 s) Abweichung.
+ * Zielzeit-Plausibilität: dieselbe Regel wie im Plan (COMPETITION_PACE.goalTimeMaxImprovement, goalTimePlausible).
+ * Verpflegung: dieselbe Rechnung wie die Wettkampf-Ernährung (COMPETITION_NUTRITION.fueling, raceFuelingPlan) – keine
+ * neuen Mengen. Keine Heilversprechen, keine Leistungsversprechen.
+ * PRODUKTENTSCHEIDUNG – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const RACE_PACE_PLAN = {
+  splitEveryM: 1000,
+  longRaceSplitEveryM: 5000,
+  longRaceFromM: 25000,
+  negativeSplitShare: 0.02,
+  uphillPerPercent: 0.03,
+  downhillPerPercent: 0.015,
+  downhillBenefitMaxGrade: 0.05,
+  maxGrade: 0.15,
+  courseLengthTolerance: 0.1,
+  stepM: 100,
+  distanceM: { min: 1000, max: 50000 },
+  paceSPerKm: { min: 150, max: 900 },
+  checkpointToleranceS: 10,
+} as const;
+
+/**
+ * Schuh-Kilometerzähler (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 22): Hinweis „Bald wechseln“
+ * ab `warnShare` (75 %) der Wechsel-Grenze, „Wechsel empfohlen“ ab der Grenze. Standard-Grenze `replaceKm` 800 km →
+ * Hinweis ab 600 km. Gängige Faustregel von Herstellern und Laufmagazinen: Laufschuhe nach etwa 500–800 km ersetzen
+ * (Dämpfung und Profil lassen nach). Das ist eine Material-Faustregel, KEINE medizinische Aussage – es gibt keinen
+ * gesicherten Beleg, dass ein Wechsel nach Kilometern Verletzungen verhindert (Fachprüfung vor Livegang). Die Grenze
+ * ist je Schuh einstellbar (`replaceKmLimits`). Datenmodell: 20261025120400_shoes.sql (CHECKs, db-sync.test.ts).
+ * PRODUKTENTSCHEIDUNG.
+ */
+export const SHOE_MILEAGE = {
+  replaceKm: 800,
+  warnShare: 0.75,
+  replaceKmLimits: { min: 200, max: 2000 },
+  startKmMax: 5000,
+  nameMaxLength: 40,
+  brandMaxLength: 40,
+  maxShoes: 30,
+  maxAssignments: 10000,
+} as const;
+
+/**
  * Anstrengung geplanter Einheiten im Wettkampfplan: CHECK `effort_target between 1 and 8` seit WP3
  * (20261016140100_competitions.sql), „> 4 (`easyMax`) nur bei harter Art“; serverseitig zusätzlich unter 18 ≤ 7 und ab
  * 65 ≤ 6 (COMPETITION_INTENSITY.hardEffortCap, private.insert_plan_sessions) – Wächter N2, db-sync.test.ts. Ohne Art
@@ -3591,6 +4148,84 @@ export const TRACKED_ROUTE_LIMITS = {
 export const ROUTE_COMPARE = {
   distanceTolerance: 0.1,
   sameWithinS: 5,
+} as const;
+
+/**
+ * „Meine Strecken“ – gleiche Strecke wiedererkennen (routes/match.ts, Vorschlag 24.10.2026, Gründer-Entscheidung
+ * 25.10.2026): feste Regeln auf dem Gerät, keine KI. Ein neuer Lauf passt zu einer gemerkten Strecke, wenn
+ * Sportart gleich, Distanz höchstens `distanceTolerance` daneben (= ROUTE_COMPARE, wie der Zeitvergleich), Rahmen
+ * (bbox, um `bboxPadM` erweitert) überlappen, Start UND Ende je höchstens `startEndMaxM` auseinander und der
+ * diskrete Fréchet-Abstand der beiden Linien (vereinfacht, alle `resampleM` Meter neu abgetastet, höchstens
+ * `maxPoints` Punkte) höchstens `frechetMaxM` ist. Andersherum gelaufen = eigene Strecke (Gründer-Entscheidung 2):
+ * passt die umgedrehte Linie um mehr als `directionMarginM` besser als die Linie selbst, gibt es keinen Treffer.
+ * Rundkurs mit anderem Startpunkt: bewusst (noch) kein Treffer (Gründer-Entscheidung 3, Start/Ende-Prüfung).
+ * - `maxRejected`: so viele abgelehnte Strecken merkt sich ein Lauf höchstens (match_rejected_ids, CHECK).
+ * - `maxAutoPerPass`: so viele Läufe ordnet ein Durchgang der Erkennung höchstens zu (neueste zuerst; Rest beim
+ *   nächsten Öffnen) – hält das Öffnen der Ausdauer-Seite schnell.
+ * Quellen: GPS-Genauigkeit von Handy und Uhr typisch 5–15 m, bei Abschattung mehr – Zandbergen PA, Barbeau SJ (2011),
+ * „Positional Accuracy of Assisted GPS Data from High-Sensitivity GPS-enabled Mobile Phones“, J Navigation
+ * 64(3):381–399; Fréchet-Abstand: Eiter T, Mannila H (1994), „Computing Discrete Fréchet Distance“, Technical Report
+ * CD-TR 94/64, TU Wien; Schwellen (150 m Start/Ende wegen verspätetem GPS-Start der Uhr, 60 m Linienabstand):
+ * PRODUKTENTSCHEIDUNG – mit echten Uhr-Läufen nachjustieren.
+ */
+export const ROUTE_MATCH = {
+  startEndMaxM: 150,
+  distanceTolerance: ROUTE_COMPARE.distanceTolerance,
+  frechetMaxM: 60,
+  resampleM: 25,
+  maxPoints: 200,
+  bboxPadM: 200,
+  directionMarginM: 10,
+  maxRejected: 20,
+  maxAutoPerPass: 50,
+} as const;
+
+/**
+ * Wetter je Lauf (routes/weather.ts, Gründer-Wunsch 25.10.2026): Quelle Open-Meteo (kostenlos, ohne Schlüssel,
+ * Lizenz CC BY 4.0 – https://open-meteo.com/en/terms). Datenschutz: an Open-Meteo gehen NUR die auf `roundDeg` Grad
+ * gerundete Startposition (Raster ca. 7–11 km in DACH) sowie Tag und Stunde – nie die Strecke. Bis `forecastMaxAgeDays`
+ * Tage zurück die Forecast-API (vergangene Tage enthalten), älter die Archiv-API (ERA5, einige Tage Verzug).
+ * `maxPerPass`: so viele Läufe holt ein Durchgang höchstens (Rest beim nächsten Öffnen, offline später). Wertebereiche
+ * (Prüfung der Antwort und CHECK der Spalte): Temperatur −60…60 °C, Wind 0…300 km/h, Niederschlag 0…500 mm/h,
+ * Luftfeuchte 0…100 %, WMO-Wettercode 0…99 (WMO-Codetabelle 4677). Quelle: Open-Meteo-Dokumentation
+ * (https://open-meteo.com/en/docs, https://open-meteo.com/en/docs/historical-weather-api); Schwellen PRODUKTENTSCHEIDUNG.
+ */
+export const ROUTE_WEATHER = {
+  roundDeg: 0.1,
+  forecastMaxAgeDays: 5,
+  maxPerPass: 10,
+  forecastUrl: 'https://api.open-meteo.com/v1/forecast',
+  archiveUrl: 'https://archive-api.open-meteo.com/v1/archive',
+  tempC: { min: -60, max: 60 },
+  windKmh: { min: 0, max: 300 },
+  precipMm: { min: 0, max: 500 },
+  humidityPct: { min: 0, max: 100 },
+  code: { min: 0, max: 99 },
+} as const;
+
+/**
+ * „Dein Fortschritt“ – auch OHNE gleiche Strecke (routes/progress.ts, Gründer-Wunsch 25.10.2026): Vergleich nur mit
+ * eigenen Einheiten derselben Sportart und ÄHNLICHER Länge. Entscheidung: relative Spanne statt fester Klassen
+ * (0–5/5–10/… km) – feste Grenzen trennen 4,9 km von 5,1 km, obwohl beide gleich lang sind; ±`similarShare` (20 %)
+ * des aktuellen Laufs passt auch für Rad und Gehen.
+ * - `lookbackDays`: Durchschnitt der letzten 4 Wochen VOR diesem Lauf.
+ * - `minForAverage`: Durchschnitt erst ab so vielen vergleichbaren Einheiten (eine einzelne ist „letztes Mal“).
+ * - `sameWithinSPerKm` / `sameWithinKmh`: Unterschiede bis dahin heißen „etwa gleich“ (Messrauschen der Pace).
+ * - `trendWeeks`: Trend-Kurve über so viele Kalenderwochen (zeitliche Reihenfolge, Wochen ohne Einheit = Lücke).
+ * - `elevationExtraMinM` / `elevationExtraShare`: Hinweis „mit 120 Hm mehr als sonst“ ab so vielen Höhenmetern UND so
+ *   viel Anteil mehr als der Durchschnitt (fairer Vergleich: bergiger Lauf ist langsamer).
+ * Neutral (W-G16): nur Vergleich mit sich selbst, keine Bestzeit, keine Rangliste. Quelle: PRODUKTENTSCHEIDUNG (die
+ * Ø-Pace aus GPS schwankt um wenige s/km, vgl. GPS-Genauigkeit bei ROUTE_MOTION/ROUTE_MATCH).
+ */
+export const ROUTE_PROGRESS = {
+  similarShare: 0.2,
+  lookbackDays: 28,
+  minForAverage: 2,
+  sameWithinSPerKm: 3,
+  sameWithinKmh: 0.3,
+  trendWeeks: 8,
+  elevationExtraMinM: 40,
+  elevationExtraShare: 0.3,
 } as const;
 
 /**
@@ -4008,11 +4643,16 @@ export const HR_ZONE_PERCENTS = [50, 60, 70, 80, 90, 100] as const;
  * - Ruhepuls 30–120 /min = BODY_METRIC_LIMITS.restingHeartRateBpm (Onboarding/Körperdaten),
  * - Schlaf 0–1.440 min (ein Tag), Schritte 0–100.000 je Tag (darüber Messfehler; Ultra-Läufe ausgenommen –
  *   PRODUKTENTSCHEIDUNG).
+ * - HRV (RMSSD, Health Connect `HeartRateVariabilityRmssd`, „Erholung aus der Uhr“, Gründer-Freigabe 25.10.2026)
+ *   5–300 ms: Ruhewerte gesunder Erwachsener liegen meist bei ca. 10–150 ms (Shaffer F, Ginsberg JP, „An Overview of
+ *   Heart Rate Variability Metrics and Norms“, Front Public Health 2017;5:258); darunter bzw. darüber sind es fast
+ *   immer Messfehler (Bewegung, Fehlschläge) – wie docs/PLAN-PHASE-8B.md 4.2. PRODUKTENTSCHEIDUNG.
  */
 export const DAILY_METRIC_LIMITS = {
   restingHrBpm: BODY_METRIC_LIMITS.restingHeartRateBpm,
   sleepMin: { min: 0, max: 1440 },
   steps: { min: 0, max: 100_000 },
+  hrvRmssdMs: { min: 5, max: 300 },
 } as const;
 
 /**
@@ -4025,6 +4665,49 @@ export const DAILY_METRIC_LIMITS = {
  *   (sync: CHECK von app_layout_settings.step_goal und save_app_layout). PRODUKTENTSCHEIDUNG.
  */
 export const STEP_GOAL = { default: 8000, min: 1000, max: 30_000, step: 500 } as const;
+
+/**
+ * „Erholung aus der Uhr“ (Gründer-Freigabe 25.10.2026, `wearables/recovery.ts`, docs/PLAN-PHASE-8.md 15): täglicher
+ * Status gut / mittel / niedrig aus Schlaf der letzten Nacht, Ruhepuls und HRV – jede Person nur mit sich selbst
+ * verglichen. Keine Diagnose, keine Bewertung der Gesundheit; Ergebnis ist höchstens ein ANGEBOT „leichter trainieren“.
+ * ALLE Schwellen: PRODUKTENTSCHEIDUNG – VOR DEM ÖFFENTLICHEN LIVEGANG FACHLICH PRÜFEN (Sportwissenschaft/-medizin,
+ * docs/PLAN-PHASE-8B.md 4 und 22).
+ * - Persönliche Basis = MEDIAN der Tageswerte der `baselineDays` 14 Tage VOR dem Tag (der Tag selbst zählt nie mit),
+ *   frühestens ab `baselineMinValues` 7 Werten – vorher „Wir lernen deine Werte noch“. Median statt Mittelwert, damit
+ *   einzelne Ausreißer (Messfehler, eine durchfeierte Nacht) die Basis nicht verschieben. Tageswert gegen persönliche
+ *   Basis: Kiviniemi AM et al., Eur J Appl Physiol 2007;101:743–751; Buchheit M, „Monitoring training status with HR
+ *   measures: do all roads lead to Rome?“, Front Physiol 2014;5:73 (Ruhepuls und HRV nur im Vergleich zum eigenen
+ *   Verlauf aussagekräftig). 14 statt 28 Tage (Plan 8B 4.5): Health Connect liefert beim ersten Abgleich nur 30 Tage
+ *   (WEARABLE_SYNC.firstSyncDays) – so gibt es nach einer Woche eine Einschätzung.
+ * - Schlaf (letzte Nacht, Aufwachtag = heute): auffällig unter `sleepShortMin.adult` 6 h; unter 18 Jahren
+ *   (`adultFromAge`) unter `sleepShortMin.under18` 7 h. Empfehlung ≥ 7 h für Erwachsene: Watson NF et al., Sleep
+ *   2015;38(6):843–844; 8–10 h für 13–18 Jahre: Paruthi S et al., J Clin Sleep Med 2016;12(6):785–786. Die Schwelle
+ *   liegt bewusst 1 h UNTER der Empfehlung (vorsichtig: nur deutlich kurze Nächte zählen).
+ * - Ruhepuls: auffällig ab Basis + `restingHrAboveBpm` 5 /min. Tag-zu-Tag-Schwankung des Ruhepulses liegt bei wenigen
+ *   Schlägen (Buchheit 2014); +5 /min liegt darüber (Plan 8B 4.5: +3 bis +7 /min als Bereich). Ohne Mindestbasis
+ *   kein Vergleich.
+ * - HRV (RMSSD): auffällig, wenn der Tageswert höchstens `hrvBelowShare` 80 % der Basis erreicht (ln-Abstand ca. −0,22).
+ *   Die „kleinste bedeutsame Änderung“ von ln(RMSSD) liegt bei ca. 0,5 SD bzw. wenigen Prozent (Plews DJ et al.,
+ *   Eur J Appl Physiol 2012;112:3729–3741; Sports Med 2013;43(9):773–781) – 20 % ist bewusst deutlich darüber.
+ * - `sleepCountedMinMin` 120: kürzer erfasster Schlaf zählt nicht als Nacht (z. B. nur ein Mittagsschlaf, Uhr nachts
+ *   abgelegt) – sonst wäre jeder solche Tag „auffällig“. PRODUKTENTSCHEIDUNG.
+ * - Status: 0 auffällige Werte = gut, 1 = mittel, ab `lowMinFlags` 2 = niedrig. Ein EINZELNER Wert ergibt nie
+ *   „niedrig“ (Plan 8B 4.5 „ein einzelner Messwert allein nie“). Ohne bewertbaren Wert: keine Einschätzung.
+ * - Medikamente (Gesundheits-Check-Flag `medication`, z. B. Betablocker) verändern Puls und HRV: dann zählen Ruhepuls
+ *   und HRV NICHT, nur der Schlaf (Plan 8B WE-G25).
+ * - `trendDays` 7: Mini-Verlauf auf der Übersicht.
+ */
+export const RECOVERY = {
+  baselineDays: 14,
+  baselineMinValues: 7,
+  sleepShortMin: { adult: 360, under18: 420 },
+  sleepCountedMinMin: 120,
+  adultFromAge: 18,
+  restingHrAboveBpm: 5,
+  hrvBelowShare: 0.8,
+  lowMinFlags: 2,
+  trendDays: 7,
+} as const;
 
 /**
  * Abgleich mit Health Connect (W8-7, W8-8, docs/PLAN-PHASE-8.md 7.1):
@@ -4232,3 +4915,492 @@ export const BALANCE_PROGRESSION = {
  * ESPEN-Leitlinie Geriatrie, Clin Nutr 38(1):10–47.
  */
 export const ACTIVE_AGING_NUTRITION = { weeklyLossMaxFraction: 0.005 } as const;
+
+/**
+ * Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md, Gründer-Entscheidung 25.10.2026) – Bedienregeln, keine
+ * Gesundheitsgrenzen. PRODUKTENTSCHEIDUNG.
+ * - `staleAfterHours` 24: Ist der zuletzt von der App geschriebene Stand älter, zeigt das Widget nur noch „App öffnen
+ *   zum Aktualisieren“ (keine alten Zahlen, kein altes Training).
+ * - `futureToleranceMinutes` 10: Ein Stand „aus der Zukunft“ (Uhr verstellt) gilt nur bis 10 min als gültig.
+ * - `days` 7: Trainingsnamen für heute und die nächsten 6 Tage – nach Mitternacht zeigt das Widget ohne App-Start das
+ *   richtige Training. Schritte und kcal gelten nur für den Tag, an dem die App sie geschrieben hat.
+ * - `maxNameLength` 60: längere Trainingsnamen werden gekürzt (Platz im Widget).
+ * - `version`: Aufbau des gespeicherten Stands; ein anderer Wert gilt als „kein Stand“.
+ */
+export const WIDGET_SNAPSHOT = {
+  version: 1,
+  staleAfterHours: 24,
+  futureToleranceMinutes: 10,
+  days: 7,
+  maxNameLength: 60,
+} as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Gewichtstrend, Monatsrückblick, Trainings im Handy-Kalender (Gründer-Freigabe 25.10.2026,
+// docs/PLAN-TREND-RUECKBLICK-KALENDER.md)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Gewichtstrend (Fortschritt): geglättete Linie über die täglichen Werte, Tempo je Woche und vorsichtige Prognose.
+ * - `smoothingPerDay` 0,1: exponentiell geglätteter gleitender Durchschnitt (EMA) mit 10 % Gewicht für den neuen Wert
+ *   je Tag (≈ 10 Tage Zeitkonstante; gleicht Wasser-, Salz- und Zyklus-Schwankungen von 1–2 kg aus). Quellen: Walker J,
+ *   „The Hacker's Diet“ (1991/2005), Kapitel „Signal and Noise“ (10-%-Glättung des Waagen-Werts); Hunter JS (1986),
+ *   „The Exponentially Weighted Moving Average“, J Qual Technol 18(4):203–210. Bei Lücken wirkt ein neuer Wert so
+ *   stark wie die Tage seit dem letzten Wert zusammen: α = 1 − (1 − 0,1)^Tage (gleiche Glättung pro Kalendertag).
+ * - `resetAfterGapDays` 28: Nach mehr als 4 Wochen ohne Wert beginnt der Trend neu beim neuen Wert (der alte Stand sagt
+ *   nichts mehr). PRODUKTENTSCHEIDUNG.
+ * - `windowDays` 90: Anzeige der letzten 90 Tage (≈ 3 Monate, wie WEIGHT_OUTDATED_AFTER_DAYS). PRODUKTENTSCHEIDUNG.
+ * - `rateWindowDays` 14 / `rateMinValues` 5 / `rateMinSpanDays` 10: Tempo je Woche erst, wenn in den letzten 14 Tagen
+ *   (bis zum letzten Wert) mindestens 5 Werte über mindestens 10 Tage liegen – sonst schwankt die Zahl zu stark.
+ *   PRODUKTENTSCHEIDUNG.
+ * - `stableBandFraction` 0,001: unter ±0,1 % Körpergewicht je Woche gilt der Trend als „etwa gleich“. PRODUKTENTSCHEIDUNG.
+ * - Prognose zum Wunschgewicht nur bei passender Richtung UND Tempo innerhalb MAX_WEEKLY_WEIGHT_LOSS_FRACTION
+ *   (CLAUDE.md, ~1 %/Woche; Fit im Alter + Abnehmen 0,5 %, ACTIVE_AGING_NUTRITION); schneller → Hinweis statt Prognose
+ *   (kein Lob für zu schnelles Abnehmen). `forecastMinFractionPerWeek` 0,001: langsamer als 0,1 %/Woche keine Prognose
+ *   (das Datum wäre Raterei). `forecastMaxWeeks` 52: weiter als ein Jahr → keine Prognose. Schwangerschaft/Stillzeit →
+ *   nie Prognose und nie Tempo. PRODUKTENTSCHEIDUNG.
+ */
+export const WEIGHT_TREND = {
+  smoothingPerDay: 0.1,
+  resetAfterGapDays: 28,
+  windowDays: 90,
+  rateWindowDays: 14,
+  rateMinValues: 5,
+  rateMinSpanDays: 10,
+  stableBandFraction: 0.001,
+  forecastMinFractionPerWeek: 0.001,
+  forecastMaxWeeks: 52,
+} as const;
+
+/**
+ * Monatsrückblick (Fortschritt): wird vom 1. bis zum `offerDays`. Tag eines Monats für den Vormonat angeboten, bis er
+ * geöffnet wurde (nur auf dem Gerät gemerkt); auf Wunsch jederzeit. `strengthTop`: höchstens 3 Übungen mit der größten
+ * Steigerung des geschätzten Maximums (E1RM_ESTIMATE, nur Sätze mit Gewicht und Wdh. ≤ maxRepsPlusReserve) gegenüber
+ * allen früheren Einträgen; `strengthMinGainFraction` 0,01: unter 1 % zählt nicht (Messrauschen). PRODUKTENTSCHEIDUNG.
+ */
+export const MONTH_REVIEW = {
+  offerDays: 7,
+  strengthTop: 3,
+  strengthMinGainFraction: 0.01,
+} as const;
+
+/**
+ * Trainings im Handy-Kalender (opt-in): geplante Einheiten des aktiven Plans ab heute für die nächsten `horizonDays`
+ * Tage. Start = Trainingszeit aus dem Ernährungs-Setup (TRAINING_TIME_START_MINUTES), sonst die gewählte Uhrzeit,
+ * Standard `defaultStartMinutes` 1080 (18:00). Dauer = geschätzte Minuten der Einheit, begrenzt auf
+ * `minDurationMinutes`–`maxDurationMinutes`. Titel immer „Alpha5: <Einheit>“ (höchstens `titleMaxLength` Zeichen),
+ * ohne Gesundheitsangaben, ohne Notizen. PRODUKTENTSCHEIDUNG.
+ */
+export const DEVICE_CALENDAR = {
+  horizonDays: 28,
+  defaultStartMinutes: 1080,
+  minDurationMinutes: 15,
+  maxDurationMinutes: 300,
+  titlePrefix: 'Alpha5: ',
+  titleMaxLength: 80,
+} as const;
+
+/**
+ * Auswärts essen – Reiter „Unterwegs“ beim Eintragen (Gründer-Freigabe 25.10.2026, KONZEPT 6.1 „Auswärts essen“,
+ * Logik `nutrition/eating-out.ts`, Gerichte `nutrition/eating-out-table.ts`). Gratis, ohne KI, nur Schätzwerte:
+ * - `portions`: Portionsgrößen je Art des Gerichts als Faktor auf die „normale“ Portion der Tabelle. Klein ¾, groß
+ *   1⅓ (übliche Spanne kleiner/großer Teller in Kantine und Gastronomie; Orientierung: BZfE
+ *   „Lebensmittel-Portionsgrößen“), Pizza halb/ganz, Stückware 1/2 Stück, Getränke klein ¾ / groß 1½ (0,2 → 0,3 l).
+ *   PRODUKTENTSCHEIDUNG.
+ * - `kcalStep`/`macroStep`: Schätzwerte werden auf diese Schritte gerundet (10 kcal, ganze Gramm), damit keine
+ *   Scheingenauigkeit entsteht. Angezeigt immer mit „ca.“ und dem Kennzeichen „Schätzwert“.
+ * - `recentMax`/`favoritesMax`: „Zuletzt“ bzw. Favoriten im Reiter „Unterwegs“ (nur Gerät, nur IDs + Portion).
+ * Keine Schutzgrenze: Ein Eintrag läuft als Schnelleintrag „Auswärts gegessen“ durch dieselben Grenzen wie jeder
+ * Tagebuch-Eintrag (`FOOD_LOG_LIMITS`, Rückfrage ab 1.500 kcal).
+ */
+export const EATING_OUT = {
+  portions: {
+    plate: [
+      { id: 'small', label: 'klein', factor: 0.75 },
+      { id: 'normal', label: 'normal', factor: 1 },
+      { id: 'large', label: 'groß', factor: 1.33 },
+    ],
+    pizza: [
+      { id: 'half', label: 'halbe Pizza', factor: 0.5 },
+      { id: 'whole', label: 'ganze Pizza', factor: 1 },
+    ],
+    piece: [
+      { id: 'one', label: '1 Stück', factor: 1 },
+      { id: 'two', label: '2 Stück', factor: 2 },
+    ],
+    drink: [
+      { id: 'small', label: 'klein', factor: 0.75 },
+      { id: 'normal', label: 'normal', factor: 1 },
+      { id: 'large', label: 'groß', factor: 1.5 },
+    ],
+  },
+  kcalStep: 10,
+  macroStep: 1,
+  recentMax: 8,
+  favoritesMax: 30,
+} as const;
+
+/**
+ * Vorratsschrank (Gründer-Freigabe 25.10.2026, KONZEPT 6.13 „Vorratsschrank“, Logik `nutrition/pantry.ts`, Tabelle
+ * `pantry_items`):
+ * - `itemsMax`: höchstens so viele Einträge je Person (sync: Migration pantry_items, db-sync.test.ts).
+ * - `countMax`/`countStep`: Menge in Kaufeinheiten (Packungen, Stück, Bund …), 0,5 bis 99 in halben Schritten.
+ * - `packSizeMax`: größte Packungsgröße (g, ml bzw. Stück) – wie `PACKAGE_SIZE_LIMITS`.
+ * - `lowWeight`: Ein Eintrag „fast leer“ zählt in Kühlschrank-Suche und Vorschlägen nur mit diesem Anteil (½) –
+ *   vorhanden, aber nicht verlässlich. Auf der Einkaufsliste bleibt er stehen (nachkaufen).
+ * Ändert nur Reihenfolge und Anzeige, nie die harten Filter oder Mengen der Liste. PRODUKTENTSCHEIDUNG.
+ */
+export const PANTRY = {
+  itemsMax: 300,
+  countMax: 99,
+  countStep: 0.5,
+  packSizeMax: 5000,
+  lowWeight: 0.5,
+} as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Trainings-Modi (docs/PLAN-TRAINING-MODI.md, Gründer-Freigabe 25.10.2026)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Woran die Regel-Engine erkennt, dass eine Übung eine Körperregion belastet (Schmerz-/Verletzungsmodus). Ein Treffer
+ * genügt: Bewegungsmuster (optional nur bei bestimmten Belastungsarten, z. B. Liegestütz = Stütz auf den Händen),
+ * Hauptmuskel, Merkmal (`caution_tags`) oder ausdrücklich genannte Übung. `strong` gilt schon bei „leicht“, `any`
+ * kommt ab „mittel“ dazu. Unbekannte Übungen gelten immer als belastend (vorsichtig).
+ *
+ * Ableitung aus vorhandenen Übungs-Metadaten statt neuer Inhaltsfelder: keine Schema-/Datenbank-Änderung an
+ * `exercises`, neue Übungen werden über Muster/Muskeln/Merkmale automatisch mit erfasst. Einzelne Übungen, die die
+ * Ableitung nicht trifft, stehen als `exercise` hier (z. B. Stuhl-Dips belasten die Schulter stark).
+ *
+ * Orientierung: Belastungssteuerung statt Schonung – Soligard T et al. (2016), „How much is too much? IOC consensus
+ * statement on load in sport and risk of injury“, Br J Sports Med 50(17):1030–1041; Gelenk-/Muster-Zuordnung nach
+ * gängiger Übungslehre (Schoenfeld B, „Science and Development of Muscle Hypertrophy“, 2. Aufl. 2020).
+ * Zuordnung je Region: PRODUKTENTSCHEIDUNG – vor dem Livegang fachlich (Physiotherapie/Sportmedizin) prüfen.
+ */
+export type PainRegionMatcher =
+  | { readonly pattern: MovementPattern; readonly loadTypes?: readonly LoadType[] }
+  | { readonly muscle: MuscleGroup }
+  | { readonly tag: CautionTag }
+  | { readonly exercise: string };
+
+export const PAIN_REGION_LOAD = {
+  knee: {
+    strong: [
+      { pattern: 'lunge' },
+      { pattern: 'conditioning' },
+      { tag: 'high_impact' },
+      { tag: 'deep_hip_flexion' },
+    ],
+    any: [
+      { pattern: 'squat' },
+      { pattern: 'knee_extension' },
+      { pattern: 'knee_flexion' },
+      { muscle: 'quadriceps' },
+    ],
+  },
+  shoulder: {
+    strong: [
+      { pattern: 'vertical_push' },
+      { pattern: 'vertical_pull' },
+      { tag: 'overhead' },
+      { exercise: 'dips-stuhl' },
+    ],
+    any: [
+      { pattern: 'horizontal_push' },
+      { pattern: 'horizontal_pull' },
+      { pattern: 'shoulder_isolation' },
+      { pattern: 'carry' },
+      { muscle: 'front_delts' },
+      { muscle: 'side_delts' },
+      { muscle: 'rear_delts' },
+    ],
+  },
+  lower_back: {
+    strong: [
+      { pattern: 'hinge' },
+      { tag: 'spinal_loading' },
+      { tag: 'loaded_flexion' },
+      { tag: 'spinal_flexion' },
+      { tag: 'trunk_rotation' },
+      { tag: 'high_impact' },
+      { exercise: 'vorgebeugtes-rudern-kurzhantel' },
+      { exercise: 'langhantelrudern' },
+    ],
+    any: [
+      { pattern: 'squat', loadTypes: ['weight'] },
+      { pattern: 'lunge', loadTypes: ['weight'] },
+      { pattern: 'core_flexion' },
+      { pattern: 'carry' },
+      { pattern: 'conditioning' },
+      { muscle: 'lower_back' },
+    ],
+  },
+  elbow: {
+    strong: [
+      { pattern: 'elbow_flexion' },
+      { pattern: 'elbow_extension' },
+      { exercise: 'klimmzug' },
+    ],
+    any: [
+      { pattern: 'horizontal_push' },
+      { pattern: 'vertical_push' },
+      { pattern: 'horizontal_pull' },
+      { pattern: 'vertical_pull' },
+      { pattern: 'carry' },
+      { muscle: 'biceps' },
+      { muscle: 'triceps' },
+      { muscle: 'forearms' },
+    ],
+  },
+  wrist: {
+    strong: [
+      // Stütz auf den Händen (Liegestütz-Varianten, Pike, Stuhl-Dips) und Seitstütz auf der Hand.
+      { pattern: 'horizontal_push', loadTypes: ['bodyweight'] },
+      { pattern: 'vertical_push', loadTypes: ['bodyweight'] },
+      { pattern: 'elbow_extension', loadTypes: ['bodyweight'] },
+      { exercise: 'seitstuetz' },
+    ],
+    any: [
+      { pattern: 'horizontal_push' },
+      { pattern: 'vertical_push' },
+      { pattern: 'elbow_flexion' },
+      { pattern: 'elbow_extension' },
+      { pattern: 'carry' },
+      { pattern: 'vertical_pull', loadTypes: ['bodyweight'] },
+      { muscle: 'forearms' },
+      { exercise: 'kettlebell-swing' },
+    ],
+  },
+  hip: {
+    strong: [
+      { pattern: 'lunge' },
+      { tag: 'high_impact' },
+      { tag: 'deep_hip_flexion' },
+      { tag: 'hip_cross_midline' },
+    ],
+    any: [
+      { pattern: 'squat' },
+      { pattern: 'hinge' },
+      { pattern: 'hip_extension' },
+      { pattern: 'conditioning' },
+      { muscle: 'glutes' },
+      { muscle: 'adductors' },
+    ],
+  },
+  ankle: {
+    strong: [
+      { pattern: 'conditioning' },
+      { pattern: 'calf_raise' },
+      { pattern: 'lunge' },
+      { tag: 'high_impact' },
+    ],
+    any: [{ pattern: 'squat' }, { pattern: 'carry' }, { muscle: 'calves' }],
+  },
+  neck: {
+    strong: [
+      { pattern: 'vertical_push' },
+      { pattern: 'core_flexion' },
+      { tag: 'overhead' },
+      { tag: 'spinal_loading' },
+    ],
+    any: [
+      { pattern: 'vertical_pull' },
+      { pattern: 'shoulder_isolation' },
+      { pattern: 'carry' },
+      { pattern: 'horizontal_pull', loadTypes: ['weight'] },
+      { tag: 'long_supine' },
+    ],
+  },
+} as const satisfies Record<
+  BodyRegion,
+  { strong: readonly PainRegionMatcher[]; any: readonly PainRegionMatcher[] }
+>;
+
+/**
+ * Schmerz-/Verletzungsmodus (docs/PLAN-TRAINING-MODI.md 3). Kein Diagnose- und kein Therapie-Werkzeug: Die App
+ * schont eine Region für wenige Tage und rät bei starken, langen oder wiederkehrenden Beschwerden zur ärztlichen
+ * Abklärung.
+ * - `durationsDays` 3/7/14: wählbare Dauer; danach endet der Modus automatisch.
+ * - Arzt-Hinweis: „stark“ ODER zusammenhängend länger als `maxChainDays` (14) Tage dieselbe Region (Folge-Einträge
+ *   mit höchstens `chainGapDays` Tagen Lücke zählen als eine Phase) ODER mindestens `recurring.episodes` (3) Phasen
+ *   derselben Region binnen `recurring.windowDays` (90) Tagen → „Bitte ärztlich abklären lassen“ und konservativer
+ *   Plan. Orientierung: anhaltende Beschwerden über etwa zwei Wochen und Warnzeichen gelten in Leitlinien als Anlass
+ *   zur Abklärung (NICE NG59 „Low back pain and sciatica in over 16s“, 2016, aktualisiert 2020; Nationale
+ *   VersorgungsLeitlinie Nicht-spezifischer Kreuzschmerz, 2. Aufl. 2017, „Red Flags“).
+ * - `dosage`: Belastung für ALLE Kraft-Übungen der Einheit, solange der Modus läuft (RPE −1 bzw. −2, Sätze −1, nie
+ *   unter `minSets` bzw. RPE 5). Orientierung Soligard et al. 2016 (s. PAIN_REGION_LOAD): Last senken statt pausieren.
+ * - `conservative`: zusätzlich zum Arzt-Hinweis – RPE ≤ 6 und die Ausschlüsse des vorsichtigen Plans.
+ * - `endurance`: Ausdauer bei Beschwerden in Knie/Hüfte/Sprunggelenk/unterem Rücken ab „mittel“: Dauer × 0,7
+ *   (abgerundet, mindestens `minMinutes`), Anstrengung ≤ 3 von 10; Einheiten mit festem Ablauf (Wettkampfplan)
+ *   bekommen nur den Hinweis.
+ * - `historyDays` 365: so weit zurück zählen Einträge; ältere löscht der Server (Datensparsamkeit).
+ * Alle Werte PRODUKTENTSCHEIDUNG – vor dem Livegang fachlich prüfen.
+ */
+export const PAIN_MODE = {
+  durationsDays: [3, 7, 14],
+  maxChainDays: 14,
+  chainGapDays: 2,
+  recurring: { episodes: 3, windowDays: 90 },
+  historyDays: 365,
+  dosage: {
+    mild: { rpeDrop: 1, setsDrop: 0 },
+    moderate: { rpeDrop: 1, setsDrop: 1 },
+    severe: { rpeDrop: 2, setsDrop: 1 },
+  },
+  minSets: 1,
+  conservative: {
+    rpeMax: 6,
+    excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill'],
+  },
+  endurance: {
+    lowerBodyRegions: ['knee', 'hip', 'ankle', 'lower_back'],
+    fromIntensity: 'moderate',
+    minutesFactor: 0.7,
+    effortMax: 3,
+    minMinutes: 10,
+  },
+} as const satisfies {
+  durationsDays: readonly number[];
+  maxChainDays: number;
+  chainGapDays: number;
+  recurring: { episodes: number; windowDays: number };
+  historyDays: number;
+  dosage: Record<PainIntensity, { rpeDrop: number; setsDrop: number }>;
+  minSets: number;
+  conservative: { rpeMax: number; excludedCautionTags: readonly CautionTag[] };
+  endurance: {
+    lowerBodyRegions: readonly BodyRegion[];
+    fromIntensity: PainIntensity;
+    minutesFactor: number;
+    effortMax: number;
+    minMinutes: number;
+  };
+};
+
+/**
+ * Mindestfassung der Einwilligung `health_data` für den Schmerz-/Verletzungsmodus: erst Fassung 2 nennt die Einträge
+ * (20261025120800_health_consent_v2_training_modes.sql). Solange Fassung 2 in der Datenbank ein unveröffentlichter
+ * Entwurf ist, ist der Modus im Supabase-Modus gesperrt (Server-Prüfung in pain_episodes, sync: db-sync.test.ts);
+ * der Testmodus nutzt Fassung 2 schon. Wie SUPPLEMENT_HEALTH_CONSENT_MIN_VERSION. Rechtsgrundlage: Art. 9 Abs. 2
+ * lit. a DSGVO (Zweckbindung, Art. 5 Abs. 1 lit. b).
+ */
+export const PAIN_MODE_HEALTH_CONSENT_MIN_VERSION = 2;
+
+/**
+ * Reise-Modus (docs/PLAN-TRAINING-MODI.md 4). Der gespeicherte Plan bleibt unverändert; nur die Anzeige der Tage im
+ * Zeitraum tauscht auf die Reise-Geräte (dieselbe Ersatz-Kette wie beim Erzeugen, findSubstitute) und kürzt optional
+ * auf die Reise-Minuten (fitSessionToMinutes). Nach dem letzten Tag gilt automatisch wieder der normale Plan.
+ * - `equipment`: Geräte-IDs je Auswahl. Hotel-Gym = Kurzhanteln, Flachbank, Laufband, Rad-Ergometer (typische
+ *   Ausstattung, bewusst knapp – eher zu wenig als zu viel). Schlingentrainer: Gerät `suspension_trainer`; solange es
+ *   keine Übungen dafür gibt, bleiben nur Körpergewicht-Übungen machbar (Rückfall auf Körpergewicht).
+ * - `maxDays` 42: längster Zeitraum (6 Wochen); für längere Reisen besser einen neuen Plan erstellen.
+ * - `maxStartAheadDays` 365: Beginn höchstens ein Jahr im Voraus.
+ * - `minutesOptions`: wählbare kürzere Dauer je Einheit (optional).
+ * PRODUKTENTSCHEIDUNG.
+ */
+export const TRAVEL_MODE = {
+  equipment: {
+    bodyweight: [],
+    dumbbells: ['dumbbells'],
+    hotel_gym: ['dumbbells', 'flat_bench', 'treadmill', 'bike_ergometer'],
+    band: ['resistance_bands'],
+    // Noch keine Schlingentrainer-Übungen (eigenes späteres Paket) → praktisch Körpergewicht-Übungen.
+    suspension_trainer: ['suspension_trainer'],
+  },
+  maxDays: 42,
+  maxStartAheadDays: 365,
+  minutesOptions: [20, 30, 45, 60],
+} as const satisfies {
+  equipment: Record<TravelEquipment, readonly string[]>;
+  maxDays: number;
+  maxStartAheadDays: number;
+  minutesOptions: readonly number[];
+};
+
+/**
+ * Aufwärmen & Dehnen (docs/PLAN-TRAINING-MODI.md 5): je Kraft-Einheit ~5 min Aufwärmen davor (allgemein + speziell
+ * für die Hauptmuskeln des Tages) und ~5 min Beweglichkeit danach – aus der Übungs-Bibliothek zusammengesetzt.
+ * - allgemein: höchstens `maxGeneral` Übung mit Muster `conditioning` ohne Sprünge (`high_impact`), `generalSeconds`.
+ * - speziell: dynamische Beweglichkeit (Muster `mobility` mit Wiederholungen) für die Hauptmuskeln, je
+ *   `mobilityReps` Wdh. (≈ `mobilitySecondsPerItem`); dazu `rampSets` leichte Aufwärmsätze der ersten Grundübung mit
+ *   ~`rampWeightFraction` des Gewichts bzw. der halben Wiederholungszahl.
+ * - danach: gehaltene Dehnungen (Muster `mobility`, Belastungsart Zeit) für die trainierten Muskeln, je
+ *   `stretchSeconds`, höchstens `maxStretches`.
+ * - Fehlen freigegebene Übungen, nimmt die App den Aufwärm-/Cool-down-Text der Vorlage (kein leerer Block).
+ * Orientierung: Fradkin AJ et al. (2010), „Effects of warming-up on physical performance: a systematic review with
+ * meta-analysis“, J Strength Cond Res 24(1):140–148; Behm DG et al. (2016), „Acute effects of muscle stretching on
+ * physical performance, range of motion, and injury incidence in healthy active individuals“, Appl Physiol Nutr
+ * Metab 41(1):1–11 (vorher dynamisch, gehaltenes Dehnen danach). Werte PRODUKTENTSCHEIDUNG.
+ */
+export const WARMUP_RULES = {
+  targetMinutes: 5,
+  cooldownMinutes: 5,
+  generalSeconds: 90,
+  maxGeneral: 1,
+  mobilityReps: 10,
+  mobilitySecondsPerItem: 40,
+  maxMobility: 3,
+  rampSets: 2,
+  rampWeightFraction: 0.5,
+  rampSecondsPerSet: 45,
+  maxRampExercises: 1,
+  stretchSeconds: 45,
+  maxStretches: 5,
+  mainMuscles: 3,
+} as const;
+
+/**
+ * Sprachansagen beim Aufzeichnen (routes/voice-cues.ts, Gründer-Freigabe 25.10.2026): offline über die Sprachausgabe
+ * des Geräts (Deutsch), keine KI, gratis.
+ * - `stepM`: Abstand der Ansagen je Einstellung und Sportart – „je km“ beim Rad alle 5 km (ein Kilometer dauert dort
+ *   nur 2–3 Minuten, Ansagen würden nerven), „je 0,5 km“ beim Rad alle 2,5 km.
+ * - `timeStepS`: Einstellung „alle 5 Minuten“ (Bewegungszeit ohne Pausen).
+ * - `sameWithinS`: Vergleich mit dem letzten Mal auf derselben Strecke – bis so viele Sekunden „etwa gleich“
+ *   (= ROUTE_COMPARE.sameWithinS).
+ * Neutral wie W-G16 (keine Bestzeit, kein Druck). Puls nur mit Einwilligung health_data UND wenn ein Live-Wert da
+ * ist. Quelle: PRODUKTENTSCHEIDUNG (üblich in Lauf-Apps: je km bzw. je 5 Minuten).
+ */
+export const VOICE_CUES = {
+  stepM: {
+    km: { run: 1000, walk: 1000, bike: 5000 },
+    half_km: { run: 500, walk: 500, bike: 2500 },
+  },
+  timeStepS: 300,
+  sameWithinS: ROUTE_COMPARE.sameWithinS,
+} as const;
+
+/**
+ * Trinken-Tracker (nutrition/hydration.ts, Gründer-Freigabe 25.10.2026). Richtwert, KEIN Heilversprechen, keine
+ * Pflicht:
+ * - `mlPerKg`: Gesamtwasser je kg Körpergewicht und Tag nach Alter (D-A-CH-Referenzwerte für die Wasserzufuhr,
+ *   DGE/ÖGE/SGE, 2. Auflage: 19–<25 und 25–<51 Jahre 35 ml/kg, 51–<65 und ab 65 Jahre 30 ml/kg).
+ * - `beverageShare`: Anteil davon über Getränke (Rest: feste Nahrung, Oxidationswasser) – D-A-CH 25–<51 Jahre:
+ *   1.410 ml Getränke von 2.350 ml Gesamtwasser ≈ 0,6 („ca. 1,5 Liter trinken“).
+ * - `mlPerTrainingMin`: Zuschlag je Trainingsminute (Bewegungszeit) – Schweißverlust bei Sport typisch 0,4–1,8 l/h
+ *   (Sawka MN et al. (2007), „American College of Sports Medicine position stand. Exercise and fluid replacement“,
+ *   Med Sci Sports Exerc 39(2):377–390); 8 ml/min ≈ 0,5 l/h als vorsichtiger Mittelwert: PRODUKTENTSCHEIDUNG.
+ * - `heat`: Zuschlag ab Tageshöchsttemperatur (gespeichertes Wetter der Läufe des Tages) – PRODUKTENTSCHEIDUNG.
+ * - `goalMl`: Rahmen des angezeigten Ziels (keine extremen Werte, auch nicht bei sehr hohem Gewicht).
+ * - `entryMl`: ein Eintrag 50–2.000 ml (Schutz vor Tippfehlern); `maxEntriesPerDay` gegen Missbrauch;
+ *   `quickMl` = Schnell-Knöpfe; `historyDays` = Verlauf; `backfillDays` = so viele Tage zurück darf man eintragen.
+ * Bei Herz- oder Nierenerkrankung (Gesundheits-Check bzw. Supplement-Check) gibt die App KEIN Ziel vor (Trinkmengen
+ * können dort ärztlich begrenzt sein) – nur notieren.
+ */
+export const HYDRATION = {
+  mlPerKg: [
+    { fromAge: 0, ml: 35 },
+    { fromAge: 51, ml: 30 },
+  ],
+  beverageShare: 0.6,
+  mlPerTrainingMin: 8,
+  heat: [
+    { fromC: 25, ml: 500 },
+    { fromC: 30, ml: 750 },
+  ],
+  goalMl: { min: 1200, max: 4000 },
+  entryMl: { min: 50, max: 2000 },
+  maxEntriesPerDay: 40,
+  quickMl: [250, 500],
+  historyDays: 7,
+  backfillDays: 14,
+} as const;

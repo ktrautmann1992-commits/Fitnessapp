@@ -352,6 +352,60 @@ export type LogSource = (typeof LOG_SOURCES)[number];
 export const TRACKED_ROUTE_SPORTS = ['run', 'bike', 'walk'] as const;
 export type TrackedRouteSport = (typeof TRACKED_ROUTE_SPORTS)[number];
 
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 2 (Gründer-Freigabe 25.10.2026, docs/PLAN-SPORTARTEN.md, 20261025160000_sport_enums.sql)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Sportarten zum Eintragen bzw. von der Uhr – OHNE eigene Trainingspläne (Katalog: SPORT_CATALOGUE in constants.ts).
+ * Laufen, Gehen, Rad und Schwimmen bleiben Ausdauer-Arten (ENDURANCE_MODALITIES) wie bisher. Reihenfolge = Postgres-Enum
+ * `sport_type` (Abgleich in db-sync.test.ts). `other` = „Sonstige Sportart“ (z. B. unbekannte Art von der Uhr).
+ */
+export const SPORT_IDS = [
+  'bouldering',
+  'climbing',
+  'football',
+  'padel',
+  'tennis',
+  'badminton',
+  'table_tennis',
+  'basketball',
+  'volleyball',
+  'handball',
+  'cross_trainer',
+  'indoor_cycling',
+  'hiit',
+  'boxing',
+  'kickboxing',
+  'judo_bjj',
+  'karate',
+  'martial_arts',
+  'cross_country_skiing',
+  'ski_touring',
+  'alpine_skiing',
+  'snowboarding',
+  'inline_skating',
+  'sup',
+  'kayaking',
+  'dancing',
+  'other',
+] as const;
+export type SportId = (typeof SPORT_IDS)[number];
+
+/** Gruppen der Auswahl (Reihenfolge der Anzeige). */
+export const SPORT_CATEGORIES = [
+  'ball',
+  'racket',
+  'climb',
+  'combat',
+  'winter',
+  'water',
+  'indoor_cardio',
+  'dance',
+  'other',
+] as const;
+export type SportCategory = (typeof SPORT_CATEGORIES)[number];
+
 /** Schwierigkeit einer Strecke (KONZEPT 10.1: leicht / mittel / schwer) – Enum route_difficulty. */
 export const ROUTE_DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
 export type RouteDifficulty = (typeof ROUTE_DIFFICULTIES)[number];
@@ -363,6 +417,17 @@ export type RouteDifficulty = (typeof ROUTE_DIFFICULTIES)[number];
  */
 export const TRACKED_ROUTE_SOURCES = ['recorded', 'gpx_import', 'watch'] as const;
 export type TrackedRouteSource = (typeof TRACKED_ROUTE_SOURCES)[number];
+
+/**
+ * Herkunft der Verknüpfung eines Laufs mit einer „Meinen Strecke“ (tracked_routes.route_match, „Meine Strecken“
+ * 25.10.2026, 20261025120900_route_match.sql – Text mit CHECK, kein Enum-Typ):
+ * - `repeat`: über „Erneut laufen“ aufgezeichnet (base_route_id beim Speichern),
+ * - `auto`: von der Erkennung auf dem Gerät vorläufig zugeordnet (zählt mit, bis die Person „Nein“ sagt),
+ * - `confirmed`: von der Person bestätigt („Ja“ bzw. „Andere Strecke wählen“),
+ * - `rejected`: von der Person abgelehnt („Nein“) – kein Vergleich, kein erneuter Vorschlag für diese Strecke.
+ */
+export const ROUTE_MATCH_STATES = ['repeat', 'auto', 'confirmed', 'rejected'] as const;
+export type RouteMatchState = (typeof ROUTE_MATCH_STATES)[number];
 
 /** Herkünfte, die die App über save_tracked_route senden darf (Uhr-Routen nur über save_wearable_route). */
 export const APP_ROUTE_SOURCES = [
@@ -407,3 +472,42 @@ export type WearableProvider = (typeof WEARABLE_PROVIDERS)[number];
  */
 export const WEARABLE_CONNECTION_STATUSES = ['connected', 'permission_missing'] as const;
 export type WearableConnectionStatus = (typeof WEARABLE_CONNECTION_STATUSES)[number];
+
+// ---------------------------------------------------------------------------------------------------------
+// Trainings-Modi (docs/PLAN-TRAINING-MODI.md; Gründer-Freigabe 25.10.2026,
+// 20261025120600_training_modes.sql): Schmerz-/Verletzungsmodus, Reise-Modus.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Körperregionen des Schmerz-/Verletzungsmodus (Körperkarte vorn/hinten). Nur Orte, keine Diagnosen. Postgres-Enum
+ * `body_region` (gleiche Reihenfolge, db-sync).
+ */
+export const BODY_REGIONS = [
+  'knee',
+  'shoulder',
+  'lower_back',
+  'elbow',
+  'wrist',
+  'hip',
+  'ankle',
+  'neck',
+] as const;
+export type BodyRegion = (typeof BODY_REGIONS)[number];
+
+/** Stärke der Beschwerden (Selbsteinschätzung leicht/mittel/stark). Postgres-Enum `pain_intensity`. */
+export const PAIN_INTENSITIES = ['mild', 'moderate', 'severe'] as const;
+export type PainIntensity = (typeof PAIN_INTENSITIES)[number];
+
+/**
+ * Geräte im Reise-Modus: nur Körpergewicht, Kurzhanteln, Hotel-Gym, Widerstandsband, Schlingentrainer
+ * (markenneutral). Postgres-Enum `travel_equipment`. Welche Geräte-IDs dahinterstehen, steht in
+ * TRAVEL_MODE.equipment (constants.ts).
+ */
+export const TRAVEL_EQUIPMENT_OPTIONS = [
+  'bodyweight',
+  'dumbbells',
+  'hotel_gym',
+  'band',
+  'suspension_trainer',
+] as const;
+export type TravelEquipment = (typeof TRAVEL_EQUIPMENT_OPTIONS)[number];

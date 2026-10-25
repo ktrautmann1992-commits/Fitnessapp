@@ -14,6 +14,7 @@ import { t } from '@/i18n';
 import { formatDateDe, formatDecimal, formatKg } from './format';
 import { dayLabel, repsRange } from './plan-format';
 import { planNameText } from './plan-name';
+import { MONTH_REVIEW_PRINT_TEXTS } from './print-month-review-texts';
 import { NUTRITION_PRINT_TEXTS } from './print-nutrition-texts';
 
 /**
@@ -48,6 +49,8 @@ type Translators = { readonly [K in PrintTextCode]: (params: PrintTextParams[K])
 const TEXTS: Translators = {
   // Essensplan und Einkaufsliste (Etappe N6 – PDF P5).
   ...NUTRITION_PRINT_TEXTS,
+  // Monatsrückblick (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 3.4).
+  ...MONTH_REVIEW_PRINT_TEXTS,
   'doc.title': () => p.docTitle,
   'doc.footer': () => p.footer,
   'cover.heading': () => p.coverHeading,

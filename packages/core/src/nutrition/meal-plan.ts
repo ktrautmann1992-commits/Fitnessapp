@@ -66,10 +66,12 @@ import {
   ratingScoreBonus,
   type RecipeRatingReason,
   recipeBlockedOnAnyDay,
+  recipeHiddenByUser,
   type RecipeRatingIndex,
   type RecipeRatingInput,
   recipeRatingIndex,
 } from './ratings';
+import type { RecipePreferenceInput } from './recipe-preferences';
 import { type MealPlanProfile, type MealPlanProfileInput, mealPlanProfileSchema } from './schemas';
 import { stableHashKey, stableUnit } from './stable-hash';
 import { resolveIngredientSwaps, swapKey } from './swap-resolve';
@@ -205,6 +207,12 @@ export interface MealPlanInput {
    * Daumen hoch und Gründe ändern nur die Reihenfolge – nie Filter, Energie, Portionen oder Grenzen (K6).
    */
   readonly ratings?: readonly RecipeRatingInput[];
+  /**
+   * Rezept-Favoriten (Gründer-Freigabe 25.10.2026, `recipe-preferences.ts`): „Nie wieder“ sperrt ein Rezept dauerhaft
+   * (wie Daumen runter, nur ohne Ablauf), „Lieblingsgericht“ gibt einen gedeckelten Bonus – NUR Vorschläge bzw.
+   * Reihenfolge, nie Filter, Energie, Portionen oder Grenzen. Fehlt das Feld, plant die Engine genau wie bisher.
+   */
+  readonly recipePreferences?: readonly RecipePreferenceInput[];
   /**
    * Resteplanung (19.7 N13, KONZEPT 6.11, Premium ab N14): Mit den Packungsgrößen (N11) erhöht ein nutzbarer Rest den
    * Score von Kandidaten, die ihn verbrauchen – NUR Reihenfolge (`leftovers.ts`). Fehlt das Feld, plant die Engine
@@ -1090,7 +1098,9 @@ export function pickDailyMeal(
   const ranked = rankSlotCandidates(ctx, slot, role, share, excludeIds);
   if (ranked.length === 0) {
     const exclude = ctx.targets.recipeExclusions.includes('pregnancy_caution');
-    // Nur wegen Daumen runter leer (19.7 N10)? Dann genau dieser Grund – kein Filter, kein Gesundheitsbezug.
+    // Nur wegen Daumen runter (19.7 N10) bzw. „Nie wieder“ (Rezept-Favoriten) leer? Dann genau dieser Grund – kein
+    // Filter, kein Gesundheitsbezug. Ein ausgeblendetes Rezept wird auch dann NICHT geplant (Wunsch der Person); der
+    // Platz bleibt leer, das Planband und die Schutzgrenzen bleiben unverändert (Ergänzungs-Snacks wie immer).
     const withoutRatings = slotCandidates(ctx, slot, { maxMinutes, ignoreRatings: true }).filter(
       (c) => !excludeIds.has(c.recipe.id),
     );
@@ -1099,7 +1109,7 @@ export function pickDailyMeal(
       repeated: false,
       reasons:
         withoutRatings.length > 0
-          ? ['rated_down']
+          ? blockedSlotReasons(ctx.pool.ratings, withoutRatings)
           : ctx.pool.emptyReasons(exclude, {
               slot,
               maxMinutes,
@@ -1115,6 +1125,18 @@ export function pickDailyMeal(
     (c) => !(ctx.state.uses.get(c.recipe.id) ?? []).includes(ctx.dayIndex),
   );
   return { variant: notToday ?? (ranked[0] as FilteredRecipe), repeated: true, reasons: [] };
+}
+
+/** Gründe eines nur durch Bewertungen/Vorlieben leeren Platzes: `recipe_hidden` und/oder `rated_down`, sortiert. */
+function blockedSlotReasons(
+  ratings: RecipeRatingIndex,
+  candidates: readonly FilteredRecipe[],
+): EmptySlotReason[] {
+  const reasons = new Set<EmptySlotReason>();
+  for (const c of candidates) {
+    reasons.add(recipeHiddenByUser(ratings, c.recipe.id) ? 'recipe_hidden' : 'rated_down');
+  }
+  return [...reasons].sort();
 }
 
 interface PrepAssignment {
@@ -1200,7 +1222,7 @@ export function buildMealPlanWeekDetailed(
     input.allowDrafts,
     input.redRecipeIds,
     input.substitutions,
-    recipeRatingIndex(input.ratings),
+    recipeRatingIndex(input.ratings, input.recipePreferences),
   );
   const profile = pool.profile;
   const state = new WeekState();
@@ -1737,7 +1759,7 @@ export function swapMealRecipe(
     input.allowDrafts,
     input.redRecipeIds,
     input.substitutions,
-    recipeRatingIndex(input.ratings),
+    recipeRatingIndex(input.ratings, input.recipePreferences),
   );
   const state = new WeekState();
   const exclude = dayTargets.recipeExclusions.includes('pregnancy_caution');

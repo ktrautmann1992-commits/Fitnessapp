@@ -121,6 +121,10 @@ export function applyWearableRouteSave(
           wearable_session_log_id: logId,
           // Health Connect kennt kein E-Bike → normales Rad (wie der Standard der Spalte).
           e_bike: false,
+          route_match: null,
+          match_rejected_ids: [],
+          auto_match: true,
+          weather: null,
           created_at: ctx.now,
         },
       ];
@@ -197,13 +201,28 @@ export function followWatchRoute(
   );
 }
 
-/** Ältere gespeicherte Zeilen (vor 23.10.2026) ohne Spalten: Uhr-Verknüpfung null, E-Bike false. */
+/**
+ * Ältere gespeicherte Zeilen ohne Spalten: Uhr-Verknüpfung null, E-Bike false (vor 23.10.2026); Zuordnung zu „Meinen
+ * Strecken“ (vor 25.10.2026): Verweis vorhanden → repeat, sonst offen; keine Ablehnungen; automatisch zuordnen an.
+ */
 export function normalizeRouteRow(row: TrackedRouteRow): TrackedRouteRow {
-  // Ältere lokale Zeilen: ohne Uhr-Verknüpfung bzw. ohne E-Bike-Angabe (= normales Rad).
-  if (row.wearable_session_log_id !== undefined && typeof row.e_bike === 'boolean') return row;
+  if (
+    row.wearable_session_log_id !== undefined &&
+    typeof row.e_bike === 'boolean' &&
+    row.route_match !== undefined &&
+    Array.isArray(row.match_rejected_ids) &&
+    typeof row.auto_match === 'boolean' &&
+    row.weather !== undefined
+  ) {
+    return row;
+  }
   return {
     ...row,
     wearable_session_log_id: row.wearable_session_log_id ?? null,
     e_bike: row.e_bike === true,
+    route_match: row.route_match ?? (row.base_route_id ? 'repeat' : null),
+    match_rejected_ids: Array.isArray(row.match_rejected_ids) ? row.match_rejected_ids : [],
+    auto_match: row.auto_match !== false,
+    weather: row.weather ?? null,
   };
 }

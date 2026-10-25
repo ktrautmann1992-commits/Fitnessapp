@@ -152,13 +152,51 @@ const ICONS = {
     { d: 'm9 3.5 3 2 3-2M9 20.5l3-2 3 2' },
   ],
   cup: [{ d: 'M6 3h12l-1.5 18h-9Z' }, { d: 'M6.5 8h11' }],
+  // Rezept-Favoriten (25.10.2026): Herz umrissen bzw. gefüllt („Lieblingsgericht“), durchgestrichenes Auge („Nie wieder“).
+  heart: [
+    {
+      d: 'M12 20s-7.2-4.4-8.9-9C2 7.9 3.9 4.5 7.2 4.5c2 0 3.3 1.1 4.8 2.9 1.5-1.8 2.8-2.9 4.8-2.9 3.3 0 5.2 3.4 4.1 6.5-1.7 4.6-8.9 9-8.9 9Z',
+    },
+  ],
+  'heart-filled': [
+    {
+      d: 'M12 20s-7.2-4.4-8.9-9C2 7.9 3.9 4.5 7.2 4.5c2 0 3.3 1.1 4.8 2.9 1.5-1.8 2.8-2.9 4.8-2.9 3.3 0 5.2 3.4 4.1 6.5-1.7 4.6-8.9 9-8.9 9Z',
+    },
+  ],
+  'eye-off': [
+    { d: 'M2 12s3.6-7 10-7c1.9 0 3.6.6 5 1.5M22 12s-3.6 7-10 7c-1.9 0-3.6-.6-5-1.5' },
+    { d: 'M4 4l16 16' },
+  ],
+  // Sportarten Stufe 2 (docs/PLAN-SPORTARTEN.md): Ball, Schläger, Boxhandschuh, Wellen, Musik, Rad.
+  ball: [
+    { cx: 12, cy: 12, r: 9 },
+    { d: 'm12 7 4 3-1.5 5h-5L8 10Z' },
+    { d: 'M12 3v4M21 10l-5 0M3 10h5' },
+  ],
+  racket: [
+    { d: 'M9.5 2.5c3.6 0 6 2.4 6 5.5s-2.7 6.5-6 6.5-6-3.1-6-6.5 2.4-5.5 6-5.5Z' },
+    { d: 'M7 4v9.5M12 4v9.5M4 7h11M4 10.5h11M9.5 14.5v2l5 5' },
+  ],
+  glove: [
+    { d: 'M7 11V7a4 4 0 0 1 4-4h3a4 4 0 0 1 4 4v6a5 5 0 0 1-5 5H9l-2-3Z' },
+    { d: 'M8 21h8M7 11h4' },
+  ],
+  waves: [
+    { d: 'M2 8c2.5-2 4.5-2 7 0s4.5 2 7 0 4.5-2 6 0M2 14c2.5-2 4.5-2 7 0s4.5 2 7 0 4.5-2 6 0' },
+  ],
+  music: [{ cx: 7, cy: 18, r: 3 }, { cx: 17, cy: 16, r: 3 }, { d: 'M10 18V5l10-2v13' }],
+  bike: [
+    { cx: 6, cy: 16, r: 4 },
+    { cx: 18, cy: 16, r: 4 },
+    { d: 'm6 16 4-7h5l3 7M10 9 8 5H6M14 5h2' },
+  ],
 } satisfies Record<string, readonly Shape[]>;
 
 export type IconName = keyof typeof ICONS;
 export const ICON_NAMES = Object.keys(ICONS) as IconName[];
 
 /** Gefüllte statt umrissene Formen (wie im Entwurf: „Mehr“-Punkte und Play-Dreieck). */
-const FILLED: ReadonlySet<IconName> = new Set(['dots', 'play', 'pause', 'stop']);
+const FILLED: ReadonlySet<IconName> = new Set(['dots', 'play', 'pause', 'stop', 'heart-filled']);
 
 export function Icon({
   name,

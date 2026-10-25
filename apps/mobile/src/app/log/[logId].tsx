@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { EBikeBadge } from '@/components/e-bike';
+import { ShoeChip } from '@/components/shoes';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
   kcalFor,
@@ -19,15 +20,18 @@ import {
   useSessionKcalContext,
   useWatchKcal,
 } from '@/components/session-kcal';
+import { SportLogInfo } from '@/components/sport-week';
 import { WearableLogInfo } from '@/components/wearables';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { EMPTY_LOG_ROWS, logRowsOf, mergeLogRows } from '@/data/log-rows';
 import { logDetail } from '@/data/log-summary';
+import { logStrengthComparisons } from '@/data/strength-progress';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { formatDateDe, todayIso } from '@/lib/format';
 import { cardioDurationText, effortText, kmText, setLineText } from '@/lib/history-format';
 import { useThemeColors } from '@/lib/theme';
+import { strengthComparisonText } from '@/lib/strength-format';
 import { cardioSpeedTexts } from '@/lib/workout-format';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
@@ -75,10 +79,10 @@ export default function LogEntryScreen() {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;
-  const detail = logDetail(
-    mergeLogRows(logRowsOf(rows), app.olderLogs?.logs ?? EMPTY_LOG_ROWS),
-    logId,
-  );
+  const allLogs = mergeLogRows(logRowsOf(rows), app.olderLogs?.logs ?? EMPTY_LOG_ROWS);
+  const detail = logDetail(allLogs, logId);
+  // Kraft-Entwicklung (25.10.2026): je Übung „+5 kg gegenüber vor 4 Wochen“ – nur eigene Werte, neutral.
+  const comparisons = logStrengthComparisons(allLogs, logId);
   const footer = <Button label={t.logEntry.back} variant="secondary" onPress={goBack} />;
 
   if (!detail) {
@@ -173,6 +177,8 @@ export default function LogEntryScreen() {
 
       {/* Phase 8: Herkunft Smartwatch, kcal, möglicher Doppel-Eintrag und Puls (nie auf dem Story-Bild). */}
       <WearableLogInfo logId={log.id} />
+      {/* Sportarten Stufe 2: Sportart, Dauer, Distanz und Belastung. */}
+      <SportLogInfo log={log} />
 
       {detail.cardio ? (
         <Card>
@@ -187,6 +193,8 @@ export default function LogEntryScreen() {
             {detail.cardio.modality === 'bike' && detail.cardio.e_bike === true ? (
               <EBikeBadge testID="log-e-bike" />
             ) : null}
+            {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 22). */}
+            <ShoeChip logId={log.id} />
             <Body accessibilityLabel={cardioDurationText(detail.cardio.duration_s).a11y}>
               {cardioDurationText(detail.cardio.duration_s).text}
             </Body>
@@ -225,6 +233,18 @@ export default function LogEntryScreen() {
                 </Body>
               );
             })}
+            {(() => {
+              const comparison = comparisons.get(row.id);
+              const text = comparison ? strengthComparisonText(comparison) : null;
+              return text ? (
+                <Body
+                  accessibilityLabel={t.strength.logLine(row.exercise_name_de, text.a11y)}
+                  testID="log-exercise-compare"
+                >
+                  {t.strength.logLine(row.exercise_name_de, text.text)}
+                </Body>
+              ) : null;
+            })()}
             {findGlossaryExercise(lib, row.exercise_id) ? (
               <Button
                 label={t.glossary.guide}

@@ -1,0 +1,37 @@
+{
+  "id": "katze-kuh",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Katze-Kuh",
+  "name_en": "Cat-Cow",
+  "aliases_de": ["Katzenbuckel"],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["lower_back"],
+  "secondary_muscles": ["abs", "upper_back"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer", "spinal_flexion"],
+  "description_de": "Im Vierfüßlerstand den Rücken abwechselnd rund machen und sanft durchhängen lassen. Mobilisiert die ganze Wirbelsäule.",
+  "steps_de": [
+    "In den Vierfüßlerstand gehen: Hände unter den Schultern, Knie unter der Hüfte.",
+    "Ausatmen und den Rücken langsam rund machen, Kinn Richtung Brust.",
+    "Einatmen und den Rücken sanft durchhängen lassen, Blick leicht nach vorn."
+  ],
+  "tips_de": ["Bewegung fließend mit dem Atem verbinden."],
+  "common_mistakes_de": ["Ins Hohlkreuz fallen und dort verharren."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, nur im angenehmen Bewegungsumfang. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Trainings-Modi (Aufwärmen & Dehnen, docs/PLAN-TRAINING-MODI.md 5) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

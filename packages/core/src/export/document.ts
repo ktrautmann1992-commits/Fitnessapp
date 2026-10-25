@@ -12,6 +12,11 @@ import {
   type EquipmentLocation,
   type GoalType,
 } from '../enums';
+import {
+  MONTH_REVIEW_HEALTH_CODES,
+  MONTH_REVIEW_PARAM_SCHEMAS,
+  type MonthReviewPrintTextParams,
+} from './month-review-print-texts';
 import { NUTRITION_PARAM_SCHEMAS, type NutritionPrintTextParams } from './nutrition-print-texts';
 import {
   type WorkoutStep,
@@ -43,7 +48,7 @@ export const PRINT_PLAN_NOTES = [
 export type PrintPlanNote = (typeof PRINT_PLAN_NOTES)[number];
 
 /** Parameter je Text-Code. Leeres Objekt = Text ohne Parameter. Ernährungs-Codes: `nutrition-print-texts.ts`. */
-export interface PrintTextParams extends NutritionPrintTextParams {
+export interface PrintTextParams extends NutritionPrintTextParams, MonthReviewPrintTextParams {
   /** Dokument-Titel und Dateiname – nie mit Namen (B7). */
   'doc.title': Record<string, never>;
   /** Fußzeile jeder Seite (neutral, für alle gleich). */
@@ -221,7 +226,12 @@ export type PrintBlock =
   /** Neue Seite; `orientation` gilt für die folgende Seite. */
   | { readonly type: 'pageBreak'; readonly orientation: PrintOrientation };
 
-export const PRINT_DOCUMENT_KINDS = ['training_plan', 'nutrition_plan', 'shopping_list'] as const;
+export const PRINT_DOCUMENT_KINDS = [
+  'training_plan',
+  'nutrition_plan',
+  'shopping_list',
+  'month_review',
+] as const;
 export type PrintDocumentKind = (typeof PRINT_DOCUMENT_KINDS)[number];
 
 export interface PrintDocument {
@@ -233,6 +243,11 @@ export interface PrintDocument {
     readonly fileName: string;
     readonly footer: PrintText;
     readonly createdOn: string;
+    /**
+     * Monatsrückblick: Gesundheitsangaben (Essen, Gewicht) ausdrücklich eingeschlossen (Standard aus,
+     * docs/PLAN-TREND-RUECKBLICK-KALENDER.md 3.4). Fehlt = nein.
+     */
+    readonly includesHealthData?: boolean;
   };
   /** Erste Seite hochkant; jede weitere beginnt mit einem `pageBreak`. */
   readonly sections: readonly PrintBlock[];
@@ -359,6 +374,7 @@ const PARAM_SCHEMAS = {
   'notes.heading': empty,
   'plan.note': z.strictObject({ note: z.enum(PRINT_PLAN_NOTES) }),
   ...NUTRITION_PARAM_SCHEMAS,
+  ...MONTH_REVIEW_PARAM_SCHEMAS,
 } satisfies { [K in PrintTextCode]: z.ZodType<PrintTextParams[K]> };
 
 export const PRINT_TEXT_CODES = Object.keys(PARAM_SCHEMAS) as PrintTextCode[];
@@ -471,6 +487,7 @@ export const printDocumentSchema: z.ZodType<PrintDocument> = z
       fileName: z.string().regex(/^[a-z0-9-]{3,80}$/),
       footer: printTextSchema,
       createdOn: isoDateSchema,
+      includesHealthData: z.boolean().optional(),
     }),
     sections: z
       .array(printBlockSchema)
@@ -496,4 +513,14 @@ export const printDocumentSchema: z.ZodType<PrintDocument> = z
       doc.meta.kind === 'nutrition_plan' ||
       printDocumentTexts(doc).every((v) => v.kind !== 'text' || v.code !== 'value.kcal'),
     { message: 'kcal stehen nur im Essensplan.' },
+  )
+  .refine(
+    // Monatsrückblick (zweite Schutzschicht): Essen und Gewicht nur im Rückblick und nur ausdrücklich eingeschlossen.
+    (doc) =>
+      (doc.meta.kind === 'month_review' && doc.meta.includesHealthData === true) ||
+      printDocumentTexts(doc).every(
+        (v) =>
+          v.kind !== 'text' || !(MONTH_REVIEW_HEALTH_CODES as readonly string[]).includes(v.code),
+      ),
+    { message: 'Gesundheitsangaben nur mit ausdrücklicher Zustimmung im Monatsrückblick.' },
   ) as unknown as z.ZodType<PrintDocument>;

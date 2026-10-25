@@ -11,6 +11,7 @@ import {
   type NutritionLibrary,
   recipeCardNutrients,
   type RecipeCardNutrients,
+  recipeIdsWithPreference,
   recipeTotalMinutes,
   searchFridge,
   weekExcludesPregnancyCaution,
@@ -18,6 +19,7 @@ import {
 
 import type { ConsentVersions } from './mapping';
 import { mealPlanProfileFromRows, type NutritionWeekResult } from './nutrition-plan';
+import { recipePreferencesFromRows } from './recipe-preference-rows';
 import type { UserRows } from './types';
 
 /**
@@ -42,6 +44,8 @@ export interface FridgeSearchCard {
   missingMore: number;
   /** Namen fehlender Zutaten aus Vorrat und Gewürzen. */
   missingMinor: string[];
+  /** Namen der Zutaten, die (nur) aus dem Vorratsschrank kommen (25.10.2026). */
+  fromPantry: string[];
   /**
    * kcal, Eiweiß und Kohlenhydrate je Portion des Grundrezepts (packages/core `recipeCardNutrients`); nur anzeigen,
    * wenn „Kalorienzahlen“ an sind. null = nicht berechenbar.
@@ -94,8 +98,13 @@ export function prepareFridgeSearch(input: FridgeSearchBaseInput): FridgeSearchP
   const profile = mealPlanProfileFromRows(input.rows, input.versions);
   if (profile.kind === 'incomplete') return { kind: 'incomplete' };
   if (profile.kind === 'blocked') return { kind: 'blocked', reason: profile.reason };
+  // Rezept-Favoriten (25.10.2026): mit „Nie wieder“ ausgeblendete Rezepte erscheinen auch hier nicht.
+  const hidden = new Set(recipeIdsWithPreference(recipePreferencesFromRows(input.rows), 'hidden'));
   const searchInput: FridgeSearchInput = {
-    recipes: input.library.recipes,
+    recipes:
+      hidden.size === 0
+        ? input.library.recipes
+        : input.library.recipes.filter((r) => !hidden.has(r.id)),
     foods: input.library.foods,
     profile: profile.profile,
     excludePregnancyCaution: weekExcludesPregnancyCaution(input.week.targets),
@@ -119,11 +128,18 @@ export function fridgeSearchResults(
   prepared: Extract<FridgeSearchPrepared, { kind: 'ok' }>,
   foodIds: readonly string[],
   limit?: number,
+  /** Vorratsschrank (25.10.2026): zählt als vorhanden, „fast leer“ halb (packages/core `pantryShares`). */
+  pantry: readonly { readonly foodId: string; readonly low: boolean }[] = [],
 ): { cards: FridgeSearchCard[]; total: number; hasDrafts: boolean; hasTestphase: boolean } {
   // Nur angebotene Lebensmittel zählen (eine veraltete Auswahl nach einer Profiländerung fällt still weg).
   const offered = new Set(prepared.options.map((o) => o.foodId));
   const ids = [...new Set(foodIds)].filter((id) => offered.has(id));
-  const hits = searchFridge(prepared.searchInput, { foodIds: ids }, prepared.variants);
+  const pantryOffered = pantry.filter((p) => offered.has(p.foodId));
+  const hits = searchFridge(
+    prepared.searchInput,
+    { foodIds: ids, pantry: pantryOffered },
+    prepared.variants,
+  );
   const foods = prepared.library.foods;
   const name = (id: string) => foods.get(id)?.name_de ?? id;
   const shownHits = limit === undefined ? hits : hits.slice(0, Math.max(0, limit));
@@ -135,10 +151,12 @@ export function fridgeSearchResults(
       title: recipe.title_de,
       totalMinutes: recipeTotalMinutes(recipe),
       percent: fridgeMatchPercent(hit.match),
-      have: hit.have.map(name),
+      // Ausgewählte Zutaten; was nur aus dem Vorratsschrank kommt, steht unter `fromPantry`.
+      have: hit.have.filter((id) => !hit.fromPantry.includes(id)).map(name),
       missing: shown.map(name),
       missingMore: hit.missing.length - shown.length,
       missingMinor: hit.missingMinor.map(name),
+      fromPantry: hit.fromPantry.map(name),
       perServing: recipeCardNutrients(hit.variant, foods),
       isDraft: recipe.status === 'draft',
       isTestphase: isPublishedWithoutExpertReview(recipe),

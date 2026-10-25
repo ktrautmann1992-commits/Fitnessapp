@@ -1,5 +1,6 @@
 import {
   bodyMetricsStepSchema,
+  contentIdSchema,
   cookingStepSchema,
   createBodyMeasurementsInputSchema,
   createMeasuredOnSchema,
@@ -54,6 +55,8 @@ import {
   storedAppLayoutSchema,
   toStoredLayout,
 } from '@fitnessapp/core';
+
+import { validRecipePreferenceRow } from './recipe-preference-rows';
 
 import type { ConsentVersions } from './mapping';
 import { preferencesFromRows } from './exercise-swap';
@@ -256,6 +259,15 @@ export function isValidOp(
         exerciseStartWeightSchema.safeParse({ exercise_id: op.exerciseId, weight_kg: op.weightKg })
           .success
       );
+    // Rezept-Favoriten (25.10.2026): wie CHECK/Trigger von recipe_preferences – eigene Zeile, gültige Art und ID,
+    // Datum höchstens heute + 1 Tag.
+    case 'set_recipe_preference':
+      return op.row === null
+        ? contentIdSchema.safeParse(op.recipeId).success
+        : op.row.recipe_id === op.recipeId &&
+            op.row.user_id === context.profile.user_id &&
+            validRecipePreferenceRow(op.row) &&
+            op.row.set_on <= addDays(context.today, 1);
     // Präferenzen und Pläne brauchen mehr Zusammenhang (Bibliothek, Einheit) → checkExercisePreference / isValidPlanOp.
     case 'upsert_exercise_preference':
     case 'delete_exercise_preference':
@@ -744,6 +756,11 @@ export function checkSessionLog(payload: SessionLogPayload, ctx: LogRuleContext)
   // Übungsnamen übernimmt das Speichern aus der Bibliothek, Wächter S1).
   const isFree = payload.is_free === true;
   if (existing && (existing.is_free === true) !== isFree) {
+    return { kind: 'reject', reason: 'invalid' };
+  }
+  // Sportart bleibt Sportart (Sportarten Stufe 2, wie save_session_log in 20261025160100_sportarten.sql); die übrigen
+  // Regeln (frei, „strength“ ohne Übungen/Ausdauer, Name, Distanz nur GPS) prüfen Zod und freeSessionPayloadIssue.
+  if (existing && ((existing.sport ?? null) !== null) !== (payload.sport != null)) {
     return { kind: 'reject', reason: 'invalid' };
   }
   const freeIssue = freeSessionPayloadIssue(payload, ctx.today);

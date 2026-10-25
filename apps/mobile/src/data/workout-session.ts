@@ -1,9 +1,11 @@
 import {
   canCatchUp,
   type DaySwap,
+  displayModesOn,
   type EquipmentProfile,
   type ExerciseProgress,
   experienceLevelSchema,
+  lighterSessionVariant,
   type PlanLibrary,
   type PlanSafetyRules,
   planWorkout,
@@ -12,7 +14,9 @@ import {
   type DisplaySession,
   type PlanExerciseContext,
   planWorkoutExercise,
+  restrictWorkoutItems,
   type StoredSession,
+  type TrainingModesState,
   weeklySetRange,
   type WorkoutItem,
 } from '@fitnessapp/core';
@@ -64,10 +68,19 @@ export function workoutView(
      * → Gratis-Vorgabe, unverändert.
      */
     stateOverrides?: ReadonlyMap<string, ExerciseProgress>;
+    /**
+     * „Leichter trainieren“ (Erholung aus der Uhr, 25.10.2026): die Einheit wird vor ALLEN weiteren Schritten über
+     * lighterSessionVariant (packages/core, je Übung 1 Satz weniger, RPE −1, gleiche Gewichte) leichter gemacht – die
+     * Sicherheitsregeln laufen danach unverändert. Nur für heute; der gespeicherte Plan bleibt.
+     */
+    lighter?: boolean;
+    /** Trainings-Modi (docs/PLAN-TRAINING-MODI.md 6.3): gleiche Anzeige wie „Heute“, Alternativen eingeschränkt. */
+    modes?: TrainingModesState | null;
   } = {},
 ): WorkoutView | null {
   const active = activePlan(rows);
-  const stored = active?.sessions.find((s) => s.id === sessionId);
+  const planned = active?.sessions.find((s) => s.id === sessionId);
+  const stored = planned && options.lighter ? lighterSessionVariant(planned) : planned;
   const birthDate = rows.profile?.birth_date;
   const level = experienceLevelSchema.safeParse(rows.profile?.experience_level);
   if (!active || !stored || !birthDate || !level.success) return null;
@@ -82,8 +95,14 @@ export function workoutView(
     today,
     daySwaps: options.daySwaps ?? null,
     ownerUserId: options.ownerUserId ?? null,
+    modes: options.modes ?? null,
   });
-  const profile = display.profiles.get(display.location.location) as EquipmentProfile;
+  const modes = displayModesOn(options.modes ?? null, stored.scheduled_on);
+  const placeProfile = display.profiles.get(display.location.location) as EquipmentProfile;
+  // Reise-Modus: Geräte unterwegs (Gewichtsstufen bleiben die bekannten), sonst das Profil des Orts.
+  const profile: EquipmentProfile = modes.travel
+    ? { ...placeProfile, available: modes.travel.available }
+    : placeProfile;
   const shown = display.shown;
   const preferences = preferencesFromRows(rows);
   const template = library.templates.find((tpl) => tpl.id === active.plan.template_id);
@@ -138,7 +157,7 @@ export function workoutView(
         }
       : {}),
   };
-  const items = planWorkout(stored, shown, active.sessions, context);
+  const items = restrictWorkoutItems(planWorkout(stored, shown, active.sessions, context), modes);
   return { active, stored, shown, profile, items, context, display };
 }
 
@@ -251,11 +270,14 @@ export function newEnduranceDraft(
     newId: () => string;
     /** Nachtragen (A1b): an diesem Tag trainiert (sonst heute). */
     performedOn?: string;
+    /** „Leichter trainieren“ (Erholung, 25.10.2026): locker und kürzer (lighterSessionVariant). */
+    lighter?: boolean;
   },
 ): WorkoutDraft | null {
   const active = activePlan(rows);
-  const session = active?.sessions.find((s) => s.id === sessionId);
-  if (!active || !session || session.kind !== 'endurance') return null;
+  const planned = active?.sessions.find((s) => s.id === sessionId);
+  if (!active || !planned || planned.kind !== 'endurance') return null;
+  const session = meta.lighter ? lighterSessionVariant(planned) : planned;
   return createEnduranceDraft({
     ownerUserId: meta.ownerUserId,
     session,

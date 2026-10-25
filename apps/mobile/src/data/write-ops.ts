@@ -11,6 +11,7 @@ import {
   type SavePlanPayload,
   type SavePlanSession,
 } from '@fitnessapp/core';
+import { applyRecipePreferenceRow } from './recipe-preference-rows';
 import type { TablesInsert, TablesUpdate } from '@fitnessapp/db';
 
 import {
@@ -40,6 +41,7 @@ import type {
   UserPlanRow,
   UserRows,
   WeightGoalRow,
+  RecipePreferenceRow,
 } from './types';
 
 /**
@@ -160,7 +162,13 @@ export type WriteOp =
    */
   | { kind: 'upsert_food_log_favorite'; row: FoodLogFavoriteRow }
   /** Favorit entfernen (Schlüssel eines Schnell-Favoriten enthält kcal → sofort, nie in die Warteschlange). */
-  | { kind: 'delete_food_log_favorite'; favKey: string };
+  | { kind: 'delete_food_log_favorite'; favKey: string }
+  /**
+   * Rezept-Favoriten (25.10.2026, Tabelle `recipe_preferences`, direkt per PostgREST, RLS): Herz bzw. „Nie wieder“
+   * setzen (`row`) oder zurücknehmen (`null`). Kein Gesundheitsdatum → offline über die normale Warteschlange
+   * (Schlüssel recipe_preference:<recipe_id>, letzte Änderung gewinnt).
+   */
+  | { kind: 'set_recipe_preference'; recipeId: string; row: RecipePreferenceRow | null };
 
 export type ProfilePatch = Pick<
   TablesUpdate<'profiles'>,
@@ -488,6 +496,8 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
         ...rows,
         foodLogFavorites: rows.foodLogFavorites.filter((f) => f.fav_key !== op.favKey),
       };
+    case 'set_recipe_preference':
+      return applyRecipePreferenceRow(rows, op.recipeId, op.row);
     case 'swap_planned_sessions': {
       // Wie swap_planned_sessions: Tage tauschen, Ursprungstag nur beim ERSTEN Verschieben setzen.
       const a = rows.plannedSessions.find((s) => s.id === op.sessionId);
@@ -728,6 +738,9 @@ export function applyHealthDataRevocation(
     userFoodProducts: [],
     // Einkaufen E1: gelernte Zuordnungen Strichcode → Lebensmittel (Konsum) – wie consents_after_revoke.
     shoppingProductLinks: [],
+    // Vorratsschrank (25.10.2026): Konsum, kann auf Unverträglichkeiten schließen lassen – wie
+    // private.consents_after_revoke_pantry ganz gelöscht.
+    pantryItems: [],
     // Wettkämpfe (Phase 10): der Wettkampf bleibt (kein Gesundheitsdatum, W-G15), der Plan-Bezug wird geleert – wie
     // private.consents_after_revoke.
     competitions: rows.competitions.map(withoutPlanBasis),

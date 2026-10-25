@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router/tabs';
 
 import { InTabsContext, TabBar, tabLabel } from '@/components/tab-bar';
 import { useThemeColors } from '@/lib/theme';
+import { WidgetSync } from '@/widget/widget-sync';
 
 /**
  * Hauptbereiche mit unterer Menüleiste (docs/PLAN-DASHBOARD.md 3). Die Gruppe „(tabs)“ ändert keine Adresse:
@@ -16,6 +17,8 @@ export default function TabsLayout() {
   const theme = useThemeColors();
   return (
     <InTabsContext.Provider value>
+      {/* Widget auf dem Startbildschirm (nur Android, nur wenn eingeschaltet): Stand schreiben (docs/PLAN-WIDGET.md). */}
+      <WidgetSync />
       <Tabs
         // Zurück-Taste (Android/Browser) wechselt zum zuletzt besuchten Reiter.
         backBehavior="history"

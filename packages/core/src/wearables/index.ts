@@ -9,3 +9,5 @@ export * from './sessions';
 export * from './sync';
 export * from './rows';
 export * from './steps';
+export * from './recovery';
+export * from './recovery-texts-de';

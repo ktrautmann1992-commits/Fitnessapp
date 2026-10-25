@@ -35,6 +35,7 @@ import { WorkoutsTile } from '@/components/workouts';
 import { EnduranceTile } from '@/components/endurance-tile';
 import { Screen } from '@/components/screen';
 import { StepsTile } from '@/components/steps';
+import { RecoveryTile } from '@/components/recovery';
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { Body, Button, Heading, LoadingState, Notice } from '@/components/ui';
 import { weightGoalOverviewFromRows } from '@/components/weight-goal';
@@ -46,6 +47,8 @@ import { activePlan } from '@/data/training-plan';
 import type { UserRows } from '@/data/types';
 import { startKind, workoutView } from '@/data/workout-session';
 import { t } from '@/i18n';
+import { deModes } from '@/i18n/de-training-modes';
+import { useTrainingModes } from '@/state/use-training-modes';
 import { formatDateDe } from '@/lib/format';
 import { appFont } from '@/lib/fonts';
 import { percentText, ringCenterText } from '@/lib/nutrition-day-format';
@@ -179,6 +182,9 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
       // Schritte mit Tagesziel als Ring (Gründer-Wunsch 22.10.2026, docs/PLAN-PHASE-8.md 13.4).
       case 'steps':
         return <StepsTile today={today} />;
+      // „Erholung“ aus Schlaf, Ruhepuls und HRV der Uhr (Gründer-Freigabe 25.10.2026) – eigene Zeile (Mini-Verlauf).
+      case 'recovery':
+        return <RecoveryTile today={today} />;
       case 'shortcuts':
         return (
           <ShortcutGrid label={t.dashboard.shortcuts.title}>
@@ -324,6 +330,8 @@ function TrainingTile({
 }) {
   const router = useRouter();
   const app = useApp();
+  // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 6): gleiche Anzeige wie „Heute“.
+  const trainingModes = useTrainingModes().state;
   const texts = t.dashboard.training;
   const active = activePlan(rows);
   const rules = app.safetyRules;
@@ -401,6 +409,7 @@ function TrainingTile({
             today,
             daySwaps: app.daySwaps,
             ownerUserId,
+            modes: trainingModes,
           })
         : null;
     const view =
@@ -409,11 +418,15 @@ function TrainingTile({
             excludeLogId: logForSession(rows, session.id)?.id ?? null,
             daySwaps: app.daySwaps,
             ownerUserId,
+            modes: trainingModes,
           })
         : null;
     if (display?.shown.emptyByPreference) {
       canStart = false;
       reason = t.swap.emptyStartDisabled;
+    } else if (display?.shown.emptyByMode) {
+      canStart = false;
+      reason = deModes.notices.pain_session_empty;
     } else if (display === null || display.shown.libraryMissing || view === null) {
       canStart = false;
       reason =

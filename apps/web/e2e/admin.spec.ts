@@ -199,15 +199,15 @@ test.describe('mit Zugangsdaten', () => {
     // Das Cookie gilt nur unter /admin.
     expect(await context.cookies(`${CONFIGURED_URL}/`)).toEqual([]);
 
-    // Übersicht: 80 Übungen (Startbestand + Körpergewicht K1 + Handtuch-Latziehen), 42 Vorlagen (inkl. 18 Körpergewicht).
+    // Übersicht: 96 Übungen (Startbestand + Körpergewicht K1 + Handtuch-Latziehen + 16 Aufwärm-/Dehnübungen), 42 Vorlagen (inkl. 18 Körpergewicht).
     await expect(page.getByRole('heading', { name: 'Inhalte prüfen' })).toBeVisible();
-    await expect(page.getByText('80 Übungen · 42 Vorlagen')).toBeVisible();
+    await expect(page.getByText('96 Übungen · 42 Vorlagen')).toBeVisible();
     await expect(page.getByText('Testansicht – Inhalte aus dem Repository')).toBeVisible();
     const exerciseCards = page.getByRole('list', { name: 'Übungen' }).getByRole('listitem');
-    await expect(exerciseCards).toHaveCount(80);
+    await expect(exerciseCards).toHaveCount(96);
     await expect(exerciseCards.first().getByText('KI-Entwurf – fachlich prüfen')).toBeVisible();
     const counts = exerciseStatusCounts();
-    expect(counts.draft + counts.published + counts.archived).toBe(80);
+    expect(counts.draft + counts.published + counts.archived).toBe(96);
     await expect(
       page.getByText(
         `${counts.draft} Entwürfe · ${counts.published} freigegeben · ${counts.archived} zurückgezogen`,
@@ -218,7 +218,7 @@ test.describe('mit Zugangsdaten', () => {
     await page.getByText('Suche und Filter').click();
     await page.getByLabel('Bewegungsmuster').selectOption('squat');
     await page.getByRole('button', { name: 'Anwenden' }).click();
-    await expect(page.getByTestId('trefferzahl')).toHaveText('7 von 80 Treffern');
+    await expect(page.getByTestId('trefferzahl')).toHaveText('7 von 96 Treffern');
     await expect(exerciseCards).toHaveCount(7);
     await expect(page.getByLabel(/IDs dieser Trefferliste/)).toHaveValue(/kniebeuge-langhantel/);
 
@@ -226,7 +226,7 @@ test.describe('mit Zugangsdaten', () => {
     await page.goto('/admin?q=gibtsnicht');
     await expect(page.getByRole('heading', { name: 'Keine Treffer' })).toBeVisible();
     await page.getByRole('link', { name: 'Filter zurücksetzen' }).click();
-    await expect(exerciseCards).toHaveCount(80);
+    await expect(exerciseCards).toHaveCount(96);
 
     // Detail Übung mit Alternativen (verlinkt).
     await page.getByRole('link', { name: /Kniebeuge mit Langhantel/ }).click();

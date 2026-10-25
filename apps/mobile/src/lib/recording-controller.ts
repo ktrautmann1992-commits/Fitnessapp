@@ -13,6 +13,7 @@ import { newId } from '@/data/create-backend';
 import { DemoRun } from './demo-recording';
 import { locationDriver } from './location-driver';
 import { type PersistedRecording, recordingSession } from './recording-session';
+import { stopVoiceCoach } from './voice-coach';
 
 /**
  * Steuerung der Aufzeichnung (Etappe E4): verbindet Standort (iPhone/Android) bzw. Demo (Testmodus im Browser) mit dem
@@ -138,6 +139,7 @@ export async function stopActiveRecording(): Promise<void> {
 
 /** Gespeichert oder verworfen: Standort aus, Sicherung löschen. */
 export async function endRecording(): Promise<void> {
+  stopVoiceCoach();
   demo?.pause();
   demo = null;
   await locationDriver.stop();

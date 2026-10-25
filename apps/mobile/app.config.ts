@@ -44,13 +44,21 @@ export const LOCATION_WHEN_IN_USE_TEXT =
 export const LOCATION_ALWAYS_TEXT =
   'Alpha5 braucht keinen Standort „Immer“. Der Standort wird nur während einer Aufzeichnung genutzt, die du selbst startest und beendest.';
 
+// Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 4, opt-in): iOS-Abfrage „Kalender“
+// (NSCalendarsUsageDescription + NSCalendarsFullAccessUsageDescription ab iOS 17 – voller Zugriff, weil die App einen
+// EIGENEN Kalender „Alpha5 Training“ anlegt; „nur hinzufügen“ kann keine Kalender anlegen). Keine Erinnerungen.
+export const CALENDAR_PERMISSION_TEXT =
+  'Alpha5 trägt deine geplanten Trainings als Termine in einen eigenen Kalender „Alpha5 Training“ ein – nur Name der Einheit, Tag und Uhrzeit, keine Gesundheitsangaben. Andere Termine liest Alpha5 nicht.';
+
 /**
  * Smartwatch über Health Connect (Phase 8, docs/PLAN-PHASE-8.md 2–3; W8-2 Datenumfang, W8-3 nur lesen, W8-7 kein
  * Hintergrund-Abgleich): je genutztem Datentyp GENAU eine Leseberechtigung (= WEARABLE_DATA_TYPES in packages/core bzw.
  * HC_RECORD_TYPES in lib/health-connect-driver.native.ts) und seit 23.10.2026 (Gründer-Entscheidung „Routen lesen“,
  * ersetzt W8-4) das Leserecht „Trainingsrouten“ (READ_EXERCISE_ROUTES, Android 15+/aktuelles Health Connect; sonst
- * fragt Health Connect je Einheit – „Route freigeben“). Health Connect zeigt alle im Systemdialog einzeln an; die
- * Person kann jede abwählen.
+ * fragt Health Connect je Einheit – „Route freigeben“). Seit 25.10.2026 („Erholung aus der Uhr“) zusätzlich HRV
+ * (READ_HEART_RATE_VARIABILITY, nur Tageswert gespeichert). Health Connect zeigt alle im Systemdialog einzeln an; die
+ * Person kann jede abwählen. Die Begründung je Datentyp zeigt der Health-Connect-Erklärungsbildschirm (Rationale-
+ * Aktivität des Plugins) und die Smartwatch-Seite vor dem Systemdialog.
  */
 export const HEALTH_CONNECT_ROUTE_PERMISSION = 'android.permission.health.READ_EXERCISE_ROUTES';
 export const HEALTH_CONNECT_READ_PERMISSIONS = [
@@ -61,6 +69,7 @@ export const HEALTH_CONNECT_READ_PERMISSIONS = [
   'android.permission.health.READ_RESTING_HEART_RATE',
   'android.permission.health.READ_SLEEP',
   'android.permission.health.READ_STEPS',
+  'android.permission.health.READ_HEART_RATE_VARIABILITY',
   HEALTH_CONNECT_ROUTE_PERMISSION,
 ] as const;
 
@@ -79,26 +88,50 @@ export const HEALTH_CONNECT_BLOCKED_PERMISSIONS = [
   'android.permission.health.WRITE_RESTING_HEART_RATE',
   'android.permission.health.WRITE_SLEEP',
   'android.permission.health.WRITE_STEPS',
+  'android.permission.health.WRITE_HEART_RATE_VARIABILITY',
 ] as const;
+
+/**
+ * Widget auf dem Startbildschirm (nur Android, docs/PLAN-WIDGET.md, Gründer-Entscheidung 25.10.2026) über das
+ * Config-Plugin von react-native-android-widget 0.24.0 (ab 0.24.0 tragen die gezeichneten Widget-Bilder einen
+ * Zufallsnamen – vorher konnten andere Apps sie über den exportierten Bild-Provider der Bibliothek erraten und lesen;
+ * deshalb nicht älter): Empfänger (nicht exportiert) + Beschreibung + Vorschaubild.
+ * Name = TODAY_WIDGET_NAME in src/widget/today-widget.android.tsx. 2 × 2 Felder, auf 4 × 2 vergrößerbar.
+ * `updatePeriodMillis` 1 h: Android ruft die Hintergrund-Aufgabe stündlich (kein Netz, liest nur den gespeicherten
+ * Stand) – so wechselt nach Mitternacht das Training und nach 24 h erscheint „App öffnen zum Aktualisieren“. Keine
+ * neue Berechtigung. iPhone: noch kein Widget (docs/PLAN-WIDGET.md 7).
+ */
+export const HOME_WIDGET = {
+  name: 'AlphaToday',
+  label: 'Alpha5 – Heute',
+  description: 'Training heute, Schritte und kcal übrig',
+  minWidth: '110dp',
+  minHeight: '110dp',
+  targetCellWidth: 2,
+  targetCellHeight: 2,
+  maxResizeWidth: '420dp',
+  maxResizeHeight: '240dp',
+  resizeMode: 'horizontal|vertical',
+  previewImage: './assets/images/widget-preview.png',
+  updatePeriodMillis: 60 * 60 * 1000,
+} as const;
 
 /** Health Connect verlangt mindestens Android 8 (API 26); Expo SDK 57 baut sonst ab API 24. */
 export const ANDROID_MIN_SDK = 26;
 
 /**
- * Hintergrundmodi iOS (UIBackgroundModes): erlaubt ist nur `location` (Aufzeichnung bei gesperrtem Bildschirm, mit
- * blauem Hinweis). Das Plugin von expo-task-manager trägt immer `fetch` (Hintergrund-Aktualisierung) ein – die App
- * nutzt das nicht. Deshalb wird es entfernt (Datensparsamkeit, App-Review fragt sonst nach dem Zweck).
+ * Hintergrundmodi iOS (UIBackgroundModes): `location` (Aufzeichnung bei gesperrtem Bildschirm, mit blauem Hinweis) und
+ * `audio` (Sprachansagen während der Aufzeichnung, Gründer-Freigabe 25.10.2026 – nur solange eine Aufzeichnung läuft
+ * und die Ansagen eingeschaltet sind; sonst spielt die App nie Ton im Hintergrund). Das Plugin von expo-task-manager
+ * trägt immer `fetch` (Hintergrund-Aktualisierung) ein – die App nutzt das nicht. Deshalb wird es entfernt
+ * (Datensparsamkeit, App-Review fragt sonst nach dem Zweck).
  */
-export const IOS_BACKGROUND_MODES = ['location'] as const;
+export const IOS_BACKGROUND_MODES = ['location', 'audio'] as const;
 
 const withOnlyLocationBackgroundMode: ConfigPlugin = (cfg) =>
   withInfoPlist(cfg, (mod) => {
-    const modes = Array.isArray(mod.modResults.UIBackgroundModes)
-      ? (mod.modResults.UIBackgroundModes as string[])
-      : [];
-    mod.modResults.UIBackgroundModes = modes.filter((mode) =>
-      (IOS_BACKGROUND_MODES as readonly string[]).includes(mode),
-    );
+    // Genau IOS_BACKGROUND_MODES: fremde Modi (z. B. `fetch`) raus, `audio` für die Sprachansagen dazu.
+    mod.modResults.UIBackgroundModes = [...IOS_BACKGROUND_MODES];
     return mod;
   });
 
@@ -182,6 +215,7 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
     // keine Bewegungsdaten, keine Health-Daten. Drucken (expo-print), Ordner-Auswahl (expo-file-system), Vibration (expo-haptics),
     // Bildschirm-an (expo-keep-awake), Schlüsselbund (expo-secure-store) und expo-crypto brauchen keine
     // Berechtigung. Kommt später eine dazu (z. B. HealthKit, Phase 8), hier deutschen Text ergänzen.
+    // Kalender (NSCalendars…UsageDescription): Plugin expo-calendar unten, Text CALENDAR_PERMISSION_TEXT (opt-in).
     // Kamera ist keine „Required Reason API“ (kein Eintrag unten); Kamerabilder verlassen das Gerät nicht, sind also
     // keine „gesammelten Daten“ im Sinne von NSPrivacyCollectedDataTypes.
     //
@@ -328,12 +362,31 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
         androidForegroundServiceIcon: './assets/images/android-icon-monochrome.png',
       },
     ],
+    // Trainings im Handy-Kalender (opt-in): Android READ_CALENDAR + WRITE_CALENDAR (Lesen nur, um den eigenen Kalender
+    // wiederzufinden), iOS Text oben. Keine Erinnerungen (remindersPermission: false). Neues natives Modul → neuer
+    // EAS-Build nötig.
+    ['expo-calendar', { calendarPermission: CALENDAR_PERMISSION_TEXT, remindersPermission: false }],
+    // Sprachansagen beim Aufzeichnen (25.10.2026): expo-audio nur für den Audio-Modus (andere Musik leiser, „duckOthers“,
+    // auch bei gesperrtem Bildschirm). KEIN Mikrofon, keine Aufnahme, kein eigener Wiedergabe-Dienst auf Android (die
+    // Ansagen laufen im Vordergrund-Dienst der Aufzeichnung). Hintergrundmodus `audio` auf iOS: IOS_BACKGROUND_MODES.
+    // Neues natives Modul → neuer EAS-Build nötig.
+    [
+      'expo-audio',
+      {
+        microphonePermission: false,
+        recordAudioAndroid: false,
+        enableBackgroundRecording: false,
+        enableBackgroundPlayback: false,
+      },
+    ],
     // Smartwatch über Health Connect (Phase 8): react-native-health-connect 4.1.3 bringt sein Config-Plugin selbst mit
     // (app.plugin.js): Android ≤ 13 – Intent-Filter ACTION_SHOW_PERMISSIONS_RATIONALE an der MainActivity, Android 14+
     // – activity-alias ViewPermissionUsageActivity (VIEW_PERMISSION_USAGE, Kategorie HEALTH_PERMISSIONS, geschützt durch
     // START_VIEW_PERMISSION_USAGE). Beides öffnet die App, wenn jemand im Health-Connect-Dialog „Datenschutzerklärung“
     // antippt. Nur Android; neues natives Modul → neuer EAS-Build nötig.
     'react-native-health-connect',
+    // Widget auf dem Startbildschirm (nur Android, HOME_WIDGET oben). Neues natives Modul → neuer EAS-Build nötig.
+    ['react-native-android-widget', { widgets: [HOME_WIDGET] }],
     // minSdk 26 (Android 8) – Voraussetzung von Health Connect. Sonst bleiben alle Build-Werte von Expo SDK 57.
     ['expo-build-properties', { android: { minSdkVersion: ANDROID_MIN_SDK } }],
     [

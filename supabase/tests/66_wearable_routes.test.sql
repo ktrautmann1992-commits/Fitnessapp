@@ -93,7 +93,10 @@ select ok(
   (select position('wearable_consents_locked' in p.prosrc) < position('pg_advisory_xact_lock' in p.prosrc)
    from pg_proc p where p.oid = 'public.save_wearable_route(jsonb, boolean)'::regprocedure),
   'Einwilligung gesperrt und geprüft vor der Advisory-Sperre');
-select is(public.current_consent_version('wearable_data'), 2, 'wearable_data: aktuelle Fassung 2 (nennt die Routen)');
+select ok(
+  (select body_de like '%Routen (GPS-Strecken)%' from public.consent_documents
+   where consent_type = 'wearable_data' and version = public.current_consent_version('wearable_data')),
+  'wearable_data: aktuelle Fassung nennt die Routen (seit Fassung 2)');
 select ok(
   not has_table_privilege('authenticated', 'private.wearable_route_dismissals', 'select'),
   'Merkliste gelöschter Routen: kein Zugriff für authenticated');

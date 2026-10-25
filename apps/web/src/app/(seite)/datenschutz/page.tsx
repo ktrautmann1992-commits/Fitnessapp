@@ -151,7 +151,20 @@ export default function Datenschutz() {
         <P>bei der rechtlichen Prüfung bestätigen (kein Auftragsverarbeiter)</P>
       </p>
 
-      <h2>9. Deine Rechte</h2>
+      <h2>9. App: Wetter zu deinen Läufen (Open-Meteo)</h2>
+      <p>
+        Wenn du es in der App erlaubst (einmaliger Hinweis, jederzeit in den Einstellungen
+        abschaltbar), holt <strong>dein Gerät direkt</strong> bei Open-Meteo (Schweiz, kostenlos,
+        ohne Konto) das Wetter zum Start eines Laufs: Temperatur, gefühlte Temperatur, Wind,
+        Niederschlag, Luftfeuchte und Wetterlage. Übermittelt werden nur eine auf{' '}
+        <strong>0,1 Grad gerundete Startposition</strong> (ein Raster von etwa 7–11 km) sowie Tag
+        und Stunde – nie die Strecke selbst. Open-Meteo sieht dabei wie bei jedem Abruf deine
+        IP-Adresse. Das Wetter speichern wir bei der Strecke (Abschnitt 6, nur dein Konto); es ist
+        kein Gesundheitsdatum und steht nicht in Protokollen.{' '}
+        <P>bei der rechtlichen Prüfung bestätigen (Rechtsgrundlage Einwilligung, kein AVV nötig)</P>
+      </p>
+
+      <h2>10. Deine Rechte</h2>
       <ul>
         <li>Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17)</li>
         <li>Einschränkung (Art. 18), Datenübertragbarkeit (Art. 20), Widerspruch (Art. 21)</li>
@@ -163,7 +176,7 @@ export default function Datenschutz() {
       </ul>
       <p>In der App kannst du deine Daten jederzeit exportieren und dein Konto löschen.</p>
 
-      <h2>10. Änderungen</h2>
+      <h2>11. Änderungen</h2>
       <p>
         <P>Hinweis zur Aktualisierung dieser Erklärung</P>
       </p>
