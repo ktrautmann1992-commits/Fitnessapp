@@ -48,13 +48,13 @@ function withData(file: ContentFile, change: (data: Record<string, unknown>) => 
 }
 
 describe('Katalog aus den Repository-Dateien', () => {
-  it('Startbestand + Körpergewicht (K1/K2) + 16 Aufwärm-/Dehnübungen: 96 Übungen, 24 + 18 Vorlagen, keine kaputten Dateien, nichts blockiert', () => {
-    expect(catalog.exercises).toHaveLength(96);
-    expect(catalog.templates).toHaveLength(42);
+  it('Startbestand + Körpergewicht (K1/K2) + 16 Aufwärm-/Dehnübungen + 74 Calisthenics/Schlinge/Lauf-Kraft: 170 Übungen, 24 + 18 + 7 Vorlagen, keine kaputten Dateien, nichts blockiert', () => {
+    expect(catalog.exercises).toHaveLength(170);
+    expect(catalog.templates).toHaveLength(49);
     expect(catalog.brokenFiles).toEqual([]);
     expect(catalog.blockingTotal).toBe(0);
     expect(countByStatus(catalog.exercises.map((e) => e.exercise.status))).toEqual({
-      draft: 96,
+      draft: 170,
       published: 0,
       archived: 0,
     });
@@ -68,12 +68,12 @@ describe('Katalog aus den Repository-Dateien', () => {
     expect(published.blockingTotal).toBe(0);
     expect(countByStatus(published.exercises.map((e) => e.exercise.status))).toEqual({
       draft: 0,
-      published: 96,
+      published: 170,
       archived: 0,
     });
     expect(
       filterTemplates(published.templates, parseFilters({ status: 'published' })),
-    ).toHaveLength(42);
+    ).toHaveLength(49);
     expect(filterTemplates(published.templates, parseFilters({ status: 'draft' }))).toEqual([]);
   });
 
@@ -191,7 +191,7 @@ describe('Filter und Suche', () => {
 
   it('Übungen nach Bewegungsmuster, Gerät und „ohne Geräte“', () => {
     const squats = filterExercises(catalog.exercises, parseFilters({ muster: 'squat' }));
-    expect(squats.length).toBe(7); // 4 + Kniebeuge zum Stuhl / mit Pause / Tempo (K1)
+    expect(squats.length).toBe(12); // 4 + Kniebeuge zum Stuhl / mit Pause / Tempo (K1) + 3 Pistol + 2 Schlingentrainer
     expect(squats.every((e) => e.exercise.movement_pattern === 'squat')).toBe(true);
     const dumbbells = filterExercises(catalog.exercises, parseFilters({ geraet: 'dumbbells' }));
     expect(dumbbells.length).toBeGreaterThan(0);
@@ -206,21 +206,28 @@ describe('Filter und Suche', () => {
       parseFilters({ ziel: 'fat_loss', level: 'beginner', tage: '3', ort: 'gym' }),
     );
     expect(one.map((t) => t.template.id)).toEqual(['fettverlust-einsteiger-3t-studio']);
-    // Zuhause: 12 mit Kurzhanteln/Bändern + 18 Körpergewicht; 4 Tage: 12 + 6 Körpergewicht; 2 Tage nur Körpergewicht.
-    expect(filterTemplates(catalog.templates, parseFilters({ ort: 'home' }))).toHaveLength(30);
+    // Zuhause: 12 mit Kurzhanteln/Bändern + 18 Körpergewicht + 3 Calisthenics + 4 Schlingentrainer; 4 Tage: 12 + 6
+    // Körpergewicht; 2 Tage nur Körpergewicht + Calisthenics Einsteiger.
+    expect(filterTemplates(catalog.templates, parseFilters({ ort: 'home' }))).toHaveLength(37);
     expect(filterTemplates(catalog.templates, parseFilters({ tage: '4' }))).toHaveLength(18);
     const two = filterTemplates(catalog.templates, parseFilters({ tage: '2' }));
-    expect(two).toHaveLength(6);
-    expect(two.every((t) => t.template.id.endsWith('-koerpergewicht'))).toBe(true);
+    expect(two).toHaveLength(7);
+    expect(
+      two.every(
+        (t) =>
+          t.template.id.endsWith('-koerpergewicht') ||
+          t.template.id === 'calisthenics-einsteiger-2t',
+      ),
+    ).toBe(true);
   });
 
   it('Status, Prüfergebnis und KI-Kennzeichnung', () => {
     expect(filterTemplates(catalog.templates, parseFilters({ status: 'published' }))).toEqual([]);
     const warned = filterTemplates(catalog.templates, parseFilters({ fehler: 'gelb' }));
     const clean = filterTemplates(catalog.templates, parseFilters({ fehler: 'ohne' }));
-    expect(warned.length + clean.length).toBe(42);
+    expect(warned.length + clean.length).toBe(49);
     expect(filterTemplates(catalog.templates, parseFilters({ fehler: 'rot' }))).toEqual([]);
-    expect(filterExercises(catalog.exercises, parseFilters({ ki: 'offen' }))).toHaveLength(96);
+    expect(filterExercises(catalog.exercises, parseFilters({ ki: 'offen' }))).toHaveLength(170);
     expect(filterExercises(catalog.exercises, parseFilters({ ki: 'geprueft' }))).toEqual([]);
   });
 
