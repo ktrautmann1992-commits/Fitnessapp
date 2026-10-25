@@ -147,6 +147,12 @@ export default function DeviceCalendarScreen() {
         </Body>
       </Card>
       {!hasPlan ? <Notice tone="info">{texts.noPlan}</Notice> : null}
+      <ChoiceList
+        label={texts.timeLabel}
+        options={timeOptions}
+        value={prefs.startMinutes === null ? SETUP : String(prefs.startMinutes)}
+        onChange={(value) => void chooseTime(value)}
+      />
       {deviceCalendar.supported ? (
         <Card>
           <Checkbox
@@ -173,12 +179,6 @@ export default function DeviceCalendarScreen() {
           />
         </Card>
       )}
-      <ChoiceList
-        label={texts.timeLabel}
-        options={timeOptions}
-        value={prefs.startMinutes === null ? SETUP : String(prefs.startMinutes)}
-        onChange={(value) => void chooseTime(value)}
-      />
       {message ? (
         <Notice tone={message.tone} testID="device-calendar-message">
           <View style={{ gap: 8 }}>

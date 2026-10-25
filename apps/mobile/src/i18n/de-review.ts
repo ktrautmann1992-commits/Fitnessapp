@@ -86,8 +86,8 @@ export const deMonthReview = {
   open: 'Rückblick ansehen',
   openAny: 'Monatsrückblick',
   openAnyHint: 'Rückblick auf einen Monat ansehen und als PDF sichern',
-  previous: 'Monat davor',
-  next: 'Monat danach',
+  previous: 'Vormonat',
+  next: 'Folgemonat',
   previousA11y: 'Vorherigen Monat zeigen',
   nextA11y: 'Nächsten Monat zeigen',
   running: (date: string) => `Der Monat läuft noch – Stand ${date}.`,
@@ -118,8 +118,8 @@ export const deMonthReview = {
     `${eaten} von ${planned} geplanten Mahlzeiten abgehakt`,
   foodUnavailable: 'Das Ernährungstagebuch braucht deine Einwilligung in Gesundheitsdaten.',
   weightTitle: 'Gewicht',
-  weightTrend: (start: string, end: string) =>
-    `Trend am Monatsanfang ${start} kg, am Ende ${end} kg`,
+  weightTrend: (startDate: string, start: string, endDate: string, end: string) =>
+    `Trend am ${startDate}: ${start} kg, am ${endDate}: ${end} kg`,
   weightTooFew: 'Zu wenige Werte in diesem Monat für einen Trend.',
   weightHidden: 'Gewicht ausgeblendet.',
   pdf: 'Als PDF sichern',

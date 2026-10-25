@@ -45,8 +45,13 @@ export const MONTH_REVIEW_PRINT_TEXTS: Translators = {
   'review.health.heading': () => r.doc.healthHeading,
   'review.food.entryDays': ({ entryDays, days }) => r.foodEntryDays(entryDays, days),
   'review.food.meals': ({ eaten, planned }) => r.foodMeals(eaten, planned),
-  'review.weight.trend': ({ startKg, endKg }) =>
-    r.weightTrend(formatDecimal(startKg), formatDecimal(endKg)),
+  'review.weight.trend': ({ startDate, startKg, endDate, endKg }) =>
+    r.weightTrend(
+      formatDateDe(startDate),
+      formatDecimal(startKg),
+      formatDateDe(endDate),
+      formatDecimal(endKg),
+    ),
   'review.weight.tooFew': () => r.weightTooFew,
   'review.health.excluded': () => r.doc.healthExcluded,
   'review.empty': () => r.empty,

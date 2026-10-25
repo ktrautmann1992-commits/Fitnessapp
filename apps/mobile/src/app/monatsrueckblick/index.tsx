@@ -228,7 +228,9 @@ function ReviewSections({
               {review.weight.kind === 'trend' ? (
                 <Body>
                   {texts.weightTrend(
+                    formatDateDe(review.weight.startDate),
                     formatDecimal(Math.round(review.weight.startKg * 10) / 10),
+                    formatDateDe(review.weight.endDate),
                     formatDecimal(Math.round(review.weight.endKg * 10) / 10),
                   )}
                 </Body>

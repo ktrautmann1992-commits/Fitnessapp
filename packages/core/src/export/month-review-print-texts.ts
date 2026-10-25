@@ -45,7 +45,7 @@ export interface MonthReviewPrintTextParams {
   'review.health.heading': Empty;
   'review.food.entryDays': { entryDays: number; days: number };
   'review.food.meals': { eaten: number; planned: number };
-  'review.weight.trend': { startKg: number; endKg: number };
+  'review.weight.trend': { startDate: string; startKg: number; endDate: string; endKg: number };
   'review.weight.tooFew': Empty;
   /** Gesundheitsangaben nicht eingeschlossen (Standard) – ohne zu sagen, was es gäbe. */
   'review.health.excluded': Empty;
@@ -98,7 +98,12 @@ export const MONTH_REVIEW_PARAM_SCHEMAS = {
   'review.health.heading': empty,
   'review.food.entryDays': z.strictObject({ entryDays: countSchema, days: countSchema }),
   'review.food.meals': z.strictObject({ eaten: countSchema, planned: countSchema }),
-  'review.weight.trend': z.strictObject({ startKg: kgSchema, endKg: kgSchema }),
+  'review.weight.trend': z.strictObject({
+    startDate: isoDateSchema,
+    startKg: kgSchema,
+    endDate: isoDateSchema,
+    endKg: kgSchema,
+  }),
   'review.weight.tooFew': empty,
   'review.health.excluded': empty,
   'review.empty': empty,

@@ -90,7 +90,7 @@ describe('monthReview – Training', () => {
     session('a', '2026-10-05'),
     session('b', '2026-10-07'),
     session('c', '2026-10-09'), // verpasst
-    session('d', '2026-10-12', { status: 'skipped' }), // gestrichen: zählt nicht
+    session('d', '2026-10-12', { status: 'skipped' }), // gestrichen: zählt als ausgelassen
     session('e', '2026-10-28'), // noch offen
     session('f', '2026-09-30'), // Vormonat
     session('g', '2026-10-14', { plan_active: false }), // entfallen (alter Plan)
@@ -105,14 +105,14 @@ describe('monthReview – Training', () => {
   it('gemacht, geplant, verpasst, offen und frei – nur Tage des Monats', () => {
     const review = monthReview({ ...empty, month: '2026-10', today: '2026-10-25', sessions, logs });
     expect(review.timing).toBe('current');
-    expect(review.training).toEqual({ done: 2, planned: 4, missed: 1, open: 1, free: 1 });
+    expect(review.training).toEqual({ done: 2, planned: 5, missed: 2, open: 1, free: 1 });
     expect(review.empty).toBe(false);
   });
 
   it('vergangener Monat: offene Einheiten sind verpasst', () => {
     const review = monthReview({ ...empty, month: '2026-10', today: '2026-11-02', sessions, logs });
     expect(review.timing).toBe('past');
-    expect(review.training).toMatchObject({ done: 2, planned: 4, missed: 2, open: 0 });
+    expect(review.training).toMatchObject({ done: 2, planned: 5, missed: 3, open: 0 });
   });
 
   it('Monat in der Zukunft: nichts gezählt', () => {

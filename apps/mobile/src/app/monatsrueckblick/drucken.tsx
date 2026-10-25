@@ -65,7 +65,7 @@ export default function MonthReviewPrintScreen() {
 
   const back = () =>
     router.canGoBack() ? router.back() : router.replace(`/monatsrueckblick?monat=${month}` as Href);
-  const footer = <Button label={t.printView.back} variant="secondary" onPress={back} />;
+  const footer = <Button label={texts.back} variant="secondary" onPress={back} />;
   const hasHealth =
     state.kind === 'ready' && (state.review.food.kind === 'counts' || state.weight === 'visible');
 

@@ -73,14 +73,14 @@ describe('Monatsrückblick als PDF', () => {
     expect(result.html).toContain('62,5 kg × 8');
     expect(result.html).toContain('Kniebeuge &lt;b&gt;');
     expect(result.html).toContain('Essen und Gewicht sind nicht enthalten');
-    expect(result.html).not.toMatch(/Trend am Monatsanfang|eingetragen/);
+    expect(result.html).not.toMatch(/Trend am 01.10.2026|eingetragen/);
   });
 
   it('mit Schalter: Essen als Anzahl und Gewichtstrend mit deutschem Komma', () => {
     const result = buildMonthReviewPrint({ review, today: '2026-11-02', includeHealthData: true });
     if (!result.ok) throw new Error('erwartet ok');
     expect(result.html).toContain('Essen und Gewicht');
-    expect(result.html).toMatch(/Trend am Monatsanfang \d+,\d kg, am Ende \d+,\d kg/);
+    expect(result.html).toMatch(/Trend am 01\.10\.2026: \d+,\d kg, am 31\.10\.2026: \d+,\d kg/);
     expect(result.html).toContain('An 0 von 31 Tagen etwas eingetragen');
     expect(result.html).not.toMatch(/Wunschgewicht|pro Woche|kcal/);
   });

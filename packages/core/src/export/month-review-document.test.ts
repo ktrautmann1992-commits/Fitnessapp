@@ -88,7 +88,9 @@ describe('buildMonthReviewDocument', () => {
       (v) => v.kind === 'text' && v.code === 'review.weight.trend',
     );
     expect(trend?.kind === 'text' && trend.params).toEqual({
+      startDate: '2026-10-01',
       startKg: expect.any(Number),
+      endDate: '2026-10-31',
       endKg: expect.any(Number),
     });
   });
@@ -152,7 +154,15 @@ describe('buildMonthReviewDocument', () => {
       ...result.document,
       meta: { ...result.document.meta, includesHealthData: false },
       sections: [
-        { type: 'paragraph', text: printText('review.weight.trend', { startKg: 80, endKg: 79 }) },
+        {
+          type: 'paragraph',
+          text: printText('review.weight.trend', {
+            startDate: '2026-10-01',
+            startKg: 80,
+            endDate: '2026-10-31',
+            endKg: 79,
+          }),
+        },
       ],
     };
     expect(printDocumentSchema.safeParse(sneaky).success).toBe(false);

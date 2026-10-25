@@ -13,7 +13,9 @@ import { type WeightEntry, weightTrendSeries } from './weight-trend';
  * eines Kalendermonats. Neutral, ohne Serien („Streaks“), ohne Vergleich mit anderen, ohne Bewertung.
  *
  * - Training aus `weekLogSummary` (gleiche Zählung wie Woche und Wochenauswertung, je Tag am angezeigten Datum):
- *   gemacht (Einträge zu Plan-Einheiten), geplant (Einheiten des aktiven Plans ohne gestrichene), verpasst, noch offen,
+ *   gemacht (Einträge zu Plan-Einheiten), geplant (Einheiten des aktiven Plans), ausgelassen (verpasst ODER
+ *   gestrichen – vergangene Einheiten ohne Eintrag werden in der App mit der Zeit als gestrichen markiert; für den
+ *   Rückblick zählt beides gleich, ohne Wertung), noch offen,
  *   freie Einheiten extra.
  * - Kilometer je Sportart aus den Ausdauer-Einträgen (cardio_logs, auch freie und von der Uhr übernommene).
  * - Kraft: bis zu MONTH_REVIEW.strengthTop Übungen mit der größten Steigerung des geschätzten Maximums (Epley,
@@ -105,7 +107,9 @@ export type MonthReviewWeight =
   | { readonly kind: 'too_few' }
   | {
       readonly kind: 'trend';
+      readonly startDate: string;
       readonly startKg: number;
+      readonly endDate: string;
       readonly endKg: number;
       readonly changeKg: number;
       readonly values: number;
@@ -154,7 +158,7 @@ function trainingOf(input: MonthReviewInput, first: string, last: string, today:
         if (item.logId !== null) {
           counts.done += 1;
           counts.planned += 1;
-        } else if (item.status === 'missed') {
+        } else if (item.status === 'missed' || item.status === 'skipped') {
           counts.missed += 1;
           counts.planned += 1;
         } else if (item.status === 'planned') {
@@ -286,7 +290,9 @@ function weightOf(
   }
   return {
     kind: 'trend',
+    startDate: start.date,
     startKg: start.trendKg,
+    endDate: final.date,
     endKg: final.trendKg,
     changeKg: final.trendKg - start.trendKg,
     values: inMonth.length,

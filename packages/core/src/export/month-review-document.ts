@@ -138,7 +138,9 @@ function healthBlocks(review: MonthReview, include: boolean): PrintBlock[] {
     blocks.push({
       type: 'paragraph',
       text: text('review.weight.trend', {
+        startDate: review.weight.startDate,
         startKg: Math.round(review.weight.startKg * 10) / 10,
+        endDate: review.weight.endDate,
         endKg: Math.round(review.weight.endKg * 10) / 10,
       }),
     });
