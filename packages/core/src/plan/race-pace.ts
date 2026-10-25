@@ -271,13 +271,15 @@ export function racePacePlan(raw: RacePaceInput): RacePacePlanResult {
   const every = racePaceSplitEveryM(distanceM);
   const splits: RacePaceSplit[] = [];
   let previousElapsed = 0;
+  let previousRaw = 0;
   for (let from = 0, index = 1; from < distanceM - 1e-9; from += every, index += 1) {
     const to = Math.min(distanceM, from + every);
     // Kurzer Rest unter 50 m (z. B. 5 km + Messfehler) gehört zum letzten Abschnitt.
     const last = to >= distanceM || distanceM - to < 50;
     const end = last ? distanceM : to;
     const inSplit = fine.filter((s) => s.to > from + 1e-9 && s.to <= end + 1e-9);
-    const endElapsed = last ? targetTimeS : Math.round(elapsedAt(fine, end));
+    const rawEnd = last ? targetTimeS : elapsedAt(fine, end);
+    const endElapsed = Math.round(rawEnd);
     const timeS = endElapsed - previousElapsed;
     const len = end - from;
     splits.push({
@@ -287,7 +289,8 @@ export function racePacePlan(raw: RacePaceInput): RacePacePlanResult {
       distanceM: len,
       timeS,
       elapsedS: endElapsed,
-      paceSPerKm: Math.round(timeS / (len / 1000)),
+      // Tempo aus der ungerundeten Zeit (sonst springt es durch die Sekunden-Rundung zwischen 5:12 und 5:13).
+      paceSPerKm: Math.round((rawEnd - previousRaw) / (len / 1000)),
       climbM: profile ? Math.round(inSplit.reduce((s, x) => s + x.climb, 0)) : null,
       descentM: profile ? Math.round(inSplit.reduce((s, x) => s + x.descent, 0)) : null,
       fuel: fuelPoints
@@ -296,6 +299,7 @@ export function racePacePlan(raw: RacePaceInput): RacePacePlanResult {
         .map(({ i }) => i),
     });
     previousElapsed = endElapsed;
+    previousRaw = rawEnd;
     if (last) break;
   }
 

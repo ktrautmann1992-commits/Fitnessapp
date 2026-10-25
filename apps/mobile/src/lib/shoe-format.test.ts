@@ -35,7 +35,7 @@ describe('Schuh-Anzeige', () => {
   });
 
   it('Chip am Lauf', () => {
-    expect(shoeChipText('Pegasus 41', 412.2)).toBe('Schuh: Pegasus 41 (412 km)');
+    expect(shoeChipText('Pegasus 41', 412.2)).toBe('Schuh: Pegasus 41 (412\u00a0km)');
     expect(shoeChipText(null, 0)).toBe('Schuh: keiner');
   });
 });

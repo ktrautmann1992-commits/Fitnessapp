@@ -85,23 +85,28 @@ export function racePaceRows(plan: RacePacePlan, showNumbers: boolean): RacePace
       pace: paceText(s.paceSPerKm),
       split: clockText(s.timeS),
       total: clockText(s.elapsedS),
+      // Höhenmeter nur mit Höhenprofil und nur, wenn es im Abschnitt rauf oder runter geht.
       elevation:
-        s.climbM === null || s.descentM === null ? null : P.elevation(s.climbM, s.descentM),
+        s.climbM === null || s.descentM === null || (s.climbM === 0 && s.descentM === 0)
+          ? null
+          : P.elevation(s.climbM, s.descentM),
       a11y: P.segmentA11y(from, to, paceText(s.paceSPerKm), clockText(s.elapsedS)),
       fuel: s.fuel.map((i) => fuelText(plan, i, showNumbers)),
     };
   });
 }
 
-/** Balken je Abschnitt: Länge = Tempo relativ (langsamster = 100 %, schnellster ≥ 55 %). */
+/**
+ * Balken je Abschnitt: Länge = Tempo (langsamster = 100 %). Unterschiede werden etwas vergrößert, aber nie mehr als
+ * wäre die Spanne 10 % des Tempos – kleine Unterschiede bleiben klein (ehrliche Grafik).
+ */
 export function racePaceBars(plan: RacePacePlan): { key: string; share: number; label: string }[] {
   const paces = plan.splits.map((s) => s.paceSPerKm);
   const max = Math.max(...paces);
-  const min = Math.min(...paces);
+  const span = Math.max(max - Math.min(...paces), max * 0.1);
   return plan.splits.map((s) => ({
     key: String(s.index),
-    // Gleichmäßig → alle gleich lang; sonst Unterschiede sichtbar machen (55–100 %).
-    share: max === min ? 1 : 0.55 + (0.45 * (s.paceSPerKm - min)) / (max - min),
+    share: 1 - (0.45 * (max - s.paceSPerKm)) / span,
     label: kmLabel(s.toM),
   }));
 }
@@ -135,8 +140,8 @@ export function racePacePrintDocument(input: {
           label: t.competition.discipline,
           value: disciplineText(input.discipline, input.distanceKm),
         },
-        { label: P.col.total, value: clockText(input.target.timeS) },
-        { label: P.col.pace, value: `${paceText(plan.averagePaceSPerKm)} min/km` },
+        { label: P.targetLabel[input.target.source], value: clockText(input.target.timeS) },
+        { label: P.averageLabel, value: `${paceText(plan.averagePaceSPerKm)} min/km` },
         { label: P.strategyLabel, value: P.strategies[plan.strategy].label },
         ...(input.courseName ? [{ label: P.course, value: input.courseName }] : []),
       ],

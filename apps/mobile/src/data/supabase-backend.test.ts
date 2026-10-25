@@ -1686,6 +1686,10 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       // Phase 6 SU3
       'supplement_screening',
       'user_supplements',
+      // Schuh-Kilometerzähler (25.10.2026)
+      'shoes',
+      'shoe_defaults',
+      'shoe_assignments',
     ];
     const exported = {
       format_version: 1,

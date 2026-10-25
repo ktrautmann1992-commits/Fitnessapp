@@ -264,6 +264,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     paddingHorizontal: spacing.md,
   },
-  chipText: { fontSize: fontSize.md },
+  chipText: { fontSize: fontSize.md, flexShrink: 1 },
   chipNote: { fontSize: fontSize.sm },
 });

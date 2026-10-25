@@ -163,10 +163,17 @@ export default function ShoesScreen() {
   }
 
   const form = editing?.form ?? null;
-  const update = (patch: Partial<ShoeForm>) =>
+  const update = (patch: Partial<ShoeForm>) => {
+    // Fehler eines geänderten Felds verschwinden sofort (neu geprüft wird beim Speichern).
+    setErrors((current) => {
+      const next = { ...current };
+      for (const key of Object.keys(patch)) delete next[key as keyof ShoeFormErrors];
+      return next;
+    });
     setEditing((current) =>
       current ? { ...current, form: { ...current.form, ...patch } } : current,
     );
+  };
 
   // Standard-Schuh einer Sportart ausgemustert, aber andere aktive Schuhe da → Hinweis „neuen Standard wählen“.
   const missingDefault =

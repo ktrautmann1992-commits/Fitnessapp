@@ -64,7 +64,9 @@ describe('Tabelle, Balken, Druck', () => {
     const negative = plan({ distanceM: 10000, targetTimeS: 3000, strategy: 'negative' });
     const shares = racePaceBars(negative).map((b) => b.share);
     expect(Math.max(...shares)).toBe(1);
-    expect(Math.min(...shares)).toBeCloseTo(0.55, 5);
+    // 2 % Unterschied → kleiner, aber sichtbarer Unterschied (Spanne mindestens 10 %).
+    expect(Math.min(...shares)).toBeGreaterThan(0.85);
+    expect(Math.min(...shares)).toBeLessThan(0.95);
   });
 
   it('Verpflegungs-Hinweis unter 60 min bzw. nur allgemein', () => {

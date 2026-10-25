@@ -44,6 +44,8 @@ describe('racePacePlan – Distanzen', () => {
     for (let i = 1; i < p.splits.length; i += 1) {
       expect(p.splits[i]!.elapsedS).toBeGreaterThan(p.splits[i - 1]!.elapsedS);
     }
+    // Tempo ohne Rundungs-Sprünge: gleichmäßig = überall gleich (auch der kurze Rest).
+    expect(new Set(p.splits.map((s) => s.paceSPerKm))).toEqual(new Set([341]));
     // Rundung je Abschnitt höchstens 1 s neben dem Durchschnitt.
     for (const s of p.splits.slice(0, -1))
       expect(Math.abs(s.timeS - 7199 / 21.0975)).toBeLessThan(1);

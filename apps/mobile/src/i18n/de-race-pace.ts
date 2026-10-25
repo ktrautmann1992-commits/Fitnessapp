@@ -35,6 +35,8 @@ export const deRacePace = {
     'Die Strecke ist etwas länger oder kürzer als die Renn-Distanz – wir haben sie angepasst.',
   courseMismatch:
     'Diese Strecke passt nicht zur Renn-Distanz (mehr als 10 % Unterschied). Wir rechnen flach.',
+  targetLabel: { target: 'Zielzeit', predicted: 'Vorhersage' },
+  averageLabel: 'Ø Tempo',
   table: 'Zwischenzeiten',
   tableA11y: 'Tabelle der Zwischenzeiten',
   col: {
