@@ -72,6 +72,7 @@ describe('normalizeLayout', () => {
       { id: 'progress', visible: false },
       { id: 'endurance', visible: true },
       { id: 'steps', visible: true },
+      { id: 'recovery', visible: true },
       { id: 'shortcuts', visible: true },
       { id: 'training', visible: true },
       { id: 'competition', visible: true },
@@ -101,6 +102,7 @@ describe('normalizeLayout', () => {
       'progress',
       'endurance',
       'steps',
+      'recovery',
     ]);
   });
 
@@ -191,10 +193,10 @@ describe('Kacheln', () => {
       'workouts',
       'competition',
     ]);
-    expect(tilePosition(moved, 'workouts')).toEqual({ index: 2, count: 9 });
+    expect(tilePosition(moved, 'workouts')).toEqual({ index: 2, count: 10 });
     expect(tilePosition(moveTile(moved, 'workouts', 'down'), 'workouts')).toEqual({
       index: 3,
-      count: 9,
+      count: 10,
     });
   });
 
@@ -282,11 +284,31 @@ describe('Kachel „Schritte“ und Schrittziel (22.10.2026)', () => {
       ],
       tab_bar: ['uebersicht', 'today', 'mehr'],
     });
-    expect(layout.tiles.slice(0, 3)).toEqual([
+    expect(layout.tiles.slice(0, 4)).toEqual([
       { id: 'endurance', visible: true },
       { id: 'steps', visible: true },
+      { id: 'recovery', visible: true },
       { id: 'training', visible: false },
     ]);
+  });
+
+  it('„Erholung“ (25.10.2026): Standard direkt hinter „Schritte“; in alten Anordnungen hinter „Schritte“ ergänzt', () => {
+    const ids = defaultLayout().tiles.map((t) => t.id);
+    expect(ids.indexOf('recovery')).toBe(ids.indexOf('steps') + 1);
+    const layout = normalizeLayout({
+      dashboard_tiles: [
+        { id: 'steps', visible: false },
+        { id: 'training', visible: true },
+      ],
+      tab_bar: ['uebersicht', 'today', 'mehr'],
+    });
+    expect(layout.tiles.slice(0, 3)).toEqual([
+      { id: 'steps', visible: false },
+      { id: 'recovery', visible: true },
+      // „shortcuts“ fehlte ebenfalls → hinter ihrem Standard-Vorgänger („recovery“).
+      { id: 'shortcuts', visible: true },
+    ]);
+    expect(layout.tiles[3]).toEqual({ id: 'training', visible: true });
   });
 
   it('Schrittziel wird mit gespeichert; ohne Ziel fehlt das Feld; ungültig → nicht speicherbar', () => {

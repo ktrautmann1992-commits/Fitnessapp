@@ -50,7 +50,8 @@ type RecordName =
   | 'HeartRate'
   | 'RestingHeartRate'
   | 'SleepSession'
-  | 'Steps';
+  | 'Steps'
+  | 'HeartRateVariabilityRmssd';
 
 /** Datentyp der App → Health-Connect-Datensatz (je eine Leseberechtigung android.permission.health.READ_*). */
 export const HC_RECORD_TYPES: Readonly<Record<WearableDataType, RecordName>> = {
@@ -61,6 +62,8 @@ export const HC_RECORD_TYPES: Readonly<Record<WearableDataType, RecordName>> = {
   resting_heart_rate: 'RestingHeartRate',
   sleep: 'SleepSession',
   steps: 'Steps',
+  // „Erholung aus der Uhr“ (25.10.2026): READ_HEART_RATE_VARIABILITY (app.config.ts).
+  hrv: 'HeartRateVariabilityRmssd',
 };
 
 const TYPES = Object.keys(HC_RECORD_TYPES) as WearableDataType[];
@@ -171,7 +174,13 @@ export const healthConnectDriver: HealthConnectDriver = {
   },
   read: async (window, granted, days): Promise<HcReadResult> => {
     if (!(await ready()))
-      return { sessions: [], restingHeartRates: [], sleepSessions: [], steps: [] };
+      return {
+        sessions: [],
+        restingHeartRates: [],
+        sleepSessions: [],
+        steps: [],
+        heartRateVariabilities: [],
+      };
     const has = (type: WearableDataType) => granted.includes(type);
     const sessions: HcReadResult['sessions'][number][] = [];
     if (has('exercise')) {
@@ -262,7 +271,17 @@ export const healthConnectDriver: HealthConnectDriver = {
         if (typeof agg.COUNT_TOTAL === 'number') steps.push({ day, count: agg.COUNT_TOTAL });
       }
     }
-    return { sessions, restingHeartRates, sleepSessions, steps };
+    // HRV (RMSSD): einzelne Messungen nur auf dem Gerät – gespeichert wird nur der Median je Tag.
+    const heartRateVariabilities = has('hrv')
+      ? (
+          await readAll<{ time: string; heartRateVariabilityMillis: number }>(
+            'HeartRateVariabilityRmssd',
+            window.from,
+            window.to,
+          )
+        ).map((h) => ({ time: h.time, rmssdMs: h.heartRateVariabilityMillis }))
+      : [];
+    return { sessions, restingHeartRates, sleepSessions, steps, heartRateVariabilities };
   },
   routeAccess: async () => {
     if (!(await ready())) return false;

@@ -460,6 +460,7 @@ export type Database = {
       daily_metrics: {
         Row: {
           day: string;
+          hrv_rmssd_ms: number | null;
           provider: Database['public']['Enums']['wearable_provider'];
           resting_hr_bpm: number | null;
           sleep_min: number | null;
@@ -469,6 +470,7 @@ export type Database = {
         };
         Insert: {
           day: string;
+          hrv_rmssd_ms?: number | null;
           provider: Database['public']['Enums']['wearable_provider'];
           resting_hr_bpm?: number | null;
           sleep_min?: number | null;
@@ -478,6 +480,7 @@ export type Database = {
         };
         Update: {
           day?: string;
+          hrv_rmssd_ms?: number | null;
           provider?: Database['public']['Enums']['wearable_provider'];
           resting_hr_bpm?: number | null;
           sleep_min?: number | null;

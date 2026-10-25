@@ -18,7 +18,8 @@ Story-Bild). Gründer-Wunsch: „Die Daten meiner Galaxy Watch sollen automatisc
 - **Gesundheitsdaten (DSGVO Art. 9):** eigene, getrennte Einwilligung „Smartwatch-Daten“, Tageswerte statt
   Rohreihen, nichts in Logs/Analytics, Export/Löschen, „Trennen“ löscht auf Wunsch alles Importierte.
 - **Abgleich** beim App-Start/Rückkehr in die App und per Knopf „Jetzt abgleichen“ – **kein Hintergrund-Abgleich**.
-- **Readiness-Score („Erholung“) erst in Etappe 2** (Empfehlung, Begründung in 5.4).
+- **Readiness-Score („Erholung“) erst in Etappe 2** (Empfehlung, Begründung in 5.4). **Seit 25.10.2026 umgesetzt
+  als „Erholung aus der Uhr“ (Abschnitt 15).**
 - **Testen:** neue Test-APK über `eas-build` nötig (neues natives Modul). Vor Store-Einreichung: Play-Formular für
   Health-Connect-Berechtigungen und Datenschutzerklärung (Abschnitt 8).
 
@@ -386,3 +387,99 @@ eigene Aufzeichnung (`summarizeTrack`) – und zeigt die Karte mit Tempo-Farben 
 ob der Patch das Recht „Trainingsrouten“ im Dialog zeigt (Android 15+), Verhalten von `readRecord`/
 `requestExerciseRoute` auf Android 14, Distanz-Abweichung zu Samsung Health bei echten GPS-Daten (Glättung der eigenen
 Aufzeichnung schneidet enge Kurven leicht ab).
+
+## 15. Erholung aus der Uhr (Gründer-Freigabe 25.10.2026, Branch `claude/erholung`)
+
+**Auftrag:** Schlaf (Dauer), Ruhepuls und – falls vorhanden – HRV aus Samsung Health → Health Connect lesen, daraus
+täglich einen deterministischen Status **gut / mittel / niedrig** rechnen (packages/core, Schwellen in `constants.ts`
+mit Quellen, keine Diagnose), bei **niedrig** an einem Trainingstag eine leichtere Variante **anbieten** („Leichter
+trainieren“ / „Wie geplant“, nie Pflicht). Ersetzt für diesen Umfang die Skizze 5.4 bzw. docs/PLAN-PHASE-8B.md 4.5
+(dort Punkte-System mit z-Werten, Belastung und Selbsteinschätzung – bleibt Ausbaustufe).
+
+### 15.1 Regeln (`packages/core/src/wearables/recovery.ts`, `RECOVERY` in constants.ts)
+
+| Wert (heute)        | auffällig, wenn …                                                        | Quelle (Kurz)                     |
+| ------------------- | ------------------------------------------------------------------------ | --------------------------------- |
+| Schlaf letzte Nacht | unter 6 h (unter 18 Jahren: unter 7 h); unter 2 h erfasst = keine Nacht  | Watson 2015, Paruthi 2016         |
+| Ruhepuls            | ≥ persönliche Basis + 5 /min                                             | Buchheit 2014                     |
+| HRV (RMSSD)         | ≤ 80 % der persönlichen Basis                                            | Plews 2012/2013                   |
+| **Basis**           | Median der 14 Tage **vor** heute, erst ab 7 Werten                       | Kiviniemi 2007 (eigener Verlauf)  |
+| **Status**          | 0 auffällig = gut · 1 = mittel · ≥ 2 = niedrig; kein Wert = „noch offen“ | Plan 8B 4.5 (ein Wert allein nie) |
+
+- **Ausreißer:** Median statt Mittelwert; unplausible Werte (Ruhepuls außerhalb 30–120, HRV außerhalb 5–300 ms,
+  Schlaf < 2 h) zählen als fehlend. Mehrere Zeilen je Tag → Median, nie addiert.
+- **Fehlende Daten:** kein Wert heute → „kein Wert“ (nie aus gestern); Basis < 7 Tage → „Wir lernen deine Werte noch“
+  (Ruhepuls/HRV zählen dann nicht). Nur Schlaf bewertbar → höchstens „mittel“.
+- **Medikamente** (Gesundheits-Check-Flag `medication`, z. B. Betablocker): Ruhepuls und HRV zählen nicht.
+- **Texte** (`recovery-texts-de.ts`): neutral („Deine Werte sprechen für einen leichteren Tag.“), keine Begriffe aus
+  `FORBIDDEN_MEDICAL_TERMS`, kein „Übertraining/Infekt/Stress“ (Test). Erklärung „So entsteht die Erholung“ und der
+  feste Satz „Trainingshilfe … keine Bewertung deiner Gesundheit … sprich mit deiner Ärztin oder deinem Arzt“.
+- **Alle Schwellen: PRODUKTENTSCHEIDUNG – vor dem öffentlichen Livegang fachlich prüfen** (Sportwissenschaft/-medizin).
+
+### 15.2 Angebot „Leichter trainieren“ (KONZEPT 4.1)
+
+- Nur bei **niedrig**, nur für die **heute geplante, noch offene** Einheit, nur auf Tipp. Karte auf „Heute“ mit
+  „Leichter trainieren“ / „Wie geplant“; beides vor dem Start umkehrbar, nach dem Start (Entwurf) fest.
+- Leichter = die gemeinsame Formel aus Phase 9 (`lighterSessionVariant`, `LIGHTER_DAY`): Kraft je Übung 1 Satz
+  weniger (mind. 1), RPE −1 (mind. 5), gleiche Gewichte; Ausdauer hart → locker, Dauer × 0,8 (mind. 10 min). Die
+  Sicherheitsregeln laufen danach unverändert; der gespeicherte Plan ändert sich nie (kein `plan_adjustments`-Eintrag –
+  die Regel-Engine `adjust/*` ändert nur Einheiten ab morgen, Plan 8B B3).
+- **Gating wie die Live-Anpassung (Premium):** Supabase-Modus `live_adjustment_status()` vom Server (Feature-Flag
+  `live_adjustment` + `has_entitlement_for(…, 'premium')`), Testmodus Schalter „Live-Anpassung einschalten“. Ohne:
+  Status trotzdem sichtbar (gratis) mit neutralem Hinweis, aber kein Angebot. **Abweichung zu Plan 8B 18.1** (dort
+  „Heute leichter“ gratis) – Gründer-Vorgabe 25.10.2026, siehe 15.6.
+- Die Wahl liegt **nur im Arbeitsspeicher** (`data/recovery-choice.ts`, Konto + Tag + Einheit) – nichts wird
+  gespeichert oder gesendet; nach Neustart fragt die Karte erneut. Ein begonnener Entwurf behält seine Vorgabe.
+
+### 15.3 Daten und Einwilligung
+
+- **HRV** (`HeartRateVariabilityRmssd`) neu als Datentyp `hrv` (WEARABLE_DATA_TYPES, Systemdialog, Leserecht
+  `READ_HEART_RATE_VARIABILITY`, `WRITE_…` gesperrt); gespeichert nur der **Median je Tag** in
+  `daily_metrics.hrv_rmssd_ms` (5–300 ms). Schlaf und Ruhepuls lagen schon in `daily_metrics` (Etappe 1).
+- **Kein neuer Speicher für den Status:** die Erholung wird auf dem Gerät aus `daily_metrics` gerechnet und nie
+  gespeichert. Export/Löschen/Widerruf/Trennen/Konto löschen wirken über `daily_metrics` (ganze Zeilen, `to_jsonb`).
+- **Einwilligung:** `wearable_data` **Fassung 3** (nennt HRV und den Zweck „Erholung“, „keine Bewertung deiner
+  Gesundheit“, Status nicht gespeichert). Muster wie Fassung 2 (Routen): wer Fassung 2 hat, wird auf der
+  Smartwatch-Seite erneut gefragt, bis dahin kein Abgleich. Getrennt von `health_data` (bleibt Voraussetzung).
+- **Migrationen** `20261025120000_recovery_hrv.sql` (Einwilligungstext, Spalte, CHECKs, `wearable_types_valid`, neue
+  Fassung `import_wearable_batch` – Tage dürfen `hrv_rmssd_ms` tragen, ältere App-Fassungen ohne das Feld gehen weiter)
+  und `20261025120100_app_layout_recovery.sql` (Kachel `recovery` in `save_app_layout`). pgTAP `68_recovery_hrv.test.sql`.
+- **Apple Health (HealthKit):** kein iOS-Codepfad vorhanden (Etappe 1 ist Android-only) – nicht gebaut. Im Browser und
+  auf dem iPhone zeigt die Kachel vorhandene Werte (von Android übernommen) bzw. „gibt es mit der Android-App“.
+
+### 15.4 Oberflächen
+
+- **Übersicht:** Kachel **„Erholung“** (eigene Zeile hinter „Schritte“, ausblendbar): Status-Wort mit Farbpunkt
+  (grün/gelb/orange, nie Rot, nie Farbe allein), Gründe („Schlaf kurz · Ruhepuls erhöht · HRV niedriger“), ein Satz,
+  7-Tage-Mini-Verlauf (Säulen je Status, „Heute“ fett, Ansage für Bildschirmleser). Leer: „Uhr verbinden“; verbunden
+  ohne Werte: Hinweis zu Samsung Health. Antippen → Smartwatch-Seite.
+- **Smartwatch-Seite:** Abschnitt „Erholung“ (Status, Verlauf, Werte heute mit Basis, Regeln, Hinweise), Tageswerte
+  mit HRV, „Was übernommen wird“ nennt HRV und die Erholung.
+- **Heute / Trainingsmodus:** Angebotskarte (15.2); im Training Hinweis „Heute leichter: …“.
+- **Kachel „Schritte“:** Knopf „Uhr verbinden“ bricht in der halben Kachel nicht mehr um (`Button compact`: eine Zeile,
+  weniger Innenabstand).
+
+### 15.5 Tests
+
+Core `wearables/recovery.test.ts` (Ampel, Grenzwerte genau auf der Schwelle, unter 18/ab 18/90 Jahre, keine Daten, nur
+Schlaf, ohne HRV, Basis < 7 bzw. genau 7 Tage, alte Werte > 14 Tage, Zukunftswerte, Ausreißer/Median, unplausible
+Werte, zwei Quellen je Tag, Medikamente, Verlauf, Angebot nur mit Berechtigung, HRV-Aggregat, Texte ohne medizinische
+Begriffe, Strukturtest ohne `cycle/`), `daily.test.ts`, `layout.test.ts`, `db-sync.test.ts`; App
+`data/recovery.test.ts` (Zustände, Beispiel-Uhr, alte Zeilen ohne HRV, Medikamente, Wahl nur im Speicher),
+`data/workout.test.ts` (leichtere Vorgabe Kraft/Ausdauer, Plan unverändert), `consent-texts`, `native-config`; E2E
+`e2e/recovery.spec.ts` (Leerzustand, Knopf einzeilig, Kachel, Smartwatch-Seite, Angebot, Training leichter, gratis nur
+Hinweis); pgTAP `68_recovery_hrv.test.sql` (Fassung 3, Spalte/CHECKs, Import mit/ohne HRV, Isolation, Export, Widerruf,
+Kaskade, Kachel).
+
+### 15.6 Offen
+
+1. **Fachliche Prüfung der Schwellen** (6 h/7 h, +5 /min, 80 %, 14 Tage/7 Werte, „≥ 2 = niedrig“) vor dem Livegang.
+2. **Echtes Gerät:** ob Samsung Health HRV (RMSSD) und Ruhepuls überhaupt nach Health Connect schreibt (sonst bleibt
+   „HRV: kein Wert“ bzw. nur Schlaf) und ob der Dialog „Herzfrequenzvariabilität“ zeigt – neuer EAS-Build nötig.
+3. **Gratis oder Premium?** Gründer-Vorgabe: Angebot folgt der Live-Anpassung (Premium, Server prüft); Plan 8B 18.1
+   sah „Heute leichter“ gratis vor. Im Supabase-Modus ist das Angebot aus, solange das Flag `live_adjustment` aus ist.
+4. **`session_logs.day_variant`** (Phase 9 ZY5 / Plan 8B 4.6) fehlt noch: ein leichterer Tag wird als normaler
+   Eintrag mit den tatsächlich gemachten (weniger) Sätzen gespeichert; die Steigerung zählt ihn wie jeden Eintrag
+   (Schritt nur, wenn alle Sätze mit dem niedrigeren RPE-Ziel geschafft wurden). Kommt mit ZY5.
+5. **Rationale-Bildschirm** von Health Connect (13.4 Punkt 2) sollte vor der Play-Einreichung auch HRV/Erholung nennen.
+6. **HealthKit/iPhone** und Kombination mit dem Zyklus-Angebot (`combineDayOffers`) folgen später.

@@ -49,8 +49,10 @@ export const LOCATION_ALWAYS_TEXT =
  * Hintergrund-Abgleich): je genutztem Datentyp GENAU eine Leseberechtigung (= WEARABLE_DATA_TYPES in packages/core bzw.
  * HC_RECORD_TYPES in lib/health-connect-driver.native.ts) und seit 23.10.2026 (Gründer-Entscheidung „Routen lesen“,
  * ersetzt W8-4) das Leserecht „Trainingsrouten“ (READ_EXERCISE_ROUTES, Android 15+/aktuelles Health Connect; sonst
- * fragt Health Connect je Einheit – „Route freigeben“). Health Connect zeigt alle im Systemdialog einzeln an; die
- * Person kann jede abwählen.
+ * fragt Health Connect je Einheit – „Route freigeben“). Seit 25.10.2026 („Erholung aus der Uhr“) zusätzlich HRV
+ * (READ_HEART_RATE_VARIABILITY, nur Tageswert gespeichert). Health Connect zeigt alle im Systemdialog einzeln an; die
+ * Person kann jede abwählen. Die Begründung je Datentyp zeigt der Health-Connect-Erklärungsbildschirm (Rationale-
+ * Aktivität des Plugins) und die Smartwatch-Seite vor dem Systemdialog.
  */
 export const HEALTH_CONNECT_ROUTE_PERMISSION = 'android.permission.health.READ_EXERCISE_ROUTES';
 export const HEALTH_CONNECT_READ_PERMISSIONS = [
@@ -61,6 +63,7 @@ export const HEALTH_CONNECT_READ_PERMISSIONS = [
   'android.permission.health.READ_RESTING_HEART_RATE',
   'android.permission.health.READ_SLEEP',
   'android.permission.health.READ_STEPS',
+  'android.permission.health.READ_HEART_RATE_VARIABILITY',
   HEALTH_CONNECT_ROUTE_PERMISSION,
 ] as const;
 
@@ -79,6 +82,7 @@ export const HEALTH_CONNECT_BLOCKED_PERMISSIONS = [
   'android.permission.health.WRITE_RESTING_HEART_RATE',
   'android.permission.health.WRITE_SLEEP',
   'android.permission.health.WRITE_STEPS',
+  'android.permission.health.WRITE_HEART_RATE_VARIABILITY',
 ] as const;
 
 /** Health Connect verlangt mindestens Android 8 (API 26); Expo SDK 57 baut sonst ab API 24. */

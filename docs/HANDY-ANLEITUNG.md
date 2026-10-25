@@ -1786,6 +1786,27 @@ einen **neuen Build** (Leserecht „Trainingsrouten“ und Patch der Health-Conn
 7. **Trennen** (egal ob „behalten“ oder „löschen“) und **Widerruf** der Einwilligung löschen alle Routen der Uhr;
    eigene Aufzeichnungen bleiben.
 
+**D – Erholung aus der Uhr (seit 25.10.2026): Status gut / mittel / niedrig und „Leichter trainieren“**
+Im **Handy-Browser (Vorschau, Testmodus)** sofort testbar mit der Beispiel-Uhr (21 Tage Werte; „heute“ ist absichtlich
+eine kurze Nacht mit höherem Ruhepuls und niedrigerer HRV):
+1. Onboarding mit Einwilligung Gesundheitsdaten und einem **Trainingstag heute** → **Zum Plan**.
+2. **Übersicht** → Kachel **Erholung**: ohne Uhr Hinweis + **Uhr verbinden** (auch in der Kachel **Schritte** steht
+   „Uhr verbinden“ jetzt in **einer** Zeile).
+3. **Uhr verbinden** → Einwilligung (Fassung 3 nennt HRV und die Erholung) → **Beispiel-Uhr verbinden**.
+4. Zurück zur **Übersicht** → Kachel **Erholung**: „● niedrig“, „Schlaf kurz · Ruhepuls erhöht · HRV niedriger“,
+   „Deine Werte sprechen für einen leichteren Tag.“ und 7 Säulen (vorgestern mittel, heute niedrig). Antippen →
+   Smartwatch-Seite mit Werten heute, „So entsteht die Erholung“ und dem Hinweis „keine Bewertung deiner Gesundheit“.
+5. **Training (Heute)** → Karte **„Heute leichter trainieren?“** → **Wie geplant** (Hinweis, „Doch leichter“) bzw.
+   **Leichter trainieren** → **Training starten** → oben „Heute leichter: …“, je Übung ein Satz weniger.
+6. **Einstellungen** → „Live-Anpassung einschalten (Testmodus)“ **aus** → **Heute** zeigt nur noch den Hinweis
+   „Erholung heute: niedrig“ ohne Knöpfe (das Angebot gehört zur Live-Anpassung/Premium; der Status bleibt gratis).
+
+Mit der **echten Galaxy Watch** (neuer Build nötig – neues Leserecht HRV): Samsung Health → Einstellungen → Health
+Connect → auch **Herzfrequenzvariabilität** und **Ruhepuls** schreiben lassen → Alpha5 → Smartwatch → **Neuer Fassung
+zustimmen** → **Berechtigungen öffnen** → „Herzfrequenzvariabilität“ erlauben. Die Erholung braucht **7 Tage** Werte
+für Ruhepuls/HRV („Wir lernen deine Werte noch“); bis dahin zählt nur der Schlaf. Bitte mitteilen, ob **HRV** und
+**Ruhepuls** ankommen (ohne Werte zu nennen).
+
 Ergebnis bitte Claude schreiben, z. B. „9c Android 14, Galaxy Watch 6: 1–10 ok, Ruhepuls fehlt“ (ohne Passwörter,
 Codes oder Gesundheitswerte). **Wichtig für den Spike:** Bitte mitteilen, ob **Ruhepuls**, **Distanz** und **kcal**
 bei euren Einheiten ankommen – das klärt, was Samsung wirklich nach Health Connect schreibt.

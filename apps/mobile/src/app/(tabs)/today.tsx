@@ -12,10 +12,16 @@ import {
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { CycleTodayCard } from '@/components/cycle-entry';
+import { RecoveryTodayCard } from '@/components/recovery';
+import {
+  recoveryChoiceFor,
+  recoveryChoiceSnapshot,
+  subscribeRecoveryChoice,
+} from '@/data/recovery-choice';
 import { CountdownCard, PhaseBand } from '@/components/competition';
 import { FewerDaysCard, SessionAdjustedNotice } from '@/components/live-adjust';
 import { NutritionTodayCard } from '@/components/nutrition';
@@ -105,6 +111,8 @@ export default function TodayScreen() {
   const [sheetDate, setSheetDate] = useState<string | null>(null);
   const [answerBusy, setAnswerBusy] = useState(false);
   const week = useWeekStatus(today);
+  // „Leichter trainieren“ (Erholung aus der Uhr, 25.10.2026): Wahl nur im Arbeitsspeicher – neu zeichnen bei Änderung.
+  useSyncExternalStore(subscribeRecoveryChoice, recoveryChoiceSnapshot, recoveryChoiceSnapshot);
   // „Übungen ansehen“ aus der Woche: /today?tag=… zeigt die Einheit dieses Tages (Zustand beim Rendern angleichen).
   const [paramSeen, setParamSeen] = useState(dayParam);
   if (dayParam !== paramSeen) {
@@ -538,6 +546,11 @@ export default function TodayScreen() {
             ownerUserId,
             // Live-Anpassung (Phase 4b): wirksame Zustands-Vorgaben (Testmodus mit „Premium simulieren“).
             stateOverrides: stateOverridesFor(rows, app.liveAdjust.adjustments),
+            // Erholung: gewählte leichtere Variante heute (Vorgabe wie im Trainingsmodus).
+            lighter:
+              session.scheduled_on === today &&
+              !logForSession(rows, session.id) &&
+              recoveryChoiceFor(ownerUserId, today, session.id) === 'lighter',
           })
         : null;
     return {
@@ -825,6 +838,14 @@ export default function TodayScreen() {
 
       {/* Arzt-Hinweis vor JEDER Einheit – das Feld liegt am Plan (auch offline). */}
       {plan.medical_notice && (todayOpen || selectedSession) ? <MedicalNotice /> : null}
+      {/* Erholung aus der Uhr (25.10.2026): bei niedriger Erholung „Leichter trainieren“ / „Wie geplant“ (nie Pflicht). */}
+      {todayOpen && todayOpen.scheduled_on === today && todayInfo?.start === 'today' ? (
+        <RecoveryTodayCard
+          today={today}
+          session={todayOpen}
+          locked={todayInfo.hasDraft || Boolean(logForSession(rows, todayOpen.id))}
+        />
+      ) : null}
       <TodayHero
         day={todayDay}
         session={todayOpen}

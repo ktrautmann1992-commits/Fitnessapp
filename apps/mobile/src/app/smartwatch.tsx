@@ -6,6 +6,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { StepGoalCard } from '@/components/steps';
+import { RecoveryDetails } from '@/components/recovery';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { consentRecordsFromRows } from '@/data/mapping';
 import type { WearableSyncOutcome } from '@/data/wearable-sync';
@@ -309,6 +310,8 @@ export default function SmartwatchScreen() {
               ) : null}
             </View>
           )}
+          {/* Erholung aus der Uhr (25.10.2026): Status, Werte heute, Regeln, Hinweise. */}
+          <RecoveryDetails today={todayIso()} />
           {/* Schrittziel für die Kachel „Schritte“ auf der Übersicht (22.10.2026). */}
           <StepGoalCard />
           {daily}

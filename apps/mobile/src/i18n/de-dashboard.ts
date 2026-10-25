@@ -128,6 +128,7 @@ export const deDashboard = {
       progress: 'Fortschritt',
       endurance: 'Ausdauer',
       steps: 'Schritte',
+      recovery: 'Erholung',
       shortcuts: 'Schnell zu',
     },
   },

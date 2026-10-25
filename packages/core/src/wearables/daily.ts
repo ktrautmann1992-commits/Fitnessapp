@@ -3,14 +3,21 @@ import { isoDateInTimeZone } from '../dates';
 import type { DailyMetricImport } from './schema';
 
 /**
- * Tageswerte aus Health Connect (W8-2, W8-6, docs/PLAN-PHASE-8.md 3): Ruhepuls, Schlafdauer und Schritte je Tag
- * (Europe/Berlin). Nur Tageswerte werden gespeichert – nie Schlafphasen oder einzelne Messungen. Rein.
+ * Tageswerte aus Health Connect (W8-2, W8-6, docs/PLAN-PHASE-8.md 3): Ruhepuls, Schlafdauer, Schritte und – seit
+ * „Erholung aus der Uhr“ (25.10.2026) – HRV (RMSSD) je Tag (Europe/Berlin). Nur Tageswerte werden gespeichert – nie
+ * Schlafphasen oder einzelne Messungen. Rein.
  */
 
 /** RestingHeartRateRecord (Zeitpunkt, Wert). */
 export interface RestingHeartRateInput {
   readonly time: string;
   readonly beatsPerMinute: number;
+}
+
+/** HeartRateVariabilityRmssdRecord (Zeitpunkt, RMSSD in ms). */
+export interface HeartRateVariabilityInput {
+  readonly time: string;
+  readonly rmssdMs: number;
 }
 
 /** Schlafphase (SleepStageType von Health Connect: 1 = wach, 3 = aufgestanden; alles andere zählt als Schlaf). */
@@ -86,21 +93,27 @@ function median(values: readonly number[]): number {
  * - Ruhepuls: Median der Messungen des Tages (gerundet), nur 30–120 /min,
  * - Schlaf: Minuten ohne Wachphasen, dem AUFWACHTAG (Ende der Sitzung) zugeordnet; überlappende Sitzungen (z. B.
  *   Handy und Uhr) zählen nur einmal; höchstens 1.440 min,
- * - Schritte: Wert der Aggregat-Abfrage, gerundet; außerhalb 0–100.000 verworfen (Messfehler).
+ * - Schritte: Wert der Aggregat-Abfrage, gerundet; außerhalb 0–100.000 verworfen (Messfehler),
+ * - HRV: Median der RMSSD-Messungen des Tages (Zeitpunkt der Messung, Europe/Berlin – Samsung misst nachts, also am
+ *   Aufwachtag), gerundet, nur 5–300 ms (DAILY_METRIC_LIMITS.hrvRmssdMs).
  * `from`/`to` (JJJJ-MM-TT, optional) begrenzen die Tage.
  */
 export function aggregateDailyMetrics(input: {
   restingHeartRates?: readonly RestingHeartRateInput[];
   sleepSessions?: readonly SleepSessionInput[];
   steps?: readonly DailyStepsInput[];
+  heartRateVariabilities?: readonly HeartRateVariabilityInput[];
   from?: string;
   to?: string;
 }): DailyMetricImport[] {
-  const days = new Map<string, { hr: number[]; sleep: Interval[]; steps: number | null }>();
+  const days = new Map<
+    string,
+    { hr: number[]; sleep: Interval[]; steps: number | null; hrv: number[] }
+  >();
   const entry = (day: string) => {
     let value = days.get(day);
     if (!value) {
-      value = { hr: [], sleep: [], steps: null };
+      value = { hr: [], sleep: [], steps: null, hrv: [] };
       days.set(day, value);
     }
     return value;
@@ -109,6 +122,11 @@ export function aggregateDailyMetrics(input: {
     if (!Number.isFinite(Date.parse(r.time))) continue;
     if (!inRange(r.beatsPerMinute, DAILY_METRIC_LIMITS.restingHrBpm)) continue;
     entry(isoDateInTimeZone(r.time)).hr.push(r.beatsPerMinute);
+  }
+  for (const h of input.heartRateVariabilities ?? []) {
+    if (!Number.isFinite(Date.parse(h.time))) continue;
+    if (!inRange(h.rmssdMs, DAILY_METRIC_LIMITS.hrvRmssdMs)) continue;
+    entry(isoDateInTimeZone(h.time)).hrv.push(h.rmssdMs);
   }
   for (const s of input.sleepSessions ?? []) {
     const intervals = asleepIntervals(s);
@@ -133,8 +151,9 @@ export function aggregateDailyMetrics(input: {
         : Math.min(DAILY_METRIC_LIMITS.sleepMin.max, Math.floor(sleepMs / 60_000));
     const steps =
       value.steps !== null && inRange(value.steps, DAILY_METRIC_LIMITS.steps) ? value.steps : null;
-    if (resting === null && sleepMin === null && steps === null) continue;
-    result.push({ day, resting_hr_bpm: resting, sleep_min: sleepMin, steps });
+    const hrv = value.hrv.length > 0 ? Math.round(median(value.hrv)) : null;
+    if (resting === null && sleepMin === null && steps === null && hrv === null) continue;
+    result.push({ day, resting_hr_bpm: resting, sleep_min: sleepMin, steps, hrv_rmssd_ms: hrv });
   }
   return result;
 }

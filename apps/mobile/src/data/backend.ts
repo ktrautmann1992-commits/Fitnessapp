@@ -520,6 +520,13 @@ export interface Backend {
    */
   testPhaseOpen(): Promise<boolean>;
   /**
+   * Live-Anpassung (Premium, KONZEPT 4.1) für dieses Konto aktiv? Grundlage des Angebots „Leichter trainieren“ der
+   * Erholung aus der Uhr (25.10.2026). Supabase-Modus: `live_adjustment_status()` vom SERVER (Feature-Flag
+   * `live_adjustment` + Premium-Berechtigung, die Prüfung liegt auf dem Server); Fehler/offline → false (kein Angebot,
+   * nie blockierend). Testmodus: Schalter „Live-Anpassung einschalten“ (simulatePremium).
+   */
+  liveAdjustmentActive(): Promise<boolean>;
+  /**
    * Ein Foto auswerten lassen (Etappe E3). Supabase-Modus: POST /api/ernaehrung/foto in apps/web (Login-Token,
    * Premium/Limit/Einwilligung prüft der Server); Testmodus: dieselbe Kette mit der Attrappe auf dem Gerät. Das Foto
    * wird nie gespeichert. Antwort = feste Codes bzw. geprüfte Bestandteile (Zod, `foodPhotoResponseSchema`); ohne

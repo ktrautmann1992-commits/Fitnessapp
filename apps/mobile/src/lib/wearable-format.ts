@@ -36,15 +36,19 @@ export function originLabel(origin: string): string {
     : W.origins.other;
 }
 
-/** Eine Zeile Tageswerte („Schritte · Schlaf · Ruhepuls“), leer = keine Werte. */
+/** Eine Zeile Tageswerte („Schritte · Schlaf · Ruhepuls · HRV“), leer = keine Werte. */
 export function dailyParts(
-  row: Pick<DailyMetricRow, 'steps' | 'sleep_min' | 'resting_hr_bpm'>,
+  row: Pick<DailyMetricRow, 'steps' | 'sleep_min' | 'resting_hr_bpm'> &
+    Partial<Pick<DailyMetricRow, 'hrv_rmssd_ms'>>,
 ): string {
   const parts: string[] = [];
   if (row.steps !== null) parts.push(W.steps(thousands(row.steps)));
   if (row.sleep_min !== null)
     parts.push(W.sleep(Math.floor(row.sleep_min / 60), row.sleep_min % 60));
   if (row.resting_hr_bpm !== null) parts.push(W.restingHr(row.resting_hr_bpm));
+  // Ältere Zeilen (Gerätespeicher vor 25.10.2026) haben kein HRV-Feld.
+  if (row.hrv_rmssd_ms !== null && row.hrv_rmssd_ms !== undefined)
+    parts.push(W.hrv(row.hrv_rmssd_ms));
   return parts.join(' · ');
 }
 

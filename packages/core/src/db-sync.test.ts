@@ -1222,12 +1222,18 @@ describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.m
     return Number(match[1]);
   };
 
-  it('neueste Fassung von save_app_layout in *_app_layout_steps.sql (Kachel „Schritte“ + Schrittziel, 22.10.2026)', () => {
+  it('neueste Fassung von save_app_layout in *_app_layout_recovery.sql (Kachel „Erholung“, 25.10.2026)', () => {
     expect(migrationFiles.filter((n) => readMigration(n).includes(saveMarker)).at(-1)).toMatch(
-      /_app_layout_steps\.sql$/,
+      /_app_layout_recovery\.sql$/,
     );
     expect(DASHBOARD_TILES).toContain('competition');
     expect(DASHBOARD_TILES).toContain('steps');
+    expect(DASHBOARD_TILES).toContain('recovery');
+    // Gegenüber der Schritte-Fassung ändert sich nur die Kachel-Liste.
+    const steps = saveBody(readMigration('_app_layout_steps.sql'));
+    expect(save.replace(/tile_ids constant text\[\] := array\[[^\]]*\];/, '')).toBe(
+      steps.replace(/tile_ids constant text\[\] := array\[[^\]]*\];/, ''),
+    );
     expect(NAV_AREAS).toContain('wettkampf');
     // Die bisherigen Prüfungen der Vorgängerfassung bleiben (Zeile für Zeile enthalten).
     const previous = saveBody(readMigration('_app_layout_competition.sql'));
@@ -3369,6 +3375,12 @@ describe('Smartwatch über Health Connect (Phase 8 Etappe H2, docs/PLAN-PHASE-8.
     return sql.slice(start, sql.indexOf('$$;', start));
   };
   const importFn = fnBody('public.import_wearable_batch');
+  // Neueste Fassung von import_wearable_batch (seit 25.10.2026 mit HRV je Tag, *_recovery_hrv.sql).
+  const recoverySql = readMigration('_recovery_hrv.sql');
+  const latestImportFn = (() => {
+    const start = recoverySql.indexOf('create or replace function public.import_wearable_batch(');
+    return recoverySql.slice(start, recoverySql.indexOf('$$;', start));
+  })();
   const quoted = (text: string) => [...text.matchAll(/'([^']+)'/g)].map((m) => m[1]);
   const keysOf = (name: string) => {
     const match = new RegExp(`${name} constant text\\[\\] := array\\[([^\\]]*)\\]`).exec(importFn);
@@ -3397,15 +3409,44 @@ describe('Smartwatch über Health Connect (Phase 8 Etappe H2, docs/PLAN-PHASE-8.
     expect(keysOf('batch_keys')).toEqual(Object.keys(wearableImportBatchSchema.shape));
     expect(keysOf('session_keys')).toEqual(Object.keys(wearableSessionImportSchema.shape));
     expect(keysOf('heart_rate_keys')).toEqual(Object.keys(heartRateSummarySchema.shape));
-    expect(keysOf('day_keys')).toEqual(Object.keys(dailyMetricImportSchema.shape));
+    // Tag: neueste Fassung (HRV, 25.10.2026); hrv_rmssd_ms darf fehlen (ältere App-Fassungen).
+    const latestDayKeys = /day_keys constant text\[\] := array\[([^\]]*)\]/.exec(
+      latestImportFn,
+    )?.[1];
+    expect(quoted(latestDayKeys ?? '')).toEqual(Object.keys(dailyMetricImportSchema.shape));
+    const required = /day_required_keys constant text\[\] := array\[([^\]]*)\]/.exec(
+      latestImportFn,
+    )?.[1];
+    expect(quoted(required ?? '')).toEqual(
+      Object.keys(dailyMetricImportSchema.shape).filter((k) => k !== 'hrv_rmssd_ms'),
+    );
+    // Fassung 1 (ohne HRV) bleibt Grundlage aller übrigen Prüfungen: die neue Fassung enthält sie Zeile für Zeile.
+    expect(keysOf('day_keys')).toEqual(['day', 'resting_hr_bpm', 'sleep_min', 'steps']);
+    for (const line of importFn.split('\n')) {
+      if (
+        /day_keys|day_required_keys|daily_metrics|hrv|steps = coalesce|\(d ->> 'steps'\)::integer|jsonb_typeof\(d -> 'steps'\) = 'null'\) then|current_user_id, v_day/.test(
+          line,
+        )
+      )
+        continue;
+      expect(latestImportFn, line).toContain(line);
+    }
   });
 
   it('Listen = packages/core (Datentypen, Herkunft, Gruppen, Titel-Regel, feste Namen)', () => {
+    // Datentypen: neueste Fassung (mit „hrv“, 25.10.2026, *_recovery_hrv.sql).
     const typesList = `array[${WEARABLE_DATA_TYPES.map((t) => `'${t}'`).join(', ')}]::text[]`;
-    expect(sql).toContain(typesList);
-    expect(sql).toContain(`not in (${WEARABLE_DATA_TYPES.map((t) => `'${t}'`).join(', ')})`);
-    expect(sql).toContain(`cardinality(granted_types) <= ${WEARABLE_DATA_TYPES.length}`);
-    expect(sql).toContain(`jsonb_array_length(p_types) <= ${WEARABLE_DATA_TYPES.length}`);
+    expect(recoverySql).toContain(typesList);
+    expect(recoverySql).toContain(
+      `not in (${WEARABLE_DATA_TYPES.map((t) => `'${t}'`).join(', ')})`,
+    );
+    expect(recoverySql).toContain(`cardinality(granted_types) <= ${WEARABLE_DATA_TYPES.length}`);
+    expect(recoverySql).toContain(`jsonb_array_length(p_types) <= ${WEARABLE_DATA_TYPES.length}`);
+    expect(
+      migrationFiles
+        .filter((n) => readMigration(n).includes('private.wearable_types_valid(p_types jsonb)'))
+        .at(-1),
+    ).toMatch(/_recovery_hrv\.sql$/);
     const origins = WEARABLE_ORIGINS.map((o) => `'${o}'`).join(', ');
     expect(sql).toContain(`check (origin in (${origins}))`);
     expect(importFn).toContain(`origins constant text[] := array[${origins}];`);
@@ -3458,6 +3499,29 @@ describe('Smartwatch über Health Connect (Phase 8 Etappe H2, docs/PLAN-PHASE-8.
     }
     // Ruhepuls wie die Körperdaten (Onboarding).
     expect(DAILY_METRIC_LIMITS.restingHrBpm).toEqual(BODY_METRIC_LIMITS.restingHeartRateBpm);
+    // HRV (25.10.2026): Funktion und CHECK der Spalte.
+    const H = DAILY_METRIC_LIMITS.hrvRmssdMs;
+    expect(latestImportFn).toContain(
+      `jsonb_number_between(d -> 'hrv_rmssd_ms', ${H.min}, ${H.max}, 0)`,
+    );
+    expect(recoverySql).toContain(`check (hrv_rmssd_ms between ${H.min} and ${H.max})`);
+    expect(recoverySql).toContain(
+      'num_nonnulls(resting_hr_bpm, sleep_min, steps, hrv_rmssd_ms) >= 1',
+    );
+  });
+
+  it('„Erholung aus der Uhr“: Einwilligung Fassung 3 = CURRENT_CONSENT_VERSIONS, nennt HRV und Erholung', () => {
+    expect(CURRENT_CONSENT_VERSIONS.wearable_data).toBe(3);
+    const seed = recoverySql.slice(recoverySql.indexOf('insert into public.consent_documents'));
+    expect(seed).toContain("'wearable_data',\n  3,");
+    expect(seed).toContain('Herzfrequenzvariabilität (HRV)');
+    expect(seed).toContain('„Erholung“');
+    expect(seed).toContain('keine Bewertung deiner Gesundheit');
+    // Keine neuen Tabellen: der Status selbst wird nie gespeichert; RLS der Tageswerte unverändert.
+    expect(recoverySql).not.toMatch(/create table/i);
+    expect(recoverySql).not.toMatch(
+      /grant (insert|update|delete|all) on table public\.daily_metrics/,
+    );
   });
 
   it('RLS: nur eigene Zeilen lesen, kein Schreib-Recht, je Tabelle genau eine Policy', () => {
@@ -3583,8 +3647,8 @@ describe('Routen der Uhr (Gründer-Entscheidung 23.10.2026, docs/PLAN-PHASE-8.md
     expect(writers).toEqual([migrationFiles.find((n) => n.endsWith('_wearable_routes.sql'))]);
   });
 
-  it('Einwilligungstext Fassung 2 = CURRENT_CONSENT_VERSIONS, nennt die Routen', () => {
-    expect(CURRENT_CONSENT_VERSIONS.wearable_data).toBe(2);
+  it('Einwilligungstext Fassung 2 nennt die Routen (seit 25.10.2026 gilt Fassung 3, siehe „Erholung“)', () => {
+    expect(CURRENT_CONSENT_VERSIONS.wearable_data).toBeGreaterThanOrEqual(2);
     const seed = sql.slice(sql.indexOf('insert into public.consent_documents'));
     expect(seed).toContain("'wearable_data',\n  2,");
     expect(seed).toContain('Routen (GPS-Strecken)');

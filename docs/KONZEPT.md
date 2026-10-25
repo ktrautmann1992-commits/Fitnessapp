@@ -806,8 +806,15 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - **Stand Etappe 1 (Phase 8, 21.10.2026, docs/PLAN-PHASE-8.md):** Galaxy Watch über Health Connect (nur Android-App,
   nur lesen, kein Hintergrund-Abgleich): Einheiten ins Tagebuch (Doppel mit App-Aufzeichnung werden zusammengeführt),
   Puls je Einheit nur als Zusammenfassung (Ø, Max, Zeit je Zone, HFmax nach Tanaka), Ruhepuls/Schlaf/Schritte als
-  Tageswerte; eigene Einwilligung `wearable_data`, Widerruf löscht Puls und Tageswerte. Readiness, HRV, Apple Health,
-  Strava und Garmin folgen in späteren Etappen.
+  Tageswerte; eigene Einwilligung `wearable_data`, Widerruf löscht Puls und Tageswerte. Apple Health, Strava und Garmin
+  folgen in späteren Etappen.
+- **Stand „Erholung aus der Uhr“ (25.10.2026, docs/PLAN-PHASE-8.md 15):** HRV (RMSSD) als Tageswert dazu
+  (`daily_metrics.hrv_rmssd_ms`, Einwilligung `wearable_data` Fassung 3). Täglicher Status **gut / mittel / niedrig**
+  aus Schlaf (< 6 h, unter 18: < 7 h), Ruhepuls (≥ eigene 14-Tage-Basis + 5 /min) und HRV (≤ 80 % der Basis) –
+  `packages/core/src/wearables/recovery.ts`, Schwellen in `RECOVERY` (vor Livegang fachlich prüfen); ein Wert allein
+  nie „niedrig“. Status gratis (Kachel „Erholung“ auf der Übersicht, 7-Tage-Verlauf); bei „niedrig“ an einem
+  Trainingstag Angebot „Leichter trainieren“ / „Wie geplant“ über `lighterSessionVariant` (nie automatisch, Plan
+  unverändert) – nur mit Live-Anpassung (Abschnitt 4.1, Premium, Server prüft). Der Status wird nicht gespeichert.
 
 ## 10. Strecken
 - Vorschläge im Umkreis des Standorts nach Disziplin, Distanz, Höhenmetern, Untergrund

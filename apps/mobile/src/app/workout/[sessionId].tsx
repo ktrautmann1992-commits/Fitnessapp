@@ -14,9 +14,12 @@ import {
   type EnduranceModality,
   isPlausibleTargetWeight,
   isValidSetWeight,
+  lighterSessionVariant,
   muscleMapHighlights,
   type MuscleMapHighlights,
   needsWeightConfirmation as needsStartWeightConfirmation,
+  lighterMinutes,
+  RECOVERY_TEXTS_DE,
   restAfterCheckedSet,
   SESSION_LOG_LIMITS,
   talkTestLevel,
@@ -114,6 +117,7 @@ import {
 } from '@/lib/workout-format';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { useRecoveryChoice } from '@/state/use-recovery';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
 import { cardColors } from '@fitnessapp/ui';
 
@@ -178,6 +182,15 @@ export default function WorkoutScreen() {
   const rules = app.safetyRules;
   const stored = app.drafts.find((d) => d.key === sessionId) ?? null;
   const ownerUserId = app.session?.userId ?? null;
+  // „Leichter trainieren“ (Erholung aus der Uhr, 25.10.2026): nur für einen NEUEN Entwurf heute – nie beim Ändern,
+  // Nachtragen oder für einen schon begonnenen Entwurf (der behält seine Vorgabe).
+  const recoveryChoice = useRecoveryChoice(today, sessionId);
+  const lighter =
+    recoveryChoice === 'lighter' &&
+    !editRequested &&
+    backfillDate === null &&
+    rows !== null &&
+    !logForSession(rows, sessionId);
   const view = useMemo(
     () =>
       rows && lib && rules
@@ -188,9 +201,20 @@ export default function WorkoutScreen() {
             ownerUserId,
             // Live-Anpassung (Phase 4b): wirksame Zustands-Vorgaben (Testmodus mit „Premium simulieren“).
             stateOverrides: rows ? stateOverridesFor(rows, app.liveAdjust.adjustments) : undefined,
+            lighter,
           })
         : null,
-    [app.daySwaps, app.liveAdjust.adjustments, ownerUserId, lib, rows, rules, sessionId, today],
+    [
+      app.daySwaps,
+      app.liveAdjust.adjustments,
+      ownerUserId,
+      lib,
+      rows,
+      rules,
+      sessionId,
+      today,
+      lighter,
+    ],
   );
   // Neuer Entwurf erst beim ersten Tipp gespeichert (vorher bleibt nichts liegen, wenn man nur hineinschaut).
   const initialDraft = useMemo<WorkoutDraft | null>(() => {
@@ -224,12 +248,23 @@ export default function WorkoutScreen() {
     const planned = activePlan(rows)?.sessions.find((x) => x.id === sessionId);
     if (planned?.kind === 'endurance') {
       return performedOn !== undefined || startKind(rows, planned, today)
-        ? newEnduranceDraft(rows, sessionId, meta)
+        ? newEnduranceDraft(rows, sessionId, { ...meta, lighter })
         : null;
     }
     if (!view) return null;
     return newWorkoutDraft(rows, view, meta);
-  }, [app.session, backfillDate, editRequested, entryToday, rows, sessionId, stored, today, view]);
+  }, [
+    app.session,
+    backfillDate,
+    editRequested,
+    entryToday,
+    rows,
+    sessionId,
+    stored,
+    today,
+    view,
+    lighter,
+  ]);
   const loadedDraft = localDraft ?? initialDraft;
   // Freie Einheit (Wächter S1): Übungsnamen aus der aktuellen Bibliothek (der nächste Tipp sichert sie mit).
   const draft = useMemo(
@@ -263,14 +298,16 @@ export default function WorkoutScreen() {
   const session = active?.sessions.find((s) => s.id === sessionId) ?? null;
   // Intervall-Timer (WP4): Schritte der ANGEZEIGTEN Einheit (aktuelle Sicherheitsregeln angewendet) – ohne Bibliothek,
   // also auch offline.
+  // „Leichter trainieren“: harte Ausdauer-Einheiten werden locker (ohne Intervall-Schritte) – dann kein Timer.
+  const timerBase = session && lighter ? lighterSessionVariant(session) : session;
   const timerSession =
-    session && active && rules && session.kind === 'endurance' && session.workout_steps
+    timerBase && active && rules && timerBase.kind === 'endurance' && timerBase.workout_steps
       ? sessionDisplay({
           rows,
           active,
           library: null,
           rules,
-          session,
+          session: timerBase,
           today,
           daySwaps: null,
           ownerUserId: null,
@@ -583,6 +620,7 @@ export default function WorkoutScreen() {
               daySwaps: app.daySwaps,
               ownerUserId,
               stateOverrides: stateOverridesFor(nextRows, app.liveAdjust.adjustments),
+              lighter,
             })
           : null;
       const replanned = nextView ? replannedTarget(nextView, exercise) : null;
@@ -648,6 +686,17 @@ export default function WorkoutScreen() {
       ) : null}
       {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
       {current.editing ? <Notice tone="info">{t.workout.editing}</Notice> : null}
+      {/* Erholung aus der Uhr (25.10.2026): Person hat „Leichter trainieren“ gewählt – Vorgabe schon angepasst. */}
+      {lighter && !current.editing ? (
+        <Notice tone="info" testID="workout-lighter">
+          {isEndurance
+            ? RECOVERY_TEXTS_DE.chosenLighterEndurance(
+                lighterMinutes(session?.estimated_minutes ?? 0),
+                session?.estimated_minutes ?? 0,
+              )
+            : RECOVERY_TEXTS_DE.chosenLighterStrength}
+        </Notice>
+      ) : null}
       {isFree ? (
         <Notice tone="info" testID="workout-free">
           {t.backfill.freeNotice}

@@ -32,6 +32,7 @@ import { deNutritionDay } from './de-nutrition-day';
 import { deWeekEval } from './de-week-eval';
 import { deWearables } from './de-wearables';
 import { deSteps } from './de-steps';
+import { deRecovery } from './de-recovery';
 import { deSessionKcal } from './de-session-kcal';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
@@ -1696,6 +1697,7 @@ export const de = {
   accessibility: deAccessibility,
   /** Kachel „Schritte“ mit Tagesziel und Schrittziel (22.10.2026). */
   stepCounter: deSteps,
+  recovery: deRecovery,
   /** Rundkurs-Vorschlag (docs/PLAN-RUNDKURS.md, 25.10.2026). */
   loop: deLoop,
 } as const;

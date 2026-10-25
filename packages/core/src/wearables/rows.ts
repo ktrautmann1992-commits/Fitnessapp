@@ -49,6 +49,8 @@ export interface DailyMetricRow {
   resting_hr_bpm: number | null;
   sleep_min: number | null;
   steps: number | null;
+  /** HRV (RMSSD, ms) je Tag – seit 25.10.2026 („Erholung aus der Uhr“). */
+  hrv_rmssd_ms: number | null;
   updated_at: string;
 }
 

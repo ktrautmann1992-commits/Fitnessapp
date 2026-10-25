@@ -4,7 +4,8 @@ import type { ConsentDocument } from './types';
  * Aktuelle Einwilligungstexte für den TESTMODUS (ohne Supabase).
  *
  * Wörtliche Kopie aus supabase/migrations/20261003120800_seed_consent_documents.sql (terms, privacy),
- * 20261016160100_ai_food_photo.sql (ai_food_photo, Etappe E3), 20261023120100_wearable_routes.sql (wearable_data Fassung 2 mit Routen, 23.10.2026)
+ * 20261016160100_ai_food_photo.sql (ai_food_photo, Etappe E3), 20261023120100_wearable_routes.sql (wearable_data Fassung 2 mit Routen, 23.10.2026),
+ * 20261025120000_recovery_hrv.sql (wearable_data Fassung 3 mit HRV und „Erholung“, 25.10.2026)
  * 20261021130200_supplement_user_data.sql (health_data Fassung 2, Supplement-Modul SU3) und
  * 20261021140000_cycle_module.sql (cycle_data, Phase 9) – consent-texts.test.ts
  * bricht ab, wenn sie auseinanderlaufen. In der Datenbank ist health_data Fassung 2 bis zur juristischen Prüfung ein
@@ -113,7 +114,7 @@ Widerruf: Du kannst die Einwilligung jederzeit in den Einstellungen widerrufen. 
   },
   {
     type: 'wearable_data',
-    version: 2,
+    version: 3,
     title: 'Einwilligung: Daten deiner Smartwatch übernehmen',
     body: `ENTWURF – juristisch prüfen
 
@@ -123,9 +124,9 @@ Welche Daten: nur die Arten, die du im Health-Connect-Dialog erlaubst:
 - Trainingseinheiten (Art, Beginn, Ende, Distanz, verbrauchte kcal),
 - Routen (GPS-Strecken) deiner Läufe, Rad- und Geh-Einheiten – nur wenn du in Health Connect „Trainingsrouten“ erlaubst oder eine Route einzeln freigibst. Daraus rechnen wir Distanz, Höhenmeter und Kilometerzeiten; gespeichert wird nur eine vereinfachte Linie, keine Zeit je Punkt,
 - Puls während deiner Einheiten – gespeichert wird nur eine Zusammenfassung je Einheit (Durchschnitt, Maximum, Minuten je Pulszone), keine Pulskurve,
-- Ruhepuls je Tag, Schlafdauer je Nacht (ohne Schlafphasen) und Schritte je Tag.
+- Ruhepuls je Tag, Schlafdauer je Nacht (ohne Schlafphasen), Schritte je Tag und Herzfrequenzvariabilität (HRV) je Tag – gespeichert wird nur ein Tageswert, keine einzelnen Messungen.
 
-Wofür: ausschließlich für dein Trainingstagebuch und deine eigenen Auswertungen (z. B. Karte, Distanz und Pulszonen einer Einheit, Tageswerte). Keine Weitergabe an Analyse-, Werbe- oder Affiliate-Partner, nicht im Partner-Modus. Routen siehst nur du; eine Route erscheint nur dann auf einem Bild, wenn du selbst „Als Bild teilen“ wählst – ohne Anfang und Ende der Strecke und ohne Puls.
+Wofür: ausschließlich für dein Trainingstagebuch und deine eigenen Auswertungen (z. B. Karte, Distanz und Pulszonen einer Einheit, Tageswerte) und für die „Erholung“: Aus Schlaf, Ruhepuls und HRV ermittelt die App mit festen Regeln einen Tagesstatus (gut, mittel, niedrig) – nur im Vergleich mit deinen eigenen Werten der letzten 14 Tage – und kann dir an Tagen mit niedriger Erholung eine leichtere Einheit vorschlagen. Du entscheidest selbst; der Plan ändert sich nie von allein. Die Erholung ist eine Trainingshilfe, keine Bewertung deiner Gesundheit; der Status selbst wird nicht gespeichert. Keine Weitergabe an Analyse-, Werbe- oder Affiliate-Partner, nicht im Partner-Modus. Routen siehst nur du; eine Route erscheint nur dann auf einem Bild, wenn du selbst „Als Bild teilen“ wählst – ohne Anfang und Ende der Strecke und ohne Puls.
 
 Speicherort und Dauer: auf Servern in der EU (Frankfurt am Main), solange dein Konto besteht oder bis du die Verbindung trennst bzw. diese Einwilligung widerrufst.
 
@@ -133,7 +134,7 @@ Rechtsgrundlage: deine ausdrückliche Einwilligung nach Art. 9 Abs. 2 lit. a DSG
 
 Freiwillig: Ohne diese Einwilligung nutzt du die App wie bisher; Einheiten kannst du weiter selbst eintragen oder aufzeichnen.
 
-Widerruf: Du kannst die Einwilligung jederzeit in den Einstellungen widerrufen. Dann löschen wir sofort alle Pulswerte, alle Tageswerte (Ruhepuls, Schlaf, Schritte), alle Routen deiner Uhr und die Verbindung. Übernommene Trainingseinheiten bleiben als normale Einträge ohne Puls und ohne Route in deinem Tagebuch – du kannst sie dort löschen. Beim Trennen der Uhr löschen wir Puls, Tageswerte und Routen ebenfalls und fragen dich, ob du die übernommenen Einheiten behalten oder löschen möchtest. Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.`,
+Widerruf: Du kannst die Einwilligung jederzeit in den Einstellungen widerrufen. Dann löschen wir sofort alle Pulswerte, alle Tageswerte (Ruhepuls, Schlaf, Schritte, HRV), alle Routen deiner Uhr und die Verbindung. Übernommene Trainingseinheiten bleiben als normale Einträge ohne Puls und ohne Route in deinem Tagebuch – du kannst sie dort löschen. Beim Trennen der Uhr löschen wir Puls, Tageswerte und Routen ebenfalls und fragen dich, ob du die übernommenen Einheiten behalten oder löschen möchtest. Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.`,
   },
   {
     type: 'cycle_data',

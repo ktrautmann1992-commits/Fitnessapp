@@ -1,6 +1,7 @@
 import type {
   DailyStepsInput,
   HcExerciseSessionInput,
+  HeartRateVariabilityInput,
   HcRouteRead,
   HcSessionExtras,
   RestingHeartRateInput,
@@ -31,6 +32,8 @@ export interface HcReadResult {
   readonly restingHeartRates: readonly RestingHeartRateInput[];
   readonly sleepSessions: readonly SleepSessionInput[];
   readonly steps: readonly DailyStepsInput[];
+  /** HRV (RMSSD) je Messung – die App rechnet daraus einen Tageswert (aggregateDailyMetrics), seit 25.10.2026. */
+  readonly heartRateVariabilities: readonly HeartRateVariabilityInput[];
 }
 
 export interface HealthConnectDriver {

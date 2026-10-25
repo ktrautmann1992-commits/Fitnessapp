@@ -11,8 +11,10 @@ import type { HcReadResult, HealthConnectDriver } from './health-connect-driver.
 
 /**
  * Beispiel-Uhr für den TESTMODUS (Phase 8, docs/PLAN-PHASE-8.md 9 „Browser: Testmodus mit Beispieldaten“): liefert
- * ausgedachte Daten der letzten 7 Tage – drei Läufe mit Puls, eine Kraft-Einheit, Yoga, Ruhepuls, Schlaf und
- * Schritte. Feste IDs je Tag: ein erneuter Abgleich ändert, legt nie doppelt an. Kein Netz, keine echten Daten.
+ * ausgedachte Daten der letzten 7 Tage – drei Läufe mit Puls, eine Kraft-Einheit, Yoga und Schritte – sowie Ruhepuls,
+ * Schlaf und HRV der letzten 21 Tage („Erholung aus der Uhr“, 25.10.2026: genug für die persönliche Basis; HEUTE kurze
+ * Nacht, Ruhepuls höher und HRV niedriger als üblich → Erholung „niedrig“). Feste IDs je Tag: ein erneuter Abgleich
+ * ändert, legt nie doppelt an. Kein Netz, keine echten Daten.
  * Routen (23.10.2026): Die Läufe haben eine feste, ausgedachte Runde um das Tempelhofer Feld in Berlin (öffentlicher
  * Park) mit wechselndem Tempo und leichter Steigung – die Route ist ca. 5 % länger als die Distanz laut Health Connect
  * (wie beim Gründer-Test). Der älteste Lauf verlangt wie Android 14 eine Freigabe je Einheit („Route freigeben“).
@@ -107,6 +109,29 @@ function heartRateSamples(
  */
 export const DEMO_STEPS = [7400, 9100, 5600, 10_300, 8200, 11_900, 6240] as const;
 
+/** Tage mit Ruhepuls, Schlaf und HRV (Erholung braucht 7–14 Tage Basis). */
+export const DEMO_RECOVERY_DAYS = 21;
+
+/**
+ * Erholungswerte je Tag (älteste zuerst, letzter = heute): ruhige Wochen mit leichtem Auf und Ab (Ruhepuls 53–56,
+ * Schlaf 6:50–7:45, HRV 58–66 ms). Vor zwei Tagen eine kurze Nacht (5:40 → „mittel“). Heute: 5:10 Schlaf, Ruhepuls
+ * 62, HRV 46 → drei auffällige Werte → „niedrig“ (Angebot „Leichter trainieren“ im Testmodus sichtbar).
+ */
+export function demoRecoveryDay(index: number): {
+  restingHr: number;
+  sleepMin: number;
+  hrvMs: number;
+} {
+  const last = DEMO_RECOVERY_DAYS - 1;
+  if (index === last) return { restingHr: 62, sleepMin: 310, hrvMs: 46 };
+  if (index === last - 2) return { restingHr: 55, sleepMin: 340, hrvMs: 60 };
+  return {
+    restingHr: 53 + (index % 4),
+    sleepMin: 410 + ((index * 17) % 56),
+    hrvMs: 58 + ((index * 5) % 9),
+  };
+}
+
 /** Beispieldaten für den Zeitraum bis `today` (lokales Datum). */
 export function demoRead(today: string, from: string, to: string): HcReadResult {
   const days = Array.from({ length: 7 }, (_, i) => addDays(today, -6 + i));
@@ -160,19 +185,33 @@ export function demoRead(today: string, from: string, to: string): HcReadResult 
       });
     }
   });
+  const recoveryDays = Array.from({ length: DEMO_RECOVERY_DAYS }, (_, i) =>
+    addDays(today, -(DEMO_RECOVERY_DAYS - 1) + i),
+  );
   return {
     sessions: sessions.filter((s) => inWindow(s.record.startTime)),
-    restingHeartRates: days
-      .map((day, i) => ({ time: at(day, '06:30'), beatsPerMinute: 54 + (i % 3) }))
+    restingHeartRates: recoveryDays
+      .map((day, i) => ({ time: at(day, '06:30'), beatsPerMinute: demoRecoveryDay(i).restingHr }))
       .filter((r) => inWindow(r.time)),
-    sleepSessions: days
-      .map((day, i) => ({
-        startTime: at(addDays(day, -1), '23:00'),
-        endTime: at(day, i % 2 === 0 ? '06:45' : '06:15'),
-        stages: [],
-      }))
+    sleepSessions: recoveryDays
+      .map((day, i) => {
+        // Aufwachen 06:30; Einschlafen so, dass die Schlafdauer passt.
+        const end = Date.parse(at(day, '06:30'));
+        return {
+          startTime: new Date(end - demoRecoveryDay(i).sleepMin * 60_000).toISOString(),
+          endTime: new Date(end).toISOString(),
+          stages: [],
+        };
+      })
       .filter((s) => inWindow(s.endTime)),
     steps: days.map((day, i) => ({ day, count: DEMO_STEPS[i] ?? 0 })),
+    // HRV: zwei Messungen je Nacht (Median = Tageswert).
+    heartRateVariabilities: recoveryDays
+      .flatMap((day, i) => [
+        { time: at(day, '03:00'), rmssdMs: demoRecoveryDay(i).hrvMs - 1 },
+        { time: at(day, '05:00'), rmssdMs: demoRecoveryDay(i).hrvMs + 1 },
+      ])
+      .filter((h) => inWindow(h.time)),
   };
 }
 

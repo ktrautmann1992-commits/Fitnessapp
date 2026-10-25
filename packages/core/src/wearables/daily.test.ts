@@ -20,8 +20,8 @@ describe('aggregateDailyMetrics', () => {
       ],
     });
     expect(days).toEqual([
-      { day: '2026-10-20', resting_hr_bpm: 55, sleep_min: null, steps: null },
-      { day: '2026-10-21', resting_hr_bpm: 48, sleep_min: null, steps: null },
+      { day: '2026-10-20', resting_hr_bpm: 55, sleep_min: null, steps: null, hrv_rmssd_ms: null },
+      { day: '2026-10-21', resting_hr_bpm: 48, sleep_min: null, steps: null, hrv_rmssd_ms: null },
     ]);
   });
 
@@ -43,7 +43,7 @@ describe('aggregateDailyMetrics', () => {
     });
     // 21:00–05:00 = 480 min; die Wachphase 01:00–01:30 ist durch die zweite Quelle als Schlaf gedeckt.
     expect(days).toEqual([
-      { day: '2026-10-20', resting_hr_bpm: null, sleep_min: 480, steps: null },
+      { day: '2026-10-20', resting_hr_bpm: null, sleep_min: 480, steps: null, hrv_rmssd_ms: null },
     ]);
   });
 
@@ -63,12 +63,13 @@ describe('aggregateDailyMetrics', () => {
       ],
     });
     expect(days).toEqual([
-      { day: '2026-10-20', resting_hr_bpm: null, sleep_min: 240, steps: null },
+      { day: '2026-10-20', resting_hr_bpm: null, sleep_min: 240, steps: null, hrv_rmssd_ms: null },
       {
         day: '2026-10-22',
         resting_hr_bpm: null,
         sleep_min: DAILY_METRIC_LIMITS.sleepMin.max,
         steps: null,
+        hrv_rmssd_ms: null,
       },
     ]);
   });
@@ -86,9 +87,9 @@ describe('aggregateDailyMetrics', () => {
       to: '2026-10-21',
     });
     expect(days).toEqual([
-      { day: '2026-10-19', resting_hr_bpm: null, sleep_min: null, steps: 8123 },
-      { day: '2026-10-20', resting_hr_bpm: 58, sleep_min: null, steps: null },
-      { day: '2026-10-21', resting_hr_bpm: null, sleep_min: null, steps: 0 },
+      { day: '2026-10-19', resting_hr_bpm: null, sleep_min: null, steps: 8123, hrv_rmssd_ms: null },
+      { day: '2026-10-20', resting_hr_bpm: 58, sleep_min: null, steps: null, hrv_rmssd_ms: null },
+      { day: '2026-10-21', resting_hr_bpm: null, sleep_min: null, steps: 0, hrv_rmssd_ms: null },
     ]);
     for (const d of days) expect(dailyMetricImportSchema.safeParse(d).success).toBe(true);
   });
@@ -100,7 +101,15 @@ describe('aggregateDailyMetrics', () => {
         resting_hr_bpm: null,
         sleep_min: null,
         steps: null,
+        hrv_rmssd_ms: null,
       }).success,
     ).toBe(false);
+    // HRV allein reicht (seit 25.10.2026); außerhalb 5–300 ms ungültig.
+    const hrvOnly = { day: '2026-10-20', resting_hr_bpm: null, sleep_min: null, steps: null };
+    expect(dailyMetricImportSchema.safeParse({ ...hrvOnly, hrv_rmssd_ms: 42 }).success).toBe(true);
+    expect(dailyMetricImportSchema.safeParse({ ...hrvOnly, hrv_rmssd_ms: 4 }).success).toBe(false);
+    expect(dailyMetricImportSchema.safeParse({ ...hrvOnly, hrv_rmssd_ms: 301 }).success).toBe(
+      false,
+    );
   });
 });

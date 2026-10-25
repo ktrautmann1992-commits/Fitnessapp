@@ -5,7 +5,7 @@
 export const deWearables = {
   settingsTitle: 'Smartwatch',
   settingsText:
-    'Einheiten, Puls, Schlaf und Schritte deiner Galaxy Watch (über Health Connect) automatisch ins Tagebuch übernehmen.',
+    'Einheiten, Puls, Schlaf, Schritte und HRV deiner Galaxy Watch (über Health Connect) automatisch ins Tagebuch übernehmen.',
   settingsLink: 'Smartwatch verbinden',
   title: 'Smartwatch verbinden',
   intro:
@@ -15,12 +15,13 @@ export const deWearables = {
     'Trainingseinheiten (Art, Dauer, Distanz, kcal) – erscheinen im Tagebuch mit Uhr-Symbol',
     'Routen deiner Läufe, Rad- und Geh-Runden (GPS) – daraus rechnet Alpha5 Distanz, Höhenmeter und Kilometerzeiten und zeigt die Karte. Nur für dich sichtbar.',
     'Puls während deiner Einheiten: nur Durchschnitt, Maximum und Minuten je Pulszone',
-    'Ruhepuls, Schlafdauer und Schritte je Tag',
+    'Ruhepuls, Schlafdauer, Schritte und HRV (Herzfrequenzvariabilität) je Tag – daraus zeigt Alpha5 deine „Erholung“ (gut, mittel, niedrig) im Vergleich mit deinen eigenen Werten',
   ],
   notTitle: 'Was nicht passiert',
   notList: [
     'Alpha5 schreibt nichts in Health Connect zurück.',
-    'Keine Pulskurven, keine Schlafphasen; von Routen nur eine vereinfachte Linie.',
+    'Keine Pulskurven, keine Schlafphasen, keine einzelnen HRV-Messungen; von Routen nur eine vereinfachte Linie.',
+    'Die Erholung ist nur ein Vorschlag: Dein Plan ändert sich nie von allein.',
     'Kein Abgleich im Hintergrund – nur beim Öffnen der App oder mit „Jetzt abgleichen“.',
     'Keine Weitergabe, kein Teilen; Puls steht nie auf einem geteilten Bild.',
   ],
@@ -43,7 +44,7 @@ export const deWearables = {
     'Im nächsten Fenster wählst du, welche Daten Alpha5 lesen darf. Alles, was du abwählst, wird nicht übernommen. Erlaube auch „Trainingsrouten“ – nur dann stimmt die Distanz genau und du siehst die Karte.',
   reconsentTitle: 'Neue Fassung der Einwilligung',
   reconsentText:
-    'Alpha5 liest jetzt auch die Routen (GPS) deiner Läufe, damit Distanz und Karte stimmen. Bitte lies die neue Fassung und stimme zu – bis dahin gleicht Alpha5 nichts ab.',
+    'Alpha5 liest jetzt auch die HRV (Herzfrequenzvariabilität) je Tag und zeigt dir daraus mit Schlaf und Ruhepuls deine „Erholung“. Bitte lies die neue Fassung und stimme zu – bis dahin gleicht Alpha5 nichts ab.',
   reconsentAccept: 'Neuer Fassung zustimmen',
   routeAccessTitle: 'Trainingsrouten',
   routeAccessOn: '✓ Trainingsrouten: für alle Einheiten erlaubt',
@@ -79,6 +80,7 @@ export const deWearables = {
     resting_heart_rate: 'Ruhepuls',
     sleep: 'Schlaf',
     steps: 'Schritte',
+    hrv: 'HRV (Herzfrequenzvariabilität)',
   },
   notGranted: 'nicht freigegeben',
   syncNow: 'Jetzt abgleichen',
@@ -105,10 +107,11 @@ export const deWearables = {
   steps: (n: string) => `${n} Schritte`,
   sleep: (h: number, m: number) => `${h} h ${String(m).padStart(2, '0')} min Schlaf`,
   restingHr: (bpm: number) => `Ruhepuls ${bpm}/min`,
+  hrv: (ms: number) => `HRV ${ms} ms`,
   disconnect: 'Trennen',
   disconnectTitle: 'Smartwatch trennen?',
   disconnectText:
-    'Puls-Zusammenfassungen, Tageswerte (Ruhepuls, Schlaf, Schritte) und die Routen der Uhr werden in jedem Fall gelöscht. Was soll mit den übernommenen Einheiten im Tagebuch passieren?',
+    'Puls-Zusammenfassungen, Tageswerte (Ruhepuls, Schlaf, Schritte, HRV) und die Routen der Uhr werden in jedem Fall gelöscht. Was soll mit den übernommenen Einheiten im Tagebuch passieren?',
   disconnectKeep: 'Einheiten behalten',
   disconnectDelete: 'Einheiten löschen',
   disconnectCancel: 'Abbrechen',
@@ -121,7 +124,7 @@ export const deWearables = {
     'Tipp: Den Zugriff in Health Connect selbst nimmst du unter Einstellungen → Sicherheit & Datenschutz → Health Connect → App-Berechtigungen → Alpha5 zurück.',
   revokeTitle: 'Einwilligung Smartwatch-Daten widerrufen?',
   revokeText:
-    'Alle Pulswerte, Tageswerte (Ruhepuls, Schlaf, Schritte), die Routen der Uhr und die Verbindung werden sofort gelöscht. Übernommene Einheiten bleiben als normale Einträge ohne Puls im Tagebuch.',
+    'Alle Pulswerte, Tageswerte (Ruhepuls, Schlaf, Schritte, HRV), die Routen der Uhr und die Verbindung werden sofort gelöscht. Übernommene Einheiten bleiben als normale Einträge ohne Puls im Tagebuch.',
   revokeConfirm: 'Widerrufen und löschen',
   revokeDone:
     'Einwilligung widerrufen. Puls, Tageswerte und Routen der Uhr sind gelöscht; übernommene Einheiten bleiben als normale Einträge.',
