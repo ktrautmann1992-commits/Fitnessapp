@@ -1927,6 +1927,12 @@ export const MEAL_PLAN_SCORING = {
   ratingQuick: 1,
   ratingSatiety: 1,
   ratingCheaper: 1,
+  /**
+   * Lieblingsgericht (Herz, Gründer-Freigabe 25.10.2026, `RECIPE_PREFERENCE_RULES`): stärker als Daumen hoch, aber
+   * im selben Deckel `ratingMaxTotal` – Herz und Daumen hoch addieren sich NICHT (es zählt der größere Wert), damit
+   * Abwechslung (`repeat`) und Passung (`kcalFit`) Vorrang behalten. Nur Reihenfolge, nie Filter oder Grenzen.
+   */
+  ratingFavorite: 1.25,
   ratingMaxTotal: 1.25,
 } as const;
 
@@ -1950,6 +1956,18 @@ export const RECIPE_RATING_RULES = {
   costReferenceEurPerServing: 5,
   maxRatings: 2000,
   maxFoodDislikes: 300,
+} as const;
+
+/**
+ * Rezept-Favoriten (Gründer-Freigabe 25.10.2026, KONZEPT 6.10a) – PRODUKTENTSCHEIDUNG, keine Schutzgrenze:
+ * - „Lieblingsgericht“ (Herz): Bonus `MEAL_PLAN_SCORING.ratingFavorite` im Essensplan (nur Reihenfolge).
+ * - „Nie wieder“: das Rezept wird dauerhaft nicht mehr vorgeschlagen (bis die Person es unter „Ausgeblendete
+ *   Gerichte“ wieder zulässt) und erscheint nicht mehr in Rezeptlisten. Passt dann für einen Platz nichts mehr, bleibt
+ *   er leer mit Grund `recipe_hidden` – Planband und Kalorien-Schutzgrenzen bleiben unberührt.
+ * - `maxEntries`: Obergrenze je Person (Gerätespeicher- und Datenbank-Schutz, wie `RECIPE_RATING_RULES.maxRatings`).
+ */
+export const RECIPE_PREFERENCE_RULES = {
+  maxEntries: 2000,
 } as const;
 
 /**

@@ -94,7 +94,7 @@ export function applyMealPrepPlan(
   );
   const layout = (targets.days[0]?.slots ?? []).map((s) => s.slot);
   const maxMinutes = pool.profile.maxPrepMinutesWeekday;
-  const ratings = recipeRatingIndex(input.ratings);
+  const ratings = recipeRatingIndex(input.ratings, input.recipePreferences);
   const planDates = [cookDate, ...prepDays.map((d) => addDays(weekStart, d.dayIndex))];
   if (mealPrepPlan.recipe_ids.some((id) => recipeBlockedOnAnyDay(ratings, id, planDates))) {
     return { offered: false };

@@ -65,6 +65,8 @@ export const SLOT_EXCLUSION_REASONS = [
   'not_no_cook',
   /** Alle passenden Rezepte wurden mit Daumen runter bewertet (8 Wochen, 19.7 N10) – kein Filter, nur Vorschlag. */
   'rated_down',
+  /** Alle passenden Rezepte sind mit „Nie wieder“ ausgeblendet (Rezept-Favoriten, 25.10.2026) – kein Filter. */
+  'recipe_hidden',
 ] as const;
 export type SlotExclusionReason = (typeof SLOT_EXCLUSION_REASONS)[number];
 

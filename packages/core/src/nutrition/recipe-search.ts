@@ -8,6 +8,7 @@ import { RECIPE_CATEGORY_IDS, type Recipe, type RecipeCategoryId } from '../cont
 import { DIET_TYPES, type DietType } from '../enums';
 import { filterRecipe, type FilteredRecipe } from './filter';
 import { dietAllows } from './recipe-nutrients';
+import { type RecipePreferenceInput, recipePreferencesSchema } from './recipe-preferences';
 import { type MealPlanProfileInput, mealPlanProfileSchema } from './schemas';
 
 /**
@@ -36,14 +37,21 @@ export const recipeSearchQuerySchema = z
       .max(RECIPE_EXTENSION_LIMITS.costEurPerServing.max)
       .optional(),
     text: z.string().trim().max(100).optional(),
+    /** „Nur Lieblingsgerichte“ (Rezept-Favoriten, 25.10.2026): nur Rezepte mit Herz. */
+    favoritesOnly: z.boolean().default(false),
   })
-  .default({ diets: [], categories: [], quick: false });
+  .default({ diets: [], categories: [], quick: false, favoritesOnly: false });
 export type RecipeSearchQuery = z.input<typeof recipeSearchQuerySchema>;
 
-export interface RecipeSearchHit {
+export interface RecipeForPersonHit {
   readonly variant: FilteredRecipe;
   /** Rezept passt nicht zur Profil-Ernährungsform (Kennzeichnung „passt nicht zu deiner Ernährungsform“). */
   readonly outsideProfileDiet: DietType | null;
+}
+
+export interface RecipeSearchHit extends RecipeForPersonHit {
+  /** „Lieblingsgericht“ (Herz) der Person. */
+  readonly favorite: boolean;
 }
 
 const DIET_RANK: Readonly<Record<DietType, number>> = { vegan: 0, vegetarian: 1, omnivore: 2 };
@@ -102,7 +110,7 @@ export function recipeForPersonWithDiets(
   recipe: Recipe,
   ctx: RecipeForPersonContext,
   extraDiets: readonly DietType[] = [],
-): RecipeSearchHit | null {
+): RecipeForPersonHit | null {
   const profile = mealPlanProfileSchema.parse(ctx.profile);
   const diets = z.array(z.enum(DIET_TYPES)).max(3).parse(extraDiets);
   const searchDiet = widestDiet(profile.diet, diets);
@@ -135,10 +143,20 @@ export function searchRecipes(
     readonly excludePregnancyCaution: boolean;
     readonly allowDrafts: boolean;
     readonly redRecipeIds?: ReadonlySet<string>;
+    /**
+     * Rezept-Favoriten (25.10.2026): „Nie wieder“ blendet ein Rezept in der Suche aus (zurückholen unter
+     * „Ausgeblendete Gerichte“), das Herz markiert Treffer und erlaubt „Nur Lieblingsgerichte“. Ohne Feld wie bisher.
+     */
+    readonly preferences?: readonly RecipePreferenceInput[];
   },
   rawQuery?: RecipeSearchQuery,
 ): RecipeSearchHit[] {
   const query = recipeSearchQuerySchema.parse(rawQuery);
+  const preferences = recipePreferencesSchema.parse(input.preferences ?? []);
+  const hidden = new Set(preferences.filter((p) => p.kind === 'hidden').map((p) => p.recipeId));
+  const favorites = new Set(
+    preferences.filter((p) => p.kind === 'favorite').map((p) => p.recipeId),
+  );
   const text = query.text === undefined ? null : normalizeFoodText(query.text);
   const ctx: RecipeForPersonContext = {
     foods: input.foods,
@@ -150,8 +168,11 @@ export function searchRecipes(
 
   const hits: RecipeSearchHit[] = [];
   for (const recipe of input.recipes) {
-    const hit = recipeForPersonWithDiets(recipe, ctx, query.diets);
-    if (hit === null) continue;
+    if (hidden.has(recipe.id)) continue;
+    if (query.favoritesOnly && !favorites.has(recipe.id)) continue;
+    const found = recipeForPersonWithDiets(recipe, ctx, query.diets);
+    if (found === null) continue;
+    const hit: RecipeSearchHit = { ...found, favorite: favorites.has(recipe.id) };
     if (
       query.categories.length > 0 &&
       !query.categories.some((c) => recipe.categories?.includes(c) === true)
