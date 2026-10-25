@@ -126,10 +126,16 @@ export function Button({
   expanded,
   testID,
   icon,
+  compact = false,
 }: {
   label: string;
   onPress: () => void;
   variant?: ButtonVariant;
+  /**
+   * Schmale Kacheln (z. B. „Uhr verbinden“ in der halben Kachel „Schritte“): weniger Innenabstand, Beschriftung immer
+   * EINE Zeile (kein Umbruch mitten im Knopf). Tippfläche bleibt gleich hoch.
+   */
+  compact?: boolean;
   /** Strich-Icon vor der Beschriftung (Deko, z. B. „scan“ beim Scan-Knopf). */
   icon?: IconName;
   loading?: boolean;
@@ -178,6 +184,7 @@ export function Button({
       style={({ pressed }) => [
         styles.button,
         variant === 'link' && styles.linkButton,
+        compact && styles.compactButton,
         // Große Ansicht (FA5): Tippflächen mindestens 56 px.
         minTouch > MIN_TOUCH && {
           minHeight: Math.max(minTouch, variant === 'link' ? 0 : BUTTON_HEIGHT),
@@ -192,8 +199,10 @@ export function Button({
         <View style={styles.buttonInner}>
           {icon ? <Icon name={icon} size={20} color={textColor} /> : null}
           <Text
+            numberOfLines={compact ? 1 : undefined}
             style={[
               variant === 'link' ? styles.linkText : styles.buttonText,
+              compact && styles.compactText,
               appFont(variant === 'link' ? 'semibold' : 'bold'),
               variant === 'onDark' && styles.onDarkText,
               { color: variant === 'link' ? theme.link : textColor },
@@ -645,6 +654,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   linkButton: { paddingHorizontal: spacing.sm, minHeight: 44 },
+  compactButton: { paddingHorizontal: spacing.md },
+  compactText: { fontSize: fontSize.md, flexShrink: 0 },
   buttonInner: {
     flexDirection: 'row',
     alignItems: 'center',

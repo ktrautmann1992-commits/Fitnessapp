@@ -67,6 +67,7 @@ export function StepsTile({ today }: { today: string }) {
           <Button
             label={S.tile.connect}
             variant="secondary"
+            compact
             onPress={toSmartwatch}
             testID="overview-steps-connect"
           />
