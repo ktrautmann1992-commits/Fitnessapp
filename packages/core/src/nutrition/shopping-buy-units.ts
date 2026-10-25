@@ -132,8 +132,8 @@ export function shoppingPackCombination(
   return unique.map((size, i) => ({ size, count: counts[i] as number })).filter((c) => c.count > 0);
 }
 
-/** Bedarf in der Einheit der Tabelle (g, ml bzw. Stück). */
-function needIn(
+/** Bedarf in der Einheit der Tabelle (g, ml bzw. Stück). Auch für den Vorratsschrank (`pantry.ts`). */
+export function shoppingNeedIn(
   def: Extract<ShoppingBuyUnit, { kind: 'pack' }>,
   amount: number,
   unit: ShoppingUnit,
@@ -236,7 +236,7 @@ export function shoppingPurchase(
   }
   const amount = item.amount as number;
   const unit = item.unit as ShoppingUnit;
-  if (def.kind === 'pack') return packPurchase(def, needIn(def, amount, unit, pieceGrams));
+  if (def.kind === 'pack') return packPurchase(def, shoppingNeedIn(def, amount, unit, pieceGrams));
   // Stück eines Rezepts (Zehe, Scheibe …) sind nicht unbedingt Kaufeinheiten: über Gramm rechnen, wenn bekannt.
   const grams = unit === 'piece' ? amount * (pieceGrams ?? def.pieceG) : amount;
   const count = countFor(grams, def.pieceG);
