@@ -1,0 +1,37 @@
+{
+  "id": "marschieren-auf-der-stelle",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Marschieren auf der Stelle",
+  "name_en": "Marching in Place",
+  "aliases_de": ["Gehen auf der Stelle"],
+  "movement_pattern": "conditioning",
+  "primary_muscles": ["calves"],
+  "secondary_muscles": ["quadriceps", "glutes"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Lockeres Gehen auf der Stelle mit Armschwung. Bringt den Kreislauf in Schwung, ganz ohne Sprünge – ideal als erster Teil des Aufwärmens.",
+  "steps_de": [
+    "Aufrecht hinstellen, Füße hüftbreit.",
+    "Abwechselnd die Knie anheben und die Arme locker mitschwingen.",
+    "Tempo langsam steigern, bis du etwas wärmer wirst und leicht schneller atmest."
+  ],
+  "tips_de": ["Atme ruhig weiter, du solltest dabei noch sprechen können."],
+  "common_mistakes_de": ["Zu schnell starten statt das Tempo langsam zu steigern."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, nur im angenehmen Bewegungsumfang. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Trainings-Modi (Aufwärmen & Dehnen, docs/PLAN-TRAINING-MODI.md 5) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

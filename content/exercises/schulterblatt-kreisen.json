@@ -1,0 +1,37 @@
+{
+  "id": "schulterblatt-kreisen",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schulterblatt-Kreisen",
+  "name_en": "Shoulder Blade Circles",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["upper_back"],
+  "secondary_muscles": ["rear_delts"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Die Schultern kreisen langsam nach hinten, die Schulterblätter bewegen sich mit. Lockert den oberen Rücken vor Rudern und Drücken.",
+  "steps_de": [
+    "Aufrecht stehen oder sitzen, Arme hängen locker.",
+    "Schultern nach vorn, oben, hinten und unten kreisen lassen.",
+    "Die Schulterblätter dabei bewusst zusammen- und auseinanderschieben."
+  ],
+  "tips_de": ["Bewegung langsam und rund ausführen."],
+  "common_mistakes_de": ["Kopf nach vorn schieben statt aufrecht zu bleiben."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, nur im angenehmen Bewegungsumfang. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Trainings-Modi (Aufwärmen & Dehnen, docs/PLAN-TRAINING-MODI.md 5) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}
