@@ -8,6 +8,7 @@ import { contentIdSchema } from '../content/schemas';
 import { addDays } from '../dates';
 import type { FilteredRecipe } from './filter';
 import type { MealPlanWeek } from './meal-plan';
+import { type RecipePreferenceInput, recipePreferencesSchema } from './recipe-preferences';
 
 /**
  * Bewertung nach dem Essen (KONZEPT 6.10, docs/PLAN-PHASE-5.md 19.7 N10) – gratis, rein regelbasiert, ohne KI.
@@ -98,18 +99,40 @@ export interface RecipeRatingIndex {
   readonly byRecipe: ReadonlyMap<string, RecipeRating>;
   readonly downByRecipe: ReadonlyMap<string, DownWindow>;
   readonly reasonsByDate: Map<string, ReadonlySet<RecipeRatingReason>>;
+  /** „Nie wieder“ (Rezept-Favoriten, `recipe-preferences.ts`): dauerhaft gesperrt, ohne Ablaufdatum. */
+  readonly hidden: ReadonlySet<string>;
+  /** „Lieblingsgericht“ (Herz): Bonus `MEAL_PLAN_SCORING.ratingFavorite` (gedeckelt, nur Reihenfolge). */
+  readonly favorites: ReadonlySet<string>;
 }
 
 /** Leerer Index (ohne Bewertungen) – je Aufruf neu, damit der Tages-Zwischenspeicher nie geteilt wird. */
 function emptyIndex(): RecipeRatingIndex {
-  return { byRecipe: new Map(), downByRecipe: new Map(), reasonsByDate: new Map() };
+  return {
+    byRecipe: new Map(),
+    downByRecipe: new Map(),
+    reasonsByDate: new Map(),
+    hidden: new Set(),
+    favorites: new Set(),
+  };
 }
 
-/** Bewertungen prüfen (Zod an der Grenze) und nach Rezept ablegen. Ohne Bewertungen: leerer Index. */
+/**
+ * Bewertungen und Rezept-Vorlieben prüfen (Zod an der Grenze) und nach Rezept ablegen. Ohne beides: leerer Index.
+ * Vorlieben sind optional – ohne sie verhält sich alles genau wie vor den Rezept-Favoriten.
+ */
 export function recipeRatingIndex(
   ratings: readonly RecipeRatingInput[] | undefined,
+  preferences?: readonly RecipePreferenceInput[],
 ): RecipeRatingIndex {
-  if (ratings === undefined || ratings.length === 0) return emptyIndex();
+  const prefs =
+    preferences === undefined || preferences.length === 0
+      ? []
+      : recipePreferencesSchema.parse(preferences);
+  const hidden = new Set(prefs.filter((p) => p.kind === 'hidden').map((p) => p.recipeId));
+  const favorites = new Set(prefs.filter((p) => p.kind === 'favorite').map((p) => p.recipeId));
+  if (ratings === undefined || ratings.length === 0) {
+    return { ...emptyIndex(), hidden, favorites };
+  }
   const parsed = recipeRatingsSchema.parse(ratings);
   const downByRecipe = new Map<string, DownWindow>();
   for (const r of parsed) {
@@ -124,7 +147,14 @@ export function recipeRatingIndex(
     byRecipe: new Map(parsed.map((r) => [r.recipeId, r])),
     downByRecipe,
     reasonsByDate: new Map(),
+    hidden,
+    favorites,
   };
+}
+
+/** Mit „Nie wieder“ ausgeblendet (dauerhaft, unabhängig vom Tag)? */
+export function recipeHiddenByUser(index: RecipeRatingIndex, recipeId: string): boolean {
+  return index.hidden.has(recipeId);
 }
 
 /** Gilt ein Sperrfenster an diesem Tag (tagesgenau, Bewertungstag eingeschlossen)? */
@@ -132,12 +162,16 @@ function windowActiveOn(window: DownWindow, date: string): boolean {
   return window.from <= date && date <= window.lastDay;
 }
 
-/** Wird das Rezept an diesem Tag wegen „Daumen runter“ nicht vorgeschlagen (8 Wochen, tagesgenau)? */
+/**
+ * Wird das Rezept an diesem Tag nicht vorgeschlagen? Daumen runter (8 Wochen, tagesgenau) oder „Nie wieder“
+ * (dauerhaft, Rezept-Favoriten).
+ */
 export function recipeBlockedByRating(
   index: RecipeRatingIndex,
   recipeId: string,
   date: string,
 ): boolean {
+  if (index.hidden.has(recipeId)) return true;
   const window = index.downByRecipe.get(recipeId);
   return window !== undefined && windowActiveOn(window, date);
 }
@@ -148,6 +182,7 @@ export function recipeBlockedOnAnyDay(
   recipeId: string,
   dates: readonly string[],
 ): boolean {
+  if (index.hidden.has(recipeId) && dates.length > 0) return true;
   const window = index.downByRecipe.get(recipeId);
   return window !== undefined && dates.some((date) => windowActiveOn(window, date));
 }
@@ -205,10 +240,13 @@ export function ratingScoreBonus(
   /** Vorab je Tag berechnete Gründe (`activeRatingReasons`, Wächter N10 S3); ohne: hier berechnet (gemerkt). */
   reasonsIn?: ReadonlySet<RecipeRatingReason>,
 ): number {
-  if (index.byRecipe.size === 0) return 0;
+  if (index.byRecipe.size === 0 && index.favorites.size === 0) return 0;
   const W = MEAL_PLAN_SCORING;
   let bonus = 0;
-  if (index.byRecipe.get(candidate.recipe.id)?.value === 'up') bonus += W.ratingUp;
+  // Herz und Daumen hoch addieren sich nicht – es zählt der größere Bonus (Rezept-Favoriten, 25.10.2026).
+  const up = index.byRecipe.get(candidate.recipe.id)?.value === 'up' ? W.ratingUp : 0;
+  const favorite = index.favorites.has(candidate.recipe.id) ? W.ratingFavorite : 0;
+  bonus += Math.max(up, favorite);
   const reasons = reasonsIn ?? activeRatingReasons(index, date);
   if (
     reasons.has('effort') &&
@@ -228,17 +266,19 @@ export function ratingScoreBonus(
 
 /**
  * Gespeicherter Plan einer Woche, die noch NICHT begonnen hat, mit einem Rezept, das an seinem Tag wegen „Daumen
- * runter“ gesperrt ist (Wächter N10 S1)? Dann bietet die App „Plan aktualisieren“ an – ohne automatische Neuplanung.
- * Die laufende Woche (Wochenanfang ≤ heute) bleibt wie bisher unverändert (K7); vergangene Wochen ohnehin.
+ * runter“ oder „Nie wieder“ gesperrt ist (Wächter N10 S1)? Dann bietet die App „Plan aktualisieren“ an – ohne
+ * automatische Neuplanung. Die laufende Woche (Wochenanfang ≤ heute) bleibt wie bisher unverändert (K7); vergangene
+ * Wochen ohnehin.
  */
 export function mealPlanHasRatedDownRecipes(
   plan: Pick<MealPlanWeek, 'weekStart' | 'days'>,
   ratings: readonly RecipeRatingInput[] | undefined,
   today: string,
+  preferences?: readonly RecipePreferenceInput[],
 ): boolean {
   if (plan.weekStart <= isoDateSchema.parse(today)) return false;
-  const index = recipeRatingIndex(ratings);
-  if (index.downByRecipe.size === 0) return false;
+  const index = recipeRatingIndex(ratings, preferences);
+  if (index.downByRecipe.size === 0 && index.hidden.size === 0) return false;
   return plan.days.some((day) =>
     day.meals.some((meal) => recipeBlockedByRating(index, meal.recipeId, day.date)),
   );

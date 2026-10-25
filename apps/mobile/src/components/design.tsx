@@ -152,13 +152,28 @@ const ICONS = {
     { d: 'm9 3.5 3 2 3-2M9 20.5l3-2 3 2' },
   ],
   cup: [{ d: 'M6 3h12l-1.5 18h-9Z' }, { d: 'M6.5 8h11' }],
+  // Rezept-Favoriten (25.10.2026): Herz umrissen bzw. gefüllt („Lieblingsgericht“), durchgestrichenes Auge („Nie wieder“).
+  heart: [
+    {
+      d: 'M12 20s-7.2-4.4-8.9-9C2 7.9 3.9 4.5 7.2 4.5c2 0 3.3 1.1 4.8 2.9 1.5-1.8 2.8-2.9 4.8-2.9 3.3 0 5.2 3.4 4.1 6.5-1.7 4.6-8.9 9-8.9 9Z',
+    },
+  ],
+  'heart-filled': [
+    {
+      d: 'M12 20s-7.2-4.4-8.9-9C2 7.9 3.9 4.5 7.2 4.5c2 0 3.3 1.1 4.8 2.9 1.5-1.8 2.8-2.9 4.8-2.9 3.3 0 5.2 3.4 4.1 6.5-1.7 4.6-8.9 9-8.9 9Z',
+    },
+  ],
+  'eye-off': [
+    { d: 'M2 12s3.6-7 10-7c1.9 0 3.6.6 5 1.5M22 12s-3.6 7-10 7c-1.9 0-3.6-.6-5-1.5' },
+    { d: 'M4 4l16 16' },
+  ],
 } satisfies Record<string, readonly Shape[]>;
 
 export type IconName = keyof typeof ICONS;
 export const ICON_NAMES = Object.keys(ICONS) as IconName[];
 
 /** Gefüllte statt umrissene Formen (wie im Entwurf: „Mehr“-Punkte und Play-Dreieck). */
-const FILLED: ReadonlySet<IconName> = new Set(['dots', 'play', 'pause', 'stop']);
+const FILLED: ReadonlySet<IconName> = new Set(['dots', 'play', 'pause', 'stop', 'heart-filled']);
 
 export function Icon({
   name,

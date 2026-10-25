@@ -33,6 +33,7 @@ import { deWeekEval } from './de-week-eval';
 import { deWearables } from './de-wearables';
 import { deSteps } from './de-steps';
 import { deRecovery } from './de-recovery';
+import { deStrength } from './de-strength';
 import { deSessionKcal } from './de-session-kcal';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
@@ -1646,6 +1647,8 @@ export const de = {
   weightTrend: deWeightTrend,
   monthReview: deMonthReview,
   deviceCalendar: deDeviceCalendar,
+  /** Kraft-Entwicklung je Übung (Gründer-Freigabe 25.10.2026). */
+  strength: deStrength,
   more: deMore,
   menuBar: deMenuBar,
   konto: deKonto,

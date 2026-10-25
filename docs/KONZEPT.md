@@ -339,7 +339,8 @@ Konto** (E-Mail, Abmelden mit Rückfrage, Einwilligungen, Datenexport, Konto lö
 Entwurf und Tagebuch-Warteschlange), Pausentimer, Bildschirm an; **Woche** (`app/week.tsx`: Mo–So mit Status-Zeichen
 und Wort – erledigt, teilweise, verpasst, gestrichen, geplant, entfallen –, Summen Einheiten/Kraft-Sätze/Ausdauer-Minuten
 und -km, Blättern; nachgeholte Einheiten am tatsächlichen Datum), **Verlauf** (`app/history/`: nach Wochen, je 20 weitere,
-ältere als 12 Wochen online nachladen; Verlauf je Übung mit bestem Satz „Gewicht × Wiederholungen“, keine 1RM),
+ältere als 12 Wochen online nachladen; Verlauf je Übung mit bestem Satz „Gewicht × Wiederholungen“, keine 1RM;
+seit 25.10.2026 mit Kurve der Kraft-Entwicklung, Abschnitt 11.4),
 **Eintrag** (`app/log/[logId].tsx`: ansehen, ändern im Datumsfenster, löschen nur online) und **Datenexport** „Meine Daten“
 (seit 18.10.2026 unter „Mein Konto“; JSON aller eigenen Daten inkl. Konto-E-Mail und Einwilligungs-Verlauf; Browser: Download, App: Ordner
 wählen – kein Teilen-Dialog). Regeln in `packages/core/src/log/summary.ts` und `packages/core/src/export/data-export.ts`.
@@ -679,6 +680,33 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   Einstellungen „Abgelehnte Lebensmittel und Bewertungen“. Eine Bewertung plant den laufenden Plan nicht um; sie wirkt
   ab der nächsten Planung. Details in `docs/PLAN-PHASE-5.md`, Umsetzungsstand N10.
 
+### 6.10a Rezept-Favoriten: „Lieblingsgericht“ und „Nie wieder“ (Gratis, ohne KI, privat)
+**Gründer-Freigabe 25.10.2026.** Ergänzt die Bewertung nach dem Essen (6.10) um eine **dauerhafte** Entscheidung je
+Rezept – ohne sie zu doppeln: Daumen hoch/runter ist der Eindruck nach einer Mahlzeit (Daumen runter = 8 Wochen Pause),
+Herz bzw. „Nie wieder“ gilt, bis die Person es zurücknimmt. Beide wirken über denselben Index der Plan-Engine.
+- **Wo:** Rezeptansicht (Karte „Dein Geschmack“: Lieblingsgericht / Nie wieder bzw. Wieder zulassen), Rezeptsuche (Herz
+  je Treffer, Filter „Nur Lieblingsgerichte“, Hinweis „N Gerichte sind ausgeblendet“ mit Weg zur Liste), Mahlzeiten des
+  Essensplans („⋯“ oben rechts klappt beide Aktionen auf; Kennzeichen „Lieblingsgericht“ mit Herz und Wort),
+  Einstellungen → Ernährung → **„Ausgeblendete Gerichte“** (alphabetisch, „Wieder zulassen“).
+- **Regeln (deterministisch, `packages/core/src/nutrition/recipe-preferences.ts` und `ratings.ts`):**
+  - „Nie wieder“ wird **nie** vorgeschlagen – weder geplant noch als Ergänzungs-Snack, beim „Rezept tauschen“, im
+    Meal-Prep-Wochenplan (Plan wird dann nicht angeboten) oder bei geteilten Mahlzeiten; es fehlt auch in Rezeptsuche
+    und Kühlschrank-Suche. Gibt es für einen Platz dann **keine Alternative**, bleibt er leer mit dem Grund
+    „passende Rezepte hast du ausgeblendet („Nie wieder“)“ (`recipe_hidden`) – das Planband und alle
+    Kalorien-Schutzgrenzen bleiben unverändert (Ergänzungs-Snacks wie immer, sonst Hinweis „unter dem Mindestbedarf“).
+  - Herz: Bonus `MEAL_PLAN_SCORING.ratingFavorite` (1,25) – **nur Reihenfolge**, gedeckelt zusammen mit allen
+    Bewertungs-Boni (`ratingMaxTotal` < Wiederholungs-Abzug), Herz und Daumen hoch addieren sich nicht. Ernährungsform,
+    Schwein, Unverträglichkeiten, „mag ich nicht“, Schwangerschaft, Zeitlimit, Wiederholungsgrenzen und Planband gelten
+    unverändert (Eigenschaftstest). Ein Herz für alle Rezepte ergibt denselben Plan wie keins.
+  - Wie bei Bewertungen: Die **laufende Woche** wird nicht automatisch neu geplant (K7); eine noch nicht begonnene
+    gespeicherte Woche mit einem ausgeblendeten Rezept bietet „Plan aktualisieren“ an.
+- **Speicher:** Tabelle `recipe_preferences` (user_id, recipe_id, kind `favorite`|`hidden`, set_on) mit RLS (nur eigene
+  Zeilen, Einfügen nur mit Profil, kein anon), höchstens 2.000 je Person (`RECIPE_PREFERENCE_RULES`), Konto löschen per
+  Kaskade, im Datenexport. **Kein Gesundheitsdatum** (kein Grund, kein Bezug zu Unverträglichkeiten) → offline-first:
+  Testmodus im Gerätespeicher, Supabase-Modus über die normale Warteschlange (`set_recipe_preference`, letzter Stand je
+  Rezept); bleibt beim Widerruf der Gesundheits-Einwilligung bestehen. Privat: nie angezeigt außer der eigenen Vorliebe,
+  nie aggregiert, nie Analytics/Logs. Migration `20261025120000_recipe_preferences.sql`, pgTAP `75_recipe_preferences`.
+
 ### 6.11 Resteverwertung (Kühlschrank-Suche gratis, automatische Resteplanung Premium)
 - **Kühlschrank-Suche (Gratis):** „Was habe ich da?“ – Zutaten auswählen → Rezepte sortiert nach Übereinstimmung
   (Anteil der vorhandenen Zutaten, gewichtet nach Menge), gefiltert nach Ernährungsform und allen Ausschlüssen.
@@ -899,6 +927,25 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
 - Abzeichen nach Abschluss, **privat** – keine Ranglisten, kein Vergleich mit anderen
 - Optional Sponsor (Supplement-Hersteller, Partnerstudio) mit Rabattcode – klar als „Werbung“ gekennzeichnet; Sponsor
   sieht keine Teilnehmer- oder Gesundheitsdaten
+
+### 11.4 Kraft-Entwicklung je Übung (Gratis, ohne KI, privat)
+**Gründer-Freigabe 25.10.2026.** Krafttraining sichtbar machen – nur aus dem eigenen Tagebuch, nur eigene frühere Werte.
+- **Kurve je Übung** im Verlauf der Übung (`app/history/[exerciseId].tsx`, über dem bisherigen „bester Satz je
+  Training“): immer **chronologisch** (x = Datum), Umschalter **Gewicht** (schwerster abgehakter Satz) / **Volumen**
+  (Gewicht × Wdh. aller Sätze) / **Wiederholungen** (gesamt) – bei Halteübungen **Haltezeit** –, Zeitraum **4 W / 3 M /
+  Alles**. Übungen mit eigenem Körpergewicht oder Band: Wiederholungen statt Gewicht. Erholungswochen als hohle Punkte,
+  Wechsel der Belastungsart als Lücke. Gleiche Kurvenform wie der Tempo-Verlauf der Lauf-Auswertung.
+- **Eintrag** (`app/log/[logId].tsx`): je Übung z. B. „Kniebeuge: +5 kg gegenüber vor 4 Wochen“ (Bezug: letzte
+  Einheit derselben Belastungsart, die mindestens 4 Wochen zurückliegt, sonst die früheste ab 7 Tagen; nie eine
+  Erholungswoche); in einer Erholungswoche „Erholungswoche – bewusst leichter.“
+- **Kachel „Kraft-Entwicklung“** unter Fortschritt: die (höchstens 3) meist trainierten Übungen der letzten 3 Monate
+  mit Mini-Kurve, letztem Wert und Vergleich; antippen öffnet die Übung; leer ein Hinweis.
+- **Neutral (wie W-G16):** keine „Bestleistung“, kein „Rekord“, keine Abzeichen, keine Wertung; ein Minus ist so
+  sachlich wie ein Plus. **Keine geschätzte Maximalkraft (1RM)** – Abschnitt 5 „keine 1RM“ und Regel V4 „keine
+  Maximaltests“ bleiben; `E1RM_ESTIMATE` dient weiter nur der Berechnung von Arbeitsgewichten.
+- Regeln in `packages/core/src/log/strength-progress.ts` (`STRENGTH_PROGRESS` in `constants.ts`), Darstellung in
+  `apps/mobile/src/components/strength-chart.tsx`. Kein neues Datenfeld, keine Migration; Grundlage wie im Verlauf (Supabase:
+  12 Wochen geladen, ältere online nachladbar).
 
 ## 12. Datenmodell (Kern, Postgres)
 - `profiles` (user_id, sex, birth_date, height_cm, experience_level, locale) – `height_cm` **geändert, siehe Abweichungen** (steht in `body_metrics`)

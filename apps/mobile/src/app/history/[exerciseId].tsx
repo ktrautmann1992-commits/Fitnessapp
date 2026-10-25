@@ -4,20 +4,24 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { Screen } from '@/components/screen';
+import { StrengthProgressSection } from '@/components/strength-chart';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { EMPTY_LOG_ROWS, logEntriesFromRows, logRowsOf } from '@/data/log-rows';
 import { historyExercises, historyLogRows } from '@/data/log-summary';
+import { exerciseStrengthSessions } from '@/data/strength-progress';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { bestSetText } from '@/lib/history-format';
 import { dayLabel } from '@/lib/plan-format';
 import { decodeRouteParam } from '@/lib/route-param';
+import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
 /**
  * Verlauf je Übung (docs/PLAN-PHASE-4.md 5.6/6.1 Punkt 5, Etappe D): je Training der beste Satz als
- * „Gewicht × Wiederholungen“ (exerciseHistory() aus packages/core, keine 1RM-Anzeige). Grundlage wie im
+ * „Gewicht × Wiederholungen“ (exerciseHistory() aus packages/core, keine 1RM-Anzeige). Seit 25.10.2026 darüber die
+ * Kraft-Entwicklung als Kurve (Gewicht/Volumen/Wiederholungen, 4 W/3 M/Alles; `StrengthProgressSection`). Grundlage wie im
  * Einheiten-Verlauf (Wächter D K1): der vollständig geladene Zeitraum (Supabase: 12 Wochen) plus online nachgeladene
  * ältere Einträge – keine einzelnen älteren Einträge aus recent_exercise_logs (sonst sichtbare Lücken).
  */
@@ -26,6 +30,7 @@ export default function ExerciseHistoryScreen() {
   const exerciseId = decodeRouteParam(params.exerciseId);
   const router = useRouter();
   const app = useApp();
+  const today = useToday();
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [error, setError] = useState<string>();
   const { ensureLibrary, library } = app;
@@ -65,6 +70,7 @@ export default function ExerciseHistoryScreen() {
     }
   }
   const entries = exerciseHistory(exerciseId, logEntriesFromRows(rows));
+  const strength = exerciseStrengthSessions(rows, exerciseId);
   const name = historyExercises(rows).find((e) => e.exerciseId === exerciseId)?.name ?? null;
   // Anleitung im Glossar – auch archivierte Übungen (displayExercises, Etappe G1).
   const hasGuide =
@@ -99,6 +105,7 @@ export default function ExerciseHistoryScreen() {
         </Card>
       ) : (
         <>
+          <StrengthProgressSection sessions={strength} today={today} />
           <Body muted>{t.history.exerciseIntro}</Body>
           {entries.map((entry, index) => {
             const best = bestSetText(entry.best);

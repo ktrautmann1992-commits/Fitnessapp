@@ -1,5 +1,6 @@
 import {
   bodyMetricsStepSchema,
+  contentIdSchema,
   cookingStepSchema,
   createBodyMeasurementsInputSchema,
   createMeasuredOnSchema,
@@ -54,6 +55,8 @@ import {
   storedAppLayoutSchema,
   toStoredLayout,
 } from '@fitnessapp/core';
+
+import { validRecipePreferenceRow } from './recipe-preference-rows';
 
 import type { ConsentVersions } from './mapping';
 import { preferencesFromRows } from './exercise-swap';
@@ -256,6 +259,15 @@ export function isValidOp(
         exerciseStartWeightSchema.safeParse({ exercise_id: op.exerciseId, weight_kg: op.weightKg })
           .success
       );
+    // Rezept-Favoriten (25.10.2026): wie CHECK/Trigger von recipe_preferences – eigene Zeile, gültige Art und ID,
+    // Datum höchstens heute + 1 Tag.
+    case 'set_recipe_preference':
+      return op.row === null
+        ? contentIdSchema.safeParse(op.recipeId).success
+        : op.row.recipe_id === op.recipeId &&
+            op.row.user_id === context.profile.user_id &&
+            validRecipePreferenceRow(op.row) &&
+            op.row.set_on <= addDays(context.today, 1);
     // Präferenzen und Pläne brauchen mehr Zusammenhang (Bibliothek, Einheit) → checkExercisePreference / isValidPlanOp.
     case 'upsert_exercise_preference':
     case 'delete_exercise_preference':

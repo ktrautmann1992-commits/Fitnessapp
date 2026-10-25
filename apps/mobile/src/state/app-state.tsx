@@ -8,6 +8,7 @@ import {
   upsertDaySwap,
   type GeneratedPlan,
   type MealPlanWeek,
+  type RecipePreferenceKind,
   type RecipeRating,
   type StoredShoppingList,
   type PlanLibrary,
@@ -351,6 +352,11 @@ export interface AppContextValue {
   saveRecipeRating: (recipeId: string, rating: RecipeRating | null) => Promise<void>;
   /** Alle eigenen Bewertungen löschen (Etappe N10). */
   deleteRecipeRatings: () => Promise<void>;
+  /**
+   * Rezept-Favoriten (25.10.2026): „Lieblingsgericht“ bzw. „Nie wieder“ setzen oder zurücknehmen (`null`). Offline-first
+   * (Gerätespeicher bzw. Warteschlange). Fehler `recipe_preference_limit`.
+   */
+  setRecipePreference: (recipeId: string, kind: RecipePreferenceKind | null) => Promise<void>;
   /** „Mag ich nicht“ je Lebensmittel ersetzen (Etappe N10). */
   saveFoodDislikes: (foodIds: readonly string[]) => Promise<void>;
   /** Ernährungstagebuch (Etappe E1): Einträge neu anlegen bzw. ersetzen (Testmodus; Supabase ab N7 Teil 2). */
@@ -907,6 +913,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setRows(await backend.saveRecipeRating({ recipeId, rating }, rows));
     },
     [backend, rows],
+  );
+
+  const setRecipePreference = useCallback(
+    async (recipeId: string, kind: RecipePreferenceKind | null) => {
+      if (!rows) {
+        throw new BackendError('not_signed_in');
+      }
+      setRows(await backend.setRecipePreference(recipeId, kind, rows));
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
   );
 
   const deleteRecipeRatings = useCallback(async () => {
@@ -1862,6 +1879,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveCookDayStart,
       saveRecipeRating,
       deleteRecipeRatings,
+      setRecipePreference,
       saveFoodDislikes,
       saveFoodLogEntries,
       deleteFoodLogEntry,
@@ -1953,6 +1971,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveCookDayStart,
       saveRecipeRating,
       deleteRecipeRatings,
+      setRecipePreference,
       saveFoodDislikes,
       saveFoodLogEntries,
       deleteFoodLogEntry,

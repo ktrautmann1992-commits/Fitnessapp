@@ -31,6 +31,7 @@ import {
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
 import { Text } from '@/components/text';
 import { RatingCard } from '@/components/rating';
+import { RecipePreferenceCard } from '@/components/recipe-preference';
 import { RecipeBanner } from '@/components/recipe-image';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, ErrorState, LoadingState, Notice } from '@/components/ui';
@@ -434,6 +435,12 @@ export default function RecipeScreen() {
           today={today}
         />
       ) : null}
+      {/* Rezept-Favoriten (25.10.2026): Lieblingsgericht und „Nie wieder“ – dauerhaft, ergänzt „Wie war’s?“. */}
+      <RecipePreferenceCard
+        recipeId={recipe.id}
+        title={recipe.title_de}
+        inPlan={plannedMeal !== null}
+      />
 
       <SectionLabel>{texts.ingredients}</SectionLabel>
       <ListGroup testID="recipe-ingredients">

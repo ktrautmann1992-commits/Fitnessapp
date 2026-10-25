@@ -17,6 +17,7 @@ import {
   nutritionReady,
 } from '@/components/nutrition';
 import { RecipeThumb, RecipeFlagChip } from '@/components/recipe-image';
+import { FavoriteToggle } from '@/components/recipe-preference';
 import { Screen } from '@/components/screen';
 import {
   Body,
@@ -46,6 +47,7 @@ interface Filters {
   section: string | null;
   quick: boolean;
   maxCostEur: number | null;
+  favoritesOnly: boolean;
 }
 
 const EMPTY: Filters = {
@@ -55,6 +57,7 @@ const EMPTY: Filters = {
   section: null,
   quick: false,
   maxCostEur: null,
+  favoritesOnly: false,
 };
 
 function toggle<T>(list: readonly T[], value: T): T[] {
@@ -80,6 +83,7 @@ export default function RecipeSearchScreen() {
       diets: filters.diets,
       categories: filters.categories,
       quick: filters.quick,
+      favoritesOnly: filters.favoritesOnly,
       ...(filters.section !== null ? { section: filters.section } : {}),
       ...(filters.maxCostEur !== null ? { maxCostEur: filters.maxCostEur } : {}),
       ...(text !== '' ? { text: text.slice(0, 100) } : {}),
@@ -119,6 +123,7 @@ export default function RecipeSearchScreen() {
     return <Redirect href={route as Href} />;
   }
   const texts = t.nutrition.search;
+  const favTexts = t.nutrition.favorites;
   const footer = (
     <Button
       label={t.nutrition.back}
@@ -162,6 +167,7 @@ export default function RecipeSearchScreen() {
     filters.categories.length > 0 ||
     filters.section !== null ||
     filters.quick ||
+    filters.favoritesOnly ||
     filters.maxCostEur !== null;
 
   return shell(
@@ -212,6 +218,15 @@ export default function RecipeSearchScreen() {
           label={texts.quick}
           selected={filters.quick}
           onPress={() => update({ quick: !filters.quick })}
+        />
+        {/* Rezept-Favoriten (25.10.2026): nur Rezepte mit Herz. */}
+        <OptionButton
+          role="checkbox"
+          compact
+          label={favTexts.filter}
+          selected={filters.favoritesOnly}
+          onPress={() => update({ favoritesOnly: !filters.favoritesOnly })}
+          testID="recipe-search-favorites"
         />
       </View>
 
@@ -289,7 +304,7 @@ export default function RecipeSearchScreen() {
       </Text>
       {result.cards.length === 0 ? (
         <Notice tone="info" testID="recipe-search-empty">
-          {texts.empty}
+          {filters.favoritesOnly && result.favoriteCount === 0 ? favTexts.filterEmpty : texts.empty}
         </Notice>
       ) : (
         <View style={styles.list} testID="recipe-search-results">
@@ -309,6 +324,17 @@ export default function RecipeSearchScreen() {
           ))}
         </View>
       )}
+      {result.hiddenCount > 0 ? (
+        <View style={styles.group} testID="recipe-search-hidden">
+          <Body muted>{favTexts.hiddenCount(result.hiddenCount)}</Body>
+          <Button
+            label={favTexts.manageHidden}
+            variant="link"
+            onPress={() => router.push('/ernaehrung/ausgeblendet' as Href)}
+            testID="recipe-search-hidden-open"
+          />
+        </View>
+      ) : null}
       <Body muted>{t.nutrition.disclaimer}</Body>
     </>,
   );
@@ -335,6 +361,7 @@ function RecipeCard({
   ].filter((part): part is string => part !== null);
   const a11y = [
     texts.cardA11y(card.title),
+    card.favorite ? t.nutrition.favorites.favoriteMark : null,
     numbers ? `${numbers.a11y}, ${texts.perServingA11y}` : null,
     card.isDraft ? texts.draft : null,
     card.isTestphase ? texts.testphaseA11y : null,
@@ -342,48 +369,59 @@ function RecipeCard({
     .filter((part): part is string => part !== null)
     .join('. ');
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={a11y}
-      onPress={onOpen}
-      testID={`recipe-search-hit-${card.id}`}
-      style={({ pressed }) => [
-        styles.card,
-        {
-          borderColor: theme.cardBorder,
-          backgroundColor: pressed ? theme.background : theme.surface,
-        },
-      ]}
-    >
-      {/* Gründer-Wunsch 24.10.2026: Rezeptfoto links (ohne Foto das grüne Rezept-Symbol, Design 20.10.2026). */}
-      <View style={styles.cardRow}>
-        <RecipeThumb recipeId={card.id} testID={`recipe-search-hit-${card.id}-thumb`} />
-        <View style={styles.cardText}>
-          <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
-          <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
-          {card.isDraft || card.isTestphase ? (
-            <View style={styles.flags}>
-              {card.isDraft ? <RecipeFlagChip label={texts.draft} a11y={texts.draft} /> : null}
-              {card.isTestphase ? (
-                <RecipeFlagChip
-                  label={texts.testphase}
-                  a11y={texts.testphaseA11y}
-                  testID={`recipe-search-hit-${card.id}-testphase`}
-                />
-              ) : null}
-            </View>
-          ) : null}
-          {card.outsideProfileDiet ? (
-            <Text
-              style={[styles.marker, { color: theme.text, borderColor: theme.border }]}
-              testID={`recipe-search-hit-${card.id}-outside`}
-            >
-              {texts.outsideDiet(t.nutrition.dietNames[card.outsideProfileDiet])}
-            </Text>
-          ) : null}
+    <View>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={a11y}
+        onPress={onOpen}
+        testID={`recipe-search-hit-${card.id}`}
+        style={({ pressed }) => [
+          styles.card,
+          styles.cardWithHeart,
+          {
+            borderColor: theme.cardBorder,
+            backgroundColor: pressed ? theme.background : theme.surface,
+          },
+        ]}
+      >
+        {/* Gründer-Wunsch 24.10.2026: Rezeptfoto links (ohne Foto das grüne Rezept-Symbol, Design 20.10.2026). */}
+        <View style={styles.cardRow}>
+          <RecipeThumb recipeId={card.id} testID={`recipe-search-hit-${card.id}-thumb`} />
+          <View style={styles.cardText}>
+            <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
+            <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
+            {card.isDraft || card.isTestphase ? (
+              <View style={styles.flags}>
+                {card.isDraft ? <RecipeFlagChip label={texts.draft} a11y={texts.draft} /> : null}
+                {card.isTestphase ? (
+                  <RecipeFlagChip
+                    label={texts.testphase}
+                    a11y={texts.testphaseA11y}
+                    testID={`recipe-search-hit-${card.id}-testphase`}
+                  />
+                ) : null}
+              </View>
+            ) : null}
+            {card.outsideProfileDiet ? (
+              <Text
+                style={[styles.marker, { color: theme.text, borderColor: theme.border }]}
+                testID={`recipe-search-hit-${card.id}-outside`}
+              >
+                {texts.outsideDiet(t.nutrition.dietNames[card.outsideProfileDiet])}
+              </Text>
+            ) : null}
+          </View>
         </View>
+      </Pressable>
+      {/* Herz außerhalb der Karte (kein Knopf im Knopf), oben rechts – 44 × 44. */}
+      <View style={styles.heart}>
+        <FavoriteToggle
+          recipeId={card.id}
+          title={card.title}
+          testID={`recipe-search-hit-${card.id}-favorite`}
+        />
       </View>
-    </Pressable>
+    </View>
   );
 }
 
@@ -403,6 +441,8 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   title: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
+  cardWithHeart: { paddingRight: 64 },
+  heart: { position: 'absolute', top: spacing.sm, right: spacing.sm },
   detail: { fontSize: fontSize.sm, lineHeight: 20 },
   marker: {
     alignSelf: 'flex-start',

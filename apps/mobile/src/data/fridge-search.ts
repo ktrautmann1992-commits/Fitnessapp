@@ -11,6 +11,7 @@ import {
   type NutritionLibrary,
   recipeCardNutrients,
   type RecipeCardNutrients,
+  recipeIdsWithPreference,
   recipeTotalMinutes,
   searchFridge,
   weekExcludesPregnancyCaution,
@@ -18,6 +19,7 @@ import {
 
 import type { ConsentVersions } from './mapping';
 import { mealPlanProfileFromRows, type NutritionWeekResult } from './nutrition-plan';
+import { recipePreferencesFromRows } from './recipe-preference-rows';
 import type { UserRows } from './types';
 
 /**
@@ -94,8 +96,13 @@ export function prepareFridgeSearch(input: FridgeSearchBaseInput): FridgeSearchP
   const profile = mealPlanProfileFromRows(input.rows, input.versions);
   if (profile.kind === 'incomplete') return { kind: 'incomplete' };
   if (profile.kind === 'blocked') return { kind: 'blocked', reason: profile.reason };
+  // Rezept-Favoriten (25.10.2026): mit „Nie wieder“ ausgeblendete Rezepte erscheinen auch hier nicht.
+  const hidden = new Set(recipeIdsWithPreference(recipePreferencesFromRows(input.rows), 'hidden'));
   const searchInput: FridgeSearchInput = {
-    recipes: input.library.recipes,
+    recipes:
+      hidden.size === 0
+        ? input.library.recipes
+        : input.library.recipes.filter((r) => !hidden.has(r.id)),
     foods: input.library.foods,
     profile: profile.profile,
     excludePregnancyCaution: weekExcludesPregnancyCaution(input.week.targets),

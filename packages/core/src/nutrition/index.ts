@@ -31,6 +31,7 @@ export * from './person';
 export * from './plausibility';
 export * from './portion-factor';
 export * from './recipe-nutrients';
+export * from './recipe-preferences';
 export * from './recipe-search';
 export * from './replan';
 export * from './revocation';
