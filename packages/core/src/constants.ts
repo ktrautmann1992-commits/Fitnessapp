@@ -4267,3 +4267,23 @@ export const BALANCE_PROGRESSION = {
  * ESPEN-Leitlinie Geriatrie, Clin Nutr 38(1):10–47.
  */
 export const ACTIVE_AGING_NUTRITION = { weeklyLossMaxFraction: 0.005 } as const;
+
+/**
+ * Sprachansagen beim Aufzeichnen (routes/voice-cues.ts, Gründer-Freigabe 25.10.2026): offline über die Sprachausgabe
+ * des Geräts (Deutsch), keine KI, gratis.
+ * - `stepM`: Abstand der Ansagen je Einstellung und Sportart – „je km“ beim Rad alle 5 km (ein Kilometer dauert dort
+ *   nur 2–3 Minuten, Ansagen würden nerven), „je 0,5 km“ beim Rad alle 2,5 km.
+ * - `timeStepS`: Einstellung „alle 5 Minuten“ (Bewegungszeit ohne Pausen).
+ * - `sameWithinS`: Vergleich mit dem letzten Mal auf derselben Strecke – bis so viele Sekunden „etwa gleich“
+ *   (= ROUTE_COMPARE.sameWithinS).
+ * Neutral wie W-G16 (keine Bestzeit, kein Druck). Puls nur mit Einwilligung health_data UND wenn ein Live-Wert da
+ * ist. Quelle: PRODUKTENTSCHEIDUNG (üblich in Lauf-Apps: je km bzw. je 5 Minuten).
+ */
+export const VOICE_CUES = {
+  stepM: {
+    km: { run: 1000, walk: 1000, bike: 5000 },
+    half_km: { run: 500, walk: 500, bike: 2500 },
+  },
+  timeStepS: 300,
+  sameWithinS: ROUTE_COMPARE.sameWithinS,
+} as const;

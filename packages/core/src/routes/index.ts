@@ -14,4 +14,5 @@ export * from './schema';
 export * from './simplify';
 export * from './sketch';
 export * from './track';
+export * from './voice-cues';
 export * from './weather';

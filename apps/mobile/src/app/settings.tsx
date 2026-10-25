@@ -16,6 +16,7 @@ import { EatingHelpNotice } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { CycleSettingsSection } from '@/components/cycle-entry';
 import { WeatherSettings } from '@/components/route-weather';
+import { VoiceCueSettingsCard } from '@/components/voice-cues';
 import { ListGroup, ListRow, SectionLabel } from '@/components/design';
 import { Body, Button, Card, Checkbox, LoadingState, Notice, TextField } from '@/components/ui';
 import { activePlan } from '@/data/training-plan';
@@ -341,6 +342,9 @@ export default function SettingsScreen() {
 
       {/* Wetter zu Läufen (25.10.2026): Abruf bei Open-Meteo nur mit gerundeter Startposition. */}
       <WeatherSettings />
+
+      {/* Sprachansagen beim Aufzeichnen (25.10.2026): nur dieses Gerät. */}
+      <VoiceCueSettingsCard />
 
       {/* Phase 9: Zyklus-Modul (sichtbar, wenn angeboten oder schon eingeschaltet – auch nach Wechsel auf „männlich“). */}
       <CycleSettingsSection onPress={() => router.push('/zyklus/einstellungen' as Href)} />

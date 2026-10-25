@@ -172,4 +172,9 @@ export const STORAGE_KEYS = {
    * Open-Meteo); fehlt = noch nicht gefragt (dann kein Abruf). Nur dieses Gerät, kein Gesundheitsdatum.
    */
   routeWeather: 'fitnessapp.route-weather.v1',
+  /**
+   * Sprachansagen beim Aufzeichnen (25.10.2026): je Konto Ein/Aus, Abstand (km, 0,5 km, 5 min) und Inhalte – nur
+   * dieses Gerät, kein Gesundheitsdatum (Puls wird nur angesagt, nie gespeichert).
+   */
+  voiceCues: 'fitnessapp.voice-cues.v1',
 } as const;

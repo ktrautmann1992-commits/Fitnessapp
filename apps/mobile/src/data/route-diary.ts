@@ -5,6 +5,7 @@ import {
   plannedEnduranceForRecording,
   type StoredSession,
   type TrackSummary,
+  type WorkoutStep,
 } from '@fitnessapp/core';
 
 import { activePlan } from './training-plan';
@@ -32,6 +33,24 @@ export function plannedCandidate(
   );
   const candidate = plannedEnduranceForRecording(sessions, logged, today, summary.sport);
   return candidate && startKind(rows, candidate, today) === 'today' ? candidate : null;
+}
+
+/**
+ * Intervall-Schritte (workout_steps) der HEUTE geplanten Ausdauer-Einheit gleicher Art ohne Eintrag – für die
+ * Sprachansagen „Belastung“/„Pause“ (25.10.2026); null ohne geplante Intervalle.
+ */
+export function plannedSteps(
+  rows: UserRows,
+  sport: TrackSummary['sport'],
+  today: string,
+): WorkoutStep[] | null {
+  const sessions = activePlan(rows)?.sessions ?? [];
+  const logged = new Set(
+    rows.sessionLogs.map((l) => l.planned_session_id).filter((id): id is string => id !== null),
+  );
+  const candidate = plannedEnduranceForRecording(sessions, logged, today, sport);
+  const steps = candidate?.workout_steps ?? null;
+  return steps && steps.length > 1 ? [...steps] : null;
 }
 
 /** Entwurf des Tagebuch-Eintrags (fertig ausgefüllt) oder null (zu kurz bzw. Tag außerhalb des Fensters). */
