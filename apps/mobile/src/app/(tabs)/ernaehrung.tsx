@@ -35,6 +35,7 @@ import {
 } from '@/components/nutrition';
 import { CompetitionNutritionCard } from '@/components/competition-nutrition';
 import { CustomMealDaySection } from '@/components/custom-meals';
+import { HydrationCard } from '@/components/hydration';
 import { DayOverviewCard, MealCard } from '@/components/nutrition-day-overview';
 import { FoodLogDaySection, PlanMealEaten } from '@/components/food-log';
 import { useReadableGuides } from '@/components/guides';
@@ -351,6 +352,11 @@ export default function NutritionDayScreen() {
         <Body muted testID="nutrition-numbers-hidden">
           {t.nutrition.numbersHidden}
         </Body>
+      ) : null}
+
+      {/* Trinken (25.10.2026): nur am heutigen Tag. */}
+      {picked === null || picked === today ? (
+        <HydrationCard today={today} testID="nutrition-hydration" />
       ) : null}
 
       <NutritionNotices

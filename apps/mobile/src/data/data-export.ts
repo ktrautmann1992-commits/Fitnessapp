@@ -32,6 +32,8 @@ export function localDataExport(
     /** Testmodus: Supplement-Check und „Meine Supplements“ (Phase 6 SU3/SU4, Spalten wie die Tabellen). */
     supplementScreening?: readonly unknown[];
     userSupplements?: readonly unknown[];
+    /** Testmodus: Trinken (25.10.2026, Spalten wie hydration_logs). */
+    hydrationLogs?: readonly unknown[];
   } = {},
 ): {
   format_version: number;
@@ -232,6 +234,7 @@ export function localDataExport(
     // Phase 6 SU3/SU4: Supplement-Check und „Meine Supplements“ (Gesundheitsdaten, Testmodus aus dem Gerätespeicher).
     supplement_screening: [...(extra.supplementScreening ?? [])],
     user_supplements: [...(extra.userSupplements ?? [])],
+    hydration_logs: [...(extra.hydrationLogs ?? [])],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

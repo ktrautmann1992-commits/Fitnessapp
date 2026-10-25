@@ -137,6 +137,7 @@ import {
   pruneExpiredNutritionWeeks,
 } from './meal-plan-rows';
 import { createMemoryProtectedStore, type ProtectedStore } from './protected-store';
+import { HYDRATION_KEYS } from './hydration';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
 import { consentRecordsFromRows, type ConsentVersions, versionsFromDocuments } from './mapping';
@@ -1590,6 +1591,12 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           trackedRoutes: (db.trackedRoutes ?? []).filter((r) => r.user_id === session.userId),
           wearables: wearableRowsFor(db.wearables ?? EMPTY_LOCAL_WEARABLES, rows, session.userId),
           ...localSupplementExport(db.supplements ?? [], session.userId),
+          // Trinken (25.10.2026): eigener Gerätespeicher (data/hydration.ts), nur eigene Zeilen.
+          hydrationLogs: (
+            (await readJson<{ user_id?: unknown }[]>(store, HYDRATION_KEYS.local).catch(
+              () => null,
+            )) ?? []
+          ).filter((r) => r && r.user_id === session.userId),
         }),
         {
           email: session.email,

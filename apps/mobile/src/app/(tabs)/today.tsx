@@ -70,6 +70,7 @@ import {
   PLAN_RECREATE_NEEDED,
   useApp,
 } from '@/state/app-state';
+import { HydrationCard } from '@/components/hydration';
 import { healthConsentStatus, isReminderDue, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { useLargeView } from '@/lib/accessibility';
@@ -1023,6 +1024,9 @@ export default function TodayScreen() {
           </Card>
         ) : null}
       </View>
+
+      {/* Trinken (25.10.2026): Ring, +250/+500 ml, 7 Tage. */}
+      <HydrationCard today={today} testID="today-hydration" />
 
       <Card>
         {planNameLine(plan) ? <Body testID="plan-name">{planNameLine(plan)}</Body> : null}

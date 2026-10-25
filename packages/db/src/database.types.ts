@@ -2523,6 +2523,30 @@ export type Database = {
           },
         ];
       };
+      hydration_logs: {
+        Row: {
+          amount_ml: number;
+          created_at: string;
+          day: string;
+          id: string;
+          user_id: string;
+        };
+        Insert: {
+          amount_ml: number;
+          created_at?: string;
+          day: string;
+          id: string;
+          user_id?: string;
+        };
+        Update: {
+          amount_ml?: number;
+          created_at?: string;
+          day?: string;
+          id?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       tracked_routes: {
         Row: {
           base_route_id: string | null;
@@ -3387,6 +3411,9 @@ export type Database = {
         Returns: undefined;
       };
       update_tracked_route: { Args: { p_route: Json }; Returns: undefined };
+      add_hydration: { Args: { p_entry: Json }; Returns: string };
+      delete_hydration: { Args: { p_id: string }; Returns: undefined };
+      delete_all_hydration: { Args: never; Returns: number };
       set_route_weather: { Args: { p_route: string; p_weather: Json | null }; Returns: undefined };
       set_route_auto_match: { Args: { p_enabled: boolean; p_route: string }; Returns: undefined };
       set_route_match: {

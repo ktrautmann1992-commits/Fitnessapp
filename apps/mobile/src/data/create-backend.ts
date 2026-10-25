@@ -16,6 +16,7 @@ import { createDeviceProtectedStores } from './device-protected-store';
 import type { KeyValueStore } from './kv';
 import { createLocalBackend } from './local-backend';
 import { readWebUrl } from './food-photo-remote';
+import { attachHydration, createLocalHydration, createRemoteHydration } from './hydration';
 import { createSupabaseBackend } from './supabase-backend';
 import type { ConsentPlatform } from './types';
 
@@ -83,6 +84,15 @@ export function createBackend(): Backend {
       // Etappe E3: Gericht per Foto über apps/web (fehlt die Adresse, ist „Per Foto“ nicht verfügbar).
       webUrl: readWebUrl(process.env.EXPO_PUBLIC_WEB_URL),
     });
+    attachHydration(
+      backend,
+      createRemoteHydration({
+        client,
+        store: deviceStore,
+        userId: async () => (await backend.getSession())?.userId ?? null,
+        now,
+      }),
+    );
     return attachCycle(backend, createRemoteCycle({ client, stores: cycleStores }));
   }
   // Testmodus: einzige Stelle, an der die Plan-Engine Entwürfe nutzen darf (allowDrafts in createLocalBackend).
@@ -97,5 +107,14 @@ export function createBackend(): Backend {
     // Etappe E4: laufende Aufzeichnung (Standortdaten) im eigenen geschützten Speicher.
     routeRecordingStore: stores.routeRecording,
   });
+  attachHydration(
+    local,
+    createLocalHydration({
+      store: deviceStore,
+      userId: async () => (await local.getSession())?.userId ?? null,
+      now,
+      today: () => todayIso(),
+    }),
+  );
   return attachCycle(local, createLocalCycle(cycleStores));
 }

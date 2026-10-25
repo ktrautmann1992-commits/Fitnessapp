@@ -20,6 +20,7 @@ import {
 } from './de-dashboard';
 import { deDay } from './de-day';
 import { deEndurance } from './de-endurance';
+import { deHydration } from './de-hydration';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
@@ -1684,6 +1685,7 @@ export const de = {
   adjust: deAdjust,
   /** Ausdauer: Aufzeichnen, Meine Läufe, Auswertung, Story-Bild (Etappen E3–E6). */
   endurance: deEndurance,
+  hydration: deHydration,
   // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
   workouts: deWorkouts,
   /** Smartwatch über Health Connect (Phase 8). */

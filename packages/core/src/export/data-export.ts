@@ -81,6 +81,8 @@ export const DATA_EXPORT_TABLES = [
   // Widerruf gelöscht)
   'supplement_screening',
   'user_supplements',
+  // Trinken-Tracker (25.10.2026): getrunkene Mengen je Tag
+  'hydration_logs',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];
