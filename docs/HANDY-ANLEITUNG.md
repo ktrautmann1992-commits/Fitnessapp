@@ -1784,6 +1784,24 @@ nacheinander **Onboarding, Heute, Training, Übung, Einstellungen** öffnen: Nic
 kein Text überlappt. Zusätzlich mit „Große Ansicht“ an. Ergebnis bitte Claude schreiben, z. B. „FA5 Android: 1–6 ok,
 Training: Pausen-Timer abgeschnitten“.
 
+## Teil 9t – Schon-Modus, Reise-Modus, Aufwärmen testen (25.10.2026, Testmodus)
+
+Chrome am Handy, Vorschau-Link aus dem Pull Request, **Inkognito-Tab**. Onboarding mit Einwilligung
+„Gesundheitsdaten“ und Kraft im Studio.
+
+1. **Heute → Einstellungen → „Schmerz-/Verletzungsmodus“** → auf der Figur das **Knie** antippen (oder unten in der
+   Liste), **mittel**, **7 Tage** → **„Schon-Modus starten“**.
+2. **Zurück zu Heute:** oben „Schon-Modus bis …“, an der Einheit „heute geschont“, keine Kniebeugen mehr.
+3. Wieder in den Schon-Modus → Knie **stark** → vor dem Speichern erscheint „Bitte ärztlich abklären lassen“.
+   **Beenden** → auf „Heute“ ist wieder der normale Plan.
+4. **Einstellungen → „Reise-Modus“** → heute bis in 6 Tagen, **Nur Körpergewicht**, **30 min** → Speichern →
+   auf „Heute“ steht „Reise-Modus bis …“, die Übungen gehen ohne Geräte. **Schlingentrainer** zeigt den Hinweis
+   „noch keine eigenen Übungen“.
+5. **Training starten** → oben „Aufwärmen (ca. 5 min)“, unten „Dehnen danach“, jeweils **Überspringen**. In den
+   Einstellungen **„Aufwärmen & Dehnen“** ausschalten → im Training kein Block mehr.
+
+Rückmeldung an Claude z. B. „Training-Modi: 1–5 ok, Körperkarte zu klein“.
+
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
 - Bei Unsicherheit einfach fragen: „Erklär mir in einfachen Worten, was du gerade geändert hast.“
