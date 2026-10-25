@@ -1,5 +1,5 @@
 /**
- * Kraft-Entwicklung je Übung (Gründer-Freigabe 25.10.2026, KONZEPT 10.2a): Kennzahlen je Einheit, Zeiträume,
+ * Kraft-Entwicklung je Übung (Gründer-Freigabe 25.10.2026, KONZEPT 11.4): Kennzahlen je Einheit, Zeiträume,
  * Vergleich „gegenüber vor 4 Wochen“, Übersicht. Grenzfälle: leerer Verlauf, eine Einheit, Erholungswochen, Wechsel der
  * Belastungsart, eigenes Körpergewicht, Halteübung, mehrere Einheiten an einem Tag, ungültige Werte, Zukunft.
  */

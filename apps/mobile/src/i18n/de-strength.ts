@@ -1,5 +1,5 @@
 /**
- * Texte „Kraft-Entwicklung“ (Gründer-Freigabe 25.10.2026, KONZEPT 10.2a): Kurve je Übung, Vergleich im Eintrag,
+ * Texte „Kraft-Entwicklung“ (Gründer-Freigabe 25.10.2026, KONZEPT 11.4): Kurve je Übung, Vergleich im Eintrag,
  * Kachel unter Fortschritt. Neutral formuliert: eigene frühere Werte, keine „Bestleistung“, kein „Rekord“, keine
  * Abzeichen, keine Bewertung („super“, „schlecht“) – weniger als vorher ist genauso sachlich beschrieben wie mehr.
  * Keine geschätzte Maximalkraft (1RM).

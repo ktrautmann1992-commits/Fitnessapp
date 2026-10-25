@@ -4,7 +4,7 @@ import type { LoadType } from '../enums';
 import type { ExerciseLogEntry } from './types';
 
 /**
- * Kraft-Entwicklung je Übung (Gründer-Freigabe 25.10.2026, KONZEPT 10.2a) – rein aus dem eigenen Tagebuch, ohne KI.
+ * Kraft-Entwicklung je Übung (Gründer-Freigabe 25.10.2026, KONZEPT 11.4) – rein aus dem eigenen Tagebuch, ohne KI.
  *
  * Je Einheit (ein `exercise_logs`-Eintrag mit mindestens einem abgehakten Satz) ein Punkt, IMMER chronologisch
  * (Datum, dann Uhrzeit) – nie nach Wert sortiert, keine „Bestleistung“, keine Abzeichen (wie W-G16 bei Läufen): nur
@@ -12,7 +12,7 @@ import type { ExerciseLogEntry } from './types';
  *
  * Kennzahlen (`StrengthMetric`):
  * - `weight`: schwerster abgehakter Satz in kg (je Hantel bzw. Langhantel gesamt, wie eingetragen). Bewusst KEINE
- *   geschätzte Maximalkraft (1RM, KONZEPT 10.2 und Regel V4).
+ *   geschätzte Maximalkraft (1RM, KONZEPT 5 „Verlauf … keine 1RM“ und Regel V4).
  * - `volume`: Summe Gewicht × Wiederholungen aller abgehakten Sätze mit Gewicht (kg).
  * - `reps`: Wiederholungen gesamt (alle abgehakten Sätze) – bei Übungen mit dem eigenen Körpergewicht die Hauptkurve.
  * - `time`: längste Haltezeit in Sekunden (Halteübungen).

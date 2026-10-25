@@ -1247,6 +1247,26 @@ ist** (geschützter Speicher) – Tab schließen = Anpassungen weg, der Plan ist
 Die Fälle über mehrere Wochen (Schritte 4 und 5, Stillstand → Übung getauscht, abgelaufener Vorschlag) prüft der
 automatische Test `e2e/live-adjust.spec.ts` mit festem Datum – im Pull Request unter **Checks → ci** grün.
 
+## Teil 7v – Lieblingsgerichte und Kraft-Entwicklung testen (25.10.2026, Testmodus)
+Beides gratis, ohne KI, alles bleibt privat auf dem Handy bzw. Konto.
+
+**Lieblingsgerichte und „Nie wieder“**
+1. Vorschau-Link im Handy-Browser öffnen → **Testmodus starten** → Onboarding mit Ernährung → **Ernährung**.
+2. An einer Mahlzeit oben rechts auf **⋯** tippen → **Lieblingsgericht** → unter dem Titel steht „Lieblingsgericht“.
+3. **Rezepte suchen** → jedes Rezept hat rechts ein Herz; **Nur Lieblingsgerichte** zeigt nur eure Herzen.
+4. Ein Rezept öffnen → Karte **Dein Geschmack** → **Nie wieder** → zurück: das Rezept fehlt in der Suche, unten steht
+   „1 Gericht ist ausgeblendet.“ → **Ausgeblendete Gerichte** → **Wieder zulassen**.
+5. Den Weg gibt es auch unter **Mehr → Einstellungen → Ernährung → Ausgeblendete Gerichte**.
+6. Ab der nächsten Woche plant die App das ausgeblendete Gericht nicht mehr ein; die laufende Woche bleibt (mit
+   **Tauschen** ersetzt ihr es sofort).
+
+**Kraft-Entwicklung**
+1. Zwei bis drei Krafttrainings im Trainingsmodus eintragen (für den Test auch an verschiedenen Tagen).
+2. **Fortschritt** → Kachel **Kraft-Entwicklung** mit Mini-Kurve je Übung → antippen.
+3. Oben die Kurve: **Gewicht / Volumen / Wiederholungen** und **4 W / 3 M / Alles** umschalten.
+4. **Verlauf** → ein Training öffnen → unter jeder Übung z. B. „Kniebeuge: +5 kg gegenüber vor 4 Wochen“.
+Es gibt bewusst keine Bestleistungen, Rekorde oder Abzeichen und keine geschätzte Maximalkraft.
+
 ## Teil 7o – Workouts mit Sternen und Timer testen (20.10.2026, Testmodus)
 Fertige Workouts (1 Stern leicht – 5 Sterne sehr schwer) mit Timer; nach dem Abschluss stehen sie als Eintrag am
 heutigen Tag. Alle 27 Workouts sind **Testphase – noch nicht fachlich geprüft** (so steht es auch in der App).

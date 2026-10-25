@@ -545,7 +545,7 @@ export const PARTIAL_START_WEEK_MIN_SHARE = 0.5;
 export const E1RM_ESTIMATE = { epleyDivisor: 30, maxRepsPlusReserve: 12 } as const;
 
 /**
- * Kraft-Entwicklung je Übung (Gründer-Freigabe 25.10.2026, KONZEPT 10.2a) – PRODUKTENTSCHEIDUNG, keine Schutzgrenze:
+ * Kraft-Entwicklung je Übung (Gründer-Freigabe 25.10.2026, KONZEPT 11.4) – PRODUKTENTSCHEIDUNG, keine Schutzgrenze:
  * - `rangeDays`: Zeiträume „4W“ (28 Tage) und „3M“ (91 Tage = 13 Wochen) bis einschließlich heute; „Alles“ ohne Grenze.
  * - `compareWeeks`: Vergleich „gegenüber vor 4 Wochen“ – Bezug ist die letzte Einheit, die mindestens so lange zurück-
  *   liegt; gibt es keine, die früheste Einheit, wenn sie mindestens `compareMinDays` zurückliegt (sonst kein Vergleich).
@@ -553,7 +553,7 @@ export const E1RM_ESTIMATE = { epleyDivisor: 30, maxRepsPlusReserve: 12 } as con
  *   nicht.
  * - `overviewLimit`/`overviewMinSessions`: Kachel „Kraft-Entwicklung“ zeigt höchstens 3 Übungen mit mindestens 2
  *   Einheiten im Zeitraum „3M“ (am häufigsten trainierte zuerst).
- * Bewusst KEINE geschätzte Maximalkraft (1RM) in der Anzeige: KONZEPT 10.2 „keine 1RM“ und Regel V4 „keine
+ * Bewusst KEINE geschätzte Maximalkraft (1RM) in der Anzeige: KONZEPT 5 „keine 1RM“ und Regel V4 „keine
  * Maximaltests“ – gezeigt wird der schwerste tatsächlich gemachte Satz (`E1RM_ESTIMATE` bleibt nur für Arbeitsgewichte).
  */
 export const STRENGTH_PROGRESS = {
