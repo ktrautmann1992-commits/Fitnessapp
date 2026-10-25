@@ -13,3 +13,4 @@ export * from './summary';
 export * from './achievement';
 export * from './types';
 export * from './workout';
+export * from './strength-progress';
