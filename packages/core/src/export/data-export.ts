@@ -81,6 +81,11 @@ export const DATA_EXPORT_TABLES = [
   // Widerruf gelöscht)
   'supplement_screening',
   'user_supplements',
+  // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md Abschnitt 21): Schuhe, Standard je Sportart, Wahl je Lauf (kein
+  // Gesundheitsdatum)
+  'shoes',
+  'shoe_defaults',
+  'shoe_assignments',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

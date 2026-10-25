@@ -1194,10 +1194,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_supplement_user_data.sql (Phase 6 SU3, davor Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_shoes.sql (Schuhe 25.10.2026, davor Phase 6 SU3, Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_supplement_user_data\.sql$/,
+      /_shoes\.sql$/,
     );
   });
 });
@@ -2865,7 +2865,8 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
     for (const [marker, newestFile] of [
       [revokeMarker, /_supplement_user_data\.sql$/],
-      [exportMarker, /_supplement_user_data\.sql$/],
+      // Export seit dem Schuh-Kilometerzähler (25.10.2026) in *_shoes.sql.
+      [exportMarker, /_shoes\.sql$/],
     ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
       // Widerruf und Export seit Phase 6 SU3 in *_supplement_user_data.sql (davor Phase 8, Einkaufen E1, E2, 4b Etappe B,
