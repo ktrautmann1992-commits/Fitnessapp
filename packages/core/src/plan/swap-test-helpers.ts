@@ -7,10 +7,11 @@ import type { EquipmentLocation, ExercisePreferenceKind } from '../enums';
 import type { PlannedExerciseDraft } from './adapt';
 import type { DaySwap } from './day-swaps';
 import type { ExercisePreference } from './preferences';
-import { MONDAY, repoLibrary } from './test-library';
+import { MONDAY, repoLibraryWithPending } from './test-library';
 import type { StoredSession } from './view';
 
-export const LIB = repoLibrary();
+// Inkl. der Calisthenics-Vorlagen, die erst mit claude/calisthenics-inhalte-2 nach content/ kommen.
+export const LIB = repoLibraryWithPending();
 export const EXERCISES = LIB.exercises;
 
 export function ex(id: string): Exercise {

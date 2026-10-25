@@ -10,11 +10,12 @@ import { generateTrainingPlan } from './generate';
 import { planInputsSchema, planInputsSnapshot } from './inputs';
 import { savePlanInputsSchema, savePlanPayloadSchema, toSavePlanPayload } from './payload';
 import { planSnapshot } from './rows';
-import { FULL_HOME, MONDAY, person, repoLibrary } from './test-library';
+import { FULL_HOME, MONDAY, person, repoLibraryWithPending } from './test-library';
 import { planTitle } from './title';
 import { planNeedsUpdate } from './update';
 
-const library = repoLibrary();
+// Inkl. der Calisthenics-Vorlagen, die erst mit claude/calisthenics-inhalte-2 nach content/ kommen.
+const library = repoLibraryWithPending();
 
 /** Schlüssel der Angaben im Payload VOR Etappe Z1 (Reihenfolge eingeschlossen). */
 const KEYS_BEFORE_Z1 = [

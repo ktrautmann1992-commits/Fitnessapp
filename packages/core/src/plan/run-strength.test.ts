@@ -20,14 +20,20 @@ import {
   runStrengthUnit,
 } from './run-strength';
 import { planSafetyRules } from './safety';
-import { MONDAY, person, repoLibrary } from './test-library';
+import { loadPendingWorkoutData, MONDAY, person, repoLibrary } from './test-library';
 
-/** Workouts aus content/workouts (echter Inhaltsstand). */
+/**
+ * Workouts aus content/workouts (echter Inhaltsstand) plus die Lauf-Kraft-Einheiten, die erst mit
+ * claude/calisthenics-inhalte-2 nach content/ kommen (siehe test-library).
+ */
 function loadRepoWorkouts(): Workout[] {
   const dir = new URL('../../../../content/workouts/', import.meta.url);
-  return readdirSync(dir)
-    .filter((name) => name.endsWith('.json'))
-    .map((name) => workoutSchema.parse(JSON.parse(readFileSync(new URL(name, dir), 'utf8'))));
+  return [
+    ...readdirSync(dir)
+      .filter((name) => name.endsWith('.json'))
+      .map((name) => JSON.parse(readFileSync(new URL(name, dir), 'utf8')) as unknown),
+    ...loadPendingWorkoutData(),
+  ].map((data) => workoutSchema.parse(data));
 }
 
 const ctx = (

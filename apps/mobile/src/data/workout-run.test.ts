@@ -16,6 +16,7 @@ import { draftToPayload } from './workout-draft';
 import { markWorkoutSource, workoutsFromBundle, workoutsFromDbRows } from './workout-library';
 import { activeRunStore, startActiveRun, workoutLogDraft } from './workout-run';
 import { CONTENT_BUNDLE } from '../generated/content-files';
+import { pendingRunStrengthWorkoutFiles } from '../test/pending-content';
 
 const T0 = Date.parse(`${TODAY}T08:00:00.000Z`);
 
@@ -84,8 +85,12 @@ describe('Workout-Bibliothek im Testmodus', () => {
     expect(workoutsFromBundle(CONTENT_BUNDLE.files, [first]).map((w) => w.id)).toEqual([
       (first.data as Workout).id,
     ]);
-    // Lauf-Kraft-Entwürfe (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) sind im Testmodus dabei.
-    const runStrength = CONTENT_BUNDLE.workoutFiles.filter(
+    // Lauf-Kraft-Entwürfe (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) sind im Testmodus dabei. Sie kommen erst mit
+    // claude/calisthenics-inhalte-2 (nach PR #182) ins Bündel – bis dahin die unveränderten Kopien.
+    expect(
+      CONTENT_BUNDLE.workoutFiles.filter((f) => (f.data as Workout).category === 'run_strength'),
+    ).toEqual([]);
+    const runStrength = pendingRunStrengthWorkoutFiles().filter(
       (f) => (f.data as Workout).category === 'run_strength',
     );
     expect(runStrength.length).toBe(4);

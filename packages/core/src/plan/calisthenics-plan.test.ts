@@ -13,10 +13,11 @@ import { travelOnDay, type TravelMode } from '../modes/travel';
 import { equipmentProfile } from './equipment-profile';
 import { generateTrainingPlan } from './generate';
 import { goalProfile } from '../goals/profile';
-import { MONDAY, person, repoLibrary } from './test-library';
+import { MONDAY, person, repoLibraryWithPending } from './test-library';
 import { prepareSessionForDisplay, type StoredSession } from './view';
 
-const LIB = repoLibrary();
+// Calisthenics-Vorlagen kommen erst mit claude/calisthenics-inhalte-2 nach content/ (siehe test-library).
+const LIB = repoLibraryWithPending();
 type HomeEquipment = { equipmentId: EquipmentId; weightsKg: number[] }[];
 const BAR: HomeEquipment = [{ equipmentId: 'pull_up_bar', weightsKg: [] }];
 const BAR_DIPS: HomeEquipment = [...BAR, { equipmentId: 'dip_station', weightsKg: [] }];

@@ -48,9 +48,10 @@ function withData(file: ContentFile, change: (data: Record<string, unknown>) => 
 }
 
 describe('Katalog aus den Repository-Dateien', () => {
-  it('Startbestand + Körpergewicht (K1/K2) + 16 Aufwärm-/Dehnübungen + 74 Calisthenics/Schlinge/Lauf-Kraft: 170 Übungen, 24 + 18 + 7 Vorlagen, keine kaputten Dateien, nichts blockiert', () => {
+  it('Startbestand + Körpergewicht (K1/K2) + 16 Aufwärm-/Dehnübungen + 74 Calisthenics/Schlinge/Lauf-Kraft: 170 Übungen, 24 + 18 + 4 Vorlagen, keine kaputten Dateien, nichts blockiert', () => {
     expect(catalog.exercises).toHaveLength(170);
-    expect(catalog.templates).toHaveLength(49);
+    // Die 3 Calisthenics-Vorlagen kommen erst mit claude/calisthenics-inhalte-2 (nach PR #182) nach content/.
+    expect(catalog.templates).toHaveLength(46);
     expect(catalog.brokenFiles).toEqual([]);
     expect(catalog.blockingTotal).toBe(0);
     expect(countByStatus(catalog.exercises.map((e) => e.exercise.status))).toEqual({
@@ -73,7 +74,7 @@ describe('Katalog aus den Repository-Dateien', () => {
     });
     expect(
       filterTemplates(published.templates, parseFilters({ status: 'published' })),
-    ).toHaveLength(49);
+    ).toHaveLength(46);
     expect(filterTemplates(published.templates, parseFilters({ status: 'draft' }))).toEqual([]);
   });
 
@@ -206,26 +207,21 @@ describe('Filter und Suche', () => {
       parseFilters({ ziel: 'fat_loss', level: 'beginner', tage: '3', ort: 'gym' }),
     );
     expect(one.map((t) => t.template.id)).toEqual(['fettverlust-einsteiger-3t-studio']);
-    // Zuhause: 12 mit Kurzhanteln/Bändern + 18 Körpergewicht + 3 Calisthenics + 4 Schlingentrainer; 4 Tage: 12 + 6
-    // Körpergewicht; 2 Tage nur Körpergewicht + Calisthenics Einsteiger.
-    expect(filterTemplates(catalog.templates, parseFilters({ ort: 'home' }))).toHaveLength(37);
+    // Zuhause: 12 mit Kurzhanteln/Bändern + 18 Körpergewicht + 4 Schlingentrainer; 4 Tage: 12 + 6 Körpergewicht;
+    // 2 Tage nur Körpergewicht. Die 3 Calisthenics-Vorlagen (Zuhause, eine davon 2 Tage) kommen erst mit
+    // claude/calisthenics-inhalte-2 (nach PR #182) nach content/.
+    expect(filterTemplates(catalog.templates, parseFilters({ ort: 'home' }))).toHaveLength(34);
     expect(filterTemplates(catalog.templates, parseFilters({ tage: '4' }))).toHaveLength(18);
     const two = filterTemplates(catalog.templates, parseFilters({ tage: '2' }));
-    expect(two).toHaveLength(7);
-    expect(
-      two.every(
-        (t) =>
-          t.template.id.endsWith('-koerpergewicht') ||
-          t.template.id === 'calisthenics-einsteiger-2t',
-      ),
-    ).toBe(true);
+    expect(two).toHaveLength(6);
+    expect(two.every((t) => t.template.id.endsWith('-koerpergewicht'))).toBe(true);
   });
 
   it('Status, Prüfergebnis und KI-Kennzeichnung', () => {
     expect(filterTemplates(catalog.templates, parseFilters({ status: 'published' }))).toEqual([]);
     const warned = filterTemplates(catalog.templates, parseFilters({ fehler: 'gelb' }));
     const clean = filterTemplates(catalog.templates, parseFilters({ fehler: 'ohne' }));
-    expect(warned.length + clean.length).toBe(49);
+    expect(warned.length + clean.length).toBe(46);
     expect(filterTemplates(catalog.templates, parseFilters({ fehler: 'rot' }))).toEqual([]);
     expect(filterExercises(catalog.exercises, parseFilters({ ki: 'offen' }))).toHaveLength(170);
     expect(filterExercises(catalog.exercises, parseFilters({ ki: 'geprueft' }))).toEqual([]);

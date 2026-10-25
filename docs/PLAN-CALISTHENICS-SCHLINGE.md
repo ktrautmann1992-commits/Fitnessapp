@@ -147,6 +147,13 @@ muskelaufbau-einsteiger-3t-schlingentrainer, fettverlust-einsteiger-3t-schlingen
 
 **Workouts (4):** lauf-kraft-waden-fuesse, lauf-kraft-huefte-rumpf, lauf-abc-koordination, lauf-kraft-ohne-spruenge.
 
+**Landung in zwei Schritten (25.10.2026):** Die Pflichtprüfung „sources-integrity (Code von main)“ prüft
+`content/` mit dem Code von main – der kennt `goal_type` „calisthenics“ und die Kategorie „run_strength“ erst nach
+dem Merge von PR #182. Deshalb kommen die 3 Calisthenics-Vorlagen und die 4 Lauf-Kraft-Workouts erst danach mit dem
+Branch `claude/calisthenics-inhalte-2` nach `content/` (unverändert). Bis dahin: Ziel Calisthenics nutzt die
+nächstbeste Vorlage (Güte „fallback“), der Lauf-Kraft-Block am Lauftag bleibt ausgeblendet; die Logik-Tests nutzen
+unveränderte Kopien in `packages/core/src/plan/test-fixtures/inhalte-folgen/`.
+
 Freigabe wie gewohnt über `content-seed.yml` (nur `published` + Fachprüfung). `content:validate`: 0 Fehler,
 136 gelbe Hinweise (nur V11 „kleine Muskelgruppen“ in Vorlagen).
 

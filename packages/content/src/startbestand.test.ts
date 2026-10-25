@@ -29,15 +29,14 @@ const standard = result.templates.filter((t) => !isBodyweightTemplate(t) && !ext
 const MATRIX_GOALS = TEMPLATE_GOAL_TYPES.filter((goal) => goal !== 'calisthenics');
 
 describe('Startbestand (content/)', () => {
-  it('ca. 170 Übungen (Startbestand + Körpergewicht K1/K2 + Aufwärmen/Dehnen + Calisthenics/Schlingentrainer/Lauf-ABC) und 24 + 18 + 7 Plan-Vorlagen, alle mit gültigem Schema', () => {
+  // Die 3 Calisthenics-Vorlagen kommen erst mit claude/calisthenics-inhalte-2 (nach PR #182) nach content/ –
+  // die Pflichtprüfung mit dem Code von main kennt goal_type „calisthenics“ bis zum Merge noch nicht.
+  it('ca. 170 Übungen (Startbestand + Körpergewicht K1/K2 + Aufwärmen/Dehnen + Calisthenics/Schlingentrainer/Lauf-ABC) und 24 + 18 + 4 Plan-Vorlagen, alle mit gültigem Schema', () => {
     expect(strayFiles).toEqual([]);
     expect(result.exercises.length).toBeGreaterThanOrEqual(45);
     expect(result.exercises.length).toBeLessThanOrEqual(180);
-    expect(result.templates).toHaveLength(49);
+    expect(result.templates).toHaveLength(46);
     expect(extra.map((t) => t.id).sort()).toEqual([
-      'calisthenics-einsteiger-2t',
-      'calisthenics-einsteiger-3t',
-      'calisthenics-fortgeschritten-3t',
       'fettverlust-einsteiger-3t-schlingentrainer',
       'fitness-einsteiger-3t-schlingentrainer',
       'fitness-fortgeschritten-3t-schlingentrainer',

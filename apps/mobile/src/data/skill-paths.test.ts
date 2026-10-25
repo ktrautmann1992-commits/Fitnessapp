@@ -14,12 +14,15 @@ import {
 import { describe, expect, it } from 'vitest';
 
 import { deCalisthenics } from '../i18n/de-calisthenics';
+import { CONTENT_BUNDLE } from '../generated/content-files';
 import { planPersonRows, seededBackend, TODAY, USER_ID, VERSIONS } from '../test/fixtures';
+import { pendingRunStrengthWorkoutFiles } from '../test/pending-content';
 import { runStrengthFor } from './run-strength';
 import { draftSkillEntry, skillGateContextFromRows, skillHintsForDraft } from './skill-paths';
 import { effectiveSafetyRules as effectiveSafetyRulesOrNull } from './training-plan';
 import type { UserRows } from './types';
 import type { WorkoutDraft } from './workout-draft';
+import { workoutsFromBundle } from './workout-library';
 
 async function library(): Promise<PlanLibrary> {
   const { backend } = seededBackend(planPersonRows());
@@ -28,9 +31,16 @@ async function library(): Promise<PlanLibrary> {
   return lib;
 }
 
+/**
+ * Workouts im Testmodus plus die Lauf-Kraft-Einheiten, die erst mit claude/calisthenics-inhalte-2 (nach PR #182)
+ * ins Bündel kommen (siehe test/pending-content).
+ */
 async function workouts(): Promise<readonly Workout[]> {
   const { backend } = seededBackend(planPersonRows());
-  return (await backend.loadWorkoutLibrary()).workouts;
+  return [
+    ...(await backend.loadWorkoutLibrary()).workouts,
+    ...workoutsFromBundle(CONTENT_BUNDLE.files, pendingRunStrengthWorkoutFiles()),
+  ];
 }
 
 function effectiveSafetyRules(...args: Parameters<typeof effectiveSafetyRulesOrNull>) {
