@@ -36,6 +36,7 @@ import {
   RunHighlights,
   SplitInsightBars,
 } from '@/components/run-insights';
+import { RouteMatchSection } from '@/components/route-match-card';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { SessionKcalStat } from '@/components/session-kcal';
 import { HeartZonesBar, WearableLogInfo } from '@/components/wearables';
@@ -248,6 +249,20 @@ export default function RouteDetailScreen() {
         </Notice>
       ) : null}
 
+      {/* „Meine Strecken“ (25.10.2026): Vorschlag „Gleiche Strecke wie …“, Zuordnung, „Zum letzten Mal“. */}
+      {saved && result ? (
+        <RouteMatchSection
+          route={saved}
+          routes={result.routes}
+          onChanged={async () => {
+            forgetTrackedRoutes();
+            await reload();
+          }}
+          onOpenRoute={(favoriteId) => router.push(`/ausdauer/strecke/${favoriteId}` as Href)}
+          onAnnounce={(text) => setLive((c) => ({ text, version: c.version + 1 }))}
+        />
+      ) : null}
+
       {/* Uhr-Lauf: Karte und Pulszonen gleich unter der Kopf-Karte (Mockup s5). */}
       {watch ? mapCard : null}
       {heart ? (
@@ -295,7 +310,7 @@ export default function RouteDetailScreen() {
       {/* Phase 8: Puls der Uhr, wenn die Aufzeichnung mit einer Uhr-Einheit zusammengeführt wurde. */}
       {info.session_log_id ? <WearableLogInfo logId={info.session_log_id} compact={watch} /> : null}
 
-      {comparison ? (
+      {comparison && saved?.is_favorite ? (
         <Notice tone="info" title={D.compare} testID="route-compare">
           {comparison}
         </Notice>

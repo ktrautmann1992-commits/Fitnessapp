@@ -1927,3 +1927,42 @@ Format: _Worum es geht – Warum wir fragen – Empfehlung._
    vor S2b ODbL-Share-Alike.
 8. **Test-Läufe draußen:** mit der APK 2–3 echte Läufe/Radfahrten (Handy gesperrt, Funkloch, 60+ Minuten) und
    Rückmeldung im PR.
+
+## Nachtrag 25.10.2026 – „Meine Strecken“ (gleiche Strecke wiedererkennen)
+
+Gründer-Entscheidungen (Vorschlag 24.10.2026, Standardwerte übernommen): (1) Läufe ohne Antwort zählen **vorläufig**
+mit (Kennzeichnung „automatisch“), bis „Nein“ getippt wird; (2) eine Runde **andersherum** ist eine eigene Strecke;
+(3) Rundkurs mit **anderem Startpunkt**: erst später; (4) „Favorit“ heißt in der Oberfläche **„Meine Strecke“**
+(technisch bleibt `is_favorite`).
+
+**Erkennung** (`packages/core/src/routes/match.ts`, feste Regeln auf dem Gerät, keine KI, gratis): gleiche Person
+und Sportart → nicht abgelehnt → Distanz ±10 % → Rahmen (bbox + 200 m) überlappen → Start und Ende je ≤ 150 m →
+beide Linien vereinfacht, alle 25 m neu abgetastet (höchstens 200 Punkte), überstehende Anfangs-/Endstücke bis 150 m
+abgeschnitten (verspäteter GPS-Start der Uhr) → diskreter Fréchet-Abstand ≤ 60 m; passt die umgedrehte Linie um mehr
+als 10 m besser, ist es „andersherum“ (kein Treffer). Mehrere Treffer → kleinster Abstand, dann älteste Strecke, dann
+id. Konstanten: `ROUTE_MATCH` in `constants.ts` (Quellen dort). `autoMatchRoutes` läuft nach jedem Laden der Strecken
+(App-Aufzeichnung, GPX) und direkt nach dem Abgleich mit der Uhr (`apps/mobile/src/data/route-match.ts`).
+
+**Vergleich** (`compare.ts`): `compareAttempts` zählt Läufe mit `route_match` repeat/auto/confirmed (nie rejected);
+`routeHistory` (Verlauf, zeitlich, nicht vergleichbare markiert, kein Feld „best“), `attemptPaceText`
+(„Ø Pace 5:38 → 5:24 /km“, Rad km/h). Übersichten in `my-routes.ts` (`myRouteTiles`, `routeMatchInfo`,
+`latestAutoMatch`).
+
+**Datenbank** (`20261025120000_route_match.sql`, nur additiv, RLS unverändert): `tracked_routes.route_match`
+(CHECK repeat/auto/confirmed/rejected, Bestand mit Verweis → repeat), `match_rejected_ids uuid[]` (höchstens 20),
+`auto_match boolean default true`; Trigger hält Herkunft und Verweis stimmig (auch beim Löschen der Strecke);
+`set_route_match(p_route, p_favorite, p_state)` (auto | confirmed | rejected | clear; eigene Strecke, Ziel eigener
+Favorit derselben Sportart, ±10 %, kein Kreis; „auto“ überschreibt keine Entscheidung) und `set_route_auto_match`.
+Export über `export_my_data` automatisch (ganze Zeile). pgTAP: `supabase/tests/68_route_match.test.sql`. Testmodus:
+gleiche Regeln in `apps/mobile/src/data/tracked-route-rows.ts`.
+
+**App**: Ausdauer → Hinweis „Lauf von der Uhr (…) passt vermutlich zu …“ und Kacheln „Meine Strecken“ (zuletzt
+gelaufen zuerst); Lauf-Detail → Vorschlag „Gleiche Strecke wie …“ mit Ja / Nein / Andere Strecke wählen, nach „Nein“
+Rückgängig, nach „Ja“ „Gehört zu …“ + „Zum letzten Mal“; ohne Zuordnung „Als neue Strecke merken“ (Name, „Künftige
+Läufe automatisch zuordnen“); Strecken-Seite `/ausdauer/strecke/[id]` mit Karte, Zum letzten Mal, Verlauf
+(Zeit/Pace), Kilometer im Vergleich (türkis = schneller, orange = langsamer), Liste aller Läufe (anders lang grau),
+Verwalten (automatisch zuordnen, Erneut laufen, Umbenennen, nicht mehr merken – Läufe bleiben).
+
+**Regeln**: nur eigene Läufe, keine Rangliste, keine Bestzeit, keine Serien, Reihenfolge nach Datum; Puls/kcal nicht
+auf der Strecken-Seite; Streckenname nie auf Teilen-Bildern; Koordinaten nie in Logs. Offen: Schwellen mit echten
+Uhr-Läufen nachjustieren; „Nachträglich zuordnen“ für Altbestand läuft automatisch mit (höchstens 50 je Durchgang).

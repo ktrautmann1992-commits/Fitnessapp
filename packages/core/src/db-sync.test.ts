@@ -97,6 +97,7 @@ import {
   MIN_INTAKE_RELATIVE_TO_BMR,
   CARDIO_PLAUSIBILITY_KMH,
   ROUTE_ELEVATION_PROFILE,
+  ROUTE_MATCH,
   ROUTE_FILTER,
   TRACKED_ROUTE_LIMITS,
   TRACKED_ROUTE_LOG_MATCH,
@@ -3807,5 +3808,33 @@ describe('E-Bike in der Datenbank (20261023140000_e_bike.sql)', () => {
       expect(sql).toContain(`revoke all on function public.${name}(jsonb) from public, anon;`);
       expect(sql).toContain(`grant execute on function public.${name}(jsonb) to authenticated;`);
     }
+  });
+});
+
+describe('Meine Strecken (20261025120000_route_match.sql)', () => {
+  const sql = readMigration('_route_match.sql');
+
+  it('route_match: CHECK = ROUTE_MATCH_STATES; set_route_match kennt dieselben Zustände + clear', () => {
+    expect(quotedListAfter(sql, 'check (route_match in (')).toEqual([...enums.ROUTE_MATCH_STATES]);
+    expect(quotedListAfter(sql, 'p_state not in (')).toEqual([
+      ...enums.ROUTE_MATCH_STATES.filter((s) => s !== 'repeat' && s !== 'rejected'),
+      'rejected',
+      'clear',
+    ]);
+  });
+
+  it('Grenzen = ROUTE_MATCH (höchstens 20 Ablehnungen, Distanz ±10 %)', () => {
+    expect(sql).toContain(`cardinality(match_rejected_ids) <= ${ROUTE_MATCH.maxRejected}`);
+    expect(sql).toContain(`max_rejected constant integer := ${ROUTE_MATCH.maxRejected};`);
+    expect(ROUTE_MATCH.distanceTolerance).toBe(0.1);
+    expect(sql).toContain(
+      'abs(v_route.distance_m - v_fav.distance_m)::bigint * 10 > v_fav.distance_m',
+    );
+  });
+
+  it('nur additiv: keine neuen Fassungen von save/update_tracked_route oder save_wearable_route', () => {
+    expect(sql).not.toMatch(/create or replace function public\.(save|update)_tracked_route\(/);
+    expect(sql).not.toContain('create or replace function public.save_wearable_route(');
+    expect(sql).not.toMatch(/drop (table|column|function)/i);
   });
 });

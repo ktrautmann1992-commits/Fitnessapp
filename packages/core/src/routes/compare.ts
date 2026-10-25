@@ -1,9 +1,13 @@
 import { ROUTE_COMPARE } from '../constants';
+import type { RouteMatchState } from '../enums';
+import { paceText, speedText, usesSpeed } from './format';
 import type { TrackedRouteRow } from './schema';
 
 /**
  * Zeitvergleich auf einer Favoriten-Strecke (Plan S1, W-G16): NUR eigene Läufe derselben Favoriten-Strecke (die
- * Favoriten-Strecke selbst und Wiederholungen mit base_route_id = Favorit), gleiche Person, gleiche Sportart.
+ * Favoriten-Strecke selbst und Läufe mit base_route_id = Favorit: „Erneut laufen“ (repeat), automatisch erkannt (auto,
+ * zählt vorläufig mit – Gründer-Entscheidung 25.10.2026) oder bestätigt (confirmed); nie abgelehnte (rejected)),
+ * gleiche Person, gleiche Sportart.
  * Ergebnis in zeitlicher Reihenfolge (nie nach Zeit sortiert – keine Rangliste), Vergleich nur mit dem jeweils
  * VORHERIGEN Lauf, neutrale Text-Codes, keine Bestzeiten, Abzeichen oder Serien.
  */
@@ -31,7 +35,13 @@ export interface AttemptComparison {
   readonly diffS: number;
   /** Kilometerzeiten-Unterschied je km zum vorherigen vergleichbaren Lauf (negativ = schneller); [] ohne Vergleich. */
   readonly splitDiffsS: number[];
+  /** Woher der Lauf zur Strecke gehört: die Strecke selbst, „Erneut laufen“, automatisch oder bestätigt. */
+  readonly matchKind: AttemptMatchKind;
+  /** id des vorherigen vergleichbaren Laufs (null bei first/not_comparable). */
+  readonly previousRouteId: string | null;
 }
+
+export type AttemptMatchKind = 'favorite' | 'repeat' | 'auto' | 'confirmed';
 
 type AttemptRow = Pick<
   TrackedRouteRow,
@@ -44,7 +54,17 @@ type AttemptRow = Pick<
   | 'km_splits'
   | 'base_route_id'
   | 'is_favorite'
->;
+> &
+  Partial<Pick<TrackedRouteRow, 'route_match'>>;
+
+/** Gehört der Lauf (base_route_id = Favorit) zur Strecke? Abgelehnte nie; ohne Angabe (ältere Zeilen) = repeat. */
+function attemptKind(r: AttemptRow, favoriteId: string): AttemptMatchKind | null {
+  if (r.id === favoriteId) return 'favorite';
+  if (r.base_route_id !== favoriteId) return null;
+  const m: RouteMatchState | null | undefined = r.route_match;
+  if (m === 'rejected') return null;
+  return m === 'auto' || m === 'confirmed' ? m : 'repeat';
+}
 
 function comparableDistance(distanceM: number, favoriteM: number): boolean {
   if (favoriteM <= 0) return distanceM <= 0;
@@ -66,7 +86,7 @@ export function compareAttempts(
       (r) =>
         r.user_id === favorite.user_id &&
         r.sport === favorite.sport &&
-        (r.id === favorite.id || r.base_route_id === favorite.id),
+        attemptKind(r, favorite.id) !== null,
     )
     .sort(
       (a, b) => Date.parse(a.started_at) - Date.parse(b.started_at) || a.id.localeCompare(b.id),
@@ -79,13 +99,20 @@ export function compareAttempts(
       startedAt: a.started_at,
       movingS: a.moving_s,
       distanceM: a.distance_m,
+      matchKind: attemptKind(a, favorite.id) as AttemptMatchKind,
     };
     if (!comparableDistance(a.distance_m, favorite.distance_m)) {
-      result.push({ ...base, code: 'not_comparable', diffS: 0, splitDiffsS: [] });
+      result.push({
+        ...base,
+        code: 'not_comparable',
+        diffS: 0,
+        splitDiffsS: [],
+        previousRouteId: null,
+      });
       continue;
     }
     if (previous === null) {
-      result.push({ ...base, code: 'first', diffS: 0, splitDiffsS: [] });
+      result.push({ ...base, code: 'first', diffS: 0, splitDiffsS: [], previousRouteId: null });
     } else {
       const diff = a.moving_s - previous.moving_s;
       const code: AttemptCompareCode =
@@ -93,7 +120,13 @@ export function compareAttempts(
       const n = Math.min(a.km_splits.length, previous.km_splits.length);
       const prevSplits = previous.km_splits;
       const splitDiffsS = a.km_splits.slice(0, n).map((s, i) => s - (prevSplits[i] as number));
-      result.push({ ...base, code, diffS: Math.abs(diff), splitDiffsS });
+      result.push({
+        ...base,
+        code,
+        diffS: Math.abs(diff),
+        splitDiffsS,
+        previousRouteId: previous.id,
+      });
     }
     previous = a;
   }
@@ -123,4 +156,64 @@ export function attemptCompareText(c: Pick<AttemptComparison, 'code' | 'diffS'>)
     case 'not_comparable':
       return 'Diesmal war die Strecke anders lang – kein Zeitvergleich.';
   }
+}
+
+/** Punkt im Verlauf einer Strecke (Strecken-Seite, „Verlauf“). */
+export interface RouteHistoryPoint {
+  readonly routeId: string;
+  readonly startedAt: string;
+  /** Bewegungszeit in Sekunden. */
+  readonly movingS: number;
+  readonly distanceM: number;
+  /** Ø-Pace in s/km (Laufen, Gehen) – null ohne Distanz. */
+  readonly paceS: number | null;
+  /** Ø-Geschwindigkeit in km/h (Rad) – null ohne Bewegungszeit. */
+  readonly speedKmh: number | null;
+  /** Ähnlich lang (±ROUTE_COMPARE.distanceTolerance) – nur diese Punkte gehören in die Linie. */
+  readonly comparable: boolean;
+  readonly matchKind: AttemptMatchKind;
+  readonly code: AttemptCompareCode;
+}
+
+/**
+ * Verlauf aller Läufe einer Strecke in ZEITLICHER Reihenfolge (W-G16: nie nach Tempo sortiert, kein Feld „best“).
+ * Nicht vergleichbare Läufe (anders lang) bleiben markiert statt entfernt (Liste grau, nicht in der Linie).
+ */
+export function routeHistory(
+  favorite: AttemptRow,
+  routes: readonly AttemptRow[],
+): RouteHistoryPoint[] {
+  return compareAttempts(favorite, routes).map((c) => ({
+    routeId: c.routeId,
+    startedAt: c.startedAt,
+    movingS: c.movingS,
+    distanceM: c.distanceM,
+    paceS: c.distanceM > 0 && c.movingS > 0 ? c.movingS / (c.distanceM / 1000) : null,
+    speedKmh: c.movingS > 0 ? c.distanceM / 1000 / (c.movingS / 3600) : null,
+    comparable: c.code !== 'not_comparable',
+    matchKind: c.matchKind,
+    code: c.code,
+  }));
+}
+
+/** „Ø Pace 5:38 → 5:24 /km“ bzw. beim Rad „Ø 24,1 → 25,3 km/h“ (vorher → heute); null ohne Werte. */
+export function attemptPaceText(
+  sport: TrackedRouteRow['sport'],
+  prev: Pick<TrackedRouteRow, 'moving_s' | 'distance_m'>,
+  cur: Pick<TrackedRouteRow, 'moving_s' | 'distance_m'>,
+): string | null {
+  if (usesSpeed(sport)) {
+    const kmh = (r: typeof prev) =>
+      r.moving_s > 0 && r.distance_m > 0 ? r.distance_m / 1000 / (r.moving_s / 3600) : null;
+    const a = kmh(prev);
+    const b = kmh(cur);
+    if (a === null || b === null) return null;
+    return `Ø ${speedText(a).replace(' km/h', '')} → ${speedText(b)}`;
+  }
+  const pace = (r: typeof prev) =>
+    r.distance_m > 0 && r.moving_s > 0 ? r.moving_s / (r.distance_m / 1000) : null;
+  const a = pace(prev);
+  const b = pace(cur);
+  if (a === null || b === null) return null;
+  return `Ø Pace ${paceText(a).replace(' min/km', '')} → ${paceText(b).replace(' min/km', '')} /km`;
 }

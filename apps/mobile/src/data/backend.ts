@@ -596,6 +596,19 @@ export interface Backend {
   saveTrackedRoute(payload: TrackedRoutePayload): Promise<'saved' | 'queued'>;
   /** Name, Schwierigkeit, Favorit, Notiz ändern (update_tracked_route). Nur online. */
   updateTrackedRoute(payload: UpdateTrackedRoutePayload): Promise<void>;
+  /**
+   * „Meine Strecken“ (25.10.2026): Lauf einer gemerkten Strecke zuordnen (set_route_match; Testmodus: gleiche Regeln
+   * in tracked-route-rows.ts). 'auto' = Erkennung auf dem Gerät (ändert keine Entscheidung → 'unchanged'),
+   * 'confirmed' = „Ja“/„Andere Strecke wählen“, 'rejected' = „Nein“, 'clear' = „Rückgängig“. Nur online; Fehler
+   * `route_rejected`.
+   */
+  setRouteMatch(
+    routeId: string,
+    favoriteId: string | null,
+    state: 'auto' | 'confirmed' | 'rejected' | 'clear',
+  ): Promise<'auto' | 'confirmed' | 'rejected' | 'clear' | 'unchanged'>;
+  /** „Neue Läufe automatisch zuordnen“ einer eigenen Strecke (set_route_auto_match). Nur online. */
+  setRouteAutoMatch(routeId: string, enabled: boolean): Promise<void>;
   /** Strecke endgültig löschen (delete_tracked_route; wartende: aus der Warteschlange). Nur online. */
   deleteTrackedRoute(id: string): Promise<void>;
   /** Alle eigenen Strecken löschen (delete_all_tracked_routes) samt Warteschlange → Anzahl. Nur online. */

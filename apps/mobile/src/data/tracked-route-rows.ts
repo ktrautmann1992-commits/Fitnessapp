@@ -1,4 +1,7 @@
 import {
+  matchDistanceOk,
+  ROUTE_MATCH,
+  type RouteMatchState,
   boundingBox,
   decodePolyline,
   sessionLogFitsRoute,
@@ -134,6 +137,10 @@ export function applyTrackedRouteSave(
     elevation_profile: r.elevation_profile ? r.elevation_profile.map((p) => [...p]) : null,
     wearable_session_log_id: null,
     e_bike: r.sport === 'bike' && r.e_bike === true,
+    // „Erneut laufen“ → repeat (wie der Trigger tracked_routes_route_match).
+    route_match: r.base_route_id !== null ? 'repeat' : null,
+    match_rejected_ids: [],
+    auto_match: true,
     created_at: context.now,
     updated_at: context.now,
   };
@@ -224,7 +231,16 @@ export function applyTrackedRouteDelete(
   if (!routes.some((x) => x.id === id && x.user_id === userId)) return 'not_found';
   return routes
     .filter((x) => x.id !== id)
-    .map((x) => (x.base_route_id === id ? { ...x, base_route_id: null } : x));
+    .map((x) =>
+      x.base_route_id === id
+        ? {
+            ...x,
+            base_route_id: null,
+            // Trigger tracked_routes_route_match: Verweis leer → Herkunft leer.
+            route_match: x.route_match === 'rejected' ? 'rejected' : null,
+          }
+        : x,
+    );
 }
 
 /**
@@ -246,4 +262,98 @@ export function detachRouteLogs(
         ? { ...x, session_log_id: null }
         : x,
     );
+}
+
+/** Zustände von set_route_match (Zuordnung zu „Meinen Strecken“). */
+export type RouteMatchAction = 'auto' | 'confirmed' | 'rejected' | 'clear';
+export type RouteMatchOutcome = RouteMatchAction | 'unchanged';
+
+/**
+ * set_route_match im TESTMODUS (20261025120000_route_match.sql): gleiche Regeln – eigene Strecke, Ziel eigener
+ * Favorit derselben Sportart, ±10 %, nicht sie selbst, der Lauf selbst keine „Meine Strecke“, kein Kreis; „auto“
+ * überschreibt keine Entscheidung; „Nein“ gemerkt (höchstens 20); „Rückgängig“ = clear.
+ */
+export function applyRouteMatch(
+  routes: readonly TrackedRouteRow[],
+  input: { routeId: string; favoriteId: string | null; state: RouteMatchAction },
+  context: { userId: string; now: string },
+):
+  | { kind: 'ok'; outcome: RouteMatchOutcome; routes: TrackedRouteRow[] }
+  | { kind: 'reject'; reason: 'not_found' | 'invalid' | 'no_match' } {
+  const own = routes.find((x) => x.id === input.routeId && x.user_id === context.userId);
+  if (!own) return { kind: 'reject', reason: 'not_found' };
+  const set = (changes: Partial<TrackedRouteRow>, outcome: RouteMatchOutcome) => ({
+    kind: 'ok' as const,
+    outcome,
+    routes: routes.map((x) => (x === own ? { ...x, ...changes, updated_at: context.now } : x)),
+  });
+  const rejected = own.match_rejected_ids ?? [];
+  const fid = input.favoriteId;
+  if (input.state === 'clear') {
+    return set(
+      {
+        base_route_id: null,
+        route_match: null,
+        match_rejected_ids: fid ? rejected.filter((x) => x !== fid) : [...rejected],
+      },
+      'clear',
+    );
+  }
+  if (!fid || fid === own.id) return { kind: 'reject', reason: 'invalid' };
+  const fav = routes.find((x) => x.id === fid && x.user_id === context.userId);
+  if (!fav) return { kind: 'reject', reason: 'invalid' };
+  if (input.state === 'rejected') {
+    const list = [...rejected.filter((x) => x !== fid), fid].slice(-ROUTE_MATCH.maxRejected);
+    const linkedHere = own.base_route_id === fid || own.base_route_id === null;
+    const match: RouteMatchState | null = linkedHere ? 'rejected' : own.route_match;
+    return set(
+      {
+        match_rejected_ids: list,
+        base_route_id: own.base_route_id === fid ? null : own.base_route_id,
+        route_match: match,
+      },
+      'rejected',
+    );
+  }
+  if (
+    !fav.is_favorite ||
+    fav.sport !== own.sport ||
+    own.is_favorite ||
+    fav.base_route_id === own.id ||
+    !matchDistanceOk(own.distance_m, fav.distance_m)
+  ) {
+    return { kind: 'reject', reason: 'no_match' };
+  }
+  if (input.state === 'auto') {
+    if (
+      own.route_match !== null ||
+      own.base_route_id !== null ||
+      fav.auto_match === false ||
+      rejected.includes(fid)
+    ) {
+      return { kind: 'ok', outcome: 'unchanged', routes: [...routes] };
+    }
+    return set({ base_route_id: fid, route_match: 'auto' }, 'auto');
+  }
+  return set(
+    {
+      base_route_id: fid,
+      route_match: 'confirmed',
+      match_rejected_ids: rejected.filter((x) => x !== fid),
+    },
+    'confirmed',
+  );
+}
+
+/** set_route_auto_match im Testmodus: Schalter „Neue Läufe automatisch zuordnen“ einer eigenen Strecke. */
+export function applyRouteAutoMatch(
+  routes: readonly TrackedRouteRow[],
+  routeId: string,
+  enabled: boolean,
+  context: { userId: string; now: string },
+): TrackedRouteRow[] | 'not_found' {
+  if (!routes.some((x) => x.id === routeId && x.user_id === context.userId)) return 'not_found';
+  return routes.map((x) =>
+    x.id === routeId ? { ...x, auto_match: enabled, updated_at: context.now } : x,
+  );
 }
