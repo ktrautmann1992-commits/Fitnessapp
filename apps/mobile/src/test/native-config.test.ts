@@ -17,6 +17,7 @@ import appConfig, {
   CAMERA_PERMISSION_TEXT,
   HEALTH_CONNECT_BLOCKED_PERMISSIONS,
   HEALTH_CONNECT_READ_PERMISSIONS,
+  HOME_WIDGET,
   IOS_BACKGROUND_MODES,
   LOCATION_ALWAYS_TEXT,
   LOCATION_WHEN_IN_USE_TEXT,
@@ -220,6 +221,27 @@ describe('app.config.ts', () => {
     expect(ANDROID_MIN_SDK).toBe(26);
   });
 
+  it('Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md): nur Android, Name wie im Code, Vorschaubild vorhanden', async () => {
+    const plugin = config().plugins?.find(
+      (entry) => Array.isArray(entry) && entry[0] === 'react-native-android-widget',
+    );
+    expect(plugin).toEqual(['react-native-android-widget', { widgets: [HOME_WIDGET] }]);
+    const { TODAY_WIDGET_NAME } = await import('../widget/widget-names');
+    expect(HOME_WIDGET.name).toBe(TODAY_WIDGET_NAME);
+    expect(existsSync(join(APP_DIR, HOME_WIDGET.previewImage))).toBe(true);
+    // Höchstens stündlich (Akku); Android erlaubt nicht unter 30 min.
+    expect(HOME_WIDGET.updatePeriodMillis).toBeGreaterThanOrEqual(60 * 60 * 1000);
+    // Bild-Provider mit Zufallsnamen erst ab 0.24.0 (vorher für andere Apps erratbar).
+    const pkg = JSON.parse(readFileSync(join(APP_DIR, 'package.json'), 'utf8')) as {
+      dependencies: Record<string, string>;
+      main: string;
+    };
+    expect(pkg.dependencies['react-native-android-widget']).toBe('0.24.0');
+    // Einstieg meldet die Hintergrund-Aufgabe des Widgets an (index.ts).
+    expect(pkg.main).toBe('index.ts');
+    expect(readFileSync(join(APP_DIR, 'index.ts'), 'utf8')).toContain('registerHomeWidget()');
+  });
+
   it('Datenschutz-Manifest: kein Tracking, nur Zweck App-Funktion', () => {
     const manifest = config().ios?.privacyManifests;
     expect(manifest?.NSPrivacyTracking).toBe(false);
@@ -395,6 +417,17 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
     expect(alias?.['intent-filter']?.[0]?.category?.[0]?.$['android:name']).toBe(
       'android.intent.category.HEALTH_PERMISSIONS',
     );
+  });
+
+  it('AndroidManifest: Widget-Empfänger nicht exportiert, keine neue Berechtigung (docs/PLAN-WIDGET.md)', () => {
+    const manifest = result._internal.modResults.android.manifest.manifest as unknown as {
+      application: { receiver?: { $: Record<string, string> }[] }[];
+    };
+    const receiver = (manifest.application[0]?.receiver ?? []).find(
+      (entry) => entry.$['android:name'] === `.widget.${HOME_WIDGET.name}`,
+    );
+    expect(receiver?.$['android:exported']).toBe('false');
+    expect(receiver?.$['android:label']).toBe(HOME_WIDGET.label);
   });
 
   it('AndroidManifest: Symbol der Benachrichtigung „Aufzeichnung läuft“ (E3)', () => {

@@ -2,7 +2,7 @@
   "name": "@fitnessapp/mobile",
   "version": "0.1.0",
   "private": true,
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "scripts": {
     "content:bundle": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase",
     "dev": "node ../../scripts/bundle-content.mjs src/generated/content-files.ts --empty-if-supabase && node scripts/copy-scanner-wasm.mjs && expo start",
@@ -47,6 +47,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
+    "react-native-android-widget": "0.24.0",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-health-connect": "4.1.3",
     "react-native-reanimated": "4.5.1",

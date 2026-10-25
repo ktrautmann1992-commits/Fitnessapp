@@ -4280,3 +4280,22 @@ export const BALANCE_PROGRESSION = {
  * ESPEN-Leitlinie Geriatrie, Clin Nutr 38(1):10–47.
  */
 export const ACTIVE_AGING_NUTRITION = { weeklyLossMaxFraction: 0.005 } as const;
+
+/**
+ * Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md, Gründer-Entscheidung 25.10.2026) – Bedienregeln, keine
+ * Gesundheitsgrenzen. PRODUKTENTSCHEIDUNG.
+ * - `staleAfterHours` 24: Ist der zuletzt von der App geschriebene Stand älter, zeigt das Widget nur noch „App öffnen
+ *   zum Aktualisieren“ (keine alten Zahlen, kein altes Training).
+ * - `futureToleranceMinutes` 10: Ein Stand „aus der Zukunft“ (Uhr verstellt) gilt nur bis 10 min als gültig.
+ * - `days` 7: Trainingsnamen für heute und die nächsten 6 Tage – nach Mitternacht zeigt das Widget ohne App-Start das
+ *   richtige Training. Schritte und kcal gelten nur für den Tag, an dem die App sie geschrieben hat.
+ * - `maxNameLength` 60: längere Trainingsnamen werden gekürzt (Platz im Widget).
+ * - `version`: Aufbau des gespeicherten Stands; ein anderer Wert gilt als „kein Stand“.
+ */
+export const WIDGET_SNAPSHOT = {
+  version: 1,
+  staleAfterHours: 24,
+  futureToleranceMinutes: 10,
+  days: 7,
+  maxNameLength: 60,
+} as const;
