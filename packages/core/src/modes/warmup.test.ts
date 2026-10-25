@@ -27,7 +27,17 @@ const UPPER = strengthSession([
 ]);
 
 describe('Hauptmuskeln', () => {
-  it('nach Sätzen gewichtet, höchstens 3', () => {
+  it('nach Sätzen und Reihenfolge gewichtet (Hauptübung vorn), höchstens 3', () => {
+    // Ganzkörper: Kniebeuge zuerst → Beine vor Brust/Rücken, obwohl alle Übungen 3 Sätze haben.
+    const fullBody = strengthSession([
+      'kniebeuge-langhantel',
+      'bankdruecken-langhantel',
+      'latziehen',
+    ]);
+    expect(mainMusclesOf(fullBody.exercises, EXERCISES).slice(0, 2).sort()).toEqual([
+      'glutes',
+      'quadriceps',
+    ]);
     expect(mainMusclesOf(LEGS.exercises, EXERCISES)).toEqual([
       'quadriceps',
       'glutes',

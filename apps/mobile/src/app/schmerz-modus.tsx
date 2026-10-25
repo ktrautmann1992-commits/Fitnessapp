@@ -69,8 +69,9 @@ export default function PainModeScreen() {
   const episodes = state?.pain ?? [];
   const active = activePainEpisodes(episodes, today);
   const advice = painAdviceReasons(episodes, today);
+  // Verlauf: alle nicht laufenden Einträge (auch am selben Tag beendete – Transparenz, was gespeichert ist).
   const past = episodes
-    .filter((e) => !active.includes(e) && lastActiveDay(e) !== null)
+    .filter((e) => !active.includes(e))
     .sort((a, b) => b.started_on.localeCompare(a.started_on));
   const preview =
     region && intensity && duration
@@ -80,6 +81,12 @@ export default function PainModeScreen() {
           today,
         )
       : [];
+
+  // Eine Meldung verschwindet, sobald das Feld ausgefüllt ist.
+  function chooseRegion(value: BodyRegion) {
+    setRegion(value);
+    setErrors((e) => ({ ...e, region: undefined }));
+  }
 
   function failText(error: unknown): string {
     if (error instanceof TrainingModesError) {
@@ -219,7 +226,7 @@ export default function PainModeScreen() {
       ) : (
         <Card>
           <Heading level={2}>{M.pain.mapTitle}</Heading>
-          <BodyMap value={region} onChange={(r) => setRegion(r)} />
+          <BodyMap value={region} onChange={chooseRegion} />
           <ChoiceList<BodyRegion>
             label={M.pain.listLabel}
             options={BODY_REGIONS.map((r) => ({
@@ -228,7 +235,7 @@ export default function PainModeScreen() {
               testID: `pain-region-${r}`,
             }))}
             value={region}
-            onChange={setRegion}
+            onChange={chooseRegion}
             error={errors.region}
             horizontal
           />
@@ -241,7 +248,10 @@ export default function PainModeScreen() {
               testID: `pain-intensity-${i}`,
             }))}
             value={intensity}
-            onChange={setIntensity}
+            onChange={(value) => {
+              setIntensity(value);
+              setErrors((e) => ({ ...e, intensity: undefined }));
+            }}
             error={errors.intensity}
           />
           <ChoiceList<3 | 7 | 14>
@@ -252,7 +262,10 @@ export default function PainModeScreen() {
               testID: `pain-duration-${d}`,
             }))}
             value={duration}
-            onChange={setDuration}
+            onChange={(value) => {
+              setDuration(value);
+              setErrors((e) => ({ ...e, duration: undefined }));
+            }}
             error={errors.duration}
             horizontal
           />
@@ -287,7 +300,7 @@ export default function PainModeScreen() {
                 M.regions[e.region],
                 M.intensities[e.intensity],
                 formatDateDe(e.started_on),
-                formatDateDe(lastActiveDay(e) as string),
+                formatDateDe(lastActiveDay(e) ?? e.started_on),
               )}
             </Body>
           ))

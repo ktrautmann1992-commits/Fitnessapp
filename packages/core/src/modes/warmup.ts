@@ -61,18 +61,23 @@ export interface RoutineContext {
 
 const byId = (a: Exercise, b: Exercise) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
-/** Hauptmuskeln: Hauptmuskeln der Übungen nach Sätzen gewichtet (Gleichstand: Reihenfolge MUSCLE_GROUPS). */
+/**
+ * Hauptmuskeln: Hauptmuskeln der Übungen nach Sätzen und Reihenfolge gewichtet (die erste Übung zählt am meisten;
+ * Gleichstand: Reihenfolge MUSCLE_GROUPS).
+ */
 export function mainMusclesOf(
   exercises: readonly Pick<PlannedExerciseDraft, 'exercise_id' | 'sets'>[],
   lookup: ReadonlyMap<string, Exercise>,
   count: number = WARMUP_RULES.mainMuscles,
 ): MuscleGroup[] {
   const score = new Map<MuscleGroup, number>();
-  for (const item of exercises) {
+  // Frühere Übungen zählen mehr (die Hauptübung steht vorn): Gewicht = Sätze × (Übungen − Position).
+  exercises.forEach((item, index) => {
     const exercise = lookup.get(item.exercise_id);
-    if (!exercise) continue;
-    for (const m of exercise.primary_muscles) score.set(m, (score.get(m) ?? 0) + item.sets);
-  }
+    if (!exercise) return;
+    const weight = item.sets * (exercises.length - index);
+    for (const m of exercise.primary_muscles) score.set(m, (score.get(m) ?? 0) + weight);
+  });
   return MUSCLE_GROUPS.filter((m) => (score.get(m) ?? 0) > 0)
     .sort(
       (a, b) =>

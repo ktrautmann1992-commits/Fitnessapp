@@ -314,6 +314,10 @@ export function prepareSessionForDisplay<T extends StoredSession>(
     session: changed
       ? {
           ...safe.session,
+          // Reise-Minuten: angezeigte Dauer höchstens die gewählte Reise-Dauer (nur senken).
+          ...(shortened && travel?.maxMinutes
+            ? { estimated_minutes: Math.min(safe.session.estimated_minutes, travel.maxMinutes) }
+            : {}),
           exercises: pairs.map((p, i) => ({ ...p.shown, order_no: i + 1 })),
         }
       : safe.session,

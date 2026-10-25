@@ -163,6 +163,7 @@ describe('Reise-Modus', () => {
     const day = travelOnDay([travel('dumbbells', 20)], MONDAY);
     const shown = prepareSessionForDisplay(GYM_SESSION, ctx({ modes: { travel: day } }));
     expect(shown.modeNotices).toContain('travel_shortened');
+    expect(shown.session.estimated_minutes).toBeLessThanOrEqual(20);
     expect(shown.session.exercises.length).toBeGreaterThanOrEqual(3);
     const minutes = estimateSessionMinutes({ exercises: [...shown.session.exercises] });
     expect(minutes <= 20 || shown.session.exercises.length === 3).toBe(true);

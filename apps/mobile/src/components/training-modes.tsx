@@ -164,11 +164,12 @@ export const BODY_MAP_SPOTS: Readonly<
       [160, 178],
     ],
   },
+  // Handgelenke hinten: vorn lägen sie direkt neben der Hüfte (Tipp-Flächen überlappten).
   wrist: {
-    view: 'front',
+    view: 'back',
     points: [
-      [26, 244],
-      [174, 244],
+      [22, 256],
+      [178, 256],
     ],
   },
   lower_back: { view: 'back', points: [[100, 206]] },
@@ -375,7 +376,7 @@ export function RoutineBlock({
               <Text style={[styles.routineName, appFont('semibold'), { color: theme.text }]}>
                 {item.nameDe}
               </Text>
-              {draft ? <Badge label={M.warmup.draft} /> : null}
+              {draft ? <Badge label={M.warmup.draft} testID={`${testID}-draft`} /> : null}
             </View>
             <Body muted>{itemLine(item)}</Body>
           </View>

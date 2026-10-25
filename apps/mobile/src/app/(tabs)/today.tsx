@@ -1162,9 +1162,12 @@ function TodayHero({
 }) {
   if (session && info) {
     const shown = info.display?.shown ?? null;
+    // Trainings-Modi: Dauer und Zahl der Übungen der ANGEZEIGTEN Einheit (Reise-Minuten, entfallene Übungen).
+    const modeShown = shown?.modeNotices && shown.modeNotices.length > 0 ? shown.session : null;
+    const count = modeShown ? modeShown.exercises.length : exerciseCount;
     const meta = [
-      W.hero.minutes(session.estimated_minutes),
-      session.kind === 'strength' && exerciseCount > 0 ? W.hero.exercises(exerciseCount) : null,
+      W.hero.minutes(modeShown ? modeShown.estimated_minutes : session.estimated_minutes),
+      session.kind === 'strength' && count > 0 ? W.hero.exercises(count) : null,
     ].filter((v): v is string => v !== null);
     const startLabel =
       session.kind === 'endurance'

@@ -139,7 +139,7 @@ export default function TravelModeScreen() {
       await modes.endTravel(mode.id);
       setMessage({
         tone: 'success',
-        text: mode.starts_on > today ? M.travel.removed : M.travel.ended,
+        text: mode.starts_on >= today ? M.travel.removed : M.travel.ended,
       });
     } catch (caught) {
       setMessage({ tone: 'danger', text: errorText(caught) });
@@ -178,7 +178,7 @@ export default function TravelModeScreen() {
               </Body>
               {m.max_minutes ? <Body muted>{M.travel.lineMinutes(m.max_minutes)}</Body> : null}
               <Button
-                label={m.starts_on > today ? M.travel.remove : M.travel.end}
+                label={m.starts_on >= today ? M.travel.remove : M.travel.end}
                 variant="secondary"
                 onPress={() => void end(m)}
                 disabled={busy}

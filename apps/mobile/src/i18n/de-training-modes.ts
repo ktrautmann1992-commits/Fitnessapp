@@ -49,7 +49,7 @@ export const deModes = {
     intro:
       'Tippe die Stelle an, die gerade Beschwerden macht. Für die gewählte Zeit tauscht die App Übungen, die diese Stelle belasten, gegen schonendere und senkt die Belastung. Danach gilt automatisch wieder dein Plan.',
     disclaimer:
-      'Das ersetzt keinen ärztlichen Rat. Die App stellt nichts fest und behandelt nichts – sie plant nur vorsichtiger.',
+      'Das ersetzt keinen ärztlichen Rat. Die App stellt nichts fest – sie plant für ein paar Tage nur vorsichtiger.',
     stopRule: 'Hör bei Schmerzen während einer Übung sofort auf.',
     mapTitle: 'Wo hast du Beschwerden?',
     mapA11y: 'Körperkarte. Tippe eine Stelle an oder wähle sie unten aus der Liste.',
