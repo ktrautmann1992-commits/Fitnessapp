@@ -265,3 +265,109 @@ export function handle(at: Point, front = true): Prop {
 export function mat(x0: number, x1: number, h = 3): Prop {
   return { t: 'rect', at: [x0, 0], w: x1 - x0, h, r: 1.5, role: 'equipSoft' };
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Calisthenics und Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md, Entwürfe)
+// ---------------------------------------------------------------------------------------------------------------
+
+/**
+ * Schlingentrainer: Ankerpunkt oben (kleine Lasche) und je Griff bzw. Schlaufe ein Gurt vom Anker zum Punkt (Hand oder
+ * Fuß, auch Gelenkbezug). Griffe als kleine Rechtecke in Markenblau.
+ */
+export function suspension(anchor: Vec, to: readonly Point[], front = true): Prop[] {
+  return [
+    { t: 'rect', at: [anchor[0] - 5, anchor[1]], w: 10, h: 4, r: 1.5, role: 'furnitureLine' },
+    ...to.flatMap((p): Prop[] => [
+      { t: 'line', points: [anchor, p], w: 2.2, role: 'equip', front },
+      { t: 'circle', at: p, r: 3.2, role: 'equip', front },
+    ]),
+  ];
+}
+
+/** Turnringe: Seil von oben (y = `top`) zur Hand, Ring als Kreis-Ring an der Hand. */
+export function ring(at: Point, topX: number, top = 164, front = true): Prop[] {
+  return [
+    { t: 'line', points: [[topX, top], at], w: 1.6, role: 'equipSoft', front },
+    { t: 'circle', at, r: 5, ring: 2.2, role: 'equip', front },
+  ];
+}
+
+/** Barren bzw. Dip-Station im Profil: Holm von x0 bis x1 auf Höhe `h`, zwei Pfosten. */
+export function dipBars(x0: number, x1: number, h: number): Prop[] {
+  return [
+    {
+      t: 'line',
+      points: [
+        [x0 + 6, 0],
+        [x0 + 6, h],
+      ],
+      w: 4,
+      role: 'furnitureLine',
+    },
+    {
+      t: 'line',
+      points: [
+        [x1 - 6, 0],
+        [x1 - 6, h],
+      ],
+      w: 4,
+      role: 'furnitureLine',
+    },
+    {
+      t: 'line',
+      points: [
+        [x0, h],
+        [x1, h],
+      ],
+      w: 4,
+      role: 'equip',
+      front: true,
+    },
+  ];
+}
+
+/** Parallettes: kleiner Griff auf zwei kurzen Füßen, Griff auf Höhe `h` bei x. */
+export function parallette(x: number, h = 12): Prop[] {
+  return [
+    {
+      t: 'line',
+      points: [
+        [x - 9, 0],
+        [x - 6, h],
+        [x + 6, h],
+        [x + 9, 0],
+      ],
+      w: 3,
+      role: 'equip',
+    },
+  ];
+}
+
+/** Niedrige Stange (Park/Rack) von der Seite: Stange als Punkt mit Pfosten zum Boden. */
+export function lowBar(at: Vec): Prop[] {
+  return [
+    {
+      t: 'line',
+      points: [
+        [at[0], 0],
+        [at[0], at[1]],
+      ],
+      w: 4,
+      role: 'furnitureLine',
+    },
+    { t: 'circle', at, r: 3.5, role: 'equip', front: true },
+  ];
+}
+
+/** Waagerechte Stange von vorn (Klimmzug im Weitgriff). */
+export function barFront(y: number, halfWidth = 70, x = 0): Prop {
+  return {
+    t: 'line',
+    points: [
+      [x - halfWidth, y],
+      [x + halfWidth, y],
+    ],
+    w: 4,
+    role: 'equip',
+  };
+}

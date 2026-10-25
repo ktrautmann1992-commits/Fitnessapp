@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pistol-kniebeuge-halt",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pistol-kniebeuge-halt-start.svg",
+      "alt_de": "Ausgangsposition: auf einem Bein neben einem Türrahmen stehen, eine Hand hält den Rahmen auf Hüfthöhe, das andere Bein leicht nach vorn gehoben.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

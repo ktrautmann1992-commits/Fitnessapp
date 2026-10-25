@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-fliegende",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-fliegende-start.svg",
+      "alt_de": "Ausgangsposition: Rücken zum Anker, Griffe vor der Brust, Arme fast gestreckt, Körper gerade nach vorn gelehnt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "ring-liegestuetz",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "ring-liegestuetz-start.svg",
+      "alt_de": "Ausgangsposition: schräger Liegestütz, Hände in tief hängenden Ringen, Arme gestreckt, Füße am Boden, Körper gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

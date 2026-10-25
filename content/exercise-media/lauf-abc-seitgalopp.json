@@ -1,0 +1,20 @@
+{
+  "exercise_id": "lauf-abc-seitgalopp",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "lauf-abc-seitgalopp-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – seitlich zur Laufrichtung, Füße etwa schulterbreit, Knie leicht gebeugt, Arme seitlich auf Schulterhöhe.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "copenhagen-seitstuetz-knie",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "copenhagen-seitstuetz-knie-start.svg",
+      "alt_de": "Ausgangsposition: Seitstütz von vorn, Ellbogen unter der Schulter, das obere Knie liegt auf einer Bank, das untere Bein hängt frei, Hüfte angehoben.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

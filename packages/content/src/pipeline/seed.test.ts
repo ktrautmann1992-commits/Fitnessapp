@@ -157,8 +157,8 @@ describe('Einspiel-Paket', () => {
     expect(result.issues.filter((issue) => issue.severity === 'error')).toEqual([]);
     const pkg = buildSeedPackage(result);
     expect(pkg.exercises.map((e) => e.id)).toEqual(result.exercises.map((e) => e.id));
-    expect(pkg.exercises).toHaveLength(96);
-    expect(pkg.plan_templates).toHaveLength(42);
+    expect(pkg.exercises).toHaveLength(170);
+    expect(pkg.plan_templates).toHaveLength(49);
   });
 
   it('berechnet die Dauer je Einheit mit estimateSessionMinutes', () => {
@@ -870,12 +870,15 @@ describe('content-seed: Workouts (docs/PLAN-WORKOUTS.md)', () => {
     const r = withWorkouts();
     const { result } = validateRepository({ cwd: r.root });
     expect(result.workouts.length).toBeGreaterThanOrEqual(20);
+    // Entwürfe (z. B. Lauf-Kraft, docs/PLAN-CALISTHENICS-SCHLINGE.md 4) kommen nie ins Paket.
+    const published = result.workouts.filter((w) => w.status === 'published');
+    expect(result.workouts.length - published.length).toBe(4);
     const strict = buildWorkoutSeedPackage(result);
     expect(strict.package.workouts).toEqual([]);
-    expect(strict.waiting).toHaveLength(result.workouts.length);
+    expect(strict.waiting).toHaveLength(published.length);
     const test = buildWorkoutSeedPackage(result, { requireExpertReview: false });
-    expect(test.package.workouts).toHaveLength(result.workouts.length);
-    expect(test.unreviewed).toHaveLength(result.workouts.length);
+    expect(test.package.workouts).toHaveLength(published.length);
+    expect(test.unreviewed).toHaveLength(published.length);
     const drafts = buildWorkoutSeedPackage(
       { workouts: result.workouts.map((w) => ({ ...w, status: 'draft' as const })) },
       { requireExpertReview: false },

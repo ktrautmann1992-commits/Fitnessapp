@@ -1,0 +1,20 @@
+{
+  "exercise_id": "toter-hang",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "toter-hang-start.svg",
+      "alt_de": "Ausgangsposition: gestreckter Hang an der Klimmzugstange, Hände schulterbreit, Arme gestreckt, Beine locker angewinkelt, Füße über dem Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

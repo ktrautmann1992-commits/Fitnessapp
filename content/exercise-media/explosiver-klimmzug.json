@@ -1,0 +1,20 @@
+{
+  "exercise_id": "explosiver-klimmzug",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "explosiver-klimmzug-start.svg",
+      "alt_de": "Ausgangsposition: ruhiger, gestreckter Hang an der Klimmzugstange, Hände etwas weiter als schulterbreit, Füße über dem Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

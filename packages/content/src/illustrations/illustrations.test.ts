@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 import { generateIllustrationFiles, mediaFor } from './generate';
 import { applyPalette, ILLUSTRATION_PALETTE } from './palette';
 import { EXERCISE_ILLUSTRATIONS } from './poses';
+import { CALISTHENICS_OFF_GROUND } from './poses-calisthenics';
 import {
   buildScene,
   GROUND_Y,
@@ -48,8 +49,8 @@ describe('EXERCISE_ILLUSTRATIONS', () => {
     expect(y1).toBeLessThanOrEqual(GROUND_Y + 2.6);
   });
 
-  /** Im Hang (Klimmzug) berühren die Füße den Boden bewusst nicht. */
-  const HANGING = new Set(['klimmzug', 'klimmzug-band-unterstuetzt']);
+  /** Im Hang (Klimmzug), Stütz und Hebel berühren die Füße den Boden bewusst nicht. */
+  const HANGING = new Set(['klimmzug', 'klimmzug-band-unterstuetzt', ...CALISTHENICS_OFF_GROUND]);
 
   it.each(ids.filter((id) => !HANGING.has(id)))(
     '%s: Bild steht auf der Bodenlinie, schwebt nicht frei',

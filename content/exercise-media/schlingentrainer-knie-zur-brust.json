@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-knie-zur-brust",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-knie-zur-brust-start.svg",
+      "alt_de": "Ausgangsposition: hoher Liegestütz mit den Füßen in den Schlaufen, Arme gestreckt, Körper gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}
