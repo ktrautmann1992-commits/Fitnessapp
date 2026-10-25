@@ -196,4 +196,9 @@ export const STORAGE_KEYS = {
    * dieses Gerät, kein Gesundheitsdatum (Puls wird nur angesagt, nie gespeichert).
    */
   voiceCues: 'fitnessapp.voice-cues.v1',
+  /**
+   * Sportarten Stufe 2: Sportart der laufenden GPS-Aufzeichnung (z. B. Skilanglauf) je Aufzeichnungs-id – nur dieses
+   * Gerät, kein Gesundheitsdatum; nach dem Speichern bzw. Verwerfen gelöscht.
+   */
+  gpsSportRecording: 'fitnessapp.gps-sport-recording.v1',
 } as const;

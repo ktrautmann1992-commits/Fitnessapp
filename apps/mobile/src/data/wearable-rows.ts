@@ -278,6 +278,9 @@ export function applyWearableImport(
         client_updated_at: ctx.now,
         created_at: ctx.now,
         updated_at: ctx.now,
+        sport: null,
+        sport_duration_s: null,
+        sport_distance_m: null,
       };
       sessionLogs.push(log);
       if (modality !== null) {

@@ -114,6 +114,9 @@ describe('Zeilen → Eingaben (eine Abbildung für App und Server, A0)', () => {
       client_updated_at: '2026-10-12T19:00:00Z',
       created_at: '2026-10-12T19:00:00Z',
       updated_at: '2026-10-12T19:00:00Z',
+      sport: null,
+      sport_duration_s: null,
+      sport_distance_m: null,
     };
     const exercise = {
       id: 'el1',

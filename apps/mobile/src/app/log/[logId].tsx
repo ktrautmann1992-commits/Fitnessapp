@@ -20,6 +20,7 @@ import {
   useSessionKcalContext,
   useWatchKcal,
 } from '@/components/session-kcal';
+import { SportLogInfo } from '@/components/sport-week';
 import { WearableLogInfo } from '@/components/wearables';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { EMPTY_LOG_ROWS, logRowsOf, mergeLogRows } from '@/data/log-rows';
@@ -176,6 +177,8 @@ export default function LogEntryScreen() {
 
       {/* Phase 8: Herkunft Smartwatch, kcal, möglicher Doppel-Eintrag und Puls (nie auf dem Story-Bild). */}
       <WearableLogInfo logId={log.id} />
+      {/* Sportarten Stufe 2: Sportart, Dauer, Distanz und Belastung. */}
+      <SportLogInfo log={log} />
 
       {detail.cardio ? (
         <Card>

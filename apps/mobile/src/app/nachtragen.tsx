@@ -220,6 +220,15 @@ export default function BackfillScreen() {
                   setError(undefined);
                 }}
               />
+              {/* Sportarten Stufe 2: Padel, Fußball, Klettern … ohne eigenen Plan (eigener Bildschirm). */}
+              <Button
+                label={t.sports.entryButton}
+                variant="secondary"
+                icon="plus"
+                onPress={() => router.push(`/sportart?date=${date}` as Href)}
+                testID="backfill-sport"
+              />
+              <Body muted>{t.sports.entryHint}</Body>
               {kind === 'endurance' ? (
                 <ChoiceList<EnduranceModality>
                   label={t.backfill.modalityLabel}

@@ -7,6 +7,7 @@ import {
   type WeekStatusDay,
   addDays,
   firstMoveDay,
+  sportName,
   startOfIsoWeek,
 } from '@fitnessapp/core';
 import { fontSize, maxContentWidth, radius, spacing } from '@fitnessapp/ui';
@@ -18,8 +19,10 @@ import { LiveRegion } from '@/components/calendar';
 import { Icon, IconChip, type IconName, useAreaColors } from '@/components/design';
 import { ConfirmDialog } from '@/components/screen';
 import { kcalForLog, useSessionKcalContext, useWatchKcal } from '@/components/session-kcal';
+import { sportIcon } from '@/components/sport-picker';
 import { Text } from '@/components/text';
 import { Body, Button, Heading, Notice } from '@/components/ui';
+import { legLoadHintsFromRows } from '@/data/sport-entry';
 import { activePlan, moveTargetsInRows, validateMoveInRows } from '@/data/training-plan';
 import { weekStatusFromRows } from '@/data/week-status';
 import { startKind } from '@/data/workout-session';
@@ -87,6 +90,9 @@ function iconOf(kind: 'strength' | 'endurance'): IconName {
 function dayIcon(day: WeekStatusDay): { icon: IconName; area: 'training' | 'ausdauer' | null } {
   const kind = day.entries[0]?.kind ?? day.open[0]?.kind ?? day.doneElsewhere[0]?.kind ?? null;
   if (day.state === 'moved' || kind === null) return { icon: 'moon', area: null };
+  // Sportarten Stufe 2: Icon der Sportart.
+  const sport = day.entries[0]?.sport ?? null;
+  if (sport) return { icon: sportIcon(sport), area: 'ausdauer' };
   return kind === 'endurance'
     ? { icon: 'run', area: 'ausdauer' }
     : { icon: 'dumbbell', area: 'training' };
@@ -818,8 +824,8 @@ function EntryBlock({
   return (
     <View style={styles.block} testID="day-sheet-entry">
       <SheetHeader
-        icon={iconOf(entry.kind)}
-        area={entry.kind === 'endurance' ? 'ausdauer' : 'training'}
+        icon={entry.sport ? sportIcon(entry.sport) : iconOf(entry.kind)}
+        area={entry.sport || entry.kind === 'endurance' ? 'ausdauer' : 'training'}
         title={W.sheet.title(weekdayShort(day.date), entryTitle(entry))}
         meta={[...tags, ...stats].join(' · ')}
       />
@@ -911,6 +917,8 @@ function OpenBlock({
   const targets: MoveTarget[] = movable ? moveTargetsInRows(rows, open.sessionId, today) : [];
   // Wie das frühere „Einheit verschieben“: kein freier Tag (ohne Tausch) → Text „kein Tag mehr frei“.
   const noFreeDay = firstMoveDay(targets) === null;
+  // Sportarten Stufe 2: sanfter Hinweis nach Sport mit hoher Beinbelastung am Vortag (nur Vorschlag).
+  const legHint = legLoadHintsFromRows(rows, today).find((h) => h.sessionId === open.sessionId);
   const meta = [
     open.missed ? W.sheet.missedMeta : W.sheet.planned,
     open.estimatedMinutes ? W.hero.minutes(open.estimatedMinutes) : null,
@@ -930,6 +938,11 @@ function OpenBlock({
       {open.missed && movable ? (
         <Notice tone="info" testID="plan-missed">
           {t.plan.missed}
+        </Notice>
+      ) : null}
+      {legHint ? (
+        <Notice tone="info" testID="day-sheet-leg-hint">
+          {`${t.sports.legHint[legHint.reason](sportName(legHint.sport), weekdayShort(legHint.sportDate))} ${t.sports.legHint.note}`}
         </Notice>
       ) : null}
       {hasDraft ? (

@@ -270,6 +270,14 @@ export default function EnduranceScreen() {
                 <Body muted>{E.record.demoHint}</Body>
               </>
             ) : null}
+            {/* Sportarten Stufe 2: Skilanglauf, Skitour, Inline-Skaten, SUP, Kajak/Kanu mit GPS. */}
+            <Button
+              label={t.sports.gpsButton}
+              variant="secondary"
+              onPress={() => router.push(`/sportart?gps=1&date=${today}` as Href)}
+              testID="endurance-gps-sport"
+            />
+            <Body muted>{t.sports.gpsHint}</Body>
             <Button
               label={E.record.manual}
               variant="secondary"

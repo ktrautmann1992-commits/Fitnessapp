@@ -14,6 +14,9 @@ import type {
   MovementPattern,
   MuscleGroup,
   PainIntensity,
+  SportCategory,
+  SportId,
+  TrackedRouteSport,
   TrainingSlotKind,
   TravelEquipment,
 } from './enums';
@@ -1300,6 +1303,458 @@ export const SESSION_KCAL = {
   minDurationS: 60,
   maxDurationS: 8 * 60 * 60,
   maxKcal: 6000,
+} as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 2 (Gründer-Freigabe 25.10.2026, docs/PLAN-SPORTARTEN.md): eintragen bzw. von der Uhr übernehmen,
+// mit kcal und Trainingsbelastung – OHNE eigene Trainingspläne. Rechnung in packages/core/src/sports/.
+// ---------------------------------------------------------------------------------------------------------
+
+/** Icon-Schlüssel einer Sportart (Strich-Icons der App, apps/mobile/src/components/design.tsx). */
+export type SportIcon =
+  | 'mountain'
+  | 'ball'
+  | 'racket'
+  | 'glove'
+  | 'snowflake'
+  | 'waves'
+  | 'music'
+  | 'bike'
+  | 'stopwatch'
+  | 'dots';
+
+/** Beinbelastung für den Plan-Hinweis (LEG_LOAD_HINT): hoch = Sprints, Sprünge, Richtungswechsel bzw. Beine im Dauerzug. */
+export type SportLegLoad = 'high' | 'moderate' | 'low';
+
+export interface SportDefinition {
+  /** Name in der App und im Tagebuch (`session_logs.name_de`, feste Liste – kein Freitext). */
+  readonly nameDe: string;
+  readonly category: SportCategory;
+  readonly icon: SportIcon;
+  /** Mit GPS aufzeichnen (Distanz) – nur Sportarten draußen mit Strecke. */
+  readonly gps: boolean;
+  /** Auswertung einer GPS-Aufzeichnung wie diese Strecken-Sportart (Geschwindigkeitsgrenze, Pace bzw. km/h). */
+  readonly gpsProfile: TrackedRouteSport | null;
+  /** MET bei geringer bzw. hoher Anstrengung (Codes siehe SPORT_CATALOGUE). */
+  readonly met: { readonly low: number; readonly high: number };
+  /** Übliche Anstrengung 0–10 (Borg-CR10), wenn die Person keine angibt – nur für die Trainingsbelastung. */
+  readonly typicalEffort: number;
+  readonly legLoad: SportLegLoad;
+  /** Stoßbelastung (Sprünge, Sprints, Stürze) – nur Anzeige/Erklärung, keine Regel. */
+  readonly impact: boolean;
+  /** Weitere Suchbegriffe (klein geschrieben, ohne Name). */
+  readonly searchTerms: readonly string[];
+}
+
+/**
+ * Katalog der Sportarten Stufe 2. MET = metabolisches Äquivalent (brutto, inkl. Ruheumsatz) aus dem Compendium of
+ * Physical Activities: Ainsworth BE et al. (2011), „2011 Compendium of Physical Activities: a second update of codes
+ * and MET values“, Med Sci Sports Exerc 43(8):1575–1581 (Code in Klammern; Wortlaut der Codes aus dem Gedächtnis,
+ * NICHT gegen das Original geprüft – VOR LIVEGANG FACHLICH PRÜFEN, ggf. auf das 2024 Adult Compendium (Herrmann SD et
+ * al. (2024), J Sport Health Sci 13(1):6–12) umstellen).
+ * - Bouldern / Klettern 5,8 / 8,0: 15535 „rock climbing, ascending or traversing rock, low-to-moderate difficulty“ /
+ *   15533 „rock climbing, ascending rock, high difficulty“. Bouldern hat 2011 keinen eigenen Code (Analogie).
+ * - Fußball 7,0 / 10,0: 15610 „soccer, casual, general“ / 15605 „soccer, competitive“.
+ * - Padel 6,0 / 7,3: kein Code (2011) – Analogie Tennis 15680 „tennis, doubles“ / 15675 „tennis, general“.
+ * - Tennis 6,0 / 8,0: 15680 „tennis, doubles“ / 15690 „tennis, singles“.
+ * - Badminton 5,5 / 7,0: 15030 „badminton, social singles and doubles, general“ / 15020 „badminton, competitive“.
+ * - Tischtennis 4,0 / 4,0: 15660 „table tennis, ping pong“ (nur ein Code – Anstrengung ändert die kcal nicht).
+ * - Basketball 6,0 / 8,0: 15050 „basketball, non-game, general“ / 15040 „basketball, game“.
+ * - Volleyball 3,0 / 6,0: 15720 „volleyball, non-competitive, 6–9 member team, general“ / 15711 „volleyball,
+ *   competitive, in gymnasium“ (Beach 15725 mit 8,0 nicht genutzt).
+ * - Handball 8,0 / 12,0: 15330 „handball, team“ / 15320 „handball, general“.
+ * - Crosstrainer 5,0 / 6,8: 02048 „elliptical trainer, moderate effort“ / für „kräftig“ kein Code (2011) – Annahme
+ *   wie 02012 „bicycling, stationary, 90–100 watts, moderate to vigorous effort“.
+ * - Spinning/Indoor-Cycling 6,8 / 8,5: 02012 (s. o.) / 02019 „bicycling, stationary, RPM/Spin bike class“.
+ * - HIIT/Zirkel 4,3 / 8,0: 02045 „circuit training, moderate effort“ / 02040 „circuit training, including kettlebells,
+ *   some aerobic movement with minimal rest, general, vigorous intensity“.
+ * - Boxen 5,5 / 7,8: 15110 „boxing, punching bag“ / 15120 „boxing, sparring“ (15100 „in ring“ 12,8 nicht genutzt).
+ * - Kickboxen, Judo/BJJ, Karate, Kampfsport (sonstige) 5,3 / 10,3: 15425 „martial arts, different types, slower
+ *   pace, novice performers, practice“ / 15430 „martial arts, different types, moderate pace (e.g., judo, jujitsu,
+ *   karate, kick boxing, tae kwan do, tai-bo, Muay Thai boxing)“.
+ * - Skilanglauf 6,8 / 9,0: 19160 „skiing, cross country, 2.5 mph, slow or light effort, ski walking“ / 19170
+ *   „skiing, cross country, 4.0–4.9 mph, moderate speed and effort, general“ (19180 „brisk“ 12,5 nicht genutzt).
+ * - Skitour 6,8 / 9,0: kein eigener Code (2011) – Analogie Skilanglauf 19160 / 19170 (Aufstieg mit Fellen ist oft
+ *   härter, Abfahrt leichter; bewusst vorsichtig).
+ * - Ski alpin / Snowboard 4,3 / 5,3: 19190 „skiing, downhill, alpine or snowboarding, light effort, active time
+ *   only“ / 19192 „… moderate effort, general, active time only“ (19200 „vigorous effort, racing“ 8,0 nicht genutzt).
+ *   Die Werte gelten für aktive Zeit – Liftzeiten nicht mitzählen (Hinweis in der App).
+ * - Inline-Skaten 7,5 / 9,8: 15591 „rollerblading, in-line skating, 14.4 km/h, recreational pace“ / 15592
+ *   „… 17.7 km/h, moderate pace, exercise training“.
+ * - SUP 3,5 / 6,0: 18365 „paddle boarding, standing“ (= hoch) / für „locker“ kein Code – Analogie 18070 „canoeing,
+ *   rowing, 2.0–3.9 mph, light effort“.
+ * - Kajak/Kanu 3,5 / 5,8: 18070 (s. o.) / 18080 „canoeing, rowing, 4.0–5.9 mph, moderate effort“ (Wettkampf 18090
+ *   12,5 nicht genutzt).
+ * - Tanzen 4,5 / 7,8: 03025 „ethnic or cultural dancing (e.g., … salsa, merengue, … swing)“ / 03031 „general
+ *   dancing (e.g., disco, folk, Irish step dancing, line dancing, polka, contra, country)“.
+ * - Sonstige Sportart 4,0 / 6,0: kein Code – PRODUKTENTSCHEIDUNG (Bereich „moderat“ 3–6 MET nach ACSM; Garber CE et
+ *   al. (2011), Med Sci Sports Exerc 43(7):1334–1359).
+ * `typicalEffort`, `legLoad`, `impact`, `gps`/`gpsProfile` und die Suchbegriffe: PRODUKTENTSCHEIDUNG (sportpraktische
+ * Einschätzung), VOR LIVEGANG FACHLICH PRÜFEN. Schwimmen bleibt Ausdauer-Art (TRAINING_MET.endurance.swim).
+ */
+export const SPORT_CATALOGUE = {
+  bouldering: {
+    nameDe: 'Bouldern',
+    category: 'climb',
+    icon: 'mountain',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.8, high: 8.0 },
+    typicalEffort: 6,
+    legLoad: 'low',
+    impact: true,
+    searchTerms: ['boulder', 'kletterhalle'],
+  },
+  climbing: {
+    nameDe: 'Klettern',
+    category: 'climb',
+    icon: 'mountain',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.8, high: 8.0 },
+    typicalEffort: 5,
+    legLoad: 'low',
+    impact: false,
+    searchTerms: ['halle', 'fels', 'sportklettern', 'kletterhalle', 'klettersteig'],
+  },
+  football: {
+    nameDe: 'Fußball',
+    category: 'ball',
+    icon: 'ball',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 7.0, high: 10.0 },
+    typicalEffort: 7,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: ['fussball', 'soccer', 'kicken', 'futsal'],
+  },
+  padel: {
+    nameDe: 'Padel',
+    category: 'racket',
+    icon: 'racket',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 6.0, high: 7.3 },
+    typicalEffort: 6,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: ['padel-tennis', 'paddel'],
+  },
+  tennis: {
+    nameDe: 'Tennis',
+    category: 'racket',
+    icon: 'racket',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 6.0, high: 8.0 },
+    typicalEffort: 6,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: [],
+  },
+  badminton: {
+    nameDe: 'Badminton',
+    category: 'racket',
+    icon: 'racket',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.5, high: 7.0 },
+    typicalEffort: 6,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: ['federball'],
+  },
+  table_tennis: {
+    nameDe: 'Tischtennis',
+    category: 'racket',
+    icon: 'racket',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.0, high: 4.0 },
+    typicalEffort: 4,
+    legLoad: 'moderate',
+    impact: false,
+    searchTerms: ['ping pong', 'pingpong'],
+  },
+  basketball: {
+    nameDe: 'Basketball',
+    category: 'ball',
+    icon: 'ball',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 6.0, high: 8.0 },
+    typicalEffort: 7,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: ['streetball', 'korbball'],
+  },
+  volleyball: {
+    nameDe: 'Volleyball',
+    category: 'ball',
+    icon: 'ball',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 3.0, high: 6.0 },
+    typicalEffort: 5,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: ['beachvolleyball'],
+  },
+  handball: {
+    nameDe: 'Handball',
+    category: 'ball',
+    icon: 'ball',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 8.0, high: 12.0 },
+    typicalEffort: 7,
+    legLoad: 'high',
+    impact: true,
+    searchTerms: [],
+  },
+  cross_trainer: {
+    nameDe: 'Crosstrainer',
+    category: 'indoor_cardio',
+    icon: 'stopwatch',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.0, high: 6.8 },
+    typicalEffort: 5,
+    legLoad: 'moderate',
+    impact: false,
+    searchTerms: ['ellipsentrainer', 'elliptical', 'stepper'],
+  },
+  indoor_cycling: {
+    nameDe: 'Spinning',
+    category: 'indoor_cardio',
+    icon: 'bike',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 6.8, high: 8.5 },
+    typicalEffort: 7,
+    legLoad: 'high',
+    impact: false,
+    searchTerms: ['indoor-cycling', 'indoor cycling', 'radkurs', 'rpm', 'spinningkurs'],
+  },
+  hiit: {
+    nameDe: 'HIIT/Zirkel',
+    category: 'indoor_cardio',
+    icon: 'stopwatch',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.3, high: 8.0 },
+    typicalEffort: 8,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['zirkeltraining', 'tabata', 'bootcamp', 'intervalltraining', 'kurs'],
+  },
+  boxing: {
+    nameDe: 'Boxen',
+    category: 'combat',
+    icon: 'glove',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.5, high: 7.8 },
+    typicalEffort: 7,
+    legLoad: 'moderate',
+    impact: false,
+    searchTerms: ['sandsack', 'sparring'],
+  },
+  kickboxing: {
+    nameDe: 'Kickboxen',
+    category: 'combat',
+    icon: 'glove',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.3, high: 10.3 },
+    typicalEffort: 7,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['muay thai', 'thaiboxen'],
+  },
+  judo_bjj: {
+    nameDe: 'Judo/BJJ',
+    category: 'combat',
+    icon: 'glove',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.3, high: 10.3 },
+    typicalEffort: 7,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['judo', 'bjj', 'jiu-jitsu', 'jiu jitsu', 'ringen', 'grappling'],
+  },
+  karate: {
+    nameDe: 'Karate',
+    category: 'combat',
+    icon: 'glove',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.3, high: 10.3 },
+    typicalEffort: 6,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['taekwondo', 'kung fu'],
+  },
+  martial_arts: {
+    nameDe: 'Kampfsport',
+    category: 'combat',
+    icon: 'glove',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 5.3, high: 10.3 },
+    typicalEffort: 6,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['kampfkunst', 'selbstverteidigung', 'mma', 'krav maga'],
+  },
+  cross_country_skiing: {
+    nameDe: 'Skilanglauf',
+    category: 'winter',
+    icon: 'snowflake',
+    gps: true,
+    gpsProfile: 'bike',
+    met: { low: 6.8, high: 9.0 },
+    typicalEffort: 6,
+    legLoad: 'high',
+    impact: false,
+    searchTerms: ['langlauf', 'loipe', 'skating', 'klassisch'],
+  },
+  ski_touring: {
+    nameDe: 'Skitour',
+    category: 'winter',
+    icon: 'snowflake',
+    gps: true,
+    gpsProfile: 'bike',
+    met: { low: 6.8, high: 9.0 },
+    typicalEffort: 6,
+    legLoad: 'high',
+    impact: false,
+    searchTerms: ['skitouren', 'tourenski', 'skibergsteigen'],
+  },
+  alpine_skiing: {
+    nameDe: 'Ski alpin',
+    category: 'winter',
+    icon: 'snowflake',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.3, high: 5.3 },
+    typicalEffort: 4,
+    legLoad: 'high',
+    impact: false,
+    searchTerms: ['skifahren', 'abfahrt', 'piste', 'ski'],
+  },
+  snowboarding: {
+    nameDe: 'Snowboard',
+    category: 'winter',
+    icon: 'snowflake',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.3, high: 5.3 },
+    typicalEffort: 4,
+    legLoad: 'moderate',
+    impact: false,
+    searchTerms: ['snowboarden', 'piste'],
+  },
+  inline_skating: {
+    nameDe: 'Inline-Skaten',
+    category: 'indoor_cardio',
+    icon: 'stopwatch',
+    gps: true,
+    gpsProfile: 'bike',
+    met: { low: 7.5, high: 9.8 },
+    typicalEffort: 5,
+    legLoad: 'moderate',
+    impact: false,
+    searchTerms: ['inliner', 'skaten', 'rollerblade', 'rollschuh'],
+  },
+  sup: {
+    nameDe: 'SUP',
+    category: 'water',
+    icon: 'waves',
+    gps: true,
+    gpsProfile: 'run',
+    met: { low: 3.5, high: 6.0 },
+    typicalEffort: 4,
+    legLoad: 'low',
+    impact: false,
+    searchTerms: ['stand-up-paddling', 'stand up paddle', 'paddeln', 'paddleboard'],
+  },
+  kayaking: {
+    nameDe: 'Kajak/Kanu',
+    category: 'water',
+    icon: 'waves',
+    gps: true,
+    gpsProfile: 'run',
+    met: { low: 3.5, high: 5.8 },
+    typicalEffort: 5,
+    legLoad: 'low',
+    impact: false,
+    searchTerms: ['kajak', 'kanu', 'paddeln', 'canadier'],
+  },
+  dancing: {
+    nameDe: 'Tanzen',
+    category: 'dance',
+    icon: 'music',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.5, high: 7.8 },
+    typicalEffort: 5,
+    legLoad: 'moderate',
+    impact: true,
+    searchTerms: ['tanz', 'zumba', 'salsa', 'ballett', 'tanzkurs'],
+  },
+  other: {
+    nameDe: 'Sonstige Sportart',
+    category: 'other',
+    icon: 'dots',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 4.0, high: 6.0 },
+    typicalEffort: 5,
+    legLoad: 'low',
+    impact: false,
+    searchTerms: ['andere', 'sonstiges'],
+  },
+} as const satisfies Readonly<Record<SportId, SportDefinition>>;
+
+/**
+ * Anstrengung (0–10, Borg-CR10) → MET zwischen `met.low` und `met.high` einer Sportart: bis `lowEffortMax` der niedrige
+ * Wert, ab `highEffortMin` der hohe, dazwischen linear. Ohne Angabe der HOHE Wert (wie TRAINING_MET.fallback; so wird
+ * die Trainingsenergie fürs Tagesziel nie unterschätzt). Grenzen 3/8 in Anlehnung an die CR10-Stufen „moderat“ (3) und
+ * „sehr hart“ (7–8): Borg GA (1982), Med Sci Sports Exerc 14(5):377–381; Zuordnung PRODUKTENTSCHEIDUNG.
+ */
+export const SPORT_INTENSITY = { lowEffortMax: 3, highEffortMin: 8 } as const;
+
+/**
+ * Trainingsbelastung je Einheit (Session-RPE-Methode): Minuten × Anstrengung 0–10 (Borg-CR10) = Belastungspunkte.
+ * Ohne Angabe der Anstrengung gilt SPORT_CATALOGUE[…].typicalEffort (andere Einheiten: `fallbackEffort`). Die Woche ist
+ * die Summe aller Einheiten. Quellen: Foster C (1998), Med Sci Sports Exerc 30(7):1164–1168; Foster C et al. (2001), „A
+ * new approach to monitoring exercise training“, J Strength Cond Res 15(1):109–115. `maxPointsPerSession`: Deckel gegen
+ * Tippfehler (8 h × 10 = 4.800) – PRODUKTENTSCHEIDUNG. `fallbackEffort` 5 (Ausdauer/Kraft ohne Angabe):
+ * PRODUKTENTSCHEIDUNG. VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const SPORT_LOAD = { maxPointsPerSession: 4800, fallbackEffort: 5 } as const;
+
+/**
+ * Plan-Hinweis nach Sport mit hoher Beinbelastung (nur Vorschlag, keine Plan-Änderung): war gestern eine Sportart mit
+ * `legLoad` „high“ mit mindestens `minMinutes` Minuten und Anstrengung ≥ `minEffort` (ohne Angabe typicalEffort),
+ * bekommt eine heute geplante harte Bein-/Intervall-Einheit den sanften Hinweis „lieber locker oder tauschen“. Hart =
+ * Kraft mit Fokus aus `strengthFocus` bzw. Ausdauer mit harter Einheiten-Art (HARD_WORKOUT_TYPES) oder Anstrengung über
+ * ENDURANCE_EFFORT.easyMax. Grundlage: 24–72 h erhöhte Ermüdung nach Mannschafts-/Rückschlagsportarten (Nédélec M et
+ * al. (2012), „Recovery in soccer: part I“, Sports Med 42(12):997–1015). Schwellen PRODUKTENTSCHEIDUNG.
+ */
+export const LEG_LOAD_HINT = {
+  minMinutes: 30,
+  minEffort: 5,
+  strengthFocus: ['lower', 'full_body'],
+} as const;
+
+/** Grenzen eines Sportart-Eintrags (wie CARDIO_LOG_LIMITS; gleiche CHECKs in der Datenbank, db-sync.test.ts). */
+export const SPORT_LOG_LIMITS = {
+  durationS: { min: 60, max: 12 * 60 * 60 },
+  distanceM: { min: 0, max: 500_000 },
 } as const;
 
 /**

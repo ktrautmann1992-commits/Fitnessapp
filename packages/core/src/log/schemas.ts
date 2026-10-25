@@ -6,6 +6,8 @@ import {
   SESSION_LOG_LIMITS,
   SESSION_RPE_LIMITS,
   SET_RPE_LIMITS,
+  SPORT_CATALOGUE,
+  SPORT_LOG_LIMITS,
   TEMPLATE_DOSAGE_LIMITS,
 } from '../constants';
 import {
@@ -15,6 +17,7 @@ import {
   LOG_SOURCES,
   PLANNED_SESSION_KINDS,
   SESSION_LOG_STATUSES,
+  SPORT_IDS,
 } from '../enums';
 
 /**
@@ -190,6 +193,30 @@ export const cardioLogSchema = z
     path: ['e_bike'],
   });
 
+/**
+ * Sportart-Eintrag (Sportarten Stufe 2, docs/PLAN-SPORTARTEN.md): Sportart, Dauer, Distanz (nur GPS-Sportarten). Im
+ * Eintrag als Feld `sport`; gespeichert in session_logs.sport / sport_duration_s / sport_distance_m.
+ */
+export const sportLogSchema = z
+  .strictObject({
+    sport: z.enum(SPORT_IDS),
+    duration_s: z
+      .number()
+      .int()
+      .min(SPORT_LOG_LIMITS.durationS.min)
+      .max(SPORT_LOG_LIMITS.durationS.max),
+    distance_m: z
+      .number()
+      .int()
+      .min(SPORT_LOG_LIMITS.distanceM.min)
+      .max(SPORT_LOG_LIMITS.distanceM.max)
+      .nullable(),
+  })
+  .refine((v) => v.distance_m === null || SPORT_CATALOGUE[v.sport].gps, {
+    message: 'Distanz nur bei Sportarten mit GPS.',
+    path: ['distance_m'],
+  });
+
 export const sessionLogPayloadSchema = z
   .strictObject({
     id: uuid,
@@ -230,16 +257,30 @@ export const sessionLogPayloadSchema = z
      * Einheit (Datum, Name aus fester Liste, keine Vorgaben) prüft freeSessionPayloadIssue() (free-session.ts).
      */
     is_free: z.boolean().optional(),
+    /**
+     * Sportart (Sportarten Stufe 2): nur als freie Einheit der Art „strength“ OHNE Übungen und ohne Ausdauer – so
+     * bleiben Pläne, Progression und 10-%-Bezug unberührt. Optional (fehlt/null = keine Sportart), damit ältere,
+     * noch wartende Fassungen gültig bleiben.
+     */
+    sport: sportLogSchema.nullable().optional(),
   })
   .refine(
     (s) =>
-      s.kind === 'strength'
-        ? s.exercises.length >= SESSION_LOG_LIMITS.exercisesPerSession.min && s.cardio === null
-        : s.exercises.length === 0 && s.cardio !== null,
+      s.sport != null
+        ? s.kind === 'strength' && s.exercises.length === 0 && s.cardio === null
+        : s.kind === 'strength'
+          ? s.exercises.length >= SESSION_LOG_LIMITS.exercisesPerSession.min && s.cardio === null
+          : s.exercises.length === 0 && s.cardio !== null,
     {
-      message: 'Kraft: Übungen ohne Ausdauer; Ausdauer: Ausdauer ohne Übungen.',
+      message:
+        'Kraft: Übungen ohne Ausdauer; Ausdauer: Ausdauer ohne Übungen; Sportart: weder noch.',
       path: ['exercises'],
     },
+  )
+  .refine(
+    (s) =>
+      s.sport == null || (s.is_free === true && s.status === 'completed' && s.source === 'manual'),
+    { message: 'Sportart nur als freie, erledigte Einheit.', path: ['sport'] },
   )
   .refine((s) => new Set(s.exercises.map((e) => e.order_no)).size === s.exercises.length, {
     message: 'Reihenfolge doppelt.',
@@ -269,6 +310,7 @@ export type SessionLogPayload = z.infer<typeof sessionLogPayloadSchema>;
 export type ExerciseLogPayload = z.infer<typeof exerciseLogSchema>;
 export type SetLogPayload = z.infer<typeof setLogSchema>;
 export type CardioLogPayload = z.infer<typeof cardioLogSchema>;
+export type SportLogPayload = z.infer<typeof sportLogSchema>;
 
 /** Eigenes Startgewicht (`exercise_start_weights`, direkt per PostgREST – bewusste Ausnahme W14). */
 export const exerciseStartWeightSchema = z.strictObject({

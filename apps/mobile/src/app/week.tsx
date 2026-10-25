@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
+import { SportWeekCard } from '@/components/sport-week';
 import { Text } from '@/components/text';
 import { DaySheet, type SheetMessage, useWeekStatus, WeekDayRow } from '@/components/training-week';
 import { Body, Button, Heading, LoadingState, Notice } from '@/components/ui';
@@ -162,6 +163,8 @@ export default function WeekScreen() {
         ))}
       </View>
       <Body muted>{W.weekPage.tapHint}</Body>
+      {/* Sportarten Stufe 2: Summen je Sportart und Trainingsbelastung der Woche. */}
+      <SportWeekCard weekOf={pager.weekStart} />
 
       <View style={styles.pager}>
         <View style={styles.pagerButton}>

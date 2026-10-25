@@ -93,6 +93,9 @@ function sessionLog(
     client_updated_at: `${date}T18:00:00Z`,
     created_at: `${date}T18:00:00Z`,
     updated_at: `${date}T18:00:00Z`,
+    sport: null,
+    sport_duration_s: null,
+    sport_distance_m: null,
     ...overrides,
   };
 }

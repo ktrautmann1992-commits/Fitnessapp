@@ -1,4 +1,4 @@
-import { FREE_SESSION, SESSION_LOG_LIMITS } from '../constants';
+import { FREE_SESSION, SESSION_LOG_LIMITS, SPORT_CATALOGUE } from '../constants';
 import { addDays, isoDateInTimeZone } from '../dates';
 import type { EnduranceModality, LoadType, PlannedSessionKind } from '../enums';
 import type { IncrementKind } from '../plan/loads';
@@ -143,8 +143,10 @@ export function freeSessionPayloadIssue(
   // Nur abgehakte Sätze, Einheit daher „completed“ (wie freeSessionLogFromInput und der Server, Wächter H1).
   if (payload.is_intro_week || payload.is_deload || payload.status !== 'completed')
     return 'invalid';
-  const expectedName =
-    payload.kind === 'strength'
+  // Sportart (Sportarten Stufe 2): Name der Sportart aus dem Katalog.
+  const expectedName = payload.sport
+    ? SPORT_CATALOGUE[payload.sport.sport].nameDe
+    : payload.kind === 'strength'
       ? FREE_SESSION.names.strength
       : payload.cardio
         ? FREE_SESSION.names.endurance[payload.cardio.modality]
@@ -441,6 +443,8 @@ export function freeSessionNutritionSessions(
     readonly performed_on: string;
     readonly kind: PlannedSessionKind;
     readonly session_rpe: number | null;
+    /** Sportarten Stufe 2: Dauer eines Sportart-Eintrags (fehlt bei älteren Aufrufern). */
+    readonly sport_duration_s?: number | null;
   }[],
   details: {
     readonly cardio: readonly {
@@ -457,12 +461,17 @@ export function freeSessionNutritionSessions(
     if (log.is_free !== true) return [];
     const cardio = log.kind === 'endurance' ? cardioByLog.get(log.id) : undefined;
     if (log.kind === 'endurance' && !cardio) return [];
+    // Sportart (Stufe 2): erfasste Dauer; gerechnet wie Kraft (TRAINING_MET.strength, sichere Richtung – die
+    // Sportart-MET nutzt nur die kcal-Anzeige je Einheit, docs/PLAN-SPORTARTEN.md 3).
+    const sportS = log.kind === 'strength' ? (log.sport_duration_s ?? null) : null;
     const minutes = cardio
       ? Math.round(cardio.duration_s / 60)
-      : Math.min(
-          (details.doneSets.get(log.id) ?? 0) * FREE_SESSION.strengthMinutesPerSet,
-          FREE_SESSION.strengthMinutesMax,
-        );
+      : sportS !== null && sportS > 0
+        ? Math.min(Math.round(sportS / 60), FREE_SESSION.strengthMinutesMax)
+        : Math.min(
+            (details.doneSets.get(log.id) ?? 0) * FREE_SESSION.strengthMinutesPerSet,
+            FREE_SESSION.strengthMinutesMax,
+          );
     return [
       {
         sessionId: `free:${log.id}`,

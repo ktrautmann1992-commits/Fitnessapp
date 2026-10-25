@@ -1,9 +1,16 @@
 import { z } from 'zod';
 
-import { BODY_METRIC_LIMITS, SESSION_KCAL, WEARABLE_SYNC } from '../constants';
-import { ENDURANCE_MODALITIES, type EnduranceModality, PLANNED_SESSION_KINDS } from '../enums';
-import type { PlannedSessionKind } from '../enums';
+import { BODY_METRIC_LIMITS, SESSION_KCAL, SESSION_RPE_LIMITS, WEARABLE_SYNC } from '../constants';
+import {
+  ENDURANCE_MODALITIES,
+  type EnduranceModality,
+  PLANNED_SESSION_KINDS,
+  SPORT_IDS,
+} from '../enums';
+import type { LogSource, PlannedSessionKind, SportId } from '../enums';
 import { metForSession } from '../nutrition/energy';
+import { sportMet } from '../sports/catalogue';
+import { sportForLog, sportLogDurationS } from '../sports/log';
 
 /**
  * kcal je Einheit („kcal verbrannt“ an jeder Einheit; docs/KONZEPT.md Abschnitt 5, Konstanten SESSION_KCAL):
@@ -35,6 +42,19 @@ export const sessionCaloriesInputSchema = z.strictObject({
     .min(BODY_METRIC_LIMITS.weightKg.min)
     .max(BODY_METRIC_LIMITS.weightKg.max)
     .nullable(),
+  /**
+   * Sportart (Sportarten Stufe 2): MET aus SPORT_CATALOGUE je Anstrengung `effort` (sportMet) statt Kraft/Ausdauer.
+   * Fehlt = keine Sportart.
+   */
+  sport: z.enum(SPORT_IDS).nullable().default(null),
+  /** Anstrengung 0–10 der Einheit (session_rpe) – nur bei Sportart genutzt; null = keine Angabe (hoher MET-Wert). */
+  effort: z
+    .number()
+    .int()
+    .min(SESSION_RPE_LIMITS.min)
+    .max(SESSION_RPE_LIMITS.max)
+    .nullable()
+    .default(null),
   /** kcal der Uhr; null = keine Messung. 0 gilt als „keine Messung“. */
   measuredKcal: z
     .number()
@@ -81,12 +101,15 @@ export function sessionCalories(raw: SessionCaloriesInput): SessionCalories {
     return { kcal: null, source: null, reason: 'no_duration' };
   }
   if (input.bodyWeightKg === null) return { kcal: null, source: null, reason: 'no_weight' };
-  const met = metForSession({
-    kind: input.kind,
-    enduranceModality: input.kind === 'endurance' ? input.enduranceModality : null,
-    effortTarget: input.effortTarget,
-    eBike: input.eBike,
-  });
+  const met =
+    input.sport !== null
+      ? sportMet(input.sport, input.effort)
+      : metForSession({
+          kind: input.kind,
+          enduranceModality: input.kind === 'endurance' ? input.enduranceModality : null,
+          effortTarget: input.effortTarget,
+          eBike: input.eBike,
+        });
   const kcal = met * input.bodyWeightKg * (durationS / 3600);
   return { kcal: roundKcal(kcal), source: 'estimate', reason: null, met };
 }
@@ -120,6 +143,12 @@ export interface SessionCaloriesLogInput {
     readonly kind: PlannedSessionKind;
     readonly started_at: string | null;
     readonly finished_at: string | null;
+    /** Sportarten Stufe 2 (fehlt bei älteren Aufrufern = keine Sportart). */
+    readonly name_de?: string;
+    readonly source?: LogSource;
+    readonly session_rpe?: number | null;
+    readonly sport?: SportId | null;
+    readonly sport_duration_s?: number | null;
   };
   readonly cardio: {
     readonly modality: EnduranceModality;
@@ -140,6 +169,12 @@ export interface SessionCaloriesLogInput {
  */
 export function sessionLogDurationS(input: SessionCaloriesLogInput): number | null {
   if (input.cardio) return input.cardio.duration_s;
+  if (
+    input.log.name_de !== undefined &&
+    sportForLog({ ...input.log, name_de: input.log.name_de })
+  ) {
+    return sportLogDurationS(input.log);
+  }
   const { started_at: started, finished_at: finished } = input.log;
   if (started !== null && finished !== null) {
     const ms = Date.parse(finished) - Date.parse(started);
@@ -152,12 +187,17 @@ export function sessionLogDurationS(input: SessionCaloriesLogInput): number | nu
 export function sessionCaloriesInputForLog(
   input: SessionCaloriesLogInput,
 ): Omit<SessionCaloriesInput, 'bodyWeightKg' | 'measuredKcal'> {
+  const sport =
+    input.log.name_de !== undefined && input.cardio === null
+      ? sportForLog({ ...input.log, name_de: input.log.name_de })
+      : null;
   return {
     kind: input.log.kind,
     enduranceModality: input.cardio?.modality ?? input.planned?.endurance_modality ?? null,
     effortTarget: input.planned?.effort_target ?? null,
     durationS: sessionLogDurationS(input),
     eBike: input.cardio?.modality === 'bike' && input.cardio.e_bike === true,
+    ...(sport === null ? {} : { sport, effort: input.log.session_rpe ?? null }),
   };
 }
 

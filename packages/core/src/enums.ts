@@ -352,6 +352,60 @@ export type LogSource = (typeof LOG_SOURCES)[number];
 export const TRACKED_ROUTE_SPORTS = ['run', 'bike', 'walk'] as const;
 export type TrackedRouteSport = (typeof TRACKED_ROUTE_SPORTS)[number];
 
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 2 (Gründer-Freigabe 25.10.2026, docs/PLAN-SPORTARTEN.md, 20261025130000_sport_enums.sql)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Sportarten zum Eintragen bzw. von der Uhr – OHNE eigene Trainingspläne (Katalog: SPORT_CATALOGUE in constants.ts).
+ * Laufen, Gehen, Rad und Schwimmen bleiben Ausdauer-Arten (ENDURANCE_MODALITIES) wie bisher. Reihenfolge = Postgres-Enum
+ * `sport_type` (Abgleich in db-sync.test.ts). `other` = „Sonstige Sportart“ (z. B. unbekannte Art von der Uhr).
+ */
+export const SPORT_IDS = [
+  'bouldering',
+  'climbing',
+  'football',
+  'padel',
+  'tennis',
+  'badminton',
+  'table_tennis',
+  'basketball',
+  'volleyball',
+  'handball',
+  'cross_trainer',
+  'indoor_cycling',
+  'hiit',
+  'boxing',
+  'kickboxing',
+  'judo_bjj',
+  'karate',
+  'martial_arts',
+  'cross_country_skiing',
+  'ski_touring',
+  'alpine_skiing',
+  'snowboarding',
+  'inline_skating',
+  'sup',
+  'kayaking',
+  'dancing',
+  'other',
+] as const;
+export type SportId = (typeof SPORT_IDS)[number];
+
+/** Gruppen der Auswahl (Reihenfolge der Anzeige). */
+export const SPORT_CATEGORIES = [
+  'ball',
+  'racket',
+  'climb',
+  'combat',
+  'winter',
+  'water',
+  'indoor_cardio',
+  'dance',
+  'other',
+] as const;
+export type SportCategory = (typeof SPORT_CATEGORIES)[number];
+
 /** Schwierigkeit einer Strecke (KONZEPT 10.1: leicht / mittel / schwer) – Enum route_difficulty. */
 export const ROUTE_DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
 export type RouteDifficulty = (typeof ROUTE_DIFFICULTIES)[number];

@@ -11,6 +11,7 @@ import {
   recordingSaveCheck,
   recordingSummary,
   ROUTE_DIFFICULTIES,
+  sportName,
   type RouteDifficulty,
   toTrackedRoutePayload,
   TRACKED_ROUTE_LIMITS,
@@ -35,6 +36,7 @@ import { AreaButton, Icon } from '@/components/design';
 import { BikeTypeChoice, EBikeBadge, useBikeChoice } from '@/components/e-bike';
 import { RouteSketch } from '@/components/endurance';
 import { LoopGuideCard } from '@/components/loop-guide-card';
+import { SportRecordingSave, useGpsSportart } from '@/components/sport-recording';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
   Body,
@@ -102,6 +104,8 @@ export default function RecordScreen() {
     ebike?: string;
     /** Rundkurs-Vorschlag: id der Leitlinie (lib/loop-guide.ts) – Karte mit der Runde beim Laufen. */
     guide?: string;
+    /** Sportart mit GPS (Sportarten Stufe 2, z. B. Skilanglauf); fehlt = Laufen/Rad/Gehen. */
+    sportart?: string;
   }>();
   const router = useRouter();
   const app = useApp();
@@ -123,6 +127,8 @@ export default function RecordScreen() {
     current?.state.sport ?? (isSport(params.sport) ? params.sport : 'run');
   const demo = params.demo === '1';
   const eBikeParam = params.ebike === '1' ? true : params.ebike === '0' ? false : null;
+  // Sportarten Stufe 2: GPS-Sportart dieser Aufzeichnung (gemerkt je Aufzeichnung, components/sport-recording.tsx).
+  const gpsSportart = useGpsSportart(params.sportart, current?.state.id ?? null);
   // Laufende (bzw. wiederhergestellte) Aufzeichnung dieses Kontos: direkt Live-Ansicht bzw. Speichern zeigen.
   const owned = current && userId && current.state.ownerUserId === userId ? current : null;
   const phase: Phase =
@@ -344,6 +350,21 @@ export default function RecordScreen() {
   }
 
   // --- Speichern ---------------------------------------------------------------------------------------------
+  if (phase.kind === 'save' && gpsSportart) {
+    return (
+      <Screen area="ausdauer" icon="run" title={sportName(gpsSportart)} testID="record-save-sport">
+        <SportRecordingSave
+          sport={gpsSportart}
+          onSaved={(day) => router.replace(`/tag/${day}` as Href)}
+          onDiscarded={() => router.replace('/ausdauer' as Href)}
+          onResume={async () => {
+            await resumeActiveRecording();
+            setPhase({ kind: 'live' });
+          }}
+        />
+      </Screen>
+    );
+  }
   if (phase.kind === 'save') {
     return (
       <SaveView
@@ -376,7 +397,11 @@ export default function RecordScreen() {
       area="ausdauer"
       icon="run"
       title={E.live.title(
-        sport === 'bike' && eBikeParam === true ? E.eBike.sport : E.sports[sport],
+        gpsSportart
+          ? sportName(gpsSportart)
+          : sport === 'bike' && eBikeParam === true
+            ? E.eBike.sport
+            : E.sports[sport],
       )}
       testID="record-live"
     >

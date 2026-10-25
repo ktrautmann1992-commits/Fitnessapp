@@ -1,4 +1,5 @@
 import { FREE_SESSION } from '../constants';
+import type { SportId } from '../enums';
 import type { WearableSessionGroup } from './schema';
 
 /**
@@ -9,6 +10,8 @@ import type { WearableSessionGroup } from './schema';
  * - Krafttraining, Gewichtheben, Calisthenics und einzelne Kraftübungen (Bankdrücken, Kniebeuge …) → freie
  *   Kraft-Einheit (A1b) ohne Übungen,
  * - alles andere (Yoga, Wandern, Tennis, Rudern, Crosstrainer …) → freie Einheit „Sonstige“ mit deutschem Titel.
+ *   Sportarten Stufe 2 (docs/PLAN-SPORTARTEN.md): Arten aus dem Sportarten-Katalog bekommen ihre Sportart
+ *   (WEARABLE_SPORT_TYPES, kcal/Belastung je Sportart); alle übrigen „Sonstigen“ zählen als „Sonstige Sportart“.
  */
 
 const RUN = [56, 57];
@@ -51,9 +54,9 @@ export const WEARABLE_OTHER_TITLES: Readonly<Record<number, string>> = {
   54: 'Rudergerät',
   55: 'Rugby',
   58: 'Segeln',
-  60: 'Skaten',
-  61: 'Skifahren',
-  62: 'Snowboarden',
+  60: 'Inline-Skaten',
+  61: 'Ski alpin',
+  62: 'Snowboard',
   63: 'Schneeschuhwandern',
   64: 'Fußball',
   66: 'Squash',
@@ -69,7 +72,7 @@ export const WEARABLE_OTHER_TITLES: Readonly<Record<number, string>> = {
 };
 
 /** Titel einer Einheit ohne bekannte Art (Health Connect „Sonstiges Training“ = 0 und neue Arten). */
-export const OTHER_TITLE = 'Sonstiges Training';
+export const OTHER_TITLE = 'Sonstige Sportart';
 
 export interface MappedExerciseType {
   readonly group: WearableSessionGroup;
@@ -86,4 +89,63 @@ export function mapExerciseType(hcType: number): MappedExerciseType {
   if (SWIM.includes(hcType)) return { group: 'swim', nameDe: names.endurance.swim };
   if (STRENGTH.includes(hcType)) return { group: 'strength', nameDe: names.strength };
   return { group: 'other', nameDe: WEARABLE_OTHER_TITLES[hcType] ?? OTHER_TITLE };
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 2: Health-Connect-Art → Sportart (docs/PLAN-SPORTARTEN.md)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Health-Connect-Arten mit Sportart aus dem Katalog (EXERCISE_TYPE_*): Badminton 2, Basketball 5, Bootcamp 10 und
+ * HIIT 36 → HIIT/Zirkel, Boxen 11, Tanzen 16, Crosstrainer 25 (ELLIPTICAL), Handball 35, Kampfsport 44
+ * (MARTIAL_ARTS, ohne Unterart), Paddeln 46 → Kajak/Kanu (PADDLING umfasst auch SUP – Health Connect unterscheidet
+ * nicht), Klettern 51 (ROCK_CLIMBING), Inline-Skaten 60 (SKATING), Ski alpin 61 (SKIING – Health Connect kennt
+ * KEINE eigene Art für Skilanglauf), Snowboard 62, Fußball 64 (SOCCER), Tischtennis 75, Tennis 76, Volleyball 78.
+ * Padel, Skitour, SUP, Judo/BJJ, Karate, Kickboxen und Spinning haben in Health Connect keine eigene Art. Alle
+ * übrigen „Sonstigen“ → `other` („Sonstige Sportart“, Dauer und kcal laut Uhr).
+ */
+export const WEARABLE_SPORT_TYPES: Readonly<Record<number, SportId>> = {
+  2: 'badminton',
+  5: 'basketball',
+  10: 'hiit',
+  11: 'boxing',
+  16: 'dancing',
+  25: 'cross_trainer',
+  35: 'handball',
+  36: 'hiit',
+  44: 'martial_arts',
+  46: 'kayaking',
+  51: 'climbing',
+  60: 'inline_skating',
+  61: 'alpine_skiing',
+  62: 'snowboarding',
+  64: 'football',
+  75: 'table_tennis',
+  76: 'tennis',
+  78: 'volleyball',
+};
+
+/** Sportart einer Health-Connect-Art: Ausdauer/Kraft → null; Katalog-Art → Sportart; sonst `other`. */
+export function sportForExerciseType(hcType: number): SportId | null {
+  if (mapExerciseType(hcType).group !== 'other') return null;
+  return WEARABLE_SPORT_TYPES[hcType] ?? 'other';
+}
+
+/** Titel früherer App-Fassungen (vor Sportarten Stufe 2) → Sportart. */
+const LEGACY_WEARABLE_TITLES: Readonly<Record<string, SportId>> = {
+  Skaten: 'inline_skating',
+  Skifahren: 'alpine_skiing',
+  Snowboarden: 'snowboarding',
+  'Sonstiges Training': 'other',
+};
+
+/**
+ * Sportart einer übernommenen Uhr-Einheit („Sonstige“, gespeichert ohne Health-Connect-Art) aus ihrem Titel: Titel
+ * einer Katalog-Art → deren Sportart, frühere Titel ebenso, jeder andere Titel → `other`.
+ */
+export function sportFromWearableTitle(title: string): SportId {
+  for (const [type, name] of Object.entries(WEARABLE_OTHER_TITLES)) {
+    if (name === title) return WEARABLE_SPORT_TYPES[Number(type)] ?? 'other';
+  }
+  return LEGACY_WEARABLE_TITLES[title] ?? 'other';
 }

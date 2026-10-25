@@ -8,6 +8,7 @@ import type {
   PlannedSessionKind,
   PlannedSessionStatus,
   SessionLogStatus,
+  SportId,
 } from '../enums';
 
 /**
@@ -67,6 +68,11 @@ export interface WeekStatusLog {
   readonly started_at?: string | null;
   /** Erst später eingetragen (isBackfilledLog). */
   readonly backfilled?: boolean;
+  /**
+   * Sportart (Sportarten Stufe 2, sportForLog): zählt nie für eine geplante Einheit (keine Zuordnung, keine Frage) –
+   * immer „zusätzliche Einheit“. Fehlt/null = Kraft/Ausdauer wie bisher.
+   */
+  readonly sport?: SportId | null;
 }
 
 const idSchema = z.string().min(1).max(LOG_ASSIGNMENT_LIMITS.idMaxLength);
@@ -133,6 +139,8 @@ export interface WeekEntry {
   readonly changeable: boolean;
   /** Freier Eintrag: passende offene Einheiten dieser Woche (ohne die schon zugeordnete). */
   readonly alternatives: readonly WeekAlternative[];
+  /** Sportart (Sportarten Stufe 2); fehlt/null = Kraft/Ausdauer. */
+  readonly sport?: SportId | null;
 }
 
 /** Geplante Einheit, die noch offen ist. */
@@ -290,6 +298,8 @@ export function weekStatus(input: {
   for (const a of input.assignments ?? []) decisions.set(a.logId, a.sessionId);
 
   const isFree = (l: WeekStatusLog) => l.is_free === true && l.planned_session_id === null;
+  // Sportarten (Stufe 2) haben keine geplanten Einheiten – nie zuordnen, nie fragen.
+  const isAssignable = (l: WeekStatusLog) => isFree(l) && (l.sport ?? null) === null;
   // Ein Eintrag gehört zur Woche des Termins seiner Einheit, sonst zur Woche seines Datums (wie weekLogSummary).
   const weekLogs = logs
     .filter((l) => {
@@ -315,7 +325,7 @@ export function weekStatus(input: {
   }
   // 2. Bestätigte Zuordnungen freier Einträge (nur gleiche Woche, gleiche Sportart, noch offen).
   for (const log of weekLogs) {
-    if (!isFree(log) || !inWeek(log.performed_on)) continue;
+    if (!isAssignable(log) || !inWeek(log.performed_on)) continue;
     const target = decisions.get(log.id);
     if (target === undefined || target === null) continue;
     const session = sessionById.get(target);
@@ -329,7 +339,7 @@ export function weekStatus(input: {
   }
   // 3. Gleicher Tag, gleiche Sportart, ohne Antwort → zählt ohne Nachfrage.
   for (const log of weekLogs) {
-    if (!isFree(log) || logFulfils.has(log.id) || decisions.has(log.id)) continue;
+    if (!isAssignable(log) || logFulfils.has(log.id) || decisions.has(log.id)) continue;
     const session = sessions
       .filter(
         (s) =>
@@ -344,7 +354,7 @@ export function weekStatus(input: {
   const questions: CrossDayQuestion[] = [];
   const asked = new Set<string>();
   for (const log of weekLogs) {
-    if (!isFree(log) || logFulfils.has(log.id) || decisions.has(log.id)) continue;
+    if (!isAssignable(log) || logFulfils.has(log.id) || decisions.has(log.id)) continue;
     if (!inWeek(log.performed_on)) continue;
     const sport = logSport(log);
     // Am Tag selbst ist eine Einheit dieser Sportart geplant (erledigt oder schon zugeordnet) → keine Frage.
@@ -454,8 +464,10 @@ export function weekStatus(input: {
               shift: shiftOf(shownOn, target.scheduled_on),
             }
           : null,
-      changeable: free && inWeek(log.performed_on),
-      alternatives: free && inWeek(log.performed_on) ? alternativesFor(log, fulfilsId) : [],
+      changeable: isAssignable(log) && inWeek(log.performed_on),
+      alternatives:
+        isAssignable(log) && inWeek(log.performed_on) ? alternativesFor(log, fulfilsId) : [],
+      sport: log.sport ?? null,
     });
   }
   // Erledigte Einheiten ohne Eintrag auf dem Gerät (älterer Zeitraum, alter Plan) – am Termin.
