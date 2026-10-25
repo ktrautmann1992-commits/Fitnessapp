@@ -3,6 +3,8 @@ import type {
   ConsentType,
   CustomMeal,
   FoodPhotoResponse,
+  LoopRequest,
+  LoopResponse,
   PhotoLimitState,
   ProductLookupResponse,
   UserFoodProduct,
@@ -534,6 +536,12 @@ export interface Backend {
    * ohne Verbindung Fehler `network`.
    */
   lookupFoodProduct(code: string): Promise<ProductLookupResponse>;
+  /**
+   * Rundkurs-Vorschlag (docs/PLAN-RUNDKURS.md). Supabase-Modus: POST /api/strecken/rundkurs in apps/web (gerundeter
+   * Startpunkt und Distanz nur im Körper; ohne EXPO_PUBLIC_WEB_URL `not_configured`). Testmodus: Attrappe ohne Netz.
+   * Antwort Zod-geprüft; ohne Verbindung Fehler `network`. Optional – fehlt = nicht verfügbar.
+   */
+  planLoopRoutes?(request: LoopRequest): Promise<LoopResponse>;
   /**
    * Eigenes Produkt anlegen bzw. ganz ersetzen (Etappe E4a, Plan 2.3/3.4). Testmodus: Gerätespeicher mit denselben
    * Regeln wie save_user_food_product (user-food-product-rows.ts); Supabase-Modus über die Ernährungs-Warteschlange.
