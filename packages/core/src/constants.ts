@@ -4402,3 +4402,61 @@ export const DEVICE_CALENDAR = {
   titlePrefix: 'Alpha5: ',
   titleMaxLength: 80,
 } as const;
+
+/**
+ * Auswärts essen – Reiter „Unterwegs“ beim Eintragen (Gründer-Freigabe 25.10.2026, KONZEPT 6.1 „Auswärts essen“,
+ * Logik `nutrition/eating-out.ts`, Gerichte `nutrition/eating-out-table.ts`). Gratis, ohne KI, nur Schätzwerte:
+ * - `portions`: Portionsgrößen je Art des Gerichts als Faktor auf die „normale“ Portion der Tabelle. Klein ¾, groß
+ *   1⅓ (übliche Spanne kleiner/großer Teller in Kantine und Gastronomie; Orientierung: BZfE
+ *   „Lebensmittel-Portionsgrößen“), Pizza halb/ganz, Stückware 1/2 Stück, Getränke klein ¾ / groß 1½ (0,2 → 0,3 l).
+ *   PRODUKTENTSCHEIDUNG.
+ * - `kcalStep`/`macroStep`: Schätzwerte werden auf diese Schritte gerundet (10 kcal, ganze Gramm), damit keine
+ *   Scheingenauigkeit entsteht. Angezeigt immer mit „ca.“ und dem Kennzeichen „Schätzwert“.
+ * - `recentMax`/`favoritesMax`: „Zuletzt“ bzw. Favoriten im Reiter „Unterwegs“ (nur Gerät, nur IDs + Portion).
+ * Keine Schutzgrenze: Ein Eintrag läuft als Schnelleintrag „Auswärts gegessen“ durch dieselben Grenzen wie jeder
+ * Tagebuch-Eintrag (`FOOD_LOG_LIMITS`, Rückfrage ab 1.500 kcal).
+ */
+export const EATING_OUT = {
+  portions: {
+    plate: [
+      { id: 'small', label: 'klein', factor: 0.75 },
+      { id: 'normal', label: 'normal', factor: 1 },
+      { id: 'large', label: 'groß', factor: 1.33 },
+    ],
+    pizza: [
+      { id: 'half', label: 'halbe Pizza', factor: 0.5 },
+      { id: 'whole', label: 'ganze Pizza', factor: 1 },
+    ],
+    piece: [
+      { id: 'one', label: '1 Stück', factor: 1 },
+      { id: 'two', label: '2 Stück', factor: 2 },
+    ],
+    drink: [
+      { id: 'small', label: 'klein', factor: 0.75 },
+      { id: 'normal', label: 'normal', factor: 1 },
+      { id: 'large', label: 'groß', factor: 1.5 },
+    ],
+  },
+  kcalStep: 10,
+  macroStep: 1,
+  recentMax: 8,
+  favoritesMax: 30,
+} as const;
+
+/**
+ * Vorratsschrank (Gründer-Freigabe 25.10.2026, KONZEPT 6.13 „Vorratsschrank“, Logik `nutrition/pantry.ts`, Tabelle
+ * `pantry_items`):
+ * - `itemsMax`: höchstens so viele Einträge je Person (sync: Migration pantry_items, db-sync.test.ts).
+ * - `countMax`/`countStep`: Menge in Kaufeinheiten (Packungen, Stück, Bund …), 0,5 bis 99 in halben Schritten.
+ * - `packSizeMax`: größte Packungsgröße (g, ml bzw. Stück) – wie `PACKAGE_SIZE_LIMITS`.
+ * - `lowWeight`: Ein Eintrag „fast leer“ zählt in Kühlschrank-Suche und Vorschlägen nur mit diesem Anteil (½) –
+ *   vorhanden, aber nicht verlässlich. Auf der Einkaufsliste bleibt er stehen (nachkaufen).
+ * Ändert nur Reihenfolge und Anzeige, nie die harten Filter oder Mengen der Liste. PRODUKTENTSCHEIDUNG.
+ */
+export const PANTRY = {
+  itemsMax: 300,
+  countMax: 99,
+  countStep: 0.5,
+  packSizeMax: 5000,
+  lowWeight: 0.5,
+} as const;

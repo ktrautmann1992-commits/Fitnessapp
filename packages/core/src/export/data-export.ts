@@ -84,6 +84,9 @@ export const DATA_EXPORT_TABLES = [
   // Rezept-Favoriten (Gründer-Freigabe 25.10.2026, KONZEPT 6.10a): „Lieblingsgericht“/„Nie wieder“ je Rezept (kein
   // Gesundheitsdatum, bleibt beim Widerruf)
   'recipe_preferences',
+  // Vorratsschrank (Gründer-Freigabe 25.10.2026, KONZEPT 6.13): Lebensmittel, Menge in Kaufeinheiten, „fast leer“
+  // (sensibel wie gelernte Strichcode-Zuordnungen, beim Widerruf gelöscht)
+  'pantry_items',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

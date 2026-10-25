@@ -22,6 +22,7 @@ import type {
   SavePlanPayload,
   SavePlanSession,
   SessionLogPayload,
+  PantryItem,
   ShoppingProductLink,
   StoredAppLayout,
   TrackedRoutePayload,
@@ -581,6 +582,14 @@ export interface Backend {
    */
   saveShoppingProductLink(link: ShoppingProductLink, rows: UserRows): Promise<UserRows>;
   /**
+   * Vorratsschrank (25.10.2026): Einträge setzen (neu oder ersetzen). Nur mit gültiger Einwilligung health_data (sonst
+   * `consent_required`), höchstens PANTRY.itemsMax (sonst `pantry_limit`). Supabase-Modus: sofort lokal, Senden über
+   * die verschlüsselte Ernährungs-Warteschlange (offline möglich, letzter Stand gewinnt).
+   */
+  savePantryItems(items: readonly PantryItem[], rows: UserRows): Promise<UserRows>;
+  /** Vorrats-Eintrag löschen – geht immer (auch ohne Einwilligung), offline über die Warteschlange. */
+  deletePantryItem(foodId: string, rows: UserRows): Promise<UserRows>;
+  /**
    * Anordnung der Übersicht und der Menüleiste speichern (Etappe E2). Testmodus: Gerätespeicher; Supabase-Modus: sofort
    * lokal, Senden über die Warteschlange (offline möglich). Fehler `unknown` bei ungültiger Anordnung.
    */
@@ -759,6 +768,8 @@ export type BackendErrorCode =
   | 'user_product_limit'
   /** Eigene Produkte (E4a): ungültige Angaben (ohne Namen, ohne Werte gemeldet). */
   | 'user_product_rejected'
+  /** Vorratsschrank: höchstens PANTRY.itemsMax Lebensmittel. */
+  | 'pantry_limit'
   /** Vorübergehend (Zeitlimit, Sperrkonflikt, Server 5xx, Drosselung) – „bitte gleich noch einmal“. */
   | 'temporary'
   /** Wettkampf abgelehnt (save/cancel/complete/delete_competition) – Grund in `competitionReason`. */

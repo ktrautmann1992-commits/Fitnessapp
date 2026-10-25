@@ -1688,6 +1688,8 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'user_supplements',
       // Rezept-Favoriten (25.10.2026)
       'recipe_preferences',
+      // Vorratsschrank (25.10.2026)
+      'pantry_items',
     ];
     const exported = {
       format_version: 1,

@@ -12,6 +12,9 @@ import {
   type NutritionContentFile,
   type NutritionLibrary,
   nutritionWeekRetained,
+  PANTRY,
+  type PantryItem,
+  pantryItemSchema,
   parseMealPlanRecord,
   parseStoredMealPlanWeek,
   selectNutritionContent,
@@ -24,6 +27,7 @@ import {
   withShoppingProductLink,
 } from '@fitnessapp/core';
 
+import { BackendError } from './backend';
 import type { ProtectedStore } from './protected-store';
 import { userFoodProductRowsFrom } from './user-food-product-rows';
 import type {
@@ -32,6 +36,7 @@ import type {
   FoodLogEntryRow,
   FoodLogFavoriteRow,
   MealPlanRow,
+  PantryItemRow,
   ShoppingListRow,
   ShoppingProductLinkRow,
   UserFoodProductRow,
@@ -427,6 +432,7 @@ export const NUTRITION_ROW_KEYS = [
   'customMealItems',
   'userFoodProducts',
   'shoppingProductLinks',
+  'pantryItems',
 ] as const satisfies readonly (keyof UserRows)[];
 
 export type NutritionRows = Pick<UserRows, (typeof NUTRITION_ROW_KEYS)[number]>;
@@ -441,6 +447,7 @@ export function nutritionRowsOf(rows: UserRows): NutritionRows {
     customMealItems: rows.customMealItems,
     userFoodProducts: rows.userFoodProducts,
     shoppingProductLinks: rows.shoppingProductLinks,
+    pantryItems: rows.pantryItems,
   };
 }
 
@@ -453,6 +460,7 @@ export const EMPTY_NUTRITION_ROWS: NutritionRows = {
   customMealItems: [],
   userFoodProducts: [],
   shoppingProductLinks: [],
+  pantryItems: [],
 };
 
 interface NutritionCache {
@@ -529,7 +537,13 @@ export type NutritionQueueOp =
    * nur Woche, Schlüssel, Häkchen und Zeitpunkt – verschlüsselt wie das Tagebuch. Letzter Stand je Eintrag gewinnt;
    * ist der Eintrag beim Senden verschwunden (Liste neu erzeugt, Widerruf), wird der Vorgang still verworfen.
    */
-  | { kind: 'shopping_check'; weekStart: string; itemKey: string; checked: boolean; at: string };
+  | { kind: 'shopping_check'; weekStart: string; itemKey: string; checked: boolean; at: string }
+  /**
+   * Vorratsschrank (25.10.2026, offline-first): letzter Stand je Lebensmittel gewinnt (auch auf dem Server über `at`,
+   * `save_pantry_item`). SENSIBEL – verschlüsselt wie das Tagebuch.
+   */
+  | { kind: 'pantry_save'; item: PantryItem; at: string }
+  | { kind: 'pantry_delete'; foodId: string; at: string };
 
 export interface NutritionQueueEntry {
   key: string;
@@ -577,6 +591,10 @@ export function nutritionQueueKey(op: NutritionQueueOp): string {
       return `user_product:${op.id}`;
     case 'shopping_check':
       return `shopping_check:${op.weekStart}|${op.itemKey}`;
+    case 'pantry_save':
+      return `pantry:${op.item.food_id}`;
+    case 'pantry_delete':
+      return `pantry:${op.foodId}`;
   }
 }
 
@@ -607,6 +625,8 @@ export function enqueueNutritionOp(
   switch (op.kind) {
     // Letzter Stand je Eintrag gewinnt.
     case 'shopping_check':
+    case 'pantry_save':
+    case 'pantry_delete':
       return [...others, { key, op }];
     case 'food_log_save':
     case 'custom_meal_save':
@@ -748,6 +768,12 @@ export function applyNutritionQueue(
               : row,
           ),
         };
+        break;
+      case 'pantry_save':
+        next = applyPantryItems(next, [op.item], { userId: ctx.userId, now: op.at });
+        break;
+      case 'pantry_delete':
+        next = { ...next, pantryItems: next.pantryItems.filter((p) => p.food_id !== op.foodId) };
         break;
       case 'user_product_delete':
         next = {
@@ -1045,4 +1071,59 @@ export function applyShoppingProductLink(
         : (previous.get(l.code) as ShoppingProductLinkRow),
     ),
   };
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Vorratsschrank (25.10.2026)
+// ---------------------------------------------------------------------------------------------------------
+
+/** Vorrat aus der Datenbank (`pantry_items`) – Zod an der Grenze, ungültige Zeilen fallen weg (nie loggen). */
+export function pantryItemRowsFromDb(rows: readonly Record<string, unknown>[]): PantryItemRow[] {
+  const out: PantryItemRow[] = [];
+  for (const row of rows) {
+    const item = pantryItemSchema.safeParse({
+      food_id: row.food_id,
+      // numeric kommt als Zahl oder Text.
+      count: row.count === null || row.count === undefined ? null : Number(row.count),
+      pack_size: row.pack_size ?? null,
+      low: row.low,
+    });
+    if (!item.success || typeof row.user_id !== 'string' || typeof row.updated_at !== 'string') {
+      continue;
+    }
+    out.push({ ...item.data, user_id: row.user_id, updated_at: row.updated_at });
+  }
+  return out.sort((a, b) => (a.food_id < b.food_id ? -1 : a.food_id > b.food_id ? 1 : 0));
+}
+
+/**
+ * Prüfung vor dem Speichern (beide Modi): Schema (Zod) und höchstens PANTRY.itemsMax verschiedene Lebensmittel.
+ * Fehler: `pantry_limit` bzw. `unknown` – ohne Lebensmittel oder Mengen in der Meldung.
+ */
+export function checkPantrySave(rows: UserRows, items: readonly PantryItem[]): PantryItem[] {
+  const parsed: PantryItem[] = [];
+  for (const item of items) {
+    const result = pantryItemSchema.safeParse(item);
+    if (!result.success) throw new BackendError('unknown', { sensitive: true });
+    parsed.push(result.data);
+  }
+  const foods = new Set([
+    ...rows.pantryItems.map((p) => p.food_id),
+    ...parsed.map((p) => p.food_id),
+  ]);
+  if (foods.size > PANTRY.itemsMax) throw new BackendError('pantry_limit', { sensitive: true });
+  return parsed;
+}
+
+/** Vorrats-Einträge lokal übernehmen (neu oder ersetzen; Testmodus, Warteschlange und nach dem Speichern). */
+export function applyPantryItems(
+  rows: UserRows,
+  items: readonly PantryItem[],
+  ctx: { userId: string; now: string },
+): UserRows {
+  const byFood = new Map(rows.pantryItems.map((p) => [p.food_id, p]));
+  for (const item of items) {
+    byFood.set(item.food_id, { ...item, user_id: ctx.userId, updated_at: ctx.now });
+  }
+  return { ...rows, pantryItems: [...byFood.values()] };
 }

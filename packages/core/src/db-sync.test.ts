@@ -110,6 +110,7 @@ import {
   ENDURANCE_DELOAD_VOLUME_FACTOR,
   MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION,
   SHOPPING_SCAN,
+  PANTRY,
   APP_LAYOUT,
   STEP_GOAL,
   DAILY_METRIC_LIMITS,
@@ -1289,6 +1290,52 @@ describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.m
     expect(sql).not.toContain('SENSIBEL');
     expect(sql).toContain("'app_layout_settings', (select coalesce");
     expect(sql).not.toContain('consents_after_revoke');
+  });
+});
+
+describe('Vorratsschrank (Gründer-Freigabe 25.10.2026, nutrition/pantry.ts)', () => {
+  const sql = readMigration('_pantry_items.sql');
+  const fnBody = (name: string) => {
+    const start = sql.indexOf(`create or replace function ${name}(`);
+    return sql.slice(start, sql.indexOf('$$;', start));
+  };
+
+  it('Grenzen = PANTRY (itemsMax, Menge in halben Schritten bis countMax, Packungsgröße bis packSizeMax)', () => {
+    expect(sql).toContain(`items_max constant integer := ${PANTRY.itemsMax};`);
+    expect(PANTRY.countStep).toBe(0.5);
+    expect(sql).toContain(
+      `count is null or (count >= ${PANTRY.countStep} and count <= ${PANTRY.countMax} and mod(count * 2, 1) = 0)`,
+    );
+    expect(sql).toContain(
+      `pack_size is null or (pack_size >= 1 and pack_size <= ${PANTRY.packSizeMax})`,
+    );
+    expect(fnBody('public.save_pantry_item')).toContain(
+      `p_count < ${PANTRY.countStep} or p_count > ${PANTRY.countMax}`,
+    );
+    expect(fnBody('public.save_pantry_item')).toContain(`p_pack_size > ${PANTRY.packSizeMax}`);
+    expect(sql).toContain('references public.foods (id) on update cascade on delete cascade');
+  });
+
+  it('Schreiben nur über Funktionen; Einwilligung zuerst gesperrt, dann geprüft, dann Person; Löschen ohne Einwilligung', () => {
+    expect(sql).toContain(
+      'revoke all on table public.pantry_items from public, anon, authenticated;',
+    );
+    expect(sql).toContain('grant select on table public.pantry_items to authenticated;');
+    const save = fnBody('public.save_pantry_item');
+    expect(save.indexOf('for share')).toBeLessThan(save.indexOf('has_valid_consent'));
+    expect(save.indexOf('has_valid_consent')).toBeLessThan(save.indexOf('pg_advisory_xact_lock'));
+    expect(fnBody('public.delete_pantry_item')).not.toContain('has_valid_consent');
+  });
+
+  it('Widerruf health_data über eigenen Trigger; Export enthält pantry_items (50 Schlüssel = 100 Argumente)', () => {
+    expect(sql).toContain("new.consent_type = 'health_data'");
+    expect(fnBody('private.consents_after_revoke_pantry')).toContain(
+      'delete from public.pantry_items where user_id = new.user_id;',
+    );
+    expect(sql).not.toContain('create or replace function private.consents_after_revoke()');
+    expect(DATA_EXPORT_TABLES).toContain('pantry_items');
+    // jsonb_build_object nimmt höchstens 100 Argumente.
+    expect(DATA_EXPORT_TABLES.length * 2).toBeLessThanOrEqual(100);
   });
 });
 
@@ -2901,7 +2948,10 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
     for (const m of allSql.matchAll(/comment on table public\.([a-z_]+) is\s+'([^']*)'/g)) {
       comments.set(m[1] as string, m[2] as string);
     }
-    const revoke = newest(revokeMarker);
+    // Eigene Widerruf-Trigger zusätzlich zu consents_after_revoke (Vorratsschrank, 25.10.2026).
+    const revoke =
+      newest(revokeMarker) +
+      newest('create or replace function private.consents_after_revoke_pantry()');
     const exported = [...newest(exportMarker).matchAll(/'([a-z_]+)', \(select coalesce/g)].map(
       (m) => m[1],
     );
@@ -2922,6 +2972,8 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
         // Phase 6 SU3: Supplement-Check und „Meine Supplements“.
         'supplement_screening',
         'user_supplements',
+        // Vorratsschrank (25.10.2026): Konsum, kann auf Unverträglichkeiten schließen lassen.
+        'pantry_items',
       ].sort(),
     );
     for (const name of sensitive) {

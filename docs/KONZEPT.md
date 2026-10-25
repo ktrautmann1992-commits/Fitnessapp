@@ -530,6 +530,19 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
   Kamera (E4b, neuer Build). Feature-Flag `food_product_lookup` (Standard aus) und Vercel-Variable `OFF_CONTACT_EMAIL`
   (SETUP Teil M).
 
+- **Auswärts essen (Reiter „Unterwegs“, Gründer-Freigabe 25.10.2026, `docs/PLAN-AUSWAERTS-VORRAT.md`):** Ernährung →
+  Eintragen → „Unterwegs“: typische DACH-Gerichte aus Restaurant, Imbiss, Kantine, Bäckerei, Café und Fast Food
+  (Tabelle mit 111 Gerichten) mit Portion klein/normal/groß, halbe/ganze Pizza bzw. 1/2 Stück, Suche, „Zuletzt
+  unterwegs“ und Favoriten (nur Gerät, nur IDs). **Keine erfundenen Nährwerte:** Jedes Gericht ist eine Zutatenliste
+  (Gramm je normaler Portion, wie eigene Gerichte aus Zutaten 6.2), die Werte rechnet `computeRecipeFacts` aus dem
+  Lebensmittel-Katalog (BLS). Fehlt eine wesentliche Zutat im Katalog (Butter, Bratwurst, Mozzarella, Fladenbrot …),
+  ist das Gericht ein Entwurf ohne Werte und erscheint nicht. Werte gerundet (10 kcal, ganze Gramm), immer „ca.“ und
+  Kennzeichen „Schätzwert“. Ins Tagebuch als Schnelleintrag „Auswärts gegessen“ (feste Bezeichnung, kein Freitext, keine
+  Datenbank-Änderung); im Tagesverlauf mit „ca.“. Sichtbar: im Testmodus alle berechenbaren Entwürfe (Kennzeichen
+  „Entwurf“), im Supabase-Modus nur von den Gründern freigegebene Gerichte aus veröffentlichten, katalog-geprüften
+  Lebensmitteln (R19 wie `filter.ts`). Logik `packages/core/src/nutrition/eating-out.ts`, Tabelle `eating-out-table.ts`,
+  Grenzen `EATING_OUT` in `constants.ts`.
+
 ### 6.2 Standardgerichte (Gratis)
 - Eigene Gerichte anlegen („Mein Porridge“, „Shake nach dem Training“) mit kcal und Makros – direkt eingegeben oder aus Zutaten berechnet
 - Mit einem Tipp ins Tagebuch, Portion anpassbar
@@ -803,6 +816,26 @@ Herz bzw. „Nie wieder“ gilt, bis die Person es zurücknimmt. Beide wirken ü
   Datenminimierung, `retailIntegrationAvailable`), Feature-Flag `retail_integration` in `constants.ts` **aus**, kein
   Händler, kein Netzwerkaufruf, kein Knopf in der App. Bis zur Gründer-Entscheidung G7 (PLAN-PHASE-5 N12) gingen
   Ersatz-Einträge und Listen aus Plänen mit Gesundheitsbezug nie an einen Händler.
+
+### 6.14 Vorratsschrank (Gratis, Gründer-Freigabe 25.10.2026, `docs/PLAN-AUSWAERTS-VORRAT.md`)
+- Ernährung → „Vorratsschrank“: Lebensmittel aus dem Katalog per Suche oder Strichcode (gleiche Abfrage wie im Laden,
+  Zuordnung `matchScannedPantryFood` gegen den ganzen Katalog, nichts ohne Tipp), wahlweise mit Menge in Kaufeinheiten
+  (Tabelle `SHOPPING_BUY_UNITS`: „2 Packungen à 1 kg“, „3 Äpfel“, „1 Bund Petersilie“; 0,5–99 in halben Schritten) und
+  „fast leer“. Öl, Essig, Gewürze („Vorrat prüfen“) nur „da“/„fast leer“.
+- **Einkaufsliste** (`shoppingPantryView`, reine Anzeige – Mengen, Häkchen, Schlüssel der Liste bleiben): reicht der
+  Vorrat (Spielraum 10 % einer Einheit) → Abschnitt „Schon im Vorrat“; teilweise → Restmenge mit Hinweis; „fast leer“
+  bleibt auf der Liste („Vorrat fast leer“); Vorrat ohne Menge zählt als da („Menge prüfen“). „Vorrat nach Einkauf
+  aktualisieren“ (`pantryAfterShopping`): abgehakte, haltbare Lebensmittel (Katalog-Kennzeichen `pantry`, Tiefkühl,
+  Vorrat ohne Menge) kommen mit der gekauften Menge in den Vorrat (gleiche Lebensmittel addiert, „fast leer“ aufgehoben);
+  Frisches bleibt draußen.
+- **Kühlschrank-Suche und Vorschläge** (`fridge-search.ts`): Vorrats-Zutaten zählen als vorhanden („fast leer“ halb,
+  `PANTRY.lowWeight`), ausgewählte voll; ohne Auswahl „Passt zu deinem Vorrat“; bei gleicher Übereinstimmung zuerst
+  Rezepte mit mehr Vorrats-Zutaten. Abschaltbar („Meinen Vorrat mitzählen“). Der Essensplan bleibt unverändert.
+- Datenschutz: Vorrat verrät Konsum (ggf. Unverträglichkeiten) – SENSIBEL wie gelernte Strichcode-Zuordnungen: nur mit
+  Einwilligung `health_data`, Löschen immer, Widerruf löscht (eigener Trigger), im Export, Konto löschen per Kaskade.
+  Tabelle `pantry_items` (RLS, Schreiben nur über `save_pantry_item`/`delete_pantry_item`, letzter Stand gewinnt),
+  offline-first über die verschlüsselte Ernährungs-Warteschlange. Logik `packages/core/src/nutrition/pantry.ts`, Grenzen
+  `PANTRY` in `constants.ts`, pgTAP `81_pantry_items.test.sql`.
 
 ## 7. Supplement-Modul
 - Nur evidenzbasiert: Proteinpulver (wenn Eiweißziel über Ernährung schwer erreichbar), Kreatin-Monohydrat, Koffein (vor Training, mit Tageslimit und Hinweis auf Schlaf), Vitamin D (Hinweis: Spiegel ärztlich prüfen lassen), bei Ausdauer: Kohlenhydrat-Gels/Elektrolyte; Omega-3 optional

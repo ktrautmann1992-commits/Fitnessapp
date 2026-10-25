@@ -236,6 +236,10 @@ export function localDataExport(
     recipe_preferences: [...rows.recipePreferences].sort((a, b) =>
       a.recipe_id.localeCompare(b.recipe_id),
     ),
+    // Vorratsschrank (25.10.2026) – Spalten und Sortierung wie export_my_data().
+    pantry_items: [...rows.pantryItems].sort((a, b) =>
+      a.food_id < b.food_id ? -1 : a.food_id > b.food_id ? 1 : 0,
+    ),
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

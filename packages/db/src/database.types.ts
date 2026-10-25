@@ -2428,6 +2428,41 @@ export type Database = {
           },
         ];
       };
+      pantry_items: {
+        Row: {
+          count: number | null;
+          food_id: string;
+          low: boolean;
+          pack_size: number | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          count?: number | null;
+          food_id: string;
+          low?: boolean;
+          pack_size?: number | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          count?: number | null;
+          food_id?: string;
+          low?: boolean;
+          pack_size?: number | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pantry_items_food_id_fkey';
+            columns: ['food_id'];
+            isOneToOne: false;
+            referencedRelation: 'foods';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       shopping_product_links: {
         Row: {
           code: string;
@@ -3280,6 +3315,7 @@ export type Database = {
       delete_tracked_route: { Args: { p_id: string }; Returns: undefined };
       delete_user_food_product: { Args: { p_id: string }; Returns: Json };
       delete_shopping_product_link: { Args: { p_code: string }; Returns: undefined };
+      delete_pantry_item: { Args: { p_food_id: string }; Returns: undefined };
       disconnect_wearable: {
         Args: {
           p_delete_imported: boolean;
@@ -3381,6 +3417,16 @@ export type Database = {
       save_shopping_product_link: {
         Args: { p_code: string; p_food_id: string };
         Returns: undefined;
+      };
+      save_pantry_item: {
+        Args: {
+          p_food_id: string;
+          p_count: number | null;
+          p_pack_size: number | null;
+          p_low: boolean;
+          p_at: string;
+        };
+        Returns: Json;
       };
       save_user_food_product: { Args: { p_product: Json }; Returns: Json };
       seed_content: { Args: { p_content: Json }; Returns: Json };
