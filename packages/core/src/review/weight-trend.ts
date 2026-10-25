@@ -1,8 +1,14 @@
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
-import { BODY_METRIC_LIMITS, MAX_WEEKLY_WEIGHT_LOSS_FRACTION, WEIGHT_TREND } from '../constants';
+import {
+  ACTIVE_AGING_NUTRITION,
+  BODY_METRIC_LIMITS,
+  MAX_WEEKLY_WEIGHT_LOSS_FRACTION,
+  WEIGHT_TREND,
+} from '../constants';
 import { addDays, daysBetween } from '../dates';
+import type { GoalType } from '../enums';
 
 /**
  * Gewichtstrend (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 2, Gründer-Freigabe 25.10.2026): geglättete Linie über die
@@ -15,6 +21,17 @@ import { addDays, daysBetween } from '../dates';
  * - Reine Rechnung: keine Texte, keine Logs. Gewicht ist ein Gesundheitsdatum – die App zeigt das Ergebnis nur mit
  *   Einwilligung und wenn es nicht ausgeblendet ist.
  */
+
+/**
+ * Höchstes Abnehm-Tempo je Woche für den Hinweis „zu schnell“ – dieselbe Grenze wie die Ernährungs-Engine
+ * (`eligibility.ts`): Fit im Alter 0,5 % (ACTIVE_AGING_NUTRITION), sonst MAX_WEEKLY_WEIGHT_LOSS_FRACTION. Nur gelesen,
+ * keine eigene Grenze.
+ */
+export function weightTrendLossLimit(goalType: GoalType | null | undefined): number {
+  return goalType === 'active_aging'
+    ? ACTIVE_AGING_NUTRITION.weeklyLossMaxFraction
+    : MAX_WEEKLY_WEIGHT_LOSS_FRACTION;
+}
 
 export interface WeightEntry {
   readonly date: string;

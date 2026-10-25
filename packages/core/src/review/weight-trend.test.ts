@@ -2,7 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import { MAX_WEEKLY_WEIGHT_LOSS_FRACTION, WEIGHT_TREND } from '../constants';
 import { addDays } from '../dates';
-import { type WeightEntry, weightTrend, weightTrendSeries } from './weight-trend';
+import {
+  type WeightEntry,
+  weightTrend,
+  weightTrendLossLimit,
+  weightTrendSeries,
+} from './weight-trend';
 
 const TODAY = '2026-10-25';
 
@@ -266,5 +271,13 @@ describe('weightTrend', () => {
     // 0,5 kg/Woche sind bei 40 kg 1,25 % → zu schnell; bei 250 kg 0,2 % → in Ordnung.
     expect(weightTrend({ ...base, entries: linear(42, -0.5, 40) }).tooFast).toBe(true);
     expect(weightTrend({ ...base, entries: linear(250, -0.5, 40) }).tooFast).toBe(false);
+  });
+});
+
+describe('weightTrendLossLimit', () => {
+  it('Fit im Alter 0,5 %, sonst 1 % (wie die Ernährungs-Engine)', () => {
+    expect(weightTrendLossLimit('active_aging')).toBe(0.005);
+    expect(weightTrendLossLimit('fat_loss')).toBe(MAX_WEEKLY_WEIGHT_LOSS_FRACTION);
+    expect(weightTrendLossLimit(null)).toBe(MAX_WEEKLY_WEIGHT_LOSS_FRACTION);
   });
 });

@@ -338,6 +338,19 @@ export default function SettingsScreen() {
         />
       </ListGroup>
 
+      {/* Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 4): opt-in, eigener Kalender. */}
+      <SectionLabel>{t.deviceCalendar.settingsTitle}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="calendar"
+          label={t.deviceCalendar.settingsLink}
+          description={t.deviceCalendar.settingsText}
+          onPress={() => router.push('/handy-kalender' as Href)}
+          testID="settings-device-calendar"
+          last
+        />
+      </ListGroup>
+
       {/* Phase 9: Zyklus-Modul (sichtbar, wenn angeboten oder schon eingeschaltet – auch nach Wechsel auf „männlich“). */}
       <CycleSettingsSection onPress={() => router.push('/zyklus/einstellungen' as Href)} />
 
