@@ -152,7 +152,9 @@ function PathCard({
               {C.stageOf(current.index + 1, total)} ·{' '}
               {C.target(current.target.sets, current.target.reps, current.target.seconds)}
             </Body>
-            {!view.started ? (
+            {!current.gate.allowed ? (
+              <Body muted>{C.currentLocked}</Body>
+            ) : !view.started ? (
               <Body muted>{C.notStarted}</Body>
             ) : view.suggestion === null && next ? (
               <Body muted>{C.toGo(cleanSessionsToGo(current.progress))}</Body>
@@ -217,8 +219,8 @@ function StageRow({
   textColor: string;
 }) {
   const name = stage.nameDe ?? stage.exerciseId;
-  // Sperren nur bei Stufen, die noch kommen (geübte bzw. aktuelle Stufe bleiben sichtbar wie sie sind).
-  const locked = (stage.role === 'next' || stage.role === 'later') && !stage.gate.allowed;
+  // Sperren bei allen Stufen außer geübten (auch die erste Stufe eines Skills kann für Einsteiger gesperrt sein).
+  const locked = stage.role !== 'done' && !stage.gate.allowed;
   const reasons = stage.gate.reasons.map((r) => C.locks[r]);
   const requirementLines = stage.gate.requirements
     .filter((r) => !r.met)
@@ -265,7 +267,7 @@ function StageRow({
               {reasons.join(' · ')}
             </Body>
           ) : null}
-          {locked && requirementLines.length > 0 && stage.role === 'next'
+          {locked && requirementLines.length > 0 && stage.role !== 'later'
             ? requirementLines.map((line) => (
                 <Body key={line} muted>
                   {line}

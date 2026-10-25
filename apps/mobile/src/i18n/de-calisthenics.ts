@@ -47,6 +47,7 @@ export const deCalisthenics = {
         : `Ziel: ${sets} × ${reps ?? 0} sauber`,
     current: (name: string) => `Aktuell: ${name}`,
     notStarted: 'Noch nicht begonnen – fang mit der ersten Stufe an.',
+    currentLocked: 'Dieser Pfad ist für dich noch gesperrt – die Gründe stehen bei der Stufe.',
     toGo: (n: number) =>
       n === 1
         ? 'Noch 1 saubere Einheit bis zur nächsten Stufe.'
