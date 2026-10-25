@@ -87,6 +87,27 @@ Supplementplan und ein Trainingstagebuch erzeugt – inkl. Zyklus-Berücksichtig
   - **Keine Gesundheitsdaten** auf dem Bild (kein Puls, Gewicht, Körperdaten, Zyklus, Gesundheits-Check).
   - Kein automatisches Teilen, keine Verknüpfung mit Konten sozialer Netzwerke, kein Hochladen auf eigene Server,
     keine öffentlichen Profile, Ranglisten oder Feeds in der App.
+- **Ausnahme (Gründer-Entscheidung 25.10.2026): Live-Begleitung / Notfallkontakt** – während einer Lauf-/Rad-Einheit
+  darf die Person ihren aktuellen Standort mit selbst gewählten Notfallkontakten teilen (Sicherheit, nicht Community).
+  Plan: `docs/PLAN-PHASE-10.md` Nachtrag „Live-Begleitung“. Pflicht dabei:
+  - **Nur auf ausdrücklichen Tipp** vor bzw. während einer Ausdauer-Aufzeichnung, nie automatisch, nie außerhalb
+    einer laufenden Aufzeichnung; jederzeit mit einem Tipp beendbar; sichtbarer Hinweis „Live-Begleitung aktiv“.
+  - **Höchstens 3 selbst eingetragene Kontakte** (Name + Telefonnummer und/oder E-Mail), nur auf dem Gerät oder in
+    einer RLS-geschützten Tabelle des Kontos; Kontakte bekommen kein Konto und keine Nachricht von unserem Server.
+  - **Freigabe nur über einen geheimen, nicht erratbaren Link** (zufälliges Token, mind. 128 Bit, nur als Hash
+    gespeichert), den die Person selbst über den System-Teilen-Dialog verschickt. Der Link läuft ab (Ende der Einheit,
+    spätestens 2 h danach; Höchstdauer je Sitzung 12 h); danach werden alle Positionen gelöscht.
+  - **Der Kontakt sieht nur:** Vorname/Anzeigename, aktuelle (letzte) Position, Startzeit, „zuletzt aktualisiert vor …“,
+    Sportart und ggf. „Ich bin angekommen“. **Keine Gesundheitsdaten** (kein Puls, keine kcal, kein Gewicht, kein
+    Zyklus), keine Pace-/Leistungswerte, keine gespeicherten Strecken, keine Strecken-Historie, nichts nach dem Ende.
+  - **Server:** Positionen nur für die Dauer der Sitzung (Supabase EU, RLS: nur die Person schreibt; Lesen nur über
+    eine Token-geprüfte, ratenbegrenzte Funktion), automatische Löschung, **keine Koordinaten in Logs**, Analytics
+    oder Crash-Reports; Begleit-Seite ohne Indexierung, ohne Analytics, ohne Cookies.
+  - **SOS-Knopf** öffnet nur SMS/WhatsApp/Telefon des Systems mit vorbereitetem Text und letzter Position – Versand bzw.
+    Anruf immer erst nach Tipp der Person. Kein automatischer Alarm an Kontakte (v1); „Kein Lebenszeichen“-Erinnerung
+    höchstens als lokale Benachrichtigung an die Person selbst. Kein Notruf-Ersatz (Hinweis „Im Notfall 112“, CH 144/112).
+  - Keine öffentlichen Profile, Feeds, Ranglisten oder Verknüpfung mit sozialen Netzwerken; Standort-Berechtigung
+    weiterhin nur „Beim Verwenden“ mit Vordergrund-Dienst (W-G13), keine zusätzliche Hintergrund-Ortung.
 
 ### Affiliate & Werbung
 - Affiliate-Links immer sichtbar als „Anzeige“/„Werbung“ kennzeichnen.

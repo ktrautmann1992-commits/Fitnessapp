@@ -7,6 +7,7 @@ Plan-Ansicht, Countdown, Intervall-Timer) im Anschluss umgesetzt (Abschnitte 7 u
 (Wettkampf-Ernährung) umgesetzt, keine Migration (Abschnitt 10, Umsetzungsstand W1). **18.10.2026:** WP5 (Rad und Triathlon
 Sprint/Olympisch) umgesetzt, Migrationen `20261018120000`/`20261018120100` (Abschnitt 9, Umsetzungsstand WP5). A1a, A1b, E1, A2, E2, A3 (PLAN-AUSWERTUNG) sind gemergt; Expo-Projekt „AlphaFive“ wird verbunden
 (PR #79). Damit können WP1/WP2 (Core) sofort starten, WP3/WP4 danach, S0 sobald die erste APK läuft.
+**25.10.2026:** Nachtrag Live-Begleitung / Notfallkontakt (Abschnitt 21) – Regel und Plan, noch nicht umgesetzt.
 
 **Grundlage:** `CLAUDE.md`, `docs/PROMPTS.md` (Phase 10, „Erweiterung Phase 10 – Strecken aufzeichnen“, Phase 8,
 Phase 4b), `docs/KONZEPT.md` (4, 5, 6.6, 9, 10, 10.1, 11, 12, 13), `docs/PLAN-PHASE-3*.md`,
@@ -1740,6 +1741,8 @@ Ergebnis von S0 (Akku 60 min, Funkloch, Sperrbildschirm) steht noch aus (Test-AP
 
 - **Standortdaten sind streng privat:** RLS, nur eigene Zeilen, keine Aggregation, kein Teilen, keine Ranglisten,
   keine öffentlichen Profile; Partner-Modus (Phase 11) **ohne** Strecken, solange nicht ausdrücklich beschlossen.
+  **Ausnahme (25.10.2026):** Live-Begleitung mit Notfallkontakt – nur aktuelle Position, nur während der Einheit,
+  geheimer Link mit Ablauf (Abschnitt 21, `CLAUDE.md`).
 - **Nie an Analytics, Werbung, Affiliate oder Logs:** Test, der Payloads, Fehlermeldungen und Log-Aufrufe auf
   Koordinaten prüft; keine Fremd-SDKs mit Standortzugriff. Postgres-Einstellung
   `log_parameter_max_length_on_error = 0` bleibt.
@@ -1927,3 +1930,193 @@ Format: _Worum es geht – Warum wir fragen – Empfehlung._
    vor S2b ODbL-Share-Alike.
 8. **Test-Läufe draußen:** mit der APK 2–3 echte Läufe/Radfahrten (Handy gesperrt, Funkloch, 60+ Minuten) und
    Rückmeldung im PR.
+
+---
+
+## 21. Nachtrag (25.10.2026): Live-Begleitung / Notfallkontakt – Plan, noch nicht umgesetzt
+
+**Status:** Regel in `CLAUDE.md` („Kein Teilen, keine Community“, Ausnahme 25.10.2026) und dieser Plan. **Noch kein
+Code.** Umsetzung erst nach Klärung der offenen Fragen (21.10) – je Etappe ein Pull Request mit Wächter-Prüfung.
+Gründer-Entscheidung 25.10.2026: „Notfallkontakt Ausnahme ja“.
+
+### 21.1 Worum es geht
+
+Wer allein läuft oder Rad fährt (abends, im Wald, lange Touren), soll einer Vertrauensperson zeigen können, **wo er
+gerade ist** – nur während der Einheit, nur auf eigenen Tipp, ohne Gesundheitsdaten. Die Vertrauensperson braucht
+**keine App und kein Konto**: Sie bekommt einen geheimen Link und sieht im Browser eine Karte mit der letzten Position.
+Das ist eine Sicherheitsfunktion, keine Community: keine Profile, kein Feed, keine Strecken-Historie.
+
+**Abgrenzung v1:** kein automatischer Alarm an Kontakte (bräuchte bezahlten SMS-Dienst und Haftungsprüfung), keine
+Sturzerkennung, kein Notruf-Ersatz, keine Live-Begleitung ohne laufende Aufzeichnung, keine echte Begleitung aus dem
+Browser-Web-Export (dort gibt es keine echte Aufzeichnung, W-G14 – im Testmodus nur Demo).
+
+### 21.2 Ablauf für die Person (App)
+
+1. **Einstellungen → Notfallkontakte:** bis zu 3 Kontakte (Name, Telefonnummer und/oder E-Mail), einer als
+   „Standard“. Übernahme aus dem Adressbuch nur als einmalige Auswahl über den System-Kontaktwähler (keine
+   Dauer-Berechtigung) – oder eintippen. Text der Nachricht anpassbar. Fester Hinweis: „Im Notfall immer 112 anrufen
+   (Schweiz: 144 Sanität oder 112).“
+2. **Aufzeichnen – vor dem Start oder während der Aufzeichnung:** Schalter „Live-Begleitung“ → Blatt mit Kontakten
+   zum Antippen, geplante Dauer (aus der Plan-Einheit vorbelegt, sonst 60 min), Knopf „Link teilen“ → System-Teilen-
+   Dialog (WhatsApp, SMS, Signal, E-Mail …) mit Text „Ich bin laufen. Hier siehst du live, wo ich gerade bin (bis ca.
+   19:45): https://…/begleitung#t=…“. Ohne gewählten Kontakt geht es auch (Link selbst teilen) – die Kontakte sind
+   nur Abkürzung für das Teilen und den SOS-Knopf.
+3. **Während der Einheit:** Banner „Live-Begleitung aktiv · Anna sieht deinen Standort“ (immer sichtbar, zusätzlich in
+   der Benachrichtigung des Vordergrund-Dienstes „Aufzeichnung läuft · Live-Begleitung an“). Knöpfe **SOS** und
+   **Beenden**.
+4. **Positions-Updates:** alle 30 s (wählbar 15/30/60 s), nur wenn sich die Position um ≥ 20 m geändert hat oder 60 s
+   vergangen sind (Herzschlag „lebt noch“). Bei Funkloch wird nur die **neueste** Position nachgereicht (keine
+   Historie).
+5. **Ende:** „Angekommen“ (im Banner oder beim Beenden der Aufzeichnung) setzt den Status `arrived`; der Kontakt sieht
+   „Karsten ist angekommen (19:32)“ ohne Karte. Pause der Aufzeichnung → Status „pausiert“. Aufzeichnung beenden oder
+   verwerfen → Sitzung endet automatisch.
+6. **SOS:** Auswahl-Blatt „SMS an Anna“, „WhatsApp an Anna“, „Anna anrufen“, „112 anrufen“. SMS/WhatsApp öffnen die
+   System-App mit vorausgefülltem Text „SOS – ich brauche Hilfe. Mein letzter Standort: https://www.openstreetmap.org/?mlat=…&mlon=…
+   (Stand 19:21)“. **Senden tippt die Person selbst.** Geht auch ohne Live-Begleitung und ohne Verbindung zu unserem
+   Server (SMS braucht nur Mobilfunk).
+7. **„Kein Lebenszeichen“-Erinnerung (optional, nur an die Person):** lokale Benachrichtigung, wenn die Aufzeichnung
+   die geplante Dauer um X min (Standard 30) überschreitet: „Alles in Ordnung? ‚Mir geht’s gut‘ oder SOS öffnen.“
+   **Kein** automatischer Versand an Kontakte in v1.
+
+### 21.3 Ablauf für den Kontakt (Browser)
+
+- Seite **`/begleitung`** in `apps/web` (Next.js, Vercel), Token im Link-Fragment `#t=…` (F5) bzw. als Pfad
+  `/begleitung/[token]`. Keine Anmeldung.
+- Zeigt: Anzeigename, Sportart-Symbol, „läuft seit 25 Min“, „zuletzt aktualisiert vor 20 s“, Karte (MapLibre GL bzw.
+  Leaflet, Kacheln laut W-G11, Attribution „© OpenStreetMap-Mitwirkende“) mit **einem** Punkt und Genauigkeitskreis,
+  Knopf „In Karten-App öffnen“, Hinweis „Bei Sorge anrufen. Im Notfall 112.“
+- **Nicht** angezeigt: Puls, kcal, Gewicht, Pace, Distanz, Strecken-Linie, frühere Positionen, gespeicherte Strecken.
+- Aktualisierung alle 20 s per Abfrage (kein Websocket, kein Supabase-Realtime für `anon`), pausiert, wenn der Tab im
+  Hintergrund ist. Warnung, wenn die letzte Position älter als 3 min ist: „Seit 4 Min keine neue Position – evtl.
+  Funkloch oder Akku leer.“
+- Zustände: aktiv, pausiert, angekommen, beendet/abgelaufen („Diese Live-Begleitung ist beendet.“ – ohne Ort), Link
+  ungültig (gleiche Meldung wie abgelaufen, damit sich Tokens nicht ausprobieren lassen).
+- `noindex, nofollow` (Meta + `X-Robots-Tag`), `robots.ts` sperrt `/begleitung`, `Referrer-Policy: no-referrer`,
+  `Cache-Control: no-store`, keine Analytics, keine Cookies, kein Vercel Web Analytics auf dieser Route, Schrift lokal.
+
+### 21.4 Datenmodell (Migration, nur additiv, RLS, pgTAP)
+
+```
+emergency_contacts            -- nur falls F1 = „im Konto“; sonst nur verschlüsselt auf dem Gerät
+  id uuid pk, user_id uuid → auth.users on delete cascade,
+  name text 1–60, phone text (E.164, optional), email text (optional), is_default bool,
+  created_at, updated_at;  check: phone oder email; höchstens 3 je Person (Trigger)
+  RLS: select/insert/update/delete nur user_id = auth.uid()
+
+live_sessions
+  id uuid pk, user_id uuid → auth.users on delete cascade,
+  token_hash bytea unique (SHA-256 des 32-Byte-Tokens; Klartext nie gespeichert),
+  display_name text 1–30, sport text (run|bike|walk),
+  status text (active|paused|arrived|ended), started_at, planned_end_at, ended_at,
+  expires_at timestamptz (Ende + 2 h bzw. Start + 12 h, das Frühere), update_interval_s smallint 15–60
+  RLS: nur Besitzer select; Schreiben nur über RPCs; anon: nichts. Höchstens 1 aktive Sitzung je Person.
+
+live_positions                -- genau EINE Zeile je Sitzung (überschreiben, keine Historie)
+  session_id uuid pk → live_sessions on delete cascade,
+  lat numeric(8,5), lon numeric(8,5) (≈ 1 m), accuracy_m smallint, recorded_at timestamptz
+  RLS: Besitzer select; Schreiben nur über RPC; anon: nichts.
+```
+
+- **Nur die letzte Position** wird gespeichert (Upsert) – serverseitig gibt es keine Spur, die durchsickern könnte.
+- **RPCs** (security definer, fester `search_path`):
+  - `start_live_session(display_name, sport, planned_minutes)` → Token mit `gen_random_bytes(32)`, speichert nur den
+    Hash, gibt den Klartext **einmal** zurück. Nur `authenticated`, nur wenn keine andere Sitzung aktiv ist.
+  - `push_live_position(session_id, lat, lon, accuracy)` → nur Besitzer, nur Status active/paused, nicht abgelaufen;
+    höchstens 1 Update je 10 s (sonst ignoriert), Plausibilität der Koordinaten.
+  - `set_live_status(session_id, status)` → paused/active/arrived/ended; `arrived`/`ended` löschen die Position sofort
+    und setzen `expires_at`.
+  - `rotate_live_token(session_id)` → „Link neu erzeugen“, altes Token sofort ungültig.
+  - `get_live_view(token_hash, ip_hash)` → nur `service_role`; prüft Hash und Ablauf; gibt nur `display_name, sport,
+status, started_at, lat, lon, accuracy_m, recorded_at` zurück (bei arrived/ended **ohne** Koordinaten).
+    **Rate-Limit** wie Warteliste (HMAC-Hashes, nach 1 h gelöscht): je IP max. 10 Abfragen/min, je Sitzung max.
+    30/min. Aufruf nur über die Next.js-Route `/api/begleitung` (Service-Rolle), damit `anon` die Tabellen und RPC
+    gar nicht braucht.
+- **Automatisch löschen:** `private.purge_live_sessions()` löscht Positionen abgelaufener Sitzungen und Sitzungen 24 h
+  nach Ablauf (nur Metadaten ohne Ort, für „Link abgelaufen“). Lauf per **pg_cron alle 5 min** (Muster wie
+  `20261018200300_live_adjust_rpcs.sql`, überspringen ohne pg_cron) **plus** Sicherheitsnetz: jede RPC filtert
+  Abgelaufenes ohnehin aus; zusätzlich GitHub Action `live-cleanup.yml` stündlich (wie `waitlist-cleanup.yml`).
+- **Kein Logging von Koordinaten:** `log_parameter_max_length_on_error = 0` bleibt; Fehlermeldungen ohne Werte;
+  Next.js-Route loggt weder Body noch Token; Test, der Logs/Fehler auf Koordinaten prüft (wie Abschnitt 13).
+- **Export/Löschung:** Datenexport enthält Kontakte (falls im Konto) und laufende `live_sessions` (ohne Token-Hash);
+  Konto löschen → Kaskade. Positionen sind nach dem Ende ohnehin weg.
+- **pgTAP:** fremde Sitzung unsichtbar, `anon` liest nichts, falsches/abgelaufenes Token → gleiche leere Antwort,
+  arrived/ended ohne Koordinaten, 4. Kontakt abgelehnt, zweite aktive Sitzung abgelehnt, Ratenbremse, Purge löscht.
+
+### 21.5 Core (`packages/core/src/live/`)
+
+Reine Logik mit Vitest: `liveSessionExpiry`, `shouldPushPosition` (Abstand/Herzschlag), `roundLivePosition`
+(5 Nachkommastellen), `positionStaleness` (frisch/alt/sehr alt), `buildLiveShareText`, `buildSosText` (OSM-Link,
+kein Gesundheitswert), `noSignOfLifeDue`, Zod-Schemas für Kontakt (E.164, E-Mail) und RPC-Antworten. Grenzwerte in
+`constants.ts` mit Kommentar: `LIVE_LINK_GRACE_H = 2`, `LIVE_SESSION_MAX_H = 12`, `LIVE_MAX_CONTACTS = 3`,
+`LIVE_PUSH_INTERVAL_S = 30`, `LIVE_STALE_WARN_S = 180`, `LIVE_NO_SIGN_OF_LIFE_GRACE_MIN = 30`.
+
+### 21.6 App (`apps/mobile`)
+
+- **Positionen aus dem bestehenden Aufzeichnungs-Task senden** (`expo-task-manager`, Vordergrund-Dienst aus S1): Der
+  Task hat die Punkte ohnehin; ein Zusatz prüft `shouldPushPosition` und ruft die RPC. **Keine neue Berechtigung**,
+  kein `ACCESS_BACKGROUND_LOCATION` (W-G13 bleibt). Fehler beim Senden bremsen die Aufzeichnung nie.
+- Neu: `einstellungen/notfallkontakte.tsx`, Blatt „Live-Begleitung“ in `ausdauer/aufzeichnen.tsx`, Banner +
+  SOS-Blatt im Lauf-Zustand, „Angekommen“ im Speichern-Schritt, lokale Erinnerung (`expo-notifications`).
+- SOS über `Linking.openURL` mit `sms:`, `whatsapp://send` (Ersatz `https://wa.me/`), `tel:`. Kein eigener Versand.
+- Testmodus/Web: Die Demo-Aufzeichnung startet eine Demo-Begleitung, damit die Begleit-Seite in der Vercel-Vorschau
+  testbar ist.
+- Texte in `i18n/de-endurance.ts` (Abschnitt `live`), Banner als `accessibilityLiveRegion`.
+
+### 21.7 Etappen
+
+| Etappe  | Inhalt                                                                                          | PR      |
+| ------- | ----------------------------------------------------------------------------------------------- | ------- |
+| **LB0** | Regel (CLAUDE.md), Plan, Mockups (dieser Nachtrag)                                              | 1       |
+| **LB1** | Core `live/` + Zod + Konstanten + Tests                                                         | 1       |
+| **LB2** | Migration (Kontakte je nach F1, `live_sessions`, `live_positions`, RPCs, Purge, pg_cron), pgTAP | 1       |
+| **LB3** | Web: `/api/begleitung` + Seite `/begleitung` (Karte, Zustände, noindex) + Playwright            | 1       |
+| **LB4** | App: Notfallkontakte, Live-Begleitung im Aufzeichnen, Banner, SOS, Angekommen, Erinnerung       | 1–2     |
+| **LB5** | Store/Recht: Datenschutzerklärung, Store-Angaben, DSFA-Ergänzung, Gerätetest draußen            | Gründer |
+
+### 21.8 Risiken
+
+1. **Akku:** zusätzlicher Netzverkehr. _Gegenmittel:_ nur bei ≥ 20 m Bewegung bzw. 60-s-Herzschlag, kleine Pakete,
+   Intervall wählbar, Hinweis „braucht etwas mehr Akku“; im Gerätetest messen (60 min, Vergleich mit/ohne).
+2. **Android 14+ / Hintergrund:** Ohne `ACCESS_BACKGROUND_LOCATION` läuft das Senden nur, solange der
+   Vordergrund-Dienst (Typ `location`) aktiv ist – genau unser Fall. Hersteller-Energiesparmodi (Samsung, Xiaomi …)
+   können trotzdem drosseln → Hinweis „Akku-Optimierung für Alpha5 ausschalten“. iOS: „Beim Verwenden“ + blauer
+   Standort-Hinweis reicht, solange die Aufzeichnung läuft.
+3. **Store-Richtlinien:** Play Console → Datensicherheit „Standort (genau) – mit anderen geteilt: ja, auf Wunsch der
+   Person“; Erklärung Vordergrund-Dienst Typ `location` (ggf. Video). Apple: Begründungstext der Standortberechtigung
+   um „Live-Begleitung“ ergänzen, App Privacy „Precise Location“ entsprechend.
+4. **Missbrauch (heimliches Orten):** _Gegenmittel:_ nur während sichtbarer Aufzeichnung, Banner + Benachrichtigung,
+   Ablauf, höchstens 12 h, kein Dauer-Tracking, keine Begleitung ohne Tipp.
+5. **Weitergeleiteter Link:** _Gegenmittel:_ kurzer Ablauf, „Link neu erzeugen“, Hinweis „nicht weiterleiten“.
+6. **Falsche Sicherheit / Haftung:** Funkloch, Akku leer. _Gegenmittel:_ „zuletzt aktualisiert“ groß, Warnung bei alter
+   Position, „kein Notruf-Ersatz“, juristische Prüfung.
+7. **Kosten:** Kachel-Abrufe durch Kontakte und Vercel-Funktionen. _Gegenmittel:_ eine Karte, Abfrage 20 s, Pause im
+   Hintergrund, Ratenbremse.
+8. **Daten Dritter (Kontakte):** _Gegenmittel:_ bevorzugt nur auf dem Gerät (F1), sonst minimal + RLS, Löschung,
+   Erwähnung in der Datenschutzerklärung.
+
+### 21.9 Datenschutz-Kurzbewertung
+
+- Standort ist kein Art.-9-Datum (W-G15); die Weitergabe geschieht **auf ausdrücklichen Wunsch der Person** an von ihr
+  gewählte Empfänger (Vertrag, Art. 6 Abs. 1 b). Kontakte bekommen den Link nur von der Person selbst; unser Server
+  schickt nichts an Dritte.
+- Gesundheitsdaten fließen nicht hinein (eigene Tabellen, die Lese-Funktion liest nur Sitzung und Position).
+- DSFA-Ergänzung „Live-Begleitung“ und Datenschutzerklärung (KONZEPT 14) vor dem Livegang.
+
+### 21.10 Offene Fragen an die Gründer
+
+- **F1 Kontakte speichern:** nur auf dem Gerät (verschlüsselt, gehen beim Handywechsel verloren) oder im Konto (RLS,
+  Sync)? – _Empfehlung:_ nur auf dem Gerät (Datensparsamkeit, Daten Dritter nicht auf dem Server).
+- **F2 Gratis oder Premium?** – _Empfehlung:_ **Gratis** (Sicherheitsfunktion, keine KI, geringe Kosten).
+- **F3 Kurze Spur (letzte 5 min) für den Kontakt?** – _Empfehlung:_ nein, nur aktueller Punkt + Genauigkeitskreis.
+- **F4 Nach „Angekommen“:** Link zeigt noch bis 2 h „angekommen“ (ohne Ort)? – _Empfehlung:_ ja, Ort sofort gelöscht.
+- **F5 Token im Link-Fragment (`#t=…`) statt im Pfad?** Hält das Token aus Server-/Vercel-Logs. – _Empfehlung:_ ja.
+- **F6 Automatische Warnung an Kontakte** (keine Bewegung, Sturz, Zeit überschritten) mit bezahltem EU-SMS-Anbieter –
+  ja/nein/später? – _Empfehlung:_ später, erst nach Rechts- und Haftungsprüfung.
+- **F7 Sportarten und Dauer:** alle Aufzeichnungs-Arten (Laufen, Rad, E-Bike, Gehen), Höchstdauer 12 h? –
+  _Empfehlung:_ ja.
+- **F8 Anzeigename:** Vorname aus dem Profil vorbelegen? – _Empfehlung:_ ja, änderbar, max. 30 Zeichen.
+- **F9 Domain für den Link:** kurze, vertrauenswürdige Adresse (eigene Domain statt `*.vercel.app`), damit Kontakte
+  den Link nicht für Betrug halten.
+
+**Mockups (LB0):** Aufzeichnen mit Blatt „Live-Begleitung“, Lauf mit Banner/SOS/Beenden, Begleit-Seite im Browser,
+Einstellungen → Notfallkontakte (PNG-Tafeln, nicht im Repository).
