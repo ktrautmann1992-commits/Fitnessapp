@@ -24,6 +24,7 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "barcode-detector": "3.2.2",
     "expo": "~57.0.26",
+    "expo-audio": "~57.0.5",
     "expo-build-properties": "~57.0.22",
     "expo-calendar": "~57.0.6",
     "expo-camera": "~57.0.6",

@@ -17,6 +17,7 @@ import type { KeyValueStore } from './kv';
 import { createLocalBackend } from './local-backend';
 import { readWebUrl } from './food-photo-remote';
 import { attachShoes, createLocalShoes, createRemoteShoes } from './shoes';
+import { attachHydration, createLocalHydration, createRemoteHydration } from './hydration';
 import { createSupabaseBackend } from './supabase-backend';
 import {
   attachTrainingModes,
@@ -100,6 +101,15 @@ export function createBackend(): Backend {
         logWindowStart: () => backend.logHistoryStart() ?? todayIso(),
       }),
     );
+    attachHydration(
+      backend,
+      createRemoteHydration({
+        client,
+        store: deviceStore,
+        userId: async () => (await backend.getSession())?.userId ?? null,
+        now,
+      }),
+    );
     // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 7): Tabellen pain_episodes/travel_modes, eigener geschützter Speicher.
     return attachTrainingModes(
       attachCycle(backend, createRemoteCycle({ client, stores: cycleStores })),
@@ -119,6 +129,15 @@ export function createBackend(): Backend {
     routeRecordingStore: stores.routeRecording,
   });
   attachShoes(local, createLocalShoes(deviceStore, local));
+  attachHydration(
+    local,
+    createLocalHydration({
+      store: deviceStore,
+      userId: async () => (await local.getSession())?.userId ?? null,
+      now,
+      today: () => todayIso(),
+    }),
+  );
   return attachTrainingModes(
     attachCycle(local, createLocalCycle(cycleStores)),
     createLocalTrainingModes({ store: createTrainingModesStore(), now, newId }),

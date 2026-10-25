@@ -41,6 +41,8 @@ const ALLOWED_ANDROID_PERMISSIONS = [
   'android.permission.ACCESS_FINE_LOCATION',
   'android.permission.FOREGROUND_SERVICE',
   'android.permission.FOREGROUND_SERVICE_LOCATION',
+  // Sprachansagen (expo-audio, 25.10.2026): Audio-Modus setzen (andere Musik leiser) – kein Mikrofon.
+  'android.permission.MODIFY_AUDIO_SETTINGS',
   // Smartwatch (Phase 8): nur Leserechte von Health Connect.
   'android.permission.health.READ_EXERCISE',
   'android.permission.health.READ_DISTANCE',
@@ -391,7 +393,7 @@ describe('expo config --type introspect (nach allen Config-Plugins, offline)', (
     );
   });
 
-  it('iOS: Hintergrundmodus nur „location“ (Aufzeichnung), kein „fetch“ (E3)', () => {
+  it('iOS: Hintergrundmodi nur „location“ (Aufzeichnung) und „audio“ (Sprachansagen), kein „fetch“ (E3)', () => {
     expect(result._internal.modResults.ios.infoPlist.UIBackgroundModes).toEqual([
       ...IOS_BACKGROUND_MODES,
     ]);

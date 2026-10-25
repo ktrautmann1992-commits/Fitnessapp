@@ -47,8 +47,8 @@ import {
   Notice,
   TextField,
 } from '@/components/ui';
-import { newId } from '@/data/create-backend';
-import { plannedCandidate, recordingDiaryDraft } from '@/data/route-diary';
+import { deviceStore, newId } from '@/data/create-backend';
+import { plannedCandidate, plannedSteps, recordingDiaryDraft } from '@/data/route-diary';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { berlinTodayIso, formatDateDe } from '@/lib/format';
@@ -63,6 +63,7 @@ import {
   stopActiveRecording,
 } from '@/lib/recording-controller';
 import { recordingSession, useRecordingSession } from '@/lib/recording-session';
+import { previousSplitsFor, readVoiceSettings, startVoiceCoach } from '@/lib/voice-coach';
 import { appFont, displayFont } from '@/lib/fonts';
 import { useColorSchemeName } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
@@ -167,6 +168,28 @@ export default function RecordScreen() {
       else setPhase({ kind: 'blocked', reason: permission });
     });
   }, [app.backend, demo, params.base, params.sport, params.step, router, userId]);
+
+  // Sprachansagen (25.10.2026): einmal je Aufzeichnung starten (Einstellung, letzte Zeiten der „Meinen Strecke“,
+  // Intervall-Schritte der heute geplanten Einheit). Läuft weiter, bis die Aufzeichnung gespeichert/verworfen ist.
+  const recordingId = owned?.state.id ?? null;
+  const baseRouteId = owned?.state.baseRouteId ?? null;
+  useEffect(() => {
+    if (phase.kind !== 'live' || !recordingId || !userId || !app.rows) return;
+    const rows = app.rows;
+    void (async () => {
+      const settings = await readVoiceSettings(deviceStore, userId);
+      if (!settings.enabled) return;
+      const routes = baseRouteId
+        ? ((await app.backend.loadTrackedRoutes().catch(() => null))?.routes ?? [])
+        : [];
+      await startVoiceCoach({
+        recordingId,
+        settings,
+        previousSplitsS: previousSplitsFor(baseRouteId, routes),
+        steps: plannedSteps(rows, sport, berlinTodayIso()),
+      });
+    })();
+  }, [app.backend, app.rows, baseRouteId, phase.kind, recordingId, sport, userId]);
 
   // Uhr für die großen Zahlen (1 s) und Grenze 12 h.
   useEffect(() => {

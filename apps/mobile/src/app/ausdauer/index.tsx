@@ -15,6 +15,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { AreaButton, SectionLabel } from '@/components/design';
 import { MyRouteTiles, shortDayDe } from '@/components/my-routes';
 import { ProgressCard } from '@/components/progress-card';
+import { VoiceCueSettingsCard } from '@/components/voice-cues';
 import { LiveRegion } from '@/components/calendar';
 import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
 import { ActivityRow, TotalsView } from '@/components/endurance';
@@ -288,6 +289,9 @@ export default function EnduranceScreen() {
           </View>
         </Card>
       )}
+
+      {/* Sprachansagen (25.10.2026): Ein/Aus gleich beim Aufzeichnen, Details in den Einstellungen. */}
+      {!active && !recovered && (!isWeb || testMode) ? <VoiceCueSettingsCard compact /> : null}
 
       {/* „Meine Strecken“ (25.10.2026): Hinweis auf neuen Treffer, Kacheln (zuletzt gelaufen zuerst). */}
       {autoMatch ? (

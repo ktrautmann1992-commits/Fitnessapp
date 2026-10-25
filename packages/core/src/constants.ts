@@ -4893,3 +4893,59 @@ export const WARMUP_RULES = {
   maxStretches: 5,
   mainMuscles: 3,
 } as const;
+
+/**
+ * Sprachansagen beim Aufzeichnen (routes/voice-cues.ts, Gründer-Freigabe 25.10.2026): offline über die Sprachausgabe
+ * des Geräts (Deutsch), keine KI, gratis.
+ * - `stepM`: Abstand der Ansagen je Einstellung und Sportart – „je km“ beim Rad alle 5 km (ein Kilometer dauert dort
+ *   nur 2–3 Minuten, Ansagen würden nerven), „je 0,5 km“ beim Rad alle 2,5 km.
+ * - `timeStepS`: Einstellung „alle 5 Minuten“ (Bewegungszeit ohne Pausen).
+ * - `sameWithinS`: Vergleich mit dem letzten Mal auf derselben Strecke – bis so viele Sekunden „etwa gleich“
+ *   (= ROUTE_COMPARE.sameWithinS).
+ * Neutral wie W-G16 (keine Bestzeit, kein Druck). Puls nur mit Einwilligung health_data UND wenn ein Live-Wert da
+ * ist. Quelle: PRODUKTENTSCHEIDUNG (üblich in Lauf-Apps: je km bzw. je 5 Minuten).
+ */
+export const VOICE_CUES = {
+  stepM: {
+    km: { run: 1000, walk: 1000, bike: 5000 },
+    half_km: { run: 500, walk: 500, bike: 2500 },
+  },
+  timeStepS: 300,
+  sameWithinS: ROUTE_COMPARE.sameWithinS,
+} as const;
+
+/**
+ * Trinken-Tracker (nutrition/hydration.ts, Gründer-Freigabe 25.10.2026). Richtwert, KEIN Heilversprechen, keine
+ * Pflicht:
+ * - `mlPerKg`: Gesamtwasser je kg Körpergewicht und Tag nach Alter (D-A-CH-Referenzwerte für die Wasserzufuhr,
+ *   DGE/ÖGE/SGE, 2. Auflage: 19–<25 und 25–<51 Jahre 35 ml/kg, 51–<65 und ab 65 Jahre 30 ml/kg).
+ * - `beverageShare`: Anteil davon über Getränke (Rest: feste Nahrung, Oxidationswasser) – D-A-CH 25–<51 Jahre:
+ *   1.410 ml Getränke von 2.350 ml Gesamtwasser ≈ 0,6 („ca. 1,5 Liter trinken“).
+ * - `mlPerTrainingMin`: Zuschlag je Trainingsminute (Bewegungszeit) – Schweißverlust bei Sport typisch 0,4–1,8 l/h
+ *   (Sawka MN et al. (2007), „American College of Sports Medicine position stand. Exercise and fluid replacement“,
+ *   Med Sci Sports Exerc 39(2):377–390); 8 ml/min ≈ 0,5 l/h als vorsichtiger Mittelwert: PRODUKTENTSCHEIDUNG.
+ * - `heat`: Zuschlag ab Tageshöchsttemperatur (gespeichertes Wetter der Läufe des Tages) – PRODUKTENTSCHEIDUNG.
+ * - `goalMl`: Rahmen des angezeigten Ziels (keine extremen Werte, auch nicht bei sehr hohem Gewicht).
+ * - `entryMl`: ein Eintrag 50–2.000 ml (Schutz vor Tippfehlern); `maxEntriesPerDay` gegen Missbrauch;
+ *   `quickMl` = Schnell-Knöpfe; `historyDays` = Verlauf; `backfillDays` = so viele Tage zurück darf man eintragen.
+ * Bei Herz- oder Nierenerkrankung (Gesundheits-Check bzw. Supplement-Check) gibt die App KEIN Ziel vor (Trinkmengen
+ * können dort ärztlich begrenzt sein) – nur notieren.
+ */
+export const HYDRATION = {
+  mlPerKg: [
+    { fromAge: 0, ml: 35 },
+    { fromAge: 51, ml: 30 },
+  ],
+  beverageShare: 0.6,
+  mlPerTrainingMin: 8,
+  heat: [
+    { fromC: 25, ml: 500 },
+    { fromC: 30, ml: 750 },
+  ],
+  goalMl: { min: 1200, max: 4000 },
+  entryMl: { min: 50, max: 2000 },
+  maxEntriesPerDay: 40,
+  quickMl: [250, 500],
+  historyDays: 7,
+  backfillDays: 14,
+} as const;

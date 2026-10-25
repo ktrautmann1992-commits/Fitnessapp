@@ -24,6 +24,7 @@ import { deEndurance } from './de-endurance';
 import { deLoop } from './de-loop';
 import { deRacePace } from './de-race-pace';
 import { deShoes } from './de-shoes';
+import { deHydration } from './de-hydration';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
@@ -1705,6 +1706,7 @@ export const de = {
   // Schuh-Kilometerzähler und Renn-Pace-Plan (docs/PLAN-PHASE-10.md Abschnitt 22).
   shoes: deShoes,
   racePace: deRacePace,
+  hydration: deHydration,
   // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
   workouts: deWorkouts,
   /** Smartwatch über Health Connect (Phase 8). */

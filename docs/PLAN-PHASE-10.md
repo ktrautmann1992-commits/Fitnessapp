@@ -2285,3 +2285,26 @@ nächsten Öffnen (höchstens 10 Läufe je Durchgang).
   zu ergänzen; falls später eine CSP kommt: `connect-src https://api.open-meteo.com https://archive-api.open-meteo.com`.
 - Teilen-Bild: Wetter bewusst **nicht** aufgenommen (Gründer: „im Zweifel weglassen“ – Wetter + Datum + Uhrzeit könnte
   den Ort eingrenzen).
+
+### Nachtrag 25.10.2026 – Sprachansagen beim Aufzeichnen und Trinken-Tracker
+
+**Sprachansagen** (`packages/core/src/routes/voice-cues.ts`, Konstanten `VOICE_CUES`): offline über die
+Sprachausgabe des Geräts (expo-speech, Deutsch), Standard aus. Abstand je km (Rad je 5 km), je 0,5 km (Rad 2,5 km)
+oder alle 5 Minuten; Inhalte Pace/Tempo, Zeit, Puls (nur mit Einwilligung health_data UND Live-Wert – den gibt es
+während der App-Aufzeichnung derzeit nicht). Auf einer „Meinen Strecke“ (Erneut laufen) an vollen km zusätzlich
+„10 Sekunden schneller als beim letzten Mal“ (neutral). Intervall-Einheiten aus dem Plan (`workout_steps`): Ansage bei
+jedem Wechsel (Einlaufen/Belastung/Pause/Auslaufen, „Einheit geschafft“). Die App hört auf neue Punkte der Aufzeichnung
+(`apps/mobile/src/lib/voice-coach.ts`, auch im Hintergrund über den Standort-Dienst). **Audio-Ducking:** expo-audio
+(`setAudioModeAsync`, `interruptionMode: 'duckOthers'`, `shouldPlayInBackground`), iOS-Hintergrundmodus `audio`
+(`IOS_BACKGROUND_MODES`), kein Mikrofon, kein eigener Wiedergabe-Dienst auf Android (der Vordergrund-Dienst der
+Aufzeichnung hält die App am Leben). **Neues natives Modul → neuer EAS-Build nötig;** Ducking und Ansagen bei
+gesperrtem Bildschirm am Gerät prüfen (Android-Audiofokus bei TTS).
+
+**Trinken** (`packages/core/src/nutrition/hydration.ts`, Konstanten `HYDRATION`): Richtwert für Getränke = Gewicht ×
+35 ml/kg (ab 51 Jahren 30 ml/kg, D-A-CH) × 0,6 Getränkeanteil + 8 ml je Trainingsminute + Wärme-Zuschlag (ab 25 °C
+500 ml, ab 30 °C 750 ml laut gespeichertem Wetter der Läufe des Tages), Rahmen 1,2–4 l. Bei Herzerkrankung
+(Gesundheits-Check) oder Nierenerkrankung (Supplement-Check) kein Ziel, nur notieren. Schnell-Knöpfe +250/+500 ml,
+„Letzten Eintrag zurücknehmen“, Ring (Wasser-Türkis) auf Heute und Ernährung, 7 Tage als Balken. DB:
+`20261025140000_hydration.sql` (Tabelle `hydration_logs`, RLS nur eigene, `add_hydration` mit gleicher id = kein Doppel,
+heute bis 14 Tage zurück, 40 je Tag; `delete_hydration`, `delete_all_hydration`; `export_my_data` Obermenge mit
+`hydration_logs`), pgTAP `75_hydration`. App offline-first (Warteschlange auf dem Gerät, `data/hydration.ts`).

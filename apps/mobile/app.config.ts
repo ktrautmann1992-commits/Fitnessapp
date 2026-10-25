@@ -120,20 +120,18 @@ export const HOME_WIDGET = {
 export const ANDROID_MIN_SDK = 26;
 
 /**
- * Hintergrundmodi iOS (UIBackgroundModes): erlaubt ist nur `location` (Aufzeichnung bei gesperrtem Bildschirm, mit
- * blauem Hinweis). Das Plugin von expo-task-manager trägt immer `fetch` (Hintergrund-Aktualisierung) ein – die App
- * nutzt das nicht. Deshalb wird es entfernt (Datensparsamkeit, App-Review fragt sonst nach dem Zweck).
+ * Hintergrundmodi iOS (UIBackgroundModes): `location` (Aufzeichnung bei gesperrtem Bildschirm, mit blauem Hinweis) und
+ * `audio` (Sprachansagen während der Aufzeichnung, Gründer-Freigabe 25.10.2026 – nur solange eine Aufzeichnung läuft
+ * und die Ansagen eingeschaltet sind; sonst spielt die App nie Ton im Hintergrund). Das Plugin von expo-task-manager
+ * trägt immer `fetch` (Hintergrund-Aktualisierung) ein – die App nutzt das nicht. Deshalb wird es entfernt
+ * (Datensparsamkeit, App-Review fragt sonst nach dem Zweck).
  */
-export const IOS_BACKGROUND_MODES = ['location'] as const;
+export const IOS_BACKGROUND_MODES = ['location', 'audio'] as const;
 
 const withOnlyLocationBackgroundMode: ConfigPlugin = (cfg) =>
   withInfoPlist(cfg, (mod) => {
-    const modes = Array.isArray(mod.modResults.UIBackgroundModes)
-      ? (mod.modResults.UIBackgroundModes as string[])
-      : [];
-    mod.modResults.UIBackgroundModes = modes.filter((mode) =>
-      (IOS_BACKGROUND_MODES as readonly string[]).includes(mode),
-    );
+    // Genau IOS_BACKGROUND_MODES: fremde Modi (z. B. `fetch`) raus, `audio` für die Sprachansagen dazu.
+    mod.modResults.UIBackgroundModes = [...IOS_BACKGROUND_MODES];
     return mod;
   });
 
@@ -368,6 +366,19 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
     // wiederzufinden), iOS Text oben. Keine Erinnerungen (remindersPermission: false). Neues natives Modul → neuer
     // EAS-Build nötig.
     ['expo-calendar', { calendarPermission: CALENDAR_PERMISSION_TEXT, remindersPermission: false }],
+    // Sprachansagen beim Aufzeichnen (25.10.2026): expo-audio nur für den Audio-Modus (andere Musik leiser, „duckOthers“,
+    // auch bei gesperrtem Bildschirm). KEIN Mikrofon, keine Aufnahme, kein eigener Wiedergabe-Dienst auf Android (die
+    // Ansagen laufen im Vordergrund-Dienst der Aufzeichnung). Hintergrundmodus `audio` auf iOS: IOS_BACKGROUND_MODES.
+    // Neues natives Modul → neuer EAS-Build nötig.
+    [
+      'expo-audio',
+      {
+        microphonePermission: false,
+        recordAudioAndroid: false,
+        enableBackgroundRecording: false,
+        enableBackgroundPlayback: false,
+      },
+    ],
     // Smartwatch über Health Connect (Phase 8): react-native-health-connect 4.1.3 bringt sein Config-Plugin selbst mit
     // (app.plugin.js): Android ≤ 13 – Intent-Filter ACTION_SHOW_PERMISSIONS_RATIONALE an der MainActivity, Android 14+
     // – activity-alias ViewPermissionUsageActivity (VIEW_PERMISSION_USAGE, Kategorie HEALTH_PERMISSIONS, geschützt durch

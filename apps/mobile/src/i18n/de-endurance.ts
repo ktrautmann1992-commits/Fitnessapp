@@ -495,6 +495,35 @@ export const deEndurance = {
     settingsText:
       'Nur eine auf etwa 10 km gerundete Startposition sowie Tag und Stunde gehen an Open-Meteo – nie die Strecke. Gilt für dieses Gerät.',
   },
+  /** Sprachansagen beim Aufzeichnen (25.10.2026). */
+  voice: {
+    title: 'Sprachansagen',
+    toggle: 'Sprachansagen beim Aufzeichnen',
+    intro:
+      'Die App sagt dir unterwegs Kilometer, Pace und Zeit an – offline über die Sprachausgabe deines Handys. Musik wird dabei kurz leiser.',
+    interval: 'Wann ansagen?',
+    intervals: {
+      km: 'Je km (Rad: je 5 km)',
+      half_km: 'Je 0,5 km (Rad: je 2,5 km)',
+      time: 'Alle 5 Minuten',
+    },
+    content: 'Was ansagen?',
+    pace: 'Pace bzw. Tempo',
+    time: 'Zeit',
+    heartRate: 'Puls (nur mit Einwilligung Gesundheitsdaten)',
+    heartRateNote:
+      'Puls wird nur angesagt, wenn ein Live-Wert vorliegt – während der Aufzeichnung in der App gibt es den derzeit nicht (die Uhr liefert Puls erst nach dem Abgleich).',
+    heartRateNoConsent:
+      'Für Puls-Ansagen braucht es deine Einwilligung in Gesundheitsdaten (Einstellungen).',
+    sameRoute:
+      'Auf einer „Meinen Strecke“ (Erneut laufen) sagt die App an vollen Kilometern zusätzlich, wie du im Vergleich zum letzten Mal liegst.',
+    intervalsInfo: 'Bei Intervall-Einheiten aus deinem Plan sagt die App Belastung und Pause an.',
+    noVoice: 'Auf diesem Gerät gibt es keine deutsche Sprachausgabe – Ansagen sind nicht möglich.',
+    test: 'Probe-Ansage',
+    testText: 'Kilometer 1. Pace 5 Minuten 24. Zeit 5 Minuten 24.',
+    recordHint: (on: boolean) => (on ? 'Sprachansagen: an' : 'Sprachansagen: aus'),
+    settingsLink: 'Ansagen einstellen',
+  },
   errors: {
     rejected: 'Diese Strecke wurde nicht angenommen. Bitte prüfe die Angaben.',
     limit: 'Heute wurden schon 20 Strecken gespeichert – bitte morgen erneut versuchen.',

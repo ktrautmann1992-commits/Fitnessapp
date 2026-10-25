@@ -1697,6 +1697,8 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       // Trainings-Modi
       'pain_episodes',
       'travel_modes',
+      // Trinken (25.10.2026)
+      'hydration_logs',
     ];
     const exported = {
       format_version: 1,
