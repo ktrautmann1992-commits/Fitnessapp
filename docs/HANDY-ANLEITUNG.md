@@ -1784,6 +1784,48 @@ nacheinander **Onboarding, Heute, Training, Übung, Einstellungen** öffnen: Nic
 kein Text überlappt. Zusätzlich mit „Große Ansicht“ an. Ergebnis bitte Claude schreiben, z. B. „FA5 Android: 1–6 ok,
 Training: Pausen-Timer abgeschnitten“.
 
+## Teil 9d – Widget auf dem Startbildschirm (25.10.2026, nur Android-App)
+Ein Widget „**Alpha5 – Heute**“ zeigt auf dem Startbildschirm euer **Training heute** (Name oder „Ruhetag“), einen
+**Schritte-Ring** (Schritte / Ziel) und „**kcal übrig**“. Antippen öffnet die App auf **Heute**. Plan und Hintergründe:
+docs/PLAN-WIDGET.md. **Braucht eine neue APK** (neues natives Modul) – im Browser gibt es nur den Hinweis in den
+Einstellungen, auf dem iPhone kommt es später.
+
+**A – Neue APK bauen (einmal)**
+1. GitHub-App → Repository → **Actions** → **eas-build** → **Run workflow**.
+2. Branch: der Branch des Pull Requests (z. B. `claude/widget`), Plattform **android**, Profil **preview** →
+   **Run workflow**.
+3. Nach ca. 15–30 Minuten: im Lauf unten **Zusammenfassung** → Link zur Build-Seite antippen → **Install** → APK
+   öffnen → installieren (die alte Alpha5-App wird ersetzt, eure Daten bleiben).
+
+**B – Widget einschalten (in der App)**
+1. Alpha5 öffnen → **Mehr → Einstellungen** → bis **Startbildschirm** wischen.
+2. Häkchen **Widget auf dem Startbildschirm** setzen. Hinweis lesen: Was im Widget steht, sieht jeder, der euer
+   entsperrtes Handy sieht. Standard ist **aus**.
+
+**C – Widget hinzufügen (Android, Samsung)**
+1. Auf dem Startbildschirm eine freie Stelle **lange gedrückt halten**.
+2. **Widgets** antippen → nach unten zu **Alpha5** wischen (oder oben „Alpha5“ suchen) → antippen.
+3. **Alpha5 – Heute** antippen bzw. gedrückt halten und auf den Startbildschirm ziehen → **Hinzufügen**.
+4. Größe ändern: Widget lange drücken → an den blauen Punkten ziehen. Ab 4 Feldern Breite liegen Schritte und kcal als
+   eigene Kacheln neben dem Training.
+
+**D – Prüfen**
+1. Widget zeigt das Training von heute (bzw. „Ruhetag“). Ohne verbundene Uhr **kein** Schritte-Ring, mit
+   „Kalorienzahlen anzeigen“ = aus **keine** kcal – beides gewollt.
+2. Ein Lebensmittel eintragen → App in den Hintergrund (Home-Taste) → „kcal übrig“ im Widget hat sich geändert.
+3. Widget antippen → App öffnet sich auf **Heute**.
+4. Einstellungen → Häkchen weg → Widget zeigt „Widget aus“ (keine Zahlen mehr). Wieder an → App einmal öffnen.
+5. Handy dunkel stellen (Einstellungen → Anzeige → Dunkel) → Widget wird dunkel.
+6. App 1 Tag nicht öffnen → nach Mitternacht steht das neue Training da, aber ohne Schritte/kcal von gestern; nach
+   über 24 Stunden steht nur noch „App öffnen zum Aktualisieren“.
+
+**iPhone:** noch kein Widget. Unter Einstellungen steht „Das Widget gibt es zuerst in der Android-App …“. Es kommt mit
+einem späteren Update (docs/PLAN-WIDGET.md Abschnitt 7). Später so hinzufügen: Startbildschirm lange drücken → oben
+links **+** → **Alpha5** → Größe wählen → **Widget hinzufügen**.
+
+Ergebnis bitte Claude schreiben, z. B. „9d Android 14: A–D ok, Widget 2×2 Text abgeschnitten“ (ohne Gesundheitswerte,
+gern mit Bildschirmfoto vom Widget **ohne** echte Zahlen).
+
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
 - Bei Unsicherheit einfach fragen: „Erklär mir in einfachen Worten, was du gerade geändert hast.“
