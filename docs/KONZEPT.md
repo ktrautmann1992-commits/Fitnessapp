@@ -832,12 +832,13 @@ Quelle: `docs/ERWEITERUNGEN-2.md` Abschnitte 1–2. Startbestand aus `alpha5-rez
   normales Rad. Uhr-Einheiten (Health Connect kennt keine E-Bike-Art) kommen als Fahrrad und sind umstellbar.
   Abzeichen „E-Bike“ in Auswertung, Liste und Tagebuch; Story-Bild „E-Bike-Fahrt“ (keine Gesundheitsdaten).
 
-### 10.2 Live-Begleitung / Notfallkontakt (Gründer-Entscheidung 25.10.2026, geplant – Gratis empfohlen)
+### 10.2 Live-Begleitung / Notfallkontakt (Gründer-Entscheidung 25.10.2026, geplant, Gratis)
 - Ausnahme vom „Kein Teilen“ (CLAUDE.md): Während einer laufenden Aufzeichnung kann die Person auf eigenen Tipp ihren
-  **aktuellen Standort** mit bis zu 3 selbst gewählten Notfallkontakten teilen – über einen geheimen Link mit Ablauf
-  (Ende der Einheit + max. 2 h, höchstens 12 h), den sie selbst per System-Teilen-Dialog verschickt.
+  **aktuellen Standort** mit bis zu 3 selbst gewählten Notfallkontakten (nur auf dem Gerät gespeichert) teilen – über
+  einen geheimen Link (Token im Fragment `#t=`, eigene Kurz-Domain) mit Ablauf (höchstens 12 h; nach dem Ende noch 2 h
+  Statusseite ohne Karte), den sie selbst per System-Teilen-Dialog verschickt. Alle Aufzeichnungs-Sportarten.
 - Der Kontakt braucht keine App: Browser-Seite mit Karte, Name, „läuft seit …“, „zuletzt aktualisiert vor …“,
-  „angekommen“. **Keine Gesundheitsdaten**, keine Pace/Distanz, keine Strecken-Historie, nichts nach dem Ende.
+  „angekommen“. **Keine Gesundheitsdaten**, keine Pace/Distanz, keine Spur, kein Ort nach dem Ende.
 - Server speichert nur die jeweils letzte Position, löscht sie beim Ende bzw. Ablauf automatisch; keine Koordinaten in
   Logs/Analytics. Banner „Live-Begleitung aktiv“, jederzeit beendbar, „Angekommen“-Knopf.
 - **SOS-Knopf:** öffnet SMS/WhatsApp/Telefon des Systems mit vorbereitetem Text und letzter Position; Senden tippt die
@@ -1317,7 +1318,7 @@ alle offen, Server-Prüfung mit Phase 7):
   gewählten Empfänger abrufbar gemacht; Rechtsgrundlage Art. 6 Abs. 1 b DSGVO; Löschung automatisch mit Ende der
   Einheit bzw. spätestens 2 h danach; Empfänger sind nur Personen, denen sie den Link selbst schickt; Kartenanbieter
   der Begleit-Seite als Empfänger (IP-Adresse der Kontakte); keine Cookies, keine Analytics auf der Begleit-Seite.
-  Name/Telefonnummer der Notfallkontakte (Daten Dritter) nennen, falls im Konto gespeichert. DSFA-Ergänzung
+  Notfallkontakte (Daten Dritter) bleiben nur auf dem Gerät und gehen nicht an uns. DSFA-Ergänzung
   „Live-Begleitung“, Hinweis „kein Notruf-Ersatz“ und Haftung prüfen lassen. Store-Angaben: Play Console
   Datensicherheit „Standort (genau) – geteilt, auf Wunsch der Person“, Erklärung Vordergrund-Dienst Typ „location“;
   Apple App Privacy und Begründungstext der Standortberechtigung ergänzen
