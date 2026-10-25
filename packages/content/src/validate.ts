@@ -558,11 +558,15 @@ export function validateRepository(options: {
   contentDir?: string;
   base?: string;
 }): ReportInput {
-  const repoRoot = gitRepoRoot(options.cwd);
+  const cwdRoot = gitRepoRoot(options.cwd);
   const contentDir = resolve(
     options.cwd,
-    options.contentDir ?? join(repoRoot ?? options.cwd, 'content'),
+    options.contentDir ?? join(cwdRoot ?? options.cwd, 'content'),
   );
+  // Mit --content (z. B. sources-integrity: Code von main, PR-Stand als Daten in einem eigenen Checkout) gilt
+  // das Repo des Inhalts-Ordners – dort liegen die Bilddateien und der Vergleichsstand dieses Stands.
+  const repoRoot =
+    options.contentDir === undefined ? cwdRoot : (gitRepoRoot(contentDir) ?? cwdRoot);
 
   let readPrevious: PreviousReader | undefined;
   let versionNote = 'nicht geprüft (kein Vergleichsstand angegeben, Option --base)';
