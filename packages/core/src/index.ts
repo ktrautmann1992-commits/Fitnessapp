@@ -36,6 +36,8 @@ export * from './plan/day-variant';
 export * from './workouts';
 // Trainings-Modi: Schmerz-/Verletzungsmodus, Reise-Modus, Aufwärmen & Dehnen (docs/PLAN-TRAINING-MODI.md).
 export * from './modes';
+// Calisthenics-Skill-Pfade und Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md).
+export * from './calisthenics';
 // Phase 8 · Wearables: Galaxy Watch über Health Connect (docs/PLAN-PHASE-8.md).
 export * from './wearables';
 // Supplement-Modul (docs/PLAN-PHASE-6.md, Etappe SU1). Im Ordner `supplements/` gibt es bewusst KEIN index.ts

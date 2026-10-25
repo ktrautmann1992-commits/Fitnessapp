@@ -138,16 +138,37 @@ describe('Reise-Modus', () => {
     },
   );
 
-  it('Schlingentrainer ohne eigene Übungen = Rückfall auf Körpergewicht (gleiche Anzeige)', () => {
+  it('Schlingentrainer ohne freigegebene Schlingentrainer-Übungen = Rückfall auf Körpergewicht (gleiche Anzeige)', () => {
+    // Supabase-Modus vor der Freigabe: die Bibliothek enthält keine Schlingentrainer-Übungen.
+    const published = new Map(
+      [...EXERCISES].filter(([, e]) => !e.equipment_ids.includes('suspension_trainer')),
+    );
+    const live = { library: published, substituteLibrary: published };
+    const sling = prepareSessionForDisplay(
+      GYM_SESSION,
+      ctx({ ...live, modes: { travel: travelOnDay([travel('suspension_trainer')], MONDAY) } }),
+    );
+    const bodyweight = prepareSessionForDisplay(
+      GYM_SESSION,
+      ctx({ ...live, modes: { travel: travelOnDay([travel('bodyweight')], MONDAY) } }),
+    );
+    expect(shownIds(sling)).toEqual(shownIds(bodyweight));
+  });
+
+  it('Schlingentrainer mit eigenen Übungen (Testmodus, docs/PLAN-CALISTHENICS-SCHLINGE.md 3): Tausch auf Schlingentrainer-Übungen', () => {
     const sling = prepareSessionForDisplay(
       GYM_SESSION,
       ctx({ modes: { travel: travelOnDay([travel('suspension_trainer')], MONDAY) } }),
     );
-    const bodyweight = prepareSessionForDisplay(
-      GYM_SESSION,
-      ctx({ modes: { travel: travelOnDay([travel('bodyweight')], MONDAY) } }),
-    );
-    expect(shownIds(sling)).toEqual(shownIds(bodyweight));
+    const ids = shownIds(sling);
+    expect(ids.some((id) => id.startsWith('schlingentrainer-'))).toBe(true);
+    for (const id of ids) {
+      const exercise = EXERCISES.get(id);
+      expect(
+        exercise?.equipment_ids.every((e) => e === 'suspension_trainer'),
+        id,
+      ).toBe(true);
+    }
   });
 
   it('Hotel-Gym: Kurzhantel-Übungen bleiben, Langhantel wird getauscht', () => {

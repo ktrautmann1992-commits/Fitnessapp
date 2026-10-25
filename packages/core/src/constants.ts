@@ -377,6 +377,9 @@ export const WEEKLY_SETS_PER_MUSCLE = {
   muscle_gain: { beginner: { min: 6, max: 14 }, advanced: { min: 10, max: 22 } },
   fat_loss: { beginner: { min: 6, max: 14 }, advanced: { min: 8, max: 20 } },
   general_fitness: { beginner: { min: 4, max: 12 }, advanced: { min: 6, max: 16 } },
+  // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): wie Fitness, oben etwas Luft für Skill-Übungen
+  // (Halte- und Technik-Sätze). PRODUKTENTSCHEIDUNG – fachlich zu prüfen.
+  calisthenics: { beginner: { min: 4, max: 12 }, advanced: { min: 6, max: 18 } },
 } as const;
 
 /**
@@ -1299,6 +1302,9 @@ export const GOAL_ENERGY_ADJUSTMENT = {
   endurance: 0,
   // Fit im Alter (FA1, docs/PLAN-FIT-IM-ALTER.md 4.1/11): Erhalt; Abnehmen nur als Nebenziel (GOAL_PAIR_RULES).
   active_aging: 0,
+  // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): Erhalt – Körperbeherrschung braucht kein Defizit;
+  // Abnehmen nur als Nebenziel (GOAL_PAIR_RULES). PRODUKTENTSCHEIDUNG.
+  calisthenics: 0,
 } as const;
 
 /**
@@ -1429,6 +1435,9 @@ export const PROTEIN_G_PER_KG = {
     // Fit im Alter (FA1): 1,2 g/kg – PROT-AGE „≥ 1,2 g/kg bei Training“ (Bauer J et al. 2013, J Am Med Dir Assoc
     // 14(8):542–559; Deutz NE et al. 2014, Clin Nutr 33(6):929–936). Gilt so auch für 60–64-Jährige mit dem Ziel.
     active_aging: 1.2,
+    // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): 1,6 g/kg – Krafttraining mit dem eigenen Körpergewicht;
+    // Morton RW et al. (2018), Br J Sports Med 52(6):376–384 (Nutzen bis ≈ 1,6 g/kg). PRODUKTENTSCHEIDUNG.
+    calisthenics: 1.6,
   },
   max: 2.2,
   cautiousMax: 1.6,
@@ -2432,6 +2441,15 @@ export const GOAL_PAIR_RULES = [
     secondary: 'fat_loss',
     energyAdjustment: -0.1,
     proteinGPerKg: 1.5,
+    enduranceCarbs: false,
+  },
+  // Calisthenics → Abnehmen (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): wie Fitness → Abnehmen (−15 %, 2,0 g/kg) –
+  // weniger Körpergewicht erleichtert die Skills, Muskelerhalt über hohes Eiweiß (Helms 2014). PRODUKTENTSCHEIDUNG.
+  {
+    primary: 'calisthenics',
+    secondary: 'fat_loss',
+    energyAdjustment: -0.15,
+    proteinGPerKg: 2.0,
     enduranceCarbs: false,
   },
 ] as const satisfies readonly {
@@ -4240,6 +4258,20 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'vertical_pull' },
       { tag: 'overhead' },
       { exercise: 'dips-stuhl' },
+      // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.3): Stütz, Dips, Hebel und Hang durch die Arme.
+      { exercise: 'stuetz-barren' },
+      { exercise: 'dips-negativ-barren' },
+      { exercise: 'dips-barren' },
+      { exercise: 'ring-stuetz' },
+      { exercise: 'dips-ringe' },
+      { exercise: 'deutscher-hang' },
+      { exercise: 'back-lever-gehockt' },
+      { exercise: 'back-lever' },
+      { exercise: 'front-lever-gehockt' },
+      { exercise: 'front-lever-einbeinig' },
+      { exercise: 'front-lever' },
+      { exercise: 'planche-lehne' },
+      { exercise: 'pseudo-planche-liegestuetz' },
     ],
     any: [
       { pattern: 'horizontal_push' },
@@ -4261,6 +4293,14 @@ export const PAIN_REGION_LOAD = {
       { tag: 'high_impact' },
       { exercise: 'vorgebeugtes-rudern-kurzhantel' },
       { exercise: 'langhantelrudern' },
+      // Calisthenics: Hebel und Hohlkreuz-Gefahr im Handstand bzw. am Umkehrpunkt.
+      { exercise: 'back-lever-gehockt' },
+      { exercise: 'back-lever' },
+      { exercise: 'front-lever-einbeinig' },
+      { exercise: 'front-lever' },
+      { exercise: 'handstand-wand' },
+      { exercise: 'handstand-frei' },
+      { exercise: 'schlingentrainer-fallout' },
     ],
     any: [
       { pattern: 'squat', loadTypes: ['weight'] },
@@ -4276,6 +4316,16 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'elbow_flexion' },
       { pattern: 'elbow_extension' },
       { exercise: 'klimmzug' },
+      // Calisthenics: schwere Zug-Varianten und Hebel mit gestreckten Armen.
+      { exercise: 'chin-up' },
+      { exercise: 'archer-klimmzug' },
+      { exercise: 'einarmiger-klimmzug-negativ' },
+      { exercise: 'explosiver-klimmzug' },
+      { exercise: 'muscle-up-negativ' },
+      { exercise: 'muscle-up' },
+      { exercise: 'deutscher-hang' },
+      { exercise: 'back-lever-gehockt' },
+      { exercise: 'back-lever' },
     ],
     any: [
       { pattern: 'horizontal_push' },
@@ -4295,6 +4345,15 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'vertical_push', loadTypes: ['bodyweight'] },
       { pattern: 'elbow_extension', loadTypes: ['bodyweight'] },
       { exercise: 'seitstuetz' },
+      // Calisthenics: Stütz- und Halteübungen auf den Händen (Belastungsart Zeit).
+      { pattern: 'vertical_push', loadTypes: ['time'] },
+      { exercise: 'stuetz-barren' },
+      { exercise: 'ring-stuetz' },
+      { exercise: 'planche-lehne' },
+      { exercise: 'l-sitz-gehockt' },
+      { exercise: 'l-sitz' },
+      { exercise: 'muscle-up' },
+      { exercise: 'muscle-up-negativ' },
     ],
     any: [
       { pattern: 'horizontal_push' },
@@ -4440,8 +4499,12 @@ export const TRAVEL_MODE = {
     dumbbells: ['dumbbells'],
     hotel_gym: ['dumbbells', 'flat_bench', 'treadmill', 'bike_ergometer'],
     band: ['resistance_bands'],
-    // Noch keine Schlingentrainer-Übungen (eigenes späteres Paket) → praktisch Körpergewicht-Übungen.
+    // Schlingentrainer-Übungen seit docs/PLAN-CALISTHENICS-SCHLINGE.md 3 (Entwürfe; im Supabase-Modus erst nach der
+    // Freigabe) – ohne sie bleibt es praktisch bei Körpergewicht-Übungen.
     suspension_trainer: ['suspension_trainer'],
+    // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.3): Ringe im Gepäck; Park = Klimmzugstange + Barren.
+    rings: ['gymnastic_rings'],
+    outdoor_park: ['calisthenics_park', 'pull_up_bar', 'dip_station'],
   },
   maxDays: 42,
   maxStartAheadDays: 365,
@@ -4484,3 +4547,114 @@ export const WARMUP_RULES = {
   maxStretches: 5,
   mainMuscles: 3,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Calisthenics, Schlingentrainer, Lauf-Kraft (Gründer-Freigabe 25.10.2026, docs/PLAN-CALISTHENICS-SCHLINGE.md).
+// Alles Gratis, ohne KI, feste Regeln. Alle Werte PRODUKTENTSCHEIDUNG – vor dem Livegang fachlich prüfen.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Skill-Pfade: Fortschritts-Regel (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.2).
+ * - Aufsteigen: In `advanceSessions` aufeinanderfolgenden gewerteten Einheiten der Stufe ist das Stufenziel
+ *   „sauber“ erreicht – alle Ziel-Sätze mit mindestens den Ziel-Wiederholungen bzw. der Ziel-Haltezeit und, wenn
+ *   eingetragen, RPE höchstens `cleanRpeMax` (≥ 2 Wiederholungen in Reserve). Dann ist die nächste Stufe
+ *   „freigeschaltet“ (nur ein Vorschlag, nie ein automatischer Tausch).
+ * - Zurückstufen: `regressMisses` gewertete Einheiten hintereinander „deutlich verfehlt“ (bester Satz unter
+ *   `missShare` des Ziels) → Vorschlag, die vorige Stufe zu üben.
+ * - Gewertet werden nur ganz oder teilweise gemachte Einträge ohne Einstiegs-/Erholungswoche, Wiedereinstieg oder
+ *   freie Einheit (wie die Progression, log/progression.ts). Stufe „aktuell“ = höchste Stufe mit einem Eintrag in den
+ *   letzten `activeWindowDays` Tagen; Voraussetzungen (z. B. 8 saubere Klimmzüge) zählen aus `achievementWindowDays`.
+ * Quellen: „2-für-2-Regel“ – Baechle TR, Earle RW (2008), Essentials of Strength Training and Conditioning, 3. Aufl.,
+ * Human Kinetics, Kap. 15 (Steigern, wenn das Ziel in zwei Einheiten hintereinander übertroffen wird); RPE/RIR:
+ * Zourdos MC et al. (2016), J Strength Cond Res 30(1):267–275; Stufenfolge: Low S (2016), Overcoming Gravity,
+ * 2. Aufl., Battle Ground Creative (Progressionen der Grundfähigkeiten). Werte PRODUKTENTSCHEIDUNG.
+ */
+export const SKILL_PROGRESSION = {
+  advanceSessions: 2,
+  cleanRpeMax: 8,
+  regressMisses: 3,
+  missShare: 0.6,
+  activeWindowDays: 90,
+  achievementWindowDays: 180,
+} as const;
+
+/**
+ * Skill-Pfade: Sicherheits-Sperren (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.3). Gelten zusätzlich zu den Plan-Regeln
+ * (planSafetyRules: `high_skill` ist ab 65, unter 18, im vorsichtigen Plan und bei „Fit im Alter“ ohnehin gesperrt).
+ * - Stufen mit `advancedOnly` (Handstand, Hebel, Muscle-up, einarmige Vorstufe …) nicht für Einsteiger (Angabe im
+ *   Profil).
+ * - `seniorFromAge`: ab diesem Alter keine Stufe mit hoher Technik (= AGE_PLAN_RULES.senior.fromAge).
+ * - Voraussetzungen: saubere Wiederholungen in EINEM Satz (Tagebuch, RPE ≤ cleanRpeMax oder ohne Angabe):
+ *   Muscle-up erst ab 8 Klimmzügen und 10 Barren-Dips, Front Lever ab 8 Klimmzügen, Back Lever ab 5 Klimmzügen und
+ *   5 Barren-Dips. Orientierung: Low S (2016), Overcoming Gravity, 2. Aufl. (Muscle-up nach soliden Klimmzügen und
+ *   Dips; Hebel nach Zug-Grundkraft). Zahlen PRODUKTENTSCHEIDUNG (Gründer-Vorgabe Muscle-up 25.10.2026).
+ */
+export const SKILL_GATES = {
+  seniorFromAge: 65,
+  requirements: {
+    muscle_up: [
+      { exerciseId: 'klimmzug', reps: 8 },
+      { exerciseId: 'dips-barren', reps: 10 },
+    ],
+    front_lever: [{ exerciseId: 'klimmzug', reps: 8 }],
+    back_lever: [
+      { exerciseId: 'klimmzug', reps: 5 },
+      { exerciseId: 'dips-barren', reps: 5 },
+    ],
+  },
+} as const satisfies {
+  seniorFromAge: number;
+  requirements: Record<string, readonly { exerciseId: string; reps: number }[]>;
+};
+
+/**
+ * Schlingentrainer gilt als Kraft-Gerät (isStrengthEquipmentIn), sobald die Bibliothek für jede dieser Gruppen von
+ * Bewegungsmustern mindestens eine nutzbare Schlingentrainer-Übung hat: Ziehen, Drücken, Kniebeuge/Ausfallschritt,
+ * Hüfte/Beinrückseite (docs/PLAN-CALISTHENICS-SCHLINGE.md 3.3). Im Supabase-Modus zählen nur freigegebene Übungen,
+ * im Testmodus auch Entwürfe. Quelle: PRODUKTENTSCHEIDUNG (Ganzkörper-Plan braucht alle vier Grundmuster).
+ */
+export const SUSPENSION_TRAINER_RULES = {
+  readyPatternGroups: [
+    ['horizontal_pull'],
+    ['horizontal_push'],
+    ['squat', 'lunge'],
+    ['hinge', 'hip_extension', 'knee_flexion'],
+  ],
+} as const satisfies { readyPatternGroups: readonly (readonly MovementPattern[])[] };
+
+/**
+ * Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4): 15-min-Einheiten an Lauftagen.
+ * - Wie oft: `perWeek` je Startgruppe (vorsichtig/Einsteiger 1, sonst 2); in Woche 0, Einstiegs- und
+ *   Erholungswochen höchstens `easyWeekMax` und nur die Fassung ohne Sprünge. Mehr Einheiten als in der Vorwoche
+ *   höchstens `maxIncreasePerWeek` (behutsam steigern wie bei der 10-%-Regel). Die Einheiten zählen nicht zum
+ *   Laufumfang (keine zusätzlichen Laufminuten, ENDURANCE_PROGRESSION bleibt unberührt).
+ * - Wo: nur an lockeren Lauftagen (Modalität Laufen, keine harte Art, nicht der lange Lauf), nie am Tag vor einer
+ *   Schlüsseleinheit (langer Lauf oder harte Art), zwei Einheiten mit mindestens `minDaysApart` Tagen Abstand.
+ * - Schon-Modus: Übungen, die eine geschonte Stelle belasten, entfallen; bleiben weniger als `minItems`, entfällt die
+ *   Einheit an dem Tag.
+ * Quellen: Blagrove RC, Howatson G, Hayes PR (2018), „Effects of Strength Training on the Physiological Determinants
+ * of Middle- and Long-Distance Running Performance: A Systematic Review“, Sports Med 48(5):1117–1149 (2–3 × pro Woche
+ * Kraft neben dem Laufen); Lauf-ABC als Technik-/Koordinationsteil: PRODUKTENTSCHEIDUNG. Zahlen PRODUKTENTSCHEIDUNG.
+ */
+export const RUN_STRENGTH_RULES = {
+  unitMinutes: 15,
+  perWeek: { cautious: 1, beginner: 1, advanced: 2, competitive: 2 },
+  easyWeekMax: 1,
+  maxIncreasePerWeek: 1,
+  minDaysApart: 2,
+  minItems: 3,
+  /** Einheiten (content/workouts, Kategorie run_strength): abwechselnd Kraft und Lauf-ABC, sonst ohne Sprünge. */
+  units: {
+    strength: ['lauf-kraft-waden-fuesse', 'lauf-kraft-huefte-rumpf'],
+    drills: 'lauf-abc-koordination',
+    gentle: 'lauf-kraft-ohne-spruenge',
+  },
+} as const satisfies {
+  unitMinutes: number;
+  perWeek: Record<'cautious' | ExperienceLevel, number>;
+  easyWeekMax: number;
+  maxIncreasePerWeek: number;
+  minDaysApart: number;
+  minItems: number;
+  units: { strength: readonly string[]; drills: string; gentle: string };
+};

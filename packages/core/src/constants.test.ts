@@ -65,6 +65,7 @@ describe('Inhalte (Phase 2)', () => {
       muscle_gain: { beginner: { min: 6, max: 14 }, advanced: { min: 10, max: 22 } },
       fat_loss: { beginner: { min: 6, max: 14 }, advanced: { min: 8, max: 20 } },
       general_fitness: { beginner: { min: 4, max: 12 }, advanced: { min: 6, max: 16 } },
+      calisthenics: { beginner: { min: 4, max: 12 }, advanced: { min: 6, max: 18 } },
     });
     expect(WEEKLY_SET_CONTRIBUTION).toEqual({ primary: 1, secondary: 0.5 });
   });
