@@ -240,6 +240,10 @@ export function localDataExport(
     pantry_items: [...rows.pantryItems].sort((a, b) =>
       a.food_id < b.food_id ? -1 : a.food_id > b.food_id ? 1 : 0,
     ),
+    // Schuh-Kilometerzähler: im Testmodus ergänzt attachShoes (data/shoes.ts) die Zeilen aus dem Gerätespeicher.
+    shoes: [],
+    shoe_defaults: [],
+    shoe_assignments: [],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

@@ -22,6 +22,8 @@ import { deDay } from './de-day';
 import { deEatingOut } from './de-eating-out';
 import { deEndurance } from './de-endurance';
 import { deLoop } from './de-loop';
+import { deRacePace } from './de-race-pace';
+import { deShoes } from './de-shoes';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
 import { deFoodProduct } from './de-food-product';
@@ -1700,6 +1702,9 @@ export const de = {
   adjust: deAdjust,
   /** Ausdauer: Aufzeichnen, Meine Läufe, Auswertung, Story-Bild (Etappen E3–E6). */
   endurance: deEndurance,
+  // Schuh-Kilometerzähler und Renn-Pace-Plan (docs/PLAN-PHASE-10.md Abschnitt 21).
+  shoes: deShoes,
+  racePace: deRacePace,
   // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
   workouts: deWorkouts,
   /** Smartwatch über Health Connect (Phase 8). */

@@ -2309,6 +2309,90 @@ export type Database = {
           },
         ];
       };
+      shoe_assignments: {
+        Row: {
+          activity_key: string;
+          shoe_id: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          activity_key: string;
+          shoe_id?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          activity_key?: string;
+          shoe_id?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      shoe_defaults: {
+        Row: {
+          shoe_id: string | null;
+          sport: Database['public']['Enums']['endurance_modality'];
+          user_id: string;
+          valid_from: string;
+        };
+        Insert: {
+          shoe_id?: string | null;
+          sport: Database['public']['Enums']['endurance_modality'];
+          user_id: string;
+          valid_from: string;
+        };
+        Update: {
+          shoe_id?: string | null;
+          sport?: Database['public']['Enums']['endurance_modality'];
+          user_id?: string;
+          valid_from?: string;
+        };
+        Relationships: [];
+      };
+      shoes: {
+        Row: {
+          brand: string | null;
+          created_at: string;
+          id: string;
+          in_use_since: string;
+          name: string;
+          replace_km: number | null;
+          retired_on: string | null;
+          sport: Database['public']['Enums']['endurance_modality'];
+          start_km: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          brand?: string | null;
+          created_at?: string;
+          id: string;
+          in_use_since: string;
+          name: string;
+          replace_km?: number | null;
+          retired_on?: string | null;
+          sport: Database['public']['Enums']['endurance_modality'];
+          start_km?: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          brand?: string | null;
+          created_at?: string;
+          id?: string;
+          in_use_since?: string;
+          name?: string;
+          replace_km?: number | null;
+          retired_on?: string | null;
+          sport?: Database['public']['Enums']['endurance_modality'];
+          start_km?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       shopping_list_items: {
         Row: {
           amount: number | null;
@@ -3444,6 +3528,8 @@ export type Database = {
         Returns: undefined;
       };
       delete_my_supplement_data: { Args: never; Returns: undefined };
+      save_shoe_data: { Args: { p_data: Json }; Returns: undefined };
+      delete_my_shoe_data: { Args: never; Returns: number };
       seed_workouts: {
         Args: { p_content: Json; p_require_expert_review?: boolean };
         Returns: Json;

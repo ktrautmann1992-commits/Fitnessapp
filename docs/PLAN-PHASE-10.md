@@ -2127,3 +2127,88 @@ Anzeigename max. 30) und RPC-Antworten. Grenzwerte in
 
 **Mockups (LB0):** Aufzeichnen mit Blatt „Live-Begleitung“, Lauf mit Banner/SOS/Beenden, Begleit-Seite im Browser,
 Einstellungen → Notfallkontakte (PNG-Tafeln, nicht im Repository).
+
+---
+
+## 22. Schuh-Kilometerzähler und Renn-Pace-Plan (Gründer-Freigabe 25.10.2026)
+
+Branch `claude/schuhe-pace`. Keine Echtzeit-KI. Alle Zahlen in `constants.ts` („VOR LIVEGANG FACHLICH PRÜFEN“).
+
+### 22.1 Schuh-Kilometerzähler (Punkt 4)
+
+**Regeln (`packages/core/src/shoes/shoes.ts`, `SHOE_MILEAGE`):**
+
+- Schuhe je Sportart **Laufen, Gehen/Wandern, Rad** (`SHOE_SPORTS`): Name (1–40), Marke freiwillig (≤ 40), Start-km
+  (0–5.000, „schon gelaufen“), eigene Wechsel-Grenze (200–2.000 km, leer = 800 km), „In Gebrauch seit“, ausgemustert ab.
+  Höchstens 30 Schuhe, 10.000 Wahlen.
+- **Standard-Schuh je Sportart mit Beginn-Datum** (`shoe_defaults`: Sportart, gültig ab, Schuh oder null). Ein Lauf
+  bekommt automatisch den Standard **seines Tages** – ein späterer Wechsel des Standards ändert frühere Läufe nicht. Ein
+  ausgemusterter Schuh bekommt nach seinem Ausmusterungstag nichts mehr automatisch; war er Standard, gilt ab dem Tag
+  danach „kein Standard“ (die Seite bittet um einen neuen).
+- **Wahl je Lauf** (`shoe_assignments`, Schlüssel wie `EnduranceActivity.key`: `route:<id>` / `log:<id>`; null = „ohne
+  Schuh“; „Automatisch“ löscht die Wahl). Eine Strecke findet auch die Wahl ihres verknüpften Eintrags. Laufen und Gehen
+  bieten Lauf- und Wanderschuhe an, Rad nur Radschuhe, Schwimmen keine.
+- **Kilometer** = Start-km + Distanz aller zugeordneten Läufe (App-Aufzeichnungen, Uhr-Importe, Einträge ohne GPS; ohne
+  Distanz zählt 0; jede Aktivität einmal). Einträge vor dem Tagebuch-Fenster der App (12 Wochen) lädt die App online ab
+  dem ersten Schuh-Tag nach (nur Datum, Art, Distanz; nie gespeichert).
+- **Hinweis**: „! Bald wechseln“ ab 75 % der Grenze (Standard 600 km), „‼ Wechsel empfohlen“ ab der Grenze (800 km),
+  sonst „✓ Gut in Schuss“ – immer Zeichen + Wort. Quelle: gängige Faustregel 500–800 km (Material: Dämpfung, Profil);
+  ausdrücklich **keine medizinische Aussage**, kein Verletzungsversprechen.
+
+**Datenbank (`20261025120000_shoes.sql`, nur additiv):** Tabellen `shoes`, `shoe_defaults`, `shoe_assignments`, RLS
+(nur eigene Zeilen lesen), kein direktes Schreiben; `save_shoe_data(p_data)` ersetzt den ganzen Stand atomar (prüft
+Felder, Grenzen, fremde IDs; Fremdschlüssel: Standard nur mit Schuh derselben Sportart, gelöschter Schuh → Standard null,
+Wahl entfällt), `delete_my_shoe_data()`. Kein Gesundheitsdatum: bleibt beim Widerruf, Konto löschen per Kaskade.
+`export_my_data` als Obermenge plus drei Tabellen – **wichtig für spätere Migrationen:** `jsonb_build_object` nimmt
+höchstens 100 Argumente (50 Tabellen); weitere Tabellen hängen im zweiten Objekt (`|| jsonb_build_object(…)`).
+pgTAP `81_shoes.test.sql`, Abgleich `shoes/shoes-db-sync.test.ts`.
+
+**App:** eigene Schnittstelle `data/shoes.ts` (wie das Zyklus-Modul über `attachShoes` in `create-backend.ts`, damit
+`backend.ts`, `local-backend.ts` und `supabase-backend.ts` unberührt bleiben). **Offline-first:** jede Änderung sofort
+im Gerätespeicher (`fitnessapp.shoes.v1`, je Konto), als „wartend“ markiert und beim nächsten Laden/Speichern mit
+Verbindung gesendet (der neueste Stand gewinnt). Abmelden, Konto löschen und Gerätedaten löschen leeren den Speicher.
+Ausdauer → **„Meine Schuhe“** (Kacheln mit Fortschrittsbalken), Seite `/ausdauer/schuhe` (anlegen, bearbeiten, als
+Standard, ausmustern/wieder verwenden, löschen, alle Schuh-Angaben löschen), Chip **„Schuh: Pegasus 41 (412 km)“** an
+Strecke und Tagebuch-Eintrag (Tippen → Auswahl: automatisch / Schuh / ohne Schuh). Aufzeichnung und Uhr-Import bleiben
+unverändert: die Zuordnung rechnet die App (kein Eingriff in den Aufnahme-Bildschirm).
+
+### 22.2 Renn-Pace-Plan (Punkt 5)
+
+**Regeln (`packages/core/src/plan/race-pace.ts`, `RACE_PACE_PLAN`):**
+
+- `racePacePlan({ distanceM, targetTimeS, strategy, elevationProfile, fueling, discipline, reference })`: Abschnitte je
+  km, ab 25 km je 5 km (Marathon: 8 × 5 km + 2,195 km). **Summe immer = Zielzeit** (Uhrzeit auf Sekunden gerundet,
+  Tempo aus der ungerundeten Zeit).
+- **Gleichmäßig** (Standard), **Negativ** (zweite Hälfte 2 % schneller), **Höhenprofil**: Strecke aus „Meine Strecken“
+  mit Höhenprofil (GPX-Import oder Aufzeichnung, ±10 % der Renn-Distanz, wird auf die Distanz gestreckt): +3 % Zeit je %
+  Steigung, −1,5 % je % Gefälle (Gefälle zählt nur bis 5 %, Steigung gekappt bei 15 %), in 100-m-Schritten –
+  vereinfacht nach Minetti 2002. Passt die Strecke nicht: flach mit Hinweis.
+- **Verpflegung**: dieselbe Rechnung wie die Wettkampf-Ernährung (`raceFuelingPlan` mit der Zielzeit als Dauer): unter
+  60 min nichts, bis 120 min bis 30 g/h, 120–150 min 30–60 g/h, darüber 60–90 g/h nur Fortgeschrittene/Leistungssport;
+  Portion alle 30 min → Stelle auf der Strecke (auf 100 m). Unter 18 bzw. ohne Einwilligung nur allgemein (keine
+  Gramm). Gramm nur mit „Kalorienzahlen anzeigen“.
+- **Plausibilität**: dieselbe Regel wie die Ampel (`goalTimePlausible`: Zielzeit höchstens 5 % schneller als die
+  Riegel-Vorhersage) → Hinweis „Die Zielzeit passt nicht zu deiner Referenzzeit“ + Knopf „Plan mit der Vorhersage
+  zeigen“. Tempo außerhalb 2:30–15:00 min/km → kein Plan.
+- **Für die Sprach-Ansagen** (Etappe „Sprache & Trinken“): `racePaceCheckpoint(plan, distanceM, elapsedS)` → Soll-Zeit
+  an der Stelle (`targetElapsedS`), Abweichung `deltaS` (+ = hinter dem Plan), `status` `ahead | on_target | behind`
+  (±10 s), aktueller Abschnitt und dessen Soll-Tempo, nächster Verpflegungspunkt, Rest-Distanz. Rein; die Sätze
+  formuliert die App.
+
+**App:** Karte „Dein Pace-Plan“ in „Mein Wettkampf“ (nur Laufen; mit Zielzeit, sonst Vorhersage aus der Referenzzeit):
+Aufteilung, Strecke, Balken-Grafik (Tempo je Abschnitt, ◆ = Verpflegung), Tabelle (Abschnitt, Tempo, Uhr, Höhenmeter,
+Verpflegungs-Zeilen), Hinweis „Die Anstrengung hat Vorrang …“, Link zur Wettkampf-Ernährung, **Druckansicht/PDF**
+`/pace-plan` (gleicher Druck-Renderer wie Trainings- und Essensplan; keine Gesundheitsangaben).
+
+**Tests:** Core `race-pace.test.ts` (5 km, 10 km, Halbmarathon, Marathon, Triathlon-Laufteil, negativ, Höhenprofil,
+Strecke zu lang, Verpflegung je Stufe, nur allgemein, unplausibel, Referenz zu weit weg, Grenzen, Checkpoint),
+`shoes.test.ts`, `shoes-db-sync.test.ts`; App `shoe-format.test.ts`, `race-pace-format.test.ts`, `data/shoes.test.ts`
+(Testmodus, offline/online, Ablehnung, Export); Playwright `shoes-pace.spec.ts`; pgTAP `81_shoes.test.sql`.
+
+**Offen / Gründer-Fragen:**
+
+- **SP-G1** Grenzen 600/800 km und Steigungsfaktoren 3 %/1,5 % fachlich prüfen lassen.
+- **SP-G2** Triathlon-Laufteil: Core kann ihn (5 km/10 km), aber Triathlon hat keine Zielzeit (W-G6) – Pace-Plan dort
+  erst, wenn ihr eine Laufteil-Zielzeit wollt.
+- **SP-G3** Gewählte Aufteilung/Strecke merkt sich die Karte nur bis zum Verlassen (nicht gespeichert).
+- **SP-G4** Mehrere Geräte offline gleichzeitig: der zuletzt gesendete Schuh-Stand gewinnt.

@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { EBikeBadge } from '@/components/e-bike';
+import { ShoeChip } from '@/components/shoes';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
   kcalFor,
@@ -189,6 +190,8 @@ export default function LogEntryScreen() {
             {detail.cardio.modality === 'bike' && detail.cardio.e_bike === true ? (
               <EBikeBadge testID="log-e-bike" />
             ) : null}
+            {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 21). */}
+            <ShoeChip logId={log.id} />
             <Body accessibilityLabel={cardioDurationText(detail.cardio.duration_s).a11y}>
               {cardioDurationText(detail.cardio.duration_s).text}
             </Body>

@@ -1690,6 +1690,10 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'recipe_preferences',
       // Vorratsschrank (25.10.2026)
       'pantry_items',
+      // Schuh-Kilometerzähler (25.10.2026)
+      'shoes',
+      'shoe_defaults',
+      'shoe_assignments',
     ];
     const exported = {
       format_version: 1,

@@ -23,6 +23,8 @@ export * from './nutrition';
 export * from './evaluation';
 export * from './retail';
 export * from './routes';
+// Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md Abschnitt 21).
+export * from './shoes';
 export * from './share';
 export * from './dashboard';
 // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md).
