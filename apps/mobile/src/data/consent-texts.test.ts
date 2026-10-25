@@ -23,6 +23,7 @@ const migration = [
   read('20261021130200_supplement_user_data.sql'),
   read('20261021140000_cycle_module.sql'),
   read('20261023120100_wearable_routes.sql'),
+  read('20261025120000_recovery_hrv.sql'),
 ].join('\n');
 
 /** Liest (Art, Version, Titel, Text) aus der Seed-Migration. */
@@ -39,7 +40,7 @@ function seedDocuments() {
 describe('Einwilligungstexte im Testmodus', () => {
   it('sind wörtlich identisch mit der jeweils höchsten Fassung aus den Seed-Migrationen', () => {
     const seed = seedDocuments();
-    expect(seed).toHaveLength(8);
+    expect(seed).toHaveLength(9);
     const latest = seed.filter(
       (doc) => !seed.some((other) => other.type === doc.type && other.version > doc.version),
     );

@@ -342,6 +342,8 @@ export function applyWearableImport(
         resting_hr_bpm: d.resting_hr_bpm ?? old?.resting_hr_bpm ?? null,
         sleep_min: d.sleep_min ?? old?.sleep_min ?? null,
         steps: d.steps ?? old?.steps ?? null,
+        // Ältere Zeilen im Gerätespeicher haben das Feld noch nicht (vor 25.10.2026).
+        hrv_rmssd_ms: d.hrv_rmssd_ms ?? old?.hrv_rmssd_ms ?? null,
         updated_at: ctx.now,
       },
     ];

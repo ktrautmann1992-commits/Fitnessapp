@@ -113,6 +113,7 @@ export async function runWearableSync(input: WearableSyncInput): Promise<Wearabl
     restingHeartRates: raw.restingHeartRates,
     sleepSessions: raw.sleepSessions,
     steps: raw.steps,
+    heartRateVariabilities: raw.heartRateVariabilities,
     from: days[0] ?? today,
     to: today,
   });

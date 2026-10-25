@@ -47,6 +47,8 @@ const ALLOWED_ANDROID_PERMISSIONS = [
   'android.permission.health.READ_RESTING_HEART_RATE',
   'android.permission.health.READ_SLEEP',
   'android.permission.health.READ_STEPS',
+  // „Erholung aus der Uhr“ (25.10.2026): HRV je Tag.
+  'android.permission.health.READ_HEART_RATE_VARIABILITY',
   // Routen der Uhr (Gründer-Entscheidung 23.10.2026).
   'android.permission.health.READ_EXERCISE_ROUTES',
 ];
@@ -67,6 +69,7 @@ const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.health.WRITE_RESTING_HEART_RATE',
   'android.permission.health.WRITE_SLEEP',
   'android.permission.health.WRITE_STEPS',
+  'android.permission.health.WRITE_HEART_RATE_VARIABILITY',
 ];
 
 function config(): ExpoConfig {
