@@ -1215,12 +1215,17 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
       [...body.matchAll(/^\s+'([a-z_]+)', \(select coalesce/gm)].map((m) => m[1] as string);
     const latest = tablesOf(bodyOf('_export_my_data_integration.sql'));
     for (const suffix of ['_recipe_preferences.sql', '_pantry_items.sql', '_shoes.sql']) {
-      expect(tablesOf(bodyOf(suffix)).filter((t) => !latest.includes(t)), suffix).toEqual([]);
+      expect(
+        tablesOf(bodyOf(suffix)).filter((t) => !latest.includes(t)),
+        suffix,
+      ).toEqual([]);
     }
     expect(new Set(latest).size).toBe(latest.length);
     expect(latest).toHaveLength(54);
     // Jedes jsonb_build_object(...) in 'data' hat höchstens 50 Schlüssel (100 Argumente, FUNC_MAX_ARGS).
-    const objects = bodyOf('_export_my_data_integration.sql').split(/jsonb_build_object\(/).slice(2);
+    const objects = bodyOf('_export_my_data_integration.sql')
+      .split(/jsonb_build_object\(/)
+      .slice(2);
     for (const part of objects) {
       expect(tablesOf(part).length).toBeLessThanOrEqual(50);
     }
