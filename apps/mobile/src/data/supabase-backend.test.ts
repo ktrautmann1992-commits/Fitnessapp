@@ -1686,6 +1686,8 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       // Phase 6 SU3
       'supplement_screening',
       'user_supplements',
+      // Vorratsschrank (25.10.2026)
+      'pantry_items',
     ];
     const exported = {
       format_version: 1,
