@@ -105,6 +105,17 @@ export const EQUIPMENT = [
     homeSelectable: true,
   },
   {
+    // Schlingentrainer (markenneutral; Gründer-Wunsch 25.10.2026, docs/PLAN-TRAINING-MODI.md 4). Kategorie
+    // `bodyweight` (wie die Klimmzugstange): zählt NICHT als Kraft-Gerät, solange es keine Schlingentrainer-Übungen
+    // gibt – wer nur ihn hat, bekommt den Körpergewicht-Plan. Übungen folgen in einem eigenen Paket.
+    id: 'suspension_trainer',
+    nameDe: 'Schlingentrainer',
+    category: 'bodyweight',
+    hasWeights: false,
+    sortOrder: 75,
+    homeSelectable: true,
+  },
+  {
     id: 'rowing_machine',
     nameDe: 'Rudergerät',
     category: 'cardio',

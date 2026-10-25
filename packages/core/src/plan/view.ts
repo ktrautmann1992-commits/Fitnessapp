@@ -26,6 +26,18 @@ import {
   preferenceNotices,
   type SwapRecord,
 } from './preferences';
+import {
+  applyModesToEndurance,
+  applyPainLayer,
+  applyTravelLayer,
+  applyTravelTimeFit,
+  type DisplayModes,
+  type ModeLayerResult,
+  type ModeNotice,
+  modeNotices,
+  type ModeSwapRecord,
+  type PainLayerResult,
+} from '../modes/layer';
 import { type EnduranceStartGroup, isStricterGroup, type PlanSafetyRules } from './safety';
 import { type GeneratedSession, isStrengthKind, locationOfKind } from './schedule';
 import { planStartGroup, type PlanStartGroupSource } from './start-group';
@@ -82,6 +94,11 @@ export interface DisplayContext {
     readonly sessions: readonly StoredSession[];
     readonly level: ExperienceLevel;
   };
+  /**
+   * Trainings-Modi am Tag der Einheit (docs/PLAN-TRAINING-MODI.md 6): Reise-Geräte/-Minuten und Schmerz-Modus. Ohne
+   * Angabe bleibt alles wie bisher (byte-gleich). Der Reise-Modus ersetzt das Geräte-Profil für ALLE Schichten.
+   */
+  readonly modes?: DisplayModes;
 }
 
 /** „Nur heute“ vor dem Training (nie im PDF). */
@@ -143,6 +160,12 @@ export interface DisplaySession<T extends StoredSession> {
   readonly droppedDaySwaps?: readonly DaySwap[];
   /** Kraft-Einheit, die wegen Präferenzen leer ist (Wächter S9): „Training starten“ deaktiviert, eigener Hinweis. */
   readonly emptyByPreference?: boolean;
+  /** Trainings-Modi (nur mit `ctx.modes`): Tausche mit Grund (Reise/Schmerz), ausgeblendete GESPEICHERTE IDs. */
+  readonly modeSwapped?: readonly ModeSwapRecord[];
+  readonly hiddenByMode?: readonly string[];
+  readonly modeNotices?: readonly ModeNotice[];
+  /** Kraft-Einheit, die wegen eines Modus leer ist: „Training starten“ aus, eigener Hinweis. */
+  readonly emptyByMode?: boolean;
 }
 
 /**
@@ -161,14 +184,22 @@ export function prepareSessionForDisplay<T extends StoredSession>(
     ctx.competitionWeek && session.kind === 'endurance' && session.workout_type
       ? weekLimited(session, ctx.competitionWeek, ctx.rules)
       : session;
-  const endurance = applyCurrentEnduranceRules(limited, ctx.rules, {
-    previousStartGroup: ctx.previousStartGroup,
-  });
+  const modes: DisplayModes = ctx.modes ?? {};
+  const enduranceModes = applyModesToEndurance(
+    applyCurrentEnduranceRules(limited, ctx.rules, {
+      previousStartGroup: ctx.previousStartGroup,
+    }),
+    modes,
+  );
+  const endurance = enduranceModes.session;
+  const travel = session.kind === 'strength' ? (modes.travel ?? null) : null;
+  // Reise-Modus: die Reise-Geräte gelten für jede Schicht (Sicherheits-Ersatz, Präferenzen, „Nur heute“, Schmerz).
+  const profile = travel ? { available: travel.available } : ctx.profile;
   const library = ctx.library ?? new Map<string, Exercise>();
   const safe = applyCurrentSafetyRules(endurance, ctx.rules, {
     library,
     ...(ctx.substituteLibrary ? { substituteLibrary: ctx.substituteLibrary } : {}),
-    ...(ctx.profile ? { profile: ctx.profile } : {}),
+    ...(profile ? { profile } : {}),
   });
   const libraryMissing =
     session.kind === 'strength' &&
@@ -184,11 +215,24 @@ export function prepareSessionForDisplay<T extends StoredSession>(
   let changed = false;
   let prefs: PreferenceLayerResult | null = null;
   let days: DaySwapLayerResult | null = null;
+  const modeRules = swap?.swapRules ?? ctx.rules;
+  const substitutes = ctx.substituteLibrary ?? library;
+  let travelLayer: ModeLayerResult | null = null;
+  if (travel) {
+    travelLayer = applyTravelLayer(pairs, session.kind, {
+      library: substitutes,
+      lookup: library,
+      rules: modeRules,
+      travel,
+    });
+    changed = travelLayer.swapped.length > 0 || travelLayer.hidden.length > 0;
+    pairs = travelLayer.pairs;
+  }
   if (swap) {
     const layerCtx = {
       library: ctx.substituteLibrary ?? library,
       lookup: library,
-      profile: ctx.profile ?? null,
+      profile: profile ?? null,
       swapRules: swap.swapRules,
       preferences: swap.preferences ?? [],
       location: swap.location,
@@ -216,6 +260,46 @@ export function prepareSessionForDisplay<T extends StoredSession>(
       pairs = days.pairs;
     }
   }
+  // Schmerz-Modus NACH den Tausch-Schichten: keine Wahl bringt eine belastende Übung zurück.
+  let painLayer: PainLayerResult | null = null;
+  if (modes.pain && session.kind === 'strength') {
+    painLayer = applyPainLayer(pairs, session.kind, {
+      library: substitutes,
+      lookup: library,
+      rules: modeRules,
+      pain: modes.pain,
+      profile: profile ?? null,
+    });
+    // Auch ohne Tausch ändert sich die Dosierung → immer neu zusammensetzen.
+    changed = true;
+    pairs = painLayer.pairs;
+  }
+  let shortened = false;
+  if (travel?.maxMinutes) {
+    const fit = applyTravelTimeFit(pairs, session.kind, travel.maxMinutes, library);
+    shortened = fit.shortened;
+    changed = changed || fit.shortened;
+    pairs = fit.pairs;
+  }
+  const modeFields = ctx.modes
+    ? {
+        modeSwapped: [...(travelLayer?.swapped ?? []), ...(painLayer?.swapped ?? [])],
+        hiddenByMode: [...(travelLayer?.hidden ?? []), ...(painLayer?.hidden ?? [])],
+        modeNotices: modeNotices({
+          kind: session.kind,
+          modes: { travel, pain: modes.pain ?? null },
+          travel: travelLayer,
+          shortened,
+          pain: painLayer,
+          endurance: enduranceModes.notices,
+        }),
+        emptyByMode:
+          session.kind === 'strength' &&
+          safe.session.exercises.length > 0 &&
+          pairs.length === 0 &&
+          (travelLayer?.hidden.length ?? 0) + (painLayer?.hidden.length ?? 0) > 0,
+      }
+    : {};
   const exclusions = swap?.preferences
     ? exclusionCountAt(swap.preferences, swap.location, swap.ambiguousLocation ?? false)
     : 0;
@@ -246,6 +330,7 @@ export function prepareSessionForDisplay<T extends StoredSession>(
     droppedDaySwaps: days?.droppedDaySwaps ?? [],
     missingKeyPattern: prefs?.missingKeyPattern ?? [],
     emptyByPreference: prefs?.emptyByPreference ?? false,
+    ...modeFields,
   };
 }
 
@@ -295,7 +380,14 @@ export function displayPairs(
  * Erzeugen oder jetzt beim Anzeigen) – ohne Grund zu nennen (kein Gesundheitsbezug); null = wie in der Vorlage.
  * Ab Etappe T1: „preference“ = „getauscht (deine Wahl)“ (Präferenz), „day_swap“ = „heute getauscht“.
  */
-export type ExerciseMark = 'equipment_swap' | 'adjusted' | 'preference' | 'day_swap' | null;
+export type ExerciseMark =
+  | 'equipment_swap'
+  | 'adjusted'
+  | 'preference'
+  | 'day_swap'
+  | 'travel_swap'
+  | 'pain_swap'
+  | null;
 
 /**
  * Prüfreihenfolge (Wächter K6): 1. `storedOrderNo` in `daySwapped` → 'day_swap'; 2. in `preferenceSwapped` →
@@ -309,12 +401,18 @@ export function exerciseMark(
   ctx: Pick<DisplayContext, 'library' | 'profile'>,
   at?: {
     readonly storedOrderNo: number;
-    readonly display: Pick<DisplaySession<StoredSession>, 'preferenceSwapped' | 'daySwapped'>;
+    readonly display: Pick<
+      DisplaySession<StoredSession>,
+      'preferenceSwapped' | 'daySwapped' | 'modeSwapped'
+    >;
   },
 ): ExerciseMark {
   if (at) {
     const matches = (r: SwapRecord) =>
       r.storedOrderNo === at.storedOrderNo && r.to === exercise.exercise_id;
+    // Trainings-Modi zuerst (sie bestimmen Geräte bzw. laufen zuletzt): „für die Reise“ / „heute geschont“.
+    const mode = at.display.modeSwapped?.filter(matches).at(-1);
+    if (mode) return mode.reason === 'pain' ? 'pain_swap' : 'travel_swap';
     if (at.display.daySwapped?.some(matches)) return 'day_swap';
     if (at.display.preferenceSwapped?.some(matches)) return 'preference';
   }
