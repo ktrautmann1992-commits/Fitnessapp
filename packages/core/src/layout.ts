@@ -37,6 +37,9 @@ export const DASHBOARD_TILES = [
   'endurance',
   // „Schritte“ mit Tagesziel als Ring (Gründer-Wunsch 22.10.2026, docs/PLAN-PHASE-8.md 13.4) – neben „Ausdauer“.
   'steps',
+  // „Erholung“ aus Schlaf, Ruhepuls und HRV der Uhr (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-8.md 15) – hinter
+  // „Schritte“, eigene Zeile (Mini-Verlauf braucht die Breite).
+  'recovery',
   'shortcuts',
 ] as const;
 export type DashboardTileId = (typeof DASHBOARD_TILES)[number];

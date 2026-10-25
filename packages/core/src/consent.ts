@@ -32,7 +32,8 @@ export const CURRENT_CONSENT_VERSIONS: Readonly<Record<ConsentType, number | nul
   health_data: 2,
   cycle_data: 1,
   ai_food_photo: 1,
-  wearable_data: 2,
+  // Fassung 3 (25.10.2026): nennt HRV und die „Erholung aus der Uhr“ (20261025120000_recovery_hrv.sql).
+  wearable_data: 3,
 };
 
 /** Ohne diese Einwilligungen ist keine Nutzung möglich (Onboarding-Schritt „Grund-Einwilligungen“). */
