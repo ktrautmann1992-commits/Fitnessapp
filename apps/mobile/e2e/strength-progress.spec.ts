@@ -118,10 +118,9 @@ test('Kraft-Entwicklung: Kachel, Kurve mit Umschaltern, Vergleich im Eintrag', a
   await expect(row).toContainText(name);
   await expect(row).toContainText('20 kg');
   await expect(row).toContainText('+7,5 kg gegenüber vor 4 Wochen');
-  await expect(row.getByRole('img')).toHaveAttribute(
-    'aria-label',
-    /von 12,5 Kilogramm auf 20 Kilogramm/,
-  );
+  await expect(
+    row.getByTestId(`strength-tile-${String(exercise.exercise_id)}-spark`),
+  ).toHaveAttribute('aria-label', /von 12,5 Kilogramm auf 20 Kilogramm/);
   await tile.scrollIntoViewIfNeeded();
   await shot(page, '06-fortschritt-kraft-entwicklung');
 

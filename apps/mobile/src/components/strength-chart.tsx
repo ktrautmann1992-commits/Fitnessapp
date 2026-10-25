@@ -133,7 +133,7 @@ export function StrengthChart({
       accessibilityLabel={a11y}
       onLayout={onLayout}
     >
-      <Svg width={width} height={height}>
+      <Svg width={width} height={height} aria-hidden>
         <Defs>
           <LinearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0" stopColor={blue.strong} stopOpacity={0.26} />
@@ -244,7 +244,7 @@ export function StrengthSparkline({
       accessibilityLabel={accessibilityLabel}
       style={{ width, height }}
     >
-      <Svg width={width} height={height}>
+      <Svg width={width} height={height} aria-hidden>
         {pts.length > 1 ? (
           <Path
             d={monotonePath(pts)}

@@ -109,19 +109,20 @@ export default function HiddenRecipesScreen() {
                 key={entry.recipeId}
                 testID={`hidden-recipe-${entry.recipeId}`}
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 12,
+                  gap: 10,
                   paddingVertical: 10,
                   paddingHorizontal: 12,
                   borderBottomWidth: index === entries.length - 1 ? 0 : 1,
                   borderColor: theme.divider,
                 }}
               >
-                <RecipeThumb recipeId={entry.recipeId} />
-                <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
-                  <Body>{title}</Body>
-                  <Body muted>{texts.hiddenSince(formatDateDe(entry.setOn))}</Body>
+                {/* Titel neben dem Bild, „Wieder zulassen“ darunter in voller Breite (ab 320 px lesbar). */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <RecipeThumb recipeId={entry.recipeId} />
+                  <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
+                    <Body>{title}</Body>
+                    <Body muted>{texts.hiddenSince(formatDateDe(entry.setOn))}</Body>
+                  </View>
                 </View>
                 <Button
                   label={texts.unhide}

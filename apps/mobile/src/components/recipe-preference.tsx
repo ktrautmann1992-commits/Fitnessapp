@@ -281,8 +281,9 @@ export function FavoriteMark({ testID }: { testID?: string }) {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, minWidth: 0 },
-  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  // Untereinander in voller Breite: „Lieblingsgericht“ passt ab 320 px nicht in eine halbe Zeile.
+  flex: { width: '100%' },
+  actions: { gap: spacing.sm },
   heart: {
     width: MIN_ROW,
     height: MIN_ROW,
