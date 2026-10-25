@@ -81,6 +81,31 @@ export const HEALTH_CONNECT_BLOCKED_PERMISSIONS = [
   'android.permission.health.WRITE_STEPS',
 ] as const;
 
+/**
+ * Widget auf dem Startbildschirm (nur Android, docs/PLAN-WIDGET.md, Gründer-Entscheidung 25.10.2026) über das
+ * Config-Plugin von react-native-android-widget 0.24.0 (ab 0.24.0 tragen die gezeichneten Widget-Bilder einen
+ * Zufallsnamen – vorher konnten andere Apps sie über den exportierten Bild-Provider der Bibliothek erraten und lesen;
+ * deshalb nicht älter): Empfänger (nicht exportiert) + Beschreibung + Vorschaubild.
+ * Name = TODAY_WIDGET_NAME in src/widget/today-widget.android.tsx. 2 × 2 Felder, auf 4 × 2 vergrößerbar.
+ * `updatePeriodMillis` 1 h: Android ruft die Hintergrund-Aufgabe stündlich (kein Netz, liest nur den gespeicherten
+ * Stand) – so wechselt nach Mitternacht das Training und nach 24 h erscheint „App öffnen zum Aktualisieren“. Keine
+ * neue Berechtigung. iPhone: noch kein Widget (docs/PLAN-WIDGET.md 7).
+ */
+export const HOME_WIDGET = {
+  name: 'AlphaToday',
+  label: 'Alpha5 – Heute',
+  description: 'Training heute, Schritte und kcal übrig',
+  minWidth: '110dp',
+  minHeight: '110dp',
+  targetCellWidth: 2,
+  targetCellHeight: 2,
+  maxResizeWidth: '420dp',
+  maxResizeHeight: '240dp',
+  resizeMode: 'horizontal|vertical',
+  previewImage: './assets/images/widget-preview.png',
+  updatePeriodMillis: 60 * 60 * 1000,
+} as const;
+
 /** Health Connect verlangt mindestens Android 8 (API 26); Expo SDK 57 baut sonst ab API 24. */
 export const ANDROID_MIN_SDK = 26;
 
@@ -334,6 +359,8 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
     // START_VIEW_PERMISSION_USAGE). Beides öffnet die App, wenn jemand im Health-Connect-Dialog „Datenschutzerklärung“
     // antippt. Nur Android; neues natives Modul → neuer EAS-Build nötig.
     'react-native-health-connect',
+    // Widget auf dem Startbildschirm (nur Android, HOME_WIDGET oben). Neues natives Modul → neuer EAS-Build nötig.
+    ['react-native-android-widget', { widgets: [HOME_WIDGET] }],
     // minSdk 26 (Android 8) – Voraussetzung von Health Connect. Sonst bleiben alle Build-Werte von Expo SDK 57.
     ['expo-build-properties', { android: { minSdkVersion: ANDROID_MIN_SDK } }],
     [
