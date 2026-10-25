@@ -27,7 +27,7 @@ Freigabe aufgenommen, damit die Health-Connect-Art MARTIAL_ARTS eine passende Sp
 - Ein Sportart-Eintrag ist eine **freie Einheit der Art „strength“ ohne Übungen und ohne Ausdauer**, Name = Name der
   Sportart (feste Liste), Anstrengung in `session_rpe`. So bleiben Pläne, Progression, Kalibrierung, 10-%-Regel und
   Strecken unberührt. CHECK in der Datenbank, Regeln in `save_session_log` (neueste Fassung + optionales Feld `sport`,
-  Migration `20261025130100_sportarten.sql`), gleich in Zod (`sportLogSchema`) und im Testmodus.
+  Migration `20261025160100_sportarten.sql`), gleich in Zod (`sportLogSchema`) und im Testmodus.
 - Uhr: `import_wearable_batch` bleibt unverändert. „Sonstige“ Uhr-Einheiten werden wie bisher mit deutschem Titel
   gespeichert; die App leitet die Sportart aus dem Titel ab (`sportFromWearableTitle`). Ausnahme: „Skaten“, „Skifahren“,
   „Snowboarden“ heißen für neue Einheiten „Inline-Skaten“, „Ski alpin“, „Snowboard“, unbekannte Arten „Sonstige

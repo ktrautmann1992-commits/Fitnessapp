@@ -31,6 +31,10 @@ function log(id: string, date: string, extra: Partial<SessionLogRow> = {}): Sess
     revision: 1,
     last_write_id: 'w',
     source: 'manual',
+    // Sportarten Stufe 2: keine Sportart-Einheit
+    sport: null,
+    sport_duration_s: null,
+    sport_distance_m: null,
     client_updated_at: `${date}T18:00:00Z`,
     created_at: `${date}T18:00:00Z`,
     updated_at: `${date}T18:00:00Z`,

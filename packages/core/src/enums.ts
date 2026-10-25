@@ -353,7 +353,7 @@ export const TRACKED_ROUTE_SPORTS = ['run', 'bike', 'walk'] as const;
 export type TrackedRouteSport = (typeof TRACKED_ROUTE_SPORTS)[number];
 
 // ---------------------------------------------------------------------------------------------------------
-// Sportarten Stufe 2 (Gründer-Freigabe 25.10.2026, docs/PLAN-SPORTARTEN.md, 20261025130000_sport_enums.sql)
+// Sportarten Stufe 2 (Gründer-Freigabe 25.10.2026, docs/PLAN-SPORTARTEN.md, 20261025160000_sport_enums.sql)
 // ---------------------------------------------------------------------------------------------------------
 
 /**

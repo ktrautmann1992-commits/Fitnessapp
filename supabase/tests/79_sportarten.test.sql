@@ -1,4 +1,4 @@
--- Sportarten Stufe 2 (Migrationen 20261025130000_sport_enums.sql und 20261025130100_sportarten.sql,
+-- Sportarten Stufe 2 (Migrationen 20261025160000_sport_enums.sql und 20261025160100_sportarten.sql,
 -- docs/PLAN-SPORTARTEN.md):
 -- - Typ sport_type, Spalten session_logs.sport / sport_duration_s / sport_distance_m (alle null bei Kraft/Ausdauer),
 --   CHECKs (Dauer 1 min–12 h, Distanz 0–500 km nur bei GPS-Sportarten, nur freie Einheit „strength“),

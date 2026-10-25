@@ -758,7 +758,7 @@ export function checkSessionLog(payload: SessionLogPayload, ctx: LogRuleContext)
   if (existing && (existing.is_free === true) !== isFree) {
     return { kind: 'reject', reason: 'invalid' };
   }
-  // Sportart bleibt Sportart (Sportarten Stufe 2, wie save_session_log in 20261025130100_sportarten.sql); die übrigen
+  // Sportart bleibt Sportart (Sportarten Stufe 2, wie save_session_log in 20261025160100_sportarten.sql); die übrigen
   // Regeln (frei, „strength“ ohne Übungen/Ausdauer, Name, Distanz nur GPS) prüfen Zod und freeSessionPayloadIssue.
   if (existing && ((existing.sport ?? null) !== null) !== (payload.sport != null)) {
     return { kind: 'reject', reason: 'invalid' };

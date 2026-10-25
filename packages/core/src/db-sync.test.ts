@@ -380,7 +380,7 @@ describe('Enums', () => {
     // Phase 8 · Wearables (20261021120000_wearable_enums.sql)
     ['wearable_provider', enums.WEARABLE_PROVIDERS],
     ['wearable_connection_status', enums.WEARABLE_CONNECTION_STATUSES],
-    // Sportarten Stufe 2 (20261025130000_sport_enums.sql)
+    // Sportarten Stufe 2 (20261025160000_sport_enums.sql)
     ['sport_type', enums.SPORT_IDS],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
@@ -4134,7 +4134,7 @@ describe('Trinken (20261025140000_hydration.sql)', () => {
   });
 });
 
-describe('Sportarten in der Datenbank (20261025130100_sportarten.sql)', () => {
+describe('Sportarten in der Datenbank (20261025160100_sportarten.sql)', () => {
   const sql = readMigration('_sportarten.sql');
   const fnOf = (text: string, name: string) => {
     const start = text.lastIndexOf(`create or replace function ${name}(`);
