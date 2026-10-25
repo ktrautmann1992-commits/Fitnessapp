@@ -2,7 +2,7 @@ import { WEARABLE_SYNC } from '../constants';
 import { isoDateInTimeZone } from '../dates';
 import { type DuplicateCandidate, matchExisting } from './duplicates';
 import { mapExerciseType } from './exercise-types';
-import { type HeartRateSample, hrZones, summarizeHeartRate } from './heart-rate';
+import { type HeartRateSample, type HeartRateZones, hrZones, summarizeHeartRate } from './heart-rate';
 import {
   chooseWatchDistance,
   type HcRouteRead,
@@ -47,6 +47,11 @@ export interface HcSessionExtras {
   readonly heartRateSamples?: readonly HeartRateSample[];
   /** Route (GPS) der Einheit (nur Ausdauer mit Strecke; fehlt = nicht gelesen). */
   readonly route?: HcRouteRead;
+  /**
+   * Summe Steps im Zeitraum (Lauf-Paket 2: Kadenz, nur Laufen/Gehen; fehlt = nicht gelesen). Wird nicht gespeichert –
+   * die App rechnet daraus die Ø Kadenz (averageCadence) und merkt sie nur auf dem Gerät.
+   */
+  readonly steps?: number | null;
 }
 
 /**
@@ -95,7 +100,12 @@ const roundIn = (value: number | null | undefined, limits: { min: number; max: n
 export function sessionFromHc(
   record: HcExerciseSessionInput,
   extras: HcSessionExtras,
-  options: { hfMax: number | null; storedRouteDistanceM?: number | null },
+  options: {
+    hfMax: number | null;
+    /** Lauf-Paket 2: eigene Zonen-Grenzen (z. B. Herzfrequenz-Reserve); fehlt = % von `hfMax`. */
+    zones?: HeartRateZones | null;
+    storedRouteDistanceM?: number | null;
+  },
 ): SessionFromHcResult {
   const startedAt = iso(record.startTime);
   const finishedAt = iso(record.endTime);
@@ -145,7 +155,7 @@ export function sessionFromHc(
               : 'none';
   const heartRate =
     options.hfMax !== null && extras.heartRateSamples && extras.heartRateSamples.length > 0
-      ? summarizeHeartRate(extras.heartRateSamples, hrZones(options.hfMax), {
+      ? summarizeHeartRate(extras.heartRateSamples, options.zones ?? hrZones(options.hfMax), {
           from: startedAt,
           to: finishedAt,
         })

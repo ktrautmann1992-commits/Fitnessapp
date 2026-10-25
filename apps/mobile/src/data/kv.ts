@@ -201,4 +201,14 @@ export const STORAGE_KEYS = {
    * Gerät, kein Gesundheitsdatum; nach dem Speichern bzw. Verwerfen gelöscht.
    */
   gpsSportRecording: 'fitnessapp.gps-sport-recording.v1',
+  /**
+   * Lauf-Paket 2 (docs/PLAN-LAUF-PAKET-2.md 2): Pulszonen je Konto – eigener Maximalpuls (oder null) und „Ruhepuls
+   * einbeziehen“. Nur dieses Gerät; Eingabe nur mit Einwilligung health_data, gelöscht beim Abmelden bzw. Widerruf.
+   */
+  pulseZones: 'fitnessapp.pulse-zones.v1',
+  /**
+   * Lauf-Paket 2 (docs/PLAN-LAUF-PAKET-2.md 6): Ø Kadenz je Uhr-Einheit (Schlüssel = Health-Connect-id) je Konto –
+   * beim Abgleich aus den Schritten gerechnet, nur dieses Gerät, nie an den Server.
+   */
+  runCadence: 'fitnessapp.run-cadence.v1',
 } as const;

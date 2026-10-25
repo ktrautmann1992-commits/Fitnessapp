@@ -1,12 +1,16 @@
 import {
   ageInYears,
   aggregateDailyMetrics,
+  averageCadence,
+  type CadenceStore,
+  DEFAULT_PULSE_ZONE_SETTINGS,
+  type PulseZoneSettings,
+  pulseZonesFor,
   assignDuplicates,
   candidatesFromLogRows,
   chunkImportBatches,
   daysInRange,
   isoDateInTimeZone,
-  maxHeartRate,
   sessionFromHc,
   syncWindow,
   type TrackedRouteRow,
@@ -18,6 +22,7 @@ import {
 
 import type { HcAvailability, HealthConnectDriver } from '../lib/health-connect-driver.types';
 import type { WearableBackend } from './backend';
+import { restingBpmFromRows } from './runner';
 import type { UserRows } from './types';
 
 /**
@@ -39,14 +44,23 @@ export type WearableSyncOutcome =
       readonly result: WearableImportResult;
       /** Läufe, für die Health Connect eine Freigabe der Route je Einheit verlangt. */
       readonly routeConsentRequired?: number;
+      /** Lauf-Paket 2: Ø Kadenz je Einheit (Health-Connect-id → Schritte/min), nur für dieses Gerät. */
+      readonly cadence?: CadenceStore;
     }
-  | { readonly kind: 'queued'; readonly routeConsentRequired?: number };
+  | {
+      readonly kind: 'queued';
+      readonly routeConsentRequired?: number;
+      readonly cadence?: CadenceStore;
+    };
 
 export interface WearableSyncInput {
   readonly driver: HealthConnectDriver;
   readonly backend: WearableBackend;
-  /** Tagebuch auf dem Gerät (Doppel-Erkennung) und Profil (Alter für den HFmax). */
-  readonly rows: Pick<UserRows, 'sessionLogs' | 'cardioLogs' | 'profile'>;
+  /** Tagebuch auf dem Gerät (Doppel-Erkennung), Profil (Alter für den HFmax) und Körperdaten (Ruhepuls). */
+  readonly rows: Pick<UserRows, 'sessionLogs' | 'cardioLogs' | 'profile'> &
+    Partial<Pick<UserRows, 'bodyMetrics'>>;
+  /** Lauf-Paket 2: Pulszonen-Einstellung dieses Geräts (eigener HFmax, Ruhepuls einbeziehen); fehlt = Standard. */
+  readonly pulseZones?: PulseZoneSettings;
   /** Stand vom Server (letzter Abgleich, schon übernommene Einheiten). */
   readonly wearable: WearableRows;
   readonly now: string;
@@ -78,7 +92,15 @@ export async function runWearableSync(input: WearableSyncInput): Promise<Wearabl
   const readWindow = input.routeBackfill ? syncWindow(null, now) : window;
   const raw = await driver.read(readWindow, granted, days);
   const birthDate = rows.profile?.birth_date ?? null;
-  const hfMax = birthDate ? maxHeartRate(ageInYears(birthDate, today)) : null;
+  // Lauf-Paket 2: Zonen mit eigenem HFmax bzw. nach Herzfrequenz-Reserve (Ruhepuls: Uhr vor Körperdaten).
+  const zones = birthDate
+    ? pulseZonesFor({
+        age: ageInYears(birthDate, today),
+        settings: input.pulseZones ?? DEFAULT_PULSE_ZONE_SETTINGS,
+        restingBpm: restingBpmFromRows({ bodyMetrics: rows.bodyMetrics ?? [] }, wearable, today),
+      })
+    : null;
+  const cadence: CadenceStore = {};
   // Gespeicherte Routen der Uhr je external_id (über die übernommene Einheit).
   const externalByLog = new Map(wearable.sessions.map((w) => [w.session_log_id, w.external_id]));
   const storedRoutes = new Map<string, { distance_m: number; polyline: string }>();
@@ -98,13 +120,20 @@ export async function runWearableSync(input: WearableSyncInput): Promise<Wearabl
     if (Date.parse(record.startTime) < Date.parse(window.from) && !known.has(record.id)) return [];
     const stored = storedRoutes.get(record.id);
     const result = sessionFromHc(record, extras, {
-      hfMax,
+      hfMax: zones?.hfMax ?? null,
+      zones,
       storedRouteDistanceM: stored?.distance_m ?? null,
     });
     if (result.kind === 'skip') {
       skippedOnDevice += 1;
       return [];
     }
+    const sport =
+      result.session.group === 'run' ? 'run' : result.session.group === 'walk' ? 'walk' : null;
+    const spm = sport
+      ? averageCadence({ steps: extras.steps, durationS: result.session.duration_s, sport })
+      : null;
+    if (spm !== null) cadence[record.id] = spm;
     if (result.routeStatus === 'consent_required') routeConsentRequired += 1;
     if (result.route && result.route.polyline !== stored?.polyline) routes.push(result.route);
     return [result.session];
@@ -131,10 +160,11 @@ export async function runWearableSync(input: WearableSyncInput): Promise<Wearabl
     chunkImportBatches(granted, items, dailies),
     routes.slice(0, WEARABLE_SYNC.maxSessionsPerBatch),
   );
-  if (outcome.kind === 'queued') return { ...outcome, routeConsentRequired };
+  if (outcome.kind === 'queued') return { ...outcome, routeConsentRequired, cadence };
   return {
     kind: 'imported',
     result: { ...outcome.result, skipped: outcome.result.skipped + skippedOnDevice },
     routeConsentRequired,
+    cadence,
   };
 }

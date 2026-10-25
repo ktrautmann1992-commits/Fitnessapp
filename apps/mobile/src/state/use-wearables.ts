@@ -8,6 +8,7 @@ import { deviceStore } from '@/data/create-backend';
 import { STORAGE_KEYS } from '@/data/kv';
 import { consentRecordsFromRows } from '@/data/mapping';
 import { applyAutoMatches } from '@/data/route-match';
+import { mergeCadence, readPulseZoneSettings } from '@/data/runner';
 import { runWearableSync, type WearableSyncOutcome } from '@/data/wearable-sync';
 import { todayIso } from '@/lib/format';
 import { createDemoHealthConnectDriver } from '@/lib/health-connect-demo';
@@ -107,10 +108,13 @@ export function syncWearables(
     const tracked = await app.backend.loadTrackedRoutes().catch(() => null);
     const userId = app.session.userId;
     const routeBackfill = tracked !== null && (await readBackfill()) !== userId;
+    // Lauf-Paket 2: Pulszonen dieses Geräts (eigener HFmax, Herzfrequenz-Reserve).
+    const pulseZones = await readPulseZoneSettings(deviceStore, userId).catch(() => undefined);
     const outcome = await runWearableSync({
       driver,
       backend: app.backend.wearables,
       rows: app.rows,
+      pulseZones,
       wearable: loaded.rows,
       now,
       today: todayIso(),
@@ -118,6 +122,9 @@ export function syncWearables(
       routeBackfill,
     });
     if (outcome.kind === 'imported' || outcome.kind === 'queued') {
+      // Lauf-Paket 2: Kadenz je Uhr-Einheit nur auf diesem Gerät merken.
+      if (outcome.cadence)
+        await mergeCadence(deviceStore, userId, outcome.cadence).catch(() => undefined);
       if (routeBackfill && outcome.kind === 'imported') await writeBackfill(userId);
       // „Meine Strecken“: Uhr-Läufe gleich nach dem Abgleich erkennen (auch ohne offene Ausdauer-Seite).
       if (outcome.kind === 'imported') {
