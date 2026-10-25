@@ -66,56 +66,6 @@ export function repoLibraryWithStatus(status: 'draft' | 'published'): PlanLibrar
   });
 }
 
-/**
- * Inhalte, die erst nach dem Merge von PR #182 nach `content/` kommen (Branch claude/calisthenics-inhalte-2): die
- * Calisthenics-Vorlagen (goal_type „calisthenics“) und die Lauf-Kraft-Einheiten (Kategorie „run_strength“). Die
- * Pflichtprüfung „sources-integrity (Code von main)“ prüft `content/` mit dem Code von main, der diese Werte noch
- * nicht kennt. Bis dahin liegen unveränderte Kopien hier, damit die Logik-Tests sie weiter prüfen.
- */
-const pendingDir = new URL('./test-fixtures/inhalte-folgen/', import.meta.url);
-
-function readJsonFolder(dir: URL): { fileName: string; data: unknown }[] {
-  return readdirSync(dir)
-    .filter((fileName) => fileName.endsWith('.json'))
-    .sort()
-    .map((fileName) => ({
-      fileName,
-      data: JSON.parse(readFileSync(new URL(fileName, dir), 'utf8')) as unknown,
-    }));
-}
-
-/** Calisthenics-Vorlagen, die erst mit claude/calisthenics-inhalte-2 nach `content/` kommen. */
-export function loadPendingTemplateFiles(): ContentFile[] {
-  return readJsonFolder(new URL('plan-templates/', pendingDir)).map(({ fileName, data }) => ({
-    kind: 'plan_template' as const,
-    fileName,
-    data,
-  }));
-}
-
-/** Lauf-Kraft-Einheiten (Rohdaten), die erst mit claude/calisthenics-inhalte-2 nach `content/` kommen. */
-export function loadPendingWorkoutData(): unknown[] {
-  return readJsonFolder(new URL('workouts/', pendingDir)).map(({ data }) => data);
-}
-
-let cachedWithPending: PlanLibrary | undefined;
-
-/** Startbestand plus die noch ausstehenden Calisthenics-Vorlagen als Bibliothek im Testmodus. */
-export function repoLibraryWithPending(): PlanLibrary {
-  if (cachedWithPending) return cachedWithPending;
-  const repo = loadRepoContentFiles();
-  // Gleiche Reihenfolge wie später in content/ (Vorlagen nach Dateiname sortiert).
-  const templates = [
-    ...repo.filter((file) => file.kind === 'plan_template'),
-    ...loadPendingTemplateFiles(),
-  ].sort((a, b) => (a.fileName < b.fileName ? -1 : a.fileName > b.fileName ? 1 : 0));
-  cachedWithPending = selectPlanContent(
-    validateContent([...repo.filter((file) => file.kind !== 'plan_template'), ...templates]),
-    { allowDrafts: true },
-  );
-  return cachedWithPending;
-}
-
 /** Montag, 05.10.2026 – fester Stichtag für die Tests. */
 export const MONDAY = '2026-10-05';
 

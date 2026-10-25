@@ -158,8 +158,7 @@ describe('Einspiel-Paket', () => {
     const pkg = buildSeedPackage(result);
     expect(pkg.exercises.map((e) => e.id)).toEqual(result.exercises.map((e) => e.id));
     expect(pkg.exercises).toHaveLength(170);
-    // 49 erst mit claude/calisthenics-inhalte-2 (3 Calisthenics-Vorlagen folgen nach PR #182).
-    expect(pkg.plan_templates).toHaveLength(46);
+    expect(pkg.plan_templates).toHaveLength(49);
   });
 
   it('berechnet die Dauer je Einheit mit estimateSessionMinutes', () => {
@@ -871,20 +870,9 @@ describe('content-seed: Workouts (docs/PLAN-WORKOUTS.md)', () => {
     const r = withWorkouts();
     const { result } = validateRepository({ cwd: r.root });
     expect(result.workouts.length).toBeGreaterThanOrEqual(20);
-    // Entwürfe (z. B. Lauf-Kraft, docs/PLAN-CALISTHENICS-SCHLINGE.md 4) kommen nie ins Paket. Die 4 Lauf-Kraft-
-    // Entwürfe kommen erst mit claude/calisthenics-inhalte-2 (nach PR #182) nach content/ – bis dahin prüft eine
-    // in-memory gemischte Liste dieselbe Regel.
+    // Entwürfe (z. B. Lauf-Kraft, docs/PLAN-CALISTHENICS-SCHLINGE.md 4) kommen nie ins Paket.
     const published = result.workouts.filter((w) => w.status === 'published');
-    expect(result.workouts.length - published.length).toBe(0);
-    const mixed = result.workouts.map((w, i) =>
-      i % 2 === 1 ? { ...w, status: 'draft' as const } : w,
-    );
-    expect(
-      buildWorkoutSeedPackage(
-        { workouts: mixed },
-        { requireExpertReview: false },
-      ).package.workouts.map((w) => w.id),
-    ).toEqual(mixed.filter((w) => w.status === 'published').map((w) => w.id));
+    expect(result.workouts.length - published.length).toBe(4);
     const strict = buildWorkoutSeedPackage(result);
     expect(strict.package.workouts).toEqual([]);
     expect(strict.waiting).toHaveLength(published.length);

@@ -200,10 +200,9 @@ test.describe('mit Zugangsdaten', () => {
     expect(await context.cookies(`${CONFIGURED_URL}/`)).toEqual([]);
 
     // Übersicht: 170 Übungen (Startbestand + Körpergewicht K1 + Handtuch-Latziehen + 16 Aufwärm-/Dehnübungen
-    // + 74 Calisthenics/Schlingentrainer/Lauf-Kraft), 46 Vorlagen (inkl. 18 Körpergewicht, 4 Schlinge; die
-    // 3 Calisthenics-Vorlagen kommen erst mit claude/calisthenics-inhalte-2 nach PR #182).
+    // + 74 Calisthenics/Schlingentrainer/Lauf-Kraft), 49 Vorlagen (inkl. 18 Körpergewicht, 3 Calisthenics, 4 Schlinge).
     await expect(page.getByRole('heading', { name: 'Inhalte prüfen' })).toBeVisible();
-    await expect(page.getByText('170 Übungen · 46 Vorlagen')).toBeVisible();
+    await expect(page.getByText('170 Übungen · 49 Vorlagen')).toBeVisible();
     await expect(page.getByText('Testansicht – Inhalte aus dem Repository')).toBeVisible();
     const exerciseCards = page.getByRole('list', { name: 'Übungen' }).getByRole('listitem');
     await expect(exerciseCards).toHaveCount(170);
@@ -252,7 +251,7 @@ test.describe('mit Zugangsdaten', () => {
     // Vorlagen: 24, Filter Ziel/Ort, Detail mit Woche und Wochensätzen.
     await page.goto('/admin?tab=vorlagen');
     const templateCards = page.getByRole('list', { name: 'Plan-Vorlagen' }).getByRole('listitem');
-    await expect(templateCards).toHaveCount(46);
+    await expect(templateCards).toHaveCount(49);
     await page.goto('/admin?tab=vorlagen&ziel=muscle_gain&ort=home');
     await expect(templateCards).toHaveCount(11);
     await page.goto('/admin/vorlagen/muskelaufbau-fortgeschritten-3t-studio');

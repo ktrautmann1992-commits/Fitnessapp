@@ -5,7 +5,7 @@ import { heading, onboard } from './plan-helpers';
 /**
  * Calisthenics, Schlingentrainer und Lauf-Kraft im TESTMODUS (docs/PLAN-CALISTHENICS-SCHLINGE.md, Gründer-Freigabe
  * 25.10.2026): Skill-Pfade-Bildschirm (Testinhalt-Hinweis, Stufen, Sperren für Einsteiger), Schlingentrainer-Plan zu
- * Hause mit Tausch-Alternative und Winkel-/Anker-Hinweis im Glossar, Lauftag ohne Lauf-Kraft-Einheiten (folgen).
+ * Hause mit Tausch-Alternative und Winkel-/Anker-Hinweis im Glossar, Lauf-Kraft-Block am Lauftag.
  * Alle Inhalte sind Entwürfe – im Testmodus sichtbar und als „Testinhalt“ gekennzeichnet.
  */
 
@@ -55,8 +55,7 @@ test('Skill-Pfade: Einstieg über „Mehr“, Testinhalt, aktuelle Stufe, Sperre
     homeEquipment: ['Klimmzugstange', 'Barren/Dip-Station'],
   });
   await toToday(page);
-  // Calisthenics-Vorlage (Entwurf) liefert Übungen mit Stange/Barren bzw. Körpergewicht – bis die Vorlagen mit
-  // claude/calisthenics-inhalte-2 kommen, die nächstbeste Vorlage (Güte „fallback“).
+  // Calisthenics-Vorlage (Entwurf) liefert Übungen mit Stange/Barren bzw. Körpergewicht.
   expect((await exerciseNames(page)).length).toBeGreaterThan(2);
   if (shots) await shot(page, 'plan-exercise', 'calisthenics-heute');
 
@@ -214,10 +213,7 @@ test('Reise-Modus mit Schlingentrainer: Einheiten werden auf Schlingen-Übungen 
   );
 });
 
-// Die 4 Lauf-Kraft-Einheiten (Kategorie „run_strength“) kommen erst nach PR #182 mit claude/calisthenics-inhalte-2
-// nach content/workouts. Bis dahin: Lauftag ohne Block (ausgeblendet statt Fehler), die Lauf-ABC-Übungen der
-// Einheiten sind im Glossar als Testinhalt da. Zuordnung und Einheit prüfen die Vitest-Tests (run-strength).
-test('Lauf-Kraft: ohne Lauf-Kraft-Einheiten bleibt der Lauftag heil, Lauf-ABC-Übungen im Glossar', async ({
+test('Lauf-Kraft: 15-Minuten-Block nach dem lockeren Lauf, mit Timer zu öffnen', async ({
   page,
 }) => {
   await start(page, MONDAY);
@@ -234,17 +230,11 @@ test('Lauf-Kraft: ohne Lauf-Kraft-Einheiten bleibt der Lauftag heil, Lauf-ABC-Ü
     ],
   });
   await toToday(page);
-  await expect(page.getByTestId('plan-endurance').first()).toBeVisible();
-  await expect(page.getByTestId('plan-run-strength')).toHaveCount(0);
-  await expect(page.getByTestId('plan-library-missing')).toHaveCount(0);
-
-  for (const [id, name] of [
-    ['lauf-abc-skippings', 'Skippings'],
-    ['wadenheben-gebeugtes-knie', 'Wadenheben mit gebeugtem Knie'],
-  ] as const) {
-    await page.goto(`/uebungen/${id}`);
-    const detail = page.getByTestId('glossary-detail');
-    await expect(detail).toContainText(name);
-    await expect(page.getByTestId('glossary-test-content')).toContainText('Testinhalt');
-  }
+  const block = page.getByTestId('plan-run-strength');
+  await expect(block).toContainText('Lauf-Kraft danach (15 min)');
+  await expect(block).toContainText('Runden');
+  await shot(page, 'plan-run-strength', 'lauf-kraft-heute');
+  await page.getByTestId('plan-run-strength-open').click();
+  await expect(page.getByTestId('workout-test-content')).toContainText('Testinhalt');
+  if (shots) await page.screenshot({ path: `${shots}/lauf-kraft-einheit.png` });
 });
