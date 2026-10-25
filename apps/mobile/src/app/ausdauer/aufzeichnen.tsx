@@ -34,6 +34,7 @@ import { StyleSheet, View } from 'react-native';
 import { AreaButton, Icon } from '@/components/design';
 import { BikeTypeChoice, EBikeBadge, useBikeChoice } from '@/components/e-bike';
 import { RouteSketch } from '@/components/endurance';
+import { LoopGuideCard } from '@/components/loop-guide-card';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
   Body,
@@ -53,6 +54,7 @@ import { errorText } from '@/lib/error-text';
 import { berlinTodayIso, formatDateDe } from '@/lib/format';
 import { useScreenAwake } from '@/lib/keep-awake';
 import { locationDriver, type LocationPermission } from '@/lib/location-driver';
+import { loopGuideFor } from '@/lib/loop-guide';
 import {
   beginRecording,
   endRecording,
@@ -97,6 +99,8 @@ export default function RecordScreen() {
     step?: string;
     /** E-Bike-Wahl vom Start („1“/„0“); fehlt (z. B. nach Absturz) → zuletzt genutzte Wahl dieses Geräts. */
     ebike?: string;
+    /** Rundkurs-Vorschlag: id der Leitlinie (lib/loop-guide.ts) – Karte mit der Runde beim Laufen. */
+    guide?: string;
   }>();
   const router = useRouter();
   const app = useApp();
@@ -323,6 +327,7 @@ export default function RecordScreen() {
         onSaved={(id) => router.replace(`/ausdauer/${id}` as Href)}
         onDiscarded={() => router.replace('/ausdauer' as Href)}
         initialEBike={eBikeParam}
+        loopName={loopGuideFor(params.guide)?.name ?? null}
         onResume={async () => {
           try {
             await resumeActiveRecording();
@@ -423,6 +428,7 @@ export default function RecordScreen() {
         onPress={() => setConfirmStop(true)}
         testID="record-stop"
       />
+      <LoopGuideCard guideId={params.guide} distanceM={stats?.distanceM ?? 0} />
       <ConfirmDialog
         visible={confirmStop}
         title={E.live.stopConfirm}
@@ -477,6 +483,7 @@ function SaveView({
   onResume,
   limitNotice,
   initialEBike,
+  loopName = null,
 }: {
   onSaved: (id: string) => void;
   onDiscarded: () => void;
@@ -484,6 +491,8 @@ function SaveView({
   limitNotice: boolean;
   /** Wahl beim Start; null = zuletzt genutzte Wahl dieses Geräts (sonst Fahrrad). */
   initialEBike: boolean | null;
+  /** Gelaufene Runde aus dem Rundkurs-Vorschlag: Name vorbelegt, als „Meine Strecke“ (Favorit) vorgeschlagen. */
+  loopName?: string | null;
 }) {
   const app = useApp();
   const current = useRecordingSession();
@@ -492,10 +501,10 @@ function SaveView({
   const check = summary ? recordingSaveCheck(summary) : 'too_short';
   const startDay = summary?.startedAt ? isoDateInTimeZone(summary.startedAt) : today;
   const sport = current?.state.sport ?? 'run';
-  const [name, setName] = useState(() =>
-    E.save.defaultName(E.sportNouns[sport], formatDateDe(startDay)),
+  const [name, setName] = useState(
+    () => loopName ?? E.save.defaultName(E.sportNouns[sport], formatDateDe(startDay)),
   );
-  const [favorite, setFavorite] = useState(false);
+  const [favorite, setFavorite] = useState(loopName !== null);
   const [difficulty, setDifficulty] = useState<RouteDifficulty | 'none'>('none');
   const [note, setNote] = useState('');
   // E-Bike (nur beim Rad): Wahl beim Start, sonst die zuletzt genutzte; hier noch änderbar.

@@ -255,6 +255,15 @@ export default function EnduranceScreen() {
               testID="endurance-manual"
             />
             <Body muted>{E.record.manualHint}</Body>
+            {/* Rundkurs-Vorschlag (docs/PLAN-RUNDKURS.md): eigener Bildschirm ausdauer/rundkurs.tsx. */}
+            <Button
+              label={t.loop.entry}
+              icon="map"
+              variant="secondary"
+              accessibilityHint={t.loop.entryHint}
+              onPress={() => router.push('/ausdauer/rundkurs' as Href)}
+              testID="endurance-loop"
+            />
           </View>
         </Card>
       )}

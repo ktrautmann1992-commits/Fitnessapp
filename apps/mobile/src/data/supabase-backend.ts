@@ -61,6 +61,7 @@ import { requestLiveAdjustment } from './live-adjust-remote';
 import { createRemoteFoodPhoto } from './food-photo-remote';
 import { appLayoutRowFromDb } from './app-layout';
 import { createRemoteFoodProduct } from './food-product-remote';
+import { createRemoteLoopRouting } from './loop-routing';
 import { applyUserFoodProductDelete, checkUserFoodProductSave } from './user-food-product-rows';
 import { readJson, STORAGE_KEYS, writeJson, type KeyValueStore } from './kv';
 import { upgradeStoredRows } from './legacy-rows';
@@ -2063,6 +2064,8 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
     // Gericht per Foto (Etappe E3): Freischaltung, Kontingent und Auswertung über apps/web.
     // Produktabfrage (Etappe E4a): über apps/web (Nummer im Körper; Flag, Einwilligung, Limits prüft der Server).
     ...createRemoteFoodProduct({ client, webUrl: options.webUrl ?? null }),
+    // Rundkurs-Vorschlag (docs/PLAN-RUNDKURS.md): über apps/web (Schlüssel des Routing-Diensts nur dort).
+    ...createRemoteLoopRouting({ client, webUrl: options.webUrl ?? null }),
     ...createRemoteFoodPhoto({
       client,
       webUrl: options.webUrl ?? null,
