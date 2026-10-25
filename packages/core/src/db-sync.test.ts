@@ -7,6 +7,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 import { MEASUREMENT_SITES } from './body-measurements';
+import { PAIN_MODE, PAIN_MODE_HEALTH_CONSENT_MIN_VERSION, TRAVEL_MODE } from './constants';
+import { BODY_REGIONS, PAIN_INTENSITIES, TRAVEL_EQUIPMENT_OPTIONS } from './enums';
 import { CURRENT_CONSENT_VERSIONS } from './consent';
 import {
   SUPPLEMENT_CONTENT_CATEGORIES,
@@ -391,7 +393,11 @@ describe('Listen', () => {
     const catalog = new Map<string, Record<string, unknown>>();
     const rowPattern =
       /\('([a-z_]+)', '([^']+)', '([a-z_]+)', (true|false), (\d+)(?:, (true|false))?\)/g;
-    for (const suffix of ['_seed_equipment.sql', '_equipment_home_selectable.sql']) {
+    for (const suffix of [
+      '_seed_equipment.sql',
+      '_equipment_home_selectable.sql',
+      '_suspension_trainer.sql',
+    ]) {
       for (const m of readMigration(suffix).matchAll(rowPattern)) {
         catalog.set(m[1] as string, {
           id: m[1],
@@ -999,11 +1005,11 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     expect(body.slice(0, end)).toContain(
       'delete from public.shopping_lists where user_id = new.user_id and uses_health_data;',
     );
-    // Neueste Fassung seit Phase 6 SU3 in *_supplement_user_data.sql (davor Phase 8 Smartwatch, Einkaufen E1, 4b
+    // Neueste Fassung seit den Trainings-Modi in *_training_modes_revoke_export.sql (davor Phase 6 SU3, davor Phase 8 Smartwatch, Einkaufen E1, 4b
     // Etappe B, Zusammenführung E4a + Z3; E1: Tagebuch-Einträge, E2: eigene Gerichte, WP3: Plan-Bezug der Wettkämpfe
     // leeren, E4a: eigene Produkte und Produkt-Favoriten, Z3: Wunschgewicht, 4b: Plan-Anpassungen).
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_supplement_user_data\.sql$/,
+      /_training_modes_revoke_export\.sql$/,
     );
   });
 
@@ -2949,8 +2955,8 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
 
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
     for (const [marker, newestFile] of [
-      [revokeMarker, /_supplement_user_data\.sql$/],
-      // Export seit der Integration 25.10.2026 (Rezept-Favoriten, Vorratsschrank, Schuhe) in *_export_my_data_integration.sql.
+      [revokeMarker, /_training_modes_revoke_export\.sql$/],
+      // Export seit der Integration 25.10.2026 in *_export_my_data_integration.sql.
       [exportMarker, /_export_my_data_integration\.sql$/],
     ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
@@ -3005,6 +3011,8 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
         'user_supplements',
         // Vorratsschrank (25.10.2026): Konsum, kann auf Unverträglichkeiten schließen lassen.
         'pantry_items',
+        // Trainings-Modi: Schmerz-/Verletzungsmodus.
+        'pain_episodes',
       ].sort(),
     );
     for (const name of sensitive) {
@@ -3993,5 +4001,36 @@ describe('Rezept-Favoriten in der Datenbank (Gründer-Freigabe 25.10.2026, KONZE
     expect(keys(after)).toEqual([...keys(before), 'recipe_preferences']);
     expect(DATA_EXPORT_TABLES).toContain('recipe_preferences');
     expect(sql).not.toContain('function private.consents_after_revoke()');
+  });
+});
+
+describe('Trainings-Modi in der Datenbank (docs/PLAN-TRAINING-MODI.md 7)', () => {
+  const sql = readMigration('_training_modes.sql');
+  const enumValues = (name: string) => quotedListAfter(sql, `create type public.${name} as enum (`);
+
+  it('Aufzählungen = Listen im Core', () => {
+    expect(enumValues('body_region')).toEqual([...BODY_REGIONS]);
+    expect(enumValues('pain_intensity')).toEqual([...PAIN_INTENSITIES]);
+    expect(enumValues('travel_equipment')).toEqual([...TRAVEL_EQUIPMENT_OPTIONS]);
+  });
+
+  it('Grenzen = PAIN_MODE / TRAVEL_MODE', () => {
+    expect(sql).toContain(`check (duration_days in (${PAIN_MODE.durationsDays.join(', ')}))`);
+    expect(sql).toContain(`max_minutes in (${TRAVEL_MODE.minutesOptions.join(', ')})`);
+    expect(sql).toContain(`ends_on - starts_on + 1 <= ${TRAVEL_MODE.maxDays}`);
+    expect(sql).toContain(`new.starts_on > today + ${TRAVEL_MODE.maxStartAheadDays}`);
+    expect(sql).toContain(`private.berlin_today() - ${PAIN_MODE.historyDays}`);
+  });
+
+  it('Schmerz-Einträge nur mit Einwilligung health_data; RLS an beiden Tabellen', () => {
+    expect(sql).toContain("and public.has_valid_consent('health_data')");
+    expect(sql).toContain(
+      `coalesce(public.current_consent_version('health_data'), 0) >= ${PAIN_MODE_HEALTH_CONSENT_MIN_VERSION}`,
+    );
+    expect(sql).toContain(
+      `min_version constant integer := ${PAIN_MODE_HEALTH_CONSENT_MIN_VERSION};`,
+    );
+    expect(sql).toContain('alter table public.pain_episodes enable row level security;');
+    expect(sql).toContain('alter table public.travel_modes enable row level security;');
   });
 });

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schulterblatt-kreisen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schulterblatt-kreisen-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – aufrecht stehen, Arme hängen locker, Schultern entspannt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

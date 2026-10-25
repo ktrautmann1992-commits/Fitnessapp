@@ -1,0 +1,38 @@
+{
+  "id": "oberschenkel-vorderseite-dehnen",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Dehnung Oberschenkel-Vorderseite",
+  "name_en": "Standing Quad Stretch",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["quadriceps"],
+  "secondary_muscles": [],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Im Stand eine Ferse Richtung Gesäß ziehen. Dehnt die Vorderseite des Oberschenkels nach Kniebeugen und Ausfallschritten.",
+  "steps_de": [
+    "Seitlich an eine Wand stellen und festhalten.",
+    "Ein Bein beugen und den Fuß mit der Hand fassen.",
+    "Ferse sanft Richtung Gesäß ziehen, Knie zeigt nach unten, und halten.",
+    "Danach die Seite wechseln."
+  ],
+  "tips_de": ["Becken leicht nach vorn schieben, Bauch fest."],
+  "common_mistakes_de": ["Ins Hohlkreuz fallen."],
+  "safety_note_de": "Nur bis zu einem deutlichen, aber angenehmen Ziehen dehnen, nicht wippen. Bei Schmerzen, Kribbeln oder ungewohnten Beschwerden die Dehnung lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Trainings-Modi (Aufwärmen & Dehnen, docs/PLAN-TRAINING-MODI.md 5) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

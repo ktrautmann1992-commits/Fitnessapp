@@ -244,6 +244,10 @@ export function localDataExport(
     shoes: [],
     shoe_defaults: [],
     shoe_assignments: [],
+    // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 7): liegen im eigenen geschützten Speicher; attachTrainingModes()
+    // (training-modes-backend.ts) setzt die Zeilen im Testmodus ein.
+    pain_episodes: [],
+    travel_modes: [],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

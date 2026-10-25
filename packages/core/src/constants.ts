@@ -5,13 +5,17 @@
  * Die Schutzgrenzen sind fest im Code und NICHT durch Nutzer abschaltbar.
  */
 import type {
+  BodyRegion,
   CautionTag,
   EquipmentCategory,
   ExperienceLevel,
   GoalType,
+  LoadType,
   MovementPattern,
   MuscleGroup,
+  PainIntensity,
   TrainingSlotKind,
+  TravelEquipment,
 } from './enums';
 
 /**
@@ -4519,4 +4523,295 @@ export const PANTRY = {
   countStep: 0.5,
   packSizeMax: 5000,
   lowWeight: 0.5,
+} as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Trainings-Modi (docs/PLAN-TRAINING-MODI.md, Gründer-Freigabe 25.10.2026)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Woran die Regel-Engine erkennt, dass eine Übung eine Körperregion belastet (Schmerz-/Verletzungsmodus). Ein Treffer
+ * genügt: Bewegungsmuster (optional nur bei bestimmten Belastungsarten, z. B. Liegestütz = Stütz auf den Händen),
+ * Hauptmuskel, Merkmal (`caution_tags`) oder ausdrücklich genannte Übung. `strong` gilt schon bei „leicht“, `any`
+ * kommt ab „mittel“ dazu. Unbekannte Übungen gelten immer als belastend (vorsichtig).
+ *
+ * Ableitung aus vorhandenen Übungs-Metadaten statt neuer Inhaltsfelder: keine Schema-/Datenbank-Änderung an
+ * `exercises`, neue Übungen werden über Muster/Muskeln/Merkmale automatisch mit erfasst. Einzelne Übungen, die die
+ * Ableitung nicht trifft, stehen als `exercise` hier (z. B. Stuhl-Dips belasten die Schulter stark).
+ *
+ * Orientierung: Belastungssteuerung statt Schonung – Soligard T et al. (2016), „How much is too much? IOC consensus
+ * statement on load in sport and risk of injury“, Br J Sports Med 50(17):1030–1041; Gelenk-/Muster-Zuordnung nach
+ * gängiger Übungslehre (Schoenfeld B, „Science and Development of Muscle Hypertrophy“, 2. Aufl. 2020).
+ * Zuordnung je Region: PRODUKTENTSCHEIDUNG – vor dem Livegang fachlich (Physiotherapie/Sportmedizin) prüfen.
+ */
+export type PainRegionMatcher =
+  | { readonly pattern: MovementPattern; readonly loadTypes?: readonly LoadType[] }
+  | { readonly muscle: MuscleGroup }
+  | { readonly tag: CautionTag }
+  | { readonly exercise: string };
+
+export const PAIN_REGION_LOAD = {
+  knee: {
+    strong: [
+      { pattern: 'lunge' },
+      { pattern: 'conditioning' },
+      { tag: 'high_impact' },
+      { tag: 'deep_hip_flexion' },
+    ],
+    any: [
+      { pattern: 'squat' },
+      { pattern: 'knee_extension' },
+      { pattern: 'knee_flexion' },
+      { muscle: 'quadriceps' },
+    ],
+  },
+  shoulder: {
+    strong: [
+      { pattern: 'vertical_push' },
+      { pattern: 'vertical_pull' },
+      { tag: 'overhead' },
+      { exercise: 'dips-stuhl' },
+    ],
+    any: [
+      { pattern: 'horizontal_push' },
+      { pattern: 'horizontal_pull' },
+      { pattern: 'shoulder_isolation' },
+      { pattern: 'carry' },
+      { muscle: 'front_delts' },
+      { muscle: 'side_delts' },
+      { muscle: 'rear_delts' },
+    ],
+  },
+  lower_back: {
+    strong: [
+      { pattern: 'hinge' },
+      { tag: 'spinal_loading' },
+      { tag: 'loaded_flexion' },
+      { tag: 'spinal_flexion' },
+      { tag: 'trunk_rotation' },
+      { tag: 'high_impact' },
+      { exercise: 'vorgebeugtes-rudern-kurzhantel' },
+      { exercise: 'langhantelrudern' },
+    ],
+    any: [
+      { pattern: 'squat', loadTypes: ['weight'] },
+      { pattern: 'lunge', loadTypes: ['weight'] },
+      { pattern: 'core_flexion' },
+      { pattern: 'carry' },
+      { pattern: 'conditioning' },
+      { muscle: 'lower_back' },
+    ],
+  },
+  elbow: {
+    strong: [
+      { pattern: 'elbow_flexion' },
+      { pattern: 'elbow_extension' },
+      { exercise: 'klimmzug' },
+    ],
+    any: [
+      { pattern: 'horizontal_push' },
+      { pattern: 'vertical_push' },
+      { pattern: 'horizontal_pull' },
+      { pattern: 'vertical_pull' },
+      { pattern: 'carry' },
+      { muscle: 'biceps' },
+      { muscle: 'triceps' },
+      { muscle: 'forearms' },
+    ],
+  },
+  wrist: {
+    strong: [
+      // Stütz auf den Händen (Liegestütz-Varianten, Pike, Stuhl-Dips) und Seitstütz auf der Hand.
+      { pattern: 'horizontal_push', loadTypes: ['bodyweight'] },
+      { pattern: 'vertical_push', loadTypes: ['bodyweight'] },
+      { pattern: 'elbow_extension', loadTypes: ['bodyweight'] },
+      { exercise: 'seitstuetz' },
+    ],
+    any: [
+      { pattern: 'horizontal_push' },
+      { pattern: 'vertical_push' },
+      { pattern: 'elbow_flexion' },
+      { pattern: 'elbow_extension' },
+      { pattern: 'carry' },
+      { pattern: 'vertical_pull', loadTypes: ['bodyweight'] },
+      { muscle: 'forearms' },
+      { exercise: 'kettlebell-swing' },
+    ],
+  },
+  hip: {
+    strong: [
+      { pattern: 'lunge' },
+      { tag: 'high_impact' },
+      { tag: 'deep_hip_flexion' },
+      { tag: 'hip_cross_midline' },
+    ],
+    any: [
+      { pattern: 'squat' },
+      { pattern: 'hinge' },
+      { pattern: 'hip_extension' },
+      { pattern: 'conditioning' },
+      { muscle: 'glutes' },
+      { muscle: 'adductors' },
+    ],
+  },
+  ankle: {
+    strong: [
+      { pattern: 'conditioning' },
+      { pattern: 'calf_raise' },
+      { pattern: 'lunge' },
+      { tag: 'high_impact' },
+    ],
+    any: [{ pattern: 'squat' }, { pattern: 'carry' }, { muscle: 'calves' }],
+  },
+  neck: {
+    strong: [
+      { pattern: 'vertical_push' },
+      { pattern: 'core_flexion' },
+      { tag: 'overhead' },
+      { tag: 'spinal_loading' },
+    ],
+    any: [
+      { pattern: 'vertical_pull' },
+      { pattern: 'shoulder_isolation' },
+      { pattern: 'carry' },
+      { pattern: 'horizontal_pull', loadTypes: ['weight'] },
+      { tag: 'long_supine' },
+    ],
+  },
+} as const satisfies Record<
+  BodyRegion,
+  { strong: readonly PainRegionMatcher[]; any: readonly PainRegionMatcher[] }
+>;
+
+/**
+ * Schmerz-/Verletzungsmodus (docs/PLAN-TRAINING-MODI.md 3). Kein Diagnose- und kein Therapie-Werkzeug: Die App
+ * schont eine Region für wenige Tage und rät bei starken, langen oder wiederkehrenden Beschwerden zur ärztlichen
+ * Abklärung.
+ * - `durationsDays` 3/7/14: wählbare Dauer; danach endet der Modus automatisch.
+ * - Arzt-Hinweis: „stark“ ODER zusammenhängend länger als `maxChainDays` (14) Tage dieselbe Region (Folge-Einträge
+ *   mit höchstens `chainGapDays` Tagen Lücke zählen als eine Phase) ODER mindestens `recurring.episodes` (3) Phasen
+ *   derselben Region binnen `recurring.windowDays` (90) Tagen → „Bitte ärztlich abklären lassen“ und konservativer
+ *   Plan. Orientierung: anhaltende Beschwerden über etwa zwei Wochen und Warnzeichen gelten in Leitlinien als Anlass
+ *   zur Abklärung (NICE NG59 „Low back pain and sciatica in over 16s“, 2016, aktualisiert 2020; Nationale
+ *   VersorgungsLeitlinie Nicht-spezifischer Kreuzschmerz, 2. Aufl. 2017, „Red Flags“).
+ * - `dosage`: Belastung für ALLE Kraft-Übungen der Einheit, solange der Modus läuft (RPE −1 bzw. −2, Sätze −1, nie
+ *   unter `minSets` bzw. RPE 5). Orientierung Soligard et al. 2016 (s. PAIN_REGION_LOAD): Last senken statt pausieren.
+ * - `conservative`: zusätzlich zum Arzt-Hinweis – RPE ≤ 6 und die Ausschlüsse des vorsichtigen Plans.
+ * - `endurance`: Ausdauer bei Beschwerden in Knie/Hüfte/Sprunggelenk/unterem Rücken ab „mittel“: Dauer × 0,7
+ *   (abgerundet, mindestens `minMinutes`), Anstrengung ≤ 3 von 10; Einheiten mit festem Ablauf (Wettkampfplan)
+ *   bekommen nur den Hinweis.
+ * - `historyDays` 365: so weit zurück zählen Einträge; ältere löscht der Server (Datensparsamkeit).
+ * Alle Werte PRODUKTENTSCHEIDUNG – vor dem Livegang fachlich prüfen.
+ */
+export const PAIN_MODE = {
+  durationsDays: [3, 7, 14],
+  maxChainDays: 14,
+  chainGapDays: 2,
+  recurring: { episodes: 3, windowDays: 90 },
+  historyDays: 365,
+  dosage: {
+    mild: { rpeDrop: 1, setsDrop: 0 },
+    moderate: { rpeDrop: 1, setsDrop: 1 },
+    severe: { rpeDrop: 2, setsDrop: 1 },
+  },
+  minSets: 1,
+  conservative: {
+    rpeMax: 6,
+    excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill'],
+  },
+  endurance: {
+    lowerBodyRegions: ['knee', 'hip', 'ankle', 'lower_back'],
+    fromIntensity: 'moderate',
+    minutesFactor: 0.7,
+    effortMax: 3,
+    minMinutes: 10,
+  },
+} as const satisfies {
+  durationsDays: readonly number[];
+  maxChainDays: number;
+  chainGapDays: number;
+  recurring: { episodes: number; windowDays: number };
+  historyDays: number;
+  dosage: Record<PainIntensity, { rpeDrop: number; setsDrop: number }>;
+  minSets: number;
+  conservative: { rpeMax: number; excludedCautionTags: readonly CautionTag[] };
+  endurance: {
+    lowerBodyRegions: readonly BodyRegion[];
+    fromIntensity: PainIntensity;
+    minutesFactor: number;
+    effortMax: number;
+    minMinutes: number;
+  };
+};
+
+/**
+ * Mindestfassung der Einwilligung `health_data` für den Schmerz-/Verletzungsmodus: erst Fassung 2 nennt die Einträge
+ * (20261025120300_health_consent_v2_training_modes.sql). Solange Fassung 2 in der Datenbank ein unveröffentlichter
+ * Entwurf ist, ist der Modus im Supabase-Modus gesperrt (Server-Prüfung in pain_episodes, sync: db-sync.test.ts);
+ * der Testmodus nutzt Fassung 2 schon. Wie SUPPLEMENT_HEALTH_CONSENT_MIN_VERSION. Rechtsgrundlage: Art. 9 Abs. 2
+ * lit. a DSGVO (Zweckbindung, Art. 5 Abs. 1 lit. b).
+ */
+export const PAIN_MODE_HEALTH_CONSENT_MIN_VERSION = 2;
+
+/**
+ * Reise-Modus (docs/PLAN-TRAINING-MODI.md 4). Der gespeicherte Plan bleibt unverändert; nur die Anzeige der Tage im
+ * Zeitraum tauscht auf die Reise-Geräte (dieselbe Ersatz-Kette wie beim Erzeugen, findSubstitute) und kürzt optional
+ * auf die Reise-Minuten (fitSessionToMinutes). Nach dem letzten Tag gilt automatisch wieder der normale Plan.
+ * - `equipment`: Geräte-IDs je Auswahl. Hotel-Gym = Kurzhanteln, Flachbank, Laufband, Rad-Ergometer (typische
+ *   Ausstattung, bewusst knapp – eher zu wenig als zu viel). Schlingentrainer: Gerät `suspension_trainer`; solange es
+ *   keine Übungen dafür gibt, bleiben nur Körpergewicht-Übungen machbar (Rückfall auf Körpergewicht).
+ * - `maxDays` 42: längster Zeitraum (6 Wochen); für längere Reisen besser einen neuen Plan erstellen.
+ * - `maxStartAheadDays` 365: Beginn höchstens ein Jahr im Voraus.
+ * - `minutesOptions`: wählbare kürzere Dauer je Einheit (optional).
+ * PRODUKTENTSCHEIDUNG.
+ */
+export const TRAVEL_MODE = {
+  equipment: {
+    bodyweight: [],
+    dumbbells: ['dumbbells'],
+    hotel_gym: ['dumbbells', 'flat_bench', 'treadmill', 'bike_ergometer'],
+    band: ['resistance_bands'],
+    // Noch keine Schlingentrainer-Übungen (eigenes späteres Paket) → praktisch Körpergewicht-Übungen.
+    suspension_trainer: ['suspension_trainer'],
+  },
+  maxDays: 42,
+  maxStartAheadDays: 365,
+  minutesOptions: [20, 30, 45, 60],
+} as const satisfies {
+  equipment: Record<TravelEquipment, readonly string[]>;
+  maxDays: number;
+  maxStartAheadDays: number;
+  minutesOptions: readonly number[];
+};
+
+/**
+ * Aufwärmen & Dehnen (docs/PLAN-TRAINING-MODI.md 5): je Kraft-Einheit ~5 min Aufwärmen davor (allgemein + speziell
+ * für die Hauptmuskeln des Tages) und ~5 min Beweglichkeit danach – aus der Übungs-Bibliothek zusammengesetzt.
+ * - allgemein: höchstens `maxGeneral` Übung mit Muster `conditioning` ohne Sprünge (`high_impact`), `generalSeconds`.
+ * - speziell: dynamische Beweglichkeit (Muster `mobility` mit Wiederholungen) für die Hauptmuskeln, je
+ *   `mobilityReps` Wdh. (≈ `mobilitySecondsPerItem`); dazu `rampSets` leichte Aufwärmsätze der ersten Grundübung mit
+ *   ~`rampWeightFraction` des Gewichts bzw. der halben Wiederholungszahl.
+ * - danach: gehaltene Dehnungen (Muster `mobility`, Belastungsart Zeit) für die trainierten Muskeln, je
+ *   `stretchSeconds`, höchstens `maxStretches`.
+ * - Fehlen freigegebene Übungen, nimmt die App den Aufwärm-/Cool-down-Text der Vorlage (kein leerer Block).
+ * Orientierung: Fradkin AJ et al. (2010), „Effects of warming-up on physical performance: a systematic review with
+ * meta-analysis“, J Strength Cond Res 24(1):140–148; Behm DG et al. (2016), „Acute effects of muscle stretching on
+ * physical performance, range of motion, and injury incidence in healthy active individuals“, Appl Physiol Nutr
+ * Metab 41(1):1–11 (vorher dynamisch, gehaltenes Dehnen danach). Werte PRODUKTENTSCHEIDUNG.
+ */
+export const WARMUP_RULES = {
+  targetMinutes: 5,
+  cooldownMinutes: 5,
+  generalSeconds: 90,
+  maxGeneral: 1,
+  mobilityReps: 10,
+  mobilitySecondsPerItem: 40,
+  maxMobility: 3,
+  rampSets: 2,
+  rampWeightFraction: 0.5,
+  rampSecondsPerSet: 45,
+  maxRampExercises: 1,
+  stretchSeconds: 45,
+  maxStretches: 5,
+  mainMuscles: 3,
 } as const;

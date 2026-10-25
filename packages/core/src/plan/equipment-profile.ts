@@ -119,6 +119,11 @@ export interface SubstituteContext {
   readonly rules: Pick<PlanSafetyRules, 'excludedCautionTags' | 'cautious'>;
   /** IDs, die nicht (noch einmal) eingesetzt werden dürfen – z. B. schon in der Einheit vorhandene Übungen. */
   readonly exclude?: ReadonlySet<string>;
+  /**
+   * Zusätzliche Sperre (Schmerz-/Verletzungsmodus, docs/PLAN-TRAINING-MODI.md 3): gesperrte Übungen gelten wie
+   * nicht erlaubte (Grund `safety`) und kommen nie als Ersatz. Weggelassen → unverändert.
+   */
+  readonly blocked?: (exercise: Exercise) => boolean;
 }
 
 const compareIds = (a: Exercise, b: Exercise) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
@@ -136,7 +141,8 @@ function sharesPrimaryMuscle(a: Exercise, b: Exercise): boolean {
  */
 export function findSubstitute(original: Exercise, ctx: SubstituteContext): Substitute | null {
   const feasible = isExerciseFeasible(original, ctx.profile);
-  const allowed = isExerciseAllowed(original, ctx.rules);
+  const blocked = ctx.blocked ?? (() => false);
+  const allowed = isExerciseAllowed(original, ctx.rules) && !blocked(original);
   if (feasible && allowed) {
     return { exercise: original, step: 1, reason: null };
   }
@@ -149,7 +155,8 @@ export function findSubstitute(original: Exercise, ctx: SubstituteContext): Subs
     (candidate.load_type === 'time') === isTime &&
     candidate.difficulty <= original.difficulty &&
     isExerciseFeasible(candidate, ctx.profile) &&
-    isExerciseAllowed(candidate, ctx.rules);
+    isExerciseAllowed(candidate, ctx.rules) &&
+    !blocked(candidate);
 
   const sortAlternatives = (alternatives: Exercise['alternatives']) =>
     [...alternatives].sort((a, b) => {
@@ -192,7 +199,10 @@ export function findSubstitute(original: Exercise, ctx: SubstituteContext): Subs
   if (samePattern[0]) {
     return { exercise: samePattern[0], step: 4, reason };
   }
-  const anyPattern = [...pool].sort(rank);
+  // Schritt 5 nie auf eine Beweglichkeitsübung (Dehnung) – sie ersetzt keine Kraftübung (docs/PLAN-TRAINING-MODI.md 5).
+  const anyPattern = pool
+    .filter((c) => c.movement_pattern !== 'mobility' || original.movement_pattern === 'mobility')
+    .sort(rank);
   if (anyPattern[0]) {
     return { exercise: anyPattern[0], step: 5, reason };
   }

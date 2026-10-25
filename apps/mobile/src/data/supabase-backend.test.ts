@@ -1694,6 +1694,9 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'shoes',
       'shoe_defaults',
       'shoe_assignments',
+      // Trainings-Modi
+      'pain_episodes',
+      'travel_modes',
     ];
     const exported = {
       format_version: 1,

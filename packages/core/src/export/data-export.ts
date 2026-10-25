@@ -92,6 +92,10 @@ export const DATA_EXPORT_TABLES = [
   'shoes',
   'shoe_defaults',
   'shoe_assignments',
+  // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 7): Schmerz-Einträge (Gesundheitsdaten, beim Widerruf gelöscht) und
+  // Reise-Zeiträume
+  'pain_episodes',
+  'travel_modes',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

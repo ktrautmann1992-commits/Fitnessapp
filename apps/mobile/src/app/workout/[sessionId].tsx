@@ -115,6 +115,9 @@ import {
   weightText,
   perPieceText,
 } from '@/lib/workout-format';
+import { ModeNoticesBlock, RoutineBlock } from '@/components/training-modes';
+import { routineFor } from '@/data/training-routine';
+import { useTrainingModes, useWarmupSetting } from '@/state/use-training-modes';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useRecoveryChoice } from '@/state/use-recovery';
@@ -142,6 +145,13 @@ export default function WorkoutScreen() {
     dateParam !== null && dateParam !== entryToday && dateParam !== todayIso() ? dateParam : null;
   const router = useRouter();
   const app = useApp();
+  // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 5/6): gleiche Übungen wie „Heute“, Aufwärmen & Dehnen.
+  const trainingModes = useTrainingModes();
+  const warmupSetting = useWarmupSetting();
+  const [routineSkipped, setRoutineSkipped] = useState<{ warmup: boolean; cooldown: boolean }>({
+    warmup: false,
+    cooldown: false,
+  });
   const today = todayIso();
   // Zurück zu „Heute“ (der Trainingsmodus wird von dort geöffnet) – nie zwei „Heute“ im Stapel.
   const goToday = () => (router.canGoBack() ? router.back() : router.replace('/today'));
@@ -191,6 +201,7 @@ export default function WorkoutScreen() {
     backfillDate === null &&
     rows !== null &&
     !logForSession(rows, sessionId);
+  const modesLoading = trainingModes.load.kind === 'loading';
   const view = useMemo(
     () =>
       rows && lib && rules
@@ -202,6 +213,8 @@ export default function WorkoutScreen() {
             // Live-Anpassung (Phase 4b): wirksame Zustands-Vorgaben (Testmodus mit „Premium simulieren“).
             stateOverrides: rows ? stateOverridesFor(rows, app.liveAdjust.adjustments) : undefined,
             lighter,
+            // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 6.3): gleiche Übungen wie „Heute“.
+            modes: trainingModes.state,
           })
         : null,
     [
@@ -214,6 +227,7 @@ export default function WorkoutScreen() {
       sessionId,
       today,
       lighter,
+      trainingModes.state,
     ],
   );
   // Neuer Entwurf erst beim ersten Tipp gespeichert (vorher bleibt nichts liegen, wenn man nur hineinschaut).
@@ -251,13 +265,16 @@ export default function WorkoutScreen() {
         ? newEnduranceDraft(rows, sessionId, { ...meta, lighter })
         : null;
     }
-    if (!view) return null;
+    // Erst mit geladenen Trainings-Modi (Schon-/Reise-Modus) einen neuen Entwurf bilden – sonst stünden darin
+    // kurz die Übungen ohne Modus.
+    if (!view || modesLoading) return null;
     return newWorkoutDraft(rows, view, meta);
   }, [
     app.session,
     backfillDate,
     editRequested,
     entryToday,
+    modesLoading,
     rows,
     sessionId,
     stored,
@@ -311,6 +328,7 @@ export default function WorkoutScreen() {
           today,
           daySwaps: null,
           ownerUserId: null,
+          modes: trainingModes.state,
         }).shown.session
       : null;
   const timerSteps = timerSession?.workout_steps ?? null;
@@ -327,7 +345,7 @@ export default function WorkoutScreen() {
   );
 
   if (!draft) {
-    const waiting = library.kind === 'loading' || library.kind === 'idle';
+    const waiting = library.kind === 'loading' || library.kind === 'idle' || modesLoading;
     const notStartable =
       session &&
       !editRequested &&
@@ -361,6 +379,17 @@ export default function WorkoutScreen() {
 
   const current = draft;
   const now = () => new Date().toISOString();
+  // Aufwärmen & Dehnen (docs/PLAN-TRAINING-MODI.md 5): nur geplante Kraft-Einheiten, abschaltbar in den Einstellungen.
+  const routine =
+    warmupSetting.enabled && view
+      ? routineFor({
+          shown: view.shown.session,
+          display: view.display,
+          library: lib,
+          rules,
+          modes: trainingModes.state,
+        })
+      : null;
   function update(next: WorkoutDraft, keepFeedback = false) {
     setLocalDraft(next);
     setError(undefined);
@@ -621,6 +650,7 @@ export default function WorkoutScreen() {
               ownerUserId,
               stateOverrides: stateOverridesFor(nextRows, app.liveAdjust.adjustments),
               lighter,
+              modes: trainingModes.state,
             })
           : null;
       const replanned = nextView ? replannedTarget(nextView, exercise) : null;
@@ -781,6 +811,21 @@ export default function WorkoutScreen() {
         />
       ) : null}
 
+      {routine && !isEndurance && !isFree && !current.editing ? (
+        <RoutineBlock
+          part="warmup"
+          routine={routine}
+          fallbackText={view?.stored.warmup_de ?? ''}
+          skipped={routineSkipped.warmup}
+          onSkip={() => setRoutineSkipped((s) => ({ ...s, warmup: true }))}
+          onShow={() => setRoutineSkipped((s) => ({ ...s, warmup: false }))}
+          library={lib?.exercises ?? null}
+        />
+      ) : null}
+      {view?.shown.modeNotices && view.shown.modeNotices.length > 0 && !current.editing ? (
+        <ModeNoticesBlock shown={view.shown} />
+      ) : null}
+
       {current.exercises.map((exercise, index) => (
         <ExerciseCard
           key={exercise.id}
@@ -836,6 +881,18 @@ export default function WorkoutScreen() {
           tone={swapFeedback.tone}
           onUndo={swapFeedback.undo ? () => void undoSwap() : null}
           undoBusy={swapBusy}
+        />
+      ) : null}
+
+      {routine && !isEndurance && !isFree && !current.editing ? (
+        <RoutineBlock
+          part="cooldown"
+          routine={routine}
+          fallbackText={view?.stored.cooldown_de ?? ''}
+          skipped={routineSkipped.cooldown}
+          onSkip={() => setRoutineSkipped((s) => ({ ...s, cooldown: true }))}
+          onShow={() => setRoutineSkipped((s) => ({ ...s, cooldown: false }))}
+          library={lib?.exercises ?? null}
         />
       ) : null}
 

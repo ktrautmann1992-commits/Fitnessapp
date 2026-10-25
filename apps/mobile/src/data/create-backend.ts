@@ -18,6 +18,12 @@ import { createLocalBackend } from './local-backend';
 import { readWebUrl } from './food-photo-remote';
 import { attachShoes, createLocalShoes, createRemoteShoes } from './shoes';
 import { createSupabaseBackend } from './supabase-backend';
+import {
+  attachTrainingModes,
+  createLocalTrainingModes,
+  createRemoteTrainingModes,
+} from './training-modes';
+import { createTrainingModesStore } from './training-modes-store';
 import type { ConsentPlatform } from './types';
 
 /** Gerätespeicher: AsyncStorage (im Browser localStorage). */
@@ -94,7 +100,11 @@ export function createBackend(): Backend {
         logWindowStart: () => backend.logHistoryStart() ?? todayIso(),
       }),
     );
-    return attachCycle(backend, createRemoteCycle({ client, stores: cycleStores }));
+    // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 7): Tabellen pain_episodes/travel_modes, eigener geschützter Speicher.
+    return attachTrainingModes(
+      attachCycle(backend, createRemoteCycle({ client, stores: cycleStores })),
+      createRemoteTrainingModes({ client, store: createTrainingModesStore(), newId }),
+    );
   }
   // Testmodus: einzige Stelle, an der die Plan-Engine Entwürfe nutzen darf (allowDrafts in createLocalBackend).
   const local = createLocalBackend(deviceStore, {
@@ -109,5 +119,8 @@ export function createBackend(): Backend {
     routeRecordingStore: stores.routeRecording,
   });
   attachShoes(local, createLocalShoes(deviceStore, local));
-  return attachCycle(local, createLocalCycle(cycleStores));
+  return attachTrainingModes(
+    attachCycle(local, createLocalCycle(cycleStores)),
+    createLocalTrainingModes({ store: createTrainingModesStore(), now, newId }),
+  );
 }

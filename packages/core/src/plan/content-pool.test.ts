@@ -16,7 +16,7 @@ describe('selectPlanContent', () => {
     expect(live.exercises.size).toBe(0);
     const test = selectPlanContent(result, { allowDrafts: true });
     expect(test.templates).toHaveLength(42); // 24 Startbestand + 18 Körpergewicht (K2)
-    expect(test.exercises.size).toBe(80); // 52 Startbestand + 27 Körpergewicht (K1) + Handtuch-Latziehen (K2)
+    expect(test.exercises.size).toBe(96); // 52 Startbestand + 27 Körpergewicht (K1) + Handtuch-Latziehen (K2) + 16 Aufwärmen/Dehnen (Trainings-Modi)
     expect(test.containsDrafts).toBe(true);
   });
 
@@ -25,7 +25,7 @@ describe('selectPlanContent', () => {
     for (const allowDrafts of [false, true]) {
       const library = selectPlanContent(result, { allowDrafts });
       expect(library.templates).toHaveLength(42);
-      expect(library.exercises.size).toBe(80);
+      expect(library.exercises.size).toBe(96);
       expect(library.containsDrafts).toBe(false);
     }
   });
@@ -38,7 +38,7 @@ describe('selectPlanContent', () => {
     expect(live.containsDrafts).toBe(false);
     const test = repoLibrary();
     expect(test.templates).toHaveLength(42);
-    expect(test.exercises.size).toBe(80);
+    expect(test.exercises.size).toBe(96);
     expect(test.containsDrafts).toBe(
       [...result.exercises, ...result.templates].some((item) => item.status === 'draft'),
     );

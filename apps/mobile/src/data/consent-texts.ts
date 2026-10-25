@@ -6,7 +6,8 @@ import type { ConsentDocument } from './types';
  * Wörtliche Kopie aus supabase/migrations/20261003120800_seed_consent_documents.sql (terms, privacy),
  * 20261016160100_ai_food_photo.sql (ai_food_photo, Etappe E3), 20261023120100_wearable_routes.sql (wearable_data Fassung 2 mit Routen, 23.10.2026),
  * 20261025120000_recovery_hrv.sql (wearable_data Fassung 3 mit HRV und „Erholung“, 25.10.2026)
- * 20261021130200_supplement_user_data.sql (health_data Fassung 2, Supplement-Modul SU3) und
+ * 20261021130200_supplement_user_data.sql (health_data Fassung 2, Supplement-Modul SU3; Entwurf ergänzt in
+ * 20261025120300_health_consent_v2_training_modes.sql um den Schmerz-/Verletzungsmodus) und
  * 20261021140000_cycle_module.sql (cycle_data, Phase 9) – consent-texts.test.ts
  * bricht ab, wenn sie auseinanderlaufen. In der Datenbank ist health_data Fassung 2 bis zur juristischen Prüfung ein
  * unveröffentlichter Entwurf; der Testmodus nutzt sie schon (Supplement-Check testbar, Testschalter „Einwilligung nur
@@ -78,15 +79,16 @@ Damit wir deine Pläne sicher und passend erstellen können, möchten wir folgen
 - deine Antworten im Gesundheits-Check (z. B. Herz-Kreislauf, Schwangerschaft, Beschwerden, Medikamente), die daraus abgeleiteten Hinweise (z. B. „vorsichtiger Plan“) und den Verlauf früherer Checks,
 - Lebensmittel-Unverträglichkeiten,
 - deine Antworten im Supplement-Check (Nieren, Stillzeit, Herzrhythmus, Empfindlichkeit für Koffein, optional deine Einschätzung, ob du dein Eiweißziel über das Essen schaffst),
-- deine Auswahl unter „Meine Supplements“ („Nehme ich“ oder „Nicht für mich“).
+- deine Auswahl unter „Meine Supplements“ („Nehme ich“ oder „Nicht für mich“),
+- deine Angaben im Schmerz-/Verletzungsmodus: Körperregion (z. B. Knie, Schulter), Stärke (leicht, mittel, stark), Dauer und Beginn – ohne Freitext und ohne Diagnose. Diese Einträge löschen wir spätestens nach 12 Monaten.
 
-Wofür: ausschließlich zur Berechnung deiner Trainings- und Ernährungspläne (z. B. Kalorienbedarf, vorsichtigere Pläne bei gesundheitlichen Auffälligkeiten) und für Supplement-Hinweise – auch, um Shop-Links auszublenden, wenn eine Ergänzung bei deinen Angaben nicht passt. Keine Weitergabe an Analyse-, Werbe- oder Affiliate-Partner. Shops und Partnernetzwerke erhalten keine dieser Angaben.
+Wofür: ausschließlich zur Berechnung deiner Trainings- und Ernährungspläne (z. B. Kalorienbedarf, vorsichtigere Pläne bei gesundheitlichen Auffälligkeiten) und für Supplement-Hinweise – im Schmerz-/Verletzungsmodus auch, um belastende Übungen für einige Tage gegen schonendere zu tauschen und dir zu raten, Beschwerden ärztlich abklären zu lassen, und – auch, um Shop-Links auszublenden, wenn eine Ergänzung bei deinen Angaben nicht passt. Keine Weitergabe an Analyse-, Werbe- oder Affiliate-Partner. Shops und Partnernetzwerke erhalten keine dieser Angaben.
 
 Rechtsgrundlage: deine ausdrückliche Einwilligung nach Art. 9 Abs. 2 lit. a DSGVO (Schweiz: revDSG).
 
 Freiwillig: Du kannst die App auch ohne diese Einwilligung nutzen. Dann erhältst du nur allgemeine Pläne ohne Körperdaten und ohne Gesundheits-Check und bei Supplementen nur allgemeine Informationen.
 
-Widerruf: Du kannst die Einwilligung jederzeit in den Einstellungen widerrufen. Dann löschen wir sofort alle oben genannten Daten – Körperdaten, Körperumfänge, alle Gesundheits-Checks samt Verlauf, Unverträglichkeiten, den Supplement-Check und „Meine Supplements“. Deine übrigen Angaben (z. B. Ziel, Ernährungsform, Vorlieben, Mess-Erinnerung) bleiben erhalten. Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.
+Widerruf: Du kannst die Einwilligung jederzeit in den Einstellungen widerrufen. Dann löschen wir sofort alle oben genannten Daten – Körperdaten, Körperumfänge, alle Gesundheits-Checks samt Verlauf, Unverträglichkeiten, den Supplement-Check, „Meine Supplements“ und die Einträge im Schmerz-/Verletzungsmodus. Deine übrigen Angaben (z. B. Ziel, Ernährungsform, Vorlieben, Mess-Erinnerung) bleiben erhalten. Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.
 
 Neue Fassung: Ändern wir diesen Text, fragen wir dich erneut. Bis du zustimmst, bleiben deine bisherigen Daten sichtbar, können aber nicht ergänzt oder geändert werden.`,
   },

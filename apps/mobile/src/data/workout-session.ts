@@ -1,6 +1,7 @@
 import {
   canCatchUp,
   type DaySwap,
+  displayModesOn,
   type EquipmentProfile,
   type ExerciseProgress,
   experienceLevelSchema,
@@ -13,7 +14,9 @@ import {
   type DisplaySession,
   type PlanExerciseContext,
   planWorkoutExercise,
+  restrictWorkoutItems,
   type StoredSession,
+  type TrainingModesState,
   weeklySetRange,
   type WorkoutItem,
 } from '@fitnessapp/core';
@@ -71,6 +74,8 @@ export function workoutView(
      * Sicherheitsregeln laufen danach unverändert. Nur für heute; der gespeicherte Plan bleibt.
      */
     lighter?: boolean;
+    /** Trainings-Modi (docs/PLAN-TRAINING-MODI.md 6.3): gleiche Anzeige wie „Heute“, Alternativen eingeschränkt. */
+    modes?: TrainingModesState | null;
   } = {},
 ): WorkoutView | null {
   const active = activePlan(rows);
@@ -90,8 +95,14 @@ export function workoutView(
     today,
     daySwaps: options.daySwaps ?? null,
     ownerUserId: options.ownerUserId ?? null,
+    modes: options.modes ?? null,
   });
-  const profile = display.profiles.get(display.location.location) as EquipmentProfile;
+  const modes = displayModesOn(options.modes ?? null, stored.scheduled_on);
+  const placeProfile = display.profiles.get(display.location.location) as EquipmentProfile;
+  // Reise-Modus: Geräte unterwegs (Gewichtsstufen bleiben die bekannten), sonst das Profil des Orts.
+  const profile: EquipmentProfile = modes.travel
+    ? { ...placeProfile, available: modes.travel.available }
+    : placeProfile;
   const shown = display.shown;
   const preferences = preferencesFromRows(rows);
   const template = library.templates.find((tpl) => tpl.id === active.plan.template_id);
@@ -146,7 +157,7 @@ export function workoutView(
         }
       : {}),
   };
-  const items = planWorkout(stored, shown, active.sessions, context);
+  const items = restrictWorkoutItems(planWorkout(stored, shown, active.sessions, context), modes);
   return { active, stored, shown, profile, items, context, display };
 }
 

@@ -317,6 +317,20 @@ Datenbank noch App.
 - Der Server prüft dieselben Grenzen mit Schutz-Triggern auf `planned_exercises`/`planned_sessions` (jeder Schreibweg)
   und in `private.fast_increase_exclusion` (pgTAP `80_active_aging.test.sql`).
 
+### 4.3 Trainings-Modi: Schon-Modus, Reise-Modus, Aufwärmen & Dehnen (Gratis, ohne KI)
+Gründer-Freigabe 25.10.2026, Details und Entscheidungen: `docs/PLAN-TRAINING-MODI.md`, Logik `packages/core/src/modes/`.
+- **Schon-Modus (Schmerz/Verletzung):** Stelle (Knie, Schulter, unterer Rücken, Ellenbogen, Handgelenk, Hüfte,
+  Sprunggelenk, Nacken) auf der Körperkarte oder in der Liste, Stärke leicht/mittel/stark, 3/7/14 Tage. Die Anzeige
+  tauscht belastende Übungen gegen schonendere (`PAIN_REGION_LOAD`), senkt Sätze/RPE und endet automatisch. „stark“,
+  mehr als 14 Tage am Stück oder wiederkehrend → „Bitte ärztlich abklären lassen“ und konservativer Plan. Keine
+  Diagnose. Gesundheitsdatum: Einwilligung `health_data` Fassung ≥ 2, Tabelle `pain_episodes` mit RLS, Widerruf
+  löscht, Export, Löschung nach 12 Monaten.
+- **Reise-Modus:** Zeitraum + Geräte (nur Körpergewicht, Kurzhanteln, Hotel-Gym, Widerstandsband, Schlingentrainer –
+  ohne eigene Übungen vorerst wie Körpergewicht) + optional kürzere Einheiten; Banner „Reise-Modus bis …“; der Plan
+  bleibt gespeichert, die Anzeige gilt nur im Zeitraum.
+- **Aufwärmen & Dehnen:** je Kraft-Einheit ~5 min davor und ~5 min danach aus der Bibliothek, Schalter in den
+  Einstellungen, „Überspringen“ im Training; ohne freigegebene Übungen der Vorlagen-Text.
+
 ## 5. Tagesansicht & Trainingstagebuch
 
 **App-Aufbau seit 18.10.2026 (`docs/PLAN-DASHBOARD.md`):** Ohne Sitzung zeigt die App den **Startbildschirm** mit zwei
@@ -1342,6 +1356,7 @@ Workflow `beta-grant` → Funktion `premium_open` → `flag_aus` (danach gilt wi
 | Monats-Challenges | Ja | Ja |
 | Einfache Progression (Gewicht steigt bei geschafften Wdh.) | Ja | Ja |
 | Live-Anpassung des Plans (alle Regeln aus Abschnitt 4.1) | Nein | Ja |
+| Schon-Modus, Reise-Modus, Aufwärmen & Dehnen (4.3, feste Regeln ohne KI) | Ja | Ja |
 | Gerichte vor, während und nach dem Training | Nein | Ja |
 | Kalorien per Foto (KI) | Nein | Ja |
 | Körperfoto-Analyse (KI) | Nein | Ja |

@@ -1,0 +1,38 @@
+{
+  "id": "lat-dehnung-stehend",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Seitliche Rumpfdehnung im Stand",
+  "name_en": "Standing Lat Stretch",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["obliques"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["overhead"],
+  "description_de": "Einen Arm über den Kopf strecken und den Oberkörper sanft zur Seite neigen. Dehnt den breiten Rückenmuskel nach Zugübungen.",
+  "steps_de": [
+    "Aufrecht stehen, Füße hüftbreit.",
+    "Einen Arm nach oben strecken, die andere Hand an die Hüfte.",
+    "Den Oberkörper langsam zur Gegenseite neigen und halten.",
+    "Danach die Seite wechseln."
+  ],
+  "tips_de": ["Lang machen statt nur zur Seite kippen."],
+  "common_mistakes_de": ["Nach vorn oder hinten wegdrehen."],
+  "safety_note_de": "Nur bis zu einem deutlichen, aber angenehmen Ziehen dehnen, nicht wippen. Bei Schmerzen, Kribbeln oder ungewohnten Beschwerden die Dehnung lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Trainings-Modi (Aufwärmen & Dehnen, docs/PLAN-TRAINING-MODI.md 5) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

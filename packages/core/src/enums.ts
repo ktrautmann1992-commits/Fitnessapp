@@ -407,3 +407,42 @@ export type WearableProvider = (typeof WEARABLE_PROVIDERS)[number];
  */
 export const WEARABLE_CONNECTION_STATUSES = ['connected', 'permission_missing'] as const;
 export type WearableConnectionStatus = (typeof WEARABLE_CONNECTION_STATUSES)[number];
+
+// ---------------------------------------------------------------------------------------------------------
+// Trainings-Modi (docs/PLAN-TRAINING-MODI.md; Gründer-Freigabe 25.10.2026,
+// 20261025120000_training_modes.sql): Schmerz-/Verletzungsmodus, Reise-Modus.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Körperregionen des Schmerz-/Verletzungsmodus (Körperkarte vorn/hinten). Nur Orte, keine Diagnosen. Postgres-Enum
+ * `body_region` (gleiche Reihenfolge, db-sync).
+ */
+export const BODY_REGIONS = [
+  'knee',
+  'shoulder',
+  'lower_back',
+  'elbow',
+  'wrist',
+  'hip',
+  'ankle',
+  'neck',
+] as const;
+export type BodyRegion = (typeof BODY_REGIONS)[number];
+
+/** Stärke der Beschwerden (Selbsteinschätzung leicht/mittel/stark). Postgres-Enum `pain_intensity`. */
+export const PAIN_INTENSITIES = ['mild', 'moderate', 'severe'] as const;
+export type PainIntensity = (typeof PAIN_INTENSITIES)[number];
+
+/**
+ * Geräte im Reise-Modus: nur Körpergewicht, Kurzhanteln, Hotel-Gym, Widerstandsband, Schlingentrainer
+ * (markenneutral). Postgres-Enum `travel_equipment`. Welche Geräte-IDs dahinterstehen, steht in
+ * TRAVEL_MODE.equipment (constants.ts).
+ */
+export const TRAVEL_EQUIPMENT_OPTIONS = [
+  'bodyweight',
+  'dumbbells',
+  'hotel_gym',
+  'band',
+  'suspension_trainer',
+] as const;
+export type TravelEquipment = (typeof TRAVEL_EQUIPMENT_OPTIONS)[number];

@@ -19,6 +19,8 @@ import { ListGroup, ListRow, SectionLabel } from '@/components/design';
 import { Body, Button, Card, Checkbox, LoadingState, Notice, TextField } from '@/components/ui';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
+import { deModes } from '@/i18n/de-training-modes';
+import { useWarmupSetting } from '@/state/use-training-modes';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe } from '@/lib/format';
 import { useAccessibility } from '@/lib/accessibility';
@@ -37,6 +39,7 @@ type DialogKind = 'clear' | 'recreate' | null;
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const warmupSetting = useWarmupSetting();
   const app = useApp();
   const [dialog, setDialog] = useState<DialogKind>(null);
   const [busy, setBusy] = useState(false);
@@ -332,6 +335,35 @@ export default function SettingsScreen() {
           />
         ) : null}
       </ListGroup>
+
+      {/* Trainings-Modi (docs/PLAN-TRAINING-MODI.md): Schon-Modus, Reise-Modus, Aufwärmen & Dehnen. */}
+      <SectionLabel>{deModes.settings.section}</SectionLabel>
+      <ListGroup>
+        <ListRow
+          icon="alert"
+          label={deModes.settings.pain}
+          description={deModes.settings.painDescription}
+          onPress={() => router.push('/schmerz-modus' as Href)}
+          testID="settings-pain-mode"
+        />
+        <ListRow
+          icon="map"
+          label={deModes.settings.travel}
+          description={deModes.settings.travelDescription}
+          onPress={() => router.push('/reise-modus' as Href)}
+          testID="settings-travel-mode"
+          last
+        />
+      </ListGroup>
+      <Card>
+        <Checkbox
+          label={deModes.settings.warmup}
+          checked={warmupSetting.enabled}
+          onChange={(value) => void warmupSetting.setEnabled(value).catch(() => undefined)}
+          testID="settings-warmup"
+        />
+        <Body muted>{deModes.settings.warmupHint}</Body>
+      </Card>
 
       {/* Phase 8: Smartwatch (Galaxy Watch über Health Connect). */}
       <SectionLabel>{t.wearables.settingsTitle}</SectionLabel>

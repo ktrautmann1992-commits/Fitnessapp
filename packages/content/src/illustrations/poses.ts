@@ -1184,4 +1184,122 @@ export const EXERCISE_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustratio
     pose: front({ near: [-96, -93], far: [-84, -87] }, [], { near: [-87, -90], far: [-93, -90] }),
     alt: 'Ausgangsposition: von vorn – aufrecht stehen, Füße zusammen, Arme seitlich am Körper.',
   },
+
+  // --- Aufwärmen & Dehnen (Trainings-Modi, Entwürfe, docs/PLAN-TRAINING-MODI.md 5) ---------------------------------
+  'marschieren-auf-der-stelle': {
+    pose: front({ near: [-96, -93], far: [-84, -87] }, [], { near: [-88, -90], far: [-92, -90] }),
+    alt: 'Ausgangsposition: von vorn – aufrecht stehen, Füße hüftbreit, Arme locker neben dem Körper.',
+  },
+  armkreisen: {
+    pose: front({ near: [180, 180], far: [0, 0] }, [], { near: [-88, -90], far: [-92, -90] }),
+    alt: 'Ausgangsposition: von vorn – aufrecht stehen, Füße hüftbreit, beide Arme seitlich auf Schulterhöhe gestreckt.',
+  },
+  'schulterblatt-kreisen': {
+    pose: front({ near: [-96, -93], far: [-84, -87] }, [], { near: [-88, -90], far: [-92, -90] }),
+    alt: 'Ausgangsposition: von vorn – aufrecht stehen, Arme hängen locker, Schultern entspannt.',
+  },
+  'hueftkreisen-stehend': {
+    pose: {
+      view: 'side',
+      torso: 90,
+      near: { arm: [-12, 2, 80], leg: [-89, -90, 0] },
+      far: { arm: [-80, -88], leg: [0, -90, 0] },
+      props: [wall(46, 8)],
+    },
+    alt: 'Ausgangsposition: aufrecht neben einer Wand stehen, eine Hand an der Wand, das andere Knie auf Hüfthöhe angehoben.',
+  },
+  'beinpendel-stehend': {
+    pose: {
+      view: 'side',
+      torso: 90,
+      near: { arm: [-12, 2, 80], leg: [-89, -90, 0] },
+      far: { arm: [-80, -88], leg: [-70, -72, 0] },
+      props: [wall(46, 8)],
+    },
+    alt: 'Ausgangsposition: aufrecht neben einer Wand stehen, eine Hand an der Wand, das freie Bein locker leicht nach vorn gependelt.',
+  },
+  'katze-kuh': {
+    pose: quadruped,
+    alt: 'Ausgangsposition: Vierfüßlerstand, Hände unter den Schultern, Knie unter der Hüfte, Rücken gerade.',
+  },
+  'brustdehnung-tuerrahmen': {
+    pose: stand({ near: [180, 90, 90], far: [-95, -93] }, [wall(-36, 7)]),
+    alt: 'Ausgangsposition: aufrecht im Türrahmen stehen, ein Oberarm auf Schulterhöhe nach hinten, der Unterarm senkrecht am Rahmen.',
+  },
+  'lat-dehnung-stehend': {
+    pose: front({ near: [95, 95], far: [-60, -100] }, [], { near: [-88, -90], far: [-92, -90] }),
+    alt: 'Ausgangsposition: von vorn – aufrecht stehen, ein Arm gestreckt über dem Kopf, die andere Hand an der Hüfte.',
+  },
+  'trizeps-dehnen': {
+    pose: stand({ near: [100, -80, -80], far: [80, 160, 160] }, [], { headOnTop: true }),
+    alt: 'Ausgangsposition: aufrecht stehen, ein Arm über dem Kopf gebeugt, die Hand liegt zwischen den Schulterblättern, die andere Hand am Ellbogen.',
+  },
+  'schulter-rueckseite-dehnen': {
+    pose: front({ near: [-8, -8], far: [-120, 160] }, [], { near: [-88, -90], far: [-92, -90] }),
+    alt: 'Ausgangsposition: von vorn – aufrecht stehen, ein gestreckter Arm quer vor der Brust, die andere Hand oberhalb des Ellbogens.',
+  },
+  'unterarm-dehnen': {
+    pose: stand({ near: [0, 0, 90], far: [-3, -2, -2] }),
+    alt: 'Ausgangsposition: aufrecht stehen, ein Arm gestreckt nach vorn, die Finger zeigen nach oben, die andere Hand fasst die Finger.',
+  },
+  'oberschenkel-vorderseite-dehnen': {
+    pose: {
+      view: 'side',
+      torso: 90,
+      near: { arm: [-12, 2, 80], leg: [-89, -90, 0] },
+      far: { arm: [-118, -100], leg: [-102, 125, 180] },
+      props: [wall(46, 8)],
+    },
+    alt: 'Ausgangsposition: auf einem Bein neben einer Wand stehen, eine Hand an der Wand, die andere Hand hält den Fuß des gebeugten Beins hinter dem Gesäß.',
+  },
+  'beinrueckseite-dehnen-sitzend': {
+    pose: {
+      view: 'side',
+      torso: 80,
+      pelvis: [0, 41],
+      near: {
+        arm: [-60, -60, -60],
+        leg: { ik: [52, 3.5], bend: 'up', end: 90 },
+      },
+      far: {
+        arm: [-62, -62, -62],
+        leg: { ik: [31, 3.5], bend: 'up', end: 0 },
+      },
+      props: [...chair(-22, 1, 33, 28)],
+    },
+    alt: 'Ausgangsposition: auf der vorderen Kante eines Stuhls sitzen, ein Bein gestreckt mit der Ferse am Boden, das andere Knie gebeugt, Rücken gerade.',
+  },
+  'wadendehnung-wand': {
+    pose: {
+      view: 'side',
+      torso: 70,
+      head: 72,
+      pelvis: [0, 64],
+      near: { arm: [20, 20, 90], leg: { ik: [22, 3.5], bend: 'fwd', end: 0 } },
+      far: { arm: [18, 18, 90], leg: { ik: [-34, 3.5], bend: 'fwd', end: 0 } },
+      props: [wall(58, 8)],
+    },
+    alt: 'Ausgangsposition: mit beiden Händen an einer Wand abstützen, ein Bein vorn gebeugt, das hintere Bein gestreckt, die hintere Ferse am Boden.',
+  },
+  'gesaess-dehnen-sitzend': {
+    pose: {
+      view: 'side',
+      torso: 92,
+      pelvis: [0, 41],
+      near: {
+        arm: { ik: [16, 30], bend: 'down', end: 0 },
+        leg: { ik: [24, 30], bend: 'up', end: -20 },
+      },
+      far: {
+        arm: { ik: [14, 30], bend: 'down', end: 0 },
+        leg: { ik: [31, 3.5], bend: 'up', end: 0 },
+      },
+      props: [...chair(-22, 1, 33, 28)],
+    },
+    alt: 'Ausgangsposition: aufrecht auf einem Stuhl sitzen, ein Knöchel liegt auf dem anderen Knie, Rücken gerade.',
+  },
+  'adduktoren-dehnen-stehend': {
+    pose: front({ near: [-115, -95], far: [-72, -60] }, [], { near: [-125, -92], far: [-62, -62] }),
+    alt: 'Ausgangsposition: von vorn – breiter Stand, ein Knie gebeugt, das andere Bein gestreckt, Hände an den Oberschenkeln.',
+  },
 };
