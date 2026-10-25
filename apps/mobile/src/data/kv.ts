@@ -89,6 +89,8 @@ export const STORAGE_KEYS = {
   logAssignments: 'fitnessapp.log-assignments.v1',
   /** Geräte-Einstellung „Bildschirm im Training anlassen“ (true/false, keine Nutzerdaten). */
   keepAwake: 'fitnessapp.keep-awake.v1',
+  /** Geräte-Einstellung „Aufwärmen & Dehnen“ (true/false, Standard an; docs/PLAN-TRAINING-MODI.md 5). */
+  warmupRoutine: 'fitnessapp.warmup-routine.v1',
   /**
    * Geräte-Einstellung lokale Benachrichtigungen (docs/PLAN-PHASE-4B.md 7, Etappe E): Opt-in Mess-Erinnerung und
    * Pausenende sowie „schon gefragt“ (true/false, keine Nutzerdaten). Abmelden und Konto löschen setzen sie zurück.

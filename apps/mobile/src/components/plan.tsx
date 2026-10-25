@@ -6,6 +6,7 @@ import {
   MULTISPORT_TEXTS_DE,
   type PaceProfile,
   type PlanSafetyRules,
+  type SessionRoutine,
   sessionPaceInfo,
   sessionSafetyNotices,
   type StoredSession,
@@ -20,6 +21,8 @@ import { keyPatternTexts, markText } from '@/lib/swap-format';
 import { useThemeColors } from '@/lib/theme';
 
 import { StepList } from './competition';
+import { ModeNoticesBlock, routineSummary } from './training-modes';
+import { deModes } from '@/i18n/de-training-modes';
 import { HeroCard } from './design';
 import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
 import { Text } from '@/components/text';
@@ -49,6 +52,8 @@ export function SessionCard({
   swap,
   paceProfile = null,
   hero = false,
+  swapPaused = false,
+  routine = null,
 }: {
   /** Gespeicherte Einheit (vor den aktuellen Sicherheitsregeln). */
   original: StoredSession;
@@ -73,6 +78,10 @@ export function SessionCard({
   paceProfile?: PaceProfile | null;
   /** Design 20.10.2026: Kopf der Einheit als dunkle Hero-Karte (Training heute), Inhalt darunter als Karte. */
   hero?: boolean;
+  /** Trainings-Modi: Tauschen ausgesetzt, weil ein Modus an diesem Tag wirkt (Hinweis in den Modus-Hinweisen). */
+  swapPaused?: boolean;
+  /** Aufwärmen & Dehnen (docs/PLAN-TRAINING-MODI.md 5): Kurzfassung statt der Vorlagen-Texte; null = Vorlage. */
+  routine?: SessionRoutine | null;
   swap?: {
     enabled: boolean;
     /** Termin nach heute („für dieses Training getauscht“). */
@@ -98,9 +107,16 @@ export function SessionCard({
     <Card>
       {head}
       {session.status === 'skipped' ? <Notice tone="info">{t.plan.skipped}</Notice> : null}
-      <View style={styles.block}>
-        <Text style={[styles.label, { color: theme.text }]}>{t.plan.warmup}</Text>
-        <Body>{session.warmup_de}</Body>
+      <ModeNoticesBlock shown={shown} swapPaused={swapPaused} />
+      <View style={styles.block} testID="plan-warmup">
+        <Text style={[styles.label, { color: theme.text }]}>
+          {routine
+            ? `${t.plan.warmup} (${deModes.warmup.minutes(routine.warmupMinutes)})`
+            : t.plan.warmup}
+        </Text>
+        <Body>
+          {routine ? routineSummary(routine, 'warmup', session.warmup_de) : session.warmup_de}
+        </Body>
       </View>
       {session.kind === 'endurance' ? (
         <View style={styles.block} testID="plan-endurance">
@@ -260,9 +276,15 @@ export function SessionCard({
           ) : null}
         </View>
       )}
-      <View style={styles.block}>
-        <Text style={[styles.label, { color: theme.text }]}>{t.plan.cooldown}</Text>
-        <Body>{session.cooldown_de}</Body>
+      <View style={styles.block} testID="plan-cooldown">
+        <Text style={[styles.label, { color: theme.text }]}>
+          {routine
+            ? `${t.plan.cooldown} (${deModes.warmup.minutes(routine.cooldownMinutes)})`
+            : t.plan.cooldown}
+        </Text>
+        <Body>
+          {routine ? routineSummary(routine, 'cooldown', session.cooldown_de) : session.cooldown_de}
+        </Body>
       </View>
     </Card>
   );

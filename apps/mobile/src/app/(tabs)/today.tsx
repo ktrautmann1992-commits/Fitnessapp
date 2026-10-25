@@ -3,6 +3,7 @@ import {
   blockWeekFor,
   competitionCountdown,
   type DaySwap,
+  modesBanner,
   nextPlannedSession,
   planInfoNotices,
   type PreferenceChange,
@@ -16,6 +17,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { CycleTodayCard } from '@/components/cycle-entry';
+import { ModesBanner } from '@/components/training-modes';
+import { deModes } from '@/i18n/de-training-modes';
 import { CountdownCard, PhaseBand } from '@/components/competition';
 import { FewerDaysCard, SessionAdjustedNotice } from '@/components/live-adjust';
 import { NutritionTodayCard } from '@/components/nutrition';
@@ -50,6 +53,7 @@ import { logForSession } from '@/data/log-rows';
 import type { WorkoutDraft } from '@/data/workout-draft';
 import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
 import { planNoticeFor } from '@/data/training-attention';
+import { routineFor } from '@/data/training-routine';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
@@ -73,6 +77,7 @@ import {
 import { healthConsentStatus, isReminderDue, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { useLargeView } from '@/lib/accessibility';
+import { useTrainingModes, useWarmupSetting } from '@/state/use-training-modes';
 
 const W = t.trainingWeek;
 
@@ -94,6 +99,9 @@ function scrollToTestId(testID: string): void {
 export default function TodayScreen() {
   const router = useRouter();
   const app = useApp();
+  // Trainings-Modi (docs/PLAN-TRAINING-MODI.md): Reise-/Schon-Modus und Aufwärmen & Dehnen.
+  const trainingModes = useTrainingModes();
+  const warmupSetting = useWarmupSetting();
   const theme = useThemeColors();
   const today = todayIso();
   const clock = new Date();
@@ -527,6 +535,7 @@ export default function TodayScreen() {
           today,
           daySwaps: app.daySwaps,
           ownerUserId,
+          modes: trainingModes.state,
         })
       : null;
     // Phase 4: berechnete Vorgabe aus dem Tagebuch (packages/core planWorkout) – nur Kraft, mit Bibliothek.
@@ -538,6 +547,7 @@ export default function TodayScreen() {
             ownerUserId,
             // Live-Anpassung (Phase 4b): wirksame Zustands-Vorgaben (Testmodus mit „Premium simulieren“).
             stateOverrides: stateOverridesFor(rows, app.liveAdjust.adjustments),
+            modes: trainingModes.state,
           })
         : null;
     return {
@@ -786,6 +796,12 @@ export default function TodayScreen() {
       <FewerDaysCard today={today} />
       {/* Phase 9: neutraler Kurzweg zum Tages-Check (ohne Zyklus-Wort, nur bei aktivem Modul, K7). */}
       <CycleTodayCard />
+      {/* Trainings-Modi: „Reise-Modus bis …“ / „Schon-Modus bis …“ (docs/PLAN-TRAINING-MODI.md 6). */}
+      <ModesBanner
+        banner={modesBanner(trainingModes.state, today)}
+        onTravel={() => router.push('/reise-modus' as Href)}
+        onPain={() => router.push('/schmerz-modus' as Href)}
+      />
       {notice.kind !== 'none' ? (
         <Notice
           tone={notice.kind === 'offer' ? 'info' : 'danger'}
@@ -938,6 +954,18 @@ export default function TodayScreen() {
               }
               {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
               paceProfile={paceProfile}
+              swapPaused={display?.modeActive === true && selectedSession.kind === 'strength'}
+              routine={
+                warmupSetting.enabled
+                  ? routineFor({
+                      shown: shown.session,
+                      display,
+                      library: lib,
+                      rules,
+                      modes: trainingModes.state,
+                    })
+                  : null
+              }
               onOpenExercise={(exerciseId) =>
                 router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href)
               }
@@ -1146,7 +1174,9 @@ function TodayHero({
         : info.start === 'today'
           ? t.today.startWorkout
           : t.today.catchUp;
-    const emptyStart = session.kind === 'strength' && shown?.emptyByPreference === true;
+    const emptyStart =
+      session.kind === 'strength' &&
+      (shown?.emptyByPreference === true || shown?.emptyByMode === true);
     const libraryMissing =
       session.kind === 'strength' && (shown === null || shown.libraryMissing || !info.view);
     const canStart = info.start !== null && !info.hasDraft;
@@ -1159,7 +1189,9 @@ function TodayHero({
         testID="today-hero"
         note={
           canStart && emptyStart
-            ? t.swap.emptyStartDisabled
+            ? shown?.emptyByMode
+              ? deModes.notices.pain_session_empty
+              : t.swap.emptyStartDisabled
             : canStart && libraryMissing
               ? t.today.libraryMissingStart
               : null

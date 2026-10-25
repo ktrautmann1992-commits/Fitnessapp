@@ -2,6 +2,7 @@ import {
   canCatchUp,
   daySwapApplies,
   type DaySwap,
+  displayModesOn,
   daySwapSchema,
   displayPairs,
   type DisplaySession,
@@ -23,6 +24,7 @@ import {
   type StoredSession,
   type SwapChoices,
   swapChoices,
+  type TrainingModesState,
 } from '@fitnessapp/core';
 
 import type { PreferenceSwapContext } from './backend';
@@ -72,6 +74,11 @@ export interface SessionDisplay {
    * Wächter T2-S1)? Sonst bietet die App „Nur heute“ nicht an.
    */
   daySwapActive: boolean;
+  /**
+   * Trainings-Modi (docs/PLAN-TRAINING-MODI.md 6): Reise- oder Schmerz-Modus wirkt an diesem Tag. Dann wählt die App
+   * die Übungen selbst – kein Tausch-Dialog (canSwapIn), Hinweis „swapPaused“.
+   */
+  modeActive: boolean;
 }
 
 export interface SessionDisplayInput {
@@ -85,6 +92,8 @@ export interface SessionDisplayInput {
   /** Day-Swaps des Kontos (null = nicht anwenden, z. B. PDF bzw. ohne Konto). */
   daySwaps: readonly DaySwap[] | null;
   ownerUserId: string | null;
+  /** Trainings-Modi der Person (null/fehlt = keine; z. B. PDF). Wirksam am Tag der Einheit. */
+  modes?: TrainingModesState | null;
 }
 
 /**
@@ -116,7 +125,10 @@ export function sessionDisplay(input: SessionDisplayInput): SessionDisplay {
           catchUpToday,
         }
       : null;
+  const modes = input.modes ? displayModesOn(input.modes, session.scheduled_on) : null;
+  const modeActive = modes !== null && (modes.travel != null || modes.pain != null);
   const shown = prepareSessionForDisplay(session, {
+    ...(modeActive && modes ? { modes } : {}),
     rules,
     previousStartGroup: startGroupOf(active, birthDate),
     // Wettkampfplan (WP4): Zahl harter Einheiten je Woche nach dem AKTUELLEN Level (Wächter N3 zu WP2).
@@ -151,6 +163,7 @@ export function sessionDisplay(input: SessionDisplayInput): SessionDisplay {
     profiles,
     swapReady: library !== null,
     daySwapActive: daySwapApplies(session, { today, catchUpToday }),
+    modeActive,
   };
 }
 
@@ -160,7 +173,7 @@ export function sessionDisplay(input: SessionDisplayInput): SessionDisplay {
  */
 export function canSwapIn(
   session: Pick<StoredSession, 'kind' | 'status'>,
-  display: Pick<SessionDisplay, 'shown' | 'swapReady' | 'daySwapActive'>,
+  display: Pick<SessionDisplay, 'shown' | 'swapReady' | 'daySwapActive' | 'modeActive'>,
   hasDraft: boolean,
   /** Backend kann „Ab jetzt immer“ (Testmodus; Supabase ab T3). */
   supportsPreferences: boolean,
@@ -170,6 +183,7 @@ export function canSwapIn(
     session.status === 'planned' &&
     display.swapReady &&
     !display.shown.libraryMissing &&
+    !display.modeActive &&
     !hasDraft &&
     // Vergangener, nicht nachholbarer Termin: „Nur heute“ wirkt dort nie (S1) – bleibt nur „Ab jetzt immer“.
     (display.daySwapActive || supportsPreferences)

@@ -1686,6 +1686,9 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       // Phase 6 SU3
       'supplement_screening',
       'user_supplements',
+      // Trainings-Modi
+      'pain_episodes',
+      'travel_modes',
     ];
     const exported = {
       format_version: 1,
