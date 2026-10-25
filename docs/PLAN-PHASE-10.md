@@ -2264,3 +2264,24 @@ Höhenmeter-Hinweis „mit 120 Hm mehr als sonst“ (ab 40 m und 30 % über dem 
 Kalenderwoche der letzten 8 Wochen (zeitlich, Wochen ohne Einheit = Lücke). `progressVolume`: km dieser Woche/dieses
 Monats. App: Karte „Dein Fortschritt“ auf Ausdauer (neueste Einheit) und auf der Seite jedes Laufs
 (`apps/mobile/src/components/progress-card.tsx`). Neutral: keine Bestzeit, keine Rangliste, nur mit sich selbst.
+
+### Nachtrag 25.10.2026 – Wetter je Lauf (Open-Meteo)
+
+Das **Gerät** holt das Wetter zum Start eines Laufs direkt bei Open-Meteo (Web und App, kein eigener Server, kostenlos,
+ohne Schlüssel): Temperatur, gefühlte Temperatur, Wind (km/h), Niederschlag, Luftfeuchte, Wetterlage (WMO-Code →
+deutscher Text + Symbol). **Datenschutz:** übermittelt werden nur die auf **0,1°** gerundete Startposition (Raster ca.
+7–11 km) sowie Tag und Stunde – nie die Strecke; erst nach einem **einmaligen Hinweis** mit Ja/Nein auf der Seite eines
+Laufs (Standard danach an), jederzeit in den Einstellungen abschaltbar (je Konto auf diesem Gerät,
+`fitnessapp.route-weather.v1`). Datenschutzerklärung (apps/web) Abschnitt 9 ergänzt. Bis 5 Tage zurück Forecast-API,
+älter Archiv-API. Kein Gesundheitsdatum, nie in Logs; Fehler/offline still („Wetter nicht verfügbar“), nachgeholt beim
+nächsten Öffnen (höchstens 10 Läufe je Durchgang).
+
+- Core: `routes/weather.ts` (`weatherRequest`, `parseWeatherResponse`, `routeWeatherSchema`, `weatherCodeText`,
+  `weatherLine`, `routesNeedingWeather`), Konstanten `ROUTE_WEATHER`.
+- DB: `20261025130000_route_weather.sql` – `tracked_routes.weather jsonb` mit CHECK `private.route_weather_valid`,
+  `set_route_weather(p_route, p_weather)` (nur eigene, null löscht); Export automatisch; pgTAP `69_route_weather`.
+- App: Wetter-Karte auf der Lauf-Seite, Wetter-Zeile in „Alle Läufe“ der Strecken-Seite, Schalter in den
+  Einstellungen (`components/route-weather.tsx`, `data/route-weather.ts`). Kein CSP in `vercel.json` vorhanden – nichts
+  zu ergänzen; falls später eine CSP kommt: `connect-src https://api.open-meteo.com https://archive-api.open-meteo.com`.
+- Teilen-Bild: Wetter bewusst **nicht** aufgenommen (Gründer: „im Zweifel weglassen“ – Wetter + Datum + Uhrzeit könnte
+  den Ort eingrenzen).

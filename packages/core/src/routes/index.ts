@@ -16,3 +16,4 @@ export * from './schema';
 export * from './simplify';
 export * from './sketch';
 export * from './track';
+export * from './weather';

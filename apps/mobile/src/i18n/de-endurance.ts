@@ -478,6 +478,23 @@ export const deEndurance = {
     volumeMonth: (km: string) => `Dieser Monat ${km}`,
     open: 'Einheit ansehen',
   },
+  /** Wetter je Lauf (25.10.2026, Open-Meteo). */
+  weather: {
+    title: 'Wetter',
+    askTitle: 'Wetter zu deinen Läufen anzeigen?',
+    askText:
+      'Dann holt die App zu jedem Lauf das Wetter zum Start (Temperatur, Wind, Regen) – praktisch, um langsamere Läufe einzuordnen. Dafür geht nur eine auf etwa 10 km gerundete Startposition mit Tag und Stunde an Open-Meteo (kostenloser Wetterdienst, Schweiz) – nie deine Strecke. Jederzeit in den Einstellungen abschaltbar.',
+    askYes: 'Ja, Wetter anzeigen',
+    askNo: 'Nein danke',
+    unavailable: 'Wetter nicht verfügbar',
+    loading: 'Wetter wird geladen …',
+    a11y: (line: string) => `Wetter zum Start: ${line}`,
+    attribution: 'Wetterdaten: Open-Meteo (CC BY 4.0)',
+    settingsTitle: 'Wetter zu Läufen',
+    settingsToggle: 'Wetter zu Läufen anzeigen',
+    settingsText:
+      'Nur eine auf etwa 10 km gerundete Startposition sowie Tag und Stunde gehen an Open-Meteo – nie die Strecke. Gilt für dieses Gerät.',
+  },
   errors: {
     rejected: 'Diese Strecke wurde nicht angenommen. Bitte prüfe die Angaben.',
     limit: 'Heute wurden schon 20 Strecken gespeichert – bitte morgen erneut versuchen.',

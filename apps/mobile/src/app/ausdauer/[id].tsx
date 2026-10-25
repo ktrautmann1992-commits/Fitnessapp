@@ -39,6 +39,7 @@ import {
 } from '@/components/run-insights';
 import { ProgressCard } from '@/components/progress-card';
 import { RouteMatchSection } from '@/components/route-match-card';
+import { RouteWeatherSection } from '@/components/route-weather';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { SessionKcalStat } from '@/components/session-kcal';
 import { HeartZonesBar, WearableLogInfo } from '@/components/wearables';
@@ -255,6 +256,8 @@ export default function RouteDetailScreen() {
         </Notice>
       ) : null}
 
+      {/* Wetter zum Start (25.10.2026, Open-Meteo, nur nach Zustimmung). */}
+      {saved ? <RouteWeatherSection route={saved} /> : null}
       {/* „Meine Strecken“ (25.10.2026): Vorschlag „Gleiche Strecke wie …“, Zuordnung, „Zum letzten Mal“. */}
       {saved && result ? (
         <RouteMatchSection

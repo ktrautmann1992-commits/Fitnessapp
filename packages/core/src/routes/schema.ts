@@ -24,6 +24,7 @@ import {
 } from './elevation-profile';
 import { boundingBox, decodePolyline, encodePolyline } from './polyline';
 import { simplifyTrack } from './simplify';
+import type { RouteWeather } from './weather';
 import {
   elevationGain,
   filterTrackPoints,
@@ -188,6 +189,8 @@ export interface TrackedRouteRow {
   match_rejected_ids: string[];
   /** Nur bei „Meinen Strecken“ (Favoriten) wirksam: neue Läufe automatisch zuordnen (Standard an). */
   auto_match: boolean;
+  /** Wetter zum Start (Open-Meteo, 25.10.2026); null = (noch) keins. Ältere Zeilen im Testmodus: beim Lesen ergänzt. */
+  weather: RouteWeather | null;
   created_at: string;
   updated_at: string;
 }

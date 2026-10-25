@@ -49,6 +49,7 @@ function row(id: string, changes: Partial<TrackedRouteRow> = {}): TrackedRouteRo
     route_match: null,
     match_rejected_ids: [],
     auto_match: true,
+    weather: null,
     created_at: NOW,
     updated_at: NOW,
     ...changes,

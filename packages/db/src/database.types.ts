@@ -2739,6 +2739,7 @@ export type Database = {
           updated_at: string;
           user_id: string;
           wearable_session_log_id: string | null;
+          weather: Json | null;
         };
         Insert: {
           base_route_id?: string | null;
@@ -2768,6 +2769,7 @@ export type Database = {
           updated_at?: string;
           user_id?: string;
           wearable_session_log_id?: string | null;
+          weather?: Json | null;
         };
         Update: {
           base_route_id?: string | null;
@@ -2797,6 +2799,7 @@ export type Database = {
           updated_at?: string;
           user_id?: string;
           wearable_session_log_id?: string | null;
+          weather?: Json | null;
         };
         Relationships: [
           {
@@ -3617,6 +3620,7 @@ export type Database = {
         Returns: undefined;
       };
       update_tracked_route: { Args: { p_route: Json }; Returns: undefined };
+      set_route_weather: { Args: { p_route: string; p_weather: Json | null }; Returns: undefined };
       set_route_auto_match: { Args: { p_enabled: boolean; p_route: string }; Returns: undefined };
       set_route_match: {
         Args: { p_favorite: string | null; p_route: string; p_state: string };

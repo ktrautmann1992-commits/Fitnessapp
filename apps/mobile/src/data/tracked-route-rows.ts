@@ -2,6 +2,8 @@ import {
   matchDistanceOk,
   ROUTE_MATCH,
   type RouteMatchState,
+  type RouteWeather,
+  routeWeatherSchema,
   boundingBox,
   decodePolyline,
   sessionLogFitsRoute,
@@ -141,6 +143,7 @@ export function applyTrackedRouteSave(
     route_match: r.base_route_id !== null ? 'repeat' : null,
     match_rejected_ids: [],
     auto_match: true,
+    weather: null,
     created_at: context.now,
     updated_at: context.now,
   };
@@ -355,5 +358,20 @@ export function applyRouteAutoMatch(
   if (!routes.some((x) => x.id === routeId && x.user_id === context.userId)) return 'not_found';
   return routes.map((x) =>
     x.id === routeId ? { ...x, auto_match: enabled, updated_at: context.now } : x,
+  );
+}
+
+/** set_route_weather im Testmodus: eigene Strecke, Form wie routeWeatherSchema; null löscht. */
+export function applyRouteWeather(
+  routes: readonly TrackedRouteRow[],
+  routeId: string,
+  weather: RouteWeather | null,
+  context: { userId: string; now: string },
+): TrackedRouteRow[] | 'invalid' | 'not_found' {
+  const parsed = weather === null ? null : routeWeatherSchema.safeParse(weather);
+  if (parsed && !parsed.success) return 'invalid';
+  if (!routes.some((x) => x.id === routeId && x.user_id === context.userId)) return 'not_found';
+  return routes.map((x) =>
+    x.id === routeId ? { ...x, weather: parsed ? parsed.data : null, updated_at: context.now } : x,
   );
 }

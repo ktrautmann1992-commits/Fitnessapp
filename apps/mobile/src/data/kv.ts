@@ -186,4 +186,9 @@ export const STORAGE_KEYS = {
    */
   widgetSnapshot: 'fitnessapp.widget-snapshot.v1',
   widgetSnapshotKey: 'fitnessapp.widget-snapshot-key.v1',
+  /**
+   * Wetter zu Läufen (25.10.2026): je Konto true/false nach dem einmaligen Hinweis (gerundete Startposition geht an
+   * Open-Meteo); fehlt = noch nicht gefragt (dann kein Abruf). Nur dieses Gerät, kein Gesundheitsdatum.
+   */
+  routeWeather: 'fitnessapp.route-weather.v1',
 } as const;
