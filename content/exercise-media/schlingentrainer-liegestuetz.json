@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-liegestuetz",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-liegestuetz-start.svg",
+      "alt_de": "Ausgangsposition: hoher Liegestütz, Hände unter den Schultern am Boden, Füße in den Schlaufen, Körper gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

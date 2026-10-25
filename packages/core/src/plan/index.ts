@@ -36,3 +36,5 @@ export * from './multisport';
 export * from './competition-outline';
 export * from './week-status';
 export * from './race-pace';
+// Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4).
+export * from './run-strength';

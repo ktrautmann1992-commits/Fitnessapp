@@ -1,0 +1,50 @@
+{
+  "id": "schlingentrainer-unterarmstuetz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Unterarmstütz mit Füßen in den Schlaufen",
+  "name_en": "Suspended Plank",
+  "aliases_de": [],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques", "front_delts"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "Unterarmstütz mit den Füßen in den Schlaufen. Weil die Füße schweben, muss der Rumpf mehr stabilisieren als am Boden.",
+  "steps_de": [
+    "Füße in die Schlaufen, Unterarme unter den Schultern am Boden.",
+    "Körper gerade anheben, Bauch und Gesäß fest.",
+    "Halten, ohne dass die Hüfte durchhängt."
+  ],
+  "tips_de": [
+    "Füße in den Schlaufen: Hände weiter vom Ankerpunkt weg = schwerer; Schlaufen etwa 30 cm über dem Boden."
+  ],
+  "common_mistakes_de": ["Hüfte zu hoch oder zu tief.", "Luft anhalten."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "unterarmstuetz",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "schlingentrainer-fallout",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

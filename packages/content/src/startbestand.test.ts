@@ -8,6 +8,8 @@ import { join } from 'node:path';
 import {
   isBodyweightOrBandOnly,
   isBodyweightTemplate,
+  isCalisthenicsTemplate,
+  isSuspensionTemplate,
   TEMPLATE_EXPERIENCE_LEVELS,
   TEMPLATE_GOAL_TYPES,
   validateContent,
@@ -20,14 +22,27 @@ const contentDir = join(import.meta.dirname, '..', '..', '..', 'content');
 const { files, strayFiles } = loadContentFiles(contentDir);
 const result = validateContent(files);
 const bodyweight = result.templates.filter((t) => isBodyweightTemplate(t));
-const standard = result.templates.filter((t) => !isBodyweightTemplate(t));
+/** Entwürfe aus docs/PLAN-CALISTHENICS-SCHLINGE.md: Calisthenics- und „nur Schlingentrainer“-Vorlagen (eigene Prüfung). */
+const extra = result.templates.filter((t) => isCalisthenicsTemplate(t) || isSuspensionTemplate(t));
+const standard = result.templates.filter((t) => !isBodyweightTemplate(t) && !extra.includes(t));
+/** Ziele der Matrix (Calisthenics hat eigene Vorlagen außerhalb der Matrix). */
+const MATRIX_GOALS = TEMPLATE_GOAL_TYPES.filter((goal) => goal !== 'calisthenics');
 
 describe('Startbestand (content/)', () => {
-  it('ca. 96 Übungen (Startbestand + Körpergewicht K1/K2 + Aufwärmen/Dehnen) und 24 + 18 Plan-Vorlagen, alle mit gültigem Schema', () => {
+  // Die 3 Calisthenics-Vorlagen kommen erst mit claude/calisthenics-inhalte-2 (nach PR #182) nach content/ –
+  // die Pflichtprüfung mit dem Code von main kennt goal_type „calisthenics“ bis zum Merge noch nicht.
+  it('ca. 170 Übungen (Startbestand + Körpergewicht K1/K2 + Aufwärmen/Dehnen + Calisthenics/Schlingentrainer/Lauf-ABC) und 24 + 18 + 4 Plan-Vorlagen, alle mit gültigem Schema', () => {
     expect(strayFiles).toEqual([]);
     expect(result.exercises.length).toBeGreaterThanOrEqual(45);
-    expect(result.exercises.length).toBeLessThanOrEqual(110);
-    expect(result.templates).toHaveLength(42);
+    expect(result.exercises.length).toBeLessThanOrEqual(180);
+    expect(result.templates).toHaveLength(46);
+    expect(extra.map((t) => t.id).sort()).toEqual([
+      'fettverlust-einsteiger-3t-schlingentrainer',
+      'fitness-einsteiger-3t-schlingentrainer',
+      'fitness-fortgeschritten-3t-schlingentrainer',
+      'muskelaufbau-einsteiger-3t-schlingentrainer',
+    ]);
+    for (const t of extra) expect(t.status, t.id).toBe('draft');
     expect(result.exercises.length + result.templates.length).toBe(files.length);
   });
 
@@ -40,7 +55,7 @@ describe('Startbestand (content/)', () => {
     const keys = standard.map(
       (t) => `${t.goal_type}/${t.experience_level}/${t.sessions_per_week}/${t.location}`,
     );
-    const expected = TEMPLATE_GOAL_TYPES.flatMap((goal) =>
+    const expected = MATRIX_GOALS.flatMap((goal) =>
       TEMPLATE_EXPERIENCE_LEVELS.flatMap((level) =>
         [3, 4].flatMap((days) => ['gym', 'home'].map((loc) => `${goal}/${level}/${days}/${loc}`)),
       ),
@@ -55,7 +70,7 @@ describe('Startbestand (content/)', () => {
     const keys = bodyweight.map(
       (t) => `${t.goal_type}/${t.experience_level}/${t.sessions_per_week}`,
     );
-    const expected = TEMPLATE_GOAL_TYPES.flatMap((goal) =>
+    const expected = MATRIX_GOALS.flatMap((goal) =>
       TEMPLATE_EXPERIENCE_LEVELS.flatMap((level) => [2, 3, 4].map((d) => `${goal}/${level}/${d}`)),
     );
     expect([...keys].sort()).toEqual([...expected].sort());

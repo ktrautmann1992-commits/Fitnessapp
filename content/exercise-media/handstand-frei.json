@@ -1,0 +1,20 @@
+{
+  "exercise_id": "handstand-frei",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "handstand-frei-start.svg",
+      "alt_de": "Ausgangsposition: freier Handstand, Hände schulterbreit am Boden, Arme gestreckt, Körper vom Handgelenk bis zu den Zehen gerade übereinander.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

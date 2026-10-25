@@ -1,0 +1,51 @@
+{
+  "id": "schlingentrainer-liegestuetz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Liegestütz mit Füßen in den Schlaufen",
+  "name_en": "Suspended Push-up",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["triceps", "front_delts", "abs"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "Liegestütz mit den Füßen in den Schlaufen: Der Rumpf muss die schwebenden Beine stabil halten.",
+  "steps_de": [
+    "Füße in die Schlaufen, Hände unter den Schultern am Boden.",
+    "Körper gerade, Bauch und Gesäß fest.",
+    "Brust zum Boden senken.",
+    "Hochdrücken, ohne dass die Hüfte absackt."
+  ],
+  "tips_de": [
+    "Füße in den Schlaufen: Hände weiter vom Ankerpunkt weg = schwerer; Schlaufen etwa 30 cm über dem Boden."
+  ],
+  "common_mistakes_de": ["Hüfte hängt.", "Beine pendeln."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "schlingentrainer-atomic-liegestuetz",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

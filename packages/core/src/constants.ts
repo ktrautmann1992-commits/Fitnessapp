@@ -380,6 +380,9 @@ export const WEEKLY_SETS_PER_MUSCLE = {
   muscle_gain: { beginner: { min: 6, max: 14 }, advanced: { min: 10, max: 22 } },
   fat_loss: { beginner: { min: 6, max: 14 }, advanced: { min: 8, max: 20 } },
   general_fitness: { beginner: { min: 4, max: 12 }, advanced: { min: 6, max: 16 } },
+  // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): wie Fitness, oben etwas Luft für Skill-Übungen
+  // (Halte- und Technik-Sätze). PRODUKTENTSCHEIDUNG – fachlich zu prüfen.
+  calisthenics: { beginner: { min: 4, max: 12 }, advanced: { min: 6, max: 18 } },
 } as const;
 
 /**
@@ -1774,6 +1777,9 @@ export const GOAL_ENERGY_ADJUSTMENT = {
   endurance: 0,
   // Fit im Alter (FA1, docs/PLAN-FIT-IM-ALTER.md 4.1/11): Erhalt; Abnehmen nur als Nebenziel (GOAL_PAIR_RULES).
   active_aging: 0,
+  // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): Erhalt – Körperbeherrschung braucht kein Defizit;
+  // Abnehmen nur als Nebenziel (GOAL_PAIR_RULES). PRODUKTENTSCHEIDUNG.
+  calisthenics: 0,
 } as const;
 
 /**
@@ -1904,6 +1910,9 @@ export const PROTEIN_G_PER_KG = {
     // Fit im Alter (FA1): 1,2 g/kg – PROT-AGE „≥ 1,2 g/kg bei Training“ (Bauer J et al. 2013, J Am Med Dir Assoc
     // 14(8):542–559; Deutz NE et al. 2014, Clin Nutr 33(6):929–936). Gilt so auch für 60–64-Jährige mit dem Ziel.
     active_aging: 1.2,
+    // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): 1,6 g/kg – Krafttraining mit dem eigenen Körpergewicht;
+    // Morton RW et al. (2018), Br J Sports Med 52(6):376–384 (Nutzen bis ≈ 1,6 g/kg). PRODUKTENTSCHEIDUNG.
+    calisthenics: 1.6,
   },
   max: 2.2,
   cautiousMax: 1.6,
@@ -2925,6 +2934,15 @@ export const GOAL_PAIR_RULES = [
     secondary: 'fat_loss',
     energyAdjustment: -0.1,
     proteinGPerKg: 1.5,
+    enduranceCarbs: false,
+  },
+  // Calisthenics → Abnehmen (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): wie Fitness → Abnehmen (−15 %, 2,0 g/kg) –
+  // weniger Körpergewicht erleichtert die Skills, Muskelerhalt über hohes Eiweiß (Helms 2014). PRODUKTENTSCHEIDUNG.
+  {
+    primary: 'calisthenics',
+    secondary: 'fat_loss',
+    energyAdjustment: -0.15,
+    proteinGPerKg: 2.0,
     enduranceCarbs: false,
   },
 ] as const satisfies readonly {
@@ -5104,6 +5122,20 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'vertical_pull' },
       { tag: 'overhead' },
       { exercise: 'dips-stuhl' },
+      // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.3): Stütz, Dips, Hebel und Hang durch die Arme.
+      { exercise: 'stuetz-barren' },
+      { exercise: 'dips-negativ-barren' },
+      { exercise: 'dips-barren' },
+      { exercise: 'ring-stuetz' },
+      { exercise: 'dips-ringe' },
+      { exercise: 'deutscher-hang' },
+      { exercise: 'back-lever-gehockt' },
+      { exercise: 'back-lever' },
+      { exercise: 'front-lever-gehockt' },
+      { exercise: 'front-lever-einbeinig' },
+      { exercise: 'front-lever' },
+      { exercise: 'planche-lehne' },
+      { exercise: 'pseudo-planche-liegestuetz' },
     ],
     any: [
       { pattern: 'horizontal_push' },
@@ -5125,6 +5157,14 @@ export const PAIN_REGION_LOAD = {
       { tag: 'high_impact' },
       { exercise: 'vorgebeugtes-rudern-kurzhantel' },
       { exercise: 'langhantelrudern' },
+      // Calisthenics: Hebel und Hohlkreuz-Gefahr im Handstand bzw. am Umkehrpunkt.
+      { exercise: 'back-lever-gehockt' },
+      { exercise: 'back-lever' },
+      { exercise: 'front-lever-einbeinig' },
+      { exercise: 'front-lever' },
+      { exercise: 'handstand-wand' },
+      { exercise: 'handstand-frei' },
+      { exercise: 'schlingentrainer-fallout' },
     ],
     any: [
       { pattern: 'squat', loadTypes: ['weight'] },
@@ -5140,6 +5180,16 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'elbow_flexion' },
       { pattern: 'elbow_extension' },
       { exercise: 'klimmzug' },
+      // Calisthenics: schwere Zug-Varianten und Hebel mit gestreckten Armen.
+      { exercise: 'chin-up' },
+      { exercise: 'archer-klimmzug' },
+      { exercise: 'einarmiger-klimmzug-negativ' },
+      { exercise: 'explosiver-klimmzug' },
+      { exercise: 'muscle-up-negativ' },
+      { exercise: 'muscle-up' },
+      { exercise: 'deutscher-hang' },
+      { exercise: 'back-lever-gehockt' },
+      { exercise: 'back-lever' },
     ],
     any: [
       { pattern: 'horizontal_push' },
@@ -5159,6 +5209,15 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'vertical_push', loadTypes: ['bodyweight'] },
       { pattern: 'elbow_extension', loadTypes: ['bodyweight'] },
       { exercise: 'seitstuetz' },
+      // Calisthenics: Stütz- und Halteübungen auf den Händen (Belastungsart Zeit).
+      { pattern: 'vertical_push', loadTypes: ['time'] },
+      { exercise: 'stuetz-barren' },
+      { exercise: 'ring-stuetz' },
+      { exercise: 'planche-lehne' },
+      { exercise: 'l-sitz-gehockt' },
+      { exercise: 'l-sitz' },
+      { exercise: 'muscle-up' },
+      { exercise: 'muscle-up-negativ' },
     ],
     any: [
       { pattern: 'horizontal_push' },
@@ -5304,8 +5363,12 @@ export const TRAVEL_MODE = {
     dumbbells: ['dumbbells'],
     hotel_gym: ['dumbbells', 'flat_bench', 'treadmill', 'bike_ergometer'],
     band: ['resistance_bands'],
-    // Noch keine Schlingentrainer-Übungen (eigenes späteres Paket) → praktisch Körpergewicht-Übungen.
+    // Schlingentrainer-Übungen seit docs/PLAN-CALISTHENICS-SCHLINGE.md 3 (Entwürfe; im Supabase-Modus erst nach der
+    // Freigabe) – ohne sie bleibt es praktisch bei Körpergewicht-Übungen.
     suspension_trainer: ['suspension_trainer'],
+    // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.3): Ringe im Gepäck; Park = Klimmzugstange + Barren.
+    rings: ['gymnastic_rings'],
+    outdoor_park: ['calisthenics_park', 'pull_up_bar', 'dip_station'],
   },
   maxDays: 42,
   maxStartAheadDays: 365,
@@ -5404,3 +5467,244 @@ export const HYDRATION = {
   historyDays: 7,
   backfillDays: 14,
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------------
+// Lauf-Paket 2 (Gründer-Freigabe „Baue alles“, 25.10.2026, docs/PLAN-LAUF-PAKET-2.md): Pulszonen nach
+// Herzfrequenz-Reserve, Belastungs-Ampel, Zeitprognose, GAP, Kadenz, Dunkelheit. Alles auf dem Gerät gerechnet.
+// ---------------------------------------------------------------------------------------------------------------
+
+/**
+ * Pulszonen nach Herzfrequenz-Reserve (Karvonen-Methode): Grenze = Ruhepuls + Anteil × (HFmax − Ruhepuls), mit
+ * denselben Anteilen wie HR_ZONE_PERCENTS (50/60/70/80/90/100 %). Quelle: Karvonen MJ, Kentala E, Mustala O (1957),
+ * „The effects of training on heart rate; a longitudinal study“, Ann Med Exp Biol Fenn 35(3):307–315; ACSM's
+ * Guidelines for Exercise Testing and Prescription, 11. Aufl. (2021): Intensität über % HFR (moderat 40–59 %,
+ * intensiv 60–89 %).
+ * - `restingWindowDays` / `restingMinValues`: Ruhepuls = Median der Tageswerte der Uhr der letzten 14 Tage (mind. 3
+ *   Werte), sonst der Ruhepuls aus den Körperdaten (Onboarding) – PRODUKTENTSCHEIDUNG.
+ * - `minReserveBpm`: Liegen HFmax und Ruhepuls weniger als 60 /min auseinander (Messfehler, Medikamente), rechnet die
+ *   App wieder mit % HFmax – sonst wären die Zonen zu schmal. PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const HR_RESERVE_ZONES = {
+  restingWindowDays: 14,
+  restingMinValues: 3,
+  minReserveBpm: 60,
+} as const;
+
+/**
+ * Belastungs-Ampel (Verhältnis akute : chronische Belastung, „acute:chronic workload ratio“): akut = Summe der
+ * Belastungspunkte (SPORT_LOAD, Session-RPE) der letzten 7 Tage, chronisch = Summe der letzten 28 Tage ÷ 4 (Wochen-
+ * Mittel, gekoppelt). Quellen: Hulin BT et al. (2016), Br J Sports Med 50(4):231–236; Gabbett TJ (2016), „The
+ * training–injury prevention paradox“, Br J Sports Med 50(5):273–280 („sweet spot“ 0,8–1,3, ab 1,5 deutlich
+ * erhöhtes Risiko). EHRLICH: Die Methode ist umstritten (Impellizzeri FM et al. (2020), Int J Sports Physiol Perform
+ * 15(6):907–913) – darum nur als sanfter Hinweis, nie als medizinische Aussage, nie als Verbot.
+ * - `greenMax` 1,3 / `yellowMax` 1,5: über 1,3 gelb, über 1,5 rot. Unter `lowBelow` 0,8: grün mit Text „weniger als
+ *   gewohnt“ (z. B. Erholungswoche).
+ * - `minHistoryDays` 21: Erst ab drei Wochen Tagebuch gibt es eine Ampel (sonst ist „gewohnt“ unbekannt).
+ * - `minChronicWeeklyLoad` 60 Punkte (≈ 2 × 30 min locker): darunter keine Ampel (kleine Zahlen schwanken zu stark).
+ * - Die 10-%-Regel (MAX_WEEKLY_ENDURANCE_VOLUME_INCREASE_FRACTION) fließt ein: Steigen die Lauf-Kilometer der letzten
+ *   7 Tage um mehr als 10 % gegenüber den 7 Tagen davor (Vorwoche mind. `volumeMinPreviousKm` km), wird Grün zu Gelb.
+ * Schwellen PRODUKTENTSCHEIDUNG nach den Quellen, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const LOAD_RATIO = {
+  acuteDays: 7,
+  chronicDays: 28,
+  greenMax: 1.3,
+  yellowMax: 1.5,
+  lowBelow: 0.8,
+  minHistoryDays: 21,
+  minChronicWeeklyLoad: 60,
+  volumeMinPreviousKm: 5,
+} as const;
+
+/**
+ * Zeitprognose für Wettkampf-Distanzen nach Riegel: t2 = t1 × (d2 / d1)^1,06 – dieselbe Formel und derselbe Exponent
+ * wie die Wettkampf-Pace (COMPETITION_PACE.riegelExponent, Quelle: Riegel PS (1981), „Athletic records and human
+ * endurance“, American Scientist 69(3):285–290, gültig etwa 3,5–230 min) und dieselbe Grenze: höchstens Faktor 4
+ * zwischen Lauf und Ziel-Distanz (COMPETITION_PACE.maxRiegelDistanceFactor; Marathon erst ab ca. 10,5 km,
+ * Halbmarathon ab 5,3 km). Bekannte Schwäche: Für Freizeitläufer ist die Marathon-Prognose oft zu optimistisch
+ * (Vickers AJ, Vertosick EA (2016), BMC Sports Sci Med Rehabil 8:26) – darum ein breiter Bereich.
+ * - `windowDays` 56 (8 Wochen), `minEffortM` 3.000 m, `minEfforts` 2: Grundlage sind eigene Läufe (Sportart Laufen)
+ *   ab 3 km der letzten 8 Wochen; weniger als zwei solche Läufe → keine Prognose.
+ * - `paceS`: nur plausible Läufe (2:30–12:00 min/km), sonst eher Gehen oder ein Messfehler.
+ * - Unsicherheit (± Anteil): `baseUncertainty` 3 % + `uncertaintyPerDoubling` 4 % je Verdopplung der Distanz, dazu
+ *   `fewEffortsExtra` 2 %, wenn weniger als `fewEffortsBelow` Läufe vorliegen. Gerundet auf `roundS` Sekunden.
+ * Werte außer Formel/Exponent: PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const RACE_PREDICTION = {
+  windowDays: 56,
+  minEffortM: 3_000,
+  minEfforts: 2,
+  paceS: { min: 150, max: 720 },
+  baseUncertainty: 0.03,
+  uncertaintyPerDoubling: 0.04,
+  fewEffortsBelow: 4,
+  fewEffortsExtra: 0.02,
+  targets: [
+    { id: '5k', distanceM: 5_000, roundS: 5 },
+    { id: '10k', distanceM: 10_000, roundS: 10 },
+    { id: 'half', distanceM: 21_097.5, roundS: 30 },
+    { id: 'marathon', distanceM: 42_195, roundS: 60 },
+  ],
+} as const;
+
+/**
+ * Bergbereinigtes Tempo (GAP, „grade-adjusted pace“) nach der Energiekosten-Kurve des Laufens von Minetti:
+ * C(i) = 155,4 i⁵ − 30,4 i⁴ − 43,3 i³ + 46,3 i² + 19,5 i + 3,6 (J je kg und m, i = Steigung als Anteil, gültig
+ * −0,45 … +0,45). Quelle: Minetti AE, Moia C, Roi GS, Susta D, Ferretti G (2002), „Energy cost of walking and running
+ * at extreme uphill and downhill slopes“, J Appl Physiol 93(3):1039–1046. GAP = Zeit ÷ „flache“ Distanz
+ * (Σ Teilstück × C(i) / C(0)).
+ * - `maxGrade` 0,45: Steigungen darüber werden auf den Gültigkeitsbereich begrenzt.
+ * - `minSegmentM` 50: Steigung über mind. 50 m Strecke rechnen (GPS-Höhen springen sonst).
+ * - `minDistanceM` 1.000: GAP erst ab 1 km mit Höhenprofil.
+ * EHRLICH: Minetti misst auf dem Laufband mit trainierten Läufern; bergab überschätzt die Kurve die Ersparnis bei
+ * steilen Gefällen (Strava hat sie deshalb angepasst). Darum nur als Orientierung. VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const GAP_MINETTI = {
+  coefficients: [155.4, -30.4, -43.3, 46.3, 19.5, 3.6],
+  maxGrade: 0.45,
+  minSegmentM: 50,
+  minDistanceM: 1_000,
+} as const;
+
+/**
+ * Laufkadenz (Schritte je Minute) aus den Schritten im Zeitraum der Uhr-Einheit (Health Connect, Datentyp „Schritte“,
+ * schon freigegeben) ÷ Dauer. Nur Hinweis-Bereiche, keine Regel: Die „180er-Kadenz“ ist kein allgemeines Ziel; eine
+ * Erhöhung um 5–10 % senkt die Belastung von Knie und Hüfte (Heiderscheit BC et al. (2011), „Effects of step rate
+ * manipulation on joint mechanics during running“, Med Sci Sports Exerc 43(2):296–302); Freizeitläufer laufen meist
+ * ca. 150–180 Schritte/min.
+ * - `plausibleSpm`: außerhalb ist es ein Messfehler (Uhr abgelegt, Pausen) → keine Anzeige.
+ * - `hint`: Laufen unter 150 → Hinweis „kürzere, schnellere Schritte probieren“, 150–185 üblich, darüber hoch (passt
+ *   bei schnellem Tempo). Gehen ohne Bewertung. `minDurationS`: erst ab 5 min. PRODUKTENTSCHEIDUNG.
+ */
+export const CADENCE = {
+  plausibleSpm: { run: { min: 100, max: 230 }, walk: { min: 50, max: 160 } },
+  hint: { lowBelow: 150, highAbove: 185 },
+  minDurationS: 300,
+} as const;
+
+/**
+ * Dunkelheit beim Laufen draußen: Sonnenauf- und -untergang nach dem Rechenweg der NOAA (Global Monitoring Laboratory,
+ * „General Solar Position Calculations“, Näherung über das Bruchjahr, Genauigkeit ca. 1–2 min), ganz auf dem Gerät aus
+ * gerundeter Position und Datum – kein Netz.
+ * - `zenithDeg` 90,833° (Sonnenmittelpunkt inkl. Refraktion und Sonnenradius), `civilZenithDeg` 96° (bürgerliche
+ *   Dämmerung: danach ist es ohne Licht dunkel).
+ * - `positionRoundingDeg` 0,1° (ca. 11 km): genauer braucht es nicht (Fehler unter 1 min), die Position bleibt grob.
+ * - `leadMin` 60: Hinweis, wenn der Sonnenuntergang in höchstens 60 min ist (übliche Laufdauer). PRODUKTENTSCHEIDUNG.
+ */
+export const DAYLIGHT = {
+  zenithDeg: 90.833,
+  civilZenithDeg: 96,
+  positionRoundingDeg: 0.1,
+  leadMin: 60,
+} as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Calisthenics, Schlingentrainer, Lauf-Kraft (Gründer-Freigabe 25.10.2026, docs/PLAN-CALISTHENICS-SCHLINGE.md).
+// Alles Gratis, ohne KI, feste Regeln. Alle Werte PRODUKTENTSCHEIDUNG – vor dem Livegang fachlich prüfen.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Skill-Pfade: Fortschritts-Regel (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.2).
+ * - Aufsteigen: In `advanceSessions` aufeinanderfolgenden gewerteten Einheiten der Stufe ist das Stufenziel
+ *   „sauber“ erreicht – alle Ziel-Sätze mit mindestens den Ziel-Wiederholungen bzw. der Ziel-Haltezeit und, wenn
+ *   eingetragen, RPE höchstens `cleanRpeMax` (≥ 2 Wiederholungen in Reserve). Dann ist die nächste Stufe
+ *   „freigeschaltet“ (nur ein Vorschlag, nie ein automatischer Tausch).
+ * - Zurückstufen: `regressMisses` gewertete Einheiten hintereinander „deutlich verfehlt“ (bester Satz unter
+ *   `missShare` des Ziels) → Vorschlag, die vorige Stufe zu üben.
+ * - Gewertet werden nur ganz oder teilweise gemachte Einträge ohne Einstiegs-/Erholungswoche, Wiedereinstieg oder
+ *   freie Einheit (wie die Progression, log/progression.ts). Stufe „aktuell“ = höchste Stufe mit einem Eintrag in den
+ *   letzten `activeWindowDays` Tagen; Voraussetzungen (z. B. 8 saubere Klimmzüge) zählen aus `achievementWindowDays`.
+ * Quellen: „2-für-2-Regel“ – Baechle TR, Earle RW (2008), Essentials of Strength Training and Conditioning, 3. Aufl.,
+ * Human Kinetics, Kap. 15 (Steigern, wenn das Ziel in zwei Einheiten hintereinander übertroffen wird); RPE/RIR:
+ * Zourdos MC et al. (2016), J Strength Cond Res 30(1):267–275; Stufenfolge: Low S (2016), Overcoming Gravity,
+ * 2. Aufl., Battle Ground Creative (Progressionen der Grundfähigkeiten). Werte PRODUKTENTSCHEIDUNG.
+ */
+export const SKILL_PROGRESSION = {
+  advanceSessions: 2,
+  cleanRpeMax: 8,
+  regressMisses: 3,
+  missShare: 0.6,
+  activeWindowDays: 90,
+  achievementWindowDays: 180,
+} as const;
+
+/**
+ * Skill-Pfade: Sicherheits-Sperren (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.3). Gelten zusätzlich zu den Plan-Regeln
+ * (planSafetyRules: `high_skill` ist ab 65, unter 18, im vorsichtigen Plan und bei „Fit im Alter“ ohnehin gesperrt).
+ * - Stufen mit `advancedOnly` (Handstand, Hebel, Muscle-up, einarmige Vorstufe …) nicht für Einsteiger (Angabe im
+ *   Profil).
+ * - `seniorFromAge`: ab diesem Alter keine Stufe mit hoher Technik (= AGE_PLAN_RULES.senior.fromAge).
+ * - Voraussetzungen: saubere Wiederholungen in EINEM Satz (Tagebuch, RPE ≤ cleanRpeMax oder ohne Angabe):
+ *   Muscle-up erst ab 8 Klimmzügen und 10 Barren-Dips, Front Lever ab 8 Klimmzügen, Back Lever ab 5 Klimmzügen und
+ *   5 Barren-Dips. Orientierung: Low S (2016), Overcoming Gravity, 2. Aufl. (Muscle-up nach soliden Klimmzügen und
+ *   Dips; Hebel nach Zug-Grundkraft). Zahlen PRODUKTENTSCHEIDUNG (Gründer-Vorgabe Muscle-up 25.10.2026).
+ */
+export const SKILL_GATES = {
+  seniorFromAge: 65,
+  requirements: {
+    muscle_up: [
+      { exerciseId: 'klimmzug', reps: 8 },
+      { exerciseId: 'dips-barren', reps: 10 },
+    ],
+    front_lever: [{ exerciseId: 'klimmzug', reps: 8 }],
+    back_lever: [
+      { exerciseId: 'klimmzug', reps: 5 },
+      { exerciseId: 'dips-barren', reps: 5 },
+    ],
+  },
+} as const satisfies {
+  seniorFromAge: number;
+  requirements: Record<string, readonly { exerciseId: string; reps: number }[]>;
+};
+
+/**
+ * Schlingentrainer gilt als Kraft-Gerät (isStrengthEquipmentIn), sobald die Bibliothek für jede dieser Gruppen von
+ * Bewegungsmustern mindestens eine nutzbare Schlingentrainer-Übung hat: Ziehen, Drücken, Kniebeuge/Ausfallschritt,
+ * Hüfte/Beinrückseite (docs/PLAN-CALISTHENICS-SCHLINGE.md 3.3). Im Supabase-Modus zählen nur freigegebene Übungen,
+ * im Testmodus auch Entwürfe. Quelle: PRODUKTENTSCHEIDUNG (Ganzkörper-Plan braucht alle vier Grundmuster).
+ */
+export const SUSPENSION_TRAINER_RULES = {
+  readyPatternGroups: [
+    ['horizontal_pull'],
+    ['horizontal_push'],
+    ['squat', 'lunge'],
+    ['hinge', 'hip_extension', 'knee_flexion'],
+  ],
+} as const satisfies { readyPatternGroups: readonly (readonly MovementPattern[])[] };
+
+/**
+ * Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4): 15-min-Einheiten an Lauftagen.
+ * - Wie oft: `perWeek` je Startgruppe (vorsichtig/Einsteiger 1, sonst 2); in Woche 0, Einstiegs- und
+ *   Erholungswochen höchstens `easyWeekMax` und nur die Fassung ohne Sprünge. Mehr Einheiten als in der Vorwoche
+ *   höchstens `maxIncreasePerWeek` (behutsam steigern wie bei der 10-%-Regel). Die Einheiten zählen nicht zum
+ *   Laufumfang (keine zusätzlichen Laufminuten, ENDURANCE_PROGRESSION bleibt unberührt).
+ * - Wo: nur an lockeren Lauftagen (Modalität Laufen, keine harte Art, nicht der lange Lauf), nie am Tag vor einer
+ *   Schlüsseleinheit (langer Lauf oder harte Art), zwei Einheiten mit mindestens `minDaysApart` Tagen Abstand.
+ * - Schon-Modus: Übungen, die eine geschonte Stelle belasten, entfallen; bleiben weniger als `minItems`, entfällt die
+ *   Einheit an dem Tag.
+ * Quellen: Blagrove RC, Howatson G, Hayes PR (2018), „Effects of Strength Training on the Physiological Determinants
+ * of Middle- and Long-Distance Running Performance: A Systematic Review“, Sports Med 48(5):1117–1149 (2–3 × pro Woche
+ * Kraft neben dem Laufen); Lauf-ABC als Technik-/Koordinationsteil: PRODUKTENTSCHEIDUNG. Zahlen PRODUKTENTSCHEIDUNG.
+ */
+export const RUN_STRENGTH_RULES = {
+  unitMinutes: 15,
+  perWeek: { cautious: 1, beginner: 1, advanced: 2, competitive: 2 },
+  easyWeekMax: 1,
+  maxIncreasePerWeek: 1,
+  minDaysApart: 2,
+  minItems: 3,
+  /** Einheiten (content/workouts, Kategorie run_strength): abwechselnd Kraft und Lauf-ABC, sonst ohne Sprünge. */
+  units: {
+    strength: ['lauf-kraft-waden-fuesse', 'lauf-kraft-huefte-rumpf'],
+    drills: 'lauf-abc-koordination',
+    gentle: 'lauf-kraft-ohne-spruenge',
+  },
+} as const satisfies {
+  unitMinutes: number;
+  perWeek: Record<'cautious' | ExperienceLevel, number>;
+  easyWeekMax: number;
+  maxIncreasePerWeek: number;
+  minDaysApart: number;
+  minItems: number;
+  units: { strength: readonly string[]; drills: string; gentle: string };
+};

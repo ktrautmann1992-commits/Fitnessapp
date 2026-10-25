@@ -1,5 +1,6 @@
 import {
   addDays,
+  suspensionTrainerReady,
   TRAVEL_EQUIPMENT_OPTIONS,
   TRAVEL_MODE,
   type TravelEquipment,
@@ -8,7 +9,7 @@ import {
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { DateInput, Screen } from '@/components/screen';
@@ -55,6 +56,15 @@ export default function TravelModeScreen() {
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: 'success' | 'danger'; text: string } | null>(null);
+  // Schlingentrainer-Übungen vorhanden? (Supabase: erst nach der Freigabe; docs/PLAN-CALISTHENICS-SCHLINGE.md 3.3)
+  const { ensureLibrary, library } = app;
+  useEffect(() => {
+    void ensureLibrary();
+  }, [ensureLibrary]);
+  const slingReady =
+    library.kind === 'ready' && library.library
+      ? suspensionTrainerReady(library.library.exercises)
+      : false;
 
   if (app.status.kind === 'loading') {
     return (
@@ -205,7 +215,12 @@ export default function TravelModeScreen() {
         />
         {equipment === 'suspension_trainer' ? (
           <Notice tone="info" testID="travel-suspension-note">
-            {M.travel.suspensionNote}
+            {slingReady ? t.calisthenics.travel.suspensionReady : M.travel.suspensionNote}
+          </Notice>
+        ) : null}
+        {equipment === 'outdoor_park' ? (
+          <Notice tone="info" testID="travel-park-note">
+            {t.calisthenics.travel.parkNote}
           </Notice>
         ) : null}
         <ChoiceList<number | 'none'>

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "front-lever",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "front-lever-start.svg",
+      "alt_de": "Ausgangsposition: unter der Klimmzugstange, Arme gestreckt, Körper komplett gestreckt und waagerecht.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "id": "explosiver-klimmzug",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Explosiver Klimmzug",
+  "name_en": "Explosive Pull-up",
+  "aliases_de": ["Brust-zur-Stange-Klimmzug"],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["biceps", "upper_back", "forearms"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["high_skill"],
+  "description_de": "Klimmzug mit voller Kraft nach oben, bis die Brust die Stange berührt. Vorstufe für den Muscle-up – Höhe zählt, nicht die Zahl.",
+  "steps_de": [
+    "Aus dem ruhigen, gestreckten Hang beginnen.",
+    "Kräftig nach oben ziehen und die Stange Richtung Bauch drücken.",
+    "Oben kurz Brust an die Stange, dann kontrolliert absenken."
+  ],
+  "tips_de": ["Wenige Wiederholungen mit voller Pause dazwischen.", "Ellbogen nach hinten ziehen."],
+  "common_mistakes_de": ["Wildes Schwingen.", "Unten nicht ganz in den Hang."],
+  "safety_note_de": "Stange vorher auf festen Sitz prüfen und nur mit sicherem Griff hängen. Kontrolliert ab- und aufsteigen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "klimmzug",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "muscle-up-negativ",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

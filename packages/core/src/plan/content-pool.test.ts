@@ -15,8 +15,10 @@ describe('selectPlanContent', () => {
     expect(live.templates).toHaveLength(0);
     expect(live.exercises.size).toBe(0);
     const test = selectPlanContent(result, { allowDrafts: true });
-    expect(test.templates).toHaveLength(42); // 24 Startbestand + 18 Körpergewicht (K2)
-    expect(test.exercises.size).toBe(96); // 52 Startbestand + 27 Körpergewicht (K1) + Handtuch-Latziehen (K2) + 16 Aufwärmen/Dehnen (Trainings-Modi)
+    // 24 Startbestand + 18 Körpergewicht (K2) + 4 Schlingentrainer; die 3 Calisthenics-Vorlagen kommen erst mit
+    // claude/calisthenics-inhalte-2 (nach PR #182) nach content/.
+    expect(test.templates).toHaveLength(46);
+    expect(test.exercises.size).toBe(170); // 52 Startbestand + 27 Körpergewicht (K1) + Handtuch-Latziehen (K2) + 16 Aufwärmen/Dehnen (Trainings-Modi) + 38 Calisthenics + 23 Schlingentrainer + 13 Lauf-ABC/Lauf-Kraft
     expect(test.containsDrafts).toBe(true);
   });
 
@@ -24,8 +26,8 @@ describe('selectPlanContent', () => {
     const result = validateContent(loadRepoContentFiles({ status: 'published' }));
     for (const allowDrafts of [false, true]) {
       const library = selectPlanContent(result, { allowDrafts });
-      expect(library.templates).toHaveLength(42);
-      expect(library.exercises.size).toBe(96);
+      expect(library.templates).toHaveLength(46);
+      expect(library.exercises.size).toBe(170);
       expect(library.containsDrafts).toBe(false);
     }
   });
@@ -37,8 +39,8 @@ describe('selectPlanContent', () => {
     expect([...live.exercises.keys()].sort()).toEqual(publishedExercises.map((e) => e.id).sort());
     expect(live.containsDrafts).toBe(false);
     const test = repoLibrary();
-    expect(test.templates).toHaveLength(42);
-    expect(test.exercises.size).toBe(96);
+    expect(test.templates).toHaveLength(46);
+    expect(test.exercises.size).toBe(170);
     expect(test.containsDrafts).toBe(
       [...result.exercises, ...result.templates].some((item) => item.status === 'draft'),
     );

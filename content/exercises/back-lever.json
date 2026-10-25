@@ -1,0 +1,43 @@
+{
+  "id": "back-lever",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Back Lever",
+  "name_en": "Back Lever",
+  "aliases_de": ["Waage rücklings"],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["front_delts", "chest"],
+  "secondary_muscles": ["biceps", "abs", "lower_back", "glutes"],
+  "equipment_ids": ["gymnastic_rings"],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["high_skill"],
+  "description_de": "Körper gestreckt und waagerecht, Bauch nach unten, Arme gestreckt an den Ringen. Fordert Schultern, Bizeps und die ganze Körperspannung.",
+  "steps_de": [
+    "Über den gehockten Back Lever hineingehen.",
+    "Beine gestreckt nach hinten, Gesäß fest.",
+    "Kurz waagerecht halten, dann zurück in die Hocke."
+  ],
+  "tips_de": ["Zwischenstufe: Beine gegrätscht oder ein Bein gestreckt."],
+  "common_mistakes_de": ["Hohlkreuz.", "Zu lange Versuche bei müden Schultern."],
+  "safety_note_de": "Ringe an einem tragfähigen Punkt befestigen und vor dem ersten Satz vorsichtig mit dem Körpergewicht testen. Langsam bewegen; bei Schmerzen in Schulter oder Ellbogen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "back-lever-gehockt",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

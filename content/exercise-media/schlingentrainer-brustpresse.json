@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-brustpresse",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-brustpresse-start.svg",
+      "alt_de": "Ausgangsposition: Rücken zum Anker, Griffe auf Brusthöhe, Arme gestreckt nach vorn, Körper gerade nach vorn gelehnt, Füße hinten.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -387,7 +387,8 @@ describe('Enums', () => {
   });
 
   it('Vorlagen-Matrix (Ziele, Level) entspricht packages/core', () => {
-    expect(quotedListAfter(allSql, 'check (goal_type in (')).toEqual([
+    // Neueste Fassung (Calisthenics-Vorlagen seit *_calisthenics_rules.sql).
+    expect(lastQuotedListAfter(allSql, 'check (goal_type in (')).toEqual([
       ...enums.TEMPLATE_GOAL_TYPES,
     ]);
     expect(quotedListAfter(allSql, 'check (experience_level in (')).toEqual([
@@ -407,6 +408,7 @@ describe('Listen', () => {
       '_seed_equipment.sql',
       '_equipment_home_selectable.sql',
       '_suspension_trainer.sql',
+      '_calisthenics_equipment.sql',
     ]) {
       for (const m of readMigration(suffix).matchAll(rowPattern)) {
         catalog.set(m[1] as string, {
@@ -654,10 +656,10 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
     expect(lastFile).toMatch(/_plan_inputs_secondary_goal\.sql$/);
   });
 
-  it('private.goal_pair_allowed = GOAL_COMBINATIONS (Paarliste aus der NEUESTEN Fassung, seit FA1 *_active_aging_rules.sql)', () => {
+  it('private.goal_pair_allowed = GOAL_COMBINATIONS (Paarliste aus der NEUESTEN Fassung, seit Calisthenics *_calisthenics_rules.sql)', () => {
     const marker = 'create or replace function private.goal_pair_allowed(';
     const lastFile = migrationFiles.filter((name) => readMigration(name).includes(marker)).at(-1);
-    expect(lastFile).toMatch(/_active_aging_rules\.sql$/);
+    expect(lastFile).toMatch(/_calisthenics_rules\.sql$/);
     const body = allSql.slice(allSql.lastIndexOf(marker));
     const list = body.slice(body.indexOf(' in ('), body.indexOf('$$;'));
     const pairs = [...list.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map(
@@ -666,7 +668,7 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
     expect(pairs.sort()).toEqual(
       GOAL_COMBINATIONS.map(([primary, secondary]) => `${primary}>${secondary}`).sort(),
     );
-    expect(pairs).toHaveLength(11);
+    expect(pairs).toHaveLength(12);
   });
 
   it('plan_keys der neuesten save_training_plan-Fassung unverändert', () => {
@@ -4043,7 +4045,15 @@ describe('Rezept-Favoriten in der Datenbank (Gründer-Freigabe 25.10.2026, KONZE
 
 describe('Trainings-Modi in der Datenbank (docs/PLAN-TRAINING-MODI.md 7)', () => {
   const sql = readMigration('_training_modes.sql');
-  const enumValues = (name: string) => quotedListAfter(sql, `create type public.${name} as enum (`);
+  // Werte aus der Migration plus spätere `alter type … add value` (Calisthenics: Reise-Geräte Ringe/Park).
+  const enumValues = (name: string) => [
+    ...quotedListAfter(sql, `create type public.${name} as enum (`),
+    ...[
+      ...allSql.matchAll(
+        new RegExp(`alter type public\\.${name} add value (?:if not exists )?'([^']+)'`, 'g'),
+      ),
+    ].map((match) => match[1] as string),
+  ];
 
   it('Aufzählungen = Listen im Core', () => {
     expect(enumValues('body_region')).toEqual([...BODY_REGIONS]);

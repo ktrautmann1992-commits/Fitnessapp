@@ -1,0 +1,57 @@
+{
+  "id": "australian-pull-up",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Australian Pull-up",
+  "name_en": "Australian Pull-up",
+  "aliases_de": ["Rudern an der niedrigen Stange", "Körperrudern"],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["upper_back", "lats"],
+  "secondary_muscles": ["biceps", "rear_delts"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Rudern mit dem eigenen Körpergewicht unter einer Stange auf Hüfthöhe (Park, Rack oder tief montierte Stange). Je flacher der Körper, desto schwerer.",
+  "steps_de": [
+    "Unter die Stange legen und sie schulterbreit greifen.",
+    "Fersen am Boden, Körper vom Kopf bis zu den Fersen gerade.",
+    "Brust zur Stange ziehen, Schulterblätter zusammen.",
+    "Langsam bis zu gestreckten Armen absenken."
+  ],
+  "tips_de": [
+    "Leichter: Knie beugen und Füße näher heranstellen.",
+    "Schwerer: Stange tiefer oder Füße erhöht."
+  ],
+  "common_mistakes_de": ["Hüfte hängt durch.", "Kinn statt Brust zur Stange."],
+  "safety_note_de": "Die Stange muss fest sitzen und darf nicht rollen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "tuerrahmen-rudern",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "ring-rudern",
+      "reason": "other_equipment",
+      "priority": 2
+    },
+    {
+      "alternative_id": "schlingentrainer-rudern",
+      "reason": "other_equipment",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "id": "l-sitz-gehockt",
+  "version": 1,
+  "status": "draft",
+  "name_de": "L-Sitz gehockt",
+  "name_en": "Tuck L-Sit",
+  "aliases_de": ["Gehockter Stütz"],
+  "movement_pattern": "core_flexion",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["triceps", "quadriceps"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Hände neben der Hüfte (Boden, zwei stabile Stühle oder Parallettes), Körper hochdrücken und die Knie angezogen halten.",
+  "steps_de": [
+    "Sitzen, Hände flach neben der Hüfte.",
+    "Arme strecken, Schultern nach unten drücken.",
+    "Gesäß und Füße vom Boden lösen, Knie zur Brust.",
+    "Halten, dann kontrolliert absetzen."
+  ],
+  "tips_de": ["Leichter: Füße bleiben leicht am Boden.", "Mit Parallettes ist mehr Platz."],
+  "common_mistakes_de": ["Schultern zu den Ohren.", "Arme gebeugt."],
+  "safety_note_de": "Handgelenke vorher aufwärmen (kreisen, sanft dehnen). Bei Schmerzen in Handgelenk, Ellbogen oder Schulter die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "knieheben-haengend",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "l-sitz",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

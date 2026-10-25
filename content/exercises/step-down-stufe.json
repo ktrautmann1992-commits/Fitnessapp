@@ -1,0 +1,49 @@
+{
+  "id": "step-down-stufe",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Step-down von der Stufe",
+  "name_en": "Step-Down",
+  "aliases_de": ["Exzentrischer Step-down"],
+  "movement_pattern": "lunge",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["calves"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Auf einer Stufe stehen und das freie Bein langsam nach unten tippen, das Standbein bremst. Schult die Kniekontrolle, die beim Laufen jeder Schritt braucht.",
+  "steps_de": [
+    "Auf einer Stufe stehen, ein Fuß steht frei über der Kante.",
+    "Standbein langsam beugen, bis die freie Ferse den Boden antippt.",
+    "Knie bleibt über den Zehen, Becken waagerecht.",
+    "Mit dem Standbein zurück nach oben drücken."
+  ],
+  "tips_de": ["Leichter: niedrige Stufe.", "Schwerer: höhere Stufe, langsamer."],
+  "common_mistakes_de": ["Knie fällt nach innen.", "Becken kippt zur Seite."],
+  "safety_note_de": "Nur so tief gehen, wie das Knie über den Zehen bleibt und die Bewegung kontrolliert ist. Bei Schmerzen in Knie oder Hüfte die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "step-up-stufe",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "split-kniebeuge",
+      "reason": "easier",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

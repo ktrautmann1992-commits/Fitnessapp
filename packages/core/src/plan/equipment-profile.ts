@@ -7,6 +7,7 @@ import {
   EQUIPMENT,
   findEquipment,
   OTHER_EQUIPMENT_ID,
+  withImpliedEquipment,
 } from '../equipment';
 import { isExerciseAllowed, type PlanSafetyRules } from './safety';
 
@@ -20,7 +21,21 @@ export interface EquipmentProfile {
   readonly available: ReadonlySet<string>;
   /** Eigene Gewichtsstufen je Gerät (nur zu Hause bekannt). */
   readonly weights: ReadonlyMap<string, readonly number[]>;
+  /**
+   * Schlingentrainer zählt als Kraft-Gerät (docs/PLAN-CALISTHENICS-SCHLINGE.md 3): nur wenn die Bibliothek genug
+   * nutzbare Schlingentrainer-Übungen hat (suspensionTrainerReady). Fehlt das Feld → wie bisher kein Kraft-Gerät.
+   */
+  readonly suspensionReady?: boolean;
 }
+
+/** Optionen von equipmentProfile. */
+export interface EquipmentProfileOptions {
+  /** suspensionTrainerReady(Bibliothek) – siehe EquipmentProfile.suspensionReady. */
+  readonly suspensionReady?: boolean;
+}
+
+/** Orte, die es nur draußen gibt (nie Teil des Studios). */
+const OUTDOOR_ONLY_EQUIPMENT: readonly string[] = ['calisthenics_park'];
 
 /** Ein Gerät zu Hause, wie in den Angaben (barKg nur bei der Langhantel). */
 export interface HomeEquipmentForProfile {
@@ -50,27 +65,38 @@ export function equipmentWeightSteps(
 }
 
 /**
- * Studio = alle Katalog-Geräte außer „Sonstiges“ (Annahme bis Phase 9b); Zuhause = eigene Heim-Geräte;
+ * Studio = alle Katalog-Geräte außer „Sonstiges“ und dem Calisthenics-Park (Annahme bis Phase 9b); Zuhause = eigene
+ * Heim-Geräte inklusive der mitgebrachten (EQUIPMENT_IMPLIES: Park → Klimmzugstange + Barren);
  * „beides“ = Studio, Gewichtsstufen der Heim-Geräte bleiben bekannt.
  */
 export function equipmentProfile(
   trainingLocation: TrainingLocation | EquipmentLocation,
   homeEquipment: readonly HomeEquipmentForProfile[],
+  options: EquipmentProfileOptions = {},
 ): EquipmentProfile {
   const weights = equipmentWeightSteps(homeEquipment);
+  const ready = options.suspensionReady === true ? { suspensionReady: true } : {};
   if (trainingLocation === 'home') {
     return {
       location: 'home',
       available: new Set(
-        homeEquipment.map((item) => item.equipmentId).filter((id) => id !== OTHER_EQUIPMENT_ID),
+        withImpliedEquipment(homeEquipment.map((item) => item.equipmentId)).filter(
+          (id) => id !== OTHER_EQUIPMENT_ID,
+        ),
       ),
       weights,
+      ...ready,
     };
   }
   return {
     location: 'gym',
-    available: new Set(EQUIPMENT.map((item) => item.id).filter((id) => id !== OTHER_EQUIPMENT_ID)),
+    available: new Set(
+      EQUIPMENT.map((item) => item.id).filter(
+        (id) => id !== OTHER_EQUIPMENT_ID && !OUTDOOR_ONLY_EQUIPMENT.includes(id),
+      ),
+    ),
     weights,
+    ...ready,
   };
 }
 
@@ -86,13 +112,49 @@ export function isStrengthEquipment(equipmentId: string): boolean {
   return strength.includes(item.category);
 }
 
+/** Schlingentrainer (Geräte-ID). */
+export const SUSPENSION_TRAINER_ID = 'suspension_trainer';
+
 /**
- * Körpergewicht-Profil (§5.1): Zuhause und KEINE Kraft-Geräte (isStrengthEquipment). Studio („beides“ eingeschlossen) ist nie ein Körpergewicht-Profil.
+ * Kraft-Gerät in DIESEM Profil: isStrengthEquipment, dazu der Schlingentrainer, sobald die Bibliothek genug
+ * Schlingentrainer-Übungen hat (`suspensionReady`, docs/PLAN-CALISTHENICS-SCHLINGE.md 3).
+ */
+export function isStrengthEquipmentIn(
+  equipmentId: string,
+  profile: Pick<EquipmentProfile, 'suspensionReady'>,
+): boolean {
+  return (
+    isStrengthEquipment(equipmentId) ||
+    (equipmentId === SUSPENSION_TRAINER_ID && profile.suspensionReady === true)
+  );
+}
+
+/**
+ * Körpergewicht-Profil (§5.1): Zuhause und KEINE Kraft-Geräte (isStrengthEquipmentIn). Studio („beides“ eingeschlossen) ist nie ein Körpergewicht-Profil.
  */
 export function isBodyweightOnly(
-  profile: Pick<EquipmentProfile, 'location' | 'available'>,
+  profile: Pick<EquipmentProfile, 'location' | 'available' | 'suspensionReady'>,
 ): boolean {
-  return profile.location === 'home' && ![...profile.available].some(isStrengthEquipment);
+  return (
+    profile.location === 'home' &&
+    ![...profile.available].some((id) => isStrengthEquipmentIn(id, profile))
+  );
+}
+
+/**
+ * „Nur Schlingentrainer“-Profil (docs/PLAN-CALISTHENICS-SCHLINGE.md 3.4): Zuhause, Schlingentrainer bereit und kein
+ * anderes Kraft-Gerät. Nur dann kommen die Schlingentrainer-Vorlagen in Frage – wer zusätzlich Kurzhanteln oder Bänder
+ * hat, behält die Zuhause-Vorlage und bekommt Schlingentrainer-Übungen über den Tausch (gemischt).
+ */
+export function isSuspensionOnly(
+  profile: Pick<EquipmentProfile, 'location' | 'available' | 'suspensionReady'>,
+): boolean {
+  return (
+    profile.location === 'home' &&
+    profile.suspensionReady === true &&
+    profile.available.has(SUSPENSION_TRAINER_ID) &&
+    ![...profile.available].some(isStrengthEquipment)
+  );
 }
 
 /** Sind alle nötigen Geräte da? */
@@ -127,6 +189,28 @@ export interface SubstituteContext {
 }
 
 const compareIds = (a: Exercise, b: Exercise) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+
+/**
+ * Schlingentrainer-Übungen der Bibliothek, die `original` als Alternative nennen (Rückwärts-Verknüpfung,
+ * docs/PLAN-CALISTHENICS-SCHLINGE.md 3.2) – nur, wenn der Schlingentrainer im Profil ist; sortiert nach der Priorität
+ * dieser Verknüpfung, dann ID. Leer ohne Schlingentrainer (bisheriges Verhalten unverändert).
+ */
+export function suspensionLinksTo(
+  original: Pick<Exercise, 'id'>,
+  library: ReadonlyMap<string, Exercise>,
+  profile: Pick<EquipmentProfile, 'available'> | null,
+): Exercise[] {
+  if (!profile?.available.has(SUSPENSION_TRAINER_ID)) return [];
+  const linked: { exercise: Exercise; priority: number }[] = [];
+  for (const candidate of library.values()) {
+    if (!candidate.equipment_ids.includes(SUSPENSION_TRAINER_ID)) continue;
+    const link = candidate.alternatives.find((alt) => alt.alternative_id === original.id);
+    if (link) linked.push({ exercise: candidate, priority: link.priority });
+  }
+  return linked
+    .sort((a, b) => a.priority - b.priority || compareIds(a.exercise, b.exercise))
+    .map((item) => item.exercise);
+}
 
 function sharesPrimaryMuscle(a: Exercise, b: Exercise): boolean {
   return a.primary_muscles.some((m) => b.primary_muscles.includes(m));
@@ -172,6 +256,14 @@ export function findSubstitute(original: Exercise, ctx: SubstituteContext): Subs
   const firstLevel = sortAlternatives(original.alternatives);
   for (const alt of firstLevel) {
     const candidate = ctx.library.get(alt.alternative_id);
+    if (ok(candidate)) {
+      return { exercise: candidate, step: 2, reason };
+    }
+  }
+  // Schritt 2b (docs/PLAN-CALISTHENICS-SCHLINGE.md 3.2): Schlingentrainer-Übungen, die diese Übung als Alternative
+  // nennen – nur, wenn der Schlingentrainer am Ort ist. So bekommt, wer ihn hat, z. B. statt Kabelrudern das
+  // Schlingentrainer-Rudern, ohne dass freigegebene Übungen geändert werden müssen.
+  for (const candidate of suspensionLinksTo(original, ctx.library, ctx.profile)) {
     if (ok(candidate)) {
       return { exercise: candidate, step: 2, reason };
     }

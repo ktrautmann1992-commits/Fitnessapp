@@ -66,6 +66,7 @@ import { createDaySwapStore, prunedDaySwaps, withoutHealthPlanSwaps } from '@/da
 import type { FavoriteChange } from '@/data/food-log-rows';
 import { followUpAdjustments, type LocalAdjustment } from '@/data/live-adjust';
 import { applyFewerDays } from '@/data/live-adjust-fewer-days';
+import { forgetRunnerDeviceData } from '@/data/runner';
 import {
   draftToPayload,
   isValidPayload,
@@ -1098,6 +1099,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         }
         // 7.4 (R2-K4): Die Unverträglichkeiten werden nur bei aktiver Zustimmung an das Backend gegeben.
         await backend.revokeHealthData(deleteLogs, convertIntolerances && rows ? { rows } : null);
+        // Lauf-Paket 2: eigener Maximalpuls und Kadenz dieses Kontos auf dem Gerät mit entfernen.
+        if (owner) await forgetRunnerDeviceData(deviceStore, owner).catch(() => undefined);
       } catch (error) {
         replanMeasurementAfterFailedRevoke();
         throw error;
@@ -1776,14 +1779,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   }, [daySwapStore, rows, session]);
 
   const deleteAccount = useCallback(async () => {
+    const owner = session?.userId ?? null;
     await backend.deleteAccount();
     await forgetDaySwaps();
+    if (owner) await forgetRunnerDeviceData(deviceStore, owner).catch(() => undefined);
     // Etappe E: alle geplanten Benachrichtigungen stornieren, Geräte-Einstellung zurücksetzen.
     await appNotifications.reset().catch(() => undefined);
     // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3): Schalter aus, Stand löschen.
     await resetHomeWidget();
     resetUser();
-  }, [backend, forgetDaySwaps, resetUser]);
+  }, [backend, forgetDaySwaps, resetUser, session]);
 
   const pendingCount = useCallback(async () => {
     const pending = await backend.pendingWorkouts();
@@ -1799,15 +1804,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         const count = await pendingCount();
         if (count > 0) return { kind: 'pending', count };
       }
+      const owner = session?.userId ?? null;
       await backend.signOut();
       await forgetDaySwaps();
+      if (owner) await forgetRunnerDeviceData(deviceStore, owner).catch(() => undefined);
       await appNotifications.reset().catch(() => undefined);
       // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3): Schalter aus, Stand löschen.
       await resetHomeWidget();
       resetUser();
       return { kind: 'signed_out' };
     },
-    [backend, forgetDaySwaps, pendingCount, resetUser],
+    [backend, forgetDaySwaps, pendingCount, resetUser, session],
   );
 
   const sendPending = useCallback(async () => {

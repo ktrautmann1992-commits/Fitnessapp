@@ -26,7 +26,8 @@ import {
   SESSION_FOCUSES,
   type TrainingLocation,
 } from '../enums';
-import { isBodyweightTemplate } from '../content/checks';
+import { suspensionTrainerReady } from '../calisthenics/suspension';
+import { isBodyweightTemplate, isCalisthenicsTemplate } from '../content/checks';
 import { adaptTemplate, type AdaptedSession, isVolumeReduced } from './adapt';
 import {
   type CompetitionBlockSetup,
@@ -413,6 +414,9 @@ function generatePlan(
   let templateForVolume: Parameters<typeof isVolumeReduced>[0] | null = null;
 
   if (strengthDays.length > 0) {
+    // Schlingentrainer zählt als Kraft-Gerät, sobald die Bibliothek genug erlaubte Schlingentrainer-Übungen hat
+    // (docs/PLAN-CALISTHENICS-SCHLINGE.md 3.3) – im Supabase-Modus also erst nach der Freigabe.
+    const profileOptions = { suspensionReady: suspensionTrainerReady(library.exercises, rules) };
     const locations = strengthDays.map((d) => locationOfKind(d.kind));
     const homeCount = locations.filter((l) => l === 'home').length;
     // Vorlagen-Ort = Mehrheit der Kraft-Tage, Gleichstand Studio (Frage 5). Gemischte Woche mit Zuhause OHNE
@@ -421,7 +425,7 @@ function generatePlan(
     const mixedWithoutHomeEquipment =
       homeCount > 0 &&
       homeCount < locations.length &&
-      isBodyweightOnly(equipmentProfile('home', inputs.homeEquipment));
+      isBodyweightOnly(equipmentProfile('home', inputs.homeEquipment, profileOptions));
     const primary: EquipmentLocation =
       !mixedWithoutHomeEquipment && homeCount > locations.length - homeCount ? 'home' : 'gym';
     const wishedStrength = inputs.schedule.slots.filter((s) => isStrengthKind(s.kind));
@@ -435,7 +439,7 @@ function generatePlan(
         trainingLocation: strengthLocation(strengthDays),
         sex: inputs.sex,
       },
-      { library, profile: equipmentProfile(primary, inputs.homeEquipment), rules },
+      { library, profile: equipmentProfile(primary, inputs.homeEquipment, profileOptions), rules },
     );
     if (!match) {
       return { ok: false, error: 'no_template' };
@@ -446,10 +450,12 @@ function generatePlan(
     for (const location of new Set<EquipmentLocation>([primary, ...locations])) {
       const adapted = adaptTemplate(match.template, {
         library: library.exercises,
-        profile: equipmentProfile(location, inputs.homeEquipment),
+        profile: equipmentProfile(location, inputs.homeEquipment, profileOptions),
         rules,
       });
-      if (location !== match.template.location) notes.add('location_mismatch');
+      if (location !== match.template.location && !isCalisthenicsTemplate(match.template)) {
+        notes.add('location_mismatch');
+      }
       if (locations.includes(location)) {
         adapted.notes.forEach((note) => notes.add(note));
         if (!adapted.unchanged) unchanged = false;

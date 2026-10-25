@@ -24,6 +24,7 @@ import { deEndurance } from './de-endurance';
 import { deLoop } from './de-loop';
 import { deRacePace } from './de-race-pace';
 import { deShoes } from './de-shoes';
+import { deRunner } from './de-runner';
 import { deHydration } from './de-hydration';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
@@ -43,6 +44,7 @@ import { deSessionKcal } from './de-session-kcal';
 import { deSports } from './de-sports';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
+import { deCalisthenics } from './de-calisthenics';
 import { deTrainingWeek } from './de-training-week';
 import { deWidget } from './de-widget';
 import { deDeviceCalendar, deMonthReview, deWeightTrend } from './de-review';
@@ -304,6 +306,7 @@ export const de = {
         general_fitness: 'Fitness & Gesundheit',
         endurance: 'Ausdauer',
         active_aging: 'Fit im Alter',
+        calisthenics: 'Calisthenics / Körperbeherrschung',
       },
       discipline: 'Disziplin (optional)',
       disciplines: {
@@ -1706,10 +1709,13 @@ export const de = {
   endurance: deEndurance,
   // Schuh-Kilometerzähler und Renn-Pace-Plan (docs/PLAN-PHASE-10.md Abschnitt 22).
   shoes: deShoes,
+  runner: deRunner,
   racePace: deRacePace,
   hydration: deHydration,
   // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
   workouts: deWorkouts,
+  // Calisthenics-Skill-Pfade, Schlingentrainer, Lauf-Kraft (docs/PLAN-CALISTHENICS-SCHLINGE.md)
+  calisthenics: deCalisthenics,
   /** Smartwatch über Health Connect (Phase 8). */
   wearables: deWearables,
   sessionKcal: deSessionKcal,

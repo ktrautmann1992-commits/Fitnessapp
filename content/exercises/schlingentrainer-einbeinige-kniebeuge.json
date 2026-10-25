@@ -1,0 +1,49 @@
+{
+  "id": "schlingentrainer-einbeinige-kniebeuge",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Einbeinige Kniebeuge am Schlingentrainer",
+  "name_en": "Suspension Single-Leg Squat",
+  "aliases_de": [],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors", "abs"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": ["deep_hip_flexion"],
+  "description_de": "Einbeinige Kniebeuge mit Halt an den Griffen. Der Weg zur freien Pistol-Kniebeuge – mit sicherer Unterstützung.",
+  "steps_de": [
+    "Gesicht zum Anker, Griffe fassen, auf einem Bein stehen.",
+    "Anderes Bein leicht nach vorn heben.",
+    "Langsam tief absenken, Knie über den Zehen.",
+    "Mit dem Standbein aufstehen, Seite wechseln."
+  ],
+  "tips_de": ["Weniger mit den Armen ziehen = schwerer."],
+  "common_mistakes_de": ["Knie kippt nach innen.", "Arme ziehen den Körper hoch."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schlingentrainer-kniebeuge",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "pistol-kniebeuge-halt",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

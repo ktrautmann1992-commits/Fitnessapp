@@ -1,0 +1,49 @@
+{
+  "id": "lauf-abc-skippings",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Skippings",
+  "name_en": "Skipping Drill",
+  "aliases_de": ["Fußgelenks-Skipping"],
+  "movement_pattern": "conditioning",
+  "primary_muscles": ["calves"],
+  "secondary_muscles": ["quadriceps"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["high_impact"],
+  "description_de": "Schnelle, kurze Kniehebe-Schritte mit kleinem Kniehub: viele, leichte Bodenkontakte auf dem Vorfuß. Lauf-ABC für Frequenz und Fußaufsatz.",
+  "steps_de": [
+    "Aufrecht, leicht nach vorn geneigt, Arme schwingen mit.",
+    "Knie abwechselnd nur bis etwa Kniehöhe des anderen Beins anheben.",
+    "Schnell und leicht über den Vorfuß abdrücken.",
+    "Etwa 20 Meter, dann locker zurückgehen."
+  ],
+  "tips_de": ["Erst langsam, dann die Frequenz steigern."],
+  "common_mistakes_de": ["Auf den Fersen landen.", "Arme hängen schlaff."],
+  "safety_note_de": "Auf ebenem, rutschfestem Untergrund in Laufschuhen üben. Locker und leichtfüßig bleiben; bei Schmerzen in Fuß, Knie oder Hüfte die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "lauf-abc-fussgelenksarbeit",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "lauf-abc-kniehebelauf",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

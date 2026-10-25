@@ -1,0 +1,271 @@
+{
+  "id": "muskelaufbau-einsteiger-3t-schlingentrainer",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Muskelaufbau · Einsteiger · 3 Tage · nur Schlingentrainer",
+  "description_de": "Drei Ganzkörper-Einheiten pro Woche nur mit einem Schlingentrainer, je 40–60 Minuten. Ziel Muskelaufbau: mehr Sätze im Bereich 8–12 Wiederholungen; schwerer wird es über den Körperwinkel. Für Einsteiger mit zwei Wiederholungen Reserve. Anker sicher befestigen und vor jedem Training testen.",
+  "goal_type": "muscle_gain",
+  "experience_level": "beginner",
+  "sessions_per_week": 3,
+  "minutes_min": 40,
+  "minutes_max": 60,
+  "location": "home",
+  "required_equipment_ids": ["suspension_trainer"],
+  "optional_equipment_ids": [],
+  "sex": null,
+  "sessions": [
+    {
+      "day_index": 1,
+      "name_de": "Ganzkörper A",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen, Anker und Gurte prüfen (Belastung kurz testen), dann Schultern und Hüfte kreisen.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "schlingentrainer-kniebeuge",
+          "sets": 3,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "schlingentrainer-rudern",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": "Schwerer: Füße weiter unter den Anker stellen (flacherer Körper)."
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "schlingentrainer-brustpresse",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": "Schwerer: Füße weiter nach hinten (flacherer Körper)."
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "schlingentrainer-hueftheben",
+          "sets": 2,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "schlingentrainer-bizepscurl",
+          "sets": 2,
+          "reps_min": 10,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "schlingentrainer-trizepsstrecken",
+          "sets": 2,
+          "reps_min": 10,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        }
+      ]
+    },
+    {
+      "day_index": 2,
+      "name_de": "Ganzkörper B",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen, Anker und Gurte prüfen (Belastung kurz testen), dann Schultern und Hüfte kreisen.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "schlingentrainer-ausfallschritt-assistiert",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "schlingentrainer-rudern",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": "Schwerer: Füße weiter unter den Anker stellen (flacherer Körper)."
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "schlingentrainer-brustpresse",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": "Schwerer: Füße weiter nach hinten (flacherer Körper)."
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "schlingentrainer-beinbeuger",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "schlingentrainer-face-pull",
+          "sets": 2,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "schlingentrainer-y-heben",
+          "sets": 2,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        }
+      ]
+    },
+    {
+      "day_index": 3,
+      "name_de": "Ganzkörper C",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen, Anker und Gurte prüfen (Belastung kurz testen), dann Schultern und Hüfte kreisen.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "schlingentrainer-kniebeuge",
+          "sets": 3,
+          "reps_min": 10,
+          "reps_max": 15,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "schlingentrainer-rudern-einarmig",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 10,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "schlingentrainer-fliegende",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": "Schwerer: Füße weiter nach hinten (flacherer Körper)."
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "schlingentrainer-beinbeuger",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "schlingentrainer-bizepscurl",
+          "sets": 2,
+          "reps_min": 10,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "schlingentrainer-trizepsstrecken",
+          "sets": 2,
+          "reps_min": 10,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 60,
+          "rpe_target": 7,
+          "superset_group": null,
+          "notes_de": null
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf „nur Schlingentrainer“ (docs/PLAN-CALISTHENICS-SCHLINGE.md 3.4) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

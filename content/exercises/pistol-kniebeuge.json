@@ -1,0 +1,44 @@
+{
+  "id": "pistol-kniebeuge",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Pistol-Kniebeuge",
+  "name_en": "Pistol Squat",
+  "aliases_de": ["Einbeinige Kniebeuge frei"],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors", "abs", "calves"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 3,
+  "caution_tags": ["high_skill", "deep_hip_flexion"],
+  "description_de": "Freie einbeinige Kniebeuge bis ganz nach unten, das andere Bein bleibt gestreckt vorn. Braucht Kraft, Beweglichkeit und Gleichgewicht.",
+  "steps_de": [
+    "Auf einem Bein stehen, das andere Bein und die Arme nach vorn strecken.",
+    "Langsam tief absenken, Ferse bleibt am Boden.",
+    "Unten kurz kontrollieren, ohne zu federn.",
+    "Kraftvoll aufstehen, dann die Seite wechseln."
+  ],
+  "tips_de": ["Ferse auf einer flachen Unterlage erleichtert die Tiefe."],
+  "common_mistakes_de": ["Rücken rundet unten stark.", "Knie kippt nach innen."],
+  "safety_note_de": "Nur so tief gehen, wie das Knie über den Zehen bleibt und die Bewegung kontrolliert ist. Bei Schmerzen in Knie oder Hüfte die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "pistol-kniebeuge-kasten",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

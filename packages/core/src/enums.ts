@@ -48,6 +48,9 @@ export const GOAL_TYPES = [
   'general_fitness',
   'endurance',
   'active_aging',
+  // Calisthenics / Körperbeherrschung (Gründer-Freigabe 25.10.2026, docs/PLAN-CALISTHENICS-SCHLINGE.md 2; Datenbank
+  // per `alter type … add value` in 20261026120000_calisthenics_enums.sql).
+  'calisthenics',
 ] as const;
 export type GoalType = (typeof GOAL_TYPES)[number];
 
@@ -230,7 +233,13 @@ export const CONTENT_ORIGINS = ['claude_session', 'batch', 'manual'] as const;
 export type ContentOrigin = (typeof CONTENT_ORIGINS)[number];
 
 /** Ziele mit Plan-Vorlagen (Matrix Phase 2, Abschnitt 14 Frage 1). „definition“ nutzt Muskelaufbau. */
-export const TEMPLATE_GOAL_TYPES = ['muscle_gain', 'fat_loss', 'general_fitness'] as const;
+export const TEMPLATE_GOAL_TYPES = [
+  'muscle_gain',
+  'fat_loss',
+  'general_fitness',
+  // Calisthenics-Vorlagen (Entwürfe, docs/PLAN-CALISTHENICS-SCHLINGE.md 2; CHECK in *_calisthenics_rules.sql).
+  'calisthenics',
+] as const;
 export type TemplateGoalType = (typeof TEMPLATE_GOAL_TYPES)[number];
 
 /** Level mit Plan-Vorlagen (Abschnitt 14 Frage 2). „competitive“ nutzt vorerst „advanced“. */
@@ -307,6 +316,9 @@ export const GOAL_TEMPLATE_MAPPING = {
   // Fit im Alter (FA1): eigene Vorlagen kommen mit Etappe FA2 (Matrix-Eintrag, CHECK plan_templates.goal_type). Bis
   // dahin die nächstbeste Vorlage „Allgemeine Fitness“ – das Sicherheitsprofil ACTIVE_AGING_RULES gilt trotzdem.
   active_aging: { goal: 'general_fitness', kind: 'fallback' },
+  // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): eigene Vorlagen. Solange keine freigegeben ist, gewinnt im
+  // Matching die nächstbeste Vorlage (Ziel-Punkte 0 → Güte `fallback`).
+  calisthenics: { goal: 'calisthenics', kind: 'same' },
 } as const satisfies Record<
   GoalType,
   { goal: TemplateGoalType; kind: 'same' | 'mapped' | 'fallback' }
@@ -509,5 +521,8 @@ export const TRAVEL_EQUIPMENT_OPTIONS = [
   'hotel_gym',
   'band',
   'suspension_trainer',
+  // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.3): Turnringe im Gepäck, Calisthenics-Park am Reiseort.
+  'rings',
+  'outdoor_park',
 ] as const;
 export type TravelEquipment = (typeof TRAVEL_EQUIPMENT_OPTIONS)[number];

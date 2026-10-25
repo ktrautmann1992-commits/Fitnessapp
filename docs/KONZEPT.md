@@ -196,6 +196,11 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   schneller) oder nach dem Höhenprofil einer gespeicherten Strecke (GPX); Summe immer = Zielzeit. Verpflegungspunkte
   aus der Wettkampf-Ernährung (gleiche Mengen), Hinweis bei unplausibler Zielzeit (gleiche Regel wie die Ampel),
   Druckansicht/PDF. `racePaceCheckpoint` liefert den Stand für spätere Sprach-Ansagen.
+- **Lauf-Paket 2 (Gründer-Freigabe „Baue alles“ 25.10.2026, `docs/PLAN-LAUF-PAKET-2.md`):** Pulszonen nach
+  Herzfrequenz-Reserve (Karvonen) bzw. % HFmax mit eigenem Maximalpuls, Zonen-Tabelle je Lauf; Belastungs-Ampel
+  (7 zu 28 Tage, 10-%-Regel, keine medizinische Aussage); Zeitprognose 5 km bis Marathon (Riegel, Bereich, nicht bei
+  zu wenig Daten); bergbereinigtes Tempo (GAP, Minetti); Kadenz aus den Schritten der Uhr; Hinweis „Es wird dunkel“
+  (Sonnenstand nach NOAA auf dem Gerät). Alles auf dem Gerät gerechnet, keine neue Tabelle, nie auf dem Story-Bild.
 - Ausdauer-Ziel klarer (Gründer-Feedback „Ziel Marathon → Plan für allgemeine Fitness“): Beim Ziel Ausdauer belegt
   „Deine Trainingstage“ Ausdauer-Tage vor (`suggestedTrainingSlots`, Werte `ENDURANCE_GOAL_SUGGESTION`: 3 Ausdauer + 2 Kraft,
   Leistungssport 4 + 2, vorsichtig 2 + 1, Triathlon mehr Ausdauer; Deckel wie oben) – nur ohne gewählte Tage, änderbar
@@ -325,11 +330,29 @@ Gründer-Freigabe 25.10.2026, Details und Entscheidungen: `docs/PLAN-TRAINING-MO
   mehr als 14 Tage am Stück oder wiederkehrend → „Bitte ärztlich abklären lassen“ und konservativer Plan. Keine
   Diagnose. Gesundheitsdatum: Einwilligung `health_data` Fassung ≥ 2, Tabelle `pain_episodes` mit RLS, Widerruf
   löscht, Export, Löschung nach 12 Monaten.
-- **Reise-Modus:** Zeitraum + Geräte (nur Körpergewicht, Kurzhanteln, Hotel-Gym, Widerstandsband, Schlingentrainer –
-  ohne eigene Übungen vorerst wie Körpergewicht) + optional kürzere Einheiten; Banner „Reise-Modus bis …“; der Plan
+- **Reise-Modus:** Zeitraum + Geräte (nur Körpergewicht, Kurzhanteln, Hotel-Gym, Widerstandsband, Schlingentrainer,
+  Turnringe, Calisthenics-Park; Schlingentrainer ohne freigegebene Übungen wie Körpergewicht, siehe 4.4) + optional
+  kürzere Einheiten; Banner „Reise-Modus bis …“; der Plan
   bleibt gespeichert, die Anzeige gilt nur im Zeitraum.
 - **Aufwärmen & Dehnen:** je Kraft-Einheit ~5 min davor und ~5 min danach aus der Bibliothek, Schalter in den
   Einstellungen, „Überspringen“ im Training; ohne freigegebene Übungen der Vorlagen-Text.
+
+### 4.4 Calisthenics, Schlingentrainer, Lauf-Kraft & Lauf-ABC (Gratis, ohne KI)
+Gründer-Freigabe 25.10.2026, Details, Freigabeliste und offene Punkte: `docs/PLAN-CALISTHENICS-SCHLINGE.md`, Logik
+`packages/core/src/calisthenics/` und `packages/core/src/plan/run-strength.ts`. Alle Inhalte zunächst Entwurf.
+- **Calisthenics:** Ziel „Calisthenics / Körperbeherrschung“, Geräte Klimmzugstange, Barren/Dip-Station, Turnringe,
+  Parallettes, Calisthenics-Park (Onboarding, Profil, Reise-Modus). 10 **Skill-Pfade** (Klimmzug, Rudern, Dips,
+  Liegestütz, Kniebeuge, Rumpf; Handstand, Muscle-up, Front/Back Lever). Feste Regel: Ziel in 2 Einheiten hintereinander
+  sauber (RPE ≤ 8) → „Nächste Stufe freigeschaltet“ (Vorschlag, neutral, keine Abzeichen); 3× deutlich verfehlt →
+  Tipp „vorige Stufe“. Sperren: Skills nicht für Einsteiger, ab 65/„Fit im Alter“, nach Gesundheits-Check, im
+  Schon-Modus, ohne Gerät; Muscle-up erst ab 8 sauberen Klimmzügen + 10 Dips (`SKILL_GATES`).
+- **Schlingentrainer:** Schwierigkeit über den Körperwinkel (`SUSPENSION_SETUPS`), Anker an der Tür nur auf der
+  Seite, zu der sie sich schließt, Belastung vorher testen. Tausch-Alternative bei allen Zielen (mischbar mit
+  Kurzhanteln), „Nur Schlingentrainer“-Vorlagen. Zählt als Kraft-Gerät, sobald je Grundmuster eine freigegebene Übung
+  da ist (Testmodus: Entwürfe mit „Testinhalt“).
+- **Lauf-Kraft & Lauf-ABC:** 15-min-Einheiten 1× (vorsichtig/Einsteiger) bzw. 2× pro Woche an lockeren Lauftagen,
+  höchstens +1 je Woche, in Einstiegs-/Erholungswochen nur sanft, nie am Tag vor einer Schlüsseleinheit, im
+  Schon-Modus ohne belastende Übungen. Reine Anzeige, zählt nicht zum Laufumfang.
 
 ## 5. Tagesansicht & Trainingstagebuch
 
@@ -1327,6 +1350,11 @@ eigene Zeilen, in Export und Kontolöschung enthalten.
   `workout_category`, `workout_format`; `log_source` um `workout` ergänzt.
 - `seed_workouts(p_content, p_require_expert_review)` und `mark_session_log_workout(p_log_id)`; `save_session_log`
   und `export_my_data` unverändert (Export enthält `source` automatisch). Eigene Spalte `workout_id` offen (W-O1).
+
+### Abweichungen ab Calisthenics & Schlingentrainer (Branch, siehe `docs/PLAN-CALISTHENICS-SCHLINGE.md` 6 und `supabase/migrations/20261026120*`)
+- Enums: `goal_type` + `calisthenics`, `workout_category` + `run_strength`, `travel_equipment` + `rings`, `outdoor_park`.
+- Geräte `gymnastic_rings`, `parallettes`, `calisthenics_park`; `dip_station` auch zu Hause. CHECK der Vorlagen-Ziele
+  und `goal_pair_allowed` um Calisthenics erweitert. Keine neue Nutzerdaten-Tabelle (Fortschritt aus dem Tagebuch).
 
 ## 13. Monetarisierung
 **Testphase (Gründer-Entscheidung 19.10.2026): alles offen, Abos ruhen.** Bis der Test vollständig abgeschlossen ist,

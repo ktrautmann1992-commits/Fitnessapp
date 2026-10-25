@@ -23,6 +23,8 @@ export * from './nutrition';
 export * from './evaluation';
 export * from './retail';
 export * from './routes';
+// Lauf-Paket 2: Pulszonen, Belastungs-Ampel, Zeitprognose, GAP, Kadenz, Dunkelheit (docs/PLAN-LAUF-PAKET-2.md).
+export * from './running';
 // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md Abschnitt 22).
 export * from './shoes';
 export * from './share';
@@ -40,6 +42,8 @@ export * from './plan/day-variant';
 export * from './workouts';
 // Trainings-Modi: Schmerz-/Verletzungsmodus, Reise-Modus, Aufwärmen & Dehnen (docs/PLAN-TRAINING-MODI.md).
 export * from './modes';
+// Calisthenics-Skill-Pfade und Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md).
+export * from './calisthenics';
 // Phase 8 · Wearables: Galaxy Watch über Health Connect (docs/PLAN-PHASE-8.md).
 export * from './wearables';
 // Sportarten Stufe 2 (docs/PLAN-SPORTARTEN.md).

@@ -184,6 +184,25 @@ export function isBodyweightTemplate(
 }
 
 /**
+ * Calisthenics-Vorlage (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.4): Ziel `calisthenics`. Ortsunabhängig – Stange und
+ * Barren gibt es zu Hause, im Studio und im Park; im Matching zählt der Ort deshalb nicht.
+ */
+export function isCalisthenicsTemplate(template: Pick<PlanTemplate, 'goal_type'>): boolean {
+  return template.goal_type === 'calisthenics';
+}
+
+/**
+ * „Nur Schlingentrainer“-Vorlage (docs/PLAN-CALISTHENICS-SCHLINGE.md 3.4): Zuhause, Pflicht-Gerät Schlingentrainer.
+ */
+export function isSuspensionTemplate(
+  template: Pick<PlanTemplate, 'location' | 'required_equipment_ids'>,
+): boolean {
+  return (
+    template.location === 'home' && template.required_equipment_ids.includes('suspension_trainer')
+  );
+}
+
+/**
  * Ü5 (gelb): Jedes Bewegungsmuster, das in der Bibliothek vorkommt, braucht mindestens eine Variante ohne
  * Geräte oder nur mit Band. Zurückgezogene Übungen zählen nicht.
  */

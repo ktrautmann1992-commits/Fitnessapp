@@ -1,0 +1,20 @@
+{
+  "exercise_id": "step-down-stufe",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "step-down-stufe-start.svg",
+      "alt_de": "Ausgangsposition: auf einem Bein an der Kante einer Stufe stehen, das andere Bein hängt frei vor der Kante, Hände an der Hüfte.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

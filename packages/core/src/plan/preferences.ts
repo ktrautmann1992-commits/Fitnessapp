@@ -10,7 +10,7 @@ import {
   type PlannedSessionKind,
 } from '../enums';
 import type { PlannedExerciseDraft } from './adapt';
-import { type EquipmentProfile, isExerciseFeasible } from './equipment-profile';
+import { type EquipmentProfile, isExerciseFeasible, suspensionLinksTo } from './equipment-profile';
 import { isExerciseAllowed, type PlanSafetyRules } from './safety';
 
 /**
@@ -248,8 +248,10 @@ export function swapCandidatesFor(
     ...sortAlternatives(stored.alternatives, cautious),
     ...(shown.id !== stored.id ? sortAlternatives(shown.alternatives, cautious) : []),
   ];
-  // Stufe 1: Alternativen von S, dann von X
+  // Stufe 1: Alternativen von S, dann von X; danach Schlingentrainer-Übungen, die S nennen (nur mit Schlingentrainer
+  // am Ort, docs/PLAN-CALISTHENICS-SCHLINGE.md 3.2)
   for (const alt of firstLevel) push(ctx.library.get(alt.alternative_id));
+  suspensionLinksTo(stored, ctx.library, profile).forEach(push);
   // Stufe 2: Alternativen der Alternativen
   for (const alt of firstLevel) {
     const parent = ctx.library.get(alt.alternative_id) ?? ctx.lookup?.get(alt.alternative_id);

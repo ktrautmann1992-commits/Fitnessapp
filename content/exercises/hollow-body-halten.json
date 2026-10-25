@@ -1,0 +1,49 @@
+{
+  "id": "hollow-body-halten",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hollow Body halten",
+  "name_en": "Hollow Body Hold",
+  "aliases_de": ["Schiffchen"],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques", "quadriceps"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["long_supine", "floor_transfer"],
+  "description_de": "Die Grundspannung fürs Calisthenics: Arme und Beine gestreckt knapp über dem Boden, der untere Rücken bleibt am Boden.",
+  "steps_de": [
+    "Rückenlage, unterer Rücken fest am Boden.",
+    "Schultern anheben, Arme gestreckt neben die Ohren.",
+    "Gestreckte Beine anheben, nur so tief, wie der Rücken unten bleibt.",
+    "Halten und ruhig atmen."
+  ],
+  "tips_de": ["Leichter: Arme neben dem Körper oder Beine höher."],
+  "common_mistakes_de": ["Unterer Rücken hebt ab.", "Luft anhalten."],
+  "safety_note_de": "Der untere Rücken bleibt am Boden. Bei Ziehen im Rücken leichter werden oder die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "hollow-body-gehockt",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "unterarmstuetz",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

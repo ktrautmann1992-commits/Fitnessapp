@@ -1,0 +1,47 @@
+{
+  "id": "schlingentrainer-atomic-liegestuetz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Atomic Push-up",
+  "name_en": "Atomic Push-up",
+  "aliases_de": ["Liegestütz mit Knieanzug"],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest", "abs"],
+  "secondary_muscles": ["triceps", "front_delts", "obliques"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "Ein Liegestütz mit den Füßen in den Schlaufen, danach die Knie zur Brust ziehen. Verbindet Drücken und Bauch in einer Bewegung.",
+  "steps_de": [
+    "Füße in die Schlaufen, hoher Liegestütz.",
+    "Einen Liegestütz machen.",
+    "Oben die Knie zur Brust ziehen.",
+    "Beine wieder strecken – das ist eine Wiederholung."
+  ],
+  "tips_de": [
+    "Füße in den Schlaufen: Hände weiter vom Ankerpunkt weg = schwerer; Schlaufen etwa 30 cm über dem Boden.",
+    "Leichter: Liegestütz und Knieanzug getrennt üben."
+  ],
+  "common_mistakes_de": ["Hüfte sackt beim Strecken ab.", "Hektische Bewegung."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schlingentrainer-liegestuetz",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

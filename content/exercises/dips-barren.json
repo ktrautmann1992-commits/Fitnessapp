@@ -1,0 +1,56 @@
+{
+  "id": "dips-barren",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Dips am Barren",
+  "name_en": "Parallel Bar Dip",
+  "aliases_de": ["Barren-Dips"],
+  "movement_pattern": "elbow_extension",
+  "primary_muscles": ["triceps", "chest"],
+  "secondary_muscles": ["front_delts"],
+  "equipment_ids": ["dip_station"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Am Barren absenken und wieder hochdrücken. Kräftigt Trizeps, Brust und vordere Schulter – „sauber“ heißt: bis die Oberarme etwa waagerecht sind.",
+  "steps_de": [
+    "Im Stütz beginnen, Arme gestreckt, Schultern tief.",
+    "Ellbogen nach hinten beugen und absenken, bis die Oberarme etwa waagerecht sind.",
+    "Kraftvoll zurück in den Stütz drücken."
+  ],
+  "tips_de": [
+    "Leichter: mit Widerstandsband unter den Knien.",
+    "Schwerer: langsamer absenken oder später an den Ringen."
+  ],
+  "common_mistakes_de": ["Viel zu tief absenken.", "Schultern rollen nach vorn."],
+  "safety_note_de": "Holme vorher auf festen Stand prüfen. Nur so tief absenken, wie die Schultern es ohne Ziehen erlauben. Bei Schmerzen in Schulter, Ellbogen oder Brustbein die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "dips-negativ-barren",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "dips-stuhl",
+      "reason": "home",
+      "priority": 2
+    },
+    {
+      "alternative_id": "dips-ringe",
+      "reason": "harder",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

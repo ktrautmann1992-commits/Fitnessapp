@@ -1,0 +1,49 @@
+{
+  "id": "hollow-body-gehockt",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hollow Body gehockt",
+  "name_en": "Tuck Hollow Hold",
+  "aliases_de": ["Schiffchen gehockt"],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["long_supine", "floor_transfer"],
+  "description_de": "Rückenlage, Lendenwirbel fest am Boden, Schultern und Knie leicht angehoben. Leichte Vorstufe des Hollow Body.",
+  "steps_de": [
+    "Auf den Rücken legen, Knie zur Brust anziehen.",
+    "Unteren Rücken fest in den Boden drücken.",
+    "Kopf und Schultern leicht anheben, Arme neben den Beinen.",
+    "Ruhig atmen und halten."
+  ],
+  "tips_de": ["Schwerer: Beine etwas weiter strecken."],
+  "common_mistakes_de": ["Hohlkreuz – der untere Rücken hebt ab.", "Kinn auf die Brust gepresst."],
+  "safety_note_de": "Der untere Rücken bleibt am Boden. Bei Ziehen im Rücken leichter werden oder die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "dead-bug",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "hollow-body-halten",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

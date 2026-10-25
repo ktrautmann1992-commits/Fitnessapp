@@ -1,0 +1,56 @@
+{
+  "id": "schlingentrainer-t-heben",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schlingentrainer-T-Heben",
+  "name_en": "Suspension T-Raise",
+  "aliases_de": [],
+  "movement_pattern": "shoulder_isolation",
+  "primary_muscles": ["rear_delts", "upper_back"],
+  "secondary_muscles": [],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Zurückgelehnt die gestreckten Arme seitlich öffnen, bis der Körper ein „T“ bildet. Kräftigt hintere Schulter und oberen Rücken.",
+  "steps_de": [
+    "Gesicht zum Anker, Arme gestreckt vor der Brust, zurücklehnen.",
+    "Arme auf Schulterhöhe seitlich öffnen.",
+    "Schulterblätter zusammen, Körper bleibt gerade.",
+    "Langsam zurück."
+  ],
+  "tips_de": [
+    "Gesicht zum Anker: Füße weiter nach vorn (unter den Anker) = schwerer, weiter zurück = leichter."
+  ],
+  "common_mistakes_de": ["Arme beugen sich stark.", "Mit der Hüfte Schwung holen."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schlingentrainer-y-heben",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "reverse-fly-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 2
+    },
+    {
+      "alternative_id": "y-t-w-vorgebeugt",
+      "reason": "home",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

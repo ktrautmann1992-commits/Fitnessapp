@@ -28,7 +28,16 @@ import type { ContentKindDefinition, GenerationCell, LibraryContext } from './ty
 /** max_tokens je Vorlage (Plan Abschnitt 10/15). */
 export const PLAN_TEMPLATE_MAX_TOKENS = 24_000;
 
-const GOALS: Record<TemplateGoalType, { de: string; slug: string; aliases: string[] }> = {
+/**
+ * Ziele der Batch-Erzeugung. Calisthenics-Vorlagen (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.4) entstehen bisher nur als
+ * Entwürfe aus der Claude-Sitzung – die Gemini-Pipeline bleibt bei den drei bisherigen Zielen (Prompts darauf
+ * abgestimmt).
+ */
+type PipelineGoal = Exclude<TemplateGoalType, 'calisthenics'>;
+const PIPELINE_GOALS = TEMPLATE_GOAL_TYPES.filter(
+  (goal): goal is PipelineGoal => goal !== 'calisthenics',
+);
+const GOALS: Record<PipelineGoal, { de: string; slug: string; aliases: string[] }> = {
   muscle_gain: { de: 'Muskelaufbau', slug: 'muskelaufbau', aliases: ['muskelaufbau'] },
   fat_loss: { de: 'Fettverlust', slug: 'fettverlust', aliases: ['fettverlust'] },
   general_fitness: { de: 'Allgemeine Fitness', slug: 'fitness', aliases: ['fitness'] },
@@ -54,7 +63,7 @@ export const HOME_REQUIRED_EQUIPMENT = ['dumbbells', 'resistance_bands'] as cons
 export const HOME_OPTIONAL_EQUIPMENT = ['flat_bench', 'pull_up_bar'] as const;
 
 interface TemplateCellValues {
-  goal: TemplateGoalType;
+  goal: PipelineGoal;
   level: TemplateExperienceLevel;
   days: number;
   location: TemplateLocation;
@@ -75,7 +84,7 @@ export function templateIdFor(values: Omit<TemplateCellValues, 'minutesMin' | 'm
 }
 
 function cellFor(
-  goal: TemplateGoalType,
+  goal: PipelineGoal,
   level: TemplateExperienceLevel,
   days: (typeof DAYS)[number],
   location: TemplateLocation,
@@ -91,7 +100,7 @@ function cellFor(
 }
 
 function valuesOf(cell: GenerationCell): TemplateCellValues {
-  const goal = cell.values.goal as TemplateGoalType;
+  const goal = cell.values.goal as PipelineGoal;
   const level = cell.values.level as TemplateExperienceLevel;
   const location = cell.values.location as TemplateLocation;
   const duration = cell.values.duration as TemplateDuration;
@@ -371,7 +380,7 @@ export const planTemplateKind: ContentKindDefinition = {
     {
       key: 'goal',
       labelDe: 'Ziel',
-      values: TEMPLATE_GOAL_TYPES.map((value) => ({ value, aliases: GOALS[value].aliases })),
+      values: PIPELINE_GOALS.map((value) => ({ value, aliases: GOALS[value].aliases })),
     },
     {
       key: 'level',
@@ -401,7 +410,7 @@ export const planTemplateKind: ContentKindDefinition = {
     },
   ],
   cells: () =>
-    TEMPLATE_GOAL_TYPES.flatMap((goal) =>
+    PIPELINE_GOALS.flatMap((goal) =>
       TEMPLATE_EXPERIENCE_LEVELS.flatMap((level) =>
         DAYS.flatMap((days) =>
           (Object.keys(LOCATIONS) as TemplateLocation[]).flatMap((location) =>

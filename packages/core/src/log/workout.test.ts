@@ -5,7 +5,7 @@ import { equipmentProfile } from '../plan/equipment-profile';
 import { swapCandidatesFor } from '../plan/preferences';
 import { planSafetyRules } from '../plan/safety';
 import { pref } from '../plan/swap-test-helpers';
-import { FULL_HOME, MONDAY, person, repoLibrary } from '../plan/test-library';
+import { FULL_HOME, MONDAY, person, repoLibraryWithPending } from '../plan/test-library';
 import { prepareSessionForDisplay, type StoredSession } from '../plan/view';
 import { sessionLogPayloadSchema } from './schemas';
 import type { Exercise } from '../content/schemas';
@@ -36,7 +36,8 @@ import {
  * Trainingsmodus (Etappe C1): Vorgabe, Zustand und Hinweis je Übung aus angezeigter Einheit + Tagebuch – mit den
  * echten Inhalten aus content/.
  */
-const lib = repoLibrary();
+// Inkl. der Calisthenics-Vorlagen, die erst mit claude/calisthenics-inhalte-2 nach content/ kommen.
+const lib = repoLibraryWithPending();
 const library = lib.exercises;
 const ex = (id: string) => {
   const found = library.get(id);

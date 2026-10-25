@@ -16,6 +16,9 @@ export const deGoalChoice = {
     endurance: 'Ausdauer verbessern – Laufen, Rad, Schwimmen oder Triathlon.',
     // Fit im Alter (docs/PLAN-FIT-IM-ALTER.md 5): Untertitel aus dem Plan, keine Wirkungsaussage zu Stürzen (4.2).
     active_aging: 'Kraft, Gleichgewicht und Beweglichkeit für einen selbstständigen Alltag.',
+    // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): Stufen statt Gewichte, Skills nur mit Voraussetzungen.
+    calisthenics:
+      'Kraft mit dem eigenen Körper an Stange und Barren – Stufe für Stufe, bis zu Skills wie Handstand oder Muscle-up.',
   },
   secondaryLabel: 'Zweites Ziel (optional)',
   secondaryIntro:
@@ -53,6 +56,8 @@ export const deGoalChoice = {
       'Fit im Alter steht vorn, dazu ein kleines Kaloriendefizit. Im Alter ist Muskelerhalt wichtiger als die Zahl auf der Waage.',
     'endurance>muscle_gain':
       'Ausdauer steht vorn, dazu Krafttraining für Muskelaufbau – ohne Kaloriendefizit.',
+    'calisthenics>fat_loss':
+      'Calisthenics steht vorn, dazu ein Kaloriendefizit und viel Eiweiß, damit die Kraft erhalten bleibt.',
   } as Record<string, string>,
   enduranceSecondary: 'Dein zweites Ziel ist Ausdauer – Disziplin und Datum sind optional.',
   /** Ohne Einwilligung Gesundheitsdaten: konkretes Abnehmziel gesperrt (Plan 2.3). */
