@@ -2212,3 +2212,55 @@ Strecke zu lang, Verpflegung je Stufe, nur allgemein, unplausibel, Referenz zu w
   erst, wenn ihr eine Laufteil-Zielzeit wollt.
 - **SP-G3** Gewählte Aufteilung/Strecke merkt sich die Karte nur bis zum Verlassen (nicht gespeichert).
 - **SP-G4** Mehrere Geräte offline gleichzeitig: der zuletzt gesendete Schuh-Stand gewinnt.
+
+---
+
+## Nachtrag 25.10.2026 – „Meine Strecken“ (gleiche Strecke wiedererkennen)
+
+Gründer-Entscheidungen (Vorschlag 24.10.2026, Standardwerte übernommen): (1) Läufe ohne Antwort zählen **vorläufig**
+mit (Kennzeichnung „automatisch“), bis „Nein“ getippt wird; (2) eine Runde **andersherum** ist eine eigene Strecke;
+(3) Rundkurs mit **anderem Startpunkt**: erst später; (4) „Favorit“ heißt in der Oberfläche **„Meine Strecke“**
+(technisch bleibt `is_favorite`).
+
+**Erkennung** (`packages/core/src/routes/match.ts`, feste Regeln auf dem Gerät, keine KI, gratis): gleiche Person
+und Sportart → nicht abgelehnt → Distanz ±10 % → Rahmen (bbox + 200 m) überlappen → Start und Ende je ≤ 150 m →
+beide Linien vereinfacht, alle 25 m neu abgetastet (höchstens 200 Punkte), überstehende Anfangs-/Endstücke bis 150 m
+abgeschnitten (verspäteter GPS-Start der Uhr) → diskreter Fréchet-Abstand ≤ 60 m; passt die umgedrehte Linie um mehr
+als 10 m besser, ist es „andersherum“ (kein Treffer). Mehrere Treffer → kleinster Abstand, dann älteste Strecke, dann
+id. Konstanten: `ROUTE_MATCH` in `constants.ts` (Quellen dort). `autoMatchRoutes` läuft nach jedem Laden der Strecken
+(App-Aufzeichnung, GPX) und direkt nach dem Abgleich mit der Uhr (`apps/mobile/src/data/route-match.ts`).
+
+**Vergleich** (`compare.ts`): `compareAttempts` zählt Läufe mit `route_match` repeat/auto/confirmed (nie rejected);
+`routeHistory` (Verlauf, zeitlich, nicht vergleichbare markiert, kein Feld „best“), `attemptPaceText`
+(„Ø Pace 5:38 → 5:24 /km“, Rad km/h). Übersichten in `my-routes.ts` (`myRouteTiles`, `routeMatchInfo`,
+`latestAutoMatch`).
+
+**Datenbank** (`20261025120000_route_match.sql`, nur additiv, RLS unverändert): `tracked_routes.route_match`
+(CHECK repeat/auto/confirmed/rejected, Bestand mit Verweis → repeat), `match_rejected_ids uuid[]` (höchstens 20),
+`auto_match boolean default true`; Trigger hält Herkunft und Verweis stimmig (auch beim Löschen der Strecke);
+`set_route_match(p_route, p_favorite, p_state)` (auto | confirmed | rejected | clear; eigene Strecke, Ziel eigener
+Favorit derselben Sportart, ±10 %, kein Kreis; „auto“ überschreibt keine Entscheidung) und `set_route_auto_match`.
+Export über `export_my_data` automatisch (ganze Zeile). pgTAP: `supabase/tests/68_route_match.test.sql`. Testmodus:
+gleiche Regeln in `apps/mobile/src/data/tracked-route-rows.ts`.
+
+**App**: Ausdauer → Hinweis „Lauf von der Uhr (…) passt vermutlich zu …“ und Kacheln „Meine Strecken“ (zuletzt
+gelaufen zuerst); Lauf-Detail → Vorschlag „Gleiche Strecke wie …“ mit Ja / Nein / Andere Strecke wählen, nach „Nein“
+Rückgängig, nach „Ja“ „Gehört zu …“ + „Zum letzten Mal“; ohne Zuordnung „Als neue Strecke merken“ (Name, „Künftige
+Läufe automatisch zuordnen“); Strecken-Seite `/ausdauer/strecke/[id]` mit Karte, Zum letzten Mal, Verlauf
+(Zeit/Pace), Kilometer im Vergleich (türkis = schneller, orange = langsamer), Liste aller Läufe (anders lang grau),
+Verwalten (automatisch zuordnen, Erneut laufen, Umbenennen, nicht mehr merken – Läufe bleiben).
+
+**Regeln**: nur eigene Läufe, keine Rangliste, keine Bestzeit, keine Serien, Reihenfolge nach Datum; Puls/kcal nicht
+auf der Strecken-Seite; Streckenname nie auf Teilen-Bildern; Koordinaten nie in Logs. Offen: Schwellen mit echten
+Uhr-Läufen nachjustieren; „Nachträglich zuordnen“ für Altbestand läuft automatisch mit (höchstens 50 je Durchgang).
+
+### Nachtrag 25.10.2026 – „Dein Fortschritt“ (auch ohne gleiche Strecke)
+
+`packages/core/src/routes/progress.ts` (Konstanten `ROUTE_PROGRESS`): Vergleich nur mit eigenen Einheiten derselben
+Sportart und **ähnlicher Länge ±20 %** (Entscheidung: relative Spanne statt fester Klassen 0–5/5–10/… km, weil feste
+Grenzen 4,9 km und 5,1 km trennen würden). `runProgress`: Ø-Pace (Rad: km/h) gegen den Schnitt der letzten 4 Wochen
+davor (ab 2 Einheiten) und gegen die letzte vergleichbare Einheit, „etwa gleich“ bis 3 s/km bzw. 0,3 km/h,
+Höhenmeter-Hinweis „mit 120 Hm mehr als sonst“ (ab 40 m und 30 % über dem Schnitt). `progressTrend`: Ø-Pace je
+Kalenderwoche der letzten 8 Wochen (zeitlich, Wochen ohne Einheit = Lücke). `progressVolume`: km dieser Woche/dieses
+Monats. App: Karte „Dein Fortschritt“ auf Ausdauer (neueste Einheit) und auf der Seite jedes Laufs
+(`apps/mobile/src/components/progress-card.tsx`). Neutral: keine Bestzeit, keine Rangliste, nur mit sich selbst.

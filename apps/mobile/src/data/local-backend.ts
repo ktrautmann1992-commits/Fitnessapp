@@ -111,6 +111,8 @@ import { checkSessionLog, isValidOp, isValidPlanOp, isValidPreferenceOp } from '
 import { checkRecipePreference } from './recipe-preference-rows';
 import { markWorkoutSource, workoutsFromBundle } from './workout-library';
 import {
+  applyRouteAutoMatch,
+  applyRouteMatch,
   applyTrackedRouteDelete,
   applyTrackedRouteSave,
   applyTrackedRouteUpdate,
@@ -319,6 +321,8 @@ const SERIALIZED_METHODS = [
   'saveAppLayout',
   'saveTrackedRoute',
   'updateTrackedRoute',
+  'setRouteMatch',
+  'setRouteAutoMatch',
   'deleteTrackedRoute',
   'deleteAllTrackedRoutes',
   'saveSupplementScreening',
@@ -1691,6 +1695,28 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       const nextRows =
         payload.e_bike !== undefined && route ? routeEBikeToLog(rows, route, now) : rows;
       await save({ ...db, rows: nextRows, trackedRoutes: next });
+    },
+    setRouteMatch: async (routeId, favoriteId, state) => {
+      const { db, session } = await requireUser();
+      const result = applyRouteMatch(
+        (db.trackedRoutes ?? []).map(normalizeRouteRow),
+        { routeId, favoriteId, state },
+        { userId: session.userId, now: options.now() },
+      );
+      if (result.kind === 'reject') throw new BackendError('route_rejected');
+      if (result.outcome !== 'unchanged') await save({ ...db, trackedRoutes: result.routes });
+      return result.outcome;
+    },
+    setRouteAutoMatch: async (routeId, enabled) => {
+      const { db, session } = await requireUser();
+      const next = applyRouteAutoMatch(
+        (db.trackedRoutes ?? []).map(normalizeRouteRow),
+        routeId,
+        enabled,
+        { userId: session.userId, now: options.now() },
+      );
+      if (next === 'not_found') throw new BackendError('route_rejected');
+      await save({ ...db, trackedRoutes: next });
     },
     deleteTrackedRoute: async (id) => {
       const { db, session } = await requireUser();

@@ -3104,6 +3104,26 @@ export function createSupabaseBackend(options: SupabaseBackendOptions): Backend 
       const { error } = await client.rpc('update_tracked_route', { p_route: toJson(parsed.data) });
       if (error) throw routeError(error);
     },
+    setRouteMatch: async (routeId, favoriteId, state) => {
+      await requireSession();
+      const { data, error } = await client.rpc('set_route_match', {
+        p_route: routeId,
+        p_favorite: favoriteId,
+        p_state: state,
+      });
+      if (error) throw routeError(error);
+      return data === 'auto' || data === 'confirmed' || data === 'rejected' || data === 'clear'
+        ? data
+        : 'unchanged';
+    },
+    setRouteAutoMatch: async (routeId, enabled) => {
+      await requireSession();
+      const { error } = await client.rpc('set_route_auto_match', {
+        p_route: routeId,
+        p_enabled: enabled,
+      });
+      if (error) throw routeError(error);
+    },
     deleteTrackedRoute: async (id) => {
       await requireSession();
       if ((await routeQueue.entries()).some((e) => e.payload.id === id)) {

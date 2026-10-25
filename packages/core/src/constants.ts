@@ -3696,6 +3696,61 @@ export const ROUTE_COMPARE = {
 } as const;
 
 /**
+ * „Meine Strecken“ – gleiche Strecke wiedererkennen (routes/match.ts, Vorschlag 24.10.2026, Gründer-Entscheidung
+ * 25.10.2026): feste Regeln auf dem Gerät, keine KI. Ein neuer Lauf passt zu einer gemerkten Strecke, wenn
+ * Sportart gleich, Distanz höchstens `distanceTolerance` daneben (= ROUTE_COMPARE, wie der Zeitvergleich), Rahmen
+ * (bbox, um `bboxPadM` erweitert) überlappen, Start UND Ende je höchstens `startEndMaxM` auseinander und der
+ * diskrete Fréchet-Abstand der beiden Linien (vereinfacht, alle `resampleM` Meter neu abgetastet, höchstens
+ * `maxPoints` Punkte) höchstens `frechetMaxM` ist. Andersherum gelaufen = eigene Strecke (Gründer-Entscheidung 2):
+ * passt die umgedrehte Linie um mehr als `directionMarginM` besser als die Linie selbst, gibt es keinen Treffer.
+ * Rundkurs mit anderem Startpunkt: bewusst (noch) kein Treffer (Gründer-Entscheidung 3, Start/Ende-Prüfung).
+ * - `maxRejected`: so viele abgelehnte Strecken merkt sich ein Lauf höchstens (match_rejected_ids, CHECK).
+ * - `maxAutoPerPass`: so viele Läufe ordnet ein Durchgang der Erkennung höchstens zu (neueste zuerst; Rest beim
+ *   nächsten Öffnen) – hält das Öffnen der Ausdauer-Seite schnell.
+ * Quellen: GPS-Genauigkeit von Handy und Uhr typisch 5–15 m, bei Abschattung mehr – Zandbergen PA, Barbeau SJ (2011),
+ * „Positional Accuracy of Assisted GPS Data from High-Sensitivity GPS-enabled Mobile Phones“, J Navigation
+ * 64(3):381–399; Fréchet-Abstand: Eiter T, Mannila H (1994), „Computing Discrete Fréchet Distance“, Technical Report
+ * CD-TR 94/64, TU Wien; Schwellen (150 m Start/Ende wegen verspätetem GPS-Start der Uhr, 60 m Linienabstand):
+ * PRODUKTENTSCHEIDUNG – mit echten Uhr-Läufen nachjustieren.
+ */
+export const ROUTE_MATCH = {
+  startEndMaxM: 150,
+  distanceTolerance: ROUTE_COMPARE.distanceTolerance,
+  frechetMaxM: 60,
+  resampleM: 25,
+  maxPoints: 200,
+  bboxPadM: 200,
+  directionMarginM: 10,
+  maxRejected: 20,
+  maxAutoPerPass: 50,
+} as const;
+
+/**
+ * „Dein Fortschritt“ – auch OHNE gleiche Strecke (routes/progress.ts, Gründer-Wunsch 25.10.2026): Vergleich nur mit
+ * eigenen Einheiten derselben Sportart und ÄHNLICHER Länge. Entscheidung: relative Spanne statt fester Klassen
+ * (0–5/5–10/… km) – feste Grenzen trennen 4,9 km von 5,1 km, obwohl beide gleich lang sind; ±`similarShare` (20 %)
+ * des aktuellen Laufs passt auch für Rad und Gehen.
+ * - `lookbackDays`: Durchschnitt der letzten 4 Wochen VOR diesem Lauf.
+ * - `minForAverage`: Durchschnitt erst ab so vielen vergleichbaren Einheiten (eine einzelne ist „letztes Mal“).
+ * - `sameWithinSPerKm` / `sameWithinKmh`: Unterschiede bis dahin heißen „etwa gleich“ (Messrauschen der Pace).
+ * - `trendWeeks`: Trend-Kurve über so viele Kalenderwochen (zeitliche Reihenfolge, Wochen ohne Einheit = Lücke).
+ * - `elevationExtraMinM` / `elevationExtraShare`: Hinweis „mit 120 Hm mehr als sonst“ ab so vielen Höhenmetern UND so
+ *   viel Anteil mehr als der Durchschnitt (fairer Vergleich: bergiger Lauf ist langsamer).
+ * Neutral (W-G16): nur Vergleich mit sich selbst, keine Bestzeit, keine Rangliste. Quelle: PRODUKTENTSCHEIDUNG (die
+ * Ø-Pace aus GPS schwankt um wenige s/km, vgl. GPS-Genauigkeit bei ROUTE_MOTION/ROUTE_MATCH).
+ */
+export const ROUTE_PROGRESS = {
+  similarShare: 0.2,
+  lookbackDays: 28,
+  minForAverage: 2,
+  sameWithinSPerKm: 3,
+  sameWithinKmh: 0.3,
+  trendWeeks: 8,
+  elevationExtraMinM: 40,
+  elevationExtraShare: 0.3,
+} as const;
+
+/**
  * Höhenprofil einer Strecke (Etappe E4, docs/PLAN-EINKAUFEN-AUSDAUER.md 6; Spalte tracked_routes.elevation_profile):
  * höchstens `maxPoints` Stützpunkte [Distanz in m, Höhe in dm]; Höhe geglättet wie elevationGain (ROUTE_ELEVATION),
  * Distanz = Bewegungsdistanz (Pausen zählen nicht). Höhen außerhalb `heightDm` (= ROUTE_GPX.elevationM × 10) fallen

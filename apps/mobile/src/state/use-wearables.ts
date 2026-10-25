@@ -7,6 +7,7 @@ import type { WearableLoadResult } from '@/data/backend';
 import { deviceStore } from '@/data/create-backend';
 import { STORAGE_KEYS } from '@/data/kv';
 import { consentRecordsFromRows } from '@/data/mapping';
+import { applyAutoMatches } from '@/data/route-match';
 import { runWearableSync, type WearableSyncOutcome } from '@/data/wearable-sync';
 import { todayIso } from '@/lib/format';
 import { createDemoHealthConnectDriver } from '@/lib/health-connect-demo';
@@ -118,6 +119,11 @@ export function syncWearables(
     });
     if (outcome.kind === 'imported' || outcome.kind === 'queued') {
       if (routeBackfill && outcome.kind === 'imported') await writeBackfill(userId);
+      // „Meine Strecken“: Uhr-Läufe gleich nach dem Abgleich erkennen (auch ohne offene Ausdauer-Seite).
+      if (outcome.kind === 'imported') {
+        const after = await app.backend.loadTrackedRoutes().catch(() => null);
+        if (after && !after.offline) await applyAutoMatches(app.backend, userId, after.routes);
+      }
       await app.reload();
       forgetTrackedRoutes();
     }

@@ -37,6 +37,8 @@ import {
   RunHighlights,
   SplitInsightBars,
 } from '@/components/run-insights';
+import { ProgressCard } from '@/components/progress-card';
+import { RouteMatchSection } from '@/components/route-match-card';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { SessionKcalStat } from '@/components/session-kcal';
 import { HeartZonesBar, WearableLogInfo } from '@/components/wearables';
@@ -51,10 +53,10 @@ import {
   Notice,
   TextField,
 } from '@/components/ui';
-import { routeInputFromPayload, routePoints } from '@/data/endurance-rows';
+import { activitiesFromRows, routeInputFromPayload, routePoints } from '@/data/endurance-rows';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
-import { formatDateDe } from '@/lib/format';
+import { berlinTodayIso, formatDateDe } from '@/lib/format';
 import { thousands as thousandsDe } from '@/lib/wearable-format';
 import { decodeRouteParam } from '@/lib/route-param';
 import { saveTextFile } from '@/lib/save-file';
@@ -137,6 +139,8 @@ export default function RouteDetailScreen() {
   const difficulty = saved?.difficulty ?? pending?.payload.difficulty ?? null;
   const day = isoDateInTimeZone(info.started_at);
   const comparison = saved ? compareFor(saved, result?.routes ?? []) : null;
+  const activities = activitiesFromRows(app.rows, result?.routes ?? [], result?.pending ?? []);
+  const progressActivity = activities.find((a) => a.routeId === info.id) ?? null;
   const speed = usesSpeed(info.sport);
   const segments = paceSegments(kmSplits, info.distance_m, info.moving_s);
   const splitRows = splitInsights(kmSplits, info.distance_m, info.moving_s);
@@ -251,6 +255,29 @@ export default function RouteDetailScreen() {
         </Notice>
       ) : null}
 
+      {/* „Meine Strecken“ (25.10.2026): Vorschlag „Gleiche Strecke wie …“, Zuordnung, „Zum letzten Mal“. */}
+      {saved && result ? (
+        <RouteMatchSection
+          route={saved}
+          routes={result.routes}
+          onChanged={async () => {
+            forgetTrackedRoutes();
+            await reload();
+          }}
+          onOpenRoute={(favoriteId) => router.push(`/ausdauer/strecke/${favoriteId}` as Href)}
+          onAnnounce={(text) => setLive((c) => ({ text, version: c.version + 1 }))}
+        />
+      ) : null}
+
+      {/* „Dein Fortschritt“ (25.10.2026): Vergleich mit eigenen Einheiten ähnlicher Länge, auch ohne gleiche Strecke. */}
+      {progressActivity ? (
+        <ProgressCard
+          activity={progressActivity}
+          activities={activities}
+          today={berlinTodayIso()}
+        />
+      ) : null}
+
       {/* Uhr-Lauf: Karte und Pulszonen gleich unter der Kopf-Karte (Mockup s5). */}
       {watch ? mapCard : null}
       {heart ? (
@@ -298,7 +325,7 @@ export default function RouteDetailScreen() {
       {/* Phase 8: Puls der Uhr, wenn die Aufzeichnung mit einer Uhr-Einheit zusammengeführt wurde. */}
       {info.session_log_id ? <WearableLogInfo logId={info.session_log_id} compact={watch} /> : null}
 
-      {comparison ? (
+      {comparison && saved?.is_favorite ? (
         <Notice tone="info" title={D.compare} testID="route-compare">
           {comparison}
         </Notice>

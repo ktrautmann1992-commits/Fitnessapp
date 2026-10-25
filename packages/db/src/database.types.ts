@@ -2723,12 +2723,15 @@ export type Database = {
           elevation_profile: Json | null;
           id: string;
           is_favorite: boolean;
+          auto_match: boolean;
           km_splits: Json;
+          match_rejected_ids: string[];
           moving_s: number;
           name: string;
           note: string | null;
           point_count: number;
           polyline: string;
+          route_match: string | null;
           session_log_id: string | null;
           source: Database['public']['Enums']['tracked_route_source'];
           sport: Database['public']['Enums']['endurance_modality'];
@@ -2749,12 +2752,15 @@ export type Database = {
           elevation_profile?: Json | null;
           id?: string;
           is_favorite?: boolean;
+          auto_match?: boolean;
           km_splits?: Json;
+          match_rejected_ids?: string[];
           moving_s: number;
           name: string;
           note?: string | null;
           point_count: number;
           polyline: string;
+          route_match?: string | null;
           session_log_id?: string | null;
           source: Database['public']['Enums']['tracked_route_source'];
           sport: Database['public']['Enums']['endurance_modality'];
@@ -2775,12 +2781,15 @@ export type Database = {
           elevation_profile?: Json | null;
           id?: string;
           is_favorite?: boolean;
+          auto_match?: boolean;
           km_splits?: Json;
+          match_rejected_ids?: string[];
           moving_s?: number;
           name?: string;
           note?: string | null;
           point_count?: number;
           polyline?: string;
+          route_match?: string | null;
           session_log_id?: string | null;
           source?: Database['public']['Enums']['tracked_route_source'];
           sport?: Database['public']['Enums']['endurance_modality'];
@@ -3608,6 +3617,11 @@ export type Database = {
         Returns: undefined;
       };
       update_tracked_route: { Args: { p_route: Json }; Returns: undefined };
+      set_route_auto_match: { Args: { p_enabled: boolean; p_route: string }; Returns: undefined };
+      set_route_match: {
+        Args: { p_favorite: string | null; p_route: string; p_state: string };
+        Returns: string;
+      };
       waitlist_add_unsubscribe_token: {
         Args: { p_token_hash: string; p_waitlist_id: string };
         Returns: undefined;

@@ -364,6 +364,17 @@ export type RouteDifficulty = (typeof ROUTE_DIFFICULTIES)[number];
 export const TRACKED_ROUTE_SOURCES = ['recorded', 'gpx_import', 'watch'] as const;
 export type TrackedRouteSource = (typeof TRACKED_ROUTE_SOURCES)[number];
 
+/**
+ * Herkunft der Verknüpfung eines Laufs mit einer „Meinen Strecke“ (tracked_routes.route_match, „Meine Strecken“
+ * 25.10.2026, 20261025120000_route_match.sql – Text mit CHECK, kein Enum-Typ):
+ * - `repeat`: über „Erneut laufen“ aufgezeichnet (base_route_id beim Speichern),
+ * - `auto`: von der Erkennung auf dem Gerät vorläufig zugeordnet (zählt mit, bis die Person „Nein“ sagt),
+ * - `confirmed`: von der Person bestätigt („Ja“ bzw. „Andere Strecke wählen“),
+ * - `rejected`: von der Person abgelehnt („Nein“) – kein Vergleich, kein erneuter Vorschlag für diese Strecke.
+ */
+export const ROUTE_MATCH_STATES = ['repeat', 'auto', 'confirmed', 'rejected'] as const;
+export type RouteMatchState = (typeof ROUTE_MATCH_STATES)[number];
+
 /** Herkünfte, die die App über save_tracked_route senden darf (Uhr-Routen nur über save_wearable_route). */
 export const APP_ROUTE_SOURCES = [
   'recorded',
