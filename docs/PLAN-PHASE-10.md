@@ -1966,3 +1966,14 @@ Verwalten (automatisch zuordnen, Erneut laufen, Umbenennen, nicht mehr merken �
 **Regeln**: nur eigene Läufe, keine Rangliste, keine Bestzeit, keine Serien, Reihenfolge nach Datum; Puls/kcal nicht
 auf der Strecken-Seite; Streckenname nie auf Teilen-Bildern; Koordinaten nie in Logs. Offen: Schwellen mit echten
 Uhr-Läufen nachjustieren; „Nachträglich zuordnen“ für Altbestand läuft automatisch mit (höchstens 50 je Durchgang).
+
+### Nachtrag 25.10.2026 – „Dein Fortschritt“ (auch ohne gleiche Strecke)
+
+`packages/core/src/routes/progress.ts` (Konstanten `ROUTE_PROGRESS`): Vergleich nur mit eigenen Einheiten derselben
+Sportart und **ähnlicher Länge ±20 %** (Entscheidung: relative Spanne statt fester Klassen 0–5/5–10/… km, weil feste
+Grenzen 4,9 km und 5,1 km trennen würden). `runProgress`: Ø-Pace (Rad: km/h) gegen den Schnitt der letzten 4 Wochen
+davor (ab 2 Einheiten) und gegen die letzte vergleichbare Einheit, „etwa gleich“ bis 3 s/km bzw. 0,3 km/h,
+Höhenmeter-Hinweis „mit 120 Hm mehr als sonst“ (ab 40 m und 30 % über dem Schnitt). `progressTrend`: Ø-Pace je
+Kalenderwoche der letzten 8 Wochen (zeitlich, Wochen ohne Einheit = Lücke). `progressVolume`: km dieser Woche/dieses
+Monats. App: Karte „Dein Fortschritt“ auf Ausdauer (neueste Einheit) und auf der Seite jedes Laufs
+(`apps/mobile/src/components/progress-card.tsx`). Neutral: keine Bestzeit, keine Rangliste, nur mit sich selbst.

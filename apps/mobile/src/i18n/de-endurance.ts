@@ -445,6 +445,39 @@ export const deEndurance = {
     notFound: 'Diese Strecke ist (nicht mehr) als „Meine Strecke“ gemerkt.',
     back: 'Zurück',
   },
+  /** „Dein Fortschritt“ (25.10.2026): auch ohne gleiche Strecke, nur mit sich selbst (W-G16). */
+  progress: {
+    title: 'Dein Fortschritt',
+    subtitle: (sport: string) => `Vergleich mit deinen ${sport} ähnlicher Länge (±20 %)`,
+    sportPlural: { run: 'Läufen', bike: 'Fahrten', walk: 'Spaziergängen', swim: 'Einheiten' },
+    latest: (day: string, distance: string) => `Letzte Einheit: ${day} · ${distance}`,
+    value: (v: string) => `Ø ${v}`,
+    vsAverage: (diff: string, word: string, avg: string, n: number) =>
+      `${diff} ${word} als dein Schnitt der letzten 4 Wochen (${avg}, ${n} ${n === 1 ? 'Einheit' : 'Einheiten'})`,
+    vsAverageSame: (avg: string, n: number) =>
+      `Etwa wie dein Schnitt der letzten 4 Wochen (${avg}, ${n} ${n === 1 ? 'Einheit' : 'Einheiten'})`,
+    vsLast: (diff: string, word: string, day: string, v: string) =>
+      `${diff} ${word} als am ${day} (${v})`,
+    vsLastSame: (day: string, v: string) => `Etwa wie am ${day} (${v})`,
+    faster: 'schneller',
+    slower: 'langsamer',
+    perKm: (s: number) => `${s} s/km`,
+    kmh: (v: string) => `${v} km/h`,
+    elevation: (m: number) =>
+      `Mit ${m} Hm mehr als sonst – bergiger, das erklärt eine langsamere Pace.`,
+    first:
+      'Noch keine früheren Einheiten ähnlicher Länge – der Vergleich erscheint ab der nächsten.',
+    trend: 'Trend der letzten 8 Wochen',
+    trendAxisPace: 'Ø Pace je Woche · weiter unten = schneller',
+    trendAxisSpeed: 'Ø Tempo je Woche · weiter oben = schneller',
+    trendA11y: (text: string) => `Trend je Woche in zeitlicher Reihenfolge: ${text}`,
+    trendEmptyWeek: 'keine',
+    trendFew: 'Der Trend erscheint ab zwei Wochen mit Einheiten.',
+    volume: 'Umfang',
+    volumeWeek: (km: string) => `Diese Woche ${km}`,
+    volumeMonth: (km: string) => `Dieser Monat ${km}`,
+    open: 'Einheit ansehen',
+  },
   errors: {
     rejected: 'Diese Strecke wurde nicht angenommen. Bitte prüfe die Angaben.',
     limit: 'Heute wurden schon 20 Strecken gespeichert – bitte morgen erneut versuchen.',

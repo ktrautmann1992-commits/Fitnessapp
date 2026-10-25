@@ -85,6 +85,20 @@ test('Meine Strecken: Kacheln, Erkennung, Vorschlag Ja/Nein/Rückgängig, Streck
   expect(other?.base_route_id).toBeNull();
   await shot(page, '2-ausdauer-meine-strecken');
 
+  // „Dein Fortschritt“ (auch ohne gleiche Strecke): neueste Einheit gegen eigene Läufe ähnlicher Länge.
+  const progress = page.getByTestId('endurance-progress');
+  await expect(progress).toContainText('Dein Fortschritt');
+  await expect(page.getByTestId('endurance-progress-value')).toHaveText('Ø 5:24 /km');
+  await expect(page.getByTestId('endurance-progress-last')).toContainText(
+    '14 s/km schneller als am 17.10. (5:38 /km)',
+  );
+  await expect(page.getByTestId('endurance-progress-average')).toContainText(
+    'als dein Schnitt der letzten 4 Wochen',
+  );
+  await expect(page.getByTestId('endurance-progress-average')).toContainText('3 Einheiten');
+  await expect(progress).not.toContainText(/Bestzeit|Rekord|Platz/);
+  await shot(page, '5-dein-fortschritt', 'endurance-progress');
+
   // Lauf-Detail des Uhr-Laufs: Vorschlag.
   await page.getByTestId('my-routes-notice-check').click();
   await expect(page.getByTestId('route-match-suggestion')).toBeVisible();

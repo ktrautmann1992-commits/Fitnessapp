@@ -7,6 +7,7 @@ export * from './match';
 export * from './my-routes';
 export * from './polyline';
 export * from './privacy-trim';
+export * from './progress';
 export * from './recording';
 export * from './run-insights';
 export * from './schema';

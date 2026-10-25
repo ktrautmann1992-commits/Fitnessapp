@@ -14,6 +14,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { AreaButton, SectionLabel } from '@/components/design';
 import { MyRouteTiles, shortDayDe } from '@/components/my-routes';
+import { ProgressCard } from '@/components/progress-card';
 import { LiveRegion } from '@/components/calendar';
 import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
 import { ActivityRow, TotalsView } from '@/components/endurance';
@@ -101,6 +102,12 @@ export default function EnduranceScreen() {
   const autoMatch = useMemo(
     () => (result && userIdForRoutes ? latestAutoMatch(userIdForRoutes, result.routes) : null),
     [result, userIdForRoutes],
+  );
+  // „Dein Fortschritt“: neueste Einheit mit Distanz (ohne Schwimmen – keine Pace pro km vergleichbar).
+  const latestActivity = useMemo(
+    () =>
+      activities.find((a) => a.sport !== 'swim' && (a.distanceM ?? 0) > 0 && a.movingS > 0) ?? null,
+    [activities],
   );
   const summary = useMemo(
     () => enduranceTotals(activities, { period, anchor }),
@@ -308,6 +315,16 @@ export default function EnduranceScreen() {
             />
           )}
         </View>
+      ) : null}
+
+      {latestActivity ? (
+        <ProgressCard
+          activity={latestActivity}
+          activities={activities}
+          today={berlinTodayIso()}
+          showLatest
+          testID="endurance-progress"
+        />
       ) : null}
 
       <Card>
