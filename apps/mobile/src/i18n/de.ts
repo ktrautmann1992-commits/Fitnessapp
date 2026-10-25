@@ -34,6 +34,7 @@ import { deSteps } from './de-steps';
 import { deSessionKcal } from './de-session-kcal';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
+import { deCalisthenics } from './de-calisthenics';
 import { deTrainingWeek } from './de-training-week';
 
 export const de = {
@@ -293,6 +294,7 @@ export const de = {
         general_fitness: 'Fitness & Gesundheit',
         endurance: 'Ausdauer',
         active_aging: 'Fit im Alter',
+        calisthenics: 'Calisthenics / Körperbeherrschung',
       },
       discipline: 'Disziplin (optional)',
       disciplines: {
@@ -1686,6 +1688,8 @@ export const de = {
   endurance: deEndurance,
   // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
   workouts: deWorkouts,
+  // Calisthenics-Skill-Pfade, Schlingentrainer, Lauf-Kraft (docs/PLAN-CALISTHENICS-SCHLINGE.md)
+  calisthenics: deCalisthenics,
   /** Smartwatch über Health Connect (Phase 8). */
   wearables: deWearables,
   sessionKcal: deSessionKcal,

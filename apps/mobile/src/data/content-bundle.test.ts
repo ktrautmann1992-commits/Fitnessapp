@@ -19,13 +19,14 @@ function bundle(args: string[], env: Record<string, string>): number {
 }
 
 describe('Inhalts-Bündel der App (scripts/bundle-content.mjs)', () => {
-  // 96 Übungen (inkl. 16 Aufwärm-/Dehn-Entwürfe der Trainings-Modi) + 42 Vorlagen (Körpergewicht K1/K2).
+  // 170 Übungen (inkl. 16 Aufwärm-/Dehn-Entwürfe der Trainings-Modi und 74 Entwürfe Calisthenics/Schlingentrainer/
+  // Lauf-ABC) + 49 Vorlagen (Körpergewicht K1/K2, 7 Entwürfe Calisthenics/Schlingentrainer).
   it('Testmodus-Build: alle Inhalte; mit Supabase-Werten und --empty-if-supabase: leer (keine Entwürfe im Build)', () => {
-    expect(bundle(['--empty-if-supabase'], {})).toBe(138);
+    expect(bundle(['--empty-if-supabase'], {})).toBe(219);
     expect(
       bundle(['--empty-if-supabase'], { EXPO_PUBLIC_SUPABASE_URL: 'https://x.supabase.co' }),
     ).toBe(0);
     // Website (ohne Schalter) bündelt immer alles – der Redaktionsbereich braucht die Entwürfe.
-    expect(bundle([], { EXPO_PUBLIC_SUPABASE_URL: 'https://x.supabase.co' })).toBe(138);
+    expect(bundle([], { EXPO_PUBLIC_SUPABASE_URL: 'https://x.supabase.co' })).toBe(219);
   });
 });

@@ -20,6 +20,7 @@ import {
   restAfterCheckedSet,
   SESSION_LOG_LIMITS,
   talkTestLevel,
+  type SkillStepHint,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -115,6 +116,7 @@ import {
 import { ModeNoticesBlock, RoutineBlock } from '@/components/training-modes';
 import { routineFor } from '@/data/training-routine';
 import { useTrainingModes, useWarmupSetting } from '@/state/use-training-modes';
+import { skillGateContextFromRows, skillHintsForDraft } from '@/data/skill-paths';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
@@ -372,6 +374,12 @@ export default function WorkoutScreen() {
           modes: trainingModes.state,
         })
       : null;
+  // Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.5): Hinweis je Übung aus Tagebuch + laufender Einheit.
+  const skillContext =
+    rows && lib && rules && current.kind === 'strength'
+      ? skillGateContextFromRows({ rows, library: lib, rules, modes: trainingModes.state, today })
+      : null;
+  const skillHints = skillHintsForDraft(current, skillContext);
   function update(next: WorkoutDraft, keepFeedback = false) {
     setLocalDraft(next);
     setError(undefined);
@@ -819,6 +827,8 @@ export default function WorkoutScreen() {
             update(addSet(current, index, SESSION_LOG_LIMITS.setsPerExercise.max, now()))
           }
           onConfirmWeight={() => update(confirmWeight(current, index, now()))}
+          skillHint={skillHints[index] ?? null}
+          onOpenSkillPaths={() => router.push('/skill-pfade' as Href)}
           startWeight={
             canSwitch &&
             !exercise.alternative &&
@@ -1039,6 +1049,8 @@ function ExerciseCard({
   onAddSet,
   onConfirmWeight,
   startWeight,
+  skillHint = null,
+  onOpenSkillPaths,
 }: {
   exercise: DraftExercise;
   index: number;
@@ -1067,6 +1079,9 @@ function ExerciseCard({
     onChangeText: (text: string) => void;
     onSave: () => void;
   } | null;
+  /** Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.5): „Nächste Stufe freigeschaltet“ bzw. „vorige Stufe üben“. */
+  skillHint?: SkillStepHint | null;
+  onOpenSkillPaths?: () => void;
 }) {
   const theme = useThemeColors();
   const training = useAreaColors('training');
@@ -1309,6 +1324,28 @@ function ExerciseCard({
             ) : null}
             {exercise.sets.length < SESSION_LOG_LIMITS.setsPerExercise.max ? (
               <Button label={t.workout.addSet} variant="link" onPress={onAddSet} />
+            ) : null}
+            {skillHint ? (
+              <Notice
+                tone={skillHint.kind === 'unlocked' ? 'success' : 'info'}
+                testID={`workout-skill-hint-${index}`}
+              >
+                <Body>
+                  {skillHint.kind === 'unlocked'
+                    ? t.calisthenics.hint.unlocked(skillHint.nameDe)
+                    : t.calisthenics.hint.stepBack(skillHint.nameDe)}
+                </Body>
+                {skillHint.kind === 'unlocked' ? (
+                  <Body muted>{t.calisthenics.hint.unlockedDetail}</Body>
+                ) : null}
+                {onOpenSkillPaths ? (
+                  <Button
+                    label={t.calisthenics.hint.open}
+                    variant="link"
+                    onPress={onOpenSkillPaths}
+                  />
+                ) : null}
+              </Notice>
             ) : null}
           </>
         )}

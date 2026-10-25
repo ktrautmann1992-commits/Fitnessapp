@@ -114,6 +114,9 @@ export function WorkoutCard({
       </View>
       <StarRating difficulty={workout.difficulty} />
       <Text style={[styles.cardMeta, { color: theme.textMuted }]}>{meta}</Text>
+      {workout.status === 'draft' ? (
+        <Text style={[styles.cardMeta, { color: theme.textMuted }]}>{t.workouts.testContent}</Text>
+      ) : null}
       {doneToday ? (
         <Text style={[styles.cardDone, { color: theme.success }]}>{t.workouts.doneToday}</Text>
       ) : null}

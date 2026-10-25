@@ -22,6 +22,7 @@ import { useThemeColors } from '@/lib/theme';
 
 import { StepList } from './competition';
 import { ModeNoticesBlock, routineSummary } from './training-modes';
+import type { RunStrengthForDay } from '@/data/run-strength';
 import { deModes } from '@/i18n/de-training-modes';
 import { HeroCard } from './design';
 import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
@@ -54,6 +55,8 @@ export function SessionCard({
   hero = false,
   swapPaused = false,
   routine = null,
+  runStrength = null,
+  onOpenRunStrength,
 }: {
   /** Gespeicherte Einheit (vor den aktuellen Sicherheitsregeln). */
   original: StoredSession;
@@ -82,6 +85,9 @@ export function SessionCard({
   swapPaused?: boolean;
   /** Aufwärmen & Dehnen (docs/PLAN-TRAINING-MODI.md 5): Kurzfassung statt der Vorlagen-Texte; null = Vorlage. */
   routine?: SessionRoutine | null;
+  /** Lauf-Kraft & Lauf-ABC an lockeren Lauftagen (docs/PLAN-CALISTHENICS-SCHLINGE.md 4); null = keine. */
+  runStrength?: RunStrengthForDay | null;
+  onOpenRunStrength?: (workoutId: string) => void;
   swap?: {
     enabled: boolean;
     /** Termin nach heute („für dieses Training getauscht“). */
@@ -137,6 +143,13 @@ export function SessionCard({
                   ? brickStepSports(session.workout_steps, session.estimated_minutes)
                   : null
               }
+            />
+          ) : null}
+          {runStrength ? (
+            <RunStrengthBlock
+              runStrength={runStrength}
+              nameOf={(id) => context.library?.get(id)?.name_de ?? id}
+              onOpen={onOpenRunStrength}
             />
           ) : null}
           {/* WP5: bei jeder Schwimm-Einheit der Sicherheitshinweis zum Freiwasser (nie allein, Neopren, Begleitung). */}
@@ -315,3 +328,45 @@ const styles = StyleSheet.create({
   exerciseName: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, lineHeight: 24 },
   exerciseLink: { minHeight: MIN_TOUCH, justifyContent: 'center' },
 });
+
+/** Lauf-Kraft & Lauf-ABC als Zusatz an einem lockeren Lauftag (docs/PLAN-CALISTHENICS-SCHLINGE.md 4). */
+function RunStrengthBlock({
+  runStrength,
+  nameOf,
+  onOpen,
+}: {
+  runStrength: RunStrengthForDay;
+  nameOf: (exerciseId: string) => string;
+  onOpen: ((workoutId: string) => void) | undefined;
+}) {
+  const theme = useThemeColors();
+  const R = t.calisthenics.runStrength;
+  const { unit, assignment } = runStrength;
+  return (
+    <View style={styles.block} testID="plan-run-strength">
+      <Text style={[styles.label, { color: theme.text }]}>{R.title(unit.workout.minutes)}</Text>
+      <Body muted>
+        {unit.workout.title_de} · {R.rounds(unit.workout.rounds)}
+      </Body>
+      <Body muted>{R.intro}</Body>
+      {assignment.gentle ? <Body muted>{R.gentle}</Body> : null}
+      {unit.items.map((item) => (
+        <Body key={item.exercise_id}>
+          {`• ${R.item(
+            nameOf(item.exercise_id),
+            item.reps !== null ? R.reps(item.reps) : R.seconds(item.duration_s ?? 0),
+          )}`}
+        </Body>
+      ))}
+      {unit.dropped > 0 ? <Body muted>{R.dropped}</Body> : null}
+      {onOpen ? (
+        <Button
+          label={R.open}
+          variant="secondary"
+          onPress={() => onOpen(unit.workout.id)}
+          testID="plan-run-strength-open"
+        />
+      ) : null}
+    </View>
+  );
+}

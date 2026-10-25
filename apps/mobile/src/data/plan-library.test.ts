@@ -62,10 +62,10 @@ function dbRows(publish: boolean, archived: readonly string[] = []) {
 }
 
 describe('Bibliothek aus der Datenbank', () => {
-  it('Zeilen → Inhalte im Format von packages/core (alle 96 Übungen, 42 Vorlagen)', () => {
+  it('Zeilen → Inhalte im Format von packages/core (alle 170 Übungen, 49 Vorlagen)', () => {
     const content = contentFromDbRows(dbRows(true));
-    expect(content.exercises).toHaveLength(96);
-    expect(content.templates).toHaveLength(42);
+    expect(content.exercises).toHaveLength(170);
+    expect(content.templates).toHaveLength(49);
     expect(content.templates[0]?.sessions[0]?.exercises.length).toBeGreaterThan(0);
   });
 
@@ -79,7 +79,7 @@ describe('Bibliothek aus der Datenbank', () => {
   it('Zwischenspeicher: nur Übungen, wieder mit Zod geprüft', () => {
     const library = libraryFromDbRows(dbRows(true));
     const cached = libraryFromCache(JSON.parse(JSON.stringify(libraryToCache(library))));
-    expect(cached?.exercises.size).toBe(96);
+    expect(cached?.exercises.size).toBe(170);
     expect(cached?.templates).toEqual([]);
     expect(libraryFromCache(null)).toBeNull();
   });
