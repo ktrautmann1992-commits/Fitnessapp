@@ -62,11 +62,10 @@ function dbRows(publish: boolean, archived: readonly string[] = []) {
 }
 
 describe('Bibliothek aus der Datenbank', () => {
-  it('Zeilen → Inhalte im Format von packages/core (alle 170 Übungen, 46 Vorlagen)', () => {
+  it('Zeilen → Inhalte im Format von packages/core (alle 170 Übungen, 49 Vorlagen)', () => {
     const content = contentFromDbRows(dbRows(true));
     expect(content.exercises).toHaveLength(170);
-    // 49 erst mit den Calisthenics-Vorlagen aus claude/calisthenics-inhalte-2 (nach PR #182).
-    expect(content.templates).toHaveLength(46);
+    expect(content.templates).toHaveLength(49);
     expect(content.templates[0]?.sessions[0]?.exercises.length).toBeGreaterThan(0);
   });
 
