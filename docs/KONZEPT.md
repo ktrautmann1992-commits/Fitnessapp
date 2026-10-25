@@ -434,6 +434,17 @@ bzw. ohne Gewicht keine Zahl, nur „Für kcal: Gewicht im Profil angeben“ mit
 anzeigen“ aus oder Schwangerschaft gar nichts. kcal stehen **nie** auf dem Story-Bild (`STORY_CARD_FIELDS` ist eine
 Positivliste). Regeln in `packages/core/src/log/session-calories.ts`.
 
+**Sportarten Stufe 2 (Gründer-Freigabe 25.10.2026):** Bouldern, Klettern, Fußball, Padel, Tennis, Badminton,
+Tischtennis, Basketball, Volleyball, Handball, Crosstrainer, Spinning, HIIT/Zirkel, Boxen, Kickboxen, Judo/BJJ, Karate,
+Kampfsport (sonstige), Skilanglauf, Skitour, Ski alpin, Snowboard, Inline-Skaten, SUP, Kajak/Kanu, Tanzen und „Sonstige
+Sportart“ lassen sich eintragen („+ Einheit“ → „Andere Sportart“) bzw. – Skilanglauf, Skitour, Inline-Skaten, SUP,
+Kajak/Kanu – mit GPS aufzeichnen; Uhr-Einheiten dieser Arten werden zugeordnet. **Ohne eigene Trainingspläne.** Je
+Einheit Dauer, Anstrengung 0–10, ggf. Distanz; kcal mit der Formel oben und dem MET der Sportart (Ainsworth 2011, je
+Anstrengung zwischen niedrigem und hohem Wert), Trainingsbelastung = Minuten × Anstrengung (Session-RPE). Sportarten
+zählen nie für geplante Einheiten, erscheinen aber in Tag, Woche („Sportarten diese Woche“) und Tagebuch. Nach Sport mit
+hoher Beinbelastung (z. B. Fußball) bekommt die harte Bein-/Intervall-Einheit am Folgetag einen sanften Hinweis (nur
+Vorschlag). Schwimmen bleibt Ausdauer-Art. Details, MET-Tabelle und offene Punkte: `docs/PLAN-SPORTARTEN.md`.
+
 ### 5.1 Workout-Bibliothek mit Sternen und Timer (Gratis, ohne KI)
 Eigener Reiter **„Workouts“**: fertige, vorab erstellte und geprüfte Workouts (Kategorien Ganzkörper, Bauch & Rumpf,
 Oberkörper, Beine & Po, HIIT & Cardio, Mobilität, Rücken-fit), Schwierigkeit **1–5 Sterne** (1 leicht … 5 sehr
