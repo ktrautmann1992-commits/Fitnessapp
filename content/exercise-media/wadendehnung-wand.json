@@ -1,0 +1,20 @@
+{
+  "exercise_id": "wadendehnung-wand",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "wadendehnung-wand-start.svg",
+      "alt_de": "Ausgangsposition: mit beiden Händen an einer Wand abstützen, ein Bein vorn gebeugt, das hintere Bein gestreckt, die hintere Ferse am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

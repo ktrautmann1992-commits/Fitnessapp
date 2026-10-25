@@ -157,7 +157,7 @@ describe('Einspiel-Paket', () => {
     expect(result.issues.filter((issue) => issue.severity === 'error')).toEqual([]);
     const pkg = buildSeedPackage(result);
     expect(pkg.exercises.map((e) => e.id)).toEqual(result.exercises.map((e) => e.id));
-    expect(pkg.exercises).toHaveLength(80);
+    expect(pkg.exercises).toHaveLength(96);
     expect(pkg.plan_templates).toHaveLength(42);
   });
 
