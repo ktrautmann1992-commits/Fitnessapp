@@ -26,6 +26,7 @@ import { useKeepAwakeSetting } from '@/lib/keep-awake';
 import { useToday } from '@/lib/use-today';
 import { planTitleText } from '@/lib/plan-title';
 import { useApp } from '@/state/app-state';
+import { WidgetSettings } from '@/widget/widget-settings';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
 
 /**
@@ -410,6 +411,9 @@ export default function SettingsScreen() {
         />
         <Body muted>{t.settings.keepAwakeHint}</Body>
       </Card>
+
+      {/* Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3, Gründer-Entscheidung 25.10.2026): Standard aus. */}
+      <WidgetSettings />
 
       <SectionLabel>{t.settings.reminder}</SectionLabel>
       <Card>

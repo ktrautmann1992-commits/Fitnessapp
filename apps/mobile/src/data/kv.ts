@@ -167,4 +167,16 @@ export const STORAGE_KEYS = {
    * kein Gesundheitsdatum. Vorbelegung beim nächsten Rad-Eintrag bzw. der nächsten Aufzeichnung.
    */
   bikeChoice: 'fitnessapp.bike-choice.v1',
+  /**
+   * Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md, 25.10.2026): Schalter an/aus (true/false, Standard aus) – nur
+   * dieses Gerät, keine Nutzerdaten. Abmelden, Konto löschen und „Testdaten löschen“ setzen ihn zurück.
+   */
+  widgetEnabled: 'fitnessapp.widget-enabled.v1',
+  /**
+   * Widget: zuletzt geschriebener Stand (Trainingsnamen, Schritte, kcal übrig – teils Gesundheitsdaten). NUR Android
+   * und NUR verschlüsselt (AES-256-GCM, eigener Schlüssel im Keystore, widget/widget-store.android.ts); gelöscht, sobald
+   * das Widget ausgeschaltet wird, beim Abmelden und beim Löschen des Kontos.
+   */
+  widgetSnapshot: 'fitnessapp.widget-snapshot.v1',
+  widgetSnapshotKey: 'fitnessapp.widget-snapshot-key.v1',
 } as const;

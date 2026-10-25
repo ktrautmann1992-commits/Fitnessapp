@@ -35,6 +35,7 @@ import { deSessionKcal } from './de-session-kcal';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
 import { deTrainingWeek } from './de-training-week';
+import { deWidget } from './de-widget';
 
 export const de = {
   common: {
@@ -1695,6 +1696,8 @@ export const de = {
   accessibility: deAccessibility,
   /** Kachel „Schritte“ mit Tagesziel und Schrittziel (22.10.2026). */
   stepCounter: deSteps,
+  /** Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md, 25.10.2026). */
+  widget: deWidget,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */
