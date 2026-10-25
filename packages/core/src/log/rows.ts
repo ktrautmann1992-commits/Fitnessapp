@@ -6,6 +6,7 @@ import type {
   LogSource,
   PlannedSessionKind,
   SessionLogStatus,
+  SportId,
 } from '../enums';
 import type { PlannedSessionRow, PlanRowRef } from '../plan/rows';
 import type { SessionLogPayload } from './schemas';
@@ -48,6 +49,13 @@ export interface SessionLogRow {
   client_updated_at: string;
   created_at: string;
   updated_at: string;
+  /**
+   * Sportarten Stufe 2 (Spalten seit 20261025130100): Sportart, Dauer und Distanz (nur GPS-Sportarten) eines
+   * Sportart-Eintrags; sonst null. Ältere lokale Zeilen ohne Feld gelten als null (sportForLog in sports/log.ts).
+   */
+  sport: SportId | null;
+  sport_duration_s: number | null;
+  sport_distance_m: number | null;
 }
 
 /** Zeile aus exercise_logs. */
@@ -173,6 +181,9 @@ export function applySessionLog<T extends LogAndSessionRows>(
     client_updated_at: payload.client_updated_at < meta.now ? payload.client_updated_at : meta.now,
     created_at: previous?.created_at ?? meta.now,
     updated_at: meta.now,
+    sport: payload.sport?.sport ?? null,
+    sport_duration_s: payload.sport?.duration_s ?? null,
+    sport_distance_m: payload.sport?.distance_m ?? null,
   };
   const exerciseLogs: ExerciseLogRow[] = [];
   const setLogs: SetLogRow[] = [];
