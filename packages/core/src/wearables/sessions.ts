@@ -2,7 +2,12 @@ import { WEARABLE_SYNC } from '../constants';
 import { isoDateInTimeZone } from '../dates';
 import { type DuplicateCandidate, matchExisting } from './duplicates';
 import { mapExerciseType } from './exercise-types';
-import { type HeartRateSample, type HeartRateZones, hrZones, summarizeHeartRate } from './heart-rate';
+import {
+  type HeartRateSample,
+  type HeartRateZones,
+  hrZones,
+  summarizeHeartRate,
+} from './heart-rate';
 import {
   chooseWatchDistance,
   type HcRouteRead,
