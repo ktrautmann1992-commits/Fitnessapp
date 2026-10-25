@@ -104,7 +104,10 @@ export function isPainEpisodeActive(
 }
 
 /** Am Tag wirksame Einträge. */
-export function activePainEpisodes<T extends PainEpisode>(episodes: readonly T[], date: string): T[] {
+export function activePainEpisodes<T extends PainEpisode>(
+  episodes: readonly T[],
+  date: string,
+): T[] {
   return episodes.filter((e) => isPainEpisodeActive(e, date));
 }
 
@@ -205,7 +208,10 @@ export function painEffectOn(episodes: readonly PainEpisode[], date: string): Pa
     return [{ region, intensity: conservative ? ('severe' as const) : intensity }];
   });
   const level = regions.reduce<PainIntensity>((acc, r) => stronger(acc, r.intensity), 'mild');
-  const until = active.map((e) => lastActiveDay(e) as string).sort().at(-1) as string;
+  const until = active
+    .map((e) => lastActiveDay(e) as string)
+    .sort()
+    .at(-1) as string;
   return { regions, level, advice, conservative, until };
 }
 

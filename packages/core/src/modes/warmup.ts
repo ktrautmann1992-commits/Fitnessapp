@@ -74,7 +74,11 @@ export function mainMusclesOf(
     for (const m of exercise.primary_muscles) score.set(m, (score.get(m) ?? 0) + item.sets);
   }
   return MUSCLE_GROUPS.filter((m) => (score.get(m) ?? 0) > 0)
-    .sort((a, b) => (score.get(b) ?? 0) - (score.get(a) ?? 0) || MUSCLE_GROUPS.indexOf(a) - MUSCLE_GROUPS.indexOf(b))
+    .sort(
+      (a, b) =>
+        (score.get(b) ?? 0) - (score.get(a) ?? 0) ||
+        MUSCLE_GROUPS.indexOf(a) - MUSCLE_GROUPS.indexOf(b),
+    )
     .slice(0, count);
 }
 
@@ -99,7 +103,10 @@ function overlap(exercise: Exercise, muscles: ReadonlySet<MuscleGroup>): number 
  * Einheit (dort zählt der Ablauf der Ausdauer-Einheit).
  */
 export function sessionRoutine(
-  session: { readonly kind: PlannedSessionKind; readonly exercises: readonly PlannedExerciseDraft[] },
+  session: {
+    readonly kind: PlannedSessionKind;
+    readonly exercises: readonly PlannedExerciseDraft[];
+  },
   ctx: RoutineContext,
 ): SessionRoutine | null {
   if (session.kind !== 'strength' || session.exercises.length === 0) return null;

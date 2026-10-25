@@ -99,8 +99,9 @@ export function currentOrNextTravelMode<T extends TravelMode>(
   const active = travelModeOn(modes, today);
   if (active) return active;
   return (
-    [...modes].filter((m) => m.starts_on > today).sort((a, b) => a.starts_on.localeCompare(b.starts_on))[0] ??
-    null
+    [...modes]
+      .filter((m) => m.starts_on > today)
+      .sort((a, b) => a.starts_on.localeCompare(b.starts_on))[0] ?? null
   );
 }
 

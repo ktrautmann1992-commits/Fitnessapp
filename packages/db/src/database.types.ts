@@ -3661,14 +3661,7 @@ export type Database = {
       wearable_connection_status: 'connected' | 'permission_missing';
       wearable_provider: 'health_connect';
       body_region:
-        | 'knee'
-        | 'shoulder'
-        | 'lower_back'
-        | 'elbow'
-        | 'wrist'
-        | 'hip'
-        | 'ankle'
-        | 'neck';
+        'knee' | 'shoulder' | 'lower_back' | 'elbow' | 'wrist' | 'hip' | 'ankle' | 'neck';
       pain_intensity: 'mild' | 'moderate' | 'severe';
       travel_equipment: 'bodyweight' | 'dumbbells' | 'hotel_gym' | 'band' | 'suspension_trainer';
       workout_format: 'circuit' | 'interval' | 'sets_reps';

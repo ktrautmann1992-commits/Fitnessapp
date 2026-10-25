@@ -381,13 +381,7 @@ export function displayPairs(
  * Ab Etappe T1: „preference“ = „getauscht (deine Wahl)“ (Präferenz), „day_swap“ = „heute getauscht“.
  */
 export type ExerciseMark =
-  | 'equipment_swap'
-  | 'adjusted'
-  | 'preference'
-  | 'day_swap'
-  | 'travel_swap'
-  | 'pain_swap'
-  | null;
+  'equipment_swap' | 'adjusted' | 'preference' | 'day_swap' | 'travel_swap' | 'pain_swap' | null;
 
 /**
  * Prüfreihenfolge (Wächter K6): 1. `storedOrderNo` in `daySwapped` → 'day_swap'; 2. in `preferenceSwapped` →

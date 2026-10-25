@@ -7,6 +7,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 import { MEASUREMENT_SITES } from './body-measurements';
+import { PAIN_MODE, TRAVEL_MODE } from './constants';
+import { BODY_REGIONS, PAIN_INTENSITIES, TRAVEL_EQUIPMENT_OPTIONS } from './enums';
 import { CURRENT_CONSENT_VERSIONS } from './consent';
 import {
   SUPPLEMENT_CONTENT_CATEGORIES,
@@ -3813,5 +3815,32 @@ describe('E-Bike in der Datenbank (20261023140000_e_bike.sql)', () => {
       expect(sql).toContain(`revoke all on function public.${name}(jsonb) from public, anon;`);
       expect(sql).toContain(`grant execute on function public.${name}(jsonb) to authenticated;`);
     }
+  });
+});
+
+describe('Trainings-Modi in der Datenbank (docs/PLAN-TRAINING-MODI.md 7)', () => {
+  const sql = readMigration('_training_modes.sql');
+  const enumValues = (name: string) => quotedListAfter(sql, `create type public.${name} as enum (`);
+
+  it('Aufzählungen = Listen im Core', () => {
+    expect(enumValues('body_region')).toEqual([...BODY_REGIONS]);
+    expect(enumValues('pain_intensity')).toEqual([...PAIN_INTENSITIES]);
+    expect(enumValues('travel_equipment')).toEqual([...TRAVEL_EQUIPMENT_OPTIONS]);
+  });
+
+  it('Grenzen = PAIN_MODE / TRAVEL_MODE', () => {
+    expect(sql).toContain(`check (duration_days in (${PAIN_MODE.durationsDays.join(', ')}))`);
+    expect(sql).toContain(`max_minutes in (${TRAVEL_MODE.minutesOptions.join(', ')})`);
+    expect(sql).toContain(`ends_on - starts_on + 1 <= ${TRAVEL_MODE.maxDays}`);
+    expect(sql).toContain(`new.starts_on > today + ${TRAVEL_MODE.maxStartAheadDays}`);
+    expect(sql).toContain(`private.berlin_today() - ${PAIN_MODE.historyDays}`);
+  });
+
+  it('Schmerz-Einträge nur mit Einwilligung health_data; RLS an beiden Tabellen', () => {
+    expect(sql).toContain(
+      "with check (user_id = (select auth.uid()) and public.has_valid_consent('health_data'));",
+    );
+    expect(sql).toContain('alter table public.pain_episodes enable row level security;');
+    expect(sql).toContain('alter table public.travel_modes enable row level security;');
   });
 });

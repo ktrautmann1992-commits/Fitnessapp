@@ -3,11 +3,7 @@ import type { Exercise } from '../content/schemas';
 import type { CautionTag, PlannedSessionKind } from '../enums';
 import { fitSessionToMinutes, type PlannedExerciseDraft } from '../plan/adapt';
 import { type EquipmentProfile, findSubstitute } from '../plan/equipment-profile';
-import {
-  type ExercisePair,
-  replaceShownExercise,
-  type SwapRecord,
-} from '../plan/preferences';
+import { type ExercisePair, replaceShownExercise, type SwapRecord } from '../plan/preferences';
 import type { PlanSafetyRules } from '../plan/safety';
 import { isBlockedByPain, isLowerBodyRegion, type PainEffect } from './pain';
 import type { TravelOnDay } from './travel';
