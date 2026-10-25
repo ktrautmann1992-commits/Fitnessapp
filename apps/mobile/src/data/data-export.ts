@@ -234,6 +234,8 @@ export function localDataExport(
     // Phase 6 SU3/SU4: Supplement-Check und „Meine Supplements“ (Gesundheitsdaten, Testmodus aus dem Gerätespeicher).
     supplement_screening: [...(extra.supplementScreening ?? [])],
     user_supplements: [...(extra.userSupplements ?? [])],
+    // Trinken-Tracker (25.10.2026). Reihenfolge der folgenden Tabellen = DATA_EXPORT_TABLES / export_my_data().
+    hydration_logs: [...(extra.hydrationLogs ?? [])],
     // Rezept-Favoriten (25.10.2026): Herz und „Nie wieder“ je Rezept – Spalten wie recipe_preferences.
     recipe_preferences: [...rows.recipePreferences].sort((a, b) =>
       a.recipe_id.localeCompare(b.recipe_id),
@@ -242,15 +244,14 @@ export function localDataExport(
     pantry_items: [...rows.pantryItems].sort((a, b) =>
       a.food_id < b.food_id ? -1 : a.food_id > b.food_id ? 1 : 0,
     ),
-    // Schuh-Kilometerzähler: im Testmodus ergänzt attachShoes (data/shoes.ts) die Zeilen aus dem Gerätespeicher.
-    shoes: [],
-    shoe_defaults: [],
-    shoe_assignments: [],
     // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 7): liegen im eigenen geschützten Speicher; attachTrainingModes()
     // (training-modes-backend.ts) setzt die Zeilen im Testmodus ein.
     pain_episodes: [],
     travel_modes: [],
-    hydration_logs: [...(extra.hydrationLogs ?? [])],
+    // Schuh-Kilometerzähler: im Testmodus ergänzt attachShoes (data/shoes.ts) die Zeilen aus dem Gerätespeicher.
+    shoes: [],
+    shoe_defaults: [],
+    shoe_assignments: [],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };
