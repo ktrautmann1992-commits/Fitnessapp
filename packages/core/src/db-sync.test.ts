@@ -34,6 +34,8 @@ import {
   WORKOUT_LIMITS,
   FREE_SESSION,
   SESSION_RPE_LIMITS,
+  SPORT_CATALOGUE,
+  SPORT_LOG_LIMITS,
   SET_RPE_LIMITS,
   TEMPLATE_DOSAGE_LIMITS,
   BODY_MEASUREMENT_LIMITS,
@@ -216,6 +218,7 @@ import {
   exerciseStartWeightSchema,
   sessionLogPayloadSchema,
   setLogSchema,
+  sportLogSchema,
 } from './log/schemas';
 import { ENDURANCE_EFFORT_LIMITS } from './plan/generate';
 import {
@@ -367,6 +370,8 @@ describe('Enums', () => {
     // Phase 8 · Wearables (20261021120000_wearable_enums.sql)
     ['wearable_provider', enums.WEARABLE_PROVIDERS],
     ['wearable_connection_status', enums.WEARABLE_CONNECTION_STATUSES],
+    // Sportarten Stufe 2 (20261025130000_sport_enums.sql)
+    ['sport_type', enums.SPORT_IDS],
   ] as const)('public.%s entspricht packages/core', (name, values) => {
     expect(enumValues(name)).toEqual([...values]);
   });
@@ -733,10 +738,11 @@ describe('Trainingstagebuch (Phase 4 Etappe B)', () => {
     }
   });
 
-  it('neueste save_session_log-Fassung steht in *_e_bike.sql (E-Bike, davor 4b B, S1, A1b)', () => {
-    expect(saveFile).toMatch(/_e_bike\.sql$/);
+  it('neueste save_session_log-Fassung steht in *_sportarten.sql (Sportarten, davor E-Bike, 4b B, S1, A1b)', () => {
+    expect(saveFile).toMatch(/_sportarten\.sql$/);
     expect(fieldsOf('log_fields').is_free).toBe('boolean|missing');
     expect(fieldsOf('cardio_fields').e_bike).toBe('boolean|missing');
+    expect(fieldsOf('log_fields').sport).toBe('object|null|missing');
   });
 
   it('freie Einheit: Namen in save_session_log = FREE_SESSION.names', () => {
@@ -3200,12 +3206,13 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
       const newest = migrationFiles.filter((n) =>
         readMigration(n).includes(`create or replace function ${name}(`),
       );
-      // save_session_log: danach nur noch die E-Bike-Fassung (Obermenge, eigener Test „E-Bike“).
+      // save_session_log: danach nur noch die E-Bike- und die Sportarten-Fassung (Obermengen, eigene Tests).
       expect(newest.at(-1), name).toMatch(
-        name === 'public.save_session_log' ? /_e_bike\.sql$/ : /_live_adjust_outbox\.sql$/,
+        name === 'public.save_session_log' ? /_sportarten\.sql$/ : /_live_adjust_outbox\.sql$/,
       );
       if (name === 'public.save_session_log') {
-        expect(newest.at(-2), name).toMatch(/_live_adjust_outbox\.sql$/);
+        expect(newest.at(-2), name).toMatch(/_e_bike\.sql$/);
+        expect(newest.at(-3), name).toMatch(/_live_adjust_outbox\.sql$/);
       }
     }
     for (const [name, trigger] of [
@@ -3807,5 +3814,80 @@ describe('E-Bike in der Datenbank (20261023140000_e_bike.sql)', () => {
       expect(sql).toContain(`revoke all on function public.${name}(jsonb) from public, anon;`);
       expect(sql).toContain(`grant execute on function public.${name}(jsonb) to authenticated;`);
     }
+  });
+});
+
+describe('Sportarten in der Datenbank (20261025130100_sportarten.sql)', () => {
+  const sql = readMigration('_sportarten.sql');
+  const fnOf = (text: string, name: string) => {
+    const start = text.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return text.slice(start, text.indexOf('$$;', text.indexOf('as $$', start)));
+  };
+  /** Zeilen der älteren Fassung, die in der neueren (in Reihenfolge, ggf. mit Komma am Ende) fehlen. */
+  const missingLines = (older: string, newer: string) => {
+    const next = newer.split('\n');
+    let at = 0;
+    const missing: string[] = [];
+    for (const line of older.split('\n')) {
+      const found = next.findIndex((n, i) => i >= at && (n === line || n === `${line},`));
+      if (found < 0) missing.push(line);
+      else at = found + 1;
+    }
+    return missing;
+  };
+  const save = fnOf(sql, 'public.save_session_log');
+  const constOf = (name: string) => {
+    const match = new RegExp(`${name} constant jsonb := '([^']*)'`).exec(save);
+    if (!match) throw new Error(`${name} nicht gefunden`);
+    return JSON.parse(match[1] as string) as Record<string, string>;
+  };
+
+  it('nur additiv: drei Spalten ohne Standard, CHECKs, keine Rechte/Policies geändert', () => {
+    expect(sql).toContain('alter table public.session_logs add column sport public.sport_type;');
+    expect(sql).toContain(
+      `add column sport_duration_s integer check (sport_duration_s between ${SPORT_LOG_LIMITS.durationS.min} and ${SPORT_LOG_LIMITS.durationS.max});`,
+    );
+    expect(sql).toContain(
+      `add column sport_distance_m integer check (sport_distance_m between ${SPORT_LOG_LIMITS.distanceM.min} and ${SPORT_LOG_LIMITS.distanceM.max});`,
+    );
+    expect(sql).not.toMatch(/drop |alter column|rename |create policy|grant select|disable row/i);
+  });
+
+  it('save_session_log = Fassung aus *_e_bike.sql + nur das Feld sport', () => {
+    const before = fnOf(readMigration('_e_bike.sql'), 'public.save_session_log');
+    // Keine Zeile fehlt (Zeilen mit neuem Komma am Ende zählen als vorhanden).
+    expect(missingLines(before, save)).toEqual([]);
+  });
+
+  it('Namen und GPS-Sportarten in save_session_log und CHECK = SPORT_CATALOGUE', () => {
+    expect(constOf('sport_names')).toEqual(
+      Object.fromEntries(enums.SPORT_IDS.map((id) => [id, SPORT_CATALOGUE[id].nameDe])),
+    );
+    const gps = enums.SPORT_IDS.filter((id) => SPORT_CATALOGUE[id].gps);
+    const list = gps.map((id) => `'${id}'`).join(', ');
+    expect(save).toContain(`array[${list}]`);
+    expect(sql).toContain(`or sport in (${list})))`);
+  });
+
+  it('sport_fields = Felder von sportLogSchema (null genau bei nullable)', () => {
+    const fields = constOf('sport_fields');
+    expect(Object.keys(fields).sort()).toEqual(Object.keys(sportLogSchema.shape).sort());
+    const shape = sportLogSchema.shape as Record<
+      string,
+      { safeParse: (value: unknown) => { success: boolean } }
+    >;
+    for (const [key, types] of Object.entries(fields)) {
+      expect(types.split('|').includes('null'), key).toBe(shape[key]?.safeParse(null).success);
+    }
+  });
+
+  it('Rechte unverändert (nur authenticated)', () => {
+    expect(sql).toContain(
+      'revoke all on function public.save_session_log(jsonb) from public, anon;',
+    );
+    expect(sql).toContain(
+      'grant execute on function public.save_session_log(jsonb) to authenticated;',
+    );
   });
 });

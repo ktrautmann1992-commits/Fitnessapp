@@ -2175,6 +2175,9 @@ export type Database = {
           revision: number;
           session_rpe: number | null;
           source: Database['public']['Enums']['log_source'];
+          sport: Database['public']['Enums']['sport_type'] | null;
+          sport_distance_m: number | null;
+          sport_duration_s: number | null;
           started_at: string | null;
           status: Database['public']['Enums']['session_log_status'];
           updated_at: string;
@@ -2198,6 +2201,9 @@ export type Database = {
           revision?: number;
           session_rpe?: number | null;
           source?: Database['public']['Enums']['log_source'];
+          sport?: Database['public']['Enums']['sport_type'] | null;
+          sport_distance_m?: number | null;
+          sport_duration_s?: number | null;
           started_at?: string | null;
           status: Database['public']['Enums']['session_log_status'];
           updated_at?: string;
@@ -2221,6 +2227,9 @@ export type Database = {
           revision?: number;
           session_rpe?: number | null;
           source?: Database['public']['Enums']['log_source'];
+          sport?: Database['public']['Enums']['sport_type'] | null;
+          sport_distance_m?: number | null;
+          sport_duration_s?: number | null;
           started_at?: string | null;
           status?: Database['public']['Enums']['session_log_status'];
           updated_at?: string;
@@ -3559,6 +3568,34 @@ export type Database = {
       route_difficulty: 'easy' | 'medium' | 'hard';
       session_focus: 'full_body' | 'upper' | 'lower' | 'balance';
       session_log_status: 'completed' | 'partial';
+      sport_type:
+        | 'bouldering'
+        | 'climbing'
+        | 'football'
+        | 'padel'
+        | 'tennis'
+        | 'badminton'
+        | 'table_tennis'
+        | 'basketball'
+        | 'volleyball'
+        | 'handball'
+        | 'cross_trainer'
+        | 'indoor_cycling'
+        | 'hiit'
+        | 'boxing'
+        | 'kickboxing'
+        | 'judo_bjj'
+        | 'karate'
+        | 'martial_arts'
+        | 'cross_country_skiing'
+        | 'ski_touring'
+        | 'alpine_skiing'
+        | 'snowboarding'
+        | 'inline_skating'
+        | 'sup'
+        | 'kayaking'
+        | 'dancing'
+        | 'other';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
       supplement_category: 'sport' | 'food' | 'diet_season' | 'safety_info';
       supplement_evidence: 'a' | 'b' | 'c';
@@ -3877,6 +3914,35 @@ export const Constants = {
       session_focus: ['full_body', 'upper', 'lower', 'balance'],
       route_difficulty: ['easy', 'medium', 'hard'],
       session_log_status: ['completed', 'partial'],
+      sport_type: [
+        'bouldering',
+        'climbing',
+        'football',
+        'padel',
+        'tennis',
+        'badminton',
+        'table_tennis',
+        'basketball',
+        'volleyball',
+        'handball',
+        'cross_trainer',
+        'indoor_cycling',
+        'hiit',
+        'boxing',
+        'kickboxing',
+        'judo_bjj',
+        'karate',
+        'martial_arts',
+        'cross_country_skiing',
+        'ski_touring',
+        'alpine_skiing',
+        'snowboarding',
+        'inline_skating',
+        'sup',
+        'kayaking',
+        'dancing',
+        'other',
+      ],
       sex: ['male', 'female', 'diverse', 'unspecified'],
       supplement_category: ['sport', 'food', 'diet_season', 'safety_info'],
       supplement_evidence: ['a', 'b', 'c'],
