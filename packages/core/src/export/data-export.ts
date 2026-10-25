@@ -87,7 +87,7 @@ export const DATA_EXPORT_TABLES = [
   // Vorratsschrank (Gründer-Freigabe 25.10.2026, KONZEPT 6.13): Lebensmittel, Menge in Kaufeinheiten, „fast leer“
   // (sensibel wie gelernte Strichcode-Zuordnungen, beim Widerruf gelöscht)
   'pantry_items',
-  // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md Abschnitt 21): Schuhe, Standard je Sportart, Wahl je Lauf (kein
+  // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md Abschnitt 22): Schuhe, Standard je Sportart, Wahl je Lauf (kein
   // Gesundheitsdatum)
   'shoes',
   'shoe_defaults',

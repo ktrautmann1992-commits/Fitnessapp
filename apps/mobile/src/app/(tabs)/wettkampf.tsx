@@ -1044,7 +1044,7 @@ export default function CompetitionScreen() {
               onOpenWeek={(monday) => router.push(`/kalender?woche=${monday}` as Href)}
             />
           ) : null}
-          {/* Renn-Pace-Plan (docs/PLAN-PHASE-10.md 21): Zwischenzeiten, Grafik, Verpflegung, Druck. */}
+          {/* Renn-Pace-Plan (docs/PLAN-PHASE-10.md 22): Zwischenzeiten, Grafik, Verpflegung, Druck. */}
           {shownEntry.row.status === 'planned' ? (
             <RacePaceCard competition={comp} rows={rows} raceDate={comp.raceDate} />
           ) : null}

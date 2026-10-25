@@ -7,7 +7,7 @@ import type { EnduranceModality } from '../enums';
 import type { EnduranceActivity } from '../routes/activities';
 
 /**
- * Schuh-Kilometerzähler (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 21). Eigene Schuhe je Sportart
+ * Schuh-Kilometerzähler (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 22). Eigene Schuhe je Sportart
  * (Laufen, Gehen/Wandern, Rad), Standard-Schuh je Sportart mit Beginn-Datum, Zuordnung je Lauf und Kilometer-Summe.
  *
  * Regeln (rein, deterministisch):

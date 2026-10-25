@@ -3317,7 +3317,7 @@ export const COMPETITION_PACE = {
 } as const;
 
 /**
- * Renn-Pace-Plan (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 21): Zwischenzeiten zur Zielzeit eines
+ * Renn-Pace-Plan (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 22): Zwischenzeiten zur Zielzeit eines
  * Wettkampfs. Die Summe aller Abschnitte ist immer genau die Zielzeit – die Regeln verteilen nur um:
  * - `splitEveryM`: bis `longRaceFromM` (25 km) je Kilometer, darüber (Marathon) je 5 km; der letzte Abschnitt ist der
  *   Rest (z. B. 0,1 km beim Halbmarathon, 2,2 km beim Marathon).
@@ -3357,7 +3357,7 @@ export const RACE_PACE_PLAN = {
 } as const;
 
 /**
- * Schuh-Kilometerzähler (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 21): Hinweis „Bald wechseln“
+ * Schuh-Kilometerzähler (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 22): Hinweis „Bald wechseln“
  * ab `warnShare` (75 %) der Wechsel-Grenze, „Wechsel empfohlen“ ab der Grenze. Standard-Grenze `replaceKm` 800 km →
  * Hinweis ab 600 km. Gängige Faustregel von Herstellern und Laufmagazinen: Laufschuhe nach etwa 500–800 km ersetzen
  * (Dämpfung und Profil lassen nach). Das ist eine Material-Faustregel, KEINE medizinische Aussage – es gibt keinen

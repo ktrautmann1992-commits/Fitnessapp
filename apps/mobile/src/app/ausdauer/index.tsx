@@ -305,7 +305,7 @@ export default function EnduranceScreen() {
         </View>
       </Card>
 
-      {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 21): Kacheln „Meine Schuhe“. */}
+      {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 22): Kacheln „Meine Schuhe“. */}
       <ShoeOverview />
 
       <Heading level={2}>{E.list.title}</Heading>

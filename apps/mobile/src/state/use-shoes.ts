@@ -16,7 +16,7 @@ import { useApp } from '@/state/app-state';
 import { useTrackedRoutes } from '@/state/use-tracked-routes';
 
 /**
- * Schuhe des angemeldeten Kontos (docs/PLAN-PHASE-10.md 21): Stand laden (Supabase bzw. Testmodus, offline aus dem
+ * Schuhe des angemeldeten Kontos (docs/PLAN-PHASE-10.md 22): Stand laden (Supabase bzw. Testmodus, offline aus dem
  * Gerätespeicher), Kilometer je Schuh aus allen Läufen (Strecken + Einträge + ältere Einträge) und Speichern. Der
  * zuletzt geladene Stand bleibt im Arbeitsspeicher; nach dem Speichern laden alle offenen Ansichten neu.
  */

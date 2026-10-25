@@ -190,7 +190,7 @@ export default function LogEntryScreen() {
             {detail.cardio.modality === 'bike' && detail.cardio.e_bike === true ? (
               <EBikeBadge testID="log-e-bike" />
             ) : null}
-            {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 21). */}
+            {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 22). */}
             <ShoeChip logId={log.id} />
             <Body accessibilityLabel={cardioDurationText(detail.cardio.duration_s).a11y}>
               {cardioDurationText(detail.cardio.duration_s).text}

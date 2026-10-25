@@ -19,7 +19,7 @@ import { useShoes } from '@/state/use-shoes';
 const S = t.shoes;
 
 /**
- * Schuh-Kilometerzähler in der App (docs/PLAN-PHASE-10.md Abschnitt 21): Kachel je Schuh mit Fortschrittsbalken,
+ * Schuh-Kilometerzähler in der App (docs/PLAN-PHASE-10.md Abschnitt 22): Kachel je Schuh mit Fortschrittsbalken,
  * Übersicht „Meine Schuhe“ im Bereich Ausdauer und der Chip „Schuh: … (… km)“ an einem Lauf. Eigene Datei, damit die
  * Seiten nur je eine Zeile brauchen. Alle Regeln aus packages/core (shoes/shoes.ts).
  */

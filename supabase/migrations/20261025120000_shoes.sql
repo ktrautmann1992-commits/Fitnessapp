@@ -1,4 +1,4 @@
--- Schuh-Kilometerzähler (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 21). NUR ADDITIV:
+-- Schuh-Kilometerzähler (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 22). NUR ADDITIV:
 -- 1. Tabellen shoes (eigene Schuhe je Sportart run | walk | bike), shoe_defaults (Standard-Schuh je Sportart ab einem
 --    Tag; null = ab dann kein Standard) und shoe_assignments (Wahl je Lauf, Schlüssel wie EnduranceActivity.key
 --    „route:<uuid>“ bzw. „log:<uuid>“; shoe_id null = ausdrücklich ohne Schuh). Kein Gesundheitsdatum (Ausrüstung):

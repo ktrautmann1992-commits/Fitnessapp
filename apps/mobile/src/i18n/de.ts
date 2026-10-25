@@ -1702,7 +1702,7 @@ export const de = {
   adjust: deAdjust,
   /** Ausdauer: Aufzeichnen, Meine Läufe, Auswertung, Story-Bild (Etappen E3–E6). */
   endurance: deEndurance,
-  // Schuh-Kilometerzähler und Renn-Pace-Plan (docs/PLAN-PHASE-10.md Abschnitt 21).
+  // Schuh-Kilometerzähler und Renn-Pace-Plan (docs/PLAN-PHASE-10.md Abschnitt 22).
   shoes: deShoes,
   racePace: deRacePace,
   // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)

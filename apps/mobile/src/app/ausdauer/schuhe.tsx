@@ -46,7 +46,7 @@ import { useShoes } from '@/state/use-shoes';
 const S = t.shoes;
 
 /**
- * „Meine Schuhe“ (docs/PLAN-PHASE-10.md Abschnitt 21): Schuhe anlegen, bearbeiten, als Standard setzen, ausmustern,
+ * „Meine Schuhe“ (docs/PLAN-PHASE-10.md Abschnitt 22): Schuhe anlegen, bearbeiten, als Standard setzen, ausmustern,
  * löschen; Kacheln mit Kilometern und Hinweis „Bald wechseln“ / „Wechsel empfohlen“. Speichern geht offline (wird
  * nachgereicht). Alle Regeln aus packages/core.
  */

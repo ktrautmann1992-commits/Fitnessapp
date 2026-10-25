@@ -4,7 +4,7 @@ import { onboardNutrition, patchDb } from './nutrition-helpers';
 import { heading } from './plan-helpers';
 
 /**
- * Schuh-Kilometerzähler und Renn-Pace-Plan (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 21) im
+ * Schuh-Kilometerzähler und Renn-Pace-Plan (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 22) im
  * TESTMODUS, Web-Export, Handy-Ansicht (390 px):
  * - Schuhe: anlegen (400 km vorher, Standard) → Lauf eintragen (12 km) bekommt ihn automatisch → Kachel 412 km, Chip
  *   „Schuh: Pegasus 41 (412 km)“ am Lauf; Wahl „Ohne Schuh“ und zurück; Hinweis „Bald wechseln“ ab 600 km;

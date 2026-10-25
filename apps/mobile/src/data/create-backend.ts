@@ -84,7 +84,7 @@ export function createBackend(): Backend {
       // Etappe E3: Gericht per Foto über apps/web (fehlt die Adresse, ist „Per Foto“ nicht verfügbar).
       webUrl: readWebUrl(process.env.EXPO_PUBLIC_WEB_URL),
     });
-    // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 21): eigene Schnittstelle wie das Zyklus-Modul.
+    // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 22): eigene Schnittstelle wie das Zyklus-Modul.
     attachShoes(
       backend,
       createRemoteShoes({

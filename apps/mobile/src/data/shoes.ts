@@ -11,7 +11,7 @@ import { BackendError, type Backend } from './backend';
 import type { KeyValueStore } from './kv';
 
 /**
- * Schuh-Kilometerzähler in der App (docs/PLAN-PHASE-10.md Abschnitt 21). Eigene Schnittstelle neben dem Backend (wie das
+ * Schuh-Kilometerzähler in der App (docs/PLAN-PHASE-10.md Abschnitt 22). Eigene Schnittstelle neben dem Backend (wie das
  * Zyklus-Modul, `attachShoes` in create-backend.ts) – so bleiben backend.ts, local-backend.ts und supabase-backend.ts
  * unberührt.
  *

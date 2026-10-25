@@ -16,7 +16,7 @@ import { formatNumberDe } from '@/lib/nutrition-format';
 const P = t.racePace;
 
 /**
- * Anzeige des Renn-Pace-Plans (docs/PLAN-PHASE-10.md Abschnitt 21): Zielzeit wählen, Tabellen-Zeilen, Balken und das
+ * Anzeige des Renn-Pace-Plans (docs/PLAN-PHASE-10.md Abschnitt 22): Zielzeit wählen, Tabellen-Zeilen, Balken und das
  * Druck-Dokument. Rechnet keine Regeln (racePacePlan in packages/core) – nur Texte. Gramm nur mit „Kalorienzahlen
  * anzeigen“ (wie die Wettkampf-Ernährung). Rein, getestet.
  */

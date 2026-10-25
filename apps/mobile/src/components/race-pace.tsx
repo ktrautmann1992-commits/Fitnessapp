@@ -37,7 +37,7 @@ import { useTrackedRoutes } from '@/state/use-tracked-routes';
 const P = t.racePace;
 
 /**
- * Renn-Pace-Plan in „Mein Wettkampf“ (docs/PLAN-PHASE-10.md Abschnitt 21): Tabelle der Zwischenzeiten, einfache
+ * Renn-Pace-Plan in „Mein Wettkampf“ (docs/PLAN-PHASE-10.md Abschnitt 22): Tabelle der Zwischenzeiten, einfache
  * Balken-Grafik, Aufteilung (gleichmäßig/negativ), optional Höhenprofil einer gespeicherten Strecke und die
  * Verpflegungspunkte aus der Wettkampf-Ernährung. Eigene Datei – die Wettkampf-Seite braucht nur eine Zeile.
  */

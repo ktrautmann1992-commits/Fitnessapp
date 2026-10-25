@@ -238,7 +238,7 @@ export default function RouteDetailScreen() {
         ) : null}
       </RunHero>
       {eBike ? <EBikeBadge testID="route-e-bike" /> : null}
-      {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 21): „Schuh: … (… km)“, Tippen ändert. */}
+      {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 22): „Schuh: … (… km)“, Tippen ändert. */}
       <ShoeChip routeId={info.id} />
       {pending ? (
         <Notice tone={pending.state === 'rejected' ? 'warning' : 'info'}>

@@ -1,7 +1,7 @@
 import type { RacePaceStrategy } from '@fitnessapp/core';
 
 /**
- * Texte des Renn-Pace-Plans (docs/PLAN-PHASE-10.md Abschnitt 21). Keine Leistungsversprechen; die Anstrengung hat
+ * Texte des Renn-Pace-Plans (docs/PLAN-PHASE-10.md Abschnitt 22). Keine Leistungsversprechen; die Anstrengung hat
  * immer Vorrang. Verpflegungs-Mengen kommen aus der Wettkampf-Ernährung (gleiche Texte, keine neuen Aussagen).
  * Wird in `de.ts` unter `racePace` eingebunden.
  */

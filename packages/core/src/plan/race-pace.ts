@@ -12,7 +12,7 @@ import {
 import { goalTimePlausible, predictedTimeS, riegelReliable } from './intensity';
 
 /**
- * Renn-Pace-Plan (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 21): aus Distanz und Zielzeit eines
+ * Renn-Pace-Plan (Gründer-Freigabe 25.10.2026, docs/PLAN-PHASE-10.md Abschnitt 22): aus Distanz und Zielzeit eines
  * Wettkampfs Zwischenzeiten je Kilometer (ab 25 km je 5 km) – gleichmäßig (Standard), „negativ“ (zweite Hälfte etwas
  * schneller) und, wenn eine gespeicherte Strecke mit Höhenprofil gewählt ist, nach Steigung verteilt. Dazu die
  * Verpflegungspunkte aus der Wettkampf-Ernährung (raceFuelingPlan, dieselben Mengen – keine neuen Aussagen).
@@ -410,7 +410,7 @@ export interface RacePaceCheckpoint {
 }
 
 /**
- * Für Sprach-Ansagen (Etappe „Sprache & Trinken“, docs/PLAN-PHASE-10.md Abschnitt 21): Wo stehe ich gegenüber dem
+ * Für Sprach-Ansagen (Etappe „Sprache & Trinken“, docs/PLAN-PHASE-10.md Abschnitt 22): Wo stehe ich gegenüber dem
  * Pace-Plan? Rein – Eingaben: Plan aus `racePacePlan`, gelaufene Distanz (m) und verstrichene Zeit (s, Bewegungs- oder
  * Uhrzeit nach Wahl der App). Ungültige Werte (negativ, NaN) zählen als 0.
  */

@@ -1,7 +1,7 @@
 import type { ShoeSport, ShoeStatus } from '@fitnessapp/core';
 
 /**
- * Texte des Schuh-Kilometerzählers (docs/PLAN-PHASE-10.md Abschnitt 21). Hinweise immer mit Wort UND Zeichen (nie nur
+ * Texte des Schuh-Kilometerzählers (docs/PLAN-PHASE-10.md Abschnitt 22). Hinweise immer mit Wort UND Zeichen (nie nur
  * Farbe). Die Kilometer-Faustregel ist eine Material-Angabe, keine Gesundheitsaussage (keine Verletzungs-Versprechen).
  * Wird in `de.ts` unter `shoes` eingebunden.
  */
