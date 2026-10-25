@@ -14,6 +14,8 @@ import { FOOD_MAPPING_PATH, parseFoodMapping } from './mapping';
 
 /** Format eines BLS-4.0-Schlüssels (geprüft an allen Codes der Summary des Laufs „kandidaten“ vom 12.10.2026). */
 const BLS_REF = /^[A-Z][0-9A-Z]{6}$/;
+/** Schweizer Nährwertdatenbank: Quell-ID wie `keyPattern` in sources.ts (bis zur Prüfung an der Datei angenommen). */
+const CH_REF = /^[0-9]{1,7}$/;
 
 const raw: unknown = JSON.parse(readFileSync(join(REAL_REPO_ROOT, FOOD_MAPPING_PATH), 'utf8'));
 const mapping = parseFoodMapping(raw);
@@ -105,14 +107,16 @@ describe('Zuordnung alpha5 → Quelle (Vorschlag, unbestätigt)', () => {
 
   it('Quell-IDs werden nicht geraten: offen (null) oder aus einem Kandidatenlauf eingetragen', () => {
     for (const item of mapping.items) {
-      expect(item.source.db).toBe('bls');
-      expect(item.source.version).toBe('4.0');
+      // Hauptquelle BLS 4.0; Zweitquelle Schweizer Nährwertdatenbank 7.1 nur für Zutaten ohne BLS-Zeile (Plan 19.3).
+      expect([`${item.source.db} ${item.source.version}`], item.food_id).toEqual([
+        expect.stringMatching(/^(bls 4\.0|ch_naehrwertdatenbank 7\.1)$/),
+      ]);
       expect(item.source.search.length).toBeGreaterThan(0);
       expect(item.reason_de.length).toBeGreaterThan(20);
       const ref = item.source.ref;
       if (ref !== null) {
         // BLS-4.0-Schlüssel: Großbuchstabe + 6 Ziffern/Großbuchstaben (z. B. „F110100“, „F3B4902“).
-        expect(ref, item.food_id).toMatch(BLS_REF);
+        expect(ref, item.food_id).toMatch(item.source.db === 'bls' ? BLS_REF : CH_REF);
         // Jede eingetragene Quell-ID ist begründet (Herkunft aus dem Kandidatenlauf, Rohzustand).
         expect(item.reason_de, item.food_id).toContain(`Quell-ID ${ref} `);
       }

@@ -88,6 +88,28 @@ describe('xlsx-Leser', () => {
   });
 });
 
+describe('Zeilen vor der Kopfzeile (headerRow, Zweitquelle)', () => {
+  it('überspringt Titelzeilen; die Kopfzeile ist danach die erste Zeile', () => {
+    const csv = Buffer.from(
+      ['Titel der Datenbank', 'Stand 2026', ...['ID,Name', '1,Apfel'].map((l) => l)].join('\n'),
+    );
+    const def = {
+      ...TEST_SOURCE,
+      format: 'csv' as const,
+      csvDelimiter: ',' as const,
+      headerRow: 2,
+    };
+    expect(readOriginalRecords(csv, def)).toEqual([
+      ['ID', 'Name'],
+      ['1', 'Apfel'],
+    ]);
+    // Ohne headerRow bleibt alles wie bisher (erste Zeile = Kopfzeile).
+    expect(readOriginalRecords(csv, { ...def, headerRow: undefined })[0]).toEqual([
+      'Titel der Datenbank',
+    ]);
+  });
+});
+
 describe('Auszug (extract-source) – Zeilen unverändert', () => {
   const records = readOriginalRecords(testOriginal(), TEST_SOURCE);
 
@@ -400,8 +422,14 @@ describe('SOURCE.json, Namensnennung und Allowlist', () => {
         expect(source.downloadPage.redirectHosts).toEqual([]);
       }
       expect(source.attribution.length).toBeGreaterThan(20);
-      expect(source.license).toBe('CC BY 4.0');
+      expect(source.licenseText.length).toBeGreaterThan(20);
     }
+    expect(SOURCES.find((s) => s.db === 'bls')?.license).toBe('CC BY 4.0');
+    // Zweitquelle (Plan 19.3): kommerzielle Nutzung mit Quellenvermerk, Wortlaut der Download-Seite.
+    const ch = SOURCES.find((s) => s.db === 'ch_naehrwertdatenbank');
+    expect(ch?.licenseText).toContain('Ernährungstagebuch-App');
+    expect(ch?.attribution).toContain('BLV');
+    expect(ch?.originalSha256).toBeNull();
     const bls = SOURCES.find((s) => s.db === 'bls');
     expect(bls?.url).toBe('https://blsdb.de/download');
     expect(bls?.downloadPage).toEqual({

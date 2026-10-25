@@ -412,7 +412,11 @@ export async function runFoodsImport(
         '<details><summary>Diagnose: Abruf und Aufbau der Datei</summary>',
         '',
         ...fetched.details.map((d) => `- ${d}`),
-        `- ${headerLine(records[0] ?? [])}`,
+        // Ungeprüfte Spalten (neue Quelle): Tabellenblätter und erste Zeilen zeigen, um Kopfzeile und Spalten
+        // festzunageln (Plan 19.3, Zweitquelle).
+        ...(def.columnsStatus === 'unconfirmed'
+          ? diagnoseOriginal(original, def).map((d) => `- ${d}`)
+          : [`- ${headerLine(records[0] ?? [])}`]),
         '',
         '</details>',
         '',
