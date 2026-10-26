@@ -58,7 +58,9 @@ function contentDir(eatingOut: unknown, alpha5Items: { food_id: string }[] = [])
   return dir;
 }
 
-const newFood = mapping.foods[0] as (typeof mapping.foods)[number];
+// Fixture: erstes Lebensmittel der echten Datei, aber immer ohne Quell-ID (unabhängig vom Import-Stand).
+const firstFood = mapping.foods[0] as (typeof mapping.foods)[number];
+const newFood = { ...firstFood, source: { ...firstFood.source, ref: null } };
 function file(items: { food_id: string; g: number }[], extra: Record<string, unknown> = {}) {
   return {
     format: 'alpha5-auswaerts-zuordnung',
