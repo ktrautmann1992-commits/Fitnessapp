@@ -1,0 +1,52 @@
+{
+  "id": "gewuerzgurken-glas",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Gewürzgurken (Glas)",
+  "aliases_de": [],
+  "shopping_category": "legumes_canned",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 33,
+    "protein_g": 0.9,
+    "carbs_g": 5.52,
+    "sugar_g": 5.49,
+    "fat_g": 0,
+    "sat_fat_g": 0,
+    "fiber_g": 0.88,
+    "salt_g": 1.135,
+    "organic_acids_g": 1.661,
+    "alcohol_g": 0,
+    "polyols_g": 0.028
+  },
+  "units": {},
+  "groups": ["sulphites"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "G520802",
+    "name": "Gurke gesäuert (Gewürzgurke) abgetropft",
+    "category": "vegetables",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-26"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-26",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

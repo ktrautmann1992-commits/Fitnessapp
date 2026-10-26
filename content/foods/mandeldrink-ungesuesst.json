@@ -1,0 +1,52 @@
+{
+  "id": "mandeldrink-ungesuesst",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Mandeldrink ungesüßt",
+  "aliases_de": [],
+  "shopping_category": "chilled_plant_based",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 24,
+    "protein_g": 0.87,
+    "carbs_g": 0.2,
+    "sugar_g": 0.173,
+    "fat_g": 2.159,
+    "sat_fat_g": 0.186,
+    "fiber_g": 0.13,
+    "salt_g": 0.127511,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": null
+  },
+  "units": {},
+  "groups": ["tree_nuts"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "H800000",
+    "name": "Mandeldrink ungesüßt",
+    "category": "nuts_seeds",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-26"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-26",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
