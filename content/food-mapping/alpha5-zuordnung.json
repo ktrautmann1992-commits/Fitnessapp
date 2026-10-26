@@ -3056,7 +3056,7 @@
       "source": {
         "db": "ch_naehrwertdatenbank",
         "version": "7.1",
-        "ref": null,
+        "ref": "742",
         "search": ["Kokos", "Kokosraspel", "Kokosnuss getrocknet", "Kokosnuss"],
         "state_de": "getrocknet, geraspelt",
         "category": "nuts_seeds"
@@ -3074,7 +3074,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet, geraspelt. Quell-ID offen (Lauf 40093377661 „kandidaten“ 24.10.2026, BLS 4.0): kein Eintrag „Kokosnuss getrocknet/Kokosraspeln“ in BLS 4.0 (nur Kokosmilch H154000) → Zweitquelle oder ungeprüft (Plan 19.3). Kokos zählt nach LMIV nicht zu den Schalenfrüchten (ohne „tree_nuts“, bei R19 bestätigen). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: getrocknet, geraspelt. Quell-ID 742 „Kokosnuss, getrocknet (Kokosrapseln, Kokosflocken)“ (Lauf 40334562401 „kandidaten“ 26.10.2026, Schweizer Nährwertdatenbank 7.1): genau passend (Schreibfehler „Kokosrapseln“ in der Quelle). Kokos nach LMIV keine Schalenfrucht."
     },
     {
       "alpha5_id": "koriander-frisch",
@@ -3903,7 +3903,7 @@
       "source": {
         "db": "ch_naehrwertdatenbank",
         "version": "7.1",
-        "ref": null,
+        "ref": "463",
         "search": ["Minze", "Pfefferminze", "Minze roh", "Pfefferminzblätter", "Minzblätter"],
         "state_de": "frisch, roh",
         "category": "vegetables"
@@ -3921,7 +3921,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Minze-Eintrag (Lauf fand keinen Kandidaten). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: frisch, roh. Quell-ID 463 „Pfefferminze, roh“ (Lauf 40334562401 „kandidaten“ 26.10.2026, Schweizer Nährwertdatenbank 7.1): frische Minze; Pfefferminze ist die übliche Handelsware."
     },
     {
       "alpha5_id": "mozzarella-light",
@@ -4254,7 +4254,7 @@
       "source": {
         "db": "ch_naehrwertdatenbank",
         "version": "7.1",
-        "ref": null,
+        "ref": "663",
         "search": [
           "Paprika",
           "Paprika Gewürz",
@@ -4279,7 +4279,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen, mild. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Paprikapulver (Gewürz), nur Gerichte mit Paprika. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: gemahlen, mild. Quell-ID 663 „Paprika (Gewürz)“ (Lauf 40334562401 „kandidaten“ 26.10.2026, Schweizer Nährwertdatenbank 7.1): gemahlenes Gewürz; nicht in BLS 4.0."
     },
     {
       "alpha5_id": "paprikapulver-geraeuchert",
@@ -4288,7 +4288,7 @@
       "source": {
         "db": "ch_naehrwertdatenbank",
         "version": "7.1",
-        "ref": null,
+        "ref": "663",
         "search": [
           "Paprika",
           "Paprika Gewürz",
@@ -4313,7 +4313,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen, geräuchert. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Paprikapulver (Gewürz), nur Gerichte mit Paprika. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "UNSICHER – bei R19 prüfen. Zustand: gemahlen, geräuchert. Quell-ID 663 „Paprika (Gewürz)“ (Lauf 40334562401 „kandidaten“ 26.10.2026, Schweizer Nährwertdatenbank 7.1): kein eigener Eintrag für geräuchertes Paprikapulver; Nährwerte gleichen sich (Menge im Rezept wenige Gramm)."
     },
     {
       "alpha5_id": "parmesan",
@@ -5033,7 +5033,7 @@
       "source": {
         "db": "ch_naehrwertdatenbank",
         "version": "7.1",
-        "ref": null,
+        "ref": "14269",
         "search": ["Rosmarin", "Rosmarin getrocknet", "Rosmarin roh", "Rosmarinblätter"],
         "state_de": "getrocknet",
         "category": "spices_sauces"
@@ -5051,7 +5051,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Rosmarin-Eintrag, nur Gerichte mit Rosmarin. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: getrocknet. Quell-ID 14269 „Rosmarin, getrocknet“ (Lauf 40334562401 „kandidaten“ 26.10.2026, Schweizer Nährwertdatenbank 7.1): genau passend."
     },
     {
       "alpha5_id": "rote-linsen-trocken",
@@ -5314,7 +5314,7 @@
       "source": {
         "db": "ch_naehrwertdatenbank",
         "version": "7.1",
-        "ref": null,
+        "ref": "461",
         "search": ["Salbei", "Salbei roh", "Salbei getrocknet", "Salbeiblätter"],
         "state_de": "frisch, roh",
         "category": "vegetables"
@@ -5332,7 +5332,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Salbei-Eintrag, nur Gerichte mit Salbei. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: frisch, roh. Quell-ID 461 „Salbei, roh“ (Lauf 40334562401 „kandidaten“ 26.10.2026, Schweizer Nährwertdatenbank 7.1): frisch."
     },
     {
       "alpha5_id": "salsa-glas",
@@ -6257,7 +6257,7 @@
       "source": {
         "db": "ch_naehrwertdatenbank",
         "version": "7.1",
-        "ref": null,
+        "ref": "14251",
         "search": ["Tempeh", "Tempe", "Sojabohne fermentiert", "Soja fermentiert"],
         "state_de": "Tempeh",
         "category": "soy_products"
@@ -6275,7 +6275,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Tempeh. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Tempeh-Eintrag. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Tempeh. Quell-ID 14251 „Tempeh, nature“ (Lauf 40334562401 „kandidaten“ 26.10.2026, Schweizer Nährwertdatenbank 7.1): genau passend; nicht in BLS 4.0."
     },
     {
       "alpha5_id": "thunfisch-dose-im-eigenen-saft-abgetropft",
@@ -7288,7 +7288,7 @@
       "source": {
         "db": "ch_naehrwertdatenbank",
         "version": "7.1",
-        "ref": null,
+        "ref": "911",
         "search": ["Zimt", "Zimt gemahlen", "Zimtpulver", "Zimtrinde", "Zimt Gewürz", "Kaneel"],
         "state_de": "gemahlen",
         "category": "spices_sauces"
@@ -7306,7 +7306,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Zimt-Eintrag, nur Gerichte/Gebäck mit Zimt. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: gemahlen. Quell-ID 911 „Zimt“ (Lauf 40334562401 „kandidaten“ 26.10.2026, Schweizer Nährwertdatenbank 7.1): gemahlenes Gewürz; nicht in BLS 4.0."
     },
     {
       "alpha5_id": "zitronensaft",
