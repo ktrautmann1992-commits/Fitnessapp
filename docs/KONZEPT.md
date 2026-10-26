@@ -259,7 +259,9 @@ Verbindlich ist der freigegebene Ablauf in `docs/PLAN-PHASE-1.md` Abschnitt 3 (S
   - Weniger als ca. 70 % der Einheiten geschafft über 3 Wochen → Vorschlag, auf weniger Trainingstage umzustellen (Nutzer bestätigt)
   - Fettverlust: Taille/Bauch und Gewicht stagnieren über ca. 4 Wochen → Kalorien leicht anpassen, **immer innerhalb der Schutzgrenzen aus CLAUDE.md**
   - Muskelaufbau: Gewicht und Umfänge stagnieren, Kraft steigt nicht → Kalorien leicht erhöhen oder Volumen anpassen
-  - Schlechte Tagesform aus Wearable (Readiness, Abschnitt 9) → leichtere Einheit für heute vorschlagen
+  - Schlechte Tagesform aus Wearable (Readiness, Abschnitt 9) → leichtere Einheit für heute vorschlagen – **seit
+    Gründer-Entscheidung 26.10.2026 gratis** (Angebot „Leichter trainieren“ bei Erholung „niedrig“, Abschnitt 9; feste
+    Regel ohne KI, ändert den Plan nie). Alle übrigen Regeln dieses Abschnitts bleiben Premium.
 - **Transparenz:** Jede Anpassung landet in `plan_adjustments` (Auslöser, Regel, vorher, nachher, bestätigt). Ansicht
   „Warum hat sich mein Plan geändert?“ in einfachen Worten aus festen Textbausteinen (keine KI). Optional (Premium-KI,
   Abschnitt 15): ausführlichere Erklärung in Worten.
@@ -323,7 +325,8 @@ Datenbank noch App.
   und in `private.fast_increase_exclusion` (pgTAP `80_active_aging.test.sql`).
 
 ### 4.3 Trainings-Modi: Schon-Modus, Reise-Modus, Aufwärmen & Dehnen (Gratis, ohne KI)
-Gründer-Freigabe 25.10.2026, Details und Entscheidungen: `docs/PLAN-TRAINING-MODI.md`, Logik `packages/core/src/modes/`.
+Gründer-Freigabe 25.10.2026, gratis bestätigt durch Gründer-Entscheidung 26.10.2026 (keine Premium-Prüfung in App und
+Server), Details und Entscheidungen: `docs/PLAN-TRAINING-MODI.md`, Logik `packages/core/src/modes/`.
 - **Schon-Modus (Schmerz/Verletzung):** Stelle (Knie, Schulter, unterer Rücken, Ellenbogen, Handgelenk, Hüfte,
   Sprunggelenk, Nacken) auf der Körperkarte oder in der Liste, Stärke leicht/mittel/stark, 3/7/14 Tage. Die Anzeige
   tauscht belastende Übungen gegen schonendere (`PAIN_REGION_LOAD`), senkt Sätze/RPE und endet automatisch. „stark“,
@@ -928,7 +931,8 @@ Herz bzw. „Nie wieder“ gilt, bis die Person es zurücknimmt. Beide wirken ü
   `packages/core/src/wearables/recovery.ts`, Schwellen in `RECOVERY` (vor Livegang fachlich prüfen); ein Wert allein
   nie „niedrig“. Status gratis (Kachel „Erholung“ auf der Übersicht, 7-Tage-Verlauf); bei „niedrig“ an einem
   Trainingstag Angebot „Leichter trainieren“ / „Wie geplant“ über `lighterSessionVariant` (nie automatisch, Plan
-  unverändert) – nur mit Live-Anpassung (Abschnitt 4.1, Premium, Server prüft). Der Status wird nicht gespeichert.
+  unverändert) – **gratis für alle (Gründer-Entscheidung 26.10.2026**, vorher an die Live-Anpassung gekoppelt; keine
+  Premium-Prüfung mehr, die übrige Live-Anpassung 4.1 bleibt Premium). Der Status wird nicht gespeichert.
 
 ## 10. Strecken
 - Vorschläge im Umkreis des Standorts nach Disziplin, Distanz, Höhenmetern, Untergrund
@@ -1374,7 +1378,8 @@ Workflow `beta-grant` → Funktion `premium_open` → `flag_aus` (danach gilt wi
 - **Premium (Abo monatlich/jährlich):** Live-Anpassung des Plans, Ernährungsplan + Einkaufsliste (laut Phase-5-Entscheidung
   in der Testphase für alle offen, endgültig mit Phase 7; Bedarf, Makros, Timing, Rezepte und PDF gratis), Gerichte
   vor/während/nach dem Training (automatische Belegung, 6.6), alle Meal-Prep-Pläne, automatische Resteplanung,
-  Paar-Modus beim Kochen, Wettkampfvorbereitung, Wearables & Readiness, Strecken-Vorschläge (Abschnitt 10),
+  Paar-Modus beim Kochen, Wettkampfvorbereitung, Wearables & Readiness (ohne Erholungs-Status und Angebot „Leichter
+  trainieren“ – gratis, Gründer-Entscheidung 26.10.2026), Strecken-Vorschläge (Abschnitt 10),
   Partner-Modus, **alle KI-Funktionen** (KI-Coach, Kalorien per Foto, Körperfoto-Analyse, KI-Erklärungen) – siehe Abschnitt 15
 - **Zyklus-Modul gratis** (Gründer-Entscheidung ZY-G1, 21.10.2026): Warnsignale und „leichter an schlechten Tagen“ sind
   Sicherheitsfunktionen; besonders sensible Art-9-Daten sind kein Verkaufshebel.
@@ -1395,7 +1400,8 @@ Workflow `beta-grant` → Funktion `premium_open` → `flag_aus` (danach gilt wi
 | Monats-Challenges | Ja | Ja |
 | Einfache Progression (Gewicht steigt bei geschafften Wdh.) | Ja | Ja |
 | Live-Anpassung des Plans (alle Regeln aus Abschnitt 4.1) | Nein | Ja |
-| Schon-Modus, Reise-Modus, Aufwärmen & Dehnen (4.3, feste Regeln ohne KI) | Ja | Ja |
+| Schon-Modus, Reise-Modus, Aufwärmen & Dehnen (4.3, feste Regeln ohne KI; Gründer-Entscheidung 26.10.2026) | Ja | Ja |
+| Erholung aus der Uhr: Status + Angebot „Leichter trainieren“ bei „niedrig“ (9, Gründer-Entscheidung 26.10.2026) | Ja | Ja |
 | Gerichte vor, während und nach dem Training | Nein | Ja |
 | Kalorien per Foto (KI) | Nein | Ja |
 | Körperfoto-Analyse (KI) | Nein | Ja |

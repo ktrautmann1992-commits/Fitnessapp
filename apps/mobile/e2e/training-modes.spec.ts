@@ -46,6 +46,18 @@ async function openSettingsEntry(page: Page, testId: string, title: string) {
   await heading(page, title);
 }
 
+/**
+ * Gratis-Weg (Gründer-Entscheidung 26.10.2026: Schon- und Reise-Modus sind gratis): im Testmodus den Schalter
+ * „Live-Anpassung einschalten (Testmodus)“ ausschalten, damit kein Premium-Zugang im Spiel ist.
+ */
+async function withoutPremium(page: Page) {
+  await page.goto('/settings');
+  const box = page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' });
+  await expect(box).toBeVisible();
+  if ((await box.getAttribute('aria-checked')) !== 'false') await box.click();
+  await expect(box).toHaveAttribute('aria-checked', 'false');
+}
+
 test.beforeEach(async ({ page }) => {
   await page.clock.setFixedTime(WEDNESDAY);
   await page.goto('/');
@@ -62,6 +74,7 @@ test('Schon-Modus: Körperkarte, Tausch ohne Knie-Übungen, Arzt-Hinweis bei „
   await toToday(page);
   const before = await exerciseNames(page);
   expect(before.some((name) => /Kniebeuge|Ausfallschritt|Beinpresse/.test(name))).toBe(true);
+  await withoutPremium(page);
 
   await openSettingsEntry(page, 'settings-pain-mode', 'Schmerz-/Verletzungsmodus');
   await expect(page.getByTestId('pain-disclaimer')).toContainText('ersetzt keinen ärztlichen Rat');
@@ -199,6 +212,7 @@ test('Reise-Modus: Banner, Körpergewicht-Übungen, 30 Minuten, Schlingentrainer
   await onboard(page, GYM_3_DAYS);
   await toToday(page);
   const before = await exerciseNames(page);
+  await withoutPremium(page);
 
   await openSettingsEntry(page, 'settings-travel-mode', 'Reise-Modus');
   await page.getByTestId('travel-equipment-suspension_trainer').click();
