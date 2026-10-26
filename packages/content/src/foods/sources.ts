@@ -92,6 +92,10 @@ export interface SourceDefinition {
   /** Nur csv: Trennzeichen. */
   readonly csvDelimiter: ',' | ';' | '\t';
   /**
+   * Zeilen VOR der Kopfzeile (Titel, Hinweise), die übersprungen werden; fehlt = 0 (Kopfzeile ist die erste Zeile).
+   */
+  readonly headerRow?: number;
+  /**
    * Festgenagelte SHA-256 der Original-Datei – PFLICHT vor dem ersten Lauf „import“ (aus dem Lauf „kandidaten“
    * per Gründer-PR eintragen; Wächter-Nachtrag blsdb, NB1). null = nur „kandidaten“ möglich; `sources-integrity`
    * prüft dann die Prüfsumme in SOURCE.json gegen einen Neudownload.
@@ -215,8 +219,68 @@ const BLS_4_0: SourceDefinition = {
     'Auszug: nur die von Alpha5 verwendeten Zeilen, Werte unverändert. In der App: Salz ggf. aus Natrium berechnet (× 2,5), Nährwerte je Rezept aus Zutatenmengen hochgerechnet.',
 };
 
+/**
+ * Schweizer Nährwertdatenbank (BLV), Version 7.1 – Zweitquelle (Plan 19.3, Gründer-Entscheidung 13.10.2026) für
+ * Zutaten ohne passende BLS-Zeile (Gewürze, Proteinpulver …). Jede Zutat hat genau EINE Quelle; BLS hat Vorrang.
+ *
+ * Adresse: direkte Datei-Adresse von naehrwertdaten.ch/de/downloads (Link „Schweizer Nährwertdatenbank“), vom
+ * Gründer am 25.10.2026 aus der Seite kopiert. Sie trägt keine Versionsnummer, nur den Upload-Monat; die Version
+ * „7.1“ steht auf der Download-Seite. Ersetzt der BLV die Datei unter derselben Adresse, schlägt die festgenagelte
+ * Prüfsumme an (gewollt) → neue Version per Gründer-PR.
+ * Lizenz (Download-Seite, Screenshot Gründer 25.10.2026): „Das Herunterladen ist kostenlos und die Daten dürfen unter
+ * Angabe eines Quellenvermerks auch für kommerzielle (z.B. Einbindung in Nährwertberechnungssoftware oder
+ * Ernährungstagebuch-App) und wissenschaftliche Zwecke verwendet werden.“
+ *
+ * Aufbau der Datei (Kopfzeile, Spalten, Quell-ID) ist noch NICHT an der Datei geprüft: erst Lauf „kandidaten“
+ * (Diagnose zeigt Tabellenblätter, die ersten Zeilen und die Kopfzeile), dann `headerRow`, Spalten und
+ * `originalSha256` per Gründer-PR festnageln. Bis dahin ist nur „kandidaten“ möglich.
+ */
+const CH_7_1: SourceDefinition = {
+  db: 'ch_naehrwertdatenbank',
+  version: '7.1',
+  title: 'Schweizer Nährwertdatenbank, Version 7.1',
+  url: 'https://naehrwertdaten.ch/wp-content/uploads/2026/07/Schweizer_Nahrwertdatenbank.xlsx',
+  downloadPage: null,
+  urlStatus: 'confirmed',
+  licenseStatus: 'confirmed',
+  confirmedBy:
+    'bestätigt durch Gründer 25.10.2026 (Link aus naehrwertdaten.ch/de/downloads kopiert, Screenshot der Nutzungsbedingungen)',
+  originalFilename: 'Schweizer_Nahrwertdatenbank.xlsx',
+  format: 'xlsx',
+  sheet: null,
+  csvDelimiter: ',',
+  headerRow: 0,
+  originalSha256: null,
+  keyColumn: 0,
+  keyPattern: '^[0-9]{1,7}$',
+  nameColumn: 3,
+  // Angenommen nach öffentlicher Beschreibung; der Lauf „kandidaten“ zeigt die echte Kopfzeile.
+  nutrients: {
+    kcal: [{ code: 'Energie,', unit: 'kcal', convert: 'none' }],
+    protein_g: [{ code: 'Protein', unit: 'g', convert: 'none' }],
+    carbs_g: [{ code: 'Kohlenhydrate,', unit: 'g', convert: 'none' }],
+    sugar_g: [{ code: 'Zucker', unit: 'g', convert: 'none' }],
+    fat_g: [{ code: 'Fett,', unit: 'g', convert: 'none' }],
+    sat_fat_g: [{ code: 'Fettsäuren,', unit: 'g', convert: 'none' }],
+    fiber_g: [{ code: 'Nahrungsfasern', unit: 'g', convert: 'none' }],
+    salt_g: [
+      { code: 'Salz', unit: 'g', convert: 'none' },
+      { code: 'Natrium', unit: 'mg', convert: 'sodium_mg_to_salt_g' },
+    ],
+  },
+  columnsStatus: 'unconfirmed',
+  license: 'Nutzung mit Quellenvermerk (auch kommerziell)',
+  licenseUrl: 'https://naehrwertdaten.ch/de/downloads/',
+  licenseText:
+    'Das Herunterladen ist kostenlos und die Daten dürfen unter Angabe eines Quellenvermerks auch für kommerzielle (z.B. Einbindung in Nährwertberechnungssoftware oder Ernährungstagebuch-App) und wissenschaftliche Zwecke verwendet werden.',
+  attribution:
+    'Schweizer Nährwertdatenbank, Version 7.1, Bundesamt für Lebensmittelsicherheit und Veterinärwesen BLV, naehrwertdaten.ch.',
+  changesNote:
+    'Auszug: nur die von Alpha5 verwendeten Zeilen, Werte unverändert. In der App: Salz ggf. aus Natrium berechnet (× 2,5), Nährwerte je Rezept aus Zutatenmengen hochgerechnet.',
+};
+
 /** Allowlist: genau diese Quellen/Versionen darf `foods-import` laden und `sources-integrity` anerkennen. */
-export const SOURCES: readonly SourceDefinition[] = [BLS_4_0];
+export const SOURCES: readonly SourceDefinition[] = [BLS_4_0, CH_7_1];
 
 /** Quelle nach Datenbank und Version (undefined = nicht in der Allowlist). */
 export function findSource(

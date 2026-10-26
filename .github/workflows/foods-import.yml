@@ -20,12 +20,14 @@ on:
         type: choice
         options:
           - bls
+          - ch_naehrwertdatenbank
         default: bls
       version:
-        description: 'Version der Quelle'
+        description: 'Version der Quelle (bls = 4.0, ch_naehrwertdatenbank = 7.1)'
         type: choice
         options:
           - '4.0'
+          - '7.1'
         default: '4.0'
       modus:
         description: 'kandidaten = nur Vorschläge anzeigen, import = Auszug + Lebensmittel als Pull Request'
