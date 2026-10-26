@@ -196,7 +196,7 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
   await expect(page.getByTestId('swap-feedback')).toContainText(
     `${PUSHUP_RAISED} durch ${PUSHUP} ersetzt. Rückgängig machen kannst du das auch unter Einstellungen, Ausgeschlossene Übungen.`,
   );
-  await expect(exerciseName(page, 2)).toHaveText(`3. ${PUSHUP}`);
+  await expect(exerciseName(page, 2)).toHaveText(PUSHUP);
   await expect(page.getByTestId('plan-exercise-mark-2')).toHaveText('getauscht (deine Wahl)');
   expect((await storedDb(page)).rows.exercisePreferences).toMatchObject([
     { location: 'home', kind: 'dislike' },
@@ -204,7 +204,7 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
 
   // Rückgängig → Präferenz weg, Übung zurück.
   await page.getByTestId('swap-undo').click();
-  await expect(exerciseName(page, 2)).toHaveText(`3. ${PUSHUP_RAISED}`);
+  await expect(exerciseName(page, 2)).toHaveText(PUSHUP_RAISED);
   expect((await storedDb(page)).rows.exercisePreferences).toEqual([]);
 
   // Erneut „immer“; „Rückgängig“ verschwindet bei der nächsten Aktion (anderer Tag).
@@ -293,7 +293,7 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
   );
   await page.goto('/today');
   await heading(page, 'Heute');
-  await expect(exerciseName(page, 2)).toHaveText(`3. ${PUSHUP_RAISED}`);
+  await expect(exerciseName(page, 2)).toHaveText(PUSHUP_RAISED);
 });
 
 test('Trainingsmodus: „Tauschen“ statt „Alternative durchgeführt“ – nur heute, Rückgängig, ab jetzt immer', async ({

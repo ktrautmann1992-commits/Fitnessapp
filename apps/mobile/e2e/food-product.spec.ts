@@ -88,7 +88,10 @@ test('Produkt per Nummer: gefunden, Quelle, 1 Portion eintragen, Tagessumme; Wer
     'Produktdaten: Open Food Facts (openfoodfacts.org), Lizenz ODbL 1.0',
   );
   await expect(page.getByTestId('food-product-card')).not.toContainText(/Nutri-Score/i);
-  await expect(page.locator('img')).toHaveCount(0);
+  // Keine Produktbilder und keine Bilder von fremden Servern (eigene Bilder im Bundle, z. B. Muskel-Chips auf
+  // „Training“, sind erlaubt).
+  await expect(page.getByTestId('food-product-card').locator('img')).toHaveCount(0);
+  await expect(page.locator('img[src^="http"], img[src^="//"]')).toHaveCount(0);
   await testIdsClean(page);
 
   // Attrappe: kein Link zu Open Food Facts (ausgedachte Testnummern); der Lizenz-Link führt zu „Lizenzen und Quellen“.
