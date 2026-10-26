@@ -80,16 +80,38 @@ describe('Schrittziel (22.10.2026) im Testmodus', () => {
 });
 
 describe('Standard in dieser App-Fassung', () => {
-  it('mit Bereich „Workouts“: Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr (6)', () => {
+  it('„App verschlanken“ (26.10.2026): Heute · Training · Ernährung · Einkaufen · Mehr (5), Workouts wählbar', () => {
     expect(AVAILABLE_AREAS).toContain('workouts');
     expect(defaultLayout(AVAILABLE_AREAS).tabs).toEqual([
       'uebersicht',
       'today',
-      'workouts',
       'ernaehrung',
       'einkaufsliste',
       'mehr',
     ]);
+  });
+
+  it('gespeicherter alter Standard (ohne Fassung) wird umgestellt; neu Gespeichertes trägt die Fassung', async () => {
+    const { backend } = seededBackend(rows());
+    const legacy = {
+      user_id: USER_ID,
+      dashboard_tiles: [{ id: 'training', visible: true }],
+      tab_bar: ['uebersicht', 'today', 'workouts', 'ernaehrung', 'einkaufsliste', 'mehr'],
+    };
+    const row = appLayoutRowFromDb(legacy);
+    expect(row?.layout_version).toBeUndefined();
+    const { user_id: _id, ...rowLayout } = row ?? legacy;
+    expect(normalizeLayout(rowLayout, AVAILABLE_AREAS).tabs).toEqual(
+      defaultLayout(AVAILABLE_AREAS).tabs,
+    );
+    // Bewusst wieder mit „Workouts“ an 3. Stelle gespeichert → bleibt (Fassung 2).
+    const { user_id: _user, ...legacyLayout } = legacy;
+    const chosen = toStoredLayout(normalizeLayout({ ...legacyLayout, layout_version: 2 }));
+    const saved = await backend.saveAppLayout(chosen, rows());
+    expect(saved.appLayout?.layout_version).toBe(2);
+    const { user_id: _owner, ...savedLayout } = saved.appLayout ?? legacy;
+    expect(normalizeLayout(savedLayout, AVAILABLE_AREAS).tabs).toEqual(legacy.tab_bar);
+    expect(appLayoutRowFromDb({ ...legacy, layout_version: 2 })?.layout_version).toBe(2);
   });
 });
 

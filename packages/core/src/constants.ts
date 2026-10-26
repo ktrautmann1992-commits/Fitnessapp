@@ -2562,7 +2562,15 @@ export const SHOPPING_PURCHASE_LIMITS = { maxPacks: 60, packPenalty: 0.25 } as c
  * mehr Knöpfe würden auf schmalen Handys (320 px) unlesbar). `storedTilesMax` = Speicherschutz (sync: Migration
  * app_layout_settings). Bedienregeln, keine Grenze zur Gesundheit. PRODUKTENTSCHEIDUNG.
  */
-export const APP_LAYOUT = { tabsMin: 3, tabsMax: 6, storedTilesMax: 20 } as const;
+// `version`: Fassung der gespeicherten Anordnung (Spalte `layout_version`, 26.10.2026 „App verschlanken“). Fehlt sie
+// (bzw. < 2), stellt normalizeLayout einen unverändert gespeicherten alten Standard auf den neuen Standard um.
+export const APP_LAYOUT = {
+  tabsMin: 3,
+  tabsMax: 6,
+  storedTilesMax: 20,
+  version: 2,
+  versionMax: 99,
+} as const;
 
 /**
  * Menge eigener Einträge der Einkaufsliste (Reiter „Einkaufen“, Gründer-Entscheidung 20.10.2026): höchstens so viel

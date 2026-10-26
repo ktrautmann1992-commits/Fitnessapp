@@ -32,6 +32,7 @@ export * from './dashboard';
 // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md).
 export * from './widget';
 export * from './layout';
+export * from './notice-queue';
 export * from './notifications';
 // Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5).
 export * from './accessibility';

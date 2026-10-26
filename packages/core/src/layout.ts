@@ -20,10 +20,15 @@ import { resolveStepGoal, stepGoalSchema } from './wearables/steps';
  *   „Mehr“) – nur der Standard enthält sie.
  * - **Schrittziel** (22.10.2026) wird mit der Anordnung gespeichert (`step_goal`, kein Gesundheitsdatum) – siehe
  *   `toStoredLayout`/`storedStepGoal`; die Anordnung selbst (`AppLayout`) kennt es nicht.
- * - Standard (`defaultLayout`) = Stand vom 20.10.2026: alle Kacheln sichtbar in der heutigen Reihenfolge (mit
- *   „Mein Wettkampf“ an zweiter Stelle); Menüleiste Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr
- *   (EA-1 + Workouts). „Wettkampf“ ist wählbar, aber nicht im Standard (steht unter „Mehr“). Ist ein Bereich in dieser
- *   App-Fassung nicht vorhanden (z. B. „Workouts“ vor dem Zusammenführen), fehlt er auch im Standard.
+ * - Standard (`defaultLayout`) seit „App verschlanken“ (Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 7):
+ *   Menüleiste mit 5 Knöpfen **Heute · Training · Ernährung · Einkaufen · Mehr** (IDs `uebersicht` = Reiter „Heute“,
+ *   `today` = Reiter „Training“). „Workouts“ steht als Umschalter im Training, bleibt aber als Knopf wählbar, ebenso
+ *   „Wettkampf“ und „Fortschritt“. Kacheln (`DEFAULT_TILES`): Training heute, Deine Woche, Ernährung, Ausdauer,
+ *   Schritte, Erholung, Wettkampf sichtbar; Workouts, Körperdaten und Schnellzugriffe ausgeblendet (über „Kacheln
+ *   anpassen“ wieder einblendbar). Ist ein Bereich in dieser App-Fassung nicht vorhanden, fehlt er auch im Standard.
+ * - **Umstellung alter Standards** (`normalizeLayout`): Eine gespeicherte Menüleiste, die genau dem alten Standard vom
+ *   20.10.2026 entspricht (6 Knöpfe mit „Workouts“), und Kacheln, die nie verändert wurden (alle sichtbar, alte
+ *   Standard-Reihenfolge), bekommen den neuen Standard. Selbst Zusammengestelltes bleibt unverändert.
  */
 
 export const DASHBOARD_TILES = [
@@ -44,6 +49,11 @@ export const DASHBOARD_TILES = [
 ] as const;
 export type DashboardTileId = (typeof DASHBOARD_TILES)[number];
 
+export interface TileSetting {
+  readonly id: DashboardTileId;
+  readonly visible: boolean;
+}
+
 export const NAV_AREAS = [
   'uebersicht',
   'today',
@@ -57,8 +67,17 @@ export const NAV_AREAS = [
 ] as const;
 export type NavArea = (typeof NAV_AREAS)[number];
 
-/** Standard-Menüleiste (EA-1 + Workouts, 20.10.2026). */
+/** Standard-Menüleiste seit „App verschlanken“ (26.10.2026): Heute · Training · Ernährung · Einkaufen · Mehr. */
 export const DEFAULT_TAB_BAR: readonly NavArea[] = [
+  'uebersicht',
+  'today',
+  'ernaehrung',
+  'einkaufsliste',
+  'mehr',
+];
+
+/** Alter Standard (EA-1 + Workouts, 20.10.2026) – unverändert gespeichert → neuer Standard (`normalizeLayout`). */
+export const LEGACY_DEFAULT_TAB_BAR: readonly NavArea[] = [
   'uebersicht',
   'today',
   'workouts',
@@ -67,14 +86,29 @@ export const DEFAULT_TAB_BAR: readonly NavArea[] = [
   'mehr',
 ];
 
+/**
+ * Standard-Kacheln der Startseite „Heute“ (26.10.2026, Entwurf 1-heute): Reihenfolge und Sichtbarkeit. Jede Kachel aus
+ * `DASHBOARD_TILES` steht genau einmal darin (Test). Ausgeblendete Kacheln lassen sich über „Kacheln anpassen“
+ * wieder einblenden.
+ */
+export const DEFAULT_TILES: readonly TileSetting[] = [
+  { id: 'training', visible: true },
+  // „Deine Woche“ (bisher „Fortschritt“): Wochenstreifen „0 von 3 erledigt“.
+  { id: 'progress', visible: true },
+  { id: 'nutrition', visible: true },
+  { id: 'endurance', visible: true },
+  { id: 'steps', visible: true },
+  { id: 'recovery', visible: true },
+  { id: 'competition', visible: true },
+  // Workouts stehen im Training (Umschalter), Körperdaten unter Mehr › Fortschritt, Kurzwege in den Reitern.
+  { id: 'workouts', visible: false },
+  { id: 'body', visible: false },
+  { id: 'shortcuts', visible: false },
+];
+
 /** Fest: links bzw. rechts, nie ausblendbar. */
 export const FIXED_FIRST_TAB: NavArea = 'uebersicht';
 export const FIXED_LAST_TAB: NavArea = 'mehr';
-
-export interface TileSetting {
-  readonly id: DashboardTileId;
-  readonly visible: boolean;
-}
 
 export interface AppLayout {
   /** Alle Kacheln in Anzeige-Reihenfolge (auch ausgeblendete). */
@@ -97,6 +131,9 @@ export const storedAppLayoutSchema = z.strictObject({
   tab_bar: z.array(idSchema).min(APP_LAYOUT.tabsMin).max(APP_LAYOUT.tabsMax),
   // Eigenes Schrittziel (22.10.2026, Spalte `step_goal`): fehlt bzw. null = Standard (STEP_GOAL.default).
   step_goal: stepGoalSchema.nullable().optional(),
+  // Fassung der Anordnung (26.10.2026, Spalte `layout_version`): fehlt bzw. null = alte Fassung (vor „App
+  // verschlanken“). Spätere App-Fassungen dürfen höhere Zahlen speichern.
+  layout_version: z.number().int().min(1).max(APP_LAYOUT.versionMax).nullable().optional(),
 });
 export type StoredAppLayout = z.infer<typeof storedAppLayoutSchema>;
 
@@ -107,27 +144,46 @@ const isArea = (id: string): id is NavArea => (NAV_AREAS as readonly string[]).i
 /** Standard für die vorhandenen Bereiche (`available`, Standard: alle). */
 export function defaultLayout(available: readonly NavArea[] = NAV_AREAS): AppLayout {
   return {
-    tiles: DASHBOARD_TILES.map((id) => ({ id, visible: true })),
+    tiles: DEFAULT_TILES.map((tile) => ({ ...tile })),
     tabs: DEFAULT_TAB_BAR.filter((a) => available.includes(a)),
   };
 }
 
-/** Fehlende Kacheln an ihrer Standardstelle (hinter dem vorigen vorhandenen Standard-Nachbarn) ergänzen. */
+/**
+ * Fehlende Kacheln an ihrer Standardstelle (hinter dem vorigen vorhandenen Standard-Nachbarn aus `DEFAULT_TILES`)
+ * ergänzen – mit der Standard-Sichtbarkeit.
+ */
 function withMissingTiles(tiles: TileSetting[]): TileSetting[] {
   const out = [...tiles];
-  DASHBOARD_TILES.forEach((id, index) => {
-    if (out.some((t) => t.id === id)) return;
+  DEFAULT_TILES.forEach((tile, index) => {
+    if (out.some((t) => t.id === tile.id)) return;
     let at = 0;
     for (let k = index - 1; k >= 0; k -= 1) {
-      const found = out.findIndex((t) => t.id === DASHBOARD_TILES[k]);
+      const found = out.findIndex((t) => t.id === DEFAULT_TILES[k]?.id);
       if (found >= 0) {
         at = found + 1;
         break;
       }
     }
-    out.splice(at, 0, { id, visible: true });
+    out.splice(at, 0, { ...tile });
   });
   return out;
+}
+
+/** Gespeicherte Menüleiste = alter Standard (ohne nicht vorhandene Bereiche)? Dann gilt der neue Standard. */
+function isLegacyDefaultTabs(ids: readonly string[], available: readonly NavArea[]): boolean {
+  const legacy = LEGACY_DEFAULT_TAB_BAR.filter((a) => available.includes(a));
+  return ids.length === legacy.length && ids.every((id, index) => id === legacy[index]);
+}
+
+/**
+ * Kacheln nie verändert? Alle sichtbar und in der alten Standard-Reihenfolge (`DASHBOARD_TILES`, auch ältere Fassungen
+ * mit weniger Kacheln). Dann gilt der neue Standard (`DEFAULT_TILES`).
+ */
+function isLegacyDefaultTiles(tiles: readonly TileSetting[]): boolean {
+  if (tiles.length === 0 || tiles.some((t) => !t.visible)) return false;
+  const order = tiles.map((t) => (DASHBOARD_TILES as readonly string[]).indexOf(t.id));
+  return order.every((value, index) => index === 0 || value > (order[index - 1] ?? -1));
 }
 
 /** Regeln der Menüleiste erzwingen (Übersicht links, Mehr rechts, 3–6, jeder Bereich einmal, nur vorhandene). */
@@ -167,18 +223,32 @@ export function normalizeLayout(
     seen.add(tile.id);
     tiles.push({ id: tile.id, visible: tile.visible });
   }
-  return { tiles: withMissingTiles(tiles), tabs: ruledTabs(parsed.data.tab_bar, available) };
+  // Umstellung nur für Anordnungen aus der Zeit vor „App verschlanken“ (ohne bzw. mit alter Fassung).
+  const legacy = (parsed.data.layout_version ?? 1) < APP_LAYOUT.version;
+  const tabIds =
+    legacy && isLegacyDefaultTabs(parsed.data.tab_bar, available)
+      ? DEFAULT_TAB_BAR
+      : parsed.data.tab_bar;
+  return {
+    tiles:
+      legacy && isLegacyDefaultTiles(tiles)
+        ? defaultLayout(available).tiles
+        : withMissingTiles(tiles),
+    tabs: ruledTabs(tabIds, available),
+  };
 }
 
 /**
  * Zum Speichern (Spaltennamen wie `app_layout_settings`). `stepGoal` (optional) = eigenes Schrittziel; ohne bzw. null
- * fehlt das Feld (die Datenbank behält dann das gespeicherte Ziel).
+ * fehlt das Feld (die Datenbank behält dann das gespeicherte Ziel). Immer mit der aktuellen Fassung
+ * (`layout_version`), damit eine bewusst gewählte Leiste nie mehr umgestellt wird.
  */
 export function toStoredLayout(layout: AppLayout, stepGoal?: number | null): StoredAppLayout {
   return storedAppLayoutSchema.parse({
     dashboard_tiles: layout.tiles.map((t) => ({ id: t.id, visible: t.visible })),
     tab_bar: [...layout.tabs],
     ...(stepGoal === undefined || stepGoal === null ? {} : { step_goal: stepGoal }),
+    layout_version: APP_LAYOUT.version,
   });
 }
 
@@ -279,4 +349,25 @@ export function areasInMore(
 /** Gleiche Anordnung? (z. B. „Auf Standard zurücksetzen“ nur anbieten, wenn etwas anders ist) */
 export function sameLayout(a: AppLayout, b: AppLayout): boolean {
   return JSON.stringify(toStoredLayout(a)) === JSON.stringify(toStoredLayout(b));
+}
+
+/**
+ * Welcher Knopf ist markiert, wenn `focused` offen ist (Entwurf 8-navigation, 26.10.2026)? Der eigene Knopf, sonst
+ * der Reiter, unter dem der Bereich jetzt steht: „Workouts“ → „Training“ (Umschalter), „Wettkampf“ und „Fortschritt“
+ * → „Mehr“. Sonst keiner (null).
+ */
+export const AREA_PARENT: Readonly<Partial<Record<NavArea, NavArea>>> = {
+  workouts: 'today',
+  wettkampf: 'mehr',
+  fortschritt: 'mehr',
+};
+
+export function highlightedTab(
+  tabs: readonly NavArea[],
+  focused: string | undefined,
+): NavArea | null {
+  if (focused === undefined || !isArea(focused)) return null;
+  if (tabs.includes(focused)) return focused;
+  const parent = AREA_PARENT[focused];
+  return parent !== undefined && tabs.includes(parent) ? parent : null;
 }
