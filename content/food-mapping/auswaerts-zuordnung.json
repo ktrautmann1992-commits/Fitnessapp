@@ -578,7 +578,7 @@
       "meat_kind": ["pork", "beef"],
       "pregnancy_caution": false,
       "alcohol": false,
-      "max_fridge_days": 2,
+      "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
       "reason_de": "Zustand: gegart (Fleischfüllung). Quell-ID X760112 „Maultaschen Schwäbische Art (mit Hackfleisch) gegart“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): gegart ohne Brühe (Brühe im Gericht getrennt). Schwäbische Maultaschen mit Fleisch-Spinat-Füllung; Schwein und Rind vorsichtig gesetzt."
