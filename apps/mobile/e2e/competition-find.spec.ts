@@ -55,15 +55,12 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
   // Ohne Wettkampf kein Knopf „Wettkampfplan“ im Training.
   await expect(page.getByTestId('today-competition-plan')).toHaveCount(0);
 
-  // --- Übersicht ohne Wettkampf: Kachel weit oben mit „Wettkampf planen“ ------------------------------------
+  // --- Heute ohne Wettkampf: Kachel mit „Wettkampf planen“ ---------------------------------------------------
   await tab(page, 'Heute').click();
   await expect(page.getByTestId('overview-header')).toBeVisible();
   const tile = page.getByTestId('overview-competition');
   await expect(tile).toContainText('Mein Wettkampf');
   await expect(page.getByTestId('overview-competition-none')).toBeVisible();
-  const tileY = (await tile.boundingBox())?.y ?? 0;
-  const nutritionY = (await page.getByTestId('overview-nutrition').boundingBox())?.y ?? 0;
-  expect(tileY).toBeLessThan(nutritionY);
   await page.getByTestId('overview-competition-plan').click();
   await heading(page, 'Wettkampf eintragen');
   await expect(page).toHaveURL(/\/wettkampf\?neu=1$/);
@@ -136,8 +133,8 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
   await page.getByTestId('overview-competition-open').click();
   await heading(page, 'Mein Wettkampf');
   await expect(page).toHaveURL(/\/wettkampf$/);
-  // „Wettkampf“ ist (noch) kein Knopf der Leiste → kein Knopf markiert.
-  await expect(tabBar(page).locator('[aria-selected="true"]')).toHaveCount(0);
+  // „Wettkampf“ ist (noch) kein Knopf der Leiste → sein Reiter „Mehr“ ist markiert (26.10.2026).
+  await expect(tab(page, 'Mehr')).toHaveAttribute('aria-selected', 'true');
 
   // --- Training: deutlicher Knopf oben, Countdown-Karte bleibt ------------------------------------------
   await tab(page, 'Training').click();
@@ -156,27 +153,23 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();
   await heading(page, 'Training');
 
-  // --- Mehr: „Wettkampf“ als erste Kachel unter „Training & Sport“ ------------------------------------------------
+  // --- Mehr: „Wettkampf“ als erste Kachel unter „Sport“ -----------------------------------------------------------
   await tab(page, 'Mehr').click();
   await heading(page, 'Mehr');
   const moreWettkampf = page.getByTestId('more-area-wettkampf');
   await expect(moreWettkampf).toHaveAccessibleName(/^Wettkampf/);
-  // Design 20.10.2026: „Mein Konto“ steht oben, „Wettkampf“ ist die erste Kachel unter „Training & Sport“.
-  const moreY = (await moreWettkampf.boundingBox())?.y ?? 1e9;
-  expect(moreY).toBeLessThan(
-    (await page.getByTestId('more-area-fortschritt').boundingBox())?.y ?? 0,
-  );
+  // „Wettkampf“ ist die erste Kachel unter „Sport“ (vor Ausdauer und Skill-Pfaden).
+  const moreBox = await moreWettkampf.boundingBox();
+  const enduranceBox = await page.getByTestId('more-endurance').boundingBox();
+  expect(moreBox && enduranceBox && moreBox.x < enduranceBox.x).toBe(true);
   // Kein doppelter Eintrag weiter unten.
   await expect(page.getByTestId('more-competition')).toHaveCount(0);
   await moreWettkampf.click();
   await heading(page, 'Mein Wettkampf');
 
-  // --- Menüleiste anpassen: „Wettkampf“ wählbar (Standard bleibt 6 Knöpfe ohne Wettkampf) ---------------
+  // --- Menüleiste anpassen: „Wettkampf“ wählbar (Standard: 5 Knöpfe ohne Wettkampf, Platz für einen 6.) --------
   await page.goto('/menueleiste');
   await heading(page, 'Menüleiste anpassen');
-  await page.getByRole('checkbox', { name: 'Wettkampf in der Menüleiste' }).click();
-  await expect(page.getByTestId('menu-bar-message')).toContainText('Höchstens 6 Knöpfe');
-  await page.getByRole('checkbox', { name: 'Workouts in der Menüleiste' }).click();
   await page.getByRole('checkbox', { name: 'Wettkampf in der Menüleiste' }).click();
   await expect(page.getByTestId('menu-bar-live')).toHaveText(
     'Wettkampf ist jetzt in der Menüleiste.',

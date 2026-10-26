@@ -32,10 +32,12 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
 
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Training');
-  // Karte „Essen heute“: Tagesziel (Montag = Trainingstag), Kennzeichnung der Testwerte (K2).
-  await expect(page.getByTestId('today-nutrition-card')).toBeVisible();
-  await expect(page.getByTestId('today-nutrition-demo')).toBeVisible();
-  const todayText = (await page.getByTestId('today-nutrition-target').innerText()).replace(
+  // Kachel „Ernährung heute“ auf „Heute“ (bis 26.10.2026 Karte „Essen heute“ im Training): Tagesziel (Montag =
+  // Trainingstag), Kennzeichnung der Testwerte (K2).
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-nutrition')).toBeVisible();
+  await expect(page.getByTestId('overview-nutrition-demo')).toBeVisible();
+  const todayText = (await page.getByTestId('overview-nutrition-target').innerText()).replace(
     /\./g,
     '',
   );
@@ -53,11 +55,11 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
   await expect(page.getByTestId('nutrition-day')).not.toContainText(/Champignon|Pilz-/);
 
   // Zurück zu „Heute“: nächste Mahlzeit um 9 Uhr ist das Mittagessen.
-  await page.goto('/today');
-  await expect(page.getByTestId('today-nutrition-next')).toContainText('Mittagessen');
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-nutrition-next')).toContainText('Mittagessen');
 
   // Rezept öffnen (aus dem Plan): Portion, „Enthält“, Allergen-Warnung, Nährwerte.
-  await page.getByTestId('today-nutrition').click();
+  await page.getByTestId('overview-nutrition-open').click();
   await page.getByTestId('meal-lunch').click();
   await expect(page.getByTestId('recipe')).toBeVisible();
   await expect(page.getByTestId('recipe-allergen-warning')).toHaveText(
@@ -72,8 +74,8 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
   await expect(page.getByText(/Prüfe die Zutatenliste der gekauften Produkte/)).toBeVisible();
 
   // Einstellungen → „Kalorienzahlen anzeigen“ aus → nirgends mehr kcal (Gründer-Entscheidung 3, 16 B (h)).
-  await page.goto('/settings');
-  await heading(page, 'Einstellungen');
+  await page.goto('/settings?thema=ernaehrung');
+  await heading(page, 'Ernährung');
   const numbers = page.getByTestId('settings-show-numbers');
   await expect(numbers).toHaveAttribute('aria-checked', 'true');
   await numbers.click();
@@ -86,9 +88,9 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
   await page.getByTestId('meal-lunch').click();
   await expect(page.getByTestId('recipe')).toBeVisible();
   await expect(page.getByTestId('recipe')).not.toContainText('kcal');
-  await page.goto('/today');
-  await expect(page.getByTestId('today-nutrition-card')).toBeVisible();
-  await expect(page.getByTestId('today-nutrition-card')).not.toContainText('kcal');
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-nutrition')).toBeVisible();
+  await expect(page.getByTestId('overview-nutrition')).not.toContainText('kcal');
   await expect((await db(page)).rows.nutritionSetup).toMatchObject({ show_energy_numbers: false });
 });
 
@@ -99,7 +101,7 @@ test('Widerruf mit Angebot: Unverträglichkeit → „mag ich nicht“, „mag i
   await onboardNutrition(page, { peanutIntolerance: true });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Training');
-  await page.goto('/settings');
+  await page.goto('/settings?thema=konto');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   const dialog = page.getByTestId('dialog-revoke');
   await expect(dialog).toContainText('Deine Unverträglichkeiten werden gelöscht');
@@ -128,7 +130,7 @@ test('Widerruf ohne Zustimmung zur Umwandlung: keine Unverträglichkeit bleibt g
   test.setTimeout(120_000);
   await onboardNutrition(page, { peanutIntolerance: true });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await page.goto('/settings');
+  await page.goto('/settings?thema=konto');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   await expect(page.getByTestId('revoke-convert')).toHaveAttribute('aria-checked', 'false');
   await page.getByRole('button', { name: 'Tagebuch behalten (empfohlen)' }).click();
@@ -185,8 +187,9 @@ test('kein Gesundheits-Check → Hinweis + Knopf, ohne Defizit (B4); Schwangersc
   await page.goto('/rezept/porridge-banane');
   await expect(page.getByTestId('recipe-ingredients')).toBeVisible();
   await expect(page.getByTestId('recipe')).not.toContainText('kcal');
-  await page.goto('/today');
-  await expect(page.getByTestId('today-nutrition-target')).toHaveCount(0);
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-nutrition')).toBeVisible();
+  await expect(page.getByTestId('overview-nutrition-target')).toHaveCount(0);
 });
 
 test('Zustände: Einrichtung fehlt (bestehende Testerinnen), keine Rezepte, Beispiel-Rezepte ein/aus, Rezept passt nicht', async ({
@@ -198,8 +201,9 @@ test('Zustände: Einrichtung fehlt (bestehende Testerinnen), keine Rezepte, Beis
   await heading(page, 'Training');
   // Vor N4 eingerichtete Konten haben noch keine Antworten → einmalig beim Öffnen der Ernährung.
   await patchDb(page, (value) => ({ ...value, rows: { ...value.rows, nutritionSetup: null } }));
-  await expect(page.getByTestId('today-nutrition-setup')).toBeVisible();
-  await page.getByTestId('today-nutrition-setup').click();
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-nutrition')).toContainText('Richte deine Ernährung ein');
+  await page.getByTestId('overview-nutrition').click();
   await completeNutritionSetup(page, {
     activity: /^Körperlich schwere Arbeit/,
     time: 'Früh (vor 8 Uhr)',
@@ -260,10 +264,11 @@ test('B1: veraltete Einwilligung + gespeicherte Unverträglichkeit → kein Plan
   await page.goto('/ernaehrung');
   await expect(page.getByTestId('nutrition-consent-blocked')).toBeVisible();
   await expect(page.getByTestId('nutrition-meals')).toHaveCount(0);
-  await page.goto('/today');
-  await expect(page.getByTestId('today-nutrition-card')).toContainText(
-    'Bitte bestätige die neue Fassung der Einwilligung Gesundheitsdaten',
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-nutrition')).toContainText(
+    'Für deinen Essensplan fehlt gerade etwas',
   );
+  await page.goto('/ernaehrung');
   // NK1: veraltet → „Neue Fassung bestätigen“; seit N7 Teil 2 (Wächter N7 H3) zusätzlich „Unverträglichkeiten
   // löschen“ – klarer Zustand „Einwilligung erneuern oder Unverträglichkeiten löschen“.
   await expect(page.getByTestId('nutrition-consent-blocked-button')).toHaveText(

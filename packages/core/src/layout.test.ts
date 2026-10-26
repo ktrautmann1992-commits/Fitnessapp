@@ -1,6 +1,6 @@
 /**
  * Übersicht und Menüleiste anpassen (docs/PLAN-EINKAUFEN-AUSDAUER.md 4, seit 26.10.2026 „App verschlanken“,
- * docs/PLAN-DASHBOARD.md 7): Ränder (erste/letzte), alle Kacheln aus, 7 Knöpfe abgelehnt, ohne „Mehr“/„Heute“ nicht
+ * docs/PLAN-DASHBOARD.md 11): Ränder (erste/letzte), alle Kacheln aus, 7 Knöpfe abgelehnt, ohne „Mehr“/„Heute“ nicht
  * möglich, unbekannte/doppelte IDs, neue Kachel nach einem Update, fehlender Bereich, kaputter Speicher, Idempotenz,
  * Umstellung alter Standards (nur Unverändertes, nur alte Fassung), markierter Knopf.
  */

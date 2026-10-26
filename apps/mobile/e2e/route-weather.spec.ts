@@ -87,7 +87,7 @@ test('Wetter: Hinweis, Abruf mit gerundeter Position, Anzeige, Einstellungen', a
   }
 
   // Einstellungen: abschalten.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   const toggle = page.getByTestId('settings-weather');
   await expect(toggle).toHaveAttribute('aria-checked', 'true');
   await toggle.click();

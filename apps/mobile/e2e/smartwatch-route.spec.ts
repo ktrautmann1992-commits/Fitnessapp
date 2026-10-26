@@ -58,7 +58,7 @@ test('Beispiel-Uhr: Läufe mit Route → Auswertung mit Karte, Puls, kcal; ohne 
   await heading(page, 'Training');
 
   // Verbinden: Erklärung nennt die Routen, Einwilligung (Fassung 2), Beispiel-Uhr.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   await page.getByTestId('settings-smartwatch').click();
   await expect(page.getByText(/Routen deiner Läufe/)).toBeVisible();
   await page.getByTestId('smartwatch-consent-accept').click();
@@ -137,7 +137,7 @@ test('Beispiel-Uhr: Läufe mit Route → Auswertung mit Karte, Puls, kcal; ohne 
   await expect(page.getByTestId('watch-route-missing')).toHaveCount(0);
 
   // Trennen („behalten“): Routen der Uhr weg, Einträge bleiben.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   await page.getByTestId('settings-smartwatch').click();
   await page.getByTestId('smartwatch-disconnect').click();
   await page

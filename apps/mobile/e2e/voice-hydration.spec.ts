@@ -74,18 +74,21 @@ async function start(page: Page, yesQuestion: number | null = null) {
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Training');
+  // Trinken steht seit „App verschlanken“ (26.10.2026) nur noch in der Ernährung (Tag „heute“).
+  await page.goto('/ernaehrung');
+  await expect(page.getByTestId('nutrition-day')).toBeVisible();
 }
 
 test('Trinken: Richtwert, +250/+500, zurücknehmen, 7 Tage', async ({ page }) => {
   await start(page);
-  const card = page.getByTestId('today-hydration');
+  const card = page.getByTestId('nutrition-hydration');
   await card.scrollIntoViewIfNeeded();
-  await expect(page.getByTestId('today-hydration-total')).toHaveText('0,0 l von 1,7 l');
+  await expect(page.getByTestId('nutrition-hydration-total')).toHaveText('0,0 l von 1,7 l');
   await expect(card).toContainText('Richtwert 1.700 ml für Getränke');
-  await page.getByTestId('today-hydration-add-250').click();
-  await page.getByTestId('today-hydration-add-500').click();
-  await expect(page.getByTestId('today-hydration-total')).toHaveText('0,75 l von 1,7 l');
-  await expect(page.getByTestId('today-hydration-ring')).toHaveAttribute(
+  await page.getByTestId('nutrition-hydration-add-250').click();
+  await page.getByTestId('nutrition-hydration-add-500').click();
+  await expect(page.getByTestId('nutrition-hydration-total')).toHaveText('0,75 l von 1,7 l');
+  await expect(page.getByTestId('nutrition-hydration-ring')).toHaveAttribute(
     'aria-label',
     'Heute getrunken: 750 ml von etwa 1.700 ml Richtwert',
   );
@@ -93,8 +96,8 @@ test('Trinken: Richtwert, +250/+500, zurücknehmen, 7 Tage', async ({ page }) =>
     mkdirSync(dir, { recursive: true });
     await card.screenshot({ path: `${dir}/trinken-heute.png` });
   }
-  await page.getByTestId('today-hydration-undo').click();
-  await expect(page.getByTestId('today-hydration-total')).toHaveText('0,25 l von 1,7 l');
+  await page.getByTestId('nutrition-hydration-undo').click();
+  await expect(page.getByTestId('nutrition-hydration-total')).toHaveText('0,25 l von 1,7 l');
   const stored = await page.evaluate(() =>
     JSON.parse(window.localStorage.getItem('fitnessapp.hydration-local.v1') ?? '[]'),
   );
@@ -105,13 +108,15 @@ test('Trinken: Richtwert, +250/+500, zurücknehmen, 7 Tage', async ({ page }) =>
 
 test('Trinken: Herz-Angabe im Gesundheits-Check → kein Ziel, nur notieren', async ({ page }) => {
   await start(page, 0);
-  await expect(page.getByTestId('today-hydration-no-goal')).toContainText(
+  await expect(page.getByTestId('nutrition-hydration-no-goal')).toContainText(
     'geben wir kein Trinkziel vor',
   );
-  await page.getByTestId('today-hydration-add-250').click();
-  await expect(page.getByTestId('today-hydration-total')).toHaveText('Heute 0,25 l');
+  await page.getByTestId('nutrition-hydration-add-250').click();
+  await expect(page.getByTestId('nutrition-hydration-total')).toHaveText('Heute 0,25 l');
   if (dir) {
-    await page.getByTestId('today-hydration').screenshot({ path: `${dir}/trinken-ohne-ziel.png` });
+    await page
+      .getByTestId('nutrition-hydration')
+      .screenshot({ path: `${dir}/trinken-ohne-ziel.png` });
   }
 });
 
@@ -121,7 +126,7 @@ test('Sprachansagen: Einstellungen und Ansage „Kilometer 1“ bei der Demo-Auf
   test.setTimeout(120_000);
   await fakeSpeech(page);
   await start(page);
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   const settings = page.getByTestId('voice-settings');
   await settings.scrollIntoViewIfNeeded();
   await expect(page.getByTestId('voice-enabled')).toHaveAttribute('aria-checked', 'false');

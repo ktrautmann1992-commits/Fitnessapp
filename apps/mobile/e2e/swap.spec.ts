@@ -259,8 +259,8 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
   await expect(row).toContainText(`Ersatz: ${PUSHUP}`);
 
   // Export enthält die Präferenzen (Testmodus).
-  await page.goto('/settings');
-  await heading(page, 'Einstellungen');
+  await page.goto('/settings?thema=training');
+  await heading(page, 'Training');
   await expect(page.getByTestId('settings-exclusions')).toBeVisible();
   await page.goto('/konto');
   await heading(page, 'Mein Konto');
@@ -274,7 +274,7 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
   expect(file.data.exercise_preferences?.[0]?.kind).toBe('dislike');
 
   // Wieder zulassen (mit Bestätigung) → Liste leer, Übung sofort zurück.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=training');
   await page.getByTestId('settings-exclusions').click();
   await heading(page, 'Ausgeschlossene Übungen');
   await page.getByRole('button', { name: `${PUSHUP_RAISED} zu Hause wieder zulassen` }).click();

@@ -1,5 +1,6 @@
 import {
   calorieRing,
+  cookDayMeals,
   evaluationMealPlanUsable,
   mealCardEntrySlot,
   mealCardGroup,
@@ -706,6 +707,26 @@ function NutritionTile({ today }: { today: string }) {
       {targetKcal !== null ? (
         <Body muted testID="overview-nutrition-target" style={styles.small}>
           {texts.target(formatKcal(targetKcal))}
+        </Body>
+      ) : null}
+      {/* Kennzeichnung der Testwerte (K2), Hinweis bei unvollständigem Tag, Kochtag (bis 26.10.2026 „Essen heute“). */}
+      {view.library.kind === 'ready' && view.library.result.demo && week?.kind === 'ready' ? (
+        <Body muted testID="overview-nutrition-demo" style={styles.small}>
+          {t.nutrition.todayCard.demo}
+        </Body>
+      ) : null}
+      {day?.status === 'below_floor' ? (
+        <Notice tone="warning" testID="overview-nutrition-below-floor">
+          {t.nutrition.todayCard.belowFloor}
+        </Notice>
+      ) : null}
+      {day && cookDayMeals(day).length > 0 ? (
+        <Body testID="overview-nutrition-cook" style={styles.small}>
+          {t.nutrition.todayCard.cookDay(
+            cookDayMeals(day)
+              .map((m) => m.titleDe)
+              .join(', '),
+          )}
         </Body>
       ) : null}
       {next ? (

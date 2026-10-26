@@ -250,7 +250,7 @@ test('„Angaben ändern“ führt über das Wunschgewicht; Rückfrage bei ausge
       nutritionSetup: { ...(value.rows.nutritionSetup as object), show_energy_numbers: false },
     },
   }));
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);
@@ -293,7 +293,7 @@ test('„Angaben ändern“ führt über das Wunschgewicht; Rückfrage bei ausge
   await heading(page, 'Training');
 
   // Gespeichert: erneut „Angaben ändern“ → konkretes Ziel steht im Formular (ohne Rückfrage).
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);

@@ -316,7 +316,7 @@ test('Widerruf „Tagebuch behalten“: Einträge bleiben ohne Vorgaben aus dem 
   expect(rows.sessionLogs[0]?.from_health_plan).toBe(true);
   expect(rows.exerciseLogs[0]?.target_sets).not.toBeNull();
 
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=konto');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   const dialog = page.getByTestId('dialog-revoke');
   await expect(dialog).toContainText('Dein Tagebuch bleibt');
@@ -488,7 +488,7 @@ test('Pausentimer nach jedem Satz: −15/+15 s, Ende sichtbar, Überspringen; Bi
   // Einstellungen: „Bildschirm im Training anlassen“ (Standard an), abschaltbar – nur auf diesem Gerät gespeichert.
   await page.getByRole('button', { name: 'Zurück zum Training' }).first().click();
   await heading(page, 'Training');
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=training');
   const keepAwake = page.getByRole('checkbox', { name: 'Bildschirm im Training anlassen' });
   await expect(keepAwake).toHaveAttribute('aria-checked', 'true');
   await keepAwake.click();

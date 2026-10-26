@@ -46,8 +46,8 @@ async function goOn(page: Page, date: string, path = '/today') {
 }
 
 async function simulatePremium(page: Page, on: boolean) {
-  await page.goto('/settings');
-  await heading(page, 'Einstellungen');
+  await page.goto('/settings?thema=training');
+  await heading(page, 'Training');
   const box = page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' });
   await expect(box).toBeVisible();
   if ((await box.getAttribute('aria-checked')) !== String(on)) await box.click();
@@ -92,8 +92,8 @@ test.beforeEach(async ({ page }) => {
 test('Testphase „alles offen“: Schalter steht von Anfang an auf an, mit Kennzeichen', async ({
   page,
 }) => {
-  await page.goto('/settings');
-  await heading(page, 'Einstellungen');
+  await page.goto('/settings?thema=training');
+  await heading(page, 'Training');
   await expect(
     page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' }),
   ).toHaveAttribute('aria-checked', 'true');
@@ -105,7 +105,7 @@ test('Schalter aus → nichts passiert (Gratis-Weg unverändert)', async ({ page
   // Testphase: Standard an – der Gratis-Weg braucht den ausgeschalteten Schalter.
   await simulatePremium(page, false);
   await seed(page, strengthWeek(['2026-10-12', '2026-10-14', '2026-10-16'], 9));
-  await goOn(page, '2026-10-19', '/settings');
+  await goOn(page, '2026-10-19', '/settings?thema=training');
   await expect(
     page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' }),
   ).toHaveAttribute('aria-checked', 'false');

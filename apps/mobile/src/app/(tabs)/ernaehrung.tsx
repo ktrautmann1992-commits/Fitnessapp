@@ -197,8 +197,18 @@ export default function NutritionDayScreen() {
     </Screen>
   );
 
+  // Trinken (25.10.2026) gibt es auch ohne fertigen Essensplan – nur am heutigen Tag.
+  const hydration =
+    picked === null || picked === today ? (
+      <HydrationCard today={today} testID="nutrition-hydration" />
+    ) : null;
   if (view.library.kind === 'unsupported') {
-    return shell(<Notice tone="info">{t.nutrition.unsupported}</Notice>);
+    return shell(
+      <>
+        <Notice tone="info">{t.nutrition.unsupported}</Notice>
+        {hydration}
+      </>,
+    );
   }
   if (view.library.kind === 'error') {
     return shell(
@@ -210,24 +220,37 @@ export default function NutritionDayScreen() {
   }
   if (view.setupMissing) {
     return shell(
-      <Card>
-        <Body>{t.nutrition.setupNeeded}</Body>
-        <Button
-          label={t.nutrition.setupButton}
-          onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
-          testID="nutrition-setup"
-        />
-      </Card>,
+      <>
+        <Card>
+          <Body>{t.nutrition.setupNeeded}</Body>
+          <Button
+            label={t.nutrition.setupButton}
+            onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
+            testID="nutrition-setup"
+          />
+        </Card>
+        {hydration}
+      </>,
     );
   }
   if (view.library.kind !== 'ready' || view.week === null) {
     return shell(<LoadingState label={t.nutrition.loading} />);
   }
   if (view.week.kind === 'incomplete') {
-    return shell(<Notice tone="info">{t.nutrition.incomplete}</Notice>);
+    return shell(
+      <>
+        <Notice tone="info">{t.nutrition.incomplete}</Notice>
+        {hydration}
+      </>,
+    );
   }
   if (view.week.kind === 'blocked') {
-    return shell(<ConsentBlockedNotice reason={view.week.reason} />);
+    return shell(
+      <>
+        <ConsentBlockedNotice reason={view.week.reason} />
+        {hydration}
+      </>,
+    );
   }
   if (view.week.kind === 'error') {
     return shell(<Notice tone="danger">{t.nutrition.computeFailed}</Notice>);
@@ -696,9 +719,7 @@ export default function NutritionDayScreen() {
       <TileGrid tiles={tools} testID="nutrition-tools" />
 
       {/* Trinken (25.10.2026): nur am heutigen Tag. */}
-      {picked === null || picked === today ? (
-        <HydrationCard today={today} testID="nutrition-hydration" />
-      ) : null}
+      {hydration}
 
       {/* Feste Hilfe-Zeile (nicht ausblendbar, nur zum Aufklappen). */}
       <CollapsibleRow

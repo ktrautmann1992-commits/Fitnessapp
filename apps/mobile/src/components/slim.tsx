@@ -10,7 +10,7 @@ import { appFont } from '@/lib/fonts';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
 
 /**
- * Bausteine für „App verschlanken“ (Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 7, docs/DESIGN.md
+ * Bausteine für „App verschlanken“ (Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 11, docs/DESIGN.md
  * „Schlank“): Umschalter oben auf einer Seite, Hinweis-Zeile mit Zähler, Aufklapp-Zeile, ⋯-Menü als Blatt von unten,
  * Kachel-Raster. Nur Darstellung – die Vorrang-Regel der Hinweise steht in packages/core (`noticeQueue`).
  * Tippflächen ≥ 44 px, Zustände für Bildschirmleser (ausgewählt, auf-/zugeklappt).

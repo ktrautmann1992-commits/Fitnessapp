@@ -98,6 +98,6 @@ test('Herz an der Mahlzeit, Suche mit Nur Lieblingsgerichte, Nie wieder ausblend
   expect(after.some((p) => p.recipe_id === favId)).toBe(false);
 
   // Der Weg über die Einstellungen.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=ernaehrung');
   await expect(page.getByTestId('settings-hidden-recipes')).toBeVisible();
 });

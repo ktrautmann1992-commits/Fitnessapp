@@ -211,6 +211,8 @@ test('Vorrat in Einkaufsliste („Schon im Vorrat“, fast leer, nach Einkauf ak
     },
   }));
   await page.goto('/einkaufsliste');
+  // Seit 26.10.2026 in der zugeklappten Zeile „Hast du wahrscheinlich da“.
+  await page.getByTestId('shopping-pantry-toggle').click();
   await expect(page.getByTestId('shopping-in-pantry')).toBeVisible();
   await page.getByTestId('shopping-in-pantry-toggle').click();
   await expect(page.getByTestId(`shopping-in-pantry-${a?.itemKey ?? ''}`)).toContainText(

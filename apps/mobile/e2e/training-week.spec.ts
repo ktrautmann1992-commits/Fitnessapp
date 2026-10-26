@@ -114,7 +114,7 @@ test('Uhr-Lauf an einem Tag ohne Plan: einmalige Frage → „Ja“ → Sa vorge
   await expect(page.getByTestId('cross-day-dialog')).toHaveCount(0);
 
   // Beispiel-Uhr verbinden (Testmodus): Läufe u. a. am Dienstag 20.10. – dort ist nichts geplant.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   await page.getByTestId('settings-smartwatch').click();
   await page.getByTestId('smartwatch-consent-accept').click();
   await page.getByTestId('smartwatch-connect').click();
@@ -175,7 +175,7 @@ test('„Nein, zusätzliche Einheit“: Samstag bleibt geplant, Dienstag erledig
     ['Montag', 'Kraft im Studio', 45],
     ['Samstag', 'Ausdauer', 30],
   ]);
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   await page.getByTestId('settings-smartwatch').click();
   await page.getByTestId('smartwatch-consent-accept').click();
   await page.getByTestId('smartwatch-connect').click();

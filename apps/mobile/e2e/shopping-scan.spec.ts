@@ -6,6 +6,9 @@ import {
   db,
   onboardNutrition,
   openNutrition,
+  openShoppingAdd,
+  openShoppingMenu,
+  openShoppingScan,
   patchDb,
   showCheckedShoppingItems,
 } from './nutrition-helpers';
@@ -57,6 +60,7 @@ async function openShoppingTab(page: Page) {
 }
 
 async function addOwn(page: Page, label: string, quantity = '') {
+  await openShoppingAdd(page);
   await page.getByTestId('shopping-add-label').fill(label);
   await page.getByTestId('shopping-add-quantity').fill(quantity);
   await page.getByTestId('shopping-add').click();
@@ -100,6 +104,7 @@ test('Menüleiste mit „Einkaufen“, Abhaken bleibt nach dem Neuladen, alle Ha
   await expect(page.getByTestId(firstId)).toHaveAttribute('aria-checked', 'true');
 
   // Alle Haken zurücksetzen (mit Rückfrage).
+  await openShoppingMenu(page);
   await page.getByTestId('shopping-uncheck-all').click();
   await page.getByRole('button', { name: 'Zurücksetzen', exact: true }).click();
   await expect(page.getByTestId('shopping-message')).toContainText('zurückgesetzt');
@@ -136,6 +141,7 @@ test('Scannen im Laden: nicht auf der Liste → hinzufügen; Treffer → abgehak
   await openShoppingTab(page);
 
   // 1. „Testprodukt Müsli“ steht nicht auf der Liste → „Zusätzlich hinzufügen?“ (Name vorbefüllt, abgehakt).
+  await openShoppingScan(page);
   await page.getByTestId('shopping-scan').click();
   await expect(page.getByTestId('shopping-scan-not-on-list')).toContainText(
     'steht nicht auf deiner Liste',
@@ -174,6 +180,7 @@ test('Scannen im Laden: nicht auf der Liste → hinzufügen; Treffer → abgehak
 
   // 2. Eigener Eintrag „Müsli“ (offen) → Scan hakt ihn sofort ab, „Rückgängig“ macht ihn wieder offen.
   await addOwn(page, 'Müsli');
+  await openShoppingScan(page);
   await page.getByTestId('shopping-scan').click();
   await expect(page.getByTestId('shopping-scan-feedback')).toContainText('✓ Müsli abgehakt');
   await expect.poll(() => checkedOf(page, 'manual|müsli')).toBe(true);
@@ -186,6 +193,7 @@ test('Scannen im Laden: nicht auf der Liste → hinzufügen; Treffer → abgehak
 
   // 3. Zwei gleich gute Einträge → Auswahl; die Wahl wird abgehakt.
   await addOwn(page, 'Bio-Müsli');
+  await openShoppingScan(page);
   await page.getByTestId('shopping-scan').click();
   const choose = page.getByTestId('shopping-scan-choose');
   await expect(choose).toContainText('Welcher Eintrag ist es?');
@@ -204,6 +212,7 @@ test('Nicht erkannt: Nummer eintippen → Auswahl aus den offenen Einträgen ode
   await fakeCamera(page, { camera: 'denied', builtInDetector: true });
   await startWithPlan(page);
   await openShoppingTab(page);
+  await openShoppingScan(page);
   await page.getByTestId('shopping-scan').click();
   await expect(page.getByTestId('shopping-scan-denied')).toContainText('Kamera-Erlaubnis');
   await page.getByTestId('shopping-scan-code').fill(NOT_FOUND);

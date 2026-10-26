@@ -3,6 +3,10 @@
 Ihr braucht keinen Computer. Claude Code arbeitet in der Cloud, GitHub speichert den Code,
 Vercel zeigt die App im Handy-Browser, Expo baut die echten Apps in der Cloud.
 
+> **Neue Reiter-Namen seit 26.10.2026 („App verschlanken“, Teil 9v):** unten **Heute · Training · Ernährung ·
+> Einkaufen · Mehr**. Ältere Teile sagen noch „Übersicht“ (= jetzt **Heute**) bzw. „Heute“ (= jetzt **Training**);
+> **Einstellungen** liegen unter **Mehr → Einstellungen** in 7 Themen, **Workouts** im Training oben im Umschalter.
+
 ## Teil 1 – Einmalige Einrichtung (ca. 30 Minuten)
 
 ### 1. Dateien aufs Handy speichern
@@ -1113,7 +1117,7 @@ einfügen. Plan dazu: `docs/PLAN-DASHBOARD.md`.
 1. Startbildschirm (dunkel, Alpha5): großer Knopf **„Neu hier – Los geht's“**. Statt „Anmelden“ steht ein kurzer
    Hinweis, dass Anmelden erst mit der Datenbank geht. Unten ist **keine** Menüleiste.
 2. „Neu hier – Los geht's“ → Geburtsdatum → **„Testmodus starten“** → Onboarding wie bisher → **„Zum Plan“**.
-   Es öffnet sich **„Heute“**, unten die Menüleiste **Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr** (seit
+   Es öffnet sich **„Training“** (bis 26.10.2026 „Heute“), unten die Menüleiste **Heute · Training · Ernährung · Einkaufen · Mehr** (seit 26.10.2026, Teil 9v; davor
    20.10.2026; „Fortschritt“ steht als Kachel auf der Übersicht und unter „Mehr“); „Training“ ist markiert.
 3. **„Übersicht“** antippen: Kacheln **Training heute** (an einem Trainingstag mit **„Training starten“**, sonst
    „Ruhetag“ und die nächste Einheit), **Ernährung heute**, **Körperdaten** (mit Einwilligung euer zuletzt
@@ -1932,6 +1936,43 @@ Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle neuen Übungen sind Entw
    Montag öffnen: unter dem Lauf **„Lauf-Kraft danach (15 min)“** → „Einheit mit Timer öffnen“.
 
 Rückmeldung an Claude z. B. „Calisthenics: 1–5 ok, Skill-Pfade zu lang“.
+
+## Teil 9v – App verschlanken: 5 Reiter, weniger pro Seite (26.10.2026, Testmodus)
+
+**Neue Namen (gilt ab jetzt für alle Teile dieser Anleitung):** Die Menüleiste unten heißt **Heute · Training ·
+Ernährung · Einkaufen · Mehr**. Was früher **„Übersicht“** hieß, ist jetzt **„Heute“** (Startseite). Was früher oben
+**„Heute“** hieß (Plan, Woche, Übungen), ist jetzt der Reiter **„Training“**. **„Workouts“** steht im Training oben im
+Umschalter **Mein Plan · Workouts · Übungen**. **Einstellungen** findet ihr unter **Mehr → Einstellungen** (7 Themen).
+Steht in einem älteren Teil „Heute → …“, meint er den Reiter **Training**; „Übersicht“ meint **Heute**.
+
+1. Vorschau-Link aus dem Pull Request öffnen → **Ohne Konto testen** → Onboarding bis **Geschafft!** → **Zum Plan**.
+2. **Menüleiste:** unten 5 Knöpfe **Heute · Training · Ernährung · Einkaufen · Mehr**; „Training“ ist markiert.
+3. **Training:** oben der Umschalter **Mein Plan · Workouts · Übungen**. Darunter höchstens **ein** Hinweis (z. B.
+   „Testinhalte …“); weitere Hinweise liegen hinter **„+2 weitere Hinweise“** – antippen klappt sie auf. Danach
+   **Deine Woche**, die Zeile **„Woche 1 von 6 – Einstiegswoche …“**, die Karte **Training starten** und die Übungen.
+   Unten **Kalender · Verlauf · Tauschen · Als PDF** und die Zeile **„Dein Plan: …“** (antippen = Vorlage und Hinweise).
+4. Im Umschalter **Workouts** antippen → Liste der Workouts, unten bleibt **„Training“** markiert. **Filter** antippen →
+   Sterne, Dauer, Ziel, „ohne Geräte“ klappen auf. **Übungen** öffnet das Übungs-Lexikon.
+5. **Heute:** Gruß, ein Hinweis, **Training heute** mit **Training starten**, **Deine Woche** (Tag antippen öffnet ihn im
+   Training), **Ernährung heute** mit „Als Nächstes: …“, **Gegessen** und **Essen eintragen**, dann Ausdauer,
+   Schritte, Erholung, Wettkampf. Ganz unten **„Kacheln anpassen“** (oder der Stift oben).
+6. **Ernährung:** oben **Tag · Woche · Rezepte**, darunter **‹ Heute ›** zum Blättern und das **Zahnrad** (= Ernährung
+   ändern). Ein Hinweis + Zähler, dann Ring, Mahlzeiten. **⋯** an einer Mahlzeit → **Rezept tauschen**, Lieblingsgericht,
+   Nie wieder. Unten bunte Kacheln **Einkaufsliste, Meal-Prep, Was habe ich da?, Vorrat, Supplemente, Ratgeber** und die
+   Zeile **„Wenn Essen oder Gewicht dich belasten“** (antippen = Hilfe-Stellen).
+7. **Einkaufen:** die Liste steht gleich oben. **„+ Etwas hinzufügen …“** antippen → Name, Menge, Abteilung. **⋯** oben
+   rechts → **Weitergeben, Als PDF speichern, Zeitraum wählen, Erledigte ausblenden, Alle Häkchen entfernen**. Unten
+   **„Hast du wahrscheinlich da“** und **„Aus diesen Rezepten“** zum Aufklappen und der blaue Knopf **Scannen**.
+8. **Mehr:** **Mein Konto**, Kacheln **Fortschritt, Kalender** · **Wettkampf, Ausdauer, Skill-Pfade** · **Rezepte,
+   Supplemente, Ratgeber, Zyklus**, darunter **Einstellungen, Menüleiste anpassen, Lizenzen**.
+9. **Mehr → Fortschritt:** „Diese Woche“ mit drei Zahlen und **Wochenauswertung**, **Körperdaten** mit **Eintragen**,
+   Kacheln **Verlauf, Kalender, Dein Tag, Trainingswoche**. Unten ist **„Mehr“** markiert.
+10. **Mehr → Einstellungen:** 7 Themen (Profil & Ziel, Training, Ernährung, Smartwatch & Apps, Anzeige & Bedienung,
+    Erinnerungen, Konto/Daten/Einwilligungen). Ein Thema antippen → nur dessen Schalter; **„Zurück zu den
+    Einstellungen“** unten.
+11. **Eigene Menüleiste bleibt:** Wer schon „Workouts“ oder „Wettkampf“ selbst als Knopf gewählt hatte, behält seine
+    Leiste. Wer nie etwas geändert hat, bekommt die neue Leiste automatisch. **Mehr → Menüleiste anpassen** → „Workouts“
+    wieder aufnehmen geht weiterhin (bis 6 Knöpfe).
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.

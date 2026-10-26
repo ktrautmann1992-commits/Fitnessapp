@@ -128,6 +128,8 @@ test('Rezept tauschen ohne Netz bedienbar (Testmodus, kein Server); nach dem Neu
   if (!snack) throw new Error('Nachmittags-Snack erwartet');
 
   await page.context().setOffline(true);
+  // „Rezept tauschen“ steht seit 26.10.2026 im ⋯-Menü der Mahlzeit.
+  await page.getByTestId('meal-snack_afternoon-pref-more').click();
   await page.getByTestId('swap-snack_afternoon').click();
   await expect(page.getByTestId('nutrition-swap-message')).toContainText('Getauscht');
   await expect(page.getByTestId('meal-snack_afternoon')).not.toContainText(snack.titleDe);

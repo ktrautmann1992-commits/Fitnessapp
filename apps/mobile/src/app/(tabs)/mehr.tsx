@@ -1,4 +1,4 @@
-import { areasInMore, type NavArea } from '@fitnessapp/core';
+import { areasInMore, cycleModuleOffered, type NavArea } from '@fitnessapp/core';
 import { cardColors, fontSize, radius, spacing, type AreaId } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -160,7 +160,10 @@ export default function MoreScreen() {
     food.push({
       key: 'cycle',
       label: deCycle.moreLabel,
-      detail: slim.cycleDetail,
+      // Nicht (mehr) angeboten, aber Daten da (z. B. nach Wechsel auf „männlich“) → „Daten verwalten …“.
+      detail: cycleModuleOffered(app.answers.sex ?? null)
+        ? slim.cycleDetail
+        : deCycle.moreDescriptionManage,
       area: 'fortschritt',
       icon: 'heart',
       onPress: open('/zyklus'),

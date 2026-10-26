@@ -20,7 +20,7 @@ import { resolveStepGoal, stepGoalSchema } from './wearables/steps';
  *   „Mehr“) – nur der Standard enthält sie.
  * - **Schrittziel** (22.10.2026) wird mit der Anordnung gespeichert (`step_goal`, kein Gesundheitsdatum) – siehe
  *   `toStoredLayout`/`storedStepGoal`; die Anordnung selbst (`AppLayout`) kennt es nicht.
- * - Standard (`defaultLayout`) seit „App verschlanken“ (Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 7):
+ * - Standard (`defaultLayout`) seit „App verschlanken“ (Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 11):
  *   Menüleiste mit 5 Knöpfen **Heute · Training · Ernährung · Einkaufen · Mehr** (IDs `uebersicht` = Reiter „Heute“,
  *   `today` = Reiter „Training“). „Workouts“ steht als Umschalter im Training, bleibt aber als Knopf wählbar, ebenso
  *   „Wettkampf“ und „Fortschritt“. Kacheln (`DEFAULT_TILES`): Training heute, Deine Woche, Ernährung, Ausdauer,

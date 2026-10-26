@@ -168,3 +168,11 @@ export function repoContentStatus(folder: 'exercises' | 'plan-templates'): Map<s
   }
   return status;
 }
+
+/** Training: Zeile „Dein Plan: …“ aufklappen (Vorlage, Hinweise – seit „App verschlanken“ 26.10.2026 zugeklappt). */
+export async function openPlanInfo(page: Page) {
+  const toggle = page.getByTestId('plan-info-toggle');
+  await expect(toggle).toBeVisible();
+  if ((await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+}

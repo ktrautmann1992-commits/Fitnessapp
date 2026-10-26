@@ -147,7 +147,7 @@ test("Link aus „Heute“ und Einstellungen; „So geht's“ im Training – Pa
   await heading(page, 'Training');
 
   // Einstellungen → „Übungen (Glossar)“.
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=training');
   await page.getByTestId('settings-glossary').click();
   await heading(page, 'Übungen');
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();

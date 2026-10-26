@@ -4,8 +4,12 @@ import {
   db,
   onboardNutrition,
   openNutrition,
+  openShoppingAdd,
+  openShoppingRange,
   patchDb,
   showCheckedShoppingItems,
+  toggleHideChecked,
+  expectHideChecked,
 } from './nutrition-helpers';
 import { heading } from './plan-helpers';
 
@@ -110,6 +114,7 @@ test('Einkaufsliste: abhaken und eigener Eintrag ohne Netz, Häkchen nach dem Ne
     'aria-checked',
     'true',
   );
+  await openShoppingAdd(page);
   await page.getByTestId('shopping-add-label').fill('Kaffee');
   await page.getByTestId('shopping-add').click();
   await expect(page.getByTestId('shopping-item-manual|kaffee')).toContainText('Kaffee');
@@ -130,12 +135,12 @@ test('Einkaufsliste: abhaken und eigener Eintrag ohne Netz, Häkchen nach dem Ne
   await expect(page.getByTestId('shopping-item-manual|kaffee')).toBeVisible();
 
   // Erledigte ausblenden (Wahl bleibt nach dem Neuladen).
-  await page.getByTestId('shopping-hide-checked').click();
+  await toggleHideChecked(page);
   await expect(page.getByRole('checkbox', { name: firstLabel })).toHaveCount(0);
   await page.reload();
-  await expect(page.getByTestId('shopping-hide-checked')).toHaveAttribute('aria-checked', 'true');
+  await expectHideChecked(page, true);
   await expect(page.getByRole('checkbox', { name: firstLabel })).toHaveCount(0);
-  await page.getByTestId('shopping-hide-checked').click();
+  await toggleHideChecked(page);
   await expect(page.getByRole('checkbox', { name: firstLabel })).toHaveCount(1);
 
   // Eigenen Eintrag löschen.
@@ -143,6 +148,7 @@ test('Einkaufsliste: abhaken und eigener Eintrag ohne Netz, Häkchen nach dem Ne
   await expect(page.getByTestId('shopping-item-manual|kaffee')).toHaveCount(0);
 
   // Eigener Zeitraum: Donnerstag bis Sonntag – bleibt nach dem Neuladen (nicht vom Standard überschrieben).
+  await openShoppingRange(page);
   await page.getByTestId('shopping-range-toggle').click();
   const picker = page.getByTestId('shopping-range-picker');
   await picker
@@ -156,6 +162,7 @@ test('Einkaufsliste: abhaken und eigener Eintrag ohne Netz, Häkchen nach dem Ne
   await page.getByTestId('shopping-range-apply').click();
   await expect(page.getByTestId('shopping-range')).toContainText('15.10.2026 bis 18.10.2026');
   await expect.poll(async () => (await listOf(page)).from).toBe('2026-10-15');
+  await openShoppingRange(page);
   await expect(page.getByTestId('shopping-range-toggle')).toContainText(
     'Eigener Zeitraum (gewählt)',
   );
@@ -163,6 +170,7 @@ test('Einkaufsliste: abhaken und eigener Eintrag ohne Netz, Häkchen nach dem Ne
   await page.reload();
   await expect(page.getByTestId('shopping-range')).toContainText('15.10.2026 bis 18.10.2026');
   // Zurück zu „3 Tage“.
+  await openShoppingRange(page);
   await page.getByTestId('shopping-range-days').click();
   await expect(page.getByTestId('shopping-range')).toContainText('12.10.2026 bis 14.10.2026');
   await expect.poll(async () => (await listOf(page)).to).toBe('2026-10-14');
@@ -175,6 +183,7 @@ test('Einkaufsliste: Standard 3 Tage, „Ganze Woche“ zeigt mehr und bleibt ge
   await startWithPlan(page);
   await openShopping(page);
   await expect(page.getByTestId('shopping-range')).toContainText('12.10.2026 bis 14.10.2026');
+  await openShoppingRange(page);
   await expect(page.getByTestId('shopping-range-days')).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByTestId('shopping-range-week')).toHaveAttribute('aria-checked', 'false');
   const boxes = page.getByTestId('shopping-items').getByRole('checkbox');
@@ -186,6 +195,7 @@ test('Einkaufsliste: Standard 3 Tage, „Ganze Woche“ zeigt mehr und bleibt ge
   await expect(page.getByRole('checkbox', { name: label })).toHaveCount(0);
   await expect.poll(async () => (await listOf(page)).items.filter((i) => i.checked).length).toBe(1);
 
+  await openShoppingRange(page);
   await page.getByTestId('shopping-range-week').click();
   await expect(page.getByTestId('shopping-range')).toContainText('12.10.2026 bis 18.10.2026');
   await expect(page.getByTestId('shopping-range-week')).toHaveAttribute('aria-checked', 'true');
@@ -200,6 +210,7 @@ test('Einkaufsliste: Standard 3 Tage, „Ganze Woche“ zeigt mehr und bleibt ge
   await page.reload();
   await expect(page.getByTestId('shopping-items')).toBeVisible();
   await expect(page.getByTestId('shopping-range')).toContainText('12.10.2026 bis 18.10.2026');
+  await openShoppingRange(page);
   await expect(page.getByTestId('shopping-range-week')).toHaveAttribute('aria-checked', 'true');
 });
 
@@ -259,6 +270,7 @@ test('W22 App: „schwanger“ am Mittwoch → Plan UND Einkaufsliste angepasst,
   await startWithPlan(page);
   await openShopping(page);
   // Hier geht es um die Neuplanung der ganzen Woche (Standard seit 23.10.2026: 3 Tage).
+  await openShoppingRange(page);
   await page.getByTestId('shopping-range-week').click();
   await expect(page.getByTestId('shopping-range')).toContainText('12.10.2026 bis 18.10.2026');
   await showCheckedShoppingItems(page);
@@ -274,6 +286,7 @@ test('W22 App: „schwanger“ am Mittwoch → Plan UND Einkaufsliste angepasst,
       .poll(async () => (await listOf(page)).items.filter((x) => x.checked).length)
       .toBe(i + 1);
   }
+  await openShoppingAdd(page);
   await page.getByTestId('shopping-add-label').fill('Spülmittel');
   await page.getByTestId('shopping-add').click();
   await expect(page.getByTestId('shopping-item-manual|spülmittel')).toBeVisible();
@@ -350,6 +363,7 @@ test('„Zur Einkaufsliste“ aus der Rezeptansicht mit Portionen; aus dem Plan 
     .poll(async () => (await listOf(page)).recipes)
     .toEqual([{ recipeId: 'porridge-banane', servings: 2 }]);
   await page.getByTestId('recipe-shopping-open').click();
+  await page.getByTestId('shopping-recipes-row-toggle').click();
   await expect(page.getByTestId('shopping-recipes')).toContainText('2 Portionen');
   await page.getByTestId('shopping-recipe-remove-porridge-banane').click();
   await expect(page.getByTestId('shopping-recipes')).toHaveCount(0);

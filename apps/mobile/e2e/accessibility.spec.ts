@@ -76,7 +76,7 @@ test('Große Ansicht: größere Schrift und Knöpfe, „Heute“ zeigt weniger, 
     .getByTestId('today-calendar')
     .evaluate((el) => parseFloat(getComputedStyle(el.querySelector('div[dir]') ?? el).fontSize));
 
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=anzeige');
   const large = page.getByTestId('settings-large-view');
   await expect(large).toHaveAttribute('aria-checked', 'false');
   // Geburtsjahr 1990 → kein Vorschlag (erst ab 60).

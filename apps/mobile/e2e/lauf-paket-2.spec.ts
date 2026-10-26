@@ -162,7 +162,7 @@ test('Beispiel-Uhr: Pulszonen mit Bereichen, Kadenz, Pulszonen-Einstellung', asy
       JSON.stringify({ [userId]: { hfMaxOverride: 190, useRestingHr: true } }),
     );
   }, LOCAL_DB);
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   await page.getByTestId('settings-smartwatch').click();
   await page.getByTestId('smartwatch-consent-accept').click();
   await page.getByTestId('smartwatch-connect').click();

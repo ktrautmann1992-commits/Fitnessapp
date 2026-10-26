@@ -39,7 +39,7 @@ async function fillDate(page: Page, label: string, day: string, month: string, y
 async function openCompetitionForm(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Training');
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByTestId('settings-competition').click();
   await heading(page, 'Mein Wettkampf');
   await page.getByTestId('competition-add').click();

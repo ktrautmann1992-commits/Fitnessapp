@@ -44,8 +44,9 @@ async function setup(page: Page) {
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Training');
-  await page.getByRole('tab', { name: 'Workouts', exact: true }).click();
-  await heading(page, 'Workouts');
+  // Seit „App verschlanken“ (26.10.2026): Umschalter „Workouts“ im Reiter „Training“.
+  await page.getByTestId('today-switch-workouts').click();
+  await expect(page.getByTestId('workouts-list')).toBeVisible();
 }
 
 const count = (page: Page) => page.getByTestId('workouts-count');
@@ -60,6 +61,8 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
     /Bauch-Blitz, Schwierigkeit 2 von 5 Sternen: eher leicht, 12 Min\./,
   );
 
+  // Filter sind zugeklappt („Filter“ antippen).
+  await page.getByTestId('workouts-filter-toggle').click();
   await page.getByTestId('workouts-filter-stars-5').click();
   await expect(count(page)).toHaveText('2 Workouts');
   await expect(card(page, 'koerpergewicht-extrem')).toBeVisible();
@@ -83,7 +86,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-reset').click();
   await expect(count(page)).toHaveText('27 Workouts');
 
-  // „Workouts“ steht in der Menüleiste – unter „Mehr“ nicht noch einmal (Design 20.10.2026: kein Doppel).
+  // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();
   await expect(page.getByTestId('more-account')).toBeVisible();
   await expect(page.getByTestId('more-workouts')).toHaveCount(0);
@@ -170,7 +173,7 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
 
   // Liste (auch nach dem Neuladen): Karte zeigt „Heute erledigt“.
   await page.goto('/workouts');
-  await heading(page, 'Workouts');
+  await expect(page.getByTestId('workouts-list')).toBeVisible();
   await expect(card(page, 'bauch-blitz')).toContainText('Heute erledigt ✓');
 });
 

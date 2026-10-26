@@ -1,6 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { db, onboardNutrition, openNutrition, showCheckedShoppingItems } from './nutrition-helpers';
+import {
+  db,
+  onboardNutrition,
+  openNutrition,
+  openShoppingMenu,
+  openShoppingRange,
+  showCheckedShoppingItems,
+} from './nutrition-helpers';
 import { heading } from './plan-helpers';
 
 /**
@@ -64,6 +71,7 @@ async function start(page: Page) {
 async function openShare(page: Page) {
   await page.getByTestId('nutrition-shopping').click();
   await expect(page.getByTestId('shopping-items')).toBeVisible();
+  await openShoppingMenu(page);
   await page.getByTestId('shopping-share').click();
   await heading(page, 'Einkaufsliste weitergeben');
   await expect(page.getByTestId('share-preview')).toBeVisible();
@@ -166,9 +174,11 @@ test('Weitergeben: Vorschau ohne Gesundheitsdaten, Hinweis vorher, Teilen-Dialog
   await firstCheck.click();
   await expect(firstCheck).toHaveAttribute('aria-checked', 'true');
   // „Ganze Woche“ auf der Liste → Weitergeben nimmt diesen Zeitraum.
+  await openShoppingRange(page);
   await page.getByTestId('shopping-range-week').click();
   await expect(page.getByTestId('shopping-range')).toContainText('12.10.2026 bis 18.10.2026');
   await expect(firstCheck).toHaveAttribute('aria-checked', 'true');
+  await openShoppingMenu(page);
   await page.getByTestId('shopping-share').click();
   await heading(page, 'Einkaufsliste weitergeben');
   await expect(page.getByTestId('share-preview')).not.toContainText('(erledigt)');

@@ -3,6 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import {
   onboardNutrition,
   openNutrition,
+  openShoppingMenu,
   patchDb,
   showCheckedShoppingItems,
 } from './nutrition-helpers';
@@ -115,6 +116,7 @@ test('Einkaufsliste als PDF: Kästchen nach Abteilungen, abgehakte mit Haken, Vo
   await expect(firstCheck).toHaveAttribute('aria-checked', 'true');
   await stubPrint(page);
 
+  await openShoppingMenu(page);
   await page.getByTestId('shopping-print').click();
   await heading(page, 'Bevor du speicherst');
   await page.getByRole('button', { name: 'Weiter', exact: true }).click();

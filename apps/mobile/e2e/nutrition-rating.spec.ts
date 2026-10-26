@@ -208,7 +208,7 @@ test('„Unverträglich“: Dialog ohne Vorauswahl, Grund nie gespeichert; wiede
     .toBe(false);
 
   // Einstellungen → Abgelehnte Lebensmittel: wieder zulassen; alle Bewertungen löschen.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=ernaehrung');
   await page.getByTestId('settings-food-dislikes').click();
   await expect(page.getByTestId('food-dislikes')).toBeVisible();
   await expect(page.getByTestId(`food-dislike-${firstId}`)).toBeVisible();

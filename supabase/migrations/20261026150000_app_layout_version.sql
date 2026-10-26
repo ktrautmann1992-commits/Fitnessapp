@@ -1,4 +1,4 @@
--- „App verschlanken“ (Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 7): neue Standard-Menüleiste mit 5 Knöpfen
+-- „App verschlanken“ (Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 11): neue Standard-Menüleiste mit 5 Knöpfen
 -- (Heute · Training · Ernährung · Einkaufen · Mehr) und neue Standard-Kacheln. Rein additiv:
 -- 1. app_layout_settings bekommt die Spalte layout_version (Fassung der gespeicherten Anordnung, null = vor dem
 --    26.10.2026). Die App (packages/core normalizeLayout) stellt NUR Anordnungen ohne bzw. mit alter Fassung um, die

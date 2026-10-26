@@ -1,6 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { onboardNutrition } from './nutrition-helpers';
+import {
+  onboardNutrition,
+  openShoppingMenu,
+  openShoppingRange,
+  toggleHideChecked,
+  expectHideChecked,
+} from './nutrition-helpers';
 import { heading } from './plan-helpers';
 
 /**
@@ -50,6 +56,7 @@ test('Einkaufsliste wie im Laden: Kaufeinheiten, Karotten einmal, keine Gramm vo
   }
   await page.goto('/einkaufsliste');
   await expect(page.getByTestId('shopping-items')).toBeVisible();
+  await openShoppingRange(page);
   await page.getByTestId('shopping-range-week').click();
   await expect(page.getByTestId('shopping-range')).toContainText('12.10.2026 bis 18.10.2026');
   await page.getByTestId('shopping-pantry-toggle').click();
@@ -74,8 +81,8 @@ test('Einkaufsliste wie im Laden: Kaufeinheiten, Karotten einmal, keine Gramm vo
   await expect(page.getByTestId('shopping-pantry')).toContainText('Vorrat prüfen');
 
   // Abhaken: durchgestrichen und ans Ende der Abteilung.
-  await page.getByTestId('shopping-hide-checked').click();
-  await expect(page.getByTestId('shopping-hide-checked')).toHaveAttribute('aria-checked', 'false');
+  await toggleHideChecked(page);
+  await expectHideChecked(page, false);
   await page.getByTestId('shopping-check-ingwer|g').click();
   await expect(page.getByTestId('shopping-check-ingwer|g')).toHaveAttribute('aria-checked', 'true');
   const veg = await page
@@ -100,6 +107,7 @@ test('Einkaufsliste wie im Laden: Kaufeinheiten, Karotten einmal, keine Gramm vo
   await page.emulateMedia({ colorScheme: 'light' });
 
   // Weitergeben: dieselben Worte.
+  await openShoppingMenu(page);
   await page.getByTestId('shopping-share').click();
   const preview = page.getByTestId('share-preview');
   await expect(preview).toContainText(/- \d+ Beutel Karotten \(/u);

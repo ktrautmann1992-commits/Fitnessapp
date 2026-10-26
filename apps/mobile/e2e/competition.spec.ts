@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { heading, onboard, openPlanInfo } from './plan-helpers';
 
 /**
  * Wettkampf im TESTMODUS (docs/PLAN-PHASE-10.md Abschnitt 8, Etappe WP4) mit festem Startdatum Mittwoch, 07.10.2026
@@ -69,11 +69,12 @@ test('Wettkampf: Ampel, Plan mit Phasen, Pace, Intervall-Timer, Countdown, Ergeb
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Training');
   // Grundlagen-Plan: Hinweis auf „Mein Wettkampf“ statt „kommt später“.
+  await openPlanInfo(page);
   await expect(page.getByTestId('plan-notes')).toContainText('Einstellungen → Mein Wettkampf');
   await expect(page.getByTestId('competition-phase-band')).toHaveCount(0);
 
   // --- Wettkampf anlegen ----------------------------------------------------------------------------------
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByTestId('settings-competition').click();
   await heading(page, 'Mein Wettkampf');
   await expect(page.getByText('Noch kein Wettkampf')).toBeVisible();
@@ -383,7 +384,7 @@ test('Übersicht bei Grundlagen-Plan: Ampel sichtbar, „Zu kurz“ ohne Knopf, 
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Training');
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByTestId('settings-competition').click();
   await page.getByTestId('competition-add').click();
   await heading(page, 'Wettkampf eintragen');
@@ -461,7 +462,7 @@ test('Gesundheits-Flag: Ampel höchstens „Knapp“ mit Hinweis „nur Gehen“
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
   await heading(page, 'Training');
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByTestId('settings-competition').click();
   await page.getByTestId('competition-add').click();
   await fillDate(page, 'Renntag', '28', '03', '2027');

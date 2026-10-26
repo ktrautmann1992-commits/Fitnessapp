@@ -222,7 +222,7 @@ test('Kalorienzahlen aus: keine kcal im DOM, kein eigenes Produkt; Lizenzen und 
   expect(await page.content()).not.toMatch(/kcal/);
 
   // Lizenzen und Quellen (Einstellungen).
-  await page.goto('/settings');
+  await page.goto('/settings?thema=konto');
   await page.getByTestId('settings-licenses').click();
   await expect(page.getByTestId('licenses-off')).toContainText('Open Database License (ODbL 1.0');
   await expect(page.getByTestId('licenses-off')).toContainText('DbCL 1.0');

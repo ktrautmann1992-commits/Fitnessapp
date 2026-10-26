@@ -224,7 +224,7 @@ test('Ohne Live-Anpassung (Gratis): Angebot „Leichter trainieren“ trotzdem d
   test.setTimeout(150_000);
   await setup(page);
   await connectDemoWatch(page);
-  await page.goto('/settings');
+  await page.goto('/settings?thema=training');
   const box = page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' });
   await expect(box).toBeVisible();
   if ((await box.getAttribute('aria-checked')) !== 'false') await box.click();

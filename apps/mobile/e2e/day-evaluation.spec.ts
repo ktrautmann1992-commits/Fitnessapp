@@ -46,8 +46,9 @@ test('Heute neutral bis zum Zielbereich, gestern rot mit „fehlt etwas?“, obe
   test.setTimeout(240_000);
   await start(page);
 
-  // Einstieg aus „Heute“.
-  await page.getByTestId('today-day').click();
+  // Einstieg aus Mehr › Fortschritt › „Dein Tag“ (seit 26.10.2026 nicht mehr doppelt im Training).
+  await page.goto('/fortschritt');
+  await page.getByTestId('progress-day').click();
   await heading(page, 'Dein Tag');
   await expect(page.getByRole('heading', { name: 'Heute, Montag, 12.10.' })).toBeVisible();
   await expect(page.getByTestId('day-bar')).toHaveCount(0);
@@ -237,7 +238,7 @@ test('Training mit Erfüllungsgrad, ungültiges Datum, ohne Einwilligung', async
   await heading(page, 'Kalender');
 
   // Ohne Einwilligung: Erklärung statt Balken.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=konto');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   await page.getByRole('button', { name: 'Tagebuch behalten (empfohlen)' }).click();
   await expect(

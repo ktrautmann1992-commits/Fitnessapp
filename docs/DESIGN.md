@@ -333,6 +333,31 @@ Gründer-Freigabe Entwurf B für die Krafteinheit auf „Training“ (`component
 - Prüfungen: `plan-strength.test.tsx`, `plan-format.test.ts`, `workout-format.test.ts`,
   `packages/core/src/content/muscle-tiles.test.ts`, E2E `training-plan.spec.ts`.
 
+### Schlank: 5 Reiter, eine Frage je Seite (Gründer-Freigabe 26.10.2026)
+
+Vorschlag „App verschlanken“ (Entwürfe 1-heute … 8-navigation, Plan: `docs/PLAN-DASHBOARD.md` 11). Jede Seite
+beantwortet eine Frage: **Heute** („Was steht heute an?“), **Training** („Was trainiere ich?“), **Ernährung** („Was
+esse ich?“), **Einkaufen** („Was muss ich kaufen?“), **Mehr** („Alles andere“). Regeln für neue Bildschirme:
+
+- **Höchstens ein Hinweis offen.** Hinweise laufen über `NoticeStack` (Vorrang aus `packages/core` `noticeQueue`):
+  sperrende Hinweise (Einwilligung, Arzt, Plan abgelaufen, fremde Daten, Ernährungs-Sicherheit) immer vollständig,
+  sonst einer vollständig + Pille **„+N weitere Hinweise“** (44 px, Rand, Link-Farbe, Pfeil dreht beim Aufklappen,
+  `aria-expanded`).
+- **Umschalter statt weiterer Reiter** (`SegmentedSwitch`): graue Pillen-Fläche (`card.divider`), gewählter Teil weiß
+  (`surface`) mit leichtem Schatten und fett, Rolle `tab` mit „ausgewählt“, 44 px hoch. Training: Mein Plan · Workouts
+  · Übungen; Ernährung: Tag · Woche · Rezepte; Einkaufen: Diese Woche · Nächste Woche.
+- **Seltenes zuklappen** (`CollapsibleRow`): weiße Karte, Icon links, Titel 17/700 + Zusatz grau, Pfeil rechts (dreht
+  beim Aufklappen), Bildschirmleser hören „aufgeklappt/zugeklappt“. Beispiele: „Dein Plan: …“, „Wenn Essen oder
+  Gewicht dich belasten“ (Herz in Fehlerfarbe, nie ausblendbar), „Hast du wahrscheinlich da“.
+- **Aktionen ins ⋯-Menü** (`MoreMenu`): runder 44-px-Knopf oben rechts, Blatt von unten (Radius 24, Griff, Zeilen
+  52 px mit Icon, Schalter-Einträge mit Haken, Gefährliches in Fehlerfarbe, „Schließen“). Seitenkopf-Knöpfe über
+  `Screen headerAction` (z. B. ⚙ in Ernährung, `HeaderIconButton`).
+- **Werkzeuge als bunte Kacheln** (`TileGrid`, zu zweit) statt Knopf-Stapel – Bereichsfarbe je Ziel (Einkaufen
+  türkis, Ernährung grün, Fortschritt/Training blau).
+- Neue Strich-Icons: `home` (Reiter Heute), `share`, `print`, `chevron-left`, `filter`.
+- Bausteine: `apps/mobile/src/components/slim.tsx` (Tests `slim.test.tsx`), Umschalter Training
+  `components/training-switch.tsx`.
+
 ### Bausteine (`apps/mobile/src/components/design.tsx`)
 
 | Baustein       | Props (Auszug)                                                                                                                                                                                                                                                                                                   | Barrierefreiheit                                    |

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 import { db, onboardNutrition, patchDb } from './nutrition-helpers';
-import { heading, next } from './plan-helpers';
+import { heading, next, openPlanInfo } from './plan-helpers';
 
 /**
  * Ziele · Etappe Z5 (docs/PLAN-ZIELE.md 6 Nr. 3–4, 7 Z5, F10, F13, K10): Einstellungen „Dein Abnehm-Ziel“ –
@@ -20,7 +20,7 @@ async function start(page: Page) {
 }
 
 async function openWeightGoal(page: Page) {
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByRole('link', { name: 'Dein Abnehm-Ziel' }).click();
   await expect(page.getByTestId('weight-goal-settings')).toBeVisible();
 }
@@ -117,7 +117,7 @@ test('Zeitraum vorbei: Karte, Verlängern nur ausdrücklich; „Angaben ändern�
   await expireGoal(page);
 
   // „Angaben ändern“: Hinweis, Feld leer, „Weiter“ behält das Ziel genau so (kein neues Startdatum).
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);
@@ -204,7 +204,7 @@ test('Wunschgewicht erreicht: Karte bleibt bis zur Wahl, „Weiter“ blockiert 
 
   // „Angaben ändern“ blockiert nicht (aktuelles Gewicht unter dem Ziel).
   await page.goto('/today');
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await next(page);
   await heading(page, 'Dein Ziel');
@@ -232,14 +232,14 @@ test('Wunschgewicht erreicht: Karte bleibt bis zur Wahl, „Weiter“ blockiert 
   expect((stored.rows.goals as { goal_type: string }).goal_type).toBe('general_fitness');
   expect(stored.rows.weightGoal ?? null).toBeNull();
   // Ohne Abnehmen gibt es den Einstellungs-Eintrag nicht mehr.
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await expect(page.getByTestId('settings-weight-goal')).toHaveCount(0);
 });
 
 test('Widerruf löscht das Wunschgewicht; danach ohne Einwilligung gesperrt', async ({ page }) => {
   await start(page);
   await setGoal(page);
-  await page.goto('/settings');
+  await page.goto('/settings?thema=konto');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   await page.getByRole('button', { name: 'Tagebuch behalten (empfohlen)' }).click();
   await expect(page.getByTestId('dialog-revoke')).toHaveCount(0);
@@ -253,10 +253,11 @@ test('Nebenziel geändert → „Plan neu erstellen?“; Planname mit beiden Zie
   page,
 }) => {
   await start(page);
+  await openPlanInfo(page);
   await expect(page.getByTestId('plan-name')).toHaveText('Dein Plan: Abnehmen · 3 Tage');
   await expect(page.getByTestId('plan-offer')).toHaveCount(0);
 
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await next(page);
   await heading(page, 'Dein Ziel');
@@ -273,6 +274,7 @@ test('Nebenziel geändert → „Plan neu erstellen?“; Planname mit beiden Zie
   const offer = page.getByTestId('plan-offer');
   await expect(offer).toContainText('Plan neu erstellen?');
   await offer.getByRole('button', { name: 'Plan neu erstellen' }).first().click();
+  await openPlanInfo(page);
   await expect(page.getByTestId('plan-name')).toHaveText(
     'Dein Plan: Abnehmen + Muskelaufbau · 3 Tage',
   );

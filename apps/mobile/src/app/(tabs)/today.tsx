@@ -14,7 +14,7 @@ import {
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { CycleTodayCard } from '@/components/cycle-entry';
 import { RecoveryTodayCard } from '@/components/recovery';
@@ -29,7 +29,7 @@ import { CountdownCard, PhaseBand } from '@/components/competition';
 import { FewerDaysCard, SessionAdjustedNotice } from '@/components/live-adjust';
 import { CollapsibleRow, NoticeStack, type StackNotice } from '@/components/slim';
 import { TrainingSwitch } from '@/components/training-switch';
-import { HeroCard, Tile } from '@/components/design';
+import { HeroCard, Icon, Tile } from '@/components/design';
 import { MedicalNotice, SessionCard } from '@/components/plan';
 import { Text } from '@/components/text';
 import {
@@ -445,17 +445,6 @@ export default function TodayScreen() {
           node: <Notice tone="warning">{t.plan.offline}</Notice>,
         }
       : null,
-    app.backend.mode === 'local' || lib?.containsDrafts
-      ? {
-          id: 'test-content',
-          level: 'info',
-          node: (
-            <Notice tone="info" testID="plan-test-content">
-              {t.plan.testContent}
-            </Notice>
-          ),
-        }
-      : null,
     isReminderDue(rows, today)
       ? {
           id: 'measurement-due',
@@ -498,25 +487,39 @@ export default function TodayScreen() {
             ),
           }
         : null,
+    // Testinhalte (im Testmodus immer da) als letzter Info-Hinweis – Wichtigeres steht davor.
+    app.backend.mode === 'local' || lib?.containsDrafts
+      ? {
+          id: 'test-content',
+          level: 'info',
+          node: (
+            <Notice tone="info" testID="plan-test-content">
+              {t.plan.testContent}
+            </Notice>
+          ),
+        }
+      : null,
   ];
+
+  // Gründer-Rückmeldung 20.10.2026: Wettkampfplan deutlich oben im Training, wenn ein Wettkampf existiert (Entwurf
+  // 2-training: oranger Countdown oben – steht über der Hinweis-Zeile, ist kein Hinweis).
+  const competitionLink = competition ? (
+    // Design 20.10.2026: Kachel in Wettkampf-Orange mit Pokal (ganz antippbar, Link).
+    <Tile
+      variant="row"
+      area="wettkampf"
+      icon="trophy"
+      title={t.competition.trainingLink}
+      role="link"
+      accessibilityLabel={t.competition.trainingLinkA11y(competition.stored.competition.name)}
+      accessibilityHint={t.competition.trainingLinkHint}
+      onPress={() => router.navigate('/wettkampf' as Href)}
+      testID="today-competition-plan"
+    />
+  ) : null;
 
   const header = (
     <>
-      {/* Gründer-Rückmeldung 20.10.2026: Wettkampfplan deutlich oben im Training, wenn ein Wettkampf existiert. */}
-      {competition ? (
-        // Design 20.10.2026: Kachel in Wettkampf-Orange mit Pokal (ganz antippbar, Link).
-        <Tile
-          variant="row"
-          area="wettkampf"
-          icon="trophy"
-          title={t.competition.trainingLink}
-          role="link"
-          accessibilityLabel={t.competition.trainingLinkA11y(competition.stored.competition.name)}
-          accessibilityHint={t.competition.trainingLinkHint}
-          onPress={() => router.navigate('/wettkampf' as Href)}
-          testID="today-competition-plan"
-        />
-      ) : null}
       {/* Etappe E: einmaliges Angebot nach der ersten Messung (nur App, nie im Onboarding). */}
       <MeasurementNotificationOffer />
       {/* Etappe Z5 (F10): Karte nur bei „erreicht“ bzw. „Zeitraum vorbei“ – ohne Zahlen, kein Fortschritt (F13). */}
@@ -569,6 +572,7 @@ export default function TodayScreen() {
     return (
       <Screen area="training" icon="dumbbell" title={t.today.title} testID="today">
         <TrainingSwitch selected="plan" prefix="today" exercisesTestID="today-glossary" />
+        {competitionLink}
         <NoticeStack items={noticeItems} testID="today-notices" />
         {header}
         <Card>
@@ -957,6 +961,7 @@ export default function TodayScreen() {
   return (
     <Screen area="training" icon="dumbbell" title={t.today.title} testID="today">
       <TrainingSwitch selected="plan" prefix="today" exercisesTestID="today-glossary" />
+      {competitionLink}
       <NoticeStack items={[...planNotices, ...noticeItems]} testID="today-notices" />
       {header}
       {/* Live-Anpassung (Phase 4b, 8.1): offener Vorschlag „Weniger Trainingstage?“ oben. */}
@@ -982,6 +987,20 @@ export default function TodayScreen() {
               · {weekCountText(week.status.summary)}
             </Text>
           ) : null}
+          {/* „Woche ansehen“ als kleiner Pfeil-Link neben der Überschrift (statt eigener Link-Zeile). */}
+          <Pressable
+            accessibilityRole="link"
+            accessibilityLabel={W.openWeekA11y}
+            onPress={() => router.push('/week' as Href)}
+            testID="today-week"
+            hitSlop={8}
+            style={({ pressed }) => [styles.weekLink, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <Text style={[styles.weekLinkText, appFont('semibold'), { color: theme.link }]}>
+              {W.openWeek}
+            </Text>
+            <Icon name="chevron" size={16} color={theme.link} />
+          </Pressable>
         </View>
       </View>
       {week.status ? (
@@ -1447,6 +1466,14 @@ const styles = StyleSheet.create({
   weekHead: { gap: spacing.xs },
   weekTitle: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 6 },
   weekCount: { fontSize: 16, lineHeight: 22 },
+  weekLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    marginLeft: 'auto',
+    minHeight: 44,
+  },
+  weekLinkText: { fontSize: 15, lineHeight: 20 },
   blockWeek: { gap: 4 },
   blockWeekTitle: { fontSize: 17, lineHeight: 23 },
   detail: { gap: spacing.md },

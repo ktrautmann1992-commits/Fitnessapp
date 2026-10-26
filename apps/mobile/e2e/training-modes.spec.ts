@@ -41,7 +41,7 @@ async function shot(page: Page, testId: string, name: string) {
 }
 
 async function openSettingsEntry(page: Page, testId: string, title: string) {
-  await page.goto('/settings');
+  await page.goto('/settings?thema=training');
   await page.getByTestId(testId).click();
   await heading(page, title);
 }
@@ -51,7 +51,7 @@ async function openSettingsEntry(page: Page, testId: string, title: string) {
  * „Live-Anpassung einschalten (Testmodus)“ ausschalten, damit kein Premium-Zugang im Spiel ist.
  */
 async function withoutPremium(page: Page) {
-  await page.goto('/settings');
+  await page.goto('/settings?thema=training');
   const box = page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' });
   await expect(box).toBeVisible();
   if ((await box.getAttribute('aria-checked')) !== 'false') await box.click();
@@ -277,7 +277,7 @@ test('Aufwärmen & Dehnen: Block vor und nach dem Training, Überspringen, Schal
   await expect(page.getByTestId('workout-warmup-item').first()).toBeVisible();
 
   // Schalter aus → kein Block mehr.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=training');
   await page.getByTestId('settings-warmup').click();
   await page.goto('/today');
   await heading(page, 'Training');

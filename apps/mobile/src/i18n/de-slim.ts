@@ -1,5 +1,5 @@
 /**
- * Texte für „App verschlanken“ (Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 7): Umschalter, Hinweis-Zeile,
+ * Texte für „App verschlanken“ (Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 11): Umschalter, Hinweis-Zeile,
  * Aufklapp-Zeilen, ⋯-Menüs und die Themen-Unterseiten der Einstellungen.
  */
 export const deSlim = {

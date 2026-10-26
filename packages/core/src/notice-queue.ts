@@ -1,5 +1,5 @@
 /**
- * Hinweis-Zeile statt Hinweis-Stapel („App verschlanken“, Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 7.3).
+ * Hinweis-Zeile statt Hinweis-Stapel („App verschlanken“, Gründer-Freigabe 26.10.2026, docs/PLAN-DASHBOARD.md 11.3).
  * Reine Vorrang-Regel – die App zeigt nur an:
  *
  * 1. **Sperrend** (`blocking`): Arzt-/Einwilligungs-Hinweise, Plan abgelaufen bzw. strengere Regeln, fremde Daten,

@@ -191,7 +191,7 @@ test('Reise-Modus mit Schlingentrainer: Einheiten werden auf Schlingen-Übungen 
     ],
   });
   await toToday(page);
-  await page.goto('/settings');
+  await page.goto('/settings?thema=training');
   await page.getByTestId('settings-travel-mode').click();
   await heading(page, 'Reise-Modus');
   await page.getByTestId('travel-equipment-outdoor_park').click();

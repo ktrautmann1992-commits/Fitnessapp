@@ -1,5 +1,5 @@
 /**
- * Hinweis-Zeile (docs/PLAN-DASHBOARD.md 7.3): Vorrang sperrend → handeln → info → erfolg, sperrende nie zugeklappt,
+ * Hinweis-Zeile (docs/PLAN-DASHBOARD.md 11.3): Vorrang sperrend → handeln → info → erfolg, sperrende nie zugeklappt,
  * höchstens ein übriger Hinweis vollständig, Rest hinter dem Zähler; leere Eingabe, Doppel, stabile Reihenfolge.
  */
 import { describe, expect, it } from 'vitest';
