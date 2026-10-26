@@ -4,7 +4,14 @@ import type { DraftTarget } from '@/data/workout-draft';
 
 import { cardioSpeed } from '@fitnessapp/core';
 
-import { cardioSpeedTexts, hintText, restTexts, targetNotes, targetText } from './workout-format';
+import {
+  cardioSpeedTexts,
+  hintText,
+  restTexts,
+  targetNotes,
+  targetSummary,
+  targetText,
+} from './workout-format';
 
 function target(overrides: Partial<DraftTarget> = {}): DraftTarget {
   return {
@@ -93,5 +100,66 @@ describe('Ausdauer und Pausentimer (Etappe C2)', () => {
     expect(restTexts(90)).toEqual({ text: '1:30', a11y: 'Pause, noch 1 Minute 30 Sekunden' });
     expect(restTexts(45)).toEqual({ text: '0:45', a11y: 'Pause, noch 45 Sekunden' });
     expect(restTexts(125).a11y).toBe('Pause, noch 2 Minuten 5 Sekunden');
+  });
+
+  it('Übungsliste (Entwurf B): Zahlen getrennt, Gewicht bzw. „Gewicht selbst finden“, Ansage in Worten', () => {
+    expect(targetSummary(target(), 90)).toEqual({
+      sets: 3,
+      dose: '3 × 10',
+      rest: '1:30 Pause',
+      reserve: '3 in Reserve',
+      weight: '22,5 kg je Hantel',
+      findWeight: null,
+      notes: [],
+      a11y: '3 Sätze à 10 Wiederholungen, Pause 90 Sekunden, 3 Wiederholungen in Reserve, Gewicht 22,5 kg je Hantel',
+    });
+    const find = targetSummary(
+      target({ targets: { ...target().targets, target_weight_kg: null, target_rpe: 7.5 } }),
+      60,
+    );
+    expect(find.weight).toBeNull();
+    expect(find.findWeight).toBe('find');
+    expect(find.rest).toBe('1:00 Pause');
+    expect(find.reserve).toBe('2–3 in Reserve');
+    expect(find.a11y).toContain('Pause 1 Minute');
+    expect(find.a11y).toContain('Gewicht selbst finden');
+    expect(
+      targetSummary(
+        target({ chooseLightest: true, targets: { ...target().targets, target_weight_kg: null } }),
+        60,
+      ).findWeight,
+    ).toBe('lightest');
+  });
+
+  it('Übungsliste: Halteübung, Körpergewicht, ein Satz, Hinweise', () => {
+    const hold = targetSummary(
+      target({
+        loadType: 'time',
+        targets: { ...target().targets, target_sets: 1, target_duration_s: 30, target_rpe: null },
+      }),
+      45,
+    );
+    expect(hold.dose).toBe('1 × 30 s');
+    expect(hold.rest).toBe('45 s Pause');
+    expect(hold.reserve).toBeNull();
+    expect(hold.findWeight).toBeNull();
+    expect(hold.a11y).toBe('1 Satz à 30 Sekunden halten, Pause 45 Sekunden');
+    const bodyweight = targetSummary(
+      target({
+        loadType: 'bodyweight',
+        source: 'start_weight',
+        hint: 'no_heavier_weight',
+        targets: { ...target().targets, target_weight_kg: null, is_return: true },
+      }),
+      120,
+    );
+    expect(bodyweight.weight).toBeNull();
+    expect(bodyweight.findWeight).toBeNull();
+    expect(bodyweight.rest).toBe('2:00 Pause');
+    expect(bodyweight.notes).toEqual([
+      'Vorschlag aus deinem Startgewicht',
+      'Wiedereinstieg nach Pause: heute etwas leichter.',
+      expect.stringMatching(/schwerere/),
+    ]);
   });
 });

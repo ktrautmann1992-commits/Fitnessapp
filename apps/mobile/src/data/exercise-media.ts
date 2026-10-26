@@ -6,7 +6,11 @@ import {
 } from '@fitnessapp/core';
 import type { ImageSourcePropType } from 'react-native';
 
-import { GENERATED_ILLUSTRATIONS, ILLUSTRATION_COLORS } from './exercise-illustrations.generated';
+import {
+  GENERATED_ILLUSTRATIONS,
+  ILLUSTRATION_COLORS,
+  type IllustrationRole,
+} from './exercise-illustrations.generated';
 
 /**
  * Übungsbilder in der App (Nachtrag „Muskelkarte“ in docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md). Gründer-Entscheidung B
@@ -38,9 +42,19 @@ export const EXERCISE_MEDIA: Readonly<Record<string, ExerciseMediaEntry>> = Obje
   ]),
 );
 
-/** Setzt die Farben (hell/dunkel) in eine SVG-Vorlage mit Marken `{rolle}` ein. */
-export function illustrationXml(template: string, scheme: 'light' | 'dark'): string {
-  const palette: Readonly<Record<string, string>> = ILLUSTRATION_COLORS[scheme];
+/**
+ * Setzt die Farben (hell/dunkel) in eine SVG-Vorlage mit Marken `{rolle}` ein. `overrides` ersetzt einzelne Rollen,
+ * z. B. `gap` (Rand um die Glieder) in der Farbe der Fläche, auf der das Bild liegt (Übungsliste: Trainingsblau-Chip).
+ */
+export function illustrationXml(
+  template: string,
+  scheme: 'light' | 'dark',
+  overrides: Readonly<Partial<Record<IllustrationRole, string>>> = {},
+): string {
+  const palette: Readonly<Record<string, string>> = {
+    ...ILLUSTRATION_COLORS[scheme],
+    ...overrides,
+  };
   return template.replace(/\{(\w+)\}/g, (match, role: string) =>
     Object.hasOwn(palette, role) ? palette[role]! : match,
   );

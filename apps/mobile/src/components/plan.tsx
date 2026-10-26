@@ -2,7 +2,6 @@ import {
   brickStepSports,
   type DisplayContext,
   type DisplaySession,
-  exerciseMark,
   MULTISPORT_TEXTS_DE,
   type PaceProfile,
   type PlanSafetyRules,
@@ -12,12 +11,11 @@ import {
   type StoredSession,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { t } from '@/i18n';
 import { workoutInfoLines } from '@/lib/competition-format';
-import { enduranceLines, exerciseLines } from '@/lib/plan-format';
-import { keyPatternTexts, markText } from '@/lib/swap-format';
+import { enduranceLines, type ExerciseSummary } from '@/lib/plan-format';
 import { useThemeColors } from '@/lib/theme';
 
 import { StepList } from './competition';
@@ -25,7 +23,8 @@ import { ModeNoticesBlock, routineSummary } from './training-modes';
 import type { RunStrengthForDay } from '@/data/run-strength';
 import { deModes } from '@/i18n/de-training-modes';
 import { HeroCard } from './design';
-import { Body, Button, Card, Heading, MIN_TOUCH, Notice } from './ui';
+import { type SessionStartAction, StrengthSession } from './plan-strength';
+import { Body, Button, Card, Heading, Notice } from './ui';
 import { Text } from '@/components/text';
 
 /**
@@ -57,6 +56,8 @@ export function SessionCard({
   routine = null,
   runStrength = null,
   onOpenRunStrength,
+  today = false,
+  start = null,
 }: {
   /** Gespeicherte Einheit (vor den aktuellen Sicherheitsregeln). */
   original: StoredSession;
@@ -68,9 +69,9 @@ export function SessionCard({
   heading: string;
   /**
    * Phase 4: berechnete Vorgabe je angezeigter Übung (gleiche Reihenfolge wie `shown.session.exercises`) – ersetzt die
-   * Dosierung aus dem Plan („3 × 10 mit 22,5 kg je Hantel“) und zeigt Hinweise der Progression.
+   * Dosierung aus dem Plan („3 × 10 · 22,5 kg je Hantel“) und zeigt Hinweise der Progression.
    */
-  targets?: readonly (readonly string[] | null)[];
+  targets?: readonly (ExerciseSummary | null)[];
   /** Übungs-Glossar (Etappe G1): Übungsname als Link zur Anleitung. */
   onOpenExercise?: (exerciseId: string) => void;
   /**
@@ -88,6 +89,10 @@ export function SessionCard({
   /** Lauf-Kraft & Lauf-ABC an lockeren Lauftagen (docs/PLAN-CALISTHENICS-SCHLINGE.md 4); null = keine. */
   runStrength?: RunStrengthForDay | null;
   onOpenRunStrength?: (workoutId: string) => void;
+  /** Gewählter Tag ist heute („Trainiert heute – Hauptmuskeln“). */
+  today?: boolean;
+  /** Krafteinheit: „Training starten“ im Kopf der Einheit (null = nicht startbar). */
+  start?: SessionStartAction | null;
   swap?: {
     enabled: boolean;
     /** Termin nach heute („für dieses Training getauscht“). */
@@ -99,9 +104,23 @@ export function SessionCard({
 }) {
   const theme = useThemeColors();
   const session = shown.session;
-  const hiddenByPreference = shown.hiddenByPreference ?? [];
-  const notices = shown.preferenceNotices ?? [];
-  const keyPatterns = keyPatternTexts(shown.missingKeyPattern);
+  if (session.kind !== 'endurance') {
+    return (
+      <StrengthSession
+        original={original}
+        shown={shown}
+        context={context}
+        heading={heading}
+        today={today}
+        targets={targets}
+        onOpenExercise={onOpenExercise}
+        swap={swap}
+        swapPaused={swapPaused}
+        routine={routine}
+        start={start}
+      />
+    );
+  }
   const head = hero ? null : (
     <>
       <Body muted>{heading}</Body>
@@ -159,136 +178,7 @@ export function SessionCard({
             </Notice>
           ) : null}
         </View>
-      ) : shown.libraryMissing ? (
-        <Notice tone="warning" title={t.plan.libraryMissingTitle} testID="plan-library-missing">
-          <Body>{t.plan.libraryMissingText}</Body>
-        </Notice>
-      ) : (
-        <View style={styles.block}>
-          <Text style={[styles.label, { color: theme.text }]}>{t.plan.exercises}</Text>
-          {session.exercises.map((exercise, index) => {
-            const storedOrderNo = shown.storedOrderNos?.[index];
-            const mark = exerciseMark(
-              exercise,
-              original,
-              context,
-              storedOrderNo !== undefined ? { storedOrderNo, display: shown } : undefined,
-            );
-            const markLabel = markText(mark, swap?.later ?? false);
-            const kept = shown.keptDisliked?.some(
-              (k) => k.storedOrderNo === storedOrderNo && k.exerciseId === exercise.exercise_id,
-            );
-            const computed = targets?.[index] ?? null;
-            return (
-              <View
-                key={`${exercise.order_no}-${exercise.exercise_id}`}
-                style={[styles.exercise, { borderColor: theme.border }]}
-                testID="plan-exercise"
-              >
-                {onOpenExercise ? (
-                  <Pressable
-                    accessibilityRole="link"
-                    accessibilityLabel={`${exercise.order_no}. ${exercise.exercise_name_de}`}
-                    accessibilityHint={t.glossary.openGuideHint}
-                    onPress={() => onOpenExercise(exercise.exercise_id)}
-                    testID="plan-exercise-link"
-                    style={({ pressed }) => [styles.exerciseLink, { opacity: pressed ? 0.8 : 1 }]}
-                  >
-                    <Text
-                      style={[
-                        styles.exerciseName,
-                        { color: theme.link, textDecorationLine: 'underline' },
-                      ]}
-                    >
-                      {exercise.order_no}. {exercise.exercise_name_de}
-                    </Text>
-                  </Pressable>
-                ) : (
-                  <Text style={[styles.exerciseName, { color: theme.text }]}>
-                    {exercise.order_no}. {exercise.exercise_name_de}
-                  </Text>
-                )}
-                {markLabel ? (
-                  <Body muted testID={`plan-exercise-mark-${index}`}>
-                    {markLabel}
-                  </Body>
-                ) : null}
-                {(computed ?? exerciseLines(exercise)).map((line) => (
-                  <Body key={line} muted>
-                    {line}
-                  </Body>
-                ))}
-                {kept ? (
-                  <Body muted testID={`plan-kept-disliked-${index}`}>
-                    {t.swap.keptDisliked}
-                  </Body>
-                ) : null}
-                {swap?.enabled ? (
-                  mark === 'day_swap' ? (
-                    <Button
-                      label={t.swap.undoDaySwap}
-                      variant="secondary"
-                      accessibilityLabel={t.swap.undoDaySwapA11y(
-                        original.exercises.find((e) => e.order_no === storedOrderNo)
-                          ?.exercise_name_de ?? exercise.exercise_name_de,
-                      )}
-                      onPress={() => swap.onUndoDaySwap(index)}
-                      testID={`plan-swap-undo-${index}`}
-                    />
-                  ) : (
-                    <Button
-                      label={t.swap.button}
-                      variant="secondary"
-                      accessibilityLabel={t.swap.buttonA11y(exercise.exercise_name_de)}
-                      onPress={() => swap.onSwap(index)}
-                      testID={`plan-swap-${index}`}
-                    />
-                  )
-                ) : null}
-              </View>
-            );
-          })}
-          {shown.hidden.length > 0 ? (
-            // Nur Sicherheits-Ausblendungen (Wächter B1b) – nie wegen einer Präferenz.
-            <Notice tone="warning" testID="plan-hidden-exercises">
-              {t.plan.hiddenExercises}
-            </Notice>
-          ) : null}
-          {shown.emptyByPreference ? (
-            <Notice tone="info" testID="plan-empty-by-preference">
-              <Body>{t.swap.emptyByPreference}</Body>
-              {swap?.onViewExclusions ? (
-                <Button
-                  label={t.swap.viewExclusions}
-                  variant="link"
-                  onPress={swap.onViewExclusions}
-                />
-              ) : null}
-            </Notice>
-          ) : hiddenByPreference.length > 0 ? (
-            // Neutral, ohne „Plan neu erstellen“ (Wächter B1b, Pflicht-Test 11).
-            <Notice tone="info" testID="plan-hidden-by-preference">
-              <Body>{t.swap.hiddenByPreference(hiddenByPreference.length)}</Body>
-              {keyPatterns.map((text) => (
-                <Body key={text}>{text}</Body>
-              ))}
-              {swap?.onViewExclusions ? (
-                <Button
-                  label={t.swap.viewExclusions}
-                  variant="link"
-                  onPress={swap.onViewExclusions}
-                  testID="plan-view-exclusions"
-                />
-              ) : null}
-            </Notice>
-          ) : null}
-          {notices.includes('many_exclusions') ? (
-            <Notice tone="info" testID="plan-many-exclusions">
-              {t.swap.manyExclusions}
-            </Notice>
-          ) : null}
-        </View>
-      )}
+      ) : null}
       <View style={styles.block} testID="plan-cooldown">
         <Text style={[styles.label, { color: theme.text }]}>
           {routine
@@ -320,13 +210,6 @@ export function SessionCard({
 const styles = StyleSheet.create({
   block: { gap: spacing.xs },
   label: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
-  exercise: {
-    borderTopWidth: 1,
-    paddingTop: spacing.sm,
-    gap: 2,
-  },
-  exerciseName: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, lineHeight: 24 },
-  exerciseLink: { minHeight: MIN_TOUCH, justifyContent: 'center' },
 });
 
 /** Lauf-Kraft & Lauf-ABC als Zusatz an einem lockeren Lauftag (docs/PLAN-CALISTHENICS-SCHLINGE.md 4). */

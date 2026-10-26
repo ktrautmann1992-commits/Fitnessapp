@@ -65,11 +65,34 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await expect(page.getByRole('heading', { name: 'Woche 1 von 6' })).toBeVisible();
   await expect(page.getByText(/^Einstiegswoche: Wähle Gewichte/)).toBeVisible();
   await expect(page.getByText('Deine Einheit heute')).toBeVisible();
-  await expect(page.getByTestId('plan-exercise').first()).toContainText('Wiederholungen');
-  await expect(page.getByTestId('plan-exercise').first()).toContainText(
-    'Wiederholungen in Reserve',
+  // Kompakte Liste (Entwurf B, 26.10.2026): eine Zeile Zahlen, „Gewicht selbst finden“ als kleiner Marker, der lange
+  // Text „Startgewicht finden“ nur EINMAL oben als aufklappbarer Hinweis.
+  const first = page.getByTestId('plan-exercise').first();
+  await expect(first).toContainText(/\d+ × \d+/);
+  await expect(first).toContainText(/in\sReserve/);
+  await expect(first).toContainText('Gewicht selbst finden');
+  await expect(first.getByTestId('plan-exercise-link')).toHaveAttribute(
+    'aria-label',
+    /Sätze à .* Wiederholungen, Pause .*, .* Wiederholungen in Reserve, Gewicht selbst finden, Hauptmuskeln: /,
   );
-  await expect(page.getByTestId('plan-exercise').first()).toContainText('Startgewicht finden');
+  await expect(page.getByRole('button', { name: /^Tauschen$/ })).toHaveCount(0);
+  await expect(page.getByTestId('plan-session-facts')).toHaveAttribute(
+    'aria-label',
+    /^ca\. \d+ Minuten, \d+ Übungen, \d+ Sätze$/,
+  );
+  await expect(page.getByTestId('plan-session-muscles')).toContainText(
+    'Trainiert heute – Hauptmuskeln',
+  );
+  // „Training starten“ nie doppelt: heute steht der Knopf nur in der Hero-Karte, nicht im Kopf der Einheit.
+  await expect(page.getByTestId('workout-start')).toHaveCount(1);
+  await expect(page.getByTestId('plan-session-start')).toHaveCount(0);
+  await expect(page.getByTestId('plan-start-weight-hint')).toHaveCount(1);
+  await expect(page.getByTestId('plan-start-weight-text')).toHaveCount(0);
+  await page.getByTestId('plan-start-weight-toggle').click();
+  await expect(page.getByTestId('plan-start-weight-text')).toContainText(
+    'Wähle ein Gewicht, mit dem du alle Wiederholungen sauber schaffst',
+  );
+  await expect(page.getByText(/^Startgewicht finden: Wähle/)).toHaveCount(0);
   await expect(page.getByTestId('plan-medical-notice')).toHaveCount(0);
 
   // Wochenübersicht Mo–So, heute hervorgehoben; Montag liegt vor dem Planstart (Ruhetag).
@@ -167,6 +190,33 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await page.getByRole('button', { name: 'Alles löschen' }).click();
   await expect(page.getByRole('button', { name: "Los geht's" })).toBeVisible();
   expect(await page.evaluate((key) => window.localStorage.getItem(key), LOCAL_DB)).toBeNull();
+});
+
+test('Kopf der Einheit: „Heute nachholen“ nur ohne Start-Knopf in der Hero-Karte', async ({
+  page,
+}) => {
+  await onboard(page, {
+    consent: true,
+    yesQuestion: null,
+    level: /^Einsteiger/,
+    goal: 'Muskelaufbau',
+    days: [
+      ['Montag', 'Kraft im Studio', 60],
+      ['Mittwoch', 'Kraft im Studio', 60],
+    ],
+  });
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await heading(page, 'Heute');
+  // Donnerstag (Ruhetag): die verpasste Einheit vom Mittwoch ansehen – nachholbar, die Hero-Karte hat keinen Start-Knopf.
+  await page.clock.setFixedTime(new Date('2026-10-08T09:00:00+02:00'));
+  await page.goto('/today?tag=2026-10-07');
+  await heading(page, 'Heute');
+  await expect(page.getByTestId('workout-start')).toHaveCount(0);
+  const start = page.getByTestId('plan-session-start');
+  await expect(start).toHaveCount(1);
+  await expect(start).toHaveText('Heute nachholen');
+  await start.click();
+  await expect(page.getByTestId('workout')).toBeVisible();
 });
 
 test('Ausdauer ohne Gesundheits-Check: Geh-Lauf-Wechsel, Anstrengung, vorsichtiger Start', async ({
@@ -334,7 +384,7 @@ test('vorsichtiger Plan mit Arzt-Hinweis; Widerruf löscht den Plan vollständig
   await expect(page.getByText('Dein Plan ist bewusst vorsichtig aufgebaut.')).toBeVisible();
   // RPE höchstens 7 → mindestens 3 Wiederholungen in Reserve; kein Über-Kopf-Drücken.
   for (const text of await page.getByTestId('plan-exercise').allInnerTexts()) {
-    expect(text).toMatch(/ca\. ([3-9]|\d–\d) Wiederholungen in Reserve/);
+    expect(text).toMatch(/([3-9]|\d–\d)\sin\sReserve/);
     expect(text).not.toMatch(/Schulterdrücken|Langhantel-Kniebeuge/);
   }
   // Arzt-Hinweis auch über anderen Einheiten der Woche.

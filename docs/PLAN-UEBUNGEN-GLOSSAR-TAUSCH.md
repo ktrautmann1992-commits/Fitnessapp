@@ -683,7 +683,8 @@ missingKeyPattern: MovementPattern[], emptyByPreference: boolean }`.
 
 ### 8.2 Tauschen
 
-- **Einstieg:** Knopf **„Tauschen“** an jeder Übung einer Kraft-Einheit (4.6) in der `SessionCard` auf „Heute“ (auch
+- **Einstieg:** Knopf **„Tauschen“** an jeder Übung einer Kraft-Einheit (4.6) in der `SessionCard` auf „Heute“ (seit
+  26.10.2026 als Icon-Knopf mit Pfeilen und Ansage „<Übung> tauschen“, siehe `docs/DESIGN.md` „Übungsliste Training“; auch
   für andere Tage dieser Woche über die Wochenübersicht auf „Heute“; nur geplante und nicht erledigte Termine).
   **Festlegung (G1):** Die Seite „Woche“ (`app/week.tsx`) bekommt **keinen** eigenen Tausch-Einstieg – sie zeigt nur
   Tagebuch-Status und Summen, keine Übungen. Getauscht wird auf „Heute“ und im Trainingsmodus. Im Trainingsmodus ersetzt das Menü „Tauschen“ den Punkt „Alternative
@@ -1239,3 +1240,8 @@ Gründer-Wunsch: Im Glossar gibt es eine Übersicht mit einer Kachel pro Muskelg
 - **Übungsseite (22.10.2026):** Unter der Muskelkarte steht die Karte „Trainierte Muskelgruppen“. Sie zeigt dieselben
   Bild-Kacheln, zuerst die Hauptmuskeln, dann die unterstützend beteiligten (`exerciseMuscleTiles`). „Nacken“ entfällt
   neben „Oberer Rücken“, damit nichts doppelt erscheint. Ein Tipp öffnet `/uebungen?muskel=<kachel-id>`.
+- **Übungsliste „Training“ (26.10.2026, Entwurf B):** Jede Übungszeile auf „Heute“ zeigt kleine Muskel-Chips
+  (Hauptmuskel gefüllt, unterstützend umrandet, `exerciseMuscleTiles`); der Kopf der Einheit fasst die Muskeln aller
+  Übungen zusammen (`sessionMuscleTiles`: Hauptmuskel gewinnt, stabile Kachel-Reihenfolge, unbekannte Übungen werden
+  übersprungen). „Tauschen“ ist dort ein 44-px-Icon-Knopf rechts in der Zeile (gleicher Tausch-Dialog, gleiche
+  testIDs `plan-swap-<i>`). Details: `docs/DESIGN.md` „Übungsliste Training“.
