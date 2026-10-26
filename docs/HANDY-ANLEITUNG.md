@@ -1818,8 +1818,8 @@ eine kurze Nacht mit höherem Ruhepuls und niedrigerer HRV):
    Smartwatch-Seite mit Werten heute, „So entsteht die Erholung“ und dem Hinweis „keine Bewertung deiner Gesundheit“.
 5. **Training (Heute)** → Karte **„Heute leichter trainieren?“** → **Wie geplant** (Hinweis, „Doch leichter“) bzw.
    **Leichter trainieren** → **Training starten** → oben „Heute leichter: …“, je Übung ein Satz weniger.
-6. **Einstellungen** → „Live-Anpassung einschalten (Testmodus)“ **aus** → **Heute** zeigt nur noch den Hinweis
-   „Erholung heute: niedrig“ ohne Knöpfe (das Angebot gehört zur Live-Anpassung/Premium; der Status bleibt gratis).
+6. **Einstellungen** → „Live-Anpassung einschalten (Testmodus)“ **aus** → **Heute** zeigt das Angebot **trotzdem**
+   (gratis seit Gründer-Entscheidung 26.10.2026; nur die übrige Live-Anpassung bleibt Premium).
 
 Mit der **echten Galaxy Watch** (neuer Build nötig – neues Leserecht HRV): Samsung Health → Einstellungen → Health
 Connect → auch **Herzfrequenzvariabilität** und **Ruhepuls** schreiben lassen → Alpha5 → Smartwatch → **Neuer Fassung

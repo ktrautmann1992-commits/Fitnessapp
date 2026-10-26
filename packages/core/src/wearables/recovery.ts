@@ -245,17 +245,15 @@ export function hasRecoveryData(rows: readonly RecoveryDayInput[]): boolean {
 
 /**
  * Angebot für heute (KONZEPT 4.1 „Schlechte Tagesform aus Wearable → leichtere Einheit für heute vorschlagen“): nur
- * bei Status `low`, nur an einem Tag mit noch offener, heute geplanter Einheit und nur mit Live-Anpassung (Premium,
- * vom Server bestätigt bzw. im Testmodus „Live-Anpassung einschalten“). Sonst `as_planned` – nie automatisch, nie
+ * bei Status `low` und nur an einem Tag mit noch offener, heute geplanter Einheit. Gratis für alle
+ * (Gründer-Entscheidung 26.10.2026: feste Regel ohne KI, eine Sicherheitsfunktion wie „Heute leichter“ im
+ * Zyklus-Modul); die übrige Live-Anpassung (KONZEPT 4.1) bleibt Premium. Sonst `as_planned` – nie automatisch, nie
  * „Ruhetag“ oder „Verschieben“ (die Erholung macht höchstens eine Stufe leichter; mit weiteren Angeboten, z. B. später
  * aus dem Zyklus-Modul, kombiniert `combineDayOffers` zu EINER Stufe).
  */
 export function recoveryOffer(input: {
   readonly status: RecoveryStatus;
   readonly plannedSessionOpenToday: boolean;
-  readonly entitled: boolean;
 }): Extract<DayOffer, 'lighter' | 'as_planned'> {
-  return input.entitled && input.plannedSessionOpenToday && input.status === 'low'
-    ? 'lighter'
-    : 'as_planned';
+  return input.plannedSessionOpenToday && input.status === 'low' ? 'lighter' : 'as_planned';
 }

@@ -37,9 +37,6 @@ export const deRecovery = {
     valuesTitle: 'Deine Werte heute',
   },
   today: {
-    /** Karte auf „Heute“, wenn die Erholung niedrig ist, aber kein Angebot erlaubt ist (ohne Live-Anpassung). */
-    infoTitle: 'Erholung heute: niedrig',
-    infoHint: 'Trainiere nach Gefühl – du kannst Sätze oder Tempo jederzeit selbst zurücknehmen.',
     lighterBadge: 'Leichter',
     chosenLighterA11y: 'Heute trainierst du die leichtere Variante.',
   },
