@@ -1,0 +1,52 @@
+{
+  "id": "speiseeis-vanille",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Speiseeis Vanille",
+  "aliases_de": [],
+  "shopping_category": "frozen",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 221,
+    "protein_g": 3.21,
+    "carbs_g": 26.8,
+    "sugar_g": 18.2,
+    "fat_g": 10.94,
+    "sat_fat_g": 7.05,
+    "fiber_g": 0.8,
+    "salt_g": 0.095,
+    "organic_acids_g": 0.408,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["dairy", "eggs", "lactose"],
+  "animal": ["dairy", "egg"],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "S211500",
+    "name": "Speiseeis Vanille, in Waffeltüte",
+    "category": "sugar_sweets",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-26"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-26",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
