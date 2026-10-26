@@ -1,7 +1,9 @@
 /**
  * Kaufeinheiten (core `SHOPPING_BUY_UNITS`, docs/PLAN-EINKAUFEN-AUSDAUER.md 3): JEDES Lebensmittel in content/foods
- * (freigegeben und Entwurf) hat einen Eintrag, jede ID der Tabelle gibt es im Katalog. Ein neues Lebensmittel ohne
- * Kaufeinheit lässt CI scheitern – sonst stünde es als „1 Packung …“ (Ersatz) auf der Liste.
+ * (freigegeben und Entwurf) hat einen Eintrag, jede ID der Tabelle gibt es im Katalog – oder sie wartet auf den
+ * Import (steht in alpha5-zuordnung.json bzw. im Abschnitt `foods` von auswaerts-zuordnung.json). So können die
+ * Kaufeinheiten vor dem foods-import-PR auf main landen. Ein neues Lebensmittel ohne Kaufeinheit lässt CI scheitern –
+ * sonst stünde es als „1 Packung …“ (Ersatz) auf der Liste.
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -10,6 +12,7 @@ import { SHOPPING_BUY_UNITS, SHOPPING_SAME_PRODUCT, shoppingPurchase } from '@fi
 import { describe, expect, it } from 'vitest';
 
 import { REAL_REPO_ROOT } from '../pipeline/test-helpers';
+import { loadImportMapping } from './foods-import';
 
 const FOODS_DIR = join(REAL_REPO_ROOT, 'content', 'foods');
 
@@ -28,6 +31,15 @@ const catalogIds = readdirSync(FOODS_DIR)
   .filter((f) => f.endsWith('.json') && f !== 'allergen-expectations.json')
   .map((f) => f.slice(0, -'.json'.length))
   .sort();
+
+/** Lebensmittel aus den Import-Zuordnungen (Lebensmittel-ID → Einkaufskategorie), noch nicht zwingend im Katalog. */
+const pendingImport = new Map(
+  loadImportMapping(REAL_REPO_ROOT).items.map((item) => [item.food_id, item.shopping_category]),
+);
+
+/** Einkaufskategorie aus dem Katalog; fehlt die Datei, aus der Import-Zuordnung (wartet auf Import). */
+const shoppingCategory = (id: string): string | undefined =>
+  existsSync(join(FOODS_DIR, `${id}.json`)) ? read(id).shopping_category : pendingImport.get(id);
 
 describe('Kaufeinheiten decken den ganzen Lebensmittel-Katalog ab', () => {
   it('Katalog ist nicht leer', () => {
@@ -49,14 +61,21 @@ describe('Kaufeinheiten decken den ganzen Lebensmittel-Katalog ab', () => {
     expect(purchase?.text).not.toMatch(/^\d[\d.,]* ?(g|kg|ml|l) /u);
   });
 
-  it.each(Object.keys(SHOPPING_BUY_UNITS))('%s gibt es im Katalog', (id) => {
-    expect(existsSync(join(FOODS_DIR, `${id}.json`)), `content/foods/${id}.json fehlt`).toBe(true);
-  });
+  it.each(Object.keys(SHOPPING_BUY_UNITS))(
+    '%s gibt es im Katalog oder es wartet auf den Import',
+    (id) => {
+      const inCatalog = existsSync(join(FOODS_DIR, `${id}.json`));
+      expect(
+        inCatalog || pendingImport.has(id),
+        `content/foods/${id}.json fehlt und „${id}“ steht in keiner Import-Zuordnung`,
+      ).toBe(true);
+    },
+  );
 
   it('lose Stücke, Bund, Kopf, Knolle, Topf nur bei Obst/Gemüse bzw. Brot', () => {
     for (const [id, def] of Object.entries(SHOPPING_BUY_UNITS)) {
       if (def.kind !== 'loose' && def.kind !== 'piece') continue;
-      expect(['fruit_vegetables', 'bread_bakery'], id).toContain(read(id).shopping_category);
+      expect(['fruit_vegetables', 'bread_bakery'], id).toContain(shoppingCategory(id));
     }
   });
 });

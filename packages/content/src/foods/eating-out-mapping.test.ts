@@ -3,7 +3,7 @@
  * Lebensmittel, doppelte Zuordnung; Hinweis: „wartet auf Import“), Übergabe an foods-import und Vorschläge für neue
  * Lebensmittel gegen R18/R9 (wie alpha5-zuordnung.json in mapping.test.ts).
  */
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -189,10 +189,19 @@ describe('Auswärts-Zuordnung im Repository', () => {
   it('content:validate: 0 blockierend, Hinweis „wartet auf Import“ mit Lebensmittelliste', () => {
     const report = validateRepository({ cwd: REAL_REPO_ROOT });
     expect(report.strayFiles.filter((f) => f.includes('auswaerts'))).toEqual([]);
-    expect(report.notes?.some((n) => /warten auf Import/.test(n) && n.includes('butter'))).toBe(
-      true,
-    );
-    expect(formatMarkdownSummary(report)).toContain('#### Hinweise');
+    // Unabhängig vom Import-Stand: Hinweis genau dann, wenn Gerichte Lebensmittel nutzen, die im Katalog fehlen –
+    // und er nennt jedes davon (Fall „wartet auf Import“ selbst: Fixture-Tests unten).
+    const waiting = [
+      ...new Set(mapping.dishes.flatMap((dish) => dish.items.map((item) => item.food_id))),
+    ].filter((id) => !existsSync(join(REAL_REPO_ROOT, 'content', 'foods', `${id}.json`)));
+    const note = report.notes?.find((n) => /warten auf Import/.test(n));
+    if (waiting.length === 0) {
+      expect(note).toBeUndefined();
+    } else {
+      expect(note).toBeDefined();
+      for (const id of waiting) expect(note, id).toContain(`${id} (`);
+      expect(formatMarkdownSummary(report)).toContain('#### Hinweise');
+    }
   });
 });
 
