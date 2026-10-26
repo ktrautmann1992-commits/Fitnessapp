@@ -37,7 +37,8 @@ import {
   MAX_CONFIRMED_SHARE,
   parseConfirmedDifferences,
 } from './confirmed-differences';
-import { FOOD_MAPPING_PATH, parseFoodMapping } from './mapping';
+import { readEatingOutMapping, withEatingOutFoods } from './eating-out-mapping';
+import { FOOD_MAPPING_PATH, type FoodMapping, parseFoodMapping } from './mapping';
 import {
   attributionMarkdown,
   extractSourceRows,
@@ -106,6 +107,17 @@ function alpha5Values(repoRoot: string): Map<string, Alpha5Per100g> {
     zutaten?: { id: string; pro_100g: Alpha5Per100g }[];
   };
   return new Map((data.zutaten ?? []).map((z) => [z.id, z.pro_100g]));
+}
+
+/**
+ * Zuordnung für Kandidatensuche und Import: `alpha5-zuordnung.json` plus die neuen Lebensmittel aus
+ * `auswaerts-zuordnung.json` (Abschnitt `foods`, G-AV2). Wie die Allowlist immer vom Stand `main` (der Lauf startet
+ * nur dort). Ungültige Dateien oder doppelte Zuordnungen → Fehler, kein Import.
+ */
+export function loadImportMapping(repoRoot: string): FoodMapping {
+  const mapping = parseFoodMapping(readJson(repoRoot, FOOD_MAPPING_PATH));
+  const eatingOut = readEatingOutMapping(repoRoot);
+  return eatingOut === undefined ? mapping : withEatingOutFoods(mapping, eatingOut);
 }
 
 function existingFoods(repoRoot: string): Map<string, unknown> {
@@ -381,7 +393,15 @@ export async function runFoodsImport(
       ].join('\n'),
     };
   }
-  const mapping = parseFoodMapping(readJson(deps.repoRoot, FOOD_MAPPING_PATH));
+  let mapping: FoodMapping;
+  try {
+    mapping = loadImportMapping(deps.repoRoot);
+  } catch (error) {
+    return {
+      exitCode: 1,
+      markdown: `### ❌ foods-import: Zuordnung ungültig\n\n${(error as Error).message}\n`,
+    };
+  }
   const candidates = formatCandidates(mappingCandidates(mapping, records, def));
   const head = [
     `### foods-import: ${def.title}`,

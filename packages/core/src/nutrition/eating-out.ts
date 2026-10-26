@@ -5,24 +5,26 @@ import { type Food, type FoodLookup, isCatalogReviewed } from '../content/food-s
 import { contentIdSchema } from '../content/schemas';
 import { type FoodLogBuild, type FoodLogTarget, quickEntry } from './food-log';
 import { computeRecipeFacts } from './recipe-nutrients';
+import { EATING_OUT_DISHES, EATING_OUT_PENDING_FOODS } from './eating-out-mapping';
 import {
   EATING_OUT_CATEGORIES,
-  EATING_OUT_DISHES,
   type EatingOutCategory,
   type EatingOutDishDef,
   type EatingOutMissingFood,
   type EatingOutPortionKind,
 } from './eating-out-table';
 
+export * from './eating-out-mapping';
 export * from './eating-out-table';
 
 /**
  * Auswärts essen (Reiter „Unterwegs“ beim Eintragen, Gründer-Freigabe 25.10.2026, KONZEPT 6.1): typische Gerichte aus
  * Restaurant, Imbiss, Kantine, Bäckerei, Café und Fast Food mit Portionswahl – gratis, ohne KI, nur Schätzwerte.
  *
- * - Werte NUR aus dem Lebensmittel-Katalog: Zutaten der Tabelle (`eating-out-table.ts`) mit derselben Rechnung wie
- *   Rezepte und eigene Gerichte (`computeRecipeFacts`). Fehlt eine Zutat im (geladenen) Katalog oder steht eine
- *   fehlende Zutat in `missing`, ist das Gericht `unavailable` – ohne Werte, nie mit erfundenen Zahlen.
+ * - Werte NUR aus dem Lebensmittel-Katalog: Zutaten der Zuordnungsdatei (`content/food-mapping/auswaerts-zuordnung.json`,
+ *   geladen in `eating-out-mapping.ts`) mit derselben Rechnung wie Rezepte und eigene Gerichte (`computeRecipeFacts`).
+ *   Fehlt eine Zutat im (geladenen) Katalog – z. B. weil sie noch auf den Import über `foods-import` wartet –, ist
+ *   das Gericht `unavailable`: ohne Werte, nie mit erfundenen Zahlen und ohne Ersatz durch „ähnliche“ Lebensmittel.
  * - Gerundet auf `EATING_OUT.kcalStep` kcal und ganze Gramm (keine Scheingenauigkeit), angezeigt mit „ca.“.
  * - Ins Tagebuch als Schnelleintrag „Auswärts gegessen“ (`quickEntry`, feste Bezeichnung, kein Freitext – dieselben
  *   Grenzen und dieselbe Datenbank-Prüfung wie jeder Schnelleintrag). Bei „Kalorienzahlen aus“ ohne Werte.
@@ -54,7 +56,7 @@ export type EatingOutDishView =
   | {
       readonly kind: 'unavailable';
       readonly dish: EatingOutDishDef;
-      /** Zutaten, die im Katalog fehlen (Tabelle `missing` plus nicht geladene Katalog-IDs). */
+      /** Katalog-IDs der Zutaten, die im geladenen Katalog fehlen bzw. (ohne Entwürfe) nicht nutzbar sind. */
       readonly missingFoods: readonly string[];
       readonly isDraft: boolean;
     };
@@ -94,15 +96,15 @@ export function eatingOutFoodUsable(food: Food | undefined, allowDrafts: boolean
 }
 
 /**
- * Ungerundete Werte einer NORMALEN Portion aus dem Katalog – null, wenn eine Zutat fehlt (Tabelle `missing`, nicht im
- * Katalog bzw. nicht nutzbar, siehe `eatingOutFoodUsable`) oder das Gericht keine Zutaten hat.
+ * Ungerundete Werte einer NORMALEN Portion aus dem Katalog – null, wenn eine Zutat fehlt (nicht im Katalog bzw. nicht
+ * nutzbar, siehe `eatingOutFoodUsable`), eine Menge nicht positiv ist oder das Gericht keine Zutaten hat.
  */
 export function eatingOutRawValues(
-  dish: Pick<EatingOutDishDef, 'items' | 'missing'>,
+  dish: Pick<EatingOutDishDef, 'items'>,
   foods: FoodLookup,
   allowDrafts = false,
 ): EatingOutValues | null {
-  if ((dish.missing?.length ?? 0) > 0 || dish.items.length === 0) return null;
+  if (dish.items.length === 0) return null;
   if (
     dish.items.some(
       ([foodId, grams]) => !eatingOutFoodUsable(foods.get(foodId), allowDrafts) || !(grams > 0),
@@ -157,12 +159,9 @@ export function eatingOutDishView(
   const isDraft = dish.status !== 'released';
   const raw = eatingOutRawValues(dish, foods, allowDrafts);
   if (raw === null) {
-    const missingFoods = [
-      ...(dish.missing ?? []).map((m) => m.name_de),
-      ...dish.items
-        .filter(([foodId]) => !eatingOutFoodUsable(foods.get(foodId), allowDrafts))
-        .map(([foodId]) => foodId),
-    ];
+    const missingFoods = dish.items
+      .filter(([foodId]) => !eatingOutFoodUsable(foods.get(foodId), allowDrafts))
+      .map(([foodId]) => foodId);
     return { kind: 'unavailable', dish, missingFoods, isDraft };
   }
   return {
@@ -315,9 +314,13 @@ export interface EatingOutContentStatus {
   readonly computable: readonly string[];
   /** Katalog-Lebensmittel (IDs), die noch geprüft/veröffentlicht werden müssen, mit Anzahl betroffener Gerichte. */
   readonly unreviewedFoods: readonly { readonly foodId: string; readonly dishes: number }[];
-  /** Entwürfe ohne Werte (fehlende Zutaten). */
+  /** Gerichte ohne Werte mit den fehlenden bzw. nicht nutzbaren Katalog-IDs. */
   readonly blocked: readonly { readonly id: string; readonly missing: readonly string[] }[];
-  /** Alle fehlenden Zutaten mit Suchbegriffen und Anzahl betroffener Gerichte (für `foods-import`). */
+  /**
+   * Zutaten, die im Katalog GAR NICHT vorhanden sind („wartet auf Import“), mit Suchbegriffen/Quell-ID aus dem
+   * Abschnitt `foods` der Zuordnung und Anzahl betroffener Gerichte – die Liste für den nächsten `foods-import`-Lauf.
+   * Ohne Eintrag in `foods` (z. B. aus alpha5-zuordnung.json) stehen Name = ID und keine Suchbegriffe.
+   */
   readonly missingFoods: readonly (EatingOutMissingFood & { readonly dishes: number })[];
 }
 
@@ -325,26 +328,30 @@ export function eatingOutContentStatus(
   foods: FoodLookup,
   dishes: readonly EatingOutDishDef[] = EATING_OUT_DISHES,
   allowDrafts = false,
+  pending: readonly EatingOutMissingFood[] = EATING_OUT_PENDING_FOODS,
 ): EatingOutContentStatus {
   const computable: string[] = [];
   const blocked: { id: string; missing: string[] }[] = [];
   const missing = new Map<string, EatingOutMissingFood & { dishes: number }>();
   const unreviewed = new Map<string, number>();
+  const pendingById = new Map(pending.map((p) => [p.food_id, p]));
   for (const dish of dishes) {
     const view = eatingOutDishView(dish, foods, allowDrafts);
     if (view.kind === 'ok') computable.push(dish.id);
     else blocked.push({ id: dish.id, missing: [...view.missingFoods] });
-    if ((dish.missing?.length ?? 0) === 0) {
-      for (const foodId of new Set(dish.items.map(([id]) => id))) {
-        const food = foods.get(foodId);
-        if (food !== undefined && !eatingOutFoodUsable(food, false)) {
-          unreviewed.set(foodId, (unreviewed.get(foodId) ?? 0) + 1);
-        }
+    for (const foodId of new Set(dish.items.map(([id]) => id))) {
+      const food = foods.get(foodId);
+      if (food === undefined) {
+        const known = pendingById.get(foodId) ?? {
+          food_id: foodId,
+          name_de: foodId,
+          search_de: [],
+          source_ref: null,
+        };
+        missing.set(foodId, { ...known, dishes: (missing.get(foodId)?.dishes ?? 0) + 1 });
+      } else if (!eatingOutFoodUsable(food, false)) {
+        unreviewed.set(foodId, (unreviewed.get(foodId) ?? 0) + 1);
       }
-    }
-    for (const m of dish.missing ?? []) {
-      const prev = missing.get(m.name_de);
-      missing.set(m.name_de, { ...m, dishes: (prev?.dishes ?? 0) + 1 });
     }
   }
   return {

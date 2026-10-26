@@ -13,6 +13,10 @@ import { type Food, type FoodLookup, foodSchema } from '../content/food-schema';
 import {
   EATING_OUT_CATEGORIES,
   EATING_OUT_DISHES,
+  EATING_OUT_MAPPING_ERRORS,
+  EATING_OUT_PENDING_FOODS,
+  eatingOutDishesFromMapping,
+  parseEatingOutMapping,
   type EatingOutDishDef,
   defaultEatingOutPortion,
   eatingOutCatalog,
@@ -44,6 +48,17 @@ function loadCatalog(): Map<string, Food> {
 }
 
 const CATALOG: FoodLookup = loadCatalog();
+/** Lebensmittel der Alpha5-Zuordnung (schon zugeordnet, ggf. noch nicht importiert). */
+const ALPHA5_MAPPED = new Set(
+  (
+    JSON.parse(
+      readFileSync(
+        join(__dirname, '../../../../content/food-mapping/alpha5-zuordnung.json'),
+        'utf8',
+      ),
+    ) as { items: { food_id: string }[] }
+  ).items.map((item) => item.food_id),
+);
 const target = {
   id: '00000000-0000-4000-8000-000000000001',
   date: '2026-10-25',
@@ -70,20 +85,28 @@ describe('Tabelle der Gerichte', () => {
     }
   });
 
-  it('jede Katalog-ID der Tabelle existiert im Katalog (keine erfundenen Lebensmittel), Mengen 1–600 g', () => {
+  it('jede Katalog-ID existiert im Katalog oder wartet auf Import (Abschnitt foods bzw. alpha5-zuordnung), Mengen 1–600 g', () => {
+    const pending = new Set([...EATING_OUT_PENDING_FOODS.map((f) => f.food_id), ...ALPHA5_MAPPED]);
     for (const dish of EATING_OUT_DISHES) {
+      expect(dish.items.length, dish.id).toBeGreaterThan(0);
       for (const [id, grams] of dish.items) {
-        expect(CATALOG.has(id), `${dish.id}: ${id}`).toBe(true);
+        expect(CATALOG.has(id) || pending.has(id), `${dish.id}: ${id}`).toBe(true);
         expect(grams).toBeGreaterThan(0);
         expect(grams).toBeLessThanOrEqual(600);
       }
     }
   });
 
-  it('ohne Zutaten nur mit fehlenden Zutaten (Entwurf); fehlende Zutaten haben Suchbegriffe', () => {
-    for (const dish of EATING_OUT_DISHES) {
-      if (dish.items.length === 0) expect(dish.missing?.length ?? 0).toBeGreaterThan(0);
-      for (const m of dish.missing ?? []) expect(m.search_de.length).toBeGreaterThan(0);
+  it('jedes Gericht hat eine Begründung; jedes neue Lebensmittel hat Suchbegriffe und wird genutzt', () => {
+    expect(EATING_OUT_MAPPING_ERRORS).toEqual([]);
+    for (const dish of EATING_OUT_DISHES)
+      expect(dish.source_de?.length ?? 0, dish.id).toBeGreaterThan(10);
+    const used = new Set(EATING_OUT_DISHES.flatMap((d) => d.items.map(([id]) => id)));
+    for (const food of EATING_OUT_PENDING_FOODS) {
+      expect(food.search_de.length, food.food_id).toBeGreaterThan(0);
+      expect(used.has(food.food_id), food.food_id).toBe(true);
+      // Neue Lebensmittel nie doppelt zur Alpha5-Zuordnung (eine Zuordnung je Katalog-ID).
+      expect(ALPHA5_MAPPED.has(food.food_id), food.food_id).toBe(false);
     }
   });
 
@@ -125,7 +148,114 @@ describe('Tabelle der Gerichte', () => {
     expect(status.computable.length + status.blocked.length).toBe(status.total);
     const counts = status.missingFoods.map((m) => m.dishes);
     expect([...counts].sort((a, b) => b - a)).toEqual(counts);
-    expect(status.missingFoods.some((m) => m.name_de === 'Butter')).toBe(true);
+    const butter = status.missingFoods.find((m) => m.food_id === 'butter');
+    expect(butter?.name_de).toBe('Butter');
+    expect(butter?.search_de).toContain('Butter');
+    expect(butter?.dishes).toBeGreaterThanOrEqual(5);
+    // Aus alpha5-zuordnung.json (schon zugeordnet, noch nicht importiert): ohne Suchbegriffe aus dieser Datei.
+    if (!CATALOG.has('weizenmehl-type-405')) {
+      expect(status.missingFoods.find((m) => m.food_id === 'weizenmehl-type-405')).toMatchObject({
+        name_de: 'weizenmehl-type-405',
+        search_de: [],
+      });
+    }
+    // Was im Katalog ist, steht nie unter „wartet auf Import“.
+    for (const m of status.missingFoods) expect(CATALOG.has(m.food_id), m.food_id).toBe(false);
+  });
+});
+
+describe('Zuordnungsdatei (Schema)', () => {
+  const dish = {
+    id: 'auswaerts-test',
+    name_de: 'Testgericht',
+    category: 'imbiss',
+    portion: 'plate',
+    basis_de: '1 Teller',
+    items: [{ food_id: 'kartoffeln', g: 200 }],
+    source_de: 'Annahme: übliche Imbiss-Portion.',
+    status: 'draft',
+  };
+  const file = (dishes: unknown[], foods: unknown[] = []) => ({
+    format: 'alpha5-auswaerts-zuordnung',
+    version: 1,
+    status: 'entwurf',
+    fachpruefung_de: 'VOR LIVEGANG FACHLICH PRÜFEN',
+    origin: 'claude_session',
+    model: 'claude-opus-5-5',
+    created_on: '2026-10-26',
+    note_de: 'Testdatei für die Zuordnung.',
+    foods,
+    dishes,
+  });
+
+  it('gültige Datei → Gerichte als [ID, Gramm]', () => {
+    const parsed = parseEatingOutMapping(file([dish]));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(eatingOutDishesFromMapping(parsed.mapping)[0]).toMatchObject({
+      id: 'auswaerts-test',
+      items: [['kartoffeln', 200]],
+      source_de: 'Annahme: übliche Imbiss-Portion.',
+    });
+  });
+
+  it('blockiert: fehlende Begründung, Menge 0 oder über 600 g, Nährwert-Felder, Freigabe ohne Prüfer, doppelte IDs', () => {
+    const withoutSource: Partial<typeof dish> = { ...dish };
+    delete withoutSource.source_de;
+    for (const bad of [
+      file([withoutSource]),
+      file([{ ...dish, items: [{ food_id: 'kartoffeln', g: 0 }] }]),
+      file([{ ...dish, items: [{ food_id: 'kartoffeln', g: 601 }] }]),
+      file([{ ...dish, kcal: 500 }]),
+      file([{ ...dish, items: [{ food_id: 'kartoffeln', g: 100, kcal: 80 }] }]),
+      file([{ ...dish, status: 'released' }]),
+      file([dish, dish]),
+      file([{ ...dish, items: [...dish.items, ...dish.items] }]),
+      file([{ ...dish, id: 'test-ohne-praefix' }]),
+      file([]),
+      { ...file([dish]), fachpruefung_de: 'geprüft' },
+    ]) {
+      const parsed = parseEatingOutMapping(bad);
+      expect(parsed.ok).toBe(false);
+      if (!parsed.ok) expect(parsed.errors.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('neues Lebensmittel: Fleisch nur mit Tierart; kaputte Daten werfen nie', () => {
+    const food = EATING_OUT_PENDING_FOODS.length > 0;
+    expect(food).toBe(true);
+    const bratwurst = {
+      food_id: 'test-wurst',
+      name_de: 'Testwurst',
+      source: {
+        db: 'bls',
+        version: '4.0',
+        ref: null,
+        search: ['Wurst'],
+        state_de: 'gegart',
+        category: 'sausage_meat_products',
+      },
+      aliases_de: [],
+      shopping_category: 'meat_sausage',
+      pantry: false,
+      units: {},
+      groups: [],
+      animal: ['meat'],
+      meat_kind: [],
+      pregnancy_caution: false,
+      alcohol: false,
+      max_fridge_days: 3,
+      freezable: true,
+      substitutes: [],
+      reason_de: 'Testeintrag ohne Tierart.',
+    };
+    expect(parseEatingOutMapping(file([dish], [bratwurst])).ok).toBe(false);
+    expect(parseEatingOutMapping(file([dish], [{ ...bratwurst, meat_kind: ['pork'] }])).ok).toBe(
+      true,
+    );
+    for (const junk of [null, undefined, 42, 'text', [], {}]) {
+      expect(parseEatingOutMapping(junk).ok).toBe(false);
+    }
   });
 });
 
@@ -153,7 +283,7 @@ describe('Werte nur aus dem Katalog', () => {
     expect(kcal('half')).toBeUndefined();
   });
 
-  it('fehlende Zutat in der Tabelle → nicht verfügbar, ohne Werte (z. B. Butterbrezel, Döner, Croissant)', () => {
+  it('Zutat wartet auf Import → nicht verfügbar, ohne Werte (z. B. Butterbrezel, Döner, Croissant)', () => {
     for (const id of [
       'auswaerts-butterbrezel',
       'auswaerts-doener',
@@ -177,6 +307,30 @@ describe('Werte nur aus dem Katalog', () => {
     const view = eatingOutDishView(dish, without, true);
     expect(view.kind).toBe('unavailable');
     if (view.kind === 'unavailable') expect(view.missingFoods).toEqual(['paniermehl']);
+  });
+
+  it('nach dem Import (Lebensmittel im Katalog) wird das Gericht berechenbar – Werte nur aus dem Katalog', () => {
+    const dish = eatingOutDish('auswaerts-butterbrezel') as EatingOutDishDef;
+    expect(dish.items).toContainEqual(['butter', 15]);
+    const rapsoel = CATALOG.get('rapsoel') as Food;
+    // Testwerte (keine echten Butter-Werte): nur, um die Rechnung nach dem Import zu prüfen.
+    const imported = new Map(CATALOG);
+    imported.set('butter', {
+      ...rapsoel,
+      id: 'butter',
+      name_de: 'Butter',
+      status: 'draft',
+      nutrients_per_100g: { ...rapsoel.nutrients_per_100g, kcal: 700, fat_g: 80 },
+    });
+    const before = eatingOutDishView(dish, CATALOG, true);
+    expect(before.kind === 'unavailable' && before.missingFoods).toEqual(['butter']);
+    const after = eatingOutDishView(dish, imported, true);
+    expect(after.kind).toBe('ok');
+    if (after.kind !== 'ok') return;
+    const laugenbrezel = (CATALOG.get('laugenbrezel') as Food).nutrients_per_100g.kcal * 0.8;
+    expect(after.normal.kcal).toBe(Math.round((laugenbrezel + 105) / 10) * 10);
+    // Ohne Entwürfe (Supabase-Modus) zählt ein frisch importierter Entwurf (noch nicht katalog-geprüft) nicht.
+    expect(eatingOutDishView(dish, imported, false).kind).toBe('unavailable');
   });
 
   it('Grenzfälle: leerer Katalog → nichts berechenbar; Gericht ohne Zutaten → null; Menge 0 → null', () => {
