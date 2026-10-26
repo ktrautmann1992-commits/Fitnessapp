@@ -987,19 +987,16 @@ export default function TodayScreen() {
               · {weekCountText(week.status.summary)}
             </Text>
           ) : null}
-          {/* „Woche ansehen“ als kleiner Pfeil-Link neben der Überschrift (statt eigener Link-Zeile). */}
+          {/* „Woche ansehen“ als Pfeil neben der Überschrift (statt eigener Link-Zeile, Entwurf 1/2). */}
           <Pressable
             accessibilityRole="link"
             accessibilityLabel={W.openWeekA11y}
             onPress={() => router.push('/week' as Href)}
             testID="today-week"
-            hitSlop={8}
+            hitSlop={4}
             style={({ pressed }) => [styles.weekLink, { opacity: pressed ? 0.6 : 1 }]}
           >
-            <Text style={[styles.weekLinkText, appFont('semibold'), { color: theme.link }]}>
-              {W.openWeek}
-            </Text>
-            <Icon name="chevron" size={16} color={theme.link} />
+            <Icon name="chevron" size={20} color={theme.link} />
           </Pressable>
         </View>
       </View>
@@ -1468,16 +1465,15 @@ function TodayHero({
 
 const styles = StyleSheet.create({
   weekHead: { gap: spacing.xs },
-  weekTitle: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 6 },
+  weekTitle: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 6 },
   weekCount: { fontSize: 16, lineHeight: 22 },
   weekLink: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
+    justifyContent: 'center',
     marginLeft: 'auto',
-    minHeight: 44,
+    width: 44,
+    height: 44,
   },
-  weekLinkText: { fontSize: 15, lineHeight: 20 },
   blockWeek: { gap: 4 },
   detail: { gap: spacing.md },
   heroTag: {
