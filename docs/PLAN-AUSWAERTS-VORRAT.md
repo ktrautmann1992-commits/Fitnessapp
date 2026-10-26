@@ -227,7 +227,15 @@ salami, schlagsahne-30, schmand, schweinemett, schweineschulter, speiseeis-vanil
 
 Bis dahin bleiben die 46 Gerichte ohne Werte; die übrigen verhalten sich unverändert (Vorschau: weiter 21 Gerichte).
 
-**Offen:** Chai-Latte-Pulver ist evtl. nicht in BLS 4.0 (dann bleibt Chai Latte ohne Werte). Die neu angenommenen
+**Stand 26.10.2026 (Kandidatenlauf 40307807050, BLS 4.0):** Quell-IDs für 32 der 33 neuen Lebensmittel per Pull
+Request in `auswaerts-zuordnung.json` eingetragen (Begründung je Eintrag in `reason_de`). Näherungen, bei R19 prüfen:
+burgerbroetchen → Weizenbrötchen (B511000), schweineschulter → Schwein Kamm roh (U632100), schweinemett → Schwein
+Hackfleisch roh (U020100), haehnchen-nuggets → Hähnchenbrustfilet paniert, gebraten (Y591112), speiseeis-vanille →
+Vanilleeis in Waffeltüte (S211500), doenerfleisch → Geflügel-Dönerfleisch (V422072), mayonnaise → Mayonnaise 80 %
+(Q991000). Nächster Schritt: foods-import Modus „import“.
+
+**Offen:** Chai-Latte-Pulver ist nicht in BLS 4.0 (einziger Treffer „Latte macchiato“) – `source.ref` bleibt `null`,
+Chai Latte bleibt ohne Werte. Die neu angenommenen
 Mengen für die bisher fehlenden Zutaten (z. B. Pizza 160 g Mehl + 110–125 g Mozzarella, Döner 150 g Fladenbrot +
 120 g Fleisch, ½ Hähnchen 280 g essbar) sind Annahmen und Teil der Fachprüfung. Leberkäse trägt wegen R18 (Wort
 „Leber“) vorsichtig „pregnancy_caution“.
