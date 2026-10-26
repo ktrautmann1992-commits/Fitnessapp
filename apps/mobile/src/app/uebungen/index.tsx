@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
+import { TrainingSwitch } from '@/components/training-switch';
 import {
   Body,
   Button,
@@ -118,6 +119,8 @@ export default function GlossaryScreen() {
         />
       }
     >
+      {/* „App verschlanken“ (26.10.2026): Übungs-Lexikon = dritter Teil des Umschalters im Training. */}
+      <TrainingSwitch selected="exercises" prefix="glossary" />
       <Button
         label={t.glossary.byMuscle}
         accessibilityHint={t.glossary.byMuscleHint}

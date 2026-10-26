@@ -8,7 +8,8 @@ const kg = (value: number) =>
 
 export const deTabs = {
   label: 'Hauptmenü',
-  overview: 'Übersicht',
+  // „App verschlanken“ (26.10.2026): die Startseite heißt „Heute“, der Plan-Reiter „Training“.
+  overview: 'Heute',
   training: 'Training',
   nutrition: 'Ernährung',
   progress: 'Fortschritt',
@@ -19,7 +20,7 @@ export const deTabs = {
 } as const;
 
 export const deDashboard = {
-  title: 'Übersicht',
+  title: 'Heute',
   greeting: {
     morning: 'Guten Morgen!',
     day: 'Hallo!',
@@ -100,7 +101,7 @@ export const deDashboard = {
   edit: {
     open: 'Bearbeiten',
     openHint: 'Kacheln ein- und ausblenden und die Reihenfolge ändern',
-    title: 'Übersicht bearbeiten',
+    title: 'Kacheln anpassen',
     intro:
       'Blende Kacheln ein oder aus und ändere die Reihenfolge mit „Nach oben“ und „Nach unten“. Hinweise oben bleiben immer sichtbar.',
     show: (title: string) => `${title} anzeigen`,
@@ -114,7 +115,7 @@ export const deDashboard = {
     hidden: (title: string) => `${title} ist ausgeblendet.`,
     done: 'Fertig',
     reset: 'Auf Standard zurücksetzen',
-    resetDone: 'Übersicht und Menüleiste sind wieder wie am Anfang.',
+    resetDone: 'Kacheln und Menüleiste sind wieder wie am Anfang.',
     menuBar: 'Menüleiste anpassen',
     saveFailed: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
     allHidden: 'Alle Kacheln sind ausgeblendet.',
@@ -125,7 +126,7 @@ export const deDashboard = {
       workouts: 'Workouts',
       nutrition: 'Ernährung heute',
       body: 'Körperdaten',
-      progress: 'Fortschritt',
+      progress: 'Deine Woche',
       endurance: 'Ausdauer',
       steps: 'Schritte',
       recovery: 'Erholung',
@@ -261,7 +262,7 @@ export const deConsentsPage = {
 export const deMenuBar = {
   title: 'Menüleiste anpassen',
   intro: (min: number, max: number) =>
-    `Wähle, welche Bereiche unten als Knöpfe erscheinen (${min} bis ${max} Knöpfe). „Übersicht“ steht immer links, „Mehr“ immer rechts. Alles ohne Knopf findest du unter „Mehr“.`,
+    `Wähle, welche Bereiche unten als Knöpfe erscheinen (${min} bis ${max} Knöpfe). „Heute“ steht immer links, „Mehr“ immer rechts. Workouts findest du sonst im Training, alles andere unter „Mehr“.`,
   inBar: (label: string) => `${label} in der Menüleiste`,
   fixed: 'Immer dabei',
   up: 'Nach links',
@@ -275,7 +276,7 @@ export const deMenuBar = {
   reasons: {
     max: (max: number) => `Höchstens ${max} Knöpfe – nimm erst einen heraus.`,
     min: (min: number) => `Mindestens ${min} Knöpfe – nimm erst einen anderen dazu.`,
-    fixed: '„Übersicht“ und „Mehr“ bleiben immer in der Menüleiste.',
+    fixed: '„Heute“ und „Mehr“ bleiben immer in der Menüleiste.',
     unavailable: 'Diesen Bereich gibt es in dieser Fassung der App noch nicht.',
   },
   preview: 'So sieht deine Menüleiste aus:',

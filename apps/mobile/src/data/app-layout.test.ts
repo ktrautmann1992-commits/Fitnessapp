@@ -18,6 +18,9 @@ import { appLayoutRowFromDb } from './app-layout';
 import { AVAILABLE_AREAS } from '../lib/app-areas';
 
 const rows = () => planPersonRows({ consent: 'valid' });
+/** Spalten ohne `user_id` (wie use-app-layout sie an normalizeLayout gibt). */
+const withoutOwner = (row: object) =>
+  Object.fromEntries(Object.entries(row).filter(([key]) => key !== 'user_id'));
 
 describe('Anordnung im Testmodus', () => {
   it('speichern, im Export, bleibt beim Widerruf (kein Gesundheitsdatum)', async () => {
@@ -100,16 +103,16 @@ describe('Standard in dieser App-Fassung', () => {
     };
     const row = appLayoutRowFromDb(legacy);
     expect(row?.layout_version).toBeUndefined();
-    const { user_id: _id, ...rowLayout } = row ?? legacy;
+    const rowLayout = withoutOwner(row ?? legacy);
     expect(normalizeLayout(rowLayout, AVAILABLE_AREAS).tabs).toEqual(
       defaultLayout(AVAILABLE_AREAS).tabs,
     );
     // Bewusst wieder mit „Workouts“ an 3. Stelle gespeichert → bleibt (Fassung 2).
-    const { user_id: _user, ...legacyLayout } = legacy;
+    const legacyLayout = withoutOwner(legacy);
     const chosen = toStoredLayout(normalizeLayout({ ...legacyLayout, layout_version: 2 }));
     const saved = await backend.saveAppLayout(chosen, rows());
     expect(saved.appLayout?.layout_version).toBe(2);
-    const { user_id: _owner, ...savedLayout } = saved.appLayout ?? legacy;
+    const savedLayout = withoutOwner(saved.appLayout ?? legacy);
     expect(normalizeLayout(savedLayout, AVAILABLE_AREAS).tabs).toEqual(legacy.tab_bar);
     expect(appLayoutRowFromDb({ ...legacy, layout_version: 2 })?.layout_version).toBe(2);
   });

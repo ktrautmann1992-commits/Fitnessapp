@@ -44,6 +44,7 @@ import { deSessionKcal } from './de-session-kcal';
 import { deSports } from './de-sports';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
+import { deSlim } from './de-slim';
 import { deCalisthenics } from './de-calisthenics';
 import { deTrainingWeek } from './de-training-week';
 import { deWidget } from './de-widget';
@@ -491,7 +492,8 @@ export const de = {
     mealprepValue: (days: number) => `Meal-Prep an ${days} Tagen pro Woche`,
   },
   today: {
-    title: 'Heute',
+    // Reiter „Training“ (bis 26.10.2026 hieß der Kopf „Heute“ – „Heute“ ist jetzt die Startseite).
+    title: 'Training',
     greeting: 'Schön, dass du da bist!',
     measurementDue: 'Zeit zum Nachmessen: Deine Körperumfänge sind fällig.',
     healthReconsent:
@@ -1688,6 +1690,8 @@ export const de = {
   weekEval: deWeekEval,
   /** Menüleiste, Übersicht, Fortschritt, Mehr, Mein Konto (docs/PLAN-DASHBOARD.md). */
   tabs: deTabs,
+  /** „App verschlanken“ (26.10.2026): Umschalter, Hinweis-Zeile, ⋯-Menüs, Einstellungs-Themen. */
+  slim: deSlim,
   dashboard: deDashboard,
   progressHub: deProgressHub,
   weightTrend: deWeightTrend,

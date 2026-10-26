@@ -9,7 +9,8 @@ import type { IconName } from '@/components/design';
  * (gleiche Werte wie `training`). Nur Darstellung, keine Fachlogik.
  */
 export const NAV_AREA_STYLE: Record<NavArea, { area: AreaId; icon: IconName }> = {
-  uebersicht: { area: 'training', icon: 'grid' },
+  // Reiter „Heute“ (Startseite, 26.10.2026): Haus wie im Entwurf 8-navigation.
+  uebersicht: { area: 'training', icon: 'home' },
   today: { area: 'training', icon: 'dumbbell' },
   workouts: { area: 'workouts', icon: 'stopwatch' },
   ernaehrung: { area: 'ernaehrung', icon: 'utensils' },
