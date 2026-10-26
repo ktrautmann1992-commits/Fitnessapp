@@ -4,9 +4,11 @@ import {
   dayLabel,
   longDayLabel,
   enduranceLines,
-  exerciseLines,
+  exerciseSummary,
   repsRange,
   reserveFromRpe,
+  restShort,
+  restSpoken,
   restText,
 } from './plan-format';
 
@@ -38,25 +40,52 @@ describe('Plan-Texte', () => {
     expect(reserveFromRpe(7.5)).toBe('2–3');
   });
 
-  it('Übung: Sätze × Wdh., Pause, Reserve, Startgewicht bzw. Halten', () => {
-    expect(exerciseLines(exercise)).toEqual([
-      '3 × 8–12 Wiederholungen',
-      'Pause 2:30 Minuten',
-      'ca. 2–3 Wiederholungen in Reserve',
-      'Startgewicht finden',
-    ]);
+  it('kurze und gesprochene Pausen', () => {
+    expect(restShort(45)).toBe('45 s');
+    expect(restShort(60)).toBe('1:00');
+    expect(restShort(90)).toBe('1:30');
+    expect(restShort(150)).toBe('2:30');
+    expect(restSpoken(45)).toBe('45 Sekunden');
+    expect(restSpoken(90)).toBe('90 Sekunden');
+    expect(restSpoken(60)).toBe('1 Minute');
+    expect(restSpoken(180)).toBe('3 Minuten');
+  });
+
+  it('Übung (kompakte Liste): Sätze × Wdh., Pause, Reserve, Gewicht bzw. „selbst finden“', () => {
+    expect(exerciseSummary(exercise)).toEqual({
+      sets: 3,
+      dose: '3 × 8–12',
+      rest: '2:30 Pause',
+      reserve: '2–3 in Reserve',
+      weight: null,
+      findWeight: 'find',
+      notes: [],
+      a11y: '3 Sätze à 8–12 Wiederholungen, Pause 150 Sekunden, 2–3 Wiederholungen in Reserve, Gewicht selbst finden',
+    });
+    const hold = exerciseSummary({
+      ...exercise,
+      sets: 1,
+      reps_min: null,
+      reps_max: null,
+      duration_s: 30,
+      target_weight_kg: 12.5,
+    });
+    expect(hold.dose).toBe('1 × 30 s');
+    expect(hold.weight).toBe('12,5 kg');
+    expect(hold.findWeight).toBeNull();
+    expect(hold.a11y).toContain('1 Satz à 30 Sekunden halten');
+    // Halteübung ohne Gewicht: nichts zu finden.
     expect(
-      exerciseLines({
-        ...exercise,
-        reps_min: null,
-        reps_max: null,
-        duration_s: 30,
-        target_weight_kg: 12.5,
-      }),
-    ).toContain('Zielgewicht 12,5 kg');
-    expect(exerciseLines({ ...exercise, reps_min: null, reps_max: null, duration_s: 30 })[0]).toBe(
-      '3 × 30 Sekunden halten',
-    );
+      exerciseSummary({ ...exercise, reps_min: null, reps_max: null, duration_s: 30 }).findWeight,
+    ).toBeNull();
+  });
+
+  it('Übung: „Gewicht selbst finden“ nur bei Gewichtsübungen, wenn die Bibliothek die Art kennt', () => {
+    expect(exerciseSummary(exercise, 'weight').findWeight).toBe('find');
+    expect(exerciseSummary(exercise, 'bodyweight').findWeight).toBeNull();
+    expect(exerciseSummary(exercise, 'band').findWeight).toBeNull();
+    expect(exerciseSummary({ ...exercise, reps_min: 10, reps_max: 10 }).dose).toBe('3 × 10');
+    expect(exerciseSummary({ ...exercise, sets: 7 }).a11y).toMatch(/^7 Sätze à/);
   });
 
   it('Ausdauer: Minuten, Gesprächstest, Geh-Lauf-Muster, Ausweichen (Schwangerschaft)', () => {
