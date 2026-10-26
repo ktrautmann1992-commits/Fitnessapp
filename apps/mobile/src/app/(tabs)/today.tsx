@@ -962,7 +962,7 @@ export default function TodayScreen() {
     <Screen area="training" icon="dumbbell" title={t.today.title} testID="today">
       <TrainingSwitch selected="plan" prefix="today" exercisesTestID="today-glossary" />
       {competitionLink}
-      <NoticeStack items={[...planNotices, ...noticeItems]} testID="today-notices" />
+      <NoticeStack items={[...noticeItems, ...planNotices]} testID="today-notices" />
       {header}
       {/* Live-Anpassung (Phase 4b, 8.1): offener Vorschlag „Weniger Trainingstage?“ oben. */}
       <FewerDaysCard today={today} />
@@ -1012,12 +1012,16 @@ export default function TodayScreen() {
       {planWeek ? <PhaseBand week={planWeek} shortDays={planView.shortDays} /> : null}
       {/* Woche im Block (Einstiegs-/Erholungswoche) als eine Zeile (Entwurf: „Woche 1 von 6 – Einstiegswoche …“). */}
       {blockWeek ? (
-        <Notice tone="info" testID="plan-week-header">
-          <Text style={[styles.blockWeekTitle, appFont('bold'), { color: theme.text }]}>
-            {blockWeek.weekNo === 0
+        <Notice
+          tone="info"
+          testID="plan-week-header"
+          titleAsHeader
+          title={
+            blockWeek.weekNo === 0
               ? t.plan.week0
-              : t.plan.weekHeader(blockWeek.weekNo, blockWeek.weeksInBlock)}
-          </Text>
+              : t.plan.weekHeader(blockWeek.weekNo, blockWeek.weeksInBlock)
+          }
+        >
           {blockWeek.isIntroWeek ? (
             <Body muted>
               {t.plan.introWeek}: {t.plan.introWeekText}
@@ -1475,7 +1479,6 @@ const styles = StyleSheet.create({
   },
   weekLinkText: { fontSize: 15, lineHeight: 20 },
   blockWeek: { gap: 4 },
-  blockWeekTitle: { fontSize: 17, lineHeight: 23 },
   detail: { gap: spacing.md },
   heroTag: {
     alignSelf: 'flex-start',

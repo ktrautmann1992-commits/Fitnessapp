@@ -116,11 +116,14 @@ export function NoticeStack({
         Boolean(x) && x !== null && x !== undefined && x !== false && x.node !== null,
     ),
   );
-  if (queue.blocking.length === 0 && queue.lead === null) return null;
+  if (queue.blocking.length === 0 && queue.lead === null && queue.success.length === 0) return null;
   const count = queue.rest.length;
   return (
     <View style={styles.stack} testID={testID}>
       {queue.blocking.map((item) => (
+        <View key={item.id}>{item.node}</View>
+      ))}
+      {queue.success.map((item) => (
         <View key={item.id}>{item.node}</View>
       ))}
       {queue.lead ? <View key={queue.lead.id}>{queue.lead.node}</View> : null}
@@ -262,66 +265,70 @@ export function MoreMenu({
       >
         <Icon name={icon} size={20} color={theme.text} />
       </Pressable>
-      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <Pressable
-          style={styles.backdrop}
-          accessibilityRole="button"
-          accessibilityLabel={t.slim.menu.close}
-          onPress={() => setOpen(false)}
-          testID={`${testID}-close`}
-        />
-        <View
-          style={[styles.sheet, { backgroundColor: theme.surface, borderColor: card.border }]}
-          testID={`${testID}-sheet`}
-          accessibilityViewIsModal
-        >
-          <View style={[styles.grabber, { backgroundColor: card.divider }]} />
-          {items.map((item) => {
-            const danger = item.tone === 'danger';
-            const color = danger ? theme.danger : theme.text;
-            return (
-              <Pressable
-                key={item.key}
-                accessibilityRole={item.checked === undefined ? 'button' : 'checkbox'}
-                accessibilityState={{
-                  disabled: item.disabled === true,
-                  ...(item.checked !== undefined ? { checked: item.checked } : {}),
-                }}
-                aria-checked={item.checked}
-                disabled={item.disabled}
-                onPress={() => {
-                  setOpen(false);
-                  item.onPress();
-                }}
-                testID={item.testID}
-                style={({ pressed }) => [
-                  styles.sheetRow,
-                  { opacity: item.disabled ? 0.5 : pressed ? 0.7 : 1 },
-                ]}
-              >
-                <Icon name={item.icon} size={22} color={color} />
-                <Text style={[styles.sheetLabel, appFont('semibold'), { color }]}>
-                  {item.label}
-                </Text>
-                {item.checked !== undefined ? (
-                  <Icon
-                    name={item.checked ? 'check' : 'plus'}
-                    size={18}
-                    color={item.checked ? theme.success : theme.textMuted}
-                  />
-                ) : null}
-              </Pressable>
-            );
-          })}
+      <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
+        {/* Eine Wurzel mit voller Fläche (wie das Tages-Blatt): Hintergrund antippbar, Blatt unten im Fluss. */}
+        <View style={styles.modalRoot}>
           <Pressable
+            style={styles.backdrop}
             accessibilityRole="button"
+            accessibilityLabel={t.slim.menu.close}
             onPress={() => setOpen(false)}
-            style={({ pressed }) => [styles.sheetRow, { opacity: pressed ? 0.7 : 1 }]}
+            testID={`${testID}-close`}
+          />
+          <View
+            style={[styles.sheet, { backgroundColor: theme.surface, borderColor: card.border }]}
+            testID={`${testID}-sheet`}
+            accessibilityViewIsModal
           >
-            <Text style={[styles.sheetLabel, appFont('bold'), { color: theme.link }]}>
-              {t.slim.menu.close}
-            </Text>
-          </Pressable>
+            <View style={[styles.grabber, { backgroundColor: card.divider }]} />
+            {items.map((item) => {
+              const danger = item.tone === 'danger';
+              const color = danger ? theme.danger : theme.text;
+              return (
+                <Pressable
+                  key={item.key}
+                  accessibilityRole={item.checked === undefined ? 'button' : 'checkbox'}
+                  accessibilityState={{
+                    disabled: item.disabled === true,
+                    ...(item.checked !== undefined ? { checked: item.checked } : {}),
+                  }}
+                  aria-checked={item.checked}
+                  disabled={item.disabled}
+                  onPress={() => {
+                    setOpen(false);
+                    item.onPress();
+                  }}
+                  testID={item.testID}
+                  style={({ pressed }) => [
+                    styles.sheetRow,
+                    { opacity: item.disabled ? 0.5 : pressed ? 0.7 : 1 },
+                  ]}
+                >
+                  <Icon name={item.icon} size={22} color={color} />
+                  <Text style={[styles.sheetLabel, appFont('semibold'), { color }]}>
+                    {item.label}
+                  </Text>
+                  {item.checked !== undefined ? (
+                    <Icon
+                      name={item.checked ? 'check' : 'plus'}
+                      size={18}
+                      color={item.checked ? theme.success : theme.textMuted}
+                    />
+                  ) : null}
+                </Pressable>
+              );
+            })}
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setOpen(false)}
+              testID={`${testID}-done`}
+              style={({ pressed }) => [styles.sheetRow, { opacity: pressed ? 0.7 : 1 }]}
+            >
+              <Text style={[styles.sheetLabel, appFont('bold'), { color: theme.link }]}>
+                {t.slim.menu.close}
+              </Text>
+            </Pressable>
+          </View>
         </View>
       </Modal>
     </>
@@ -468,11 +475,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(15, 23, 42, 0.45)',
   },
+  modalRoot: { flex: 1, justifyContent: 'flex-end', alignItems: 'center' },
   sheet: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     borderWidth: 1,

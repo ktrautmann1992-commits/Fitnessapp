@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { DEMO_KEY, db, onboardNutrition, openNutrition, patchDb } from './nutrition-helpers';
-import { completeNutritionSetup, heading } from './plan-helpers';
+import { completeNutritionSetup, expandNotices, heading } from './plan-helpers';
 
 /**
  * Ernährung im TESTMODUS (docs/PLAN-PHASE-5.md 8, 13 N4, 15): Onboarding mit Schritt „Alltag und Training“ → Ziel
@@ -51,6 +51,7 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
   await expect(page.getByText('Schätzung – ±10 % sind normal.').first()).toBeVisible();
   // Abends trainieren → Abendessen „nach dem Training“ (4.8); Entwürfe gekennzeichnet (K6).
   await expect(page.getByTestId('meal-dinner')).toContainText('nach dem Training');
+  await expandNotices(page, 'nutrition-notice-line');
   await expect(page.getByTestId('nutrition-plan-notice-drafts_allergens_unreviewed')).toBeVisible();
   await expect(page.getByTestId('nutrition-day')).not.toContainText(/Champignon|Pilz-/);
 
@@ -75,7 +76,7 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
 
   // Einstellungen → „Kalorienzahlen anzeigen“ aus → nirgends mehr kcal (Gründer-Entscheidung 3, 16 B (h)).
   await page.goto('/settings?thema=ernaehrung');
-  await heading(page, 'Ernährung');
+  await expect(page.getByRole('heading', { level: 1, name: 'Ernährung' })).toBeVisible();
   const numbers = page.getByTestId('settings-show-numbers');
   await expect(numbers).toHaveAttribute('aria-checked', 'true');
   await numbers.click();
@@ -119,6 +120,7 @@ test('Widerruf mit Angebot: Unverträglichkeit → „mag ich nicht“, „mag i
   // Ernährung danach ohne Kalorienziel, mit Einladung zur Einwilligung.
   await page.goto('/ernaehrung');
   await expect(page.getByTestId('nutrition-day')).toBeVisible();
+  await expandNotices(page, 'nutrition-notice-line');
   await expect(page.getByTestId('nutrition-notice-no_health_data_consent')).toBeVisible();
   await expect(page.getByTestId('nutrition-action-consent')).toBeVisible();
   await expect(page.getByTestId('nutrition-target')).toHaveCount(0);
@@ -156,6 +158,7 @@ test('kein Gesundheits-Check → Hinweis + Knopf, ohne Defizit (B4); Schwangersc
   // Check entfernen (z. B. neue Fassung, Abbruch) → vorsichtig, Hinweis „Gesundheits-Check machen“.
   await patchDb(page, (value) => ({ ...value, rows: { ...value.rows, healthScreenings: [] } }));
   await page.goto('/ernaehrung');
+  await expandNotices(page, 'nutrition-notice-line');
   await expect(page.getByTestId('nutrition-notice-health_check_missing')).toBeVisible();
   await expect(page.getByTestId('nutrition-action-check')).toBeVisible();
   await expect(page.getByTestId('nutrition-target')).toBeVisible();
@@ -178,6 +181,7 @@ test('kein Gesundheits-Check → Hinweis + Knopf, ohne Defizit (B4); Schwangersc
     },
   }));
   await page.goto('/ernaehrung');
+  await expandNotices(page, 'nutrition-notice-line');
   await expect(page.getByTestId('nutrition-notice-pregnancy_no_targets')).toBeVisible();
   await expect(page.getByTestId('nutrition-notice-pregnancy_caffeine')).toBeVisible();
   await expect(page.getByTestId('nutrition-action-check-update')).toBeVisible();
@@ -210,6 +214,7 @@ test('Zustände: Einrichtung fehlt (bestehende Testerinnen), keine Rezepte, Beis
   });
   await expect(page.getByTestId('nutrition-day')).toBeVisible();
   // Frühtraining: Hinweis zum Frühstück (Montag ist Trainingstag).
+  await expandNotices(page, 'nutrition-notice-line');
   await expect(page.getByTestId('nutrition-notice-early_training')).toBeVisible();
   // Noch keine Rezepte im Bündel → Angebot; mit Beispiel-Rezepten → gekennzeichnet; wieder aus → leer. Hat das Bündel
   // schon echte Rezepte (nach foods-import/alpha5-import), gibt es das Angebot nicht – dann erzwingen (K7).
@@ -233,6 +238,7 @@ test('Zustände: Einrichtung fehlt (bestehende Testerinnen), keine Rezepte, Beis
   await expect(page.getByTestId('recipe-not-for-you')).toBeVisible();
   await expect(page.getByTestId('recipe')).not.toContainText('Hackfleisch');
   await page.goto('/ernaehrung');
+  await expandNotices(page, 'nutrition-notice-line');
   await page.getByTestId('nutrition-demo-off').click();
   await expect(page.getByTestId('nutrition-demo-banner')).toHaveCount(0);
   if (emptyBundle) await expect(page.getByTestId('nutrition-demo-use')).toBeVisible();

@@ -328,7 +328,8 @@ export default function NutritionDayScreen() {
     demo
       ? {
           id: 'demo',
-          level: 'action',
+          // Testwerte-Hinweis immer oben (Entwurf 3-ernaehrung: „höchste Stufe“, ungeprüfte Allergene).
+          level: 'blocking',
           node: <DemoBanner onDisable={() => void app.setNutritionDemo(false)} />,
         }
       : null,

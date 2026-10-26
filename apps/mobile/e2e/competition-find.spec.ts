@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Wettkampfplan leicht finden (Gründer-Rückmeldung 20.10.2026: „Man findet den Wettkampfplan nicht … es sollte besser
@@ -141,10 +141,12 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
   await heading(page, 'Training');
   // Reiter bleiben geladen – nur im Reiter „Training“ suchen.
   const todayScreen = page.getByTestId('today');
+  await expandNotices(page, 'today-notices');
   await expect(todayScreen.getByTestId('competition-countdown')).toBeVisible();
   const link = todayScreen.getByTestId('today-competition-plan');
   await expect(link).toHaveText('Wettkampfplan');
   const linkY = (await link.boundingBox())?.y ?? 1e9;
+  await expandNotices(page, 'today-notices');
   const countdownY = (await todayScreen.getByTestId('competition-countdown').boundingBox())?.y ?? 0;
   expect(linkY).toBeLessThan(countdownY);
   await link.click();

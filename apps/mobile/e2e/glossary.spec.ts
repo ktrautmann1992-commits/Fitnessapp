@@ -151,7 +151,7 @@ test("Link aus „Heute“ und Einstellungen; „So geht's“ im Training – Pa
   await page.getByTestId('settings-glossary').click();
   await heading(page, 'Übungen');
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();
-  await page.getByRole('button', { name: 'Zurück zum Training' }).click();
+  await page.goto('/today');
   await heading(page, 'Training');
 
   // Trainingsmodus: Satz abhaken → Pause läuft; „So geht's“ aufklappen bleibt im Training, Pause läuft weiter.

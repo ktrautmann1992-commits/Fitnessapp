@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Training-Übersicht (docs/PLAN-AUSWERTUNG.md „Training-Übersicht“, Gründer-Freigabe 23.10.2026), Web-Export im Testmodus, Handy-Ansicht:
@@ -65,6 +65,7 @@ test('Leiste: 7 Tage mit Zustand, Legende, Werkzeugleiste; Blatt legt eine Einhe
   await expect(sheet.getByTestId('day-sheet-move-info')).toContainText('Freitag');
   await sheet.getByTestId('day-sheet-chip-2026-10-25').click();
   await expect(page.getByTestId('day-sheet')).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toHaveText('Auf Sonntag verschoben.');
   await expect(cell(page, '2026-10-25')).toHaveAccessibleName(/verschoben von Sa/);
   await expect(cell(page, SAT)).toHaveAccessibleName(/Ruhetag \(verschoben auf So\)/);
@@ -75,6 +76,7 @@ test('Leiste: 7 Tage mit Zustand, Legende, Werkzeugleiste; Blatt legt eine Einhe
   await page.getByTestId('day-sheet-skip').click();
   await expect(page.getByRole('heading', { name: 'Einheit auslassen?' })).toBeVisible();
   await page.getByRole('button', { name: 'Einheit auslassen' }).click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toHaveText('Die Einheit entfällt diese Woche.');
   await expect(cell(page, THU)).toHaveAccessibleName(/– entfällt/);
   await expect(page.getByTestId('plan-week-count')).toHaveText('· 0 von 1 Einheit');
@@ -132,6 +134,7 @@ test('Uhr-Lauf an einem Tag ohne Plan: einmalige Frage → „Ja“ → Sa vorge
   // Bis zur Antwort: Dienstag erledigt (freie Einheit), Samstag geplant.
   await page.getByTestId('cross-day-yes').click();
   await expect(dialog).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toContainText('Zählt für Sa');
   await expect(cell(page, TUE)).toHaveAccessibleName(/erledigt, statt Sa/);
   await expect(cell(page, TUE)).toContainText('statt Sa');

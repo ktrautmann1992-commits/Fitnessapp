@@ -146,15 +146,15 @@ export async function onboardNutrition(page: Page, person: NutritionPerson = {})
  */
 export async function showCheckedShoppingItems(page: Page) {
   // Seit 26.10.2026 im ⋯-Menü oben rechts (Blatt schließt nach dem Tippen).
-  await page.getByTestId('shopping-menu').click();
+  await openShoppingMenu(page);
   const box = page.getByTestId('shopping-hide-checked');
   await expect(box).toBeVisible();
   if ((await box.getAttribute('aria-checked')) === 'true') {
     await box.click();
-    await page.getByTestId('shopping-menu').click();
+    await openShoppingMenu(page);
   }
   await expect(box).toHaveAttribute('aria-checked', 'false');
-  await page.getByTestId('shopping-menu-close').click();
+  await closeShoppingMenu(page);
 }
 
 export async function openNutrition(page: Page) {
@@ -170,10 +170,16 @@ export async function openNutrition(page: Page) {
 
 /** Einkaufen: ⋯-Menü oben rechts öffnen (Weitergeben, PDF, Zeitraum, Erledigte, Häkchen – seit 26.10.2026). */
 export async function openShoppingMenu(page: Page) {
-  if ((await page.getByTestId('shopping-menu-sheet').count()) === 0) {
-    await page.getByTestId('shopping-menu').click();
-  }
+  // Ein gerade schließendes Blatt erst ganz verschwinden lassen (Animation), dann öffnen.
+  await expect(page.getByTestId('shopping-menu-sheet')).toHaveCount(0);
+  await page.getByTestId('shopping-menu').click();
   await expect(page.getByTestId('shopping-menu-sheet')).toBeVisible();
+}
+
+/** Einkaufen: ⋯-Menü mit „Schließen“ zumachen und warten, bis es weg ist. */
+export async function closeShoppingMenu(page: Page) {
+  await page.getByTestId('shopping-menu-done').click();
+  await expect(page.getByTestId('shopping-menu-sheet')).toHaveCount(0);
 }
 
 /** Einkaufen: Zeitraum-Wahl (3 Tage | Ganze Woche, eigener Zeitraum) über ⋯ → „Zeitraum wählen“ einblenden. */
@@ -202,6 +208,7 @@ export async function openShoppingScan(page: Page) {
 export async function toggleHideChecked(page: Page) {
   await openShoppingMenu(page);
   await page.getByTestId('shopping-hide-checked').click();
+  await expect(page.getByTestId('shopping-menu-sheet')).toHaveCount(0);
 }
 
 /** Einkaufen: Stand von „Erledigte ausblenden“ prüfen (öffnet und schließt das ⋯-Menü). */
@@ -211,5 +218,5 @@ export async function expectHideChecked(page: Page, on: boolean) {
     'aria-checked',
     String(on),
   );
-  await page.getByTestId('shopping-menu-close').click();
+  await closeShoppingMenu(page);
 }

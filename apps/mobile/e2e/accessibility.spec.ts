@@ -94,7 +94,7 @@ test('Große Ansicht: größere Schrift und Knöpfe, „Heute“ zeigt weniger, 
   await page.reload();
   await expect(page.getByTestId('settings-large-view')).toHaveAttribute('aria-checked', 'true');
 
-  await page.getByRole('button', { name: 'Zurück zum Training' }).click();
+  await page.goto('/today');
   await heading(page, 'Training');
   // Weniger Elemente: Kalender, Woche, Verlauf, Übungen erst nach „Mehr anzeigen“.
   await expect(page.getByTestId('today-calendar')).toHaveCount(0);

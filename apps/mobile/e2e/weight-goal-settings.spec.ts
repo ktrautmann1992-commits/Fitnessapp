@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 import { db, onboardNutrition, patchDb } from './nutrition-helpers';
-import { heading, next, openPlanInfo } from './plan-helpers';
+import { expandNotices, heading, next, openPlanInfo } from './plan-helpers';
 
 /**
  * Ziele · Etappe Z5 (docs/PLAN-ZIELE.md 6 Nr. 3–4, 7 Z5, F10, F13, K10): Einstellungen „Dein Abnehm-Ziel“ –
@@ -227,6 +227,7 @@ test('Wunschgewicht erreicht: Karte bleibt bis zur Wahl, „Weiter“ blockiert 
     'Dein Ziel ist geändert.',
   );
   await expect(page.getByTestId('weight-goal-card-reached')).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-offer')).toContainText('Plan neu erstellen?');
   const stored = await db(page);
   expect((stored.rows.goals as { goal_type: string }).goal_type).toBe('general_fitness');
@@ -244,6 +245,7 @@ test('Widerruf löscht das Wunschgewicht; danach ohne Einwilligung gesperrt', as
   await page.getByRole('button', { name: 'Tagebuch behalten (empfohlen)' }).click();
   await expect(page.getByTestId('dialog-revoke')).toHaveCount(0);
   expect(await storedGoal(page)).toBeNull();
+  await page.goto('/settings?thema=profil');
   await page.getByTestId('settings-weight-goal').click();
   await expect(page.getByTestId('weight-goal-settings-no-consent')).toBeVisible();
   await expect(page.getByTestId('weight-goal-settings-target')).toHaveCount(0);
@@ -271,6 +273,7 @@ test('Nebenziel geändert → „Plan neu erstellen?“; Planname mit beiden Zie
   await heading(page, 'Deine Trainingstage');
   await next(page);
   await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   const offer = page.getByTestId('plan-offer');
   await expect(offer).toContainText('Plan neu erstellen?');
   await offer.getByRole('button', { name: 'Plan neu erstellen' }).first().click();

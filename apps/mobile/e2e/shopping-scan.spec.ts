@@ -83,7 +83,7 @@ test('Menüleiste mit „Einkaufen“, Abhaken bleibt nach dem Neuladen, alle Ha
     await expect(tab(page, name)).toBeVisible();
   }
   await expect(tab(page, 'Fortschritt')).toHaveCount(0);
-  await expect(tabBar(page).getByRole('tab')).toHaveCount(6);
+  await expect(tabBar(page).getByRole('tab')).toHaveCount(5);
   await openShoppingTab(page);
   await expect(tab(page, 'Einkaufen')).toHaveAttribute('aria-selected', 'true');
   // Reiter: keine „Zurück“-Leiste.
@@ -128,8 +128,8 @@ test('Menüleiste mit „Einkaufen“, Abhaken bleibt nach dem Neuladen, alle Ha
   await tab(page, 'Mehr').click();
   await page.getByTestId('more-area-fortschritt').click();
   await heading(page, 'Fortschritt');
-  // Kein Knopf markiert (Bereich ohne Knopf).
-  await expect(tabBar(page).locator('[aria-selected="true"]')).toHaveCount(0);
+  // Bereich ohne Knopf → sein Reiter „Mehr“ ist markiert (26.10.2026).
+  await expect(tab(page, 'Mehr')).toHaveAttribute('aria-selected', 'true');
 });
 
 test('Scannen im Laden: nicht auf der Liste → hinzufügen; Treffer → abgehakt mit „Rückgängig“; mehrere → Auswahl', async ({
@@ -226,6 +226,7 @@ test('Nicht erkannt: Nummer eintippen → Auswahl aus den offenen Einträgen ode
   await expect(page.getByTestId('shopping-scan-feedback')).toContainText(`✓ ${label} abgehakt`);
 
   // Die Wahl wurde gelernt (Einwilligung vorhanden): derselbe Strichcode erkennt den Eintrag jetzt ohne Abfrage.
+  await openShoppingScan(page);
   await page.getByTestId('shopping-scan-type').click();
   await page.getByTestId('shopping-scan-testcode-nicht_gefunden').click();
   await expect(page.getByTestId('shopping-scan-feedback')).toContainText(
@@ -241,6 +242,7 @@ test('Nicht erkannt: Nummer eintippen → Auswahl aus den offenen Einträgen ode
   ).toEqual([NOT_FOUND]);
 
   // Abfrage klappt nicht (Zeitlimit) → eigener Artikel.
+  await openShoppingScan(page);
   await page.getByTestId('shopping-scan-type').click();
   await page.getByTestId('shopping-scan-code').fill(TIMEOUT);
   await page.getByTestId('shopping-scan-search').click();
@@ -283,6 +285,7 @@ test('Einkaufen ohne Essensplan (EA-2): eigene Artikel, Abhaken und Scanner gehe
   await expect(otherDone(page)).toHaveText('✓ erledigt');
   await page.getByTestId('shopping-dept-toggle-other').click();
   await expect(item(page, 'manual|brot')).toHaveAttribute('aria-checked', 'true');
+  await openShoppingScan(page);
   await expect(page.getByTestId('shopping-scan-type')).toBeVisible();
 });
 
@@ -293,6 +296,7 @@ test('Nährwerte beim Scannen: „Werte prüfen“ mit Hinweis, unbrauchbar ohne
   await startWithPlan(page);
   await openShoppingTab(page);
   const scanTestCode = async (key: string) => {
+    await openShoppingScan(page);
     await page.getByTestId('shopping-scan-type').click();
     await page.getByTestId(`shopping-scan-testcode-${key}`).click();
     await expect(nutrition(page)).toBeVisible();

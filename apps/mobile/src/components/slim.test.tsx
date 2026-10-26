@@ -25,13 +25,14 @@ describe('NoticeStack (Hinweis-Zeile, 26.10.2026)', () => {
       />,
     );
     expect(view.textContent).toContain('Entwurf');
+    // Erfolg ist eine Rückmeldung auf die eigene Aktion – immer sichtbar, zählt nicht mit.
+    expect(view.textContent).toContain('Gespeichert');
     expect(view.textContent).not.toContain('Testinhalte');
     const more = byTestId(view, 'n-more');
-    expect(more?.textContent).toContain('+2 weitere Hinweise');
+    expect(more?.textContent).toContain('+1 weiterer Hinweis');
     expect(more?.getAttribute('aria-expanded')).toBe('false');
     click(more);
     expect(view.textContent).toContain('Testinhalte');
-    expect(view.textContent).toContain('Gespeichert');
     expect(byTestId(view, 'n-more')?.getAttribute('aria-expanded')).toBe('true');
   });
 

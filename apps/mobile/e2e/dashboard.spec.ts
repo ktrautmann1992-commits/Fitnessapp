@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Startbildschirm, Übersicht (Kacheln), untere Menüleiste und „Mein Konto“ im TESTMODUS (docs/PLAN-DASHBOARD.md).
@@ -202,6 +202,7 @@ test('Hinweis „Im Training wartet etwas“ bei einem angefangenen Training', a
     .getByRole('button', { name: 'Zum Training' })
     .click();
   await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-draft')).toBeVisible();
 });
 
@@ -271,6 +272,7 @@ test('Plan-Hinweise auf der Übersicht: geänderte Angaben, strengere Regeln ohn
   await page.getByRole('radio', { name: 'Donnerstag: 30 Minuten' }).click();
   await page.getByRole('button', { name: 'Weiter', exact: true }).click();
   await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-offer')).toContainText('Deine Angaben haben sich geändert');
   // … und die Übersicht weist darauf hin (normales Angebot: Start bleibt möglich).
   await tab(page, 'Heute').click();
@@ -301,6 +303,7 @@ test('Plan-Hinweise auf der Übersicht: geänderte Angaben, strengere Regeln ohn
     await page.getByRole('button', { name: 'Bestätigen und weiter' }).click();
   }
   await page.goto('/today');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-offer')).toContainText('Bitte Plan neu erstellen');
   await tab(page, 'Heute').click();
   await expect(page.getByTestId('overview-plan-urgent')).toContainText('Bitte Plan neu erstellen');

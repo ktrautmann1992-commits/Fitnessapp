@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Trainingsmodus im TESTMODUS (docs/PLAN-PHASE-4.md Etappe C1 – Kraft, C2 – Ausdauer und Pausentimer) mit festem
@@ -143,6 +143,7 @@ test('Kraft-Einheit komplett: Sätze, Alternative, „nicht gemacht“, Abschlus
   await page.getByTestId('workout-save').click();
 
   await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   await expect(page.getByTestId('plan-completed')).toContainText('Erledigt (teilweise)');
 
@@ -195,6 +196,7 @@ test('Progression nach zwei Einheiten sichtbar: kalibriert, dann eine Wiederholu
   await setWeight(page, 0, 8);
   await tickAll(page, 0);
   await page.getByTestId('workout-save').click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
 
   // Eine Woche später (gleiche Einheit A): Vorschlag aus dem ersten Eintrag.
@@ -209,6 +211,7 @@ test('Progression nach zwei Einheiten sichtbar: kalibriert, dann eine Wiederholu
   await expect(page.getByTestId('workout-weight-0-0-value')).toHaveText('18,5 kg');
   await tickAll(page, 0);
   await page.getByTestId('workout-save').click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
 
   // Noch eine Woche später: alle Wiederholungen geschafft → eine Wiederholung mehr.
@@ -248,10 +251,12 @@ test('Entwurf nach Neu laden, beforeunload-Warnung und Abmelden mit Nachfrage', 
   // … und beim Öffnen der App fragt „Heute“: fortsetzen, speichern oder verwerfen?
   await page.goto('/today');
   await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-draft')).toContainText(
     'Du hast ein Training vom 07.10.2026 nicht beendet',
   );
   await expect(page.getByTestId('workout-start')).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await page.getByTestId('workout-draft-continue').click();
   await expect(page.getByTestId('workout-done-0-0')).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByTestId('workout-weight-0-1-value')).toHaveText('20 kg');
@@ -294,6 +299,7 @@ test('Offline eintragen und später neu laden: Training bleibt gespeichert', asy
   await expect(page.getByTestId('workout-weight-0-2-value')).toHaveText('20 kg');
   await tickAll(page, 0);
   await page.getByTestId('workout-save').click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   await context.setOffline(false);
   await page.goto('/today');
@@ -311,6 +317,7 @@ test('Widerruf „Tagebuch behalten“: Einträge bleiben ohne Vorgaben aus dem 
   await setWeight(page, 0, 8);
   await tickAll(page, 0);
   await page.getByTestId('workout-save').click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   let rows = await storedRows(page);
   expect(rows.sessionLogs[0]?.from_health_plan).toBe(true);
@@ -415,6 +422,7 @@ test('Ausdauer mit Pace: Art, Dauer, Distanz mit Komma, Pace live, Gesprächstes
   await page.getByTestId('workout-save').click();
 
   await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   await expect(page.getByTestId('plan-completed')).toContainText('Erledigt');
   const rows = await storedRows(page);

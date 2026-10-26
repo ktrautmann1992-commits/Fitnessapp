@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Rad und Triathlon im TESTMODUS (docs/PLAN-PHASE-10.md Abschnitt 9, Etappe WP5) mit festem Startdatum Mittwoch,
@@ -214,6 +214,7 @@ test('Rad: Distanz in km, kürzere Distanzklasse als Vorschlag, Countdown und Pl
     'Dein Wettkampfplan ist fertig',
   );
   await expect(page.getByTestId('competition-summary')).toContainText('Distanz: Radrennen 120 km');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('competition').getByTestId('competition-countdown')).toContainText(
     'Noch 116 Tage bis zum Radrennen 120 km',
   );

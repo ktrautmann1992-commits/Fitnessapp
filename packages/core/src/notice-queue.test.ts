@@ -11,8 +11,9 @@ const ids = (list: readonly QueuedNotice[]) => list.map((x) => x.id);
 
 describe('noticeQueue', () => {
   it('nichts da → leer', () => {
-    expect(noticeQueue([])).toEqual({ blocking: [], lead: null, rest: [] });
-    expect(noticeQueue([null, undefined, false])).toEqual({ blocking: [], lead: null, rest: [] });
+    const empty = { blocking: [], lead: null, rest: [], success: [] };
+    expect(noticeQueue([])).toEqual(empty);
+    expect(noticeQueue([null, undefined, false])).toEqual(empty);
   });
 
   it('ein Hinweis → vollständig, kein Zähler', () => {
@@ -21,7 +22,7 @@ describe('noticeQueue', () => {
     expect(q.rest).toEqual([]);
   });
 
-  it('Vorrang: handeln vor info vor erfolg; gleiche Stufe in Eingabe-Reihenfolge', () => {
+  it('Vorrang: handeln vor info; gleiche Stufe in Eingabe-Reihenfolge; Erfolg immer sichtbar', () => {
     const q = noticeQueue([
       n('saved', 'success'),
       n('test', 'info'),
@@ -31,7 +32,8 @@ describe('noticeQueue', () => {
     ]);
     expect(q.blocking).toEqual([]);
     expect(q.lead?.id).toBe('draft');
-    expect(ids(q.rest)).toEqual(['offline', 'test', 'measure', 'saved']);
+    expect(ids(q.rest)).toEqual(['offline', 'test', 'measure']);
+    expect(ids(q.success)).toEqual(['saved']);
   });
 
   it('sperrende stehen immer oben, alle übrigen hinter dem Zähler', () => {
@@ -53,6 +55,20 @@ describe('noticeQueue', () => {
     expect(q.rest).toEqual([]);
   });
 
+  it('nur Erfolg → kein lead, Erfolg sichtbar; mit sperrenden auch', () => {
+    const q = noticeQueue([n('saved', 'success')]);
+    expect(q.lead).toBeNull();
+    expect(ids(q.success)).toEqual(['saved']);
+    const b = noticeQueue([
+      n('saved', 'success'),
+      n('foreign', 'blocking'),
+      n('a', 'info'),
+      n('b', 'info'),
+    ]);
+    expect(ids(b.success)).toEqual(['saved']);
+    expect(ids(b.rest)).toEqual(['a', 'b']);
+  });
+
   it('nur sperrende → kein lead, kein Zähler', () => {
     const q = noticeQueue([n('a', 'blocking'), n('b', 'blocking')]);
     expect(ids(q.blocking)).toEqual(['a', 'b']);
@@ -61,7 +77,7 @@ describe('noticeQueue', () => {
   });
 
   it('doppelte IDs zählen einmal (der erste gewinnt)', () => {
-    const q = noticeQueue([n('x', 'info'), n('x', 'blocking'), n('y', 'success')]);
+    const q = noticeQueue([n('x', 'info'), n('x', 'blocking'), n('y', 'info')]);
     expect(q.blocking).toEqual([]);
     expect(q.lead).toEqual(n('x', 'info'));
     expect(ids(q.rest)).toEqual(['y']);

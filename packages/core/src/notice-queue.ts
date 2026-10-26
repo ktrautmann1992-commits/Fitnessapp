@@ -6,7 +6,8 @@
  *    Plan muss neu erstellt werden. Stehen IMMER vollständig oben, nie zugeklappt.
  * 2. **Handeln** (`action`): Entwurf, Konflikt, Sitzung abgelaufen, offline, Wettkampf passt nicht, Tausch-Rückmeldung.
  * 3. **Info** (`info`): Testinhalte, Zeit zum Messen, Einladungen, Tages-Check, Plan-Hinweise.
- * 4. **Erfolg** (`success`): „Gespeichert“ u. ä.
+ * 4. **Erfolg** (`success`): „Gespeichert“ u. ä. – Rückmeldung auf eine eigene Aktion: steht immer kurz sichtbar
+ *    (`success`, nie hinter dem Zähler), bis die Person sie schließt bzw. die Seite verlässt.
  *
  * Gibt es keinen sperrenden Hinweis, steht der wichtigste übrige Hinweis vollständig da (`lead`); alle weiteren liegen
  * hinter „+N weitere Hinweise“ (`rest`, aufklappbar). Gibt es sperrende, liegen ALLE übrigen dahinter – so steht oben
@@ -29,6 +30,8 @@ export interface NoticeQueue<T extends QueuedNotice> {
   readonly lead: T | null;
   /** Hinter „+N weitere Hinweise“ (nach Stufe sortiert). */
   readonly rest: readonly T[];
+  /** Erfolgs-Rückmeldungen – immer sichtbar (zählen nicht zum Zähler). */
+  readonly success: readonly T[];
 }
 
 /**
@@ -51,12 +54,13 @@ export function noticeQueue<T extends QueuedNotice>(
     .sort((a, b) => rank(a.item.level) - rank(b.item.level) || a.index - b.index)
     .map((x) => x.item);
   const blocking = sorted.filter((x) => x.level === 'blocking');
-  const others = sorted.filter((x) => x.level !== 'blocking');
+  const success = sorted.filter((x) => x.level === 'success');
+  const others = sorted.filter((x) => x.level !== 'blocking' && x.level !== 'success');
   if (blocking.length > 0) {
     // Nur ein einziger übriger Hinweis → nicht verstecken.
     return others.length === 1
-      ? { blocking, lead: others[0] ?? null, rest: [] }
-      : { blocking, lead: null, rest: others };
+      ? { blocking, lead: others[0] ?? null, rest: [], success }
+      : { blocking, lead: null, rest: others, success };
   }
-  return { blocking, lead: others[0] ?? null, rest: others.slice(1) };
+  return { blocking, lead: others[0] ?? null, rest: others.slice(1), success };
 }

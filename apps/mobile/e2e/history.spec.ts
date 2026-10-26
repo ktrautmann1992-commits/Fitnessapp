@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Woche, Verlauf, Eintrag und Datenexport im TESTMODUS (docs/PLAN-PHASE-4.md Etappe D) mit festem Datum Mittwoch,
@@ -63,6 +63,7 @@ async function trainToday(page: Page, notes = 'Griff eng') {
   await page.getByTestId('workout-notes').fill(notes);
   await page.getByTestId('workout-save').click();
   await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   return count;
 }

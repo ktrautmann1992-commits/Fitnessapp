@@ -101,6 +101,7 @@ test('Rezeptsuche: vorbelegte Ernährungsform, erweitern gekennzeichnet, Portion
   await expect(page.getByTestId('recipe-shopping-message')).toContainText('3 Portionen');
   await page.getByTestId('recipe-shopping-open').click();
   await expect(page.getByTestId('shopping-list')).toBeVisible();
+  await page.getByTestId('shopping-recipes-row-toggle').click();
   await expect(page.getByTestId('shopping-recipe-outside-haehnchen-reis')).toBeVisible();
   await expect(page.getByTestId('shopping-item-haehnchenbrust|g')).toContainText(
     'passt nicht zu deiner Ernährungsform',

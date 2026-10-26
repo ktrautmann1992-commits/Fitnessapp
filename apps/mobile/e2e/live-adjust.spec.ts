@@ -4,7 +4,7 @@ import { mkdirSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 
 import { type SeedSession, seedTrainingLogs } from './live-adjust-helpers';
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Live-Anpassung im TESTMODUS (docs/PLAN-PHASE-4B.md Etappe D, 8.1–8.4) mit festen Daten (Europe/Berlin): Plan ab
@@ -247,6 +247,7 @@ test('Stillstand → Übung getauscht; heutige Einheit mit offenem Entwurf bleib
   await page.goto('/today');
   await expect(facePull).toBeVisible();
   await expect(page.getByTestId('adjusted-notice')).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-draft')).toBeVisible();
   await page.getByTestId('workout-draft-continue').click();
   await expect(page.getByTestId('workout')).toBeVisible();
@@ -254,6 +255,7 @@ test('Stillstand → Übung getauscht; heutige Einheit mit offenem Entwurf bleib
   await page.getByTestId('workout-effort-7').click();
   await page.getByTestId('workout-save').click();
   await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
 
   // Künftige Einheit (Mittwoch 11.11.) mit der neuen Übung statt Face Pulls, gekennzeichnet.
