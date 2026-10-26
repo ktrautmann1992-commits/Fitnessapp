@@ -69,7 +69,7 @@ async function planRow(page: Page): Promise<StoredPlanRow | undefined> {
 async function startWithPlan(page: Page, person: Parameters<typeof onboardNutrition>[1] = {}) {
   await onboardNutrition(page, person);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
   await expect.poll(async () => (await planRow(page)) !== undefined).toBe(true);
 }

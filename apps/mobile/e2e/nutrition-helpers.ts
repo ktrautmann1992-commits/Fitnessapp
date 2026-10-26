@@ -145,14 +145,24 @@ export async function onboardNutrition(page: Page, person: NutritionPerson = {})
  * Wahl bleibt auf dem Gerät gespeichert).
  */
 export async function showCheckedShoppingItems(page: Page) {
+  // Seit 26.10.2026 im ⋯-Menü oben rechts (Blatt schließt nach dem Tippen).
+  await page.getByTestId('shopping-menu').click();
   const box = page.getByTestId('shopping-hide-checked');
   await expect(box).toBeVisible();
-  if ((await box.getAttribute('aria-checked')) === 'true') await box.click();
+  if ((await box.getAttribute('aria-checked')) === 'true') {
+    await box.click();
+    await page.getByTestId('shopping-menu').click();
+  }
   await expect(box).toHaveAttribute('aria-checked', 'false');
+  await page.getByTestId('shopping-menu-close').click();
 }
 
 export async function openNutrition(page: Page) {
-  await page.getByTestId('today-nutrition').click();
+  // Seit „App verschlanken“ (26.10.2026) steht „Essen heute“ nicht mehr im Training – Reiter „Ernährung“.
+  await page
+    .getByRole('tablist', { name: 'Hauptmenü' })
+    .getByRole('tab', { name: 'Ernährung', exact: true })
+    .click();
   await expect(page.getByTestId('nutrition-day')).toBeVisible();
   await expect(page.getByTestId('nutrition-demo-banner')).toBeVisible();
   await expect(page.getByTestId('nutrition-meals')).toBeVisible();

@@ -60,17 +60,17 @@ test('Übersicht: Kacheln führen in die Bereiche, Menüleiste auf allen Hauptbe
   await page.getByRole('button', { name: 'Zum Plan' }).click();
 
   // „Zum Plan“ öffnet wie bisher „Heute“ – jetzt der Reiter „Training“.
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(tab(page, 'Training')).toHaveAttribute('aria-selected', 'true');
 
   // Neu laden → Startseite ist die Übersicht.
   await page.goto('/');
   await expect(page).toHaveURL(/\/uebersicht$/);
   await expect(page.getByTestId('overview-header')).toBeVisible();
-  await expect(tab(page, 'Übersicht')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab(page, 'Heute')).toHaveAttribute('aria-selected', 'true');
   await expect(tab(page, 'Training')).toHaveAttribute('aria-selected', 'false');
   // Seit EA-1 (20.10.2026): „Einkaufen“ statt „Fortschritt“ (der steht als Kachel und unter „Mehr“).
-  for (const name of ['Übersicht', 'Training', 'Workouts', 'Ernährung', 'Einkaufen', 'Mehr']) {
+  for (const name of ['Heute', 'Training', 'Ernährung', 'Einkaufen', 'Mehr']) {
     await expect(tab(page, name)).toBeVisible();
   }
   await expect(tab(page, 'Fortschritt')).toHaveCount(0);
@@ -107,12 +107,12 @@ test('Übersicht: Kacheln führen in die Bereiche, Menüleiste auf allen Hauptbe
 
   // Reiter wechseln.
   await tab(page, 'Training').click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page).toHaveURL(/\/today$/);
   await tab(page, 'Ernährung').click();
   await expect(page).toHaveURL(/\/ernaehrung$/);
   await expect(page.getByTestId('nutrition-day')).toBeVisible();
-  await tab(page, 'Übersicht').click();
+  await tab(page, 'Heute').click();
   await page.getByTestId('overview-progress-open').click();
   await heading(page, 'Fortschritt');
   await expect(page.getByTestId('progress-week')).toContainText('0 von 2 Einheiten');
@@ -127,7 +127,7 @@ test('Übersicht: Kacheln führen in die Bereiche, Menüleiste auf allen Hauptbe
   await page.getByTestId('more-exercises').click();
   await expect(page).toHaveURL(/\/uebungen$/);
   await page.goBack();
-  await tab(page, 'Übersicht').click();
+  await tab(page, 'Heute').click();
 
   // Schnellzugriffe.
   await page.getByTestId('overview-recipes').click();
@@ -149,15 +149,15 @@ test('Übersicht: Kacheln führen in die Bereiche, Menüleiste auf allen Hauptbe
 
   // Deep-Links bleiben gleich und zeigen die Leiste.
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(tab(page, 'Training')).toHaveAttribute('aria-selected', 'true');
 });
 
 test('ohne Einwilligung: Körperdaten-Kachel mit Hinweis, kein Gewicht', async ({ page }) => {
   await onboardStudio(page, false);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
-  await tab(page, 'Übersicht').click();
+  await heading(page, 'Training');
+  await tab(page, 'Heute').click();
   await expect(page.getByTestId('overview-header')).toBeVisible();
   await expect(page.getByTestId('overview-body-no-consent')).toContainText(
     'nur mit deiner Einwilligung',
@@ -169,8 +169,8 @@ test('ohne Einwilligung: Körperdaten-Kachel mit Hinweis, kein Gewicht', async (
 test('Hinweis „Im Training wartet etwas“ bei einem angefangenen Training', async ({ page }) => {
   await onboardStudio(page, true);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
-  await tab(page, 'Übersicht').click();
+  await heading(page, 'Training');
+  await tab(page, 'Heute').click();
   await expect(page.getByTestId('overview-attention')).toHaveCount(0);
   await page.getByTestId('overview-training-start').click();
   await expect(page).toHaveURL(/\/workout\//);
@@ -189,14 +189,14 @@ test('Hinweis „Im Training wartet etwas“ bei einem angefangenen Training', a
     .getByTestId('overview-attention')
     .getByRole('button', { name: 'Zum Training' })
     .click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('workout-draft')).toBeVisible();
 });
 
 test('Mein Konto: Testmodus, Einwilligungen, Export, Abmelden mit Rückfrage', async ({ page }) => {
   await onboardStudio(page, true);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await tab(page, 'Mehr').click();
   await page.getByTestId('more-account').click();
   await heading(page, 'Mein Konto');
@@ -244,7 +244,7 @@ test('Plan-Hinweise auf der Übersicht: geänderte Angaben, strengere Regeln ohn
 }) => {
   await onboardStudio(page, true);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Einstellungen → Angaben ändern → Trainingstage ändern → „Heute“ bietet „Plan neu erstellen?“ an …
   await page.getByRole('button', { name: 'Einstellungen' }).click();
@@ -258,10 +258,10 @@ test('Plan-Hinweise auf der Übersicht: geänderte Angaben, strengere Regeln ohn
   await page.getByRole('radio', { name: 'Donnerstag: Ausdauer' }).click();
   await page.getByRole('radio', { name: 'Donnerstag: 30 Minuten' }).click();
   await page.getByRole('button', { name: 'Weiter', exact: true }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('plan-offer')).toContainText('Deine Angaben haben sich geändert');
   // … und die Übersicht weist darauf hin (normales Angebot: Start bleibt möglich).
-  await tab(page, 'Übersicht').click();
+  await tab(page, 'Heute').click();
   await expect(page.getByTestId('overview-attention')).toContainText(
     'Deine Angaben haben sich geändert',
   );
@@ -290,7 +290,7 @@ test('Plan-Hinweise auf der Übersicht: geänderte Angaben, strengere Regeln ohn
   }
   await page.goto('/today');
   await expect(page.getByTestId('plan-offer')).toContainText('Bitte Plan neu erstellen');
-  await tab(page, 'Übersicht').click();
+  await tab(page, 'Heute').click();
   await expect(page.getByTestId('overview-plan-urgent')).toContainText('Bitte Plan neu erstellen');
   await expect(page.getByTestId('overview-training-start')).toHaveCount(0);
   await expect(page.getByTestId('overview-training-no-start')).toContainText(
@@ -300,7 +300,7 @@ test('Plan-Hinweise auf der Übersicht: geänderte Angaben, strengere Regeln ohn
     .getByTestId('overview-plan-urgent')
     .getByRole('button', { name: 'Zum Training: Plan neu erstellen' })
     .click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 });
 
 test('Reiter „Ernährung“: anderer Tag aus der Woche ohne zweite Reiter-Instanz, „Zu heute“, Reiter springt auf heute (Wächter M1/N7)', async ({
@@ -312,7 +312,7 @@ test('Reiter „Ernährung“: anderer Tag aus der Woche ohne zweite Reiter-Inst
   );
   await onboardStudio(page, true);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await tab(page, 'Ernährung').click();
   await expect(page.getByTestId('nutrition-day')).toBeVisible();
   await expect(page.getByTestId('nutrition-to-today')).toHaveCount(0);

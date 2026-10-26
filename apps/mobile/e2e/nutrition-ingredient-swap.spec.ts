@@ -52,7 +52,7 @@ async function planOf(page: Page): Promise<StoredPlanRow> {
 async function start(page: Page) {
   await onboardNutrition(page); // vegetarisch, Pilze „mag ich nicht“, Meal-Prep 2×
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
   return planOf(page);
 }

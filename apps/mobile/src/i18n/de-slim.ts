@@ -103,7 +103,7 @@ export const deSlim = {
       },
       training: {
         title: 'Training',
-        detail: 'Übungen, Schon- und Reise-Modus, Aufwärmen, Live-Anpassung',
+        detail: 'Übungen, Schon- und Reise-Modus, Aufwärmen, Bildschirm an',
       },
       ernaehrung: {
         title: 'Ernährung',
@@ -113,7 +113,7 @@ export const deSlim = {
         title: 'Smartwatch & Apps',
         detail: 'Uhr, Handy-Kalender, Wetter, Ansagen, Widget',
       },
-      anzeige: { title: 'Anzeige & Bedienung', detail: 'Große Ansicht, Vorlesen, Bildschirm an' },
+      anzeige: { title: 'Anzeige & Bedienung', detail: 'Große Ansicht, Vorlesen' },
       erinnerungen: { title: 'Erinnerungen', detail: 'Messen, Benachrichtigungen' },
       konto: {
         title: 'Konto, Daten & Einwilligungen',

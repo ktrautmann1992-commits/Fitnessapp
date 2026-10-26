@@ -26,7 +26,7 @@ test('Herz an der Mahlzeit, Suche mit Nur Lieblingsgerichte, Nie wieder ausblend
   test.setTimeout(180_000);
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 
   // Mahlzeit: „⋯“ klappt Lieblingsgericht / Nie wieder auf.

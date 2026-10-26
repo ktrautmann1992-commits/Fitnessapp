@@ -55,7 +55,7 @@ test('Beispiel-Uhr: Läufe mit Route → Auswertung mit Karte, Puls, kcal; ohne 
     days: [['Montag', 'Kraft im Studio', 60]],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Verbinden: Erklärung nennt die Routen, Einwilligung (Fassung 2), Beispiel-Uhr.
   await page.goto('/settings');

@@ -334,11 +334,13 @@ export function HeaderIconButton({
   accessibilityLabel,
   onPress,
   testID,
+  disabled = false,
 }: {
   icon: IconName;
   accessibilityLabel: string;
   onPress: () => void;
   testID?: string;
+  disabled?: boolean;
 }) {
   const theme = useThemeColors();
   return (
@@ -346,11 +348,17 @@ export function HeaderIconButton({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       onPress={onPress}
+      disabled={disabled}
+      accessibilityState={{ disabled }}
       testID={testID}
       hitSlop={4}
       style={({ pressed }) => [
         styles.roundButton,
-        { backgroundColor: theme.surface, borderColor: theme.border, opacity: pressed ? 0.8 : 1 },
+        {
+          backgroundColor: theme.surface,
+          borderColor: theme.border,
+          opacity: disabled ? 0.4 : pressed ? 0.8 : 1,
+        },
       ]}
     >
       <Icon name={icon} size={20} color={theme.text} />

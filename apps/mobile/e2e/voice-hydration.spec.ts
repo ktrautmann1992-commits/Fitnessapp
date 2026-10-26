@@ -73,7 +73,7 @@ async function start(page: Page, yesQuestion: number | null = null) {
     days: [['Montag', 'Kraft im Studio', 60]],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 test('Trinken: Richtwert, +250/+500, zurücknehmen, 7 Tage', async ({ page }) => {

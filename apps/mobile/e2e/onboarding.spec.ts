@@ -404,7 +404,7 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   expect(rows?.reminder?.enabled).toBe(true);
 
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await expect(page.getByRole('heading', { name: 'Heute', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Training', exact: true })).toBeVisible();
   // Neustart nach dem Onboarding → direkt die Übersicht (Startseite seit 18.10.2026).
   await page.goto('/');
   await expect(page.getByTestId('overview-header')).toBeVisible();

@@ -179,11 +179,14 @@ export function MealPreferenceMenu({
   title,
   testID,
   children,
+  extraActions,
 }: {
   recipeId: string;
   title: string;
   testID: string;
   children: ReactNode;
+  /** Weitere Aktionen im Menü (z. B. „Rezept tauschen“), vor Lieblingsgericht/Nie wieder. */
+  extraActions?: ReactNode;
 }) {
   const theme = useThemeColors();
   const [open, setOpen] = useState(false);
@@ -215,6 +218,8 @@ export function MealPreferenceMenu({
       </View>
       {open ? (
         <View style={styles.actions} testID={`${testID}-actions`}>
+          {/* „App verschlanken“ (26.10.2026): „Rezept tauschen“ steht mit im ⋯-Menü. */}
+          {extraActions ? <View style={styles.flex}>{extraActions}</View> : null}
           <View style={styles.flex}>
             <Button
               label={texts.favorite}

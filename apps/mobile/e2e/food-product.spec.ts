@@ -28,7 +28,7 @@ const ownProducts = async (page: Page) =>
 async function start(page: Page) {
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 }
 

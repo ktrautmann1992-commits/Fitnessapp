@@ -5,7 +5,7 @@ import {
   nextMeasurementDue,
   suggestLargeView,
 } from '@fitnessapp/core';
-import { Redirect, useRouter, type Href } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { ConsentSettings } from '@/components/consent-settings';
@@ -17,7 +17,7 @@ import { ConfirmDialog, Screen } from '@/components/screen';
 import { CycleSettingsSection } from '@/components/cycle-entry';
 import { WeatherSettings } from '@/components/route-weather';
 import { VoiceCueSettingsCard } from '@/components/voice-cues';
-import { ListGroup, ListRow, SectionLabel } from '@/components/design';
+import { type IconName, ListGroup, ListRow, SectionLabel } from '@/components/design';
 import { Body, Button, Card, Checkbox, LoadingState, Notice, TextField } from '@/components/ui';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
@@ -39,8 +39,38 @@ import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
  */
 type DialogKind = 'clear' | 'recreate' | null;
 
+/** Themen-Unterseiten (`/settings?thema=…`, Entwurf 6-einstellungen, 26.10.2026) in Anzeige-Reihenfolge. */
+const SETTINGS_TOPICS = [
+  'profil',
+  'training',
+  'ernaehrung',
+  'geraete',
+  'anzeige',
+  'erinnerungen',
+  'konto',
+] as const;
+type SettingsTopic = (typeof SETTINGS_TOPICS)[number];
+
+const TOPIC_ICONS: Record<SettingsTopic, IconName> = {
+  profil: 'user',
+  training: 'dumbbell',
+  ernaehrung: 'utensils',
+  geraete: 'stopwatch',
+  anzeige: 'eye',
+  erinnerungen: 'bell',
+  konto: 'shield',
+};
+
+/** `?thema=` → Thema (unbekannt/fehlt → null = Themenliste). */
+function settingsTopic(value: string | string[] | undefined): SettingsTopic | null {
+  return typeof value === 'string' && (SETTINGS_TOPICS as readonly string[]).includes(value)
+    ? (value as SettingsTopic)
+    : null;
+}
+
 export default function SettingsScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ thema?: string }>();
   const warmupSetting = useWarmupSetting();
   const app = useApp();
   const [dialog, setDialog] = useState<DialogKind>(null);
@@ -165,390 +195,460 @@ export default function SettingsScreen() {
           confirm: t.settings.clearConfirm,
         };
 
+  // „App verschlanken“ (26.10.2026, Entwurf 6-einstellungen): erst Thema wählen, dann nur dessen Schalter sehen.
+  // Inhalte sind nur verschoben – jeder Schalter und Link hat genau ein Thema (docs/DESIGN.md „Einstellungen“).
+  const topic = settingsTopic(params.thema);
+  const show = (id: SettingsTopic) => topic === id;
+  const topics = t.slim.settings.topics;
+
+  if (topic === null) {
+    return (
+      <Screen
+        area="training"
+        icon="settings"
+        title={t.settings.title}
+        testID="settings"
+        footer={
+          <Button
+            label={t.settings.back}
+            variant="secondary"
+            onPress={() => (router.canGoBack() ? router.back() : router.replace('/mehr'))}
+          />
+        }
+      >
+        {message ? <Notice tone="success">{message}</Notice> : null}
+        <ListGroup testID="settings-topics">
+          {SETTINGS_TOPICS.map((id, index) => (
+            <ListRow
+              key={id}
+              icon={TOPIC_ICONS[id]}
+              label={topics[id].title}
+              description={topics[id].detail}
+              onPress={() => router.push(`/settings?thema=${id}` as Href)}
+              testID={`settings-topic-${id}`}
+              last={index === SETTINGS_TOPICS.length - 1}
+            />
+          ))}
+        </ListGroup>
+      </Screen>
+    );
+  }
+
   return (
     <Screen
       area="training"
-      icon="settings"
-      title={t.settings.title}
+      icon={TOPIC_ICONS[topic]}
+      title={topics[topic].title}
       testID="settings"
       footer={
         <Button
-          label={t.settings.back}
+          label={t.slim.settings.back}
           variant="secondary"
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/today'))}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/settings'))}
+          testID="settings-back"
         />
       }
     >
       {message ? <Notice tone="success">{message}</Notice> : null}
 
-      <SectionLabel>{t.settings.training}</SectionLabel>
-      {currentPlan ? <Body>{planTitleText(currentPlan)}</Body> : null}
-      <Body muted>{t.settings.trainingText}</Body>
-      <ListGroup>
-        {/* Öffnet die vorhandenen Onboarding-Schritte und kehrt danach zu „Heute“ zurück (Plan neu erstellen?). */}
-        <ListRow
-          icon="edit"
-          label={t.settings.editInputs}
-          onPress={() => router.push('/onboarding/experience?edit=1')}
-        />
-        {healthStatus === 'valid' ? (
-          <ListRow
-            icon="shield"
-            label={t.settings.repeatScreening}
-            onPress={() => router.push('/onboarding/health_screening?edit=1')}
-          />
-        ) : null}
-        <ListRow
-          icon="dumbbell"
-          label={t.settings.recreatePlan}
-          role="button"
-          onPress={() => {
-            setDialogError(undefined);
-            setDialog('recreate');
-          }}
-        />
-        {/* Phase 10 WP4: Wettkampf mit Ampel, Countdown und Wettkampfplan. */}
-        <ListRow
-          icon="trophy"
-          label={t.competition.settingsLink}
-          accessibilityHint={t.competition.settingsLinkHint}
-          onPress={() => router.push('/wettkampf' as Href)}
-          testID="settings-competition"
-          last
-        />
-      </ListGroup>
-      {healthStatus === 'valid' ? null : (
-        <Body muted>{t.settings.repeatScreeningNeedsConsent}</Body>
-      )}
-
-      {/* Etappe Z5: Abnehm-Ziel nur hier sichtbar (docs/PLAN-ZIELE.md F13) – nur bei Abnehmen als Haupt- oder Nebenziel. */}
-      {rows.goals &&
-      (rows.goals.goal_type === 'fat_loss' || rows.goals.secondary_goal_type === 'fat_loss') ? (
+      {show('profil') ? (
         <>
-          <SectionLabel>{t.weightGoalLife.settings.title}</SectionLabel>
+          <SectionLabel>{t.settings.training}</SectionLabel>
+          {currentPlan ? <Body>{planTitleText(currentPlan)}</Body> : null}
+          <Body muted>{t.settings.trainingText}</Body>
           <ListGroup>
-            <ListRow
-              icon="scale"
-              label={t.weightGoalLife.settings.open}
-              description={t.weightGoalLife.settings.entryText}
-              onPress={() => router.push('/abnehmziel' as Href)}
-              testID="settings-weight-goal"
-              last
-            />
-          </ListGroup>
-        </>
-      ) : null}
-
-      {supportsNutrition ? (
-        <>
-          <SectionLabel>{t.nutrition.settings.title}</SectionLabel>
-          <Body muted>{t.nutrition.settings.text}</Body>
-          <ListGroup>
-            <ListRow
-              icon="utensils"
-              label={t.nutrition.settings.open}
-              onPress={() => router.dismissTo('/ernaehrung' as Href)}
-              testID="settings-nutrition-open"
-            />
+            {/* Öffnet die vorhandenen Onboarding-Schritte und kehrt danach zum Training zurück (Plan neu erstellen?). */}
             <ListRow
               icon="edit"
-              label={t.nutrition.settings.edit}
-              onPress={() => router.push('/onboarding/nutrition?edit=1' as Href)}
-              testID="settings-nutrition-edit"
+              label={t.settings.editInputs}
+              onPress={() => router.push('/onboarding/experience?edit=1')}
             />
+            {healthStatus === 'valid' ? (
+              <ListRow
+                icon="shield"
+                label={t.settings.repeatScreening}
+                onPress={() => router.push('/onboarding/health_screening?edit=1')}
+              />
+            ) : null}
             <ListRow
-              icon="settings"
-              label={t.nutrition.settings.setup}
-              onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
-              testID="settings-nutrition-setup"
+              icon="dumbbell"
+              label={t.settings.recreatePlan}
+              role="button"
+              onPress={() => {
+                setDialogError(undefined);
+                setDialog('recreate');
+              }}
+              testID="settings-recreate"
             />
+            {/* Phase 10 WP4: Wettkampf mit Ampel, Countdown und Wettkampfplan. */}
             <ListRow
-              icon="recipe"
-              label={t.nutrition.foodDislikes.open}
-              description={t.nutrition.foodDislikes.settingsText}
-              onPress={() => router.push('/ernaehrung/abneigungen' as Href)}
-              testID="settings-food-dislikes"
-            />
-            <ListRow
-              icon="eye-off"
-              label={t.nutrition.favorites.manageHidden}
-              description={t.nutrition.favorites.settingsText}
-              onPress={() => router.push('/ernaehrung/ausgeblendet' as Href)}
-              testID="settings-hidden-recipes"
+              icon="trophy"
+              label={t.competition.settingsLink}
+              accessibilityHint={t.competition.settingsLinkHint}
+              onPress={() => router.push('/wettkampf' as Href)}
+              testID="settings-competition"
               last
             />
           </ListGroup>
-          {setup ? (
-            <Card>
-              <Checkbox
-                label={t.nutrition.settings.showNumbers}
-                checked={setup.showEnergyNumbers}
-                onChange={(value) => void setShowNumbers(value)}
-                testID="settings-show-numbers"
-              />
-              <Body muted>{t.nutrition.setup.showNumbersHint}</Body>
-              {numbersSaving ? <LoadingState /> : null}
-              {numbersMessage ? <Body muted>{numbersMessage}</Body> : null}
-            </Card>
+          {healthStatus === 'valid' ? null : (
+            <Body muted>{t.settings.repeatScreeningNeedsConsent}</Body>
+          )}
+
+          {/* Etappe Z5: Abnehm-Ziel nur hier sichtbar (docs/PLAN-ZIELE.md F13) – nur bei Abnehmen als Haupt- oder Nebenziel. */}
+          {rows.goals &&
+          (rows.goals.goal_type === 'fat_loss' || rows.goals.secondary_goal_type === 'fat_loss') ? (
+            <>
+              <SectionLabel>{t.weightGoalLife.settings.title}</SectionLabel>
+              <ListGroup>
+                <ListRow
+                  icon="scale"
+                  label={t.weightGoalLife.settings.open}
+                  description={t.weightGoalLife.settings.entryText}
+                  onPress={() => router.push('/abnehmziel' as Href)}
+                  testID="settings-weight-goal"
+                  last
+                />
+              </ListGroup>
+            </>
           ) : null}
-          <EatingHelpNotice />
+
+          {/* Phase 9: Zyklus-Modul (sichtbar, wenn angeboten oder schon eingeschaltet – auch nach Wechsel auf „männlich“). */}
+          <CycleSettingsSection onPress={() => router.push('/zyklus/einstellungen' as Href)} />
         </>
       ) : null}
 
-      {/* Phase 6 SU4: Supplemente – „Meine Supplements“ und Supplement-Check ändern. */}
-      <SectionLabel>{t.supplements.title}</SectionLabel>
-      <ListGroup>
-        <ListRow
-          icon="pill"
-          label={t.supplements.mine.title}
-          onPress={() => router.push('/supplemente' as Href)}
-          testID="settings-supplements"
-          last={healthStatus !== 'valid'}
-        />
-        {healthStatus === 'valid' ? (
-          <ListRow
-            icon="edit"
-            label={t.supplements.check.redo}
-            onPress={() => router.push('/supplemente/check' as Href)}
-            testID="settings-supplement-check"
-            last
-          />
-        ) : null}
-      </ListGroup>
-
-      <SectionLabel>{t.glossary.settingsTitle}</SectionLabel>
-      <ListGroup>
-        <ListRow
-          icon="book"
-          label={t.glossary.allExercises}
-          description={t.glossary.settingsText}
-          onPress={() => router.push('/uebungen' as Href)}
-          testID="settings-glossary"
-          last={!app.backend.supportsExercisePreferences}
-        />
-        {app.backend.supportsExercisePreferences ? (
-          <ListRow
-            icon="dumbbell"
-            label={t.exclusions.title}
-            description={t.exclusions.settingsText}
-            onPress={() => router.push('/ausgeschlossene-uebungen' as Href)}
-            testID="settings-exclusions"
-            last
-          />
-        ) : null}
-      </ListGroup>
-
-      {/* Trainings-Modi (docs/PLAN-TRAINING-MODI.md): Schon-Modus, Reise-Modus, Aufwärmen & Dehnen. */}
-      <SectionLabel>{deModes.settings.section}</SectionLabel>
-      <ListGroup>
-        <ListRow
-          icon="alert"
-          label={deModes.settings.pain}
-          description={deModes.settings.painDescription}
-          onPress={() => router.push('/schmerz-modus' as Href)}
-          testID="settings-pain-mode"
-        />
-        <ListRow
-          icon="map"
-          label={deModes.settings.travel}
-          description={deModes.settings.travelDescription}
-          onPress={() => router.push('/reise-modus' as Href)}
-          testID="settings-travel-mode"
-          last
-        />
-      </ListGroup>
-      <Card>
-        <Checkbox
-          label={deModes.settings.warmup}
-          checked={warmupSetting.enabled}
-          onChange={(value) => void warmupSetting.setEnabled(value).catch(() => undefined)}
-          testID="settings-warmup"
-        />
-        <Body muted>{deModes.settings.warmupHint}</Body>
-      </Card>
-
-      {/* Phase 8: Smartwatch (Galaxy Watch über Health Connect). */}
-      <SectionLabel>{t.wearables.settingsTitle}</SectionLabel>
-      <ListGroup>
-        <ListRow
-          icon="stopwatch"
-          label={t.wearables.settingsLink}
-          description={t.wearables.settingsText}
-          onPress={() => router.push('/smartwatch' as Href)}
-          testID="settings-smartwatch"
-          last
-        />
-      </ListGroup>
-
-      {/* Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 4): opt-in, eigener Kalender. */}
-      <SectionLabel>{t.deviceCalendar.settingsTitle}</SectionLabel>
-      <ListGroup>
-        <ListRow
-          icon="calendar"
-          label={t.deviceCalendar.settingsLink}
-          description={t.deviceCalendar.settingsText}
-          onPress={() => router.push('/handy-kalender' as Href)}
-          testID="settings-device-calendar"
-          last
-        />
-      </ListGroup>
-
-      {/* Wetter zu Läufen (25.10.2026): Abruf bei Open-Meteo nur mit gerundeter Startposition. */}
-      <WeatherSettings />
-
-      {/* Sprachansagen beim Aufzeichnen (25.10.2026): nur dieses Gerät. */}
-      <VoiceCueSettingsCard />
-
-      {/* Phase 9: Zyklus-Modul (sichtbar, wenn angeboten oder schon eingeschaltet – auch nach Wechsel auf „männlich“). */}
-      <CycleSettingsSection onPress={() => router.push('/zyklus/einstellungen' as Href)} />
-
-      {/* Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5): nur dieses Gerät; nach Smartwatch und Zyklus. */}
-      <SectionLabel>{t.accessibility.section}</SectionLabel>
-      <Card>
-        {!accessibility.settings.largeView &&
-        suggestLargeView({ ageYears, goalType: rows.goals?.goal_type ?? null }) ? (
-          <Notice tone="info" testID="settings-large-view-suggestion">
-            {t.accessibility.largeViewSuggestion}
-          </Notice>
-        ) : null}
-        <Checkbox
-          label={t.accessibility.largeView}
-          checked={accessibility.settings.largeView}
-          onChange={(value) =>
-            void accessibility.update({ largeView: value }).catch(() => undefined)
-          }
-          testID="settings-large-view"
-        />
-        <Body muted>{t.accessibility.largeViewHint}</Body>
-        {readAloudVoice === null ? (
-          <Body muted testID="settings-read-aloud-unavailable">
-            {t.accessibility.readAloudUnavailable}
-          </Body>
-        ) : readAloudVoice ? (
-          <>
-            <Checkbox
-              label={t.accessibility.readAloud}
-              checked={accessibility.settings.readAloud}
-              onChange={(value) =>
-                void accessibility.update({ readAloud: value }).catch(() => undefined)
-              }
-              testID="settings-read-aloud"
-            />
-            <Body muted>{t.accessibility.readAloudHint}</Body>
-          </>
-        ) : null}
-      </Card>
-
-      {/* Mein Konto (docs/PLAN-DASHBOARD.md 2.3): Abmelden, Datenexport, Konto löschen. */}
-      <SectionLabel>{t.settings.account}</SectionLabel>
-      <ListGroup>
-        <ListRow
-          icon="user"
-          label={t.konto.settingsLink}
-          description={t.konto.settingsLinkText}
-          onPress={() => router.push('/konto' as Href)}
-          testID="settings-account"
-        />
-        {/* Etappe E4a: Namensnennung der Nährwert-Quellen (BLS, Open Food Facts). */}
-        <ListRow
-          icon="info"
-          label={t.foodProduct.licenses.open}
-          onPress={() => router.push('/lizenzen' as Href)}
-          testID="settings-licenses"
-          last
-        />
-      </ListGroup>
-
-      <ConsentSettings rows={rows} />
-
-      <SectionLabel>{t.settings.screen}</SectionLabel>
-      <Card>
-        <Checkbox
-          label={t.settings.keepAwake}
-          checked={keepAwake.enabled}
-          onChange={(value) => void keepAwake.setEnabled(value).catch(() => undefined)}
-          testID="settings-keep-awake"
-        />
-        <Body muted>{t.settings.keepAwakeHint}</Body>
-      </Card>
-
-      {/* Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3, Gründer-Entscheidung 25.10.2026): Standard aus. */}
-      <WidgetSettings />
-
-      <SectionLabel>{t.settings.reminder}</SectionLabel>
-      <Card>
-        <Checkbox
-          label={t.settings.reminderEnabled}
-          checked={reminderEnabled}
-          onChange={(value) => {
-            setReminderEnabled(value);
-            setReminderSaved(false);
-          }}
-        />
-        <TextField
-          label={t.settings.reminderInterval}
-          value={interval}
-          onChangeText={(text) => {
-            setIntervalText(text.replace(/\D/g, '').slice(0, 2));
-            setReminderSaved(false);
-          }}
-          keyboardType="number-pad"
-          error={reminderError}
-        />
-        <Body muted>
-          {!reminder?.enabled
-            ? reminder
-              ? t.settings.reminderOff
-              : t.settings.reminderNoDate
-            : reminder.next_due_on
-              ? t.settings.reminderNext(formatDateDe(reminder.next_due_on))
-              : t.settings.reminderNoDate}
-        </Body>
-        {reminderSaved ? <Notice tone="success">{t.settings.reminderSaved}</Notice> : null}
-        <Button
-          label={t.common.save}
-          variant="secondary"
-          onPress={() => void saveReminder()}
-          loading={savingReminder}
-        />
-      </Card>
-
-      {/* Etappe E (docs/PLAN-PHASE-4B.md 8.1 Nr. 4): lokale Benachrichtigungen; im Browser nur ein Hinweis. */}
-      <NotificationSettings rows={rows} />
-      {/* Live-Anpassung (Phase 4b, Etappe D): Schalter „Premium simulieren“ nur im Testmodus (Wächter K2). */}
-      <LiveAdjustSettings />
-
-      {app.backend.mode === 'local' ? (
+      {show('training') ? (
         <>
-          <SectionLabel>{t.settings.testMode}</SectionLabel>
+          <SectionLabel>{t.glossary.settingsTitle}</SectionLabel>
+          <ListGroup>
+            <ListRow
+              icon="book"
+              label={t.glossary.allExercises}
+              description={t.glossary.settingsText}
+              onPress={() => router.push('/uebungen' as Href)}
+              testID="settings-glossary"
+              last={!app.backend.supportsExercisePreferences}
+            />
+            {app.backend.supportsExercisePreferences ? (
+              <ListRow
+                icon="dumbbell"
+                label={t.exclusions.title}
+                description={t.exclusions.settingsText}
+                onPress={() => router.push('/ausgeschlossene-uebungen' as Href)}
+                testID="settings-exclusions"
+                last
+              />
+            ) : null}
+          </ListGroup>
+
+          {/* Trainings-Modi (docs/PLAN-TRAINING-MODI.md): Schon-Modus, Reise-Modus, Aufwärmen & Dehnen. */}
+          <SectionLabel>{deModes.settings.section}</SectionLabel>
+          <ListGroup>
+            <ListRow
+              icon="alert"
+              label={deModes.settings.pain}
+              description={deModes.settings.painDescription}
+              onPress={() => router.push('/schmerz-modus' as Href)}
+              testID="settings-pain-mode"
+            />
+            <ListRow
+              icon="map"
+              label={deModes.settings.travel}
+              description={deModes.settings.travelDescription}
+              onPress={() => router.push('/reise-modus' as Href)}
+              testID="settings-travel-mode"
+              last
+            />
+          </ListGroup>
           <Card>
-            <Body muted>{t.settings.testModeText}</Body>
-            {nutritionLib && (nutritionLib.demoAvailable || nutritionLib.demo) ? (
-              <>
-                <Body muted>{t.nutrition.settings.demoText}</Body>
-                <Checkbox
-                  label={t.nutrition.demoUse}
-                  checked={nutritionLib.demo}
-                  onChange={(value) => void app.setNutritionDemo(value)}
-                  testID="settings-nutrition-demo"
+            <Checkbox
+              label={deModes.settings.warmup}
+              checked={warmupSetting.enabled}
+              onChange={(value) => void warmupSetting.setEnabled(value).catch(() => undefined)}
+              testID="settings-warmup"
+            />
+            <Body muted>{deModes.settings.warmupHint}</Body>
+          </Card>
+
+          <SectionLabel>{t.settings.screen}</SectionLabel>
+          <Card>
+            <Checkbox
+              label={t.settings.keepAwake}
+              checked={keepAwake.enabled}
+              onChange={(value) => void keepAwake.setEnabled(value).catch(() => undefined)}
+              testID="settings-keep-awake"
+            />
+            <Body muted>{t.settings.keepAwakeHint}</Body>
+          </Card>
+
+          {/* Live-Anpassung (Phase 4b, Etappe D): Schalter „Premium simulieren“ nur im Testmodus (Wächter K2). */}
+          <LiveAdjustSettings />
+        </>
+      ) : null}
+
+      {show('ernaehrung') ? (
+        <>
+          {supportsNutrition ? (
+            <>
+              <SectionLabel>{t.nutrition.settings.title}</SectionLabel>
+              <Body muted>{t.nutrition.settings.text}</Body>
+              <ListGroup>
+                <ListRow
+                  icon="utensils"
+                  label={t.nutrition.settings.open}
+                  onPress={() => router.dismissTo('/ernaehrung' as Href)}
+                  testID="settings-nutrition-open"
                 />
+                <ListRow
+                  icon="edit"
+                  label={t.nutrition.settings.edit}
+                  onPress={() => router.push('/onboarding/nutrition?edit=1' as Href)}
+                  testID="settings-nutrition-edit"
+                />
+                <ListRow
+                  icon="settings"
+                  label={t.nutrition.settings.setup}
+                  onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
+                  testID="settings-nutrition-setup"
+                />
+                <ListRow
+                  icon="recipe"
+                  label={t.nutrition.foodDislikes.open}
+                  description={t.nutrition.foodDislikes.settingsText}
+                  onPress={() => router.push('/ernaehrung/abneigungen' as Href)}
+                  testID="settings-food-dislikes"
+                />
+                <ListRow
+                  icon="eye-off"
+                  label={t.nutrition.favorites.manageHidden}
+                  description={t.nutrition.favorites.settingsText}
+                  onPress={() => router.push('/ernaehrung/ausgeblendet' as Href)}
+                  testID="settings-hidden-recipes"
+                  last
+                />
+              </ListGroup>
+              {setup ? (
+                <Card>
+                  <Checkbox
+                    label={t.nutrition.settings.showNumbers}
+                    checked={setup.showEnergyNumbers}
+                    onChange={(value) => void setShowNumbers(value)}
+                    testID="settings-show-numbers"
+                  />
+                  <Body muted>{t.nutrition.setup.showNumbersHint}</Body>
+                  {numbersSaving ? <LoadingState /> : null}
+                  {numbersMessage ? <Body muted>{numbersMessage}</Body> : null}
+                </Card>
+              ) : null}
+              <EatingHelpNotice />
+            </>
+          ) : null}
+
+          {/* Phase 6 SU4: Supplemente – „Meine Supplements“ und Supplement-Check ändern. */}
+          <SectionLabel>{t.supplements.title}</SectionLabel>
+          <ListGroup>
+            <ListRow
+              icon="pill"
+              label={t.supplements.mine.title}
+              onPress={() => router.push('/supplemente' as Href)}
+              testID="settings-supplements"
+              last={healthStatus !== 'valid'}
+            />
+            {healthStatus === 'valid' ? (
+              <ListRow
+                icon="edit"
+                label={t.supplements.check.redo}
+                onPress={() => router.push('/supplemente/check' as Href)}
+                testID="settings-supplement-check"
+                last
+              />
+            ) : null}
+          </ListGroup>
+        </>
+      ) : null}
+
+      {show('geraete') ? (
+        <>
+          {/* Phase 8: Smartwatch (Galaxy Watch über Health Connect). */}
+          <SectionLabel>{t.wearables.settingsTitle}</SectionLabel>
+          <ListGroup>
+            <ListRow
+              icon="stopwatch"
+              label={t.wearables.settingsLink}
+              description={t.wearables.settingsText}
+              onPress={() => router.push('/smartwatch' as Href)}
+              testID="settings-smartwatch"
+              last
+            />
+          </ListGroup>
+
+          {/* Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md 4): opt-in, eigener Kalender. */}
+          <SectionLabel>{t.deviceCalendar.settingsTitle}</SectionLabel>
+          <ListGroup>
+            <ListRow
+              icon="calendar"
+              label={t.deviceCalendar.settingsLink}
+              description={t.deviceCalendar.settingsText}
+              onPress={() => router.push('/handy-kalender' as Href)}
+              testID="settings-device-calendar"
+              last
+            />
+          </ListGroup>
+
+          {/* Wetter zu Läufen (25.10.2026): Abruf bei Open-Meteo nur mit gerundeter Startposition. */}
+          <WeatherSettings />
+
+          {/* Sprachansagen beim Aufzeichnen (25.10.2026): nur dieses Gerät. */}
+          <VoiceCueSettingsCard />
+
+          {/* Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3, Gründer-Entscheidung 25.10.2026): Standard aus. */}
+          <WidgetSettings />
+        </>
+      ) : null}
+
+      {show('anzeige') ? (
+        <>
+          {/* Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5): nur dieses Gerät. */}
+          <SectionLabel>{t.accessibility.section}</SectionLabel>
+          <Card>
+            {!accessibility.settings.largeView &&
+            suggestLargeView({ ageYears, goalType: rows.goals?.goal_type ?? null }) ? (
+              <Notice tone="info" testID="settings-large-view-suggestion">
+                {t.accessibility.largeViewSuggestion}
+              </Notice>
+            ) : null}
+            <Checkbox
+              label={t.accessibility.largeView}
+              checked={accessibility.settings.largeView}
+              onChange={(value) =>
+                void accessibility.update({ largeView: value }).catch(() => undefined)
+              }
+              testID="settings-large-view"
+            />
+            <Body muted>{t.accessibility.largeViewHint}</Body>
+            {readAloudVoice === null ? (
+              <Body muted testID="settings-read-aloud-unavailable">
+                {t.accessibility.readAloudUnavailable}
+              </Body>
+            ) : readAloudVoice ? (
+              <>
+                <Checkbox
+                  label={t.accessibility.readAloud}
+                  checked={accessibility.settings.readAloud}
+                  onChange={(value) =>
+                    void accessibility.update({ readAloud: value }).catch(() => undefined)
+                  }
+                  testID="settings-read-aloud"
+                />
+                <Body muted>{t.accessibility.readAloudHint}</Body>
               </>
             ) : null}
           </Card>
-          {/* Destruktiv: rot und abgesetzt in eigener Gruppe, immer mit Rückfrage. */}
+        </>
+      ) : null}
+
+      {show('erinnerungen') ? (
+        <>
+          <SectionLabel>{t.settings.reminder}</SectionLabel>
+          <Card>
+            <Checkbox
+              label={t.settings.reminderEnabled}
+              checked={reminderEnabled}
+              onChange={(value) => {
+                setReminderEnabled(value);
+                setReminderSaved(false);
+              }}
+            />
+            <TextField
+              label={t.settings.reminderInterval}
+              value={interval}
+              onChangeText={(text) => {
+                setIntervalText(text.replace(/\D/g, '').slice(0, 2));
+                setReminderSaved(false);
+              }}
+              keyboardType="number-pad"
+              error={reminderError}
+            />
+            <Body muted>
+              {!reminder?.enabled
+                ? reminder
+                  ? t.settings.reminderOff
+                  : t.settings.reminderNoDate
+                : reminder.next_due_on
+                  ? t.settings.reminderNext(formatDateDe(reminder.next_due_on))
+                  : t.settings.reminderNoDate}
+            </Body>
+            {reminderSaved ? <Notice tone="success">{t.settings.reminderSaved}</Notice> : null}
+            <Button
+              label={t.common.save}
+              variant="secondary"
+              onPress={() => void saveReminder()}
+              loading={savingReminder}
+            />
+          </Card>
+
+          {/* Etappe E (docs/PLAN-PHASE-4B.md 8.1 Nr. 4): lokale Benachrichtigungen; im Browser nur ein Hinweis. */}
+          <NotificationSettings rows={rows} />
+        </>
+      ) : null}
+
+      {show('konto') ? (
+        <>
+          {/* Mein Konto (docs/PLAN-DASHBOARD.md 2.3): Abmelden, Datenexport, Konto löschen. */}
+          <SectionLabel>{t.settings.account}</SectionLabel>
           <ListGroup>
             <ListRow
-              icon="trash"
-              label={t.settings.clearTestData}
-              role="button"
-              tone="danger"
-              onPress={() => {
-                setDialogError(undefined);
-                setDialog('clear');
-              }}
+              icon="user"
+              label={t.konto.settingsLink}
+              description={t.konto.settingsLinkText}
+              onPress={() => router.push('/konto' as Href)}
+              testID="settings-account"
+            />
+            {/* Etappe E4a: Namensnennung der Nährwert-Quellen (BLS, Open Food Facts). */}
+            <ListRow
+              icon="info"
+              label={t.foodProduct.licenses.open}
+              onPress={() => router.push('/lizenzen' as Href)}
+              testID="settings-licenses"
               last
             />
           </ListGroup>
+
+          <ConsentSettings rows={rows} />
+
+          {app.backend.mode === 'local' ? (
+            <>
+              <SectionLabel>{t.settings.testMode}</SectionLabel>
+              <Card>
+                <Body muted>{t.settings.testModeText}</Body>
+                {nutritionLib && (nutritionLib.demoAvailable || nutritionLib.demo) ? (
+                  <>
+                    <Body muted>{t.nutrition.settings.demoText}</Body>
+                    <Checkbox
+                      label={t.nutrition.demoUse}
+                      checked={nutritionLib.demo}
+                      onChange={(value) => void app.setNutritionDemo(value)}
+                      testID="settings-nutrition-demo"
+                    />
+                  </>
+                ) : null}
+              </Card>
+              {/* Destruktiv: rot und abgesetzt in eigener Gruppe, immer mit Rückfrage. */}
+              <ListGroup>
+                <ListRow
+                  icon="trash"
+                  label={t.settings.clearTestData}
+                  role="button"
+                  tone="danger"
+                  onPress={() => {
+                    setDialogError(undefined);
+                    setDialog('clear');
+                  }}
+                  last
+                />
+              </ListGroup>
+            </>
+          ) : null}
         </>
       ) : null}
 

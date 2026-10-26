@@ -43,7 +43,7 @@ async function items(page: Page): Promise<StoredItem[]> {
 async function startWithPlan(page: Page) {
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 }
 
@@ -75,7 +75,7 @@ test('Menüleiste mit „Einkaufen“, Abhaken bleibt nach dem Neuladen, alle Ha
   test.setTimeout(150_000);
   await startWithPlan(page);
   // EA-1 + Workouts: Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr – „Fortschritt“ unter „Mehr“.
-  for (const name of ['Übersicht', 'Training', 'Workouts', 'Ernährung', 'Einkaufen', 'Mehr']) {
+  for (const name of ['Heute', 'Training', 'Ernährung', 'Einkaufen', 'Mehr']) {
     await expect(tab(page, name)).toBeVisible();
   }
   await expect(tab(page, 'Fortschritt')).toHaveCount(0);
@@ -257,7 +257,7 @@ test('Einkaufen ohne Essensplan (EA-2): eigene Artikel, Abhaken und Scanner gehe
       ...value,
       rows: { ...value.rows, nutritionSetup: null, shoppingLists: [], mealPlans: [] },
     }));
-    await heading(page, 'Heute');
+    await heading(page, 'Training');
   }
   expect((await db(page)).rows.nutritionSetup).toBeNull();
   await openShoppingTab(page);
@@ -319,7 +319,7 @@ test('Nährwerte beim Scannen: „Werte prüfen“ mit Hinweis, unbrauchbar ohne
         nutritionSetup: { ...(value.rows.nutritionSetup as object), show_energy_numbers: false },
       },
     }));
-    await heading(page, 'Heute');
+    await heading(page, 'Training');
   }
   await openShoppingTab(page);
   await scanTestCode('plausibel');

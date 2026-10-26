@@ -51,12 +51,12 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Ohne Wettkampf kein Knopf „Wettkampfplan“ im Training.
   await expect(page.getByTestId('today-competition-plan')).toHaveCount(0);
 
   // --- Übersicht ohne Wettkampf: Kachel weit oben mit „Wettkampf planen“ ------------------------------------
-  await tab(page, 'Übersicht').click();
+  await tab(page, 'Heute').click();
   await expect(page.getByTestId('overview-header')).toBeVisible();
   const tile = page.getByTestId('overview-competition');
   await expect(tile).toContainText('Mein Wettkampf');
@@ -117,7 +117,7 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
   await heading(page, 'Mein Wettkampf');
 
   // --- Übersicht mit Wettkampf ------------------------------------------------------------------------------
-  await tab(page, 'Übersicht').click();
+  await tab(page, 'Heute').click();
   await expect(page.getByTestId('overview-header')).toBeVisible();
   await expect(page.getByTestId('overview-competition-name')).toHaveText(
     'Winterlauf · Halbmarathon',
@@ -141,7 +141,7 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
 
   // --- Training: deutlicher Knopf oben, Countdown-Karte bleibt ------------------------------------------
   await tab(page, 'Training').click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Reiter bleiben geladen – nur im Reiter „Training“ suchen.
   const todayScreen = page.getByTestId('today');
   await expect(todayScreen.getByTestId('competition-countdown')).toBeVisible();
@@ -154,7 +154,7 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
   await heading(page, 'Mein Wettkampf');
   // Zurück führt zum zuvor besuchten Reiter.
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // --- Mehr: „Wettkampf“ als erste Kachel unter „Training & Sport“ ------------------------------------------------
   await tab(page, 'Mehr').click();
@@ -191,7 +191,7 @@ test('Wettkampfplan finden: Kachel, Aufbau des Plans, Training, Mehr, Menüleist
   // Zurück (Knopf auf der Seite) → zuvor besuchter Reiter.
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();
   await expect(page.getByTestId('overview-header')).toBeVisible();
-  await expect(tab(page, 'Übersicht')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab(page, 'Heute')).toHaveAttribute('aria-selected', 'true');
 
   // --- 320 px: alles lesbar, kein waagerechtes Scrollen ---------------------------------------------------
   await page.setViewportSize({ width: 320, height: 640 });

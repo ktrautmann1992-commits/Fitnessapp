@@ -16,6 +16,7 @@ import { type ReactNode, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { FavoriteMark } from '@/components/recipe-preference';
+import type { StackNotice } from '@/components/slim';
 import { RecipeThumb } from '@/components/recipe-image';
 import { ConfirmDialog } from '@/components/screen';
 import {
@@ -339,6 +340,57 @@ export function NutritionNotices({
       ))}
     </View>
   );
+}
+
+/** Sicherheits-Hinweise der Ernährung – in der Hinweis-Zeile „sperrend“, also nie zugeklappt (26.10.2026). */
+const SAFETY_NOTICES = new Set<NutritionNoticeCode>([
+  'pregnancy_no_targets',
+  'underweight',
+  'severe_underweight',
+  'medical_consult',
+]);
+
+/**
+ * Dieselben Hinweise wie `NutritionNotices`, aber einzeln für die Hinweis-Zeile („App verschlanken“, 26.10.2026,
+ * components/slim.tsx `NoticeStack`): Sicherheit (Schwangerschaft, Untergewicht, ärztliche Abklärung) sperrend und
+ * immer sichtbar, fehlender Gesundheits-Check „handeln“, alles andere (Eiweiß bei Nierenerkrankung, Entwürfe,
+ * Allergene ungeprüft …) Info hinter dem Zähler. testIDs wie bisher.
+ */
+export function nutritionNoticeItems(
+  notices: readonly NutritionNoticeCode[],
+  planNotices: readonly MealPlanNoticeCode[],
+  showNumbers: boolean,
+): StackNotice[] {
+  return [
+    ...notices.map((code): StackNotice => ({
+      id: `notice-${code}`,
+      level: SAFETY_NOTICES.has(code)
+        ? 'blocking'
+        : code === 'health_check_missing'
+          ? 'action'
+          : 'info',
+      node: (
+        <Notice
+          tone={WARNING_NOTICES.has(code) ? 'warning' : 'info'}
+          testID={`nutrition-notice-${code}`}
+        >
+          <Body>{noticeText(code, showNumbers)}</Body>
+        </Notice>
+      ),
+    })),
+    ...planNotices.map((code): StackNotice => ({
+      id: `plan-notice-${code}`,
+      level: code === 'day_below_floor' ? 'action' : 'info',
+      node: (
+        <Notice
+          tone={code === 'day_below_floor' || code.startsWith('drafts') ? 'warning' : 'info'}
+          testID={`nutrition-plan-notice-${code}`}
+        >
+          <Body>{t.nutrition.planNotices[code]}</Body>
+        </Notice>
+      ),
+    })),
+  ];
 }
 
 const WARNING_NOTICES = new Set<NutritionNoticeCode>([

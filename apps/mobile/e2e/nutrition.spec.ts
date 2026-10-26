@@ -31,7 +31,7 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
   expect(training).toBeGreaterThan(rest);
 
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Karte „Essen heute“: Tagesziel (Montag = Trainingstag), Kennzeichnung der Testwerte (K2).
   await expect(page.getByTestId('today-nutrition-card')).toBeVisible();
   await expect(page.getByTestId('today-nutrition-demo')).toBeVisible();
@@ -98,7 +98,7 @@ test('Widerruf mit Angebot: Unverträglichkeit → „mag ich nicht“, „mag i
   test.setTimeout(120_000);
   await onboardNutrition(page, { peanutIntolerance: true });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.goto('/settings');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   const dialog = page.getByTestId('dialog-revoke');
@@ -150,7 +150,7 @@ test('kein Gesundheits-Check → Hinweis + Knopf, ohne Defizit (B4); Schwangersc
   test.setTimeout(120_000);
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Check entfernen (z. B. neue Fassung, Abbruch) → vorsichtig, Hinweis „Gesundheits-Check machen“.
   await patchDb(page, (value) => ({ ...value, rows: { ...value.rows, healthScreenings: [] } }));
   await page.goto('/ernaehrung');
@@ -195,7 +195,7 @@ test('Zustände: Einrichtung fehlt (bestehende Testerinnen), keine Rezepte, Beis
   test.setTimeout(120_000);
   await onboardNutrition(page, { forceDemo: false });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Vor N4 eingerichtete Konten haben noch keine Antworten → einmalig beim Öffnen der Ernährung.
   await patchDb(page, (value) => ({ ...value, rows: { ...value.rows, nutritionSetup: null } }));
   await expect(page.getByTestId('today-nutrition-setup')).toBeVisible();
@@ -240,7 +240,7 @@ test('B1: veraltete Einwilligung + gespeicherte Unverträglichkeit → kein Plan
   test.setTimeout(120_000);
   await onboardNutrition(page, { peanutIntolerance: true });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Neue Fassung der Einwilligung: die gespeicherte gilt als veraltet, die Unverträglichkeit bleibt gespeichert.
   await patchDb(page, (value) => ({
     ...value,
@@ -280,7 +280,7 @@ test('NK1/NK2: Einwilligung fehlt, Unverträglichkeit noch gespeichert → ertei
   test.setTimeout(120_000);
   await onboardNutrition(page, { peanutIntolerance: true });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Alt-Stand: Einwilligung widerrufen, Unverträglichkeit aber noch gespeichert.
   await patchDb(page, (value) => ({
     ...value,

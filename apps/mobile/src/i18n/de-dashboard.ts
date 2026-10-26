@@ -96,6 +96,8 @@ export const deDashboard = {
     statDone: 'erledigt',
     statPlanned: 'geplant',
     statOpen: 'noch offen',
+    /** Kurz im Kopf der Kachel „Deine Woche“ (26.10.2026). */
+    short: (completed: number, planned: number) => `${completed} von ${planned} erledigt`,
   },
   /** Etappe E2: Übersicht bearbeiten (docs/PLAN-EINKAUFEN-AUSDAUER.md 4). */
   edit: {

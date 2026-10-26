@@ -56,7 +56,7 @@ const recipeIds = (days: StoredDay[]) => days.flatMap((d) => d.meals.map((m) => 
 async function startWithPlan(page: Page, person: Parameters<typeof onboardNutrition>[1] = {}) {
   await onboardNutrition(page, person);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
   return planOf(page);
 }

@@ -43,7 +43,7 @@ async function onboardStudio(page: Page) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.goto('/uebersicht');
   await expect(page.getByTestId('overview-header')).toBeVisible();
 }
@@ -168,7 +168,7 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
   test.setTimeout(120_000);
   await onboardStudio(page);
   expect(await tabs(page)).toEqual([
-    'Übersicht',
+    'Heute',
     'Training',
     'Workouts',
     'Ernährung',
@@ -200,7 +200,7 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
     'Fortschritt ist jetzt in der Menüleiste.',
   );
   expect(await preview(page)).toEqual([
-    'Übersicht',
+    'Heute',
     'Training',
     'Ernährung',
     'Einkaufen',
@@ -212,7 +212,7 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
   await page.getByRole('button', { name: 'Einkaufen nach links' }).click();
   await expect(page.getByTestId('menu-bar-live')).toHaveText('Einkaufen ist jetzt Knopf 3 von 6.');
   expect(await preview(page)).toEqual([
-    'Übersicht',
+    'Heute',
     'Training',
     'Einkaufen',
     'Ernährung',
@@ -242,15 +242,15 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
   for (const name of ['Einkaufen', 'Ernährung', 'Fortschritt']) {
     await page.getByRole('checkbox', { name: `${name} in der Menüleiste` }).click();
   }
-  expect(await preview(page)).toEqual(['Übersicht', 'Training', 'Mehr']);
+  expect(await preview(page)).toEqual(['Heute', 'Training', 'Mehr']);
   await page.getByRole('checkbox', { name: 'Training in der Menüleiste' }).click();
   await expect(page.getByTestId('menu-bar-message')).toContainText('Mindestens 3 Knöpfe');
-  expect(await preview(page)).toEqual(['Übersicht', 'Training', 'Mehr']);
+  expect(await preview(page)).toEqual(['Heute', 'Training', 'Mehr']);
 
   // Ausgeblendete Bereiche stehen unter „Mehr“ und funktionieren (auch nach dem Neuladen).
   await page.goto('/mehr');
   await heading(page, 'Mehr');
-  expect(await tabs(page)).toEqual(['Übersicht', 'Training', 'Mehr']);
+  expect(await tabs(page)).toEqual(['Heute', 'Training', 'Mehr']);
   for (const area of ['workouts', 'ernaehrung', 'einkaufsliste', 'wettkampf', 'fortschritt']) {
     await expect(page.getByTestId(`more-area-${area}`)).toBeVisible();
   }
@@ -264,7 +264,7 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
   await expect(page.getByTestId('menu-bar-live')).toHaveText(
     'Die Menüleiste ist wieder wie am Anfang.',
   );
-  const standard = ['Übersicht', 'Training', 'Workouts', 'Ernährung', 'Einkaufen', 'Mehr'];
+  const standard = ['Heute', 'Training', 'Ernährung', 'Einkaufen', 'Mehr'];
   expect(await preview(page)).toEqual(standard);
   await page.getByTestId('menu-bar-done').click();
   expect(await tabs(page)).toEqual(standard);

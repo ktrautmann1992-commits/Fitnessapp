@@ -26,7 +26,7 @@ const GYM_3_DAYS: Person = {
 
 async function toToday(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function exerciseNames(page: Page): Promise<string[]> {
@@ -104,7 +104,7 @@ test('Schon-Modus: Körperkarte, Tausch ohne Knie-Übungen, Arzt-Hinweis bei „
 
   // „Heute“: Banner, Hinweise, keine Kniebeugen/Ausfallschritte/Beinpresse, Kennzeichen „heute geschont“.
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('modes-banner-pain')).toContainText('Schon-Modus bis 13.10.2026');
   await expect(page.getByTestId('modes-banner-pain')).toContainText('Geschont: Knie');
   await expect(page.getByTestId('session-mode-notice-pain_active')).toBeVisible();
@@ -232,7 +232,7 @@ test('Reise-Modus: Banner, Körpergewicht-Übungen, 30 Minuten, Schlingentrainer
   await expect(page.getByTestId('travel-item')).toContainText('Nur Körpergewicht');
 
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('modes-banner-travel')).toContainText('Reise-Modus bis 13.10.2026');
   await expect(page.getByTestId('modes-banner-travel')).toContainText('höchstens 30 min');
   await expect(page.getByText('für die Reise getauscht').first()).toBeVisible();
@@ -280,7 +280,7 @@ test('Aufwärmen & Dehnen: Block vor und nach dem Training, Überspringen, Schal
   await page.goto('/settings');
   await page.getByTestId('settings-warmup').click();
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('plan-warmup')).not.toContainText(/Aufwärmen\s*ca\. \d+ Min/);
   await page.getByTestId('workout-start').click();
   await expect(page.getByTestId('workout-exercise-0')).toBeVisible();

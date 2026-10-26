@@ -43,7 +43,7 @@ async function setup(page: Page) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.getByRole('tab', { name: 'Workouts', exact: true }).click();
   await heading(page, 'Workouts');
 }

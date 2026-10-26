@@ -25,7 +25,7 @@ async function setup(page: Page, days: Parameters<typeof onboard>[1]['days'], co
   await page.evaluate(() => window.localStorage.clear());
   await onboard(page, { consent, level: /^Einsteiger/, goal: 'Muskelaufbau', days });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 test('Leiste: 7 Tage mit Zustand, Legende, Werkzeugleiste; Blatt legt eine Einheit auf einen anderen Tag', async ({
@@ -120,7 +120,7 @@ test('Uhr-Lauf an einem Tag ohne Plan: einmalige Frage → „Ja“ → Sa vorge
   await page.getByTestId('smartwatch-connect').click();
   await expect(page.getByTestId('smartwatch-message')).toContainText('Abgleich fertig');
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Frage statt stiller Zuordnung.
   const dialog = page.getByTestId('cross-day-dialog');
@@ -140,7 +140,7 @@ test('Uhr-Lauf an einem Tag ohne Plan: einmalige Frage → „Ja“ → Sa vorge
 
   // Bleibt nach dem Neuladen – keine zweite Frage.
   await page.reload();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(cell(page, SAT)).toHaveAccessibleName(/vorgezogen/);
   await expect(page.getByTestId('cross-day-dialog')).toHaveCount(0);
 
@@ -164,7 +164,7 @@ test('Uhr-Lauf an einem Tag ohne Plan: einmalige Frage → „Ja“ → Sa vorge
   await page.getByTestId('day-sheet-close').click();
   await expect(page.getByTestId(`week-day-${SAT}`)).toContainText('geplant');
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('cross-day-dialog')).toHaveCount(0);
 });
 

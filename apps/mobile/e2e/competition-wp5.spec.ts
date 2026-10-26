@@ -38,7 +38,7 @@ async function fillDate(page: Page, label: string, day: string, month: string, y
 
 async function openCompetitionForm(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.getByRole('button', { name: 'Einstellungen' }).click();
   await page.getByTestId('settings-competition').click();
   await heading(page, 'Mein Wettkampf');
@@ -123,7 +123,7 @@ test('Triathlon: Hinweis Langdistanz, Sprint mit Schwimmtechnik, Koppeltraining 
   // Letzte Woche des ersten Blocks: der Folgeblock (Aufbau) wird angehängt – mit Koppeltraining.
   await page.clock.setSystemTime(new Date('2026-11-12T09:00:00+01:00'));
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect
     .poll(async () => {
       rows = await storedRows(page);
@@ -142,7 +142,7 @@ test('Triathlon: Hinweis Langdistanz, Sprint mit Schwimmtechnik, Koppeltraining 
   );
   await page.clock.setSystemTime(new Date(`${swim?.scheduled_on}T09:00:00+01:00`));
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('plan-endurance')).toContainText('Art: Schwimmtechnik');
   await expect(page.getByTestId('plan-open-water')).toContainText('Neoprenanzug');
   await expect(page.getByTestId('plan-open-water')).toContainText('Begleitung');
@@ -150,7 +150,7 @@ test('Triathlon: Hinweis Langdistanz, Sprint mit Schwimmtechnik, Koppeltraining 
   // Tag mit Koppeltraining: zwei Teile, Ablauf mit Sportart, Timer zeigt „Rad“ und danach „Laufen“.
   await page.clock.setSystemTime(new Date(`${brick?.scheduled_on}T09:00:00+01:00`));
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const details = page.getByTestId('plan-endurance');
   await expect(details).toContainText('Art: Koppeltraining (Rad → Lauf)');
   await expect(details).toContainText('Zwei Teile in einer Einheit: Teil 1 Rad');

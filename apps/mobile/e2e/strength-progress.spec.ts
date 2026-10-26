@@ -54,13 +54,13 @@ test('Kraft-Entwicklung: Kachel, Kurve mit Umschaltern, Vergleich im Eintrag', a
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Fortschritt ohne Einträge: Hinweis, wann die Kachel etwas zeigt.
   await page.goto('/fortschritt');
   await expect(page.getByTestId('strength-tile-empty')).toContainText('zweimal');
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Heute: erste Übung mit 20 kg abhaken.
   await page.getByTestId('workout-start').click();
@@ -75,7 +75,7 @@ test('Kraft-Entwicklung: Kachel, Kurve mit Umschaltern, Vergleich im Eintrag', a
   for (let i = 0; i < count; i += 1) await page.getByTestId(`workout-done-0-${i}`).click();
   await page.getByTestId('workout-effort-7').click();
   await page.getByTestId('workout-save').click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Vier ältere Einträge derselben Übung (12,5 → 15 → Erholungswoche 10 → 17,5 kg).
   const db = await readDb(page);

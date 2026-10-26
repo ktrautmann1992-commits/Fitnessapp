@@ -42,7 +42,7 @@ async function setup(page: Page, requests: string[]) {
     days: [['Montag', 'Kraft im Studio', 60]],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await seedDemoRoutes(page);
 }
 

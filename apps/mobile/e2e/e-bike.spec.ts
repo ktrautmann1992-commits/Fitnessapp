@@ -31,7 +31,7 @@ async function setup(page: Page) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 /** Radfahrt ohne GPS eintragen: 60 min, 20 km; `eBike` = Wahl im Formular (null = Vorbelegung lassen). */

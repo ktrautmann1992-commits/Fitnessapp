@@ -3,12 +3,13 @@ import { cardColors, fontSize, radius, spacing, type AreaId } from '@fitnessapp/
 import { Redirect, useRouter, type Href } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { CycleMoreRow } from '@/components/cycle-entry';
+import { useCycleVisible } from '@/components/cycle-entry';
 import { Icon, ListGroup, ListRow, SectionLabel, Tile, type IconName } from '@/components/design';
 import { Screen } from '@/components/screen';
 import { LoadingState } from '@/components/ui';
 import { tabLabel } from '@/components/tab-bar';
 import { t } from '@/i18n';
+import { deCycle } from '@/i18n/de-cycle';
 import { NAV_AREA_STYLE } from '@/lib/area-style';
 import { appFont } from '@/lib/fonts';
 import { initialsFromEmail } from '@/lib/initials';
@@ -19,15 +20,13 @@ import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { Text } from '@/components/text';
 
 /**
- * Reiter „Mehr“ (docs/PLAN-DASHBOARD.md 2.6; Aussehen seit 20.10.2026 wie Entwurf „Mehr neu“): oben „Mein Konto“,
- * dann Kacheln „Training & Sport“ und „Essen“, unten die Liste „Wissen & Einstellungen“. Bereiche, die schon als
- * Knopf in der Menüleiste stehen, erscheinen hier nicht noch einmal (areasInMore, packages/core). Nur Wege in
- * vorhandene Bildschirme – nichts Neues.
+ * Reiter „Mehr“ („App verschlanken“, Gründer-Freigabe 26.10.2026, Entwurf 5-mehr-fortschritt): oben „Mein Konto“,
+ * dann bunte Kacheln nach Themen – „Dein Fortschritt“ (Fortschritt, Kalender), „Sport“ (Wettkampf, Ausdauer,
+ * Calisthenics), „Essen & Wissen“ (Rezepte, Supplemente, Ratgeber, Zyklus) – und unten drei Zeilen: Einstellungen,
+ * Menüleiste & Kacheln anpassen, Lizenzen. Bereiche, die als Knopf in der Menüleiste stehen, erscheinen hier nicht
+ * noch einmal (areasInMore, packages/core); „Workouts“ steht im Training (Umschalter) und hier nur, wenn „Training“
+ * keinen Knopf hat. Nur Wege in vorhandene Bildschirme – nichts Neues.
  */
-
-/** Bereiche der Menüleiste je Gruppe (in dieser Reihenfolge, nur wenn sie NICHT in der Leiste sind). */
-const SPORT_AREAS: readonly NavArea[] = ['wettkampf', 'fortschritt', 'workouts', 'today'];
-const FOOD_AREAS: readonly NavArea[] = ['ernaehrung', 'einkaufsliste'];
 
 interface Entry {
   key: string;
@@ -43,6 +42,7 @@ export default function MoreScreen() {
   const router = useRouter();
   const app = useApp();
   const { layout, available } = useAppLayout();
+  const cycleVisible = useCycleVisible();
   if (app.status.kind === 'loading') {
     return (
       <Screen>
@@ -60,27 +60,44 @@ export default function MoreScreen() {
     return <Redirect href={route as Href} />;
   }
   const texts = t.more;
+  const slim = t.slim.more;
   const details: Record<string, string> = texts.details;
-  const hidden = areasInMore(layout, available);
+  const hidden = areasInMore(layout, available).filter(
+    // Workouts gehören zum Training (Umschalter) – nur ohne Knopf „Training“ hier.
+    (area) => area !== 'workouts' || !layout.tabs.includes('today'),
+  );
   const nutrition = app.backend.supportsNutrition;
   const open = (href: string) => () => router.push(href as Href);
-  const hiddenOf = (areas: readonly NavArea[]): Entry[] =>
-    areas
-      .filter((area) => hidden.includes(area))
-      .map((area) => ({
-        key: area,
-        label: tabLabel(area),
-        detail: details[area] ?? '',
-        area: NAV_AREA_STYLE[area].area,
-        icon: NAV_AREA_STYLE[area].icon,
-        onPress: () => router.navigate(`/${area}` as Href),
-        testID: `more-area-${area}`,
-      }));
+  const area = (key: NavArea, detail?: string): Entry[] =>
+    hidden.includes(key)
+      ? [
+          {
+            key,
+            label: tabLabel(key),
+            detail: detail ?? details[key] ?? '',
+            area: NAV_AREA_STYLE[key].area,
+            icon: NAV_AREA_STYLE[key].icon,
+            onPress: () => router.navigate(`/${key}` as Href),
+            testID: `more-area-${key}`,
+          },
+        ]
+      : [];
 
-  const sportAreas = hiddenOf(SPORT_AREAS);
+  const progress: Entry[] = [
+    ...area('fortschritt', slim.progressDetail),
+    {
+      key: 'calendar',
+      label: slim.calendar,
+      detail: slim.calendarDetail,
+      area: 'fortschritt',
+      icon: 'calendar',
+      onPress: open('/kalender'),
+      testID: 'more-calendar',
+    },
+  ];
   const sport: Entry[] = [
     // „Wettkampf“ zuerst (Gründer-Rückmeldung 20.10.2026: leicht finden).
-    ...sportAreas.filter((e) => e.key === 'wettkampf'),
+    ...area('wettkampf'),
     // Etappe E4: Ausdauer aufzeichnen (Laufen, Rad, Gehen).
     {
       key: 'endurance',
@@ -91,16 +108,9 @@ export default function MoreScreen() {
       onPress: open('/ausdauer'),
       testID: 'more-endurance',
     },
-    ...sportAreas.filter((e) => e.key !== 'wettkampf'),
-    {
-      key: 'exercises',
-      label: texts.exercises,
-      detail: details.exercises ?? '',
-      area: 'training',
-      icon: 'dumbbell',
-      onPress: open('/uebungen'),
-      testID: 'more-exercises',
-    },
+    // Hat die Person einen Hauptbereich aus der Leiste genommen, steht er hier.
+    ...area('today'),
+    ...area('workouts'),
     // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.5): Stufenleitern mit aktueller Stufe und nächstem Ziel.
     {
       key: 'skill-paths',
@@ -112,30 +122,18 @@ export default function MoreScreen() {
       testID: 'more-skill-paths',
     },
   ];
-  const food: Entry[] = [...hiddenOf(FOOD_AREAS)];
+  const food: Entry[] = [...area('ernaehrung'), ...area('einkaufsliste')];
   if (nutrition) {
-    food.push(
-      {
-        key: 'recipes',
-        label: texts.recipes,
-        detail: details.recipes ?? '',
-        area: 'ernaehrung',
-        icon: 'recipe',
-        onPress: open('/rezepte'),
-        testID: 'more-recipes',
-      },
-      {
-        key: 'meal-prep',
-        label: texts.mealPrep,
-        detail: details.mealPrep ?? '',
-        area: 'ernaehrung',
-        icon: 'box',
-        onPress: open('/meal-prep'),
-        testID: 'more-meal-prep',
-      },
-    );
+    food.push({
+      key: 'recipes',
+      label: texts.recipes,
+      detail: details.recipes ?? '',
+      area: 'ernaehrung',
+      icon: 'recipe',
+      onPress: open('/rezepte'),
+      testID: 'more-recipes',
+    });
   }
-
   // Phase 6 SU4: Supplemente (Testmodus und Supabase-Modus, allgemeine Infos auch ohne Einwilligung).
   food.push({
     key: 'supplements',
@@ -146,37 +144,51 @@ export default function MoreScreen() {
     onPress: open('/supplemente'),
     testID: 'more-supplements',
   });
+  if (nutrition) {
+    food.push({
+      key: 'guides',
+      label: texts.guides,
+      detail: slim.guidesDetail,
+      area: 'training',
+      icon: 'book',
+      onPress: open('/ratgeber'),
+      testID: 'more-guides',
+    });
+  }
+  // Phase 9: Zyklus-Modul (nur wenn angeboten oder schon eingeschaltet).
+  if (cycleVisible) {
+    food.push({
+      key: 'cycle',
+      label: deCycle.moreLabel,
+      detail: slim.cycleDetail,
+      area: 'fortschritt',
+      icon: 'heart',
+      onPress: open('/zyklus'),
+      testID: 'more-cycle',
+    });
+  }
 
   return (
     <Screen title={texts.title} testID="more">
       <AccountRow email={app.session?.email ?? null} onPress={open('/konto')} />
-      <TileGroup title={texts.sections.sport} entries={sport} />
-      {food.length > 0 ? <TileGroup title={texts.sections.food} entries={food} /> : null}
+      <TileGroup title={slim.progressSection} entries={progress} />
+      <TileGroup title={slim.sportSection} entries={sport} />
+      <TileGroup title={slim.foodSection} entries={food} />
       <View style={styles.group}>
-        <SectionLabel>{texts.sections.knowledge}</SectionLabel>
+        <SectionLabel>{slim.settingsSection}</SectionLabel>
         <ListGroup>
-          {nutrition ? (
-            <ListRow
-              icon="book"
-              label={texts.guides}
-              onPress={open('/ratgeber')}
-              testID="more-guides"
-            />
-          ) : null}
+          <ListRow
+            icon="settings"
+            label={texts.settings}
+            onPress={open('/settings')}
+            testID="more-settings"
+          />
           <ListRow
             icon="bar-menu"
             label={texts.menuBar}
             accessibilityHint={texts.layoutHint}
             onPress={open('/menueleiste')}
             testID="more-menu-bar"
-          />
-          {/* Phase 9: Zyklus-Modul (nur wenn angeboten oder schon eingeschaltet). */}
-          <CycleMoreRow onPress={open('/zyklus')} />
-          <ListRow
-            icon="settings"
-            label={texts.settings}
-            onPress={open('/settings')}
-            testID="more-settings"
           />
           <ListRow
             icon="info"

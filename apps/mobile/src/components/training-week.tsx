@@ -119,13 +119,26 @@ export function WeekStrip({
       accessibilityRole="list"
     >
       {days.map((day) => (
-        <StripCell key={day.date} day={day} onPress={() => onSelect(day.date)} />
+        <StripCell
+          key={day.date}
+          day={day}
+          onPress={() => onSelect(day.date)}
+          testID={`${testID}-day-${day.date}`}
+        />
       ))}
     </View>
   );
 }
 
-function StripCell({ day, onPress }: { day: WeekStatusDay; onPress: () => void }) {
+function StripCell({
+  day,
+  onPress,
+  testID,
+}: {
+  day: WeekStatusDay;
+  onPress: () => void;
+  testID: string;
+}) {
   const theme = useThemeColors();
   const training = useAreaColors('training');
   const tag = insteadOfTag(day);
@@ -135,7 +148,7 @@ function StripCell({ day, onPress }: { day: WeekStatusDay; onPress: () => void }
       accessibilityLabel={stripDayA11y(day)}
       accessibilityState={{ selected: day.isToday }}
       onPress={onPress}
-      testID={`plan-week-day-${day.date}`}
+      testID={testID}
       style={({ pressed }) => [
         styles.cell,
         {

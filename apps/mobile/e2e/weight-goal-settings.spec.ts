@@ -16,7 +16,7 @@ async function start(page: Page) {
   test.setTimeout(150_000);
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function openWeightGoal(page: Page) {
@@ -61,7 +61,7 @@ async function expireGoal(page: Page) {
       },
     },
   }));
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 test('Bearbeiten und Entfernen: nur unter Einstellungen sichtbar, Speichern plant ab heute neu', async ({
@@ -85,7 +85,7 @@ test('Bearbeiten und Entfernen: nur unter Einstellungen sichtbar, Speichern plan
 
   // F13: Auf „Heute“ kein Wunschgewicht, kein Fortschritt, keine Karte (Ziel aktiv).
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByText(/Wunschgewicht|67 kg/)).toHaveCount(0);
   await expect(page.getByTestId('weight-goal-card-reached')).toHaveCount(0);
   await expect(page.getByTestId('weight-goal-card-date-passed')).toHaveCount(0);
@@ -135,7 +135,7 @@ test('Zeitraum vorbei: Karte, Verlängern nur ausdrücklich; „Angaben ändern�
     target_date: '2026-10-01',
   });
   await next(page);
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Karte auf „Heute“ – ohne Zahlen.
   const card = page.getByTestId('weight-goal-card-date-passed');
@@ -151,7 +151,7 @@ test('Zeitraum vorbei: Karte, Verlängern nur ausdrücklich; „Angaben ändern�
   await expect(page.getByText('Bitte gib eine Menge und einen Zeitraum ein.')).toBeVisible();
   await page.getByLabel('Wochen', { exact: true }).fill('8');
   await page.getByRole('button', { name: 'Speichern' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('weight-goal-card-date-passed')).toHaveCount(0);
   expect(await storedGoal(page)).toMatchObject({
     start_date: '2026-10-12',
@@ -192,7 +192,7 @@ test('Wunschgewicht erreicht: Karte bleibt bis zur Wahl, „Weiter“ blockiert 
       ],
     },
   }));
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const card = page.getByTestId('weight-goal-card-reached');
   await expect(card).toContainText('Du hast dein Wunschgewicht erreicht. Wie geht es weiter?');
   await expect(card).not.toContainText(/\d/);
@@ -216,7 +216,7 @@ test('Wunschgewicht erreicht: Karte bleibt bis zur Wahl, „Weiter“ blockiert 
   await next(page);
   await heading(page, 'Deine Trainingstage');
   await next(page);
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Wahl „Gewicht halten“ → Ziel Fitness, Wunschgewicht gelöscht, Angebot „Plan neu erstellen?“.
   await page
@@ -269,7 +269,7 @@ test('Nebenziel geändert → „Plan neu erstellen?“; Planname mit beiden Zie
   await next(page);
   await heading(page, 'Deine Trainingstage');
   await next(page);
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const offer = page.getByTestId('plan-offer');
   await expect(offer).toContainText('Plan neu erstellen?');
   await offer.getByRole('button', { name: 'Plan neu erstellen' }).first().click();

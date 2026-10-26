@@ -55,7 +55,7 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await expect(page.getByTestId('done-info-bodyweight_limits')).toHaveCount(0);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
 
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Studio-Plan: kein Körpergewicht-Hinweis (Etappe K4).
   await expect(page.getByTestId('plan-info-bodyweight_limits')).toHaveCount(0);
   await expect(page.getByTestId('plan-test-content')).toHaveText(
@@ -144,7 +144,7 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
 
   // Neu laden: gleicher Stand aus dem Gerätespeicher.
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByText('Deine Einheit heute')).toBeVisible();
   // Schon einmal verschoben, in derselben Woche nichts mehr frei → würde gestrichen.
   await page
@@ -167,7 +167,7 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await page.getByRole('radio', { name: 'Donnerstag: Ausdauer' }).click();
   await page.getByRole('radio', { name: 'Donnerstag: 30 Minuten' }).click();
   await next(page);
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('plan-offer')).toContainText('Deine Angaben haben sich geändert');
   await page.getByTestId('plan-offer').getByRole('button', { name: 'Plan neu erstellen' }).click();
   await expect(page.getByTestId('plan-message')).toHaveText('Dein neuer Plan ist fertig.');
@@ -206,11 +206,11 @@ test('Kopf der Einheit: „Heute nachholen“ nur ohne Start-Knopf in der Hero-K
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Donnerstag (Ruhetag): die verpasste Einheit vom Mittwoch ansehen – nachholbar, die Hero-Karte hat keinen Start-Knopf.
   await page.clock.setFixedTime(new Date('2026-10-08T09:00:00+02:00'));
   await page.goto('/today?tag=2026-10-07');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('workout-start')).toHaveCount(0);
   const start = page.getByTestId('plan-session-start');
   await expect(start).toHaveCount(1);
@@ -234,7 +234,7 @@ test('Ausdauer ohne Gesundheits-Check: Geh-Lauf-Wechsel, Anstrengung, vorsichtig
   });
   await expect(page.getByTestId('done-plan')).toContainText('Ausdauer-Grundlage – 10 km');
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByRole('heading', { name: 'Geh-Lauf-Wechsel' })).toBeVisible();
   const details = page.getByTestId('plan-endurance');
   await expect(details).toContainText('Anstrengung 3 von 10');
@@ -275,7 +275,7 @@ test('Start mitten in der Woche: alle Lauf-Tage in der Wochenübersicht der näc
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.getByTestId('today-week').click();
   await heading(page, 'Deine Woche');
   // Diese Woche: nur noch der Samstag-Lauf (Mo/Di lagen vor dem Planstart).
@@ -315,7 +315,7 @@ test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundl
   await expect(page.getByTestId('done-plan')).toContainText('Ausdauer-Grundlage – Marathon');
   await expect(page.getByTestId('done-plan')).not.toContainText('Allgemeine Fitness');
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByText('Ausdauer-Grundlage – Marathon', { exact: true })).toBeVisible();
   await expect(page.getByTestId('plan-notes')).toContainText(
     'Das ist dein Grundlagen-Plan (locker). Einen Wettkampfplan rückwärts ab Renntag mit langen Läufen, Tempo und Tapering erstellst du unter Einstellungen → Mein Wettkampf.',
@@ -349,7 +349,7 @@ test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundl
   // Eigene Änderung: Samstag abwählen und speichern.
   await page.getByRole('checkbox', { name: 'Samstag' }).click();
   await next(page);
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.getByRole('button', { name: 'Einstellungen' }).click();
   await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
@@ -377,7 +377,7 @@ test('vorsichtiger Plan mit Arzt-Hinweis; Widerruf löscht den Plan vollständig
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('plan-medical-notice')).toContainText(
     'Bitte kläre vor dem Training ärztlich ab',
   );
@@ -406,7 +406,7 @@ test('vorsichtiger Plan mit Arzt-Hinweis; Widerruf löscht den Plan vollständig
   expect(rows.plannedSessions).toEqual([]);
   expect(rows.plannedExercises).toEqual([]);
 
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).click();
+  await page.getByRole('button', { name: 'Zurück zum Training' }).click();
   await expect(page.getByRole('heading', { name: 'Noch kein Plan' })).toBeVisible();
   await expect(page.getByText(/wurden mit dem Widerruf gelöscht/)).toBeVisible();
   await page.getByRole('button', { name: 'Neuen Plan erstellen' }).click();
@@ -432,7 +432,7 @@ test('veraltete Einwilligung: zuerst Neu-Einwilligung, Ablehnen → Plan ohne Ge
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Neue Fassung simulieren: gespeicherte Einwilligung auf Version 0 setzen.
   await page.evaluate((key) => {
     const db = JSON.parse(window.localStorage.getItem(key) ?? '{}');
@@ -442,7 +442,7 @@ test('veraltete Einwilligung: zuerst Neu-Einwilligung, Ablehnen → Plan ohne Ge
     window.localStorage.setItem(key, JSON.stringify(db));
   }, LOCAL_DB);
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Ganz oben, vor allem anderen.
   const first = page.getByTestId('today').getByRole('alert').first();
   await expect(first).toContainText('Neue Fassung der Einwilligung');
@@ -473,7 +473,7 @@ test('Zuhause ohne Geräte, 7 Tage: Deckel, Ruhetage und verständliche Hinweise
     'Ohne Geräte ist der Trainingsreiz begrenzt',
   );
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const bodyweightInfo = page.getByTestId('plan-info-bodyweight_limits');
   await expect(bodyweightInfo).toContainText('Training ohne Geräte');
   await expect(bodyweightInfo).toContainText('Ohne Geräte ist der Trainingsreiz begrenzt');
@@ -522,10 +522,10 @@ test('verpasste Einheit: Plan am Montag, Uhr Mittwoch → Montags-Einheit versch
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.clock.setFixedTime(WEDNESDAY);
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const week = page.getByTestId('plan-week');
   await week.getByRole('button', { name: /^Montag/ }).click();
   await expect(page.getByTestId('plan-missed')).toHaveText(
@@ -558,10 +558,10 @@ test('verpasste Einheit mit freiem Tag: Mo/Fr, Uhr Mittwoch → Montags-Einheit 
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.clock.setFixedTime(WEDNESDAY);
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const week = page.getByTestId('plan-week');
   await week.getByRole('button', { name: /^Montag/ }).click();
   await expect(page.getByTestId('plan-missed')).toBeVisible();
@@ -590,7 +590,7 @@ test('Plan als PDF: Hinweis bei Gesundheitsangaben, Druckansicht, Name, Querform
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Druckdialog des Browsers abfangen (zählt nur die Aufrufe).
   await page.evaluate(() => {
     const w = window as unknown as { __prints: number };
@@ -634,7 +634,7 @@ test('Plan als PDF: Hinweis bei Gesundheitsangaben, Druckansicht, Name, Querform
   await expect(page.getByTestId('print-preview')).toHaveCount(0);
   await expect(page.locator('#alpha5-print-root')).toHaveCount(0);
   await page.getByRole('button', { name: 'Abbrechen' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.evaluate(() => {
     const w = window as unknown as { __prints: number };
     w.__prints = 0;
@@ -651,7 +651,7 @@ test('Plan als PDF: Hinweis bei Gesundheitsangaben, Druckansicht, Name, Querform
   ).toBeVisible();
   await expect(page.getByTestId('print-preview')).toHaveCount(0);
   await page.getByRole('button', { name: 'Abbrechen' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.getByRole('button', { name: 'Als PDF speichern' }).click();
   await page.getByRole('button', { name: 'Weiter', exact: true }).click();
 
@@ -709,7 +709,7 @@ test('Plan als PDF: Hinweis bei Gesundheitsangaben, Druckansicht, Name, Querform
 
   // Zurück: Druck-Kopie und Stile sind wieder weg.
   await page.getByRole('button', { name: 'Zurück zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.locator('#alpha5-print-root')).toHaveCount(0);
   await expect(page.locator('#alpha5-print-style')).toHaveCount(0);
 });
@@ -727,7 +727,7 @@ test('Plan als PDF ohne Gesundheitsangaben: kein Hinweis, direkt zur Druckansich
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.getByRole('button', { name: 'Als PDF speichern' }).click();
   await heading(page, 'Plan als PDF');
   await expect(page.getByText('Bevor du speicherst')).toHaveCount(0);

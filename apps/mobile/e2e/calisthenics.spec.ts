@@ -15,7 +15,7 @@ const shots = process.env.SCREENSHOT_DIR;
 
 async function toToday(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function exerciseNames(page: Page): Promise<string[]> {
@@ -205,7 +205,7 @@ test('Reise-Modus mit Schlingentrainer: Einheiten werden auf Schlingen-Übungen 
   await page.getByTestId('travel-save').click();
   await expect(page.getByTestId('travel-message')).toContainText('07.10.2026 bis 13.10.2026');
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const names = await exerciseNames(page);
   expect(names.some((name) => /Schlingentrainer/.test(name))).toBe(true);
   expect(names.some((name) => /Langhantel|Maschine|Kabel|Latzug|Beinpresse/.test(name))).toBe(

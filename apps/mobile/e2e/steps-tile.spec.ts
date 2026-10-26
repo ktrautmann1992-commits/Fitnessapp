@@ -29,7 +29,7 @@ async function setup(page: Page) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function storedGoal(page: Page): Promise<unknown> {

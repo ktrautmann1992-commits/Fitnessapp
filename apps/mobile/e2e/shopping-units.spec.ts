@@ -39,7 +39,7 @@ test('Einkaufsliste wie im Laden: Kaufeinheiten, Karotten einmal, keine Gramm vo
   await page.setViewportSize({ width: 390, height: 844 });
   await onboardNutrition(page, { forceDemo: false });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   for (const id of RECIPES) {
     await page.goto(`/rezept/${id}`);
     await expect(page.getByTestId('recipe')).toBeVisible();

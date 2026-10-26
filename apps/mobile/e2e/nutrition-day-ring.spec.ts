@@ -31,7 +31,7 @@ test('Ring, Makros, Mahlzeiten-Karten mit „+“, Überschreitung rot mit Worte
   test.setTimeout(180_000);
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 
   // Kopf: „Heute“ + Datum mit Kalenderwoche.

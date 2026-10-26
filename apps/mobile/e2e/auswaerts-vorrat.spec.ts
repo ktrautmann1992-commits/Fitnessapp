@@ -43,7 +43,7 @@ const pantry = async (page: Page) => ((await db(page)).rows.pantryItems ?? []) a
 async function start(page: Page, forceDemo = false) {
   await onboardNutrition(page, { forceDemo });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 test('Unterwegs: Kategorie, Portion, Eintragen als Schätzwert, Zuletzt, Suche, Favorit', async ({

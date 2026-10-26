@@ -290,7 +290,7 @@ test('„Angaben ändern“ führt über das Wunschgewicht; Rückfrage bei ausge
   // Kette geht weiter zu den Trainingstagen und zurück zu „Heute“.
   await heading(page, 'Deine Trainingstage');
   await next(page);
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Gespeichert: erneut „Angaben ändern“ → konkretes Ziel steht im Formular (ohne Rückfrage).
   await page.getByRole('button', { name: 'Einstellungen' }).click();

@@ -37,7 +37,7 @@ async function setup(page: Page) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function connectDemoWatch(page: Page) {
@@ -209,8 +209,8 @@ test('Heute: Angebot „Leichter trainieren“ → leichtere Vorgabe im Training
   // Training begonnen (Entwurf) → Wahl fest, kein „Doch wie geplant“ mehr. (In der App zurück – die Wahl liegt nur im
   // Arbeitsspeicher; nach einem Neuladen fragt die Karte nicht erneut, der Entwurf behält die leichtere Vorgabe.)
   await page.getByTestId('workout-done-0-0').click();
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).click();
-  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Zurück zum Training' }).click();
+  await heading(page, 'Training');
   await expect(page.getByTestId('recovery-today-chosen')).toBeVisible();
   await expect(page.getByTestId('recovery-today-undo')).toHaveCount(0);
 

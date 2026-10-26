@@ -114,7 +114,7 @@ async function setup(page: Page) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.getByTestId('today-calendar').click();
   await heading(page, 'Kalender');
   await expect(page.getByTestId(`calendar-card-${DI}`)).toBeVisible();
@@ -359,7 +359,7 @@ test('Plan nicht mehr aktiv: Text ohne falschen Regel-Grund, Plan neu geladen �
     'Das hat nicht geklappt – dein Plan wurde neu geladen. Bitte prüfe den Tag noch einmal.',
   );
   await page.getByTestId('calendar-no-plan').click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 });
 
 test('veralteter Stand (S1): anderes Gerät hat verschoben → Tausch abgelehnt, Kalender lädt neu', async ({
