@@ -59,6 +59,13 @@ const ALPHA5_MAPPED = new Set(
     ) as { items: { food_id: string }[] }
   ).items.map((item) => item.food_id),
 );
+/** Test-Katalog: echter Katalog ohne die genannten Lebensmittel (Stand „wartet auf Import“ nachstellen). */
+function catalogWithout(...ids: string[]): Map<string, Food> {
+  const map = new Map(CATALOG);
+  for (const id of ids) map.delete(id);
+  return map;
+}
+
 const target = {
   id: '00000000-0000-4000-8000-000000000001',
   date: '2026-10-25',
@@ -148,19 +155,45 @@ describe('Tabelle der Gerichte', () => {
     expect(status.computable.length + status.blocked.length).toBe(status.total);
     const counts = status.missingFoods.map((m) => m.dishes);
     expect([...counts].sort((a, b) => b - a)).toEqual(counts);
-    const butter = status.missingFoods.find((m) => m.food_id === 'butter');
-    expect(butter?.name_de).toBe('Butter');
-    expect(butter?.search_de).toContain('Butter');
-    expect(butter?.dishes).toBeGreaterThanOrEqual(5);
-    // Aus alpha5-zuordnung.json (schon zugeordnet, noch nicht importiert): ohne Suchbegriffe aus dieser Datei.
-    if (!CATALOG.has('weizenmehl-type-405')) {
-      expect(status.missingFoods.find((m) => m.food_id === 'weizenmehl-type-405')).toMatchObject({
-        name_de: 'weizenmehl-type-405',
-        search_de: [],
-      });
+    // Jedes Gericht ist berechenbar oder nennt seine fehlenden Zutaten – unabhängig vom Import-Stand.
+    for (const blocked of status.blocked) {
+      expect(blocked.missing.length, blocked.id).toBeGreaterThan(0);
+      for (const id of blocked.missing) {
+        const dish = eatingOutDish(blocked.id) as EatingOutDishDef;
+        expect(
+          dish.items.some(([itemId]) => itemId === id),
+          `${blocked.id}: ${id}`,
+        ).toBe(true);
+      }
     }
     // Was im Katalog ist, steht nie unter „wartet auf Import“.
     for (const m of status.missingFoods) expect(CATALOG.has(m.food_id), m.food_id).toBe(false);
+  });
+
+  it('fehlende Zutaten (Test-Katalog ohne Butter und Weizenmehl): Name/Suchbegriffe aus foods, Häufigkeit', () => {
+    // Test-Katalog = echter Katalog ohne zwei Lebensmittel → unabhängig davon, ob sie schon importiert sind.
+    const butterDishes = EATING_OUT_DISHES.filter((d) => d.items.some(([id]) => id === 'butter'));
+    const status = eatingOutContentStatus(
+      catalogWithout('butter', 'weizenmehl-type-405'),
+      undefined,
+      true,
+    );
+    const butter = status.missingFoods.find((m) => m.food_id === 'butter');
+    expect(butter?.name_de).toBe('Butter');
+    expect(butter?.search_de).toContain('Butter');
+    expect(butter?.dishes).toBe(butterDishes.length);
+    expect(butter?.dishes).toBeGreaterThanOrEqual(5);
+    for (const dish of butterDishes) {
+      expect(status.computable, dish.id).not.toContain(dish.id);
+      expect(status.blocked.find((b) => b.id === dish.id)?.missing, dish.id).toContain('butter');
+    }
+    // Aus alpha5-zuordnung.json (kein Eintrag im Abschnitt foods): Name = ID, ohne Suchbegriffe.
+    expect(status.missingFoods.find((m) => m.food_id === 'weizenmehl-type-405')).toMatchObject({
+      name_de: 'weizenmehl-type-405',
+      search_de: [],
+    });
+    const counts = status.missingFoods.map((m) => m.dishes);
+    expect([...counts].sort((a, b) => b - a)).toEqual(counts);
   });
 });
 
@@ -284,6 +317,9 @@ describe('Werte nur aus dem Katalog', () => {
   });
 
   it('Zutat wartet auf Import → nicht verfügbar, ohne Werte (z. B. Butterbrezel, Döner, Croissant)', () => {
+    // Test-Katalog ohne die neuen Lebensmittel aus dem Abschnitt foods (Stand vor dem Import).
+    const pendingIds = EATING_OUT_PENDING_FOODS.map((f) => f.food_id);
+    const beforeImport = catalogWithout(...pendingIds);
     for (const id of [
       'auswaerts-butterbrezel',
       'auswaerts-doener',
@@ -291,12 +327,42 @@ describe('Werte nur aus dem Katalog', () => {
       'auswaerts-currywurst-pommes',
     ]) {
       const dish = eatingOutDish(id) as EatingOutDishDef;
-      const view = eatingOutDishView(dish, CATALOG, true);
+      const expected = dish.items.map(([foodId]) => foodId).filter((f) => pendingIds.includes(f));
+      expect(expected.length, id).toBeGreaterThan(0);
+      const view = eatingOutDishView(dish, beforeImport, true);
       expect(view.kind, id).toBe('unavailable');
-      if (view.kind === 'unavailable') expect(view.missingFoods.length).toBeGreaterThan(0);
+      if (view.kind === 'unavailable')
+        expect([...view.missingFoods].sort()).toEqual(expected.sort());
       expect(
-        eatingOutPortionValues(dish, defaultEatingOutPortion(dish.portion), CATALOG, true),
+        eatingOutPortionValues(dish, defaultEatingOutPortion(dish.portion), beforeImport, true),
       ).toBeNull();
+    }
+  });
+
+  it('echter Katalog: jedes Gericht ist berechenbar (plausible Werte) oder nennt seine fehlenden Zutaten', () => {
+    for (const dish of EATING_OUT_DISHES) {
+      const view = eatingOutDishView(dish, CATALOG, true);
+      if (view.kind === 'ok') {
+        // ≥ 0: z. B. Espresso rundet auf 0 kcal.
+        expect(view.normal.kcal, dish.id).toBeGreaterThanOrEqual(0);
+        expect(view.normal.kcal, dish.id).toBeLessThanOrEqual(FOOD_LOG_LIMITS.kcal.max);
+        expect(view.normal.kcal % 10, dish.id).toBe(0);
+        expect(
+          Math.min(view.normal.protein_g, view.normal.carbs_g, view.normal.fat_g),
+          dish.id,
+        ).toBeGreaterThanOrEqual(0);
+      } else {
+        expect(view.missingFoods.length, dish.id).toBeGreaterThan(0);
+        for (const foodId of view.missingFoods) {
+          expect(
+            dish.items.some(([id]) => id === foodId),
+            `${dish.id}: ${foodId}`,
+          ).toBe(true);
+        }
+        expect(
+          eatingOutPortionValues(dish, defaultEatingOutPortion(dish.portion), CATALOG, true),
+        ).toBeNull();
+      }
     }
   });
 
@@ -314,7 +380,9 @@ describe('Werte nur aus dem Katalog', () => {
     expect(dish.items).toContainEqual(['butter', 15]);
     const rapsoel = CATALOG.get('rapsoel') as Food;
     // Testwerte (keine echten Butter-Werte): nur, um die Rechnung nach dem Import zu prüfen.
-    const imported = new Map(CATALOG);
+    // Test-Katalog ohne Butter = Stand vor dem Import (unabhängig davon, ob Butter schon importiert ist).
+    const beforeImport = catalogWithout('butter');
+    const imported = new Map(beforeImport);
     imported.set('butter', {
       ...rapsoel,
       id: 'butter',
@@ -322,7 +390,7 @@ describe('Werte nur aus dem Katalog', () => {
       status: 'draft',
       nutrients_per_100g: { ...rapsoel.nutrients_per_100g, kcal: 700, fat_g: 80 },
     });
-    const before = eatingOutDishView(dish, CATALOG, true);
+    const before = eatingOutDishView(dish, beforeImport, true);
     expect(before.kind === 'unavailable' && before.missingFoods).toEqual(['butter']);
     const after = eatingOutDishView(dish, imported, true);
     expect(after.kind).toBe('ok');
