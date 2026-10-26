@@ -111,6 +111,12 @@ const ICONS = {
   pill: [{ d: 'M10.5 20.5 3.5 13.5a5 5 0 0 1 7-7l7 7a5 5 0 0 1-7 7Z' }, { d: 'm8.5 8.5 7 7' }],
   // Training-Übersicht (23.10.2026): Ruhetag, Uhr-Einheit, Ansehen.
   moon: [{ d: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z' }],
+  sun: [
+    { cx: 12, cy: 12, r: 4 },
+    {
+      d: 'M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
+    },
+  ],
   watch: [{ x: 6, y: 6, w: 12, h: 12, rx: 3 }, { d: 'M9 6V3h6v3M9 18v3h6v-3M12 9.5V12l1.5 1.5' }],
   eye: [{ d: 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z' }, { cx: 12, cy: 12, r: 3 }],
   scan: [
@@ -864,19 +870,30 @@ export function ListRow({
   );
 }
 
-/** Runder Knopf nur mit Icon (44 × 44, Rand), z. B. „Übersicht bearbeiten“. Name für Bildschirmleser ist Pflicht. */
+/**
+ * Knopf nur mit Icon (44 × 44), z. B. „Übersicht bearbeiten“. Name für Bildschirmleser ist Pflicht.
+ * - `outline` (Standard): rund mit Rand.
+ * - `plain`: ohne Rand, Icon in der Bereichsfarbe (`area`), z. B. „Tauschen“ in der Übungsliste.
+ */
 export function IconButton({
   icon,
   accessibilityLabel,
   onPress,
+  variant = 'outline',
+  area,
   testID,
 }: {
   icon: IconName;
   accessibilityLabel: string;
   onPress: () => void;
+  variant?: 'outline' | 'plain';
+  /** Nur für `plain`: Farbe des Icons aus der Bereichsfarbe (`icon`, ≥ 4,5 : 1 auf der Karte). */
+  area?: AreaId;
   testID?: string;
 }) {
   const theme = useThemeColors();
+  const scheme = useColorSchemeName();
+  const plain = variant === 'plain';
   return (
     <Pressable
       testID={testID}
@@ -885,11 +902,21 @@ export function IconButton({
       onPress={onPress}
       hitSlop={4}
       style={({ pressed }) => [
-        styles.iconButton,
-        { backgroundColor: theme.surface, borderColor: theme.border, opacity: pressed ? 0.8 : 1 },
+        plain ? styles.iconButtonPlain : styles.iconButton,
+        plain
+          ? { opacity: pressed ? 0.6 : 1 }
+          : {
+              backgroundColor: theme.surface,
+              borderColor: theme.border,
+              opacity: pressed ? 0.8 : 1,
+            },
       ]}
     >
-      <Icon name={icon} size={20} />
+      <Icon
+        name={icon}
+        size={plain ? 22 : 20}
+        {...(plain && area ? { color: areaColors[scheme][area].icon } : {})}
+      />
     </Pressable>
   );
 }
@@ -1258,6 +1285,13 @@ const styles = StyleSheet.create({
   },
   listRowText: { flex: 1, minWidth: 0, gap: 2 },
   listRowLabel: { fontSize: fontSize.md, lineHeight: 22 },
+  iconButtonPlain: {
+    width: MIN_ROW,
+    height: MIN_ROW,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   iconButton: {
     width: MIN_ROW,
     height: MIN_ROW,

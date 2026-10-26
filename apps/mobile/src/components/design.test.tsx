@@ -245,6 +245,26 @@ describe('ListRow (Anzeige, Knopf rechts, destruktiv)', () => {
     expect(view.querySelector('[data-testid="zutat"]')?.textContent).toBe('150 g Haferflocken');
   });
 
+  it('IconButton „plain“: Knopf mit Name für Bildschirmleser (Tippfläche MIN_ROW)', () => {
+    const onPress = vi.fn();
+    const view = render(
+      <IconButton
+        icon="swap"
+        variant="plain"
+        area="training"
+        accessibilityLabel="Kniebeuge tauschen"
+        onPress={onPress}
+        testID="plain"
+      />,
+    );
+    const button = view.querySelector<HTMLElement>('[data-testid="plain"]');
+    expect(button?.getAttribute('role')).toBe('button');
+    expect(button?.getAttribute('aria-label')).toBe('Kniebeuge tauschen');
+    expect(MIN_ROW).toBe(44);
+    button?.click();
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
   it('kennzeichnet destruktive Aktionen als Knopf mit Wort', () => {
     const view = render(
       <ListRow
