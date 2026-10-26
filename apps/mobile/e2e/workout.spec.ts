@@ -201,9 +201,9 @@ test('Progression nach zwei Einheiten sichtbar: kalibriert, dann eine Wiederholu
   await page.clock.setFixedTime(new Date('2026-10-14T09:00:00+02:00'));
   await page.goto('/today');
   await heading(page, 'Heute');
-  await expect(page.getByTestId('plan-exercise').first()).toContainText(
-    '3 × 8 Wiederholungen mit 18,5 kg',
-  );
+  // Kompakte Liste (Entwurf B): Zahlen und Gewicht in eigenen Zeilen.
+  await expect(page.getByTestId('plan-exercise-dose-0')).toContainText('3 × 8 ·');
+  await expect(page.getByTestId('plan-exercise-weight-0')).toHaveText('18,5 kg');
   await page.getByTestId('workout-start').click();
   await expect(page.getByTestId('workout-target-0')).toHaveText('3 × 8 Wiederholungen mit 18,5 kg');
   await expect(page.getByTestId('workout-weight-0-0-value')).toHaveText('18,5 kg');
@@ -215,9 +215,9 @@ test('Progression nach zwei Einheiten sichtbar: kalibriert, dann eine Wiederholu
   await page.clock.setFixedTime(new Date('2026-10-21T09:00:00+02:00'));
   await page.goto('/today');
   await heading(page, 'Heute');
-  await expect(page.getByTestId('plan-exercise').first()).toContainText(
-    '3 × 9 Wiederholungen mit 18,5 kg',
-  );
+  // Kompakte Liste (Entwurf B): Zahlen und Gewicht in eigenen Zeilen.
+  await expect(page.getByTestId('plan-exercise-dose-0')).toContainText('3 × 9 ·');
+  await expect(page.getByTestId('plan-exercise-weight-0')).toHaveText('18,5 kg');
 });
 
 test('Entwurf nach Neu laden, beforeunload-Warnung und Abmelden mit Nachfrage', async ({

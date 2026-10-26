@@ -248,7 +248,7 @@ test('Aufwärmen & Dehnen: Block vor und nach dem Training, Überspringen, Schal
 }) => {
   await onboard(page, GYM_3_DAYS);
   await toToday(page);
-  await expect(page.getByTestId('plan-warmup')).toContainText('Aufwärmen (ca.');
+  await expect(page.getByTestId('plan-warmup')).toContainText(/Aufwärmen\s*ca\. \d+ Min/);
   await page.getByTestId('workout-start').click();
   const warmup = page.getByTestId('workout-warmup');
   await expect(warmup).toContainText('Aufwärmen');
@@ -267,7 +267,7 @@ test('Aufwärmen & Dehnen: Block vor und nach dem Training, Überspringen, Schal
   await page.getByTestId('settings-warmup').click();
   await page.goto('/today');
   await heading(page, 'Heute');
-  await expect(page.getByTestId('plan-warmup')).not.toContainText('Aufwärmen (ca.');
+  await expect(page.getByTestId('plan-warmup')).not.toContainText(/Aufwärmen\s*ca\. \d+ Min/);
   await page.getByTestId('workout-start').click();
   await expect(page.getByTestId('workout-exercise-0')).toBeVisible();
   await expect(page.getByTestId('workout-warmup')).toHaveCount(0);

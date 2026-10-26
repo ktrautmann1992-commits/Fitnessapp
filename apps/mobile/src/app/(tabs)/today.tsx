@@ -66,7 +66,7 @@ import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe, todayIso } from '@/lib/format';
-import { workoutTargetLines } from '@/lib/workout-format';
+import { workoutTargetSummary } from '@/lib/workout-format';
 import { dayLabel, weekdayName, weekdayShort } from '@/lib/plan-format';
 import { appFont } from '@/lib/fonts';
 import { isoDateParam } from '@/lib/route-param';
@@ -581,7 +581,7 @@ export default function TodayScreen() {
   const shown = display?.shown ?? null;
   const context = display?.context ?? null;
   const view = selectedInfo?.view ?? null;
-  const targets = view?.items.map(workoutTargetLines);
+  const targets = view?.items.map(workoutTargetSummary);
   const log = selectedSession ? logForSession(rows, selectedSession.id) : null;
   const hasDraft = selectedInfo?.hasDraft ?? false;
   const pendingUpload =
@@ -979,6 +979,15 @@ export default function TodayScreen() {
                 selected === today ? t.plan.todaySession : t.plan.sessionOn(dayLabel(selected))
               }
               {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
+              today={selected === today}
+              start={
+                selectedInfo && startableNow(selectedSession, selectedInfo)
+                  ? {
+                      label: startLabelFor(selectedSession, selectedInfo),
+                      onPress: () => router.push(`/workout/${selectedSession.id}` as Href),
+                    }
+                  : null
+              }
               paceProfile={paceProfile}
               swapPaused={display?.modeActive === true && selectedSession.kind === 'strength'}
               runStrength={
@@ -1185,6 +1194,28 @@ interface SessionInfo {
  * Hero-Karte „Heute“ (Entwurf s1): offene Einheit mit „Training starten“, erledigte Einheit mit Werten und „statt Sa“
  * bzw. Ruhetag mit der nächsten Einheit. Erledigt steht immer am tatsächlichen Tag (Wochen-Status aus dem Core).
  */
+/** Beschriftung des Start-Knopfs (Hero-Karte und Kopf der Einheit). */
+function startLabelFor(session: StoredSession, info: SessionInfo): string {
+  return session.kind === 'endurance'
+    ? info.start === 'today'
+      ? t.today.startEndurance
+      : t.today.catchUpEndurance
+    : info.start === 'today'
+      ? t.today.startWorkout
+      : t.today.catchUp;
+}
+
+/**
+ * Darf der Kopf der Krafteinheit „Training starten“ zeigen? Dieselben Regeln wie die Hero-Karte: startbar, kein
+ * Entwurf, Einheit nicht leer (Präferenz/Modus) und Übungen geprüft (Bibliothek da).
+ */
+function startableNow(session: StoredSession, info: SessionInfo): boolean {
+  const shown = info.display?.shown ?? null;
+  if (session.kind !== 'strength' || info.start === null || info.hasDraft) return false;
+  if (shown === null || shown.libraryMissing || !info.view) return false;
+  return shown.emptyByPreference !== true && shown.emptyByMode !== true;
+}
+
 function TodayHero({
   day,
   session,
@@ -1213,14 +1244,7 @@ function TodayHero({
       W.hero.minutes(modeShown ? modeShown.estimated_minutes : session.estimated_minutes),
       session.kind === 'strength' && count > 0 ? W.hero.exercises(count) : null,
     ].filter((v): v is string => v !== null);
-    const startLabel =
-      session.kind === 'endurance'
-        ? info.start === 'today'
-          ? t.today.startEndurance
-          : t.today.catchUpEndurance
-        : info.start === 'today'
-          ? t.today.startWorkout
-          : t.today.catchUp;
+    const startLabel = startLabelFor(session, info);
     const emptyStart =
       session.kind === 'strength' &&
       (shown?.emptyByPreference === true || shown?.emptyByMode === true);
