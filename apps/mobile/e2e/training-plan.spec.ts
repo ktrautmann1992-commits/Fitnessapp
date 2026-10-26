@@ -83,6 +83,9 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await expect(page.getByTestId('plan-session-muscles')).toContainText(
     'Trainiert heute – Hauptmuskeln',
   );
+  // „Training starten“ nie doppelt: heute steht der Knopf nur in der Hero-Karte, nicht im Kopf der Einheit.
+  await expect(page.getByTestId('workout-start')).toHaveCount(1);
+  await expect(page.getByTestId('plan-session-start')).toHaveCount(0);
   await expect(page.getByTestId('plan-start-weight-hint')).toHaveCount(1);
   await expect(page.getByTestId('plan-start-weight-text')).toHaveCount(0);
   await page.getByTestId('plan-start-weight-toggle').click();
@@ -187,6 +190,33 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await page.getByRole('button', { name: 'Alles löschen' }).click();
   await expect(page.getByRole('button', { name: "Los geht's" })).toBeVisible();
   expect(await page.evaluate((key) => window.localStorage.getItem(key), LOCAL_DB)).toBeNull();
+});
+
+test('Kopf der Einheit: „Heute nachholen“ nur ohne Start-Knopf in der Hero-Karte', async ({
+  page,
+}) => {
+  await onboard(page, {
+    consent: true,
+    yesQuestion: null,
+    level: /^Einsteiger/,
+    goal: 'Muskelaufbau',
+    days: [
+      ['Montag', 'Kraft im Studio', 60],
+      ['Mittwoch', 'Kraft im Studio', 60],
+    ],
+  });
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await heading(page, 'Heute');
+  // Donnerstag (Ruhetag): die verpasste Einheit vom Mittwoch ansehen – nachholbar, die Hero-Karte hat keinen Start-Knopf.
+  await page.clock.setFixedTime(new Date('2026-10-08T09:00:00+02:00'));
+  await page.goto('/today?tag=2026-10-07');
+  await heading(page, 'Heute');
+  await expect(page.getByTestId('workout-start')).toHaveCount(0);
+  const start = page.getByTestId('plan-session-start');
+  await expect(start).toHaveCount(1);
+  await expect(start).toHaveText('Heute nachholen');
+  await start.click();
+  await expect(page.getByTestId('workout')).toBeVisible();
 });
 
 test('Ausdauer ohne Gesundheits-Check: Geh-Lauf-Wechsel, Anstrengung, vorsichtiger Start', async ({

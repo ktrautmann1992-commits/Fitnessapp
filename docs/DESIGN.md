@@ -300,8 +300,9 @@ Gründer-Freigabe Entwurf B für die Krafteinheit auf „Training“ (`component
 - **Kopf-Karte** (helle Karte, Radius 20): Icon-Chip Hantel (Trainingsblau), Kennzeile („Deine Einheit heute“),
   Name als Überschrift, darunter drei Zahlen **Minuten · Übungen · Sätze** (20 px extra fett, Ansage „ca. 50 Minuten,
   6 Übungen, 16 Sätze“), Kennzeile „Trainiert heute – Hauptmuskeln“ mit Muskel-Chips, Zeile „**Unterstützend:** …“
-  und – wenn die Einheit startbar ist (gleiche Regeln wie die Hero-Karte) – „Training starten“ (52 px,
-  `plan-session-start`). Muskeln der Einheit: `sessionMuscleTiles` in `packages/core` (Hauptmuskel gewinnt).
+  und – wenn die Einheit startbar ist (gleiche Regeln wie die Hero-Karte) – „Training starten“ bzw. „Heute nachholen“
+  (52 px, `plan-session-start`). **Nie doppelt:** Zeigt die Hero-Karte oben schon den Start-Knopf für dieselbe Einheit
+  (heute), entfällt er im Kopf; er erscheint nur ohne Hero-Start, z. B. beim Nachholen einer verpassten Einheit. Muskeln der Einheit: `sessionMuscleTiles` in `packages/core` (Hauptmuskel gewinnt).
 - **„Startgewicht finden“** steht nur noch **einmal** oben als aufklappbarer Hinweis (Rand links Trainingsblau
   `strong`, Info-Icon, „Erstes Mal? So wählst du das Gewicht“) – nur wenn mindestens einer Übung ein Gewicht fehlt.
   Aufgeklappt: wie man das Gewicht wählt und was „2–3 in Reserve“ heißt.

@@ -605,6 +605,12 @@ export default function TodayScreen() {
       : null;
   const todayInfo =
     todayOpen && selectedSession?.id === todayOpen.id ? selectedInfo : sessionInfo(todayOpen);
+  /** Zeigt die Hero-Karte „Training starten“ für diese Einheit (gleiche Regel wie TodayHero)? */
+  const heroStarts = (sessionId: string) =>
+    todayOpen !== null &&
+    todayOpen.id === sessionId &&
+    todayInfo !== null &&
+    startableNow(todayOpen, todayInfo);
   const question =
     focused && week.assignmentsReady && sheetDate === null && swapTarget === null
       ? (week.status?.questions[0] ?? null)
@@ -980,8 +986,12 @@ export default function TodayScreen() {
               }
               {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
               today={selected === today}
+              // Nie doppelt: zeigt die Hero-Karte oben schon „Training starten“ für diese Einheit, entfällt der Knopf
+              // im Kopf der Einheit (nur andere Tage, z. B. Nachholen).
               start={
-                selectedInfo && startableNow(selectedSession, selectedInfo)
+                selectedInfo &&
+                startableNow(selectedSession, selectedInfo) &&
+                !heroStarts(selectedSession.id)
                   ? {
                       label: startLabelFor(selectedSession, selectedInfo),
                       onPress: () => router.push(`/workout/${selectedSession.id}` as Href),
