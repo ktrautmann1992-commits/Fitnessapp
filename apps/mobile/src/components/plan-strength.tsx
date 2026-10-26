@@ -497,10 +497,7 @@ function ExerciseRow({
         >
           <ExerciseThumb exerciseId={exercise.exercise_id} />
           <View
-            style={[
-              styles.number,
-              { backgroundColor: training.strong, borderColor: theme.surface },
-            ]}
+            style={[styles.number, { backgroundColor: theme.primary, borderColor: theme.surface }]}
           >
             <Text style={[styles.numberText, appFont('extrabold')]}>{exercise.order_no}</Text>
           </View>
