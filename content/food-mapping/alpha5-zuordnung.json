@@ -1717,7 +1717,7 @@
         "state_de": "Pulver, mit Süßungsmitteln",
         "category": "other"
       },
-      "name_de": "Geschmackspulver (zuckerfrei)",
+      "name_de": "Geschmackspulver (mit Süßungsmitteln)",
       "aliases_de": [],
       "shopping_category": "other",
       "pantry": true,
@@ -1730,7 +1730,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, mit Süßungsmitteln. Quell-ID offen (Lauf 40093377661 „kandidaten“ 24.10.2026, BLS 4.0): nur Tafelsüße und gesüßte Gerichte – passt nicht → Zweitquelle oder ungeprüft (Plan 19.3). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver, mit Süßungsmitteln. Quell-ID offen (Lauf 40093377661 „kandidaten“ 24.10.2026, BLS 4.0): nur Tafelsüße und gesüßte Gerichte – passt nicht → Zweitquelle oder ungeprüft (Plan 19.3). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle. Name ohne „zuckerfrei“ (R10, Health-Claims-Verordnung)."
     },
     {
       "alpha5_id": "gewuerzgurken-glas",
@@ -2506,7 +2506,7 @@
         "state_de": "Pulver, ohne Zucker",
         "category": "other"
       },
-      "name_de": "Instant-Puddingpulver (zuckerfrei)",
+      "name_de": "Instant-Puddingpulver (mit Süßungsmitteln)",
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
@@ -2519,7 +2519,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "UNSICHER – bei R19 prüfen. Zustand: Pulver, ohne Zucker. Quell-ID R481100 „Puddingpulver Vanille, ungezuckert“ (Lauf 40093377661 „kandidaten“ 24.10.2026, BLS 4.0): ungezuckertes Puddingpulver; Geschmack der Rezepte unterschiedlich (Vanille als nächster Eintrag). Instant-Pulver kann Milchpulver enthalten – bei R19 prüfen."
+      "reason_de": "UNSICHER – bei R19 prüfen. Zustand: Pulver, ohne Zucker. Quell-ID R481100 „Puddingpulver Vanille, ungezuckert“ (Lauf 40093377661 „kandidaten“ 24.10.2026, BLS 4.0): ungezuckertes Puddingpulver; Geschmack der Rezepte unterschiedlich (Vanille als nächster Eintrag). Instant-Pulver kann Milchpulver enthalten – bei R19 prüfen. Name ohne „zuckerfrei“ (R10, Health-Claims-Verordnung)."
     },
     {
       "alpha5_id": "instantkaffee",
