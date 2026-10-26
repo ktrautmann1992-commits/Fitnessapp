@@ -10,6 +10,7 @@ import {
   MUSCLE_TILES,
   muscleTileRole,
   parseMuscleTileId,
+  sessionMuscleTiles,
 } from './muscle-tiles';
 import { makeExercise } from './test-fixtures';
 
@@ -158,5 +159,79 @@ describe('exerciseMuscleTiles (Übungsseite)', () => {
     for (const ex of repoLibrary().exercises.values()) {
       expect(exerciseMuscleTiles(ex).length, ex.id).toBeGreaterThan(0);
     }
+  });
+});
+
+describe('sessionMuscleTiles (Übungsliste der Einheit)', () => {
+  const squat = makeExercise({
+    id: 'squat',
+    primary_muscles: ['quadriceps', 'glutes'],
+    secondary_muscles: ['lower_back', 'adductors'],
+  });
+  const bench = makeExercise({
+    id: 'bench',
+    primary_muscles: ['chest'],
+    secondary_muscles: ['front_delts', 'triceps'],
+  });
+  const pushdown = makeExercise({
+    id: 'pushdown',
+    primary_muscles: ['triceps'],
+    secondary_muscles: [],
+  });
+
+  it('leere Einheit → leer', () => {
+    expect(sessionMuscleTiles([])).toEqual([]);
+  });
+
+  it('unbekannte Übungen (null/undefined) werden übersprungen, kein Absturz', () => {
+    expect(sessionMuscleTiles([null, undefined])).toEqual([]);
+    expect(sessionMuscleTiles([null, pushdown, undefined])).toEqual([
+      { tile: 'trizeps', role: 'primary' },
+    ]);
+  });
+
+  it('Hauptmuskel gewinnt über unterstützend – egal in welcher Reihenfolge', () => {
+    const expected = [
+      { tile: 'brust', role: 'primary' },
+      { tile: 'trizeps', role: 'primary' },
+      { tile: 'schultern', role: 'secondary' },
+    ];
+    expect(sessionMuscleTiles([bench, pushdown])).toEqual(expected);
+    expect(sessionMuscleTiles([pushdown, bench])).toEqual(expected);
+  });
+
+  it('doppelte Muskeln erscheinen nur einmal', () => {
+    expect(sessionMuscleTiles([bench, bench, pushdown, pushdown])).toEqual(
+      sessionMuscleTiles([bench, pushdown]),
+    );
+  });
+
+  it('stabile Reihenfolge: Hauptmuskeln, dann unterstützend, je in Kachel-Reihenfolge', () => {
+    expect(sessionMuscleTiles([squat, bench])).toEqual([
+      { tile: 'brust', role: 'primary' },
+      { tile: 'gesaess', role: 'primary' },
+      { tile: 'oberschenkel-vorne', role: 'primary' },
+      { tile: 'schultern', role: 'secondary' },
+      { tile: 'unterer-ruecken', role: 'secondary' },
+      { tile: 'trizeps', role: 'secondary' },
+      { tile: 'adduktoren', role: 'secondary' },
+    ]);
+  });
+
+  it('„Nacken“ entfällt auch über Übungen hinweg neben „Oberer Rücken“', () => {
+    const shrug = makeExercise({ primary_muscles: ['upper_back'], secondary_muscles: [] });
+    const row = makeExercise({ primary_muscles: ['lats'], secondary_muscles: [] });
+    expect(sessionMuscleTiles([shrug, row])).toEqual([{ tile: 'ruecken-oben', role: 'primary' }]);
+  });
+
+  it('Übung ohne Muskeln trägt nichts bei', () => {
+    const none = makeExercise({ primary_muscles: [], secondary_muscles: [] });
+    expect(sessionMuscleTiles([none])).toEqual([]);
+  });
+
+  it('echter Inhaltsstand: alle Übungen zusammen ergeben jede Kachel höchstens einmal', () => {
+    const tiles = sessionMuscleTiles([...repoLibrary().exercises.values()]);
+    expect(new Set(tiles.map((t) => t.tile)).size).toBe(tiles.length);
+    expect(tiles.length).toBeGreaterThan(0);
   });
 });
