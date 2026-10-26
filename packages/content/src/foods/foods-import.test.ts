@@ -604,3 +604,88 @@ describe('foods-import: Liste „bestätigte Datenunterschiede“ (aus dem Stand
     expect(result.markdown).toMatch(/nur auf `main` starten/);
   });
 });
+
+describe('foods-import mit der Auswärts-Zuordnung (G-AV2)', () => {
+  function eatingOutFood(food_id: string, ref: string | null, search: string[]) {
+    const rest: Partial<MappingItem> = { ...item(food_id, ref) };
+    delete rest.alpha5_id;
+    delete rest.alpha5_name;
+    return { ...rest, source: { ...item(food_id, ref).source, search, category: 'fish' as const } };
+  }
+  function writeEatingOut(dir: string, foods: unknown[], dishFood = 'apfel'): void {
+    writeFileSync(
+      join(dir, 'content/food-mapping/auswaerts-zuordnung.json'),
+      JSON.stringify({
+        format: 'alpha5-auswaerts-zuordnung',
+        version: 1,
+        status: 'entwurf',
+        fachpruefung_de: 'VOR LIVEGANG FACHLICH PRÜFEN',
+        origin: 'claude_session',
+        model: 'claude-opus-5-5',
+        created_on: '2026-10-26',
+        note_de: 'Testzuordnung (erfunden).',
+        foods,
+        dishes: [
+          {
+            id: 'auswaerts-test',
+            name_de: 'Testgericht',
+            category: 'imbiss',
+            portion: 'plate',
+            basis_de: '1 Teller',
+            items: [{ food_id: dishFood, g: 150 }],
+            source_de: 'Annahme: Testportion.',
+            status: 'draft',
+          },
+        ],
+      }),
+    );
+  }
+
+  it('Modus kandidaten: neue Lebensmittel ohne Quell-ID erscheinen mit Kandidaten', async () => {
+    const dir = workdir();
+    writeEatingOut(dir, [eatingOutFood('lachs-test', null, ['Lachs'])], 'lachs-test');
+    const result = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'kandidaten' },
+      deps(dir, fakeApi()),
+    );
+    expect(result.exitCode).toBe(0);
+    expect(result.markdown).toMatch(/\| `lachs-test` \| Lachs \| `T100000`: Lachs/);
+    expect(result.markdown).toContain('auswaerts-zuordnung.json');
+  });
+
+  it('Modus import: Lebensmittel mit Quell-ID kommt aus dem Quellauszug nach content/foods (einzige Schreibstelle)', async () => {
+    const dir = workdir();
+    writeEatingOut(dir, [eatingOutFood('lachs-test', 'T100000', ['Lachs'])], 'lachs-test');
+    const result = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'import' },
+      deps(dir, fakeApi()),
+    );
+    expect(result.exitCode).toBe(0);
+    const extract = readFileSync(join(dir, 'content/sources/bls/4.0/extract.csv'), 'utf8');
+    expect(extract).toContain('T100000');
+    const salmon = foodSchema.parse(
+      JSON.parse(readFileSync(join(dir, 'content/foods/lachs-test.json'), 'utf8')),
+    );
+    expect(salmon.nutrients_per_100g.kcal).toBe(200);
+    expect(salmon.status).toBe('draft');
+    expect(salmon.source.ref).toBe('T100000');
+  });
+
+  it('doppelte Zuordnung (beide Dateien) oder ungültige Datei → kein Lauf', async () => {
+    const dir = workdir();
+    writeEatingOut(dir, [eatingOutFood('apfel', null, ['Apfel'])]);
+    const doubled = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'kandidaten' },
+      deps(dir, fakeApi()),
+    );
+    expect(doubled.exitCode).toBe(1);
+    expect(doubled.markdown).toMatch(/Zuordnung ungültig[\s\S]*schon in alpha5-zuordnung\.json/);
+    writeFileSync(join(dir, 'content/food-mapping/auswaerts-zuordnung.json'), '{"format":"x"}');
+    const broken = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'import' },
+      deps(dir, fakeApi()),
+    );
+    expect(broken.exitCode).toBe(1);
+    expect(broken.markdown).toMatch(/auswaerts-zuordnung\.json ungültig/);
+  });
+});

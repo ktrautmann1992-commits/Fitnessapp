@@ -280,7 +280,7 @@ export function formatCandidates(result: {
   const lines = [
     '#### Zuordnung: Kandidaten aus der Quelle',
     '',
-    `${result.open.length} Zutaten ohne Quell-ID. Gewählte Quell-ID in \`content/food-mapping/alpha5-zuordnung.json\` bei \`source.ref\` eintragen (Pull Request), danach Modus „import“.`,
+    `${result.open.length} Zutaten ohne Quell-ID. Gewählte Quell-ID in \`content/food-mapping/alpha5-zuordnung.json\` bzw. – für Lebensmittel aus „Auswärts essen“ – in \`content/food-mapping/auswaerts-zuordnung.json\` (Abschnitt \`foods\`) bei \`source.ref\` eintragen (Pull Request), danach Modus „import“.`,
     '',
   ];
   if (result.open.length > 0) {
