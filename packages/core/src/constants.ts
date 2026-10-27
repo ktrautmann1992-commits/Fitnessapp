@@ -6498,3 +6498,28 @@ export const HYROX_ONLY_EXERCISE_IDS: readonly string[] = [
   'wall-balls',
   'kniebeuge-schulterdruecken-kurzhantel',
 ];
+
+/**
+ * Sportarten Stufe 1 · Restpunkte (Wandern, 27.10.2026): GPX-Datei als gemerkte Strecke einlesen (routes/gpx-import.ts).
+ * Die Datei wird NUR auf dem Gerät gelesen und als gemerkte Strecke auf diesem Gerät abgelegt (wie „Rundkurs merken“,
+ * nie auf dem Server). Grenzen schützen das Gerät vor riesigen oder kaputten Dateien:
+ * - `maxFileChars`: höchstens so viele Zeichen (≈ 8 MB; eine 100-km-Tour mit Punkt je Sekunde hat ≈ 3 MB),
+ * - `maxRawPoints`: höchstens so viele Punkte werden gelesen (mehr → Fehler „zu groß“),
+ * - `minPoints`: mindestens 2 gültige Punkte, `minDistanceM`/`maxDistanceM`: Länge der Strecke,
+ * - `maxStoredPoints`: die gemerkte Linie wird auf so viele Punkte vereinfacht (wie TRACKED_ROUTE_LIMITS),
+ * - `maxGapM`: Sprung zwischen zwei Punkten über diesem Wert → kaputte Datei (z. B. 0/0-Koordinaten),
+ * - `nameMaxLength`: Name aus der Datei gekürzt (wie die gemerkten Runden).
+ * Zeiten in der Datei werden nicht übernommen (eine eingelesene Strecke ist ein Weg zum Nachgehen, keine Einheit).
+ * Höhen außerhalb ROUTE_GPX.elevationM fallen weg. Quelle: GPX 1.1 (www.topografix.com/GPX/1/1); Grenzen
+ * PRODUKTENTSCHEIDUNG.
+ */
+export const GPX_IMPORT = {
+  maxFileChars: 8_000_000,
+  maxRawPoints: 100_000,
+  minPoints: 2,
+  minDistanceM: 100,
+  maxDistanceM: 300_000,
+  maxStoredPoints: 2_000,
+  maxGapM: 50_000,
+  nameMaxLength: 60,
+} as const;
