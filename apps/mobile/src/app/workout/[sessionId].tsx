@@ -34,6 +34,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { IntervalTimer } from '@/components/competition';
 import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
+import { WalkKindChoice } from '@/components/hiking';
 import { RowEntryFields, RowTechniqueNotice } from '@/components/rowing';
 import { AreaProgress, HeroCard, IconChip, Tile, useAreaColors } from '@/components/design';
 import { RestEndNotificationOffer } from '@/components/notifications';
@@ -1523,6 +1524,15 @@ function EnduranceCard({
             }}
             testID="workout-cardio-bike-type"
           />
+        ) : null}
+        {/* Sportarten Stufe 1 · Wandern: Art der Geh-Einheit auch ohne GPS (Nachtragen/Eintragen). */}
+        {cardio.modality === 'walk' ? (
+          <View testID="workout-cardio-walk-kind">
+            <WalkKindChoice
+              walkKind={cardio.walkKind ?? 'walk'}
+              onChange={(walkKind) => onChange({ walkKind: walkKind === 'walk' ? null : walkKind })}
+            />
+          </View>
         ) : null}
         <Body style={styles.setLabel}>{t.workout.cardio.duration}</Body>
         <View style={styles.steppers}>

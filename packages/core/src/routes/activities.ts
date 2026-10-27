@@ -1,5 +1,11 @@
 import { addDays, isoDateInTimeZone, startOfIsoWeek } from '../dates';
-import { ENDURANCE_MODALITIES, type EnduranceModality, type TrackedRouteSport } from '../enums';
+import {
+  ENDURANCE_MODALITIES,
+  type EnduranceModality,
+  type TrackedRouteSport,
+  type WalkKind,
+} from '../enums';
+import { type HikeKind, isHikeKind } from '../hiking/walk-kind';
 
 /**
  * Ausdauer-Aktivitäten (Etappe E4 „Meine Läufe“, E5 Woche/Monat; docs/PLAN-EINKAUFEN-AUSDAUER.md 6–7):
@@ -22,6 +28,8 @@ export interface EnduranceRouteInput {
   readonly is_favorite?: boolean;
   /** E-Bike (nur beim Rad); fehlt = normales Rad. */
   readonly e_bike?: boolean;
+  /** Sportarten Stufe 1: Art der Geh-Einheit (nur beim Gehen); fehlt/null = Gehen. */
+  readonly walk_kind?: WalkKind | null;
 }
 
 export interface EnduranceLogInput {
@@ -35,6 +43,8 @@ export interface EnduranceLogInput {
   readonly elevation_m: number | null;
   /** E-Bike (cardio_logs.e_bike, nur beim Rad); fehlt = normales Rad. */
   readonly e_bike?: boolean;
+  /** Sportarten Stufe 1: Art der Geh-Einheit (cardio_logs.walk_kind); fehlt/null = Gehen. */
+  readonly walk_kind?: WalkKind | null;
 }
 
 export interface EnduranceActivity {
@@ -57,6 +67,16 @@ export interface EnduranceActivity {
   readonly isFavorite: boolean;
   /** E-Bike: Sportart bleibt „Rad“, zählt in die Rad-Summen und wird dort als „davon E-Bike“ ausgewiesen. */
   readonly eBike: boolean;
+  /**
+   * Wanderung/Bergwanderung (Sportarten Stufe 1, 27.10.2026): Sportart bleibt „Gehen“ (Summen unverändert), die Liste
+   * zeigt „Wanderung“ bzw. „Bergwanderung“. Fehlt beim Spaziergang und bei anderen Sportarten.
+   */
+  readonly walkKind?: HikeKind;
+}
+
+/** Art der Geh-Einheit für die Anzeige: Eintrag führend (wie beim E-Bike), sonst die Strecke. */
+function hikeOf(kind: WalkKind | null | undefined): { walkKind?: HikeKind } {
+  return isHikeKind(kind) ? { walkKind: kind } : {};
 }
 
 /** Strecken und Einträge zusammenführen, neueste zuerst; verknüpfte Einträge nur einmal (als Strecke). */
@@ -69,6 +89,7 @@ export function enduranceActivities(
   );
   // E-Bike: der verknüpfte Eintrag ist führend (die Datenbank hält beide gleich; Uhr-Routen kommen ohne Angabe).
   const logEBike = new Map(logs.map((l) => [l.id, l.modality === 'bike' && l.e_bike === true]));
+  const logWalkKind = new Map(logs.map((l) => [l.id, l.walk_kind ?? null]));
   const fromRoutes = routes.map((r): EnduranceActivity => ({
     key: `route:${r.id}`,
     source: 'route',
@@ -88,6 +109,13 @@ export function enduranceActivities(
       (r.session_log_id !== null && logEBike.has(r.session_log_id)
         ? logEBike.get(r.session_log_id) === true
         : r.e_bike === true),
+    ...(r.sport === 'walk'
+      ? hikeOf(
+          r.session_log_id !== null && logWalkKind.has(r.session_log_id)
+            ? logWalkKind.get(r.session_log_id)
+            : r.walk_kind,
+        )
+      : {}),
   }));
   const fromLogs = logs
     .filter((l) => !linked.has(l.id))
@@ -106,6 +134,7 @@ export function enduranceActivities(
       elevationM: l.elevation_m,
       isFavorite: false,
       eBike: l.modality === 'bike' && l.e_bike === true,
+      ...(l.modality === 'walk' ? hikeOf(l.walk_kind) : {}),
     }));
   return [...fromRoutes, ...fromLogs].sort(
     (a, b) =>
