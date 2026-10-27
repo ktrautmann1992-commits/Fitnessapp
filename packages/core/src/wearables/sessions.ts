@@ -1,4 +1,4 @@
-import { WEARABLE_SYNC } from '../constants';
+import { CARDIO_LOG_LIMITS, WEARABLE_SYNC } from '../constants';
 import { isoDateInTimeZone } from '../dates';
 import { type DuplicateCandidate, matchExisting } from './duplicates';
 import { mapExerciseType } from './exercise-types';
@@ -57,6 +57,12 @@ export interface HcSessionExtras {
    * die App rechnet daraus die Ø Kadenz (averageCadence) und merkt sie nur auf dem Gerät.
    */
   readonly steps?: number | null;
+  /**
+   * Sportarten Stufe 1 · Etappe R (nur Rudergerät): Ø Leistung in Watt und Ø Schlagzahl je Minute, falls die App sie
+   * liest (fehlt = nicht gelesen). Außerhalb von CARDIO_LOG_LIMITS bzw. bei anderen Arten verworfen.
+   */
+  readonly avgPowerW?: number | null;
+  readonly strokeRate?: number | null;
 }
 
 /**
@@ -95,6 +101,19 @@ const roundIn = (value: number | null | undefined, limits: { min: number; max: n
   const rounded = Math.round(value);
   return rounded >= limits.min && rounded <= limits.max ? rounded : null;
 };
+
+function rowExtras(
+  group: string,
+  extras: HcSessionExtras,
+): { avg_power_w?: number; stroke_rate?: number } {
+  if (group !== 'row') return {};
+  const power = roundIn(extras.avgPowerW, CARDIO_LOG_LIMITS.avgPowerW);
+  const stroke = roundIn(extras.strokeRate, CARDIO_LOG_LIMITS.strokeRate);
+  return {
+    ...(power === null ? {} : { avg_power_w: power }),
+    ...(stroke === null ? {} : { stroke_rate: stroke }),
+  };
+}
 
 /**
  * Eine Einheit übernehmen: Dauer 1 min–12 h (sonst überspringen, Zähler „nicht übernommen“), Tag = Beginn in
@@ -179,6 +198,8 @@ export function sessionFromHc(
       distance_m: distance.distanceM,
       kcal: roundIn(extras.kcal, WEARABLE_SYNC.kcal),
       heart_rate: heartRate,
+      // Etappe R: Watt/Schlagzahl nur beim Rudergerät und nur, wenn vorhanden (sonst fehlt das Feld wie bisher).
+      ...rowExtras(mapped.group, extras),
     },
     route: routePayload,
     routeStatus,

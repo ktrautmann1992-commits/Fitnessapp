@@ -32,6 +32,9 @@ import { type HardWorkoutLimits, hardSeconds, stepsFitWorkoutType } from '../pla
 import { MULTISPORT_TEXTS_DE, sportOfVariant } from '../plan/multisport';
 import { planSafetyRules } from '../plan/safety';
 import { FULL_HOME, MONDAY, person, repoLibrary } from '../plan/test-library';
+import { mapExerciseType, sportForExerciseType } from '../wearables/exercise-types';
+import { wearableSessionImportSchema } from '../wearables/schema';
+import { sessionFromHc } from '../wearables/sessions';
 import { parseRowClock, rowValuesFromInput } from './input';
 import {
   formatRowSplit,
@@ -595,5 +598,55 @@ describe('Schon- und Reise-Modus', () => {
       }),
     ).toEqual(['travel_active', 'travel_row_alternative']);
     expect(applyModesToEndurance(rowSession, {}).notices).toEqual([]);
+  });
+});
+
+describe('Uhr: Health Connect 54 Rudergerät', () => {
+  const record = {
+    id: 'hc-row-1',
+    exerciseType: 54,
+    startTime: '2026-10-26T07:00:00Z',
+    endTime: '2026-10-26T07:30:00Z',
+  };
+
+  it('54 → Rudern mit Dauer/Distanz/Watt/Schlagzahl; 53 (Boot) bleibt „Sonstige“', () => {
+    expect(mapExerciseType(54)).toEqual({ group: 'row', nameDe: 'Rudern' });
+    expect(mapExerciseType(53).group).toBe('other');
+    expect(sportForExerciseType(54)).toBeNull();
+    const result = sessionFromHc(
+      record,
+      { distanceM: 6123.4, avgPowerW: 181.6, strokeRate: 23.8 },
+      { hfMax: null },
+    );
+    expect(result.kind).toBe('ok');
+    if (result.kind !== 'ok') return;
+    expect(result.session).toMatchObject({
+      group: 'row',
+      name_de: 'Rudern',
+      duration_s: 1800,
+      distance_m: 6123,
+      avg_power_w: 182,
+      stroke_rate: 24,
+    });
+    expect(result.routeStatus).toBe('not_applicable');
+    expect(
+      wearableSessionImportSchema.safeParse({
+        ...result.session,
+        merge_into: null,
+        possible_duplicate_of: null,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('ohne bzw. außerhalb der Grenzen: Felder fehlen; andere Arten nie', () => {
+    const none = sessionFromHc(record, { avgPowerW: 2000, strokeRate: 5 }, { hfMax: null });
+    expect(none.kind === 'ok' && 'avg_power_w' in none.session).toBe(false);
+    expect(none.kind === 'ok' && 'stroke_rate' in none.session).toBe(false);
+    const run = sessionFromHc(
+      { ...record, exerciseType: 56 },
+      { avgPowerW: 200, strokeRate: 24 },
+      { hfMax: null },
+    );
+    expect(run.kind === 'ok' && 'avg_power_w' in run.session).toBe(false);
   });
 });

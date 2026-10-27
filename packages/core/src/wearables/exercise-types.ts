@@ -9,7 +9,8 @@ import type { WearableSessionGroup } from './schema';
  * - Laufen, Laufband → run; Gehen → walk; Rad, Ergometer → bike; Schwimmen (Becken, offen) → swim,
  * - Krafttraining, Gewichtheben, Calisthenics und einzelne Kraftübungen (Bankdrücken, Kniebeuge …) → freie
  *   Kraft-Einheit (A1b) ohne Übungen,
- * - alles andere (Yoga, Wandern, Tennis, Rudern, Crosstrainer …) → freie Einheit „Sonstige“ mit deutschem Titel.
+ * - Rudergerät (54, Sportarten Stufe 1 · Etappe R) → Ausdauer Rudern,
+ * - alles andere (Yoga, Wandern, Tennis, Rudern im Boot, Crosstrainer …) → freie Einheit „Sonstige“ mit deutschem Titel.
  *   Sportarten Stufe 2 (docs/PLAN-SPORTARTEN.md): Arten aus dem Sportarten-Katalog bekommen ihre Sportart
  *   (WEARABLE_SPORT_TYPES, kcal/Belastung je Sportart); alle übrigen „Sonstigen“ zählen als „Sonstige Sportart“.
  */
@@ -18,6 +19,8 @@ const RUN = [56, 57];
 const WALK = [79];
 const BIKE = [8, 9];
 const SWIM = [73, 74];
+/** Sportarten Stufe 1 · Etappe R: Rudergerät (54) → Ausdauer Rudern; Rudern im Boot (53) bleibt „Sonstige“. */
+const ROW = [54];
 /** Krafttraining (70), Gewichtheben (81), Calisthenics (13) und einzelne Kraftübungen. */
 const STRENGTH = [
   70, 81, 13, 1, 3, 6, 7, 15, 17, 18, 19, 20, 21, 22, 23, 24, 30, 42, 43, 49, 67, 77,
@@ -87,6 +90,7 @@ export function mapExerciseType(hcType: number): MappedExerciseType {
   if (WALK.includes(hcType)) return { group: 'walk', nameDe: names.endurance.walk };
   if (BIKE.includes(hcType)) return { group: 'bike', nameDe: names.endurance.bike };
   if (SWIM.includes(hcType)) return { group: 'swim', nameDe: names.endurance.swim };
+  if (ROW.includes(hcType)) return { group: 'row', nameDe: names.endurance.row };
   if (STRENGTH.includes(hcType)) return { group: 'strength', nameDe: names.strength };
   return { group: 'other', nameDe: WEARABLE_OTHER_TITLES[hcType] ?? OTHER_TITLE };
 }
