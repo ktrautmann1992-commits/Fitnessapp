@@ -1,0 +1,59 @@
+{
+  "id": "hyrox-renntag",
+  "version": 1,
+  "status": "published",
+  "title_de": "Hyrox – so läuft der Tag",
+  "intro_de": "Ein Hyrox-Wettkampf verbindet Laufen und funktionelle Stationen: achtmal 1 km laufen, nach jedem Kilometer eine Station. Hier steht, wie der Tag abläuft und wie du dich vorbereitest. Die App ist kein offizielles Angebot der Veranstalter – maßgeblich ist immer das aktuelle Regelwerk deines Events.",
+  "sections": [
+    {
+      "heading_de": "Der Ablauf in Kürze",
+      "body_de": [
+        "Du läufst 8 Runden: jeweils ca. 1 km laufen, dann eine Station in fester Reihenfolge – Ski-Ergometer, Schlitten schieben, Schlitten ziehen, Burpee-Weitsprünge, Rudern, Farmer's Carry, Sandsack-Ausfallschritte und zum Schluss Wall Balls.",
+        "Zwischen Laufstrecke und Station liegt die Wechselzone (Roxzone). Die Zeit dort zählt zur Gesamtzeit.",
+        "Gewichte und Mengen hängen von Division und Geschlecht ab. Prüfe sie vorab im Regelwerk der laufenden Saison."
+      ]
+    },
+    {
+      "heading_de": "Die Tage davor",
+      "body_de": [
+        "In der Rennwoche trainierst du nur noch kurz und locker – dein Plan setzt dafür eine leichte Woche. Neue Übungen oder harte Einheiten lässt du weg.",
+        "Schlafe ausreichend, iss vertraute Gerichte und trink über den Tag verteilt. Was du am Renntag essen willst, hast du im Training schon ausprobiert.",
+        "Lege am Vorabend alles bereit: Startunterlagen, Schuhe mit gutem Halt, Kleidung, Getränk, kleiner Snack, Handtuch."
+      ]
+    },
+    {
+      "heading_de": "Am Renntag",
+      "body_de": [
+        "Sei früh genug da, um in Ruhe einzuchecken und die Halle anzusehen: Wo beginnt die Laufrunde, wo liegen die Stationen, wo ist die Wechselzone?",
+        "Das letzte größere Essen liegt einige Stunden vor dem Start, danach nur noch Kleinigkeiten, die du gut verträgst.",
+        "Wärm dich 10–15 Minuten auf: locker traben, Hüfte und Schultern mobilisieren, ein paar Kniebeugen und kurze Steigerungen."
+      ]
+    },
+    {
+      "heading_de": "Während des Rennens",
+      "body_de": [
+        "Starte bewusst ruhiger, als es sich anfühlt. Die ersten Kilometer sind schnell vorbei, die Stationen werden mit jeder Runde schwerer.",
+        "Achte auf saubere Technik – die Kampfrichter zählen nur korrekte Wiederholungen. Lieber kurz durchatmen als eine Wiederholung doppelt machen.",
+        "Trinke, wenn es angeboten wird oder du Durst hast. Bei Schwindel, Brustschmerz oder ungewohnten Beschwerden hörst du sofort auf und meldest dich beim Personal."
+      ]
+    },
+    {
+      "heading_de": "Danach",
+      "body_de": [
+        "Geh ein paar Minuten locker, trink etwas und iss eine Mahlzeit mit Kohlenhydraten und Eiweiß.",
+        "Trag dein Ergebnis in der App unter „Mein Wettkampf“ ein – auf Wunsch mit Teilzeiten. Es bleibt privat: keine Ranglisten, kein Vergleich.",
+        "Die Tage danach sind zur Erholung da. Dein Plan sieht danach lockere Einheiten vor."
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

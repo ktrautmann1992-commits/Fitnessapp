@@ -10,6 +10,8 @@ import {
   codePointLength,
   findGlossaryExercise,
   freeSessionDates,
+  hasStationSteps,
+  hyroxTravelStationNames,
   type CardioInputError,
   type CardioInputField,
   ENDURANCE_MODALITIES,
@@ -26,6 +28,7 @@ import {
   restAfterCheckedSet,
   SESSION_LOG_LIMITS,
   talkTestLevel,
+  travelOnDay,
   type SkillStepHint,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
@@ -344,6 +347,19 @@ export default function WorkoutScreen() {
     timerSession && timerSteps && timerSession.workout_type === 'brick'
       ? brickStepSports(timerSteps, timerSession.estimated_minutes)
       : null;
+  // Restpunkte (Hyrox, 27.10.2026): Reise-Modus → Kombi als „Lauf + Körpergewicht-Zirkel“ – je Stations-Schritt eine
+  // Übung mit den Reise-Geräten (packages/core hyroxTravelStationNames). Ohne Bibliothek: „locker weiterlaufen“.
+  const travelToday =
+    timerSteps && hasStationSteps(timerSteps)
+      ? travelOnDay(trainingModes.state?.travel ?? [], today)
+      : null;
+  const timerTravel = travelToday
+    ? hyroxTravelStationNames(timerSteps ?? [], {
+        library: lib?.exercises ?? new Map(),
+        available: travelToday.available,
+        excludedCautionTags: rules?.excludedCautionTags ?? [],
+      })
+    : null;
   // WP5: Sicherheitshinweis zum Freiwasser bei jeder Schwimm-Einheit (auch ohne Wettkampf).
   const openWater =
     session !== null && sessionSafetyNotices(timerSession ?? session).includes('open_water');
@@ -799,6 +815,7 @@ export default function WorkoutScreen() {
         <IntervalTimer
           steps={timerSteps}
           sports={timerSports}
+          travelStations={timerTravel}
           onLog={(minutes) =>
             update(
               setCardioFields(

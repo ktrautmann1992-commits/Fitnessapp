@@ -403,11 +403,17 @@ const TICK_MS = 250;
 export function IntervalTimer({
   steps,
   sports = null,
+  travelStations = null,
   onLog,
 }: {
   steps: readonly WorkoutStep[];
   /** Sportart je Schritt (Koppeltraining Rad → Lauf, WP5): Anzeige „Hauptteil (Laufen)“ beim Wechsel. */
   sports?: readonly Sport[] | null;
+  /**
+   * Reise-Modus (Hyrox-Kombi, Restpunkte 27.10.2026): je Schritt die Zirkel-Übung mit den Reise-Geräten (null = locker
+   * weiterlaufen); null = kein Reise-Modus.
+   */
+  travelStations?: readonly (string | null)[] | null;
   /** Gelaufene Minuten als Dauer übernehmen (der Eintrag wird erst mit „Training speichern“ gespeichert). */
   onLog: (minutes: number) => void;
 }) {
@@ -426,6 +432,8 @@ export function IntervalTimer({
   useScreenAwake(running, INTERVAL_TIMER_AWAKE_TAG);
   const lastIndex = useRef<number | null>(null);
   const [announcement, setAnnouncement] = useState('');
+  const travelAt = (index: number): string | null | undefined =>
+    travelStations ? (travelStations[index] ?? null) : undefined;
 
   useEffect(() => {
     if (!running) return;
@@ -444,11 +452,20 @@ export function IntervalTimer({
     const text = position.finished
       ? C.timer.announceFinished
       : C.timer.announce(
-          `${C.timer.stepOf(position.index + 1, steps.length)}: ${stepTitle(position.step, sports?.[position.index] ?? null)}`,
+          `${C.timer.stepOf(position.index + 1, steps.length)}: ${stepTitle(position.step, sports?.[position.index] ?? null, travelAt(position.index))}`,
         );
     setAnnouncement(text);
     if (!first) alertStepChange(text);
-  }, [position.finished, position.index, position.step, started, steps.length, sports]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- travelAt liest nur travelStations
+  }, [
+    position.finished,
+    position.index,
+    position.step,
+    started,
+    steps.length,
+    sports,
+    travelStations,
+  ]);
 
   function start() {
     const at = Date.now();
@@ -490,11 +507,21 @@ export function IntervalTimer({
         >
           {announcement}
         </Text>
+        {travelStations ? (
+          <Notice tone="info" title={C.hyrox.travelTitle} testID="interval-travel">
+            {C.hyrox.travelNotice}
+          </Notice>
+        ) : null}
         {!started ? (
           <>
             <Body muted>{C.timer.intro}</Body>
             {Platform.OS === 'web' ? <Body muted>{C.timer.webHint}</Body> : null}
-            {stepLines(steps, sports).map((line, index) => (
+            {(travelStations
+              ? steps.map((step, index) =>
+                  stepTitle(step, sports?.[index] ?? null, travelAt(index)),
+                )
+              : stepLines(steps, sports)
+            ).map((line, index) => (
               <Body key={`${index}-${line}`}>• {line}</Body>
             ))}
             {logged !== null ? (
@@ -529,7 +556,7 @@ export function IntervalTimer({
               ]}
             >
               <Text style={[styles.timerStepTitle, { color: theme.text }]} testID="interval-step">
-                {stepTitle(step, sports?.[position.index] ?? null)}
+                {stepTitle(step, sports?.[position.index] ?? null, travelAt(position.index))}
               </Text>
               <Text
                 style={[styles.timerTime, { color: theme.text }]}
@@ -548,7 +575,13 @@ export function IntervalTimer({
             {workText ? <Body testID="interval-parts">{workText}</Body> : null}
             <Body muted>
               {position.next
-                ? C.timer.next(stepTitle(position.next, sports?.[position.index + 1] ?? null))
+                ? C.timer.next(
+                    stepTitle(
+                      position.next,
+                      sports?.[position.index + 1] ?? null,
+                      travelAt(position.index + 1),
+                    ),
+                  )
                 : C.timer.nextLast}
             </Body>
             <Body muted accessibilityLabel={C.timer.total(clockA11y(position.remainingS))}>
