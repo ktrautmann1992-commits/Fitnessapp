@@ -364,3 +364,9 @@ Piktogramm. Tests: `packages/core/src/hyrox/hyrox-plan.test.ts`, `apps/mobile/sr
 - **Übungsbilder:** Dips an Ringen (jetzt von vorn, Ringe sichtbar), Front Lever gehockt, Vorbeuge im Stand und Abrollen
   im Stand neu gezeichnet. Seitlage-Posen bleiben in der Vorderansicht (Kniebeugung in Seitlage ist im Rig nur
   angedeutet).
+- **Startbestand Yoga/Pilates/Mobility vervollständigt (`claude/sportarten-rest-inhalte`):** 13 Yoga-Posen (u. a. Katze-Kuh,
+  Sphinx, Palme, Stuhlhaltung, Krieger 3 an der Wand, Block-Varianten), 13 Pilates- und 8 Mobility-Übungen, 6 Yoga- und
+  4 Pilates-Routinen – alle mit eigenem Bild, direkt freigegeben (Prüfer-Angabe „Karsten (Auftrag an Claude)“, private
+  Nutzung). Die neuen Routinen nutzen nur freigegebene Übungen (neue Posen und `seitstuetz-knie`); Matte/Block stehen an
+  Posen und Routinen, schließen aber nichts aus. Sicherheits-Merkmale wie bisher (`inversion` an der gestützten Brücke,
+  `long_supine`, `trunk_rotation`, `deep_hip_flexion` …), Halteposen ab 65 ≤ 30 s über `prepareFlowWorkout`.

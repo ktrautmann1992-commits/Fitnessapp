@@ -2065,6 +2065,12 @@ Chrome am Handy, Vorschau-Link, **Inkognito-Tab**, **Ohne Konto testen**.
 7. **Smartwatch (Android-App, neuer EAS-Build):** Beim Verbinden fragt Health Connect zusätzlich „Leistung“ – Einheiten
    am Rudergerät bekommen Ø Watt.
 
+8. **Neue Routinen** (mit den Inhalten aus `claude/sportarten-rest-inhalte`): Training → Workouts → Ziel **Yoga** →
+   9 Routinen ohne Gesundheits-Check (u. a. „Yoga für den Schreibtisch“, „Gleichgewicht und Haltung“, „Rücken und
+   Schultern“, „Hüften sanft öffnen“); **Pilates** → „Rumpf kompakt“, „Rücken stärken“, „Hüfte und Seitlage“,
+   „Pilates im Stehen“. Bei Routinen mit Block steht „Matte, Block“ – der Filter **Ohne Geräte** zeigt sie trotzdem
+   (Ersatz Handtuch/Kissen).
+
 Rückmeldung an Claude z. B. „Restpunkte: 1–7 ok, Gehzeit wirkt zu kurz“.
 
 ## Teil 9h – Hyrox testen (Sportarten Stufe 1, Etappe H, 27.10.2026, Testmodus)

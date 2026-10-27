@@ -56,8 +56,9 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await setup(page);
   // 27 freigegebene + 10 Rudern-Entwürfe (Etappe R) + 14 Yoga-/Pilates-/Mobility-Entwürfe (Etappe Y), im Testmodus als
   // „Testinhalt“ in der Liste; ohne Gesundheits-Check ist
-  // „Sanft in den Morgen“ ausgeblendet (zu viele Umkehrhaltungen für den vorsichtigen Plan).
-  await expect(count(page)).toHaveText('51 Workouts');
+  // „Sanft in den Morgen“ ausgeblendet (zu viele Umkehrhaltungen für den vorsichtigen Plan). Restpunkte A: + 10 freigegebene
+  // Yoga-/Pilates-Routinen, davon 2 ohne Gesundheits-Check ausgeblendet (gestützte Brücke = Umkehrhaltung).
+  await expect(count(page)).toHaveText('59 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
@@ -87,7 +88,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-1').click();
   await expect(page.getByTestId('workouts-no-match')).toBeVisible();
   await page.getByTestId('workouts-filter-reset').click();
-  await expect(count(page)).toHaveText('51 Workouts');
+  await expect(count(page)).toHaveText('59 Workouts');
 
   // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();
@@ -210,8 +211,10 @@ test('Yoga (Flow): Stuhl-Yoga mit Seitenwechsel, Pose überspringen; Kategorie Y
   // Kategorie „Yoga“ ist wählbar (Sportarten Stufe 1 · Etappe Y).
   await page.getByTestId('workouts-filter-toggle').click();
   await page.getByTestId('workouts-filter-category-yoga').click();
-  await expect(count(page)).toHaveText('5 Workouts');
+  // 5 aus Etappe Y + 4 der Restpunkte A (2 weitere mit Umkehrhaltung ohne Gesundheits-Check ausgeblendet).
+  await expect(count(page)).toHaveText('9 Workouts');
   await expect(card(page, 'yoga-sanft-in-den-morgen')).toHaveCount(0);
+  await expect(card(page, 'yoga-fuer-den-schreibtisch')).toBeVisible();
   await card(page, 'yoga-stuhl').click();
   await heading(page, 'Stuhl-Yoga');
   await expect(page.getByTestId('workout-test-content')).toBeVisible();
