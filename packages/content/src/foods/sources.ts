@@ -44,6 +44,11 @@ export interface SourceNutrientColumn {
    * Natrium × 2,5).
    */
   readonly convert: 'none' | 'sodium_mg_to_salt_g';
+  /**
+   * Genaue Spaltenüberschrift (statt Code am Anfang). Nötig, wenn die Quelle keine Nährstoff-Codes führt und
+   * mehrere Überschriften mit demselben ersten Wort und derselben Einheit hat.
+   */
+  readonly header?: string;
 }
 
 /** Felder von `nutrients_per_100g` (Plan 5.1). */
@@ -231,9 +236,8 @@ const BLS_4_0: SourceDefinition = {
  * Angabe eines Quellenvermerks auch für kommerzielle (z.B. Einbindung in Nährwertberechnungssoftware oder
  * Ernährungstagebuch-App) und wissenschaftliche Zwecke verwendet werden.“
  *
- * Aufbau der Datei (Kopfzeile, Spalten, Quell-ID) ist noch NICHT an der Datei geprüft: erst Lauf „kandidaten“
- * (Diagnose zeigt Tabellenblätter, die ersten Zeilen und die Kopfzeile), dann `headerRow`, Spalten und
- * `originalSha256` per Gründer-PR festnageln. Bis dahin ist nur „kandidaten“ möglich.
+ * Aufbau der Datei an der echten Datei geprüft (Lauf „kandidaten“ 40334562401, 26.10.2026): Kopfzeile, Spalten,
+ * Quell-ID-Format und Prüfsumme sind festgenagelt.
  */
 const CH_7_1: SourceDefinition = {
   db: 'ch_naehrwertdatenbank',
@@ -247,28 +251,47 @@ const CH_7_1: SourceDefinition = {
     'bestätigt durch Gründer 25.10.2026 (Link aus naehrwertdaten.ch/de/downloads kopiert, Screenshot der Nutzungsbedingungen)',
   originalFilename: 'Schweizer_Nahrwertdatenbank.xlsx',
   format: 'xlsx',
-  sheet: null,
+  sheet: 'Generische Lebensmittel',
   csvDelimiter: ',',
-  headerRow: 0,
-  originalSha256: null,
+  // Zeile 0 Titel („Schweizer Nährwertdatenbank – Generische Lebensmittel V 7.1 (01.07.2026)“), Zeile 1 leer,
+  // Zeile 2 Kopfzeile (Lauf „kandidaten“ 40334562401, 26.10.2026: 144 Spalten, 1218 Lebensmittel).
+  headerRow: 2,
+  // Festgenagelt aus Lauf „kandidaten“ 40334562401 (26.10.2026): 941.213 Bytes, Blätter „Generische Lebensmittel“,
+  // „Markenprodukte“, „Quellen“, „Nutrient Codes“.
+  originalSha256: 'f4bb854944ef811f9b8463984389f8121e73278c4fd24fc3e8d16336cb711270',
   keyColumn: 0,
+  // Spalte 0 „ID“ (z. B. 663, 13884); geprüft an der Namensliste des Laufs 40334562401.
   keyPattern: '^[0-9]{1,7}$',
+  // Spalte 3 „Name“ (deutsch). Werte je 100 g essbarer Anteil; je Nährstoff drei Spalten Wert/Herleitung/Quelle.
   nameColumn: 3,
-  // Angenommen nach öffentlicher Beschreibung; der Lauf „kandidaten“ zeigt die echte Kopfzeile.
   nutrients: {
-    kcal: [{ code: 'Energie,', unit: 'kcal', convert: 'none' }],
-    protein_g: [{ code: 'Protein', unit: 'g', convert: 'none' }],
-    carbs_g: [{ code: 'Kohlenhydrate,', unit: 'g', convert: 'none' }],
-    sugar_g: [{ code: 'Zucker', unit: 'g', convert: 'none' }],
-    fat_g: [{ code: 'Fett,', unit: 'g', convert: 'none' }],
-    sat_fat_g: [{ code: 'Fettsäuren,', unit: 'g', convert: 'none' }],
-    fiber_g: [{ code: 'Nahrungsfasern', unit: 'g', convert: 'none' }],
-    salt_g: [
-      { code: 'Salz', unit: 'g', convert: 'none' },
-      { code: 'Natrium', unit: 'mg', convert: 'sodium_mg_to_salt_g' },
+    kcal: [
+      { code: 'Energie,', header: 'Energie, Kilokalorien (kcal)', unit: 'kcal', convert: 'none' },
     ],
+    protein_g: [{ code: 'Protein', header: 'Protein (g)', unit: 'g', convert: 'none' }],
+    carbs_g: [
+      {
+        code: 'Kohlenhydrate,',
+        header: 'Kohlenhydrate, verfügbar (g)',
+        unit: 'g',
+        convert: 'none',
+      },
+    ],
+    sugar_g: [{ code: 'Zucker', header: 'Zucker (g)', unit: 'g', convert: 'none' }],
+    fat_g: [{ code: 'Fett,', header: 'Fett, total (g)', unit: 'g', convert: 'none' }],
+    sat_fat_g: [
+      { code: 'Fettsäuren,', header: 'Fettsäuren, gesättigt (g)', unit: 'g', convert: 'none' },
+    ],
+    fiber_g: [{ code: 'Nahrungsfasern', header: 'Nahrungsfasern (g)', unit: 'g', convert: 'none' }],
+    salt_g: [{ code: 'Salz', header: 'Salz (NaCl) (g)', unit: 'g', convert: 'none' }],
   },
-  columnsStatus: 'unconfirmed',
+  // Nur für R4: Alkohol (Spalte 59). Organische Säuren und Polyole führt die Datei in den ersten 80 Spalten nicht.
+  energyExtras: {
+    alcohol_g: [{ code: 'Alkohol', header: 'Alkohol (g)', unit: 'g', convert: 'none' }],
+  },
+  // Kopfzeile geprüft am Lauf „kandidaten“ 40334562401: Energie kcal 11, Fett 14, gesättigte FS 17, verfügbare
+  // KH 41, Zucker 44, Nahrungsfasern 50, Protein 53, Salz 56, Alkohol 59.
+  columnsStatus: 'confirmed',
   license: 'Nutzung mit Quellenvermerk (auch kommerziell)',
   licenseUrl: 'https://naehrwertdaten.ch/de/downloads/',
   licenseText:

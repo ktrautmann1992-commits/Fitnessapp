@@ -110,6 +110,60 @@ describe('Zeilen vor der Kopfzeile (headerRow, Zweitquelle)', () => {
   });
 });
 
+describe('Schweizer Nährwertdatenbank: Spalten über die genaue Überschrift', () => {
+  it('findet je Nährwert genau die Wert-Spalte, auch bei gleichem ersten Wort und gleicher Einheit', () => {
+    const ch = SOURCES.find((source) => source.db === 'ch_naehrwertdatenbank');
+    if (ch === undefined) throw new Error('Zweitquelle fehlt in der Allowlist');
+    // Ausschnitt der echten Kopfzeile (Lauf „kandidaten“ 40334562401).
+    const header = [
+      'ID',
+      'ID V 4.0',
+      'ID SwissFIR',
+      'Name',
+      'Synonyme',
+      'Kategorie',
+      'Dichte',
+      'Bezugseinheit',
+      'Energie, Kilojoule (kJ)',
+      'Herleitung des Wertes',
+      'Quelle',
+      'Energie, Kilokalorien (kcal)',
+      'Herleitung des Wertes',
+      'Quelle',
+      'Fett, total (g)',
+      'Herleitung des Wertes',
+      'Quelle',
+      'Fettsäuren, gesättigt (g)',
+      'Herleitung des Wertes',
+      'Quelle',
+      'Fettsäuren, einfach ungesättigt (g)',
+      'Herleitung des Wertes',
+      'Quelle',
+      'Kohlenhydrate, verfügbar (g)',
+      'Zucker (g)',
+      'Stärke (g)',
+      'Nahrungsfasern (g)',
+      'Protein (g)',
+      'Salz (NaCl) (g)',
+      'Alkohol (g)',
+    ];
+    const columns = resolveNutrientColumns(header, ch);
+    expect(columns.kcal.index).toBe(11);
+    expect(columns.fat_g.index).toBe(14);
+    expect(columns.sat_fat_g.index).toBe(17);
+    expect(columns.carbs_g.index).toBe(23);
+    expect(columns.fiber_g.index).toBe(26);
+    expect(columns.salt_g.index).toBe(28);
+    // Fehlt die genaue Überschrift, bricht die Prüfung ab (nie raten).
+    expect(() =>
+      resolveNutrientColumns(
+        header.map((h) => (h === 'Protein (g)' ? 'Eiweiss (g)' : h)),
+        ch,
+      ),
+    ).toThrow(/protein_g/);
+  });
+});
+
 describe('Auszug (extract-source) – Zeilen unverändert', () => {
   const records = readOriginalRecords(testOriginal(), TEST_SOURCE);
 
@@ -429,7 +483,11 @@ describe('SOURCE.json, Namensnennung und Allowlist', () => {
     const ch = SOURCES.find((s) => s.db === 'ch_naehrwertdatenbank');
     expect(ch?.licenseText).toContain('Ernährungstagebuch-App');
     expect(ch?.attribution).toContain('BLV');
-    expect(ch?.originalSha256).toBeNull();
+    expect(ch?.originalSha256).toBe(
+      'f4bb854944ef811f9b8463984389f8121e73278c4fd24fc3e8d16336cb711270',
+    );
+    expect(ch?.headerRow).toBe(2);
+    expect(ch?.columnsStatus).toBe('confirmed');
     const bls = SOURCES.find((s) => s.db === 'bls');
     expect(bls?.url).toBe('https://blsdb.de/download');
     expect(bls?.downloadPage).toEqual({

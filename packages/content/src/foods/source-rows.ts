@@ -74,9 +74,15 @@ function resolveColumns<K extends string>(
     for (const column of alternatives) {
       // Die Quelle kann je Nährstoff mehrere Spalten mit demselben Code haben (Wert, Datenherkunft, Referenz);
       // die Wert-Spalte ist die mit der Einheit.
+      // Mit `header` zählt nur genau diese Überschrift (Quellen ohne Nährstoff-Code am Anfang, z. B. die Schweizer
+      // Nährwertdatenbank: „Fettsäuren, gesättigt (g)“ neben „Fettsäuren, einfach ungesättigt (g)“).
       const sameCode = header
         .map((text, index) => ({ text, index }))
-        .filter((cell) => headerCode(cell.text) === column.code);
+        .filter((cell) =>
+          column.header === undefined
+            ? headerCode(cell.text) === column.code
+            : cell.text.trim() === column.header,
+        );
       if (sameCode.length === 0) {
         continue;
       }
