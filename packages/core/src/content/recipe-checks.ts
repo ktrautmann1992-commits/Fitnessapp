@@ -1,7 +1,13 @@
-import { MEAL_PREP_FRIDGE_DAYS, RECIPE_CHECK_LIMITS, RECIPE_COVERAGE } from '../constants';
+import {
+  MEAL_PREP_FRIDGE_DAYS,
+  RECIPE_CHECK_LIMITS,
+  RECIPE_COVERAGE,
+  TRAINING_TAG_RULES,
+} from '../constants';
 import { DIET_TYPES, type DietType } from '../enums';
 import type { FoodGroupId } from '../food-groups';
 import { computeRecipeFacts, dietAllows, type RecipeFacts } from '../nutrition/recipe-nutrients';
+import { preWorkoutIssues } from '../nutrition/training-meal-targets';
 import { RECIPE_UNIT_LABELS_DE } from '../nutrition/units';
 import {
   type AllergenRuleKey,
@@ -787,6 +793,75 @@ export function checkRecipe(
   });
 
   issues.push(...checkRecipeCategories(recipe));
+  return issues;
+}
+
+/** Rolle, die eine Markierung „vor dem Training“ meint: reiner Snack → Snack 30–60 min vorher, sonst Mahlzeit. */
+function preRole(recipe: Pick<Recipe, 'meal_types'>): 'pre' | 'pre_snack' {
+  return recipe.meal_types.every((t) => t === 'snack') ? 'pre_snack' : 'pre';
+}
+
+/**
+ * Markierungen nach Nährwert-Regeln (Nährstoff-Timing T3, docs/PLAN-NAEHRSTOFF-TIMING.md 3/7): Welche Markierungen
+ * passen zu den Nährwerten je Portion? „vor dem Training“: keine Überschreitung der Fett-/Ballaststoff-Grenzen
+ * (`preWorkoutIssues`) und mindestens die Hälfte der Energie aus Kohlenhydraten; „nach dem Training“: mindestens
+ * `postMinProteinEnergyShare` der Energie aus Eiweiß. Nur Vorschlag für die Redaktion – die Engine bewertet ohnehin
+ * selbst nach Nährwerten.
+ */
+export function suggestedTrainingTags(
+  recipe: Pick<Recipe, 'meal_types'>,
+  facts: Pick<RecipeFacts, 'perServing'>,
+): ('vor_training' | 'nach_training')[] {
+  const per = facts.perServing;
+  if (per.kcal <= 0) return [];
+  const tags: ('vor_training' | 'nach_training')[] = [];
+  if (preWorkoutIssues(preRole(recipe), per).length === 0 && (4 * per.carbs_g) / per.kcal >= 0.5) {
+    tags.push('vor_training');
+  }
+  if ((4 * per.protein_g) / per.kcal >= TRAINING_TAG_RULES.postMinProteinEnergyShare) {
+    tags.push('nach_training');
+  }
+  return tags;
+}
+
+/** R22T (gelb): gesetzte Trainings-Markierung passt nicht zu den Nährwerten je Portion. */
+export function checkRecipeTrainingTags(
+  recipe: Recipe,
+  facts: Pick<RecipeFacts, 'perServing' | 'nutrientsComplete'>,
+): ContentIssue[] {
+  if (!facts.nutrientsComplete || facts.perServing.kcal <= 0) return [];
+  const target = recipeTarget(recipe);
+  const issues: ContentIssue[] = [];
+  if (recipe.training_tags.includes('vor_training')) {
+    const found = preWorkoutIssues(preRole(recipe), facts.perServing);
+    if (found.length > 0) {
+      const what = found
+        .map((i) => (i === 'fat' ? 'Fett' : i === 'fiber' ? 'Ballaststoffe' : 'Energie'))
+        .join(', ');
+      issues.push(
+        makeIssue(
+          'R22T',
+          target,
+          `Markierung „vor dem Training“, aber je Portion viel ${what} – die Engine rückt das Rezept vor dem Training nach hinten.`,
+          'training_tags',
+        ),
+      );
+    }
+  }
+  if (
+    recipe.training_tags.includes('nach_training') &&
+    (4 * facts.perServing.protein_g) / facts.perServing.kcal <
+      TRAINING_TAG_RULES.postMinProteinEnergyShare
+  ) {
+    issues.push(
+      makeIssue(
+        'R22T',
+        target,
+        'Markierung „nach dem Training“, aber je Portion wenig Eiweiß.',
+        'training_tags',
+      ),
+    );
+  }
   return issues;
 }
 

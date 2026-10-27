@@ -1974,6 +1974,31 @@ Steht in einem älteren Teil „Heute → …“, meint er den Reiter **Training
     Leiste. Wer nie etwas geändert hat, bekommt die neue Leiste automatisch. **Mehr → Menüleiste anpassen** → „Workouts“
     wieder aufnehmen geht weiterhin (bis 6 Knöpfe).
 
+## Teil 9w – So testest du Essen rund ums Training (27.10.2026, Testmodus)
+
+Plan: `docs/PLAN-NAEHRSTOFF-TIMING.md`. Alles läuft ohne Konto im Vorschau-Link.
+
+1. Vorschau-Link öffnen → **Ohne Konto testen** → Onboarding mit Körperdaten (Einwilligung an), Trainingstagen und
+   **Ernährung** (Trainingszeit z. B. „Abends“) bis **Geschafft!**.
+2. **Ernährung** → einen **Trainingstag** wählen (‹ ›). Unter der Hinweis-Zeile steht die Karte **„Essen rund ums
+   Training“**: Zeitfenster mit „ca.“ (noch keine eigene Uhrzeit), Training, **Mahlzeit nach dem Training** mit echtem
+   Gericht und Portion, darunter klein „ca. … g KH · … g Eiweiß“. **Warum?** klappt die Begründung auf.
+3. Ein **Ruhetag** zeigt keine Karte.
+4. **Training** → in **Deine Woche** denselben Tag antippen → im Blatt **„Uhrzeit: ca. 17:30 (Standard)“** antippen →
+   mit **− 1 Std. / − 15 Min. / + 15 Min. / + 1 Std.** z. B. **16:00** einstellen → **Uhrzeit speichern**.
+5. Zurück zu **Ernährung** → derselbe Tag: jetzt ohne „ca.“, mit **Mahlzeit vor dem Training (12:00–14:00)**, **Snack
+   vorher**, **Training 16:00–…** und **Mahlzeit nach dem Training**. Oben die grüne Meldung **„Mahlzeiten an dein
+   Training angepasst.“** mit **Rückgängig** und **Verstanden** (ggf. „Einkaufsliste angepasst“).
+6. **Rückgängig** antippen → die bisherigen Gerichte sind wieder da (als selbst gewählt – sie werden danach nicht
+   automatisch getauscht).
+7. Einen Snack/eine Beilage mit **„Auf die Einkaufsliste“** übernehmen → Reiter **Einkaufen** prüfen.
+8. **Mehr → Einstellungen → Ernährung → „Kalorienzahlen anzeigen“** aus → die Karte zeigt nur noch Gerichte und
+   Zeiten, keine Gramm.
+9. **Erinnerung:** nur in der Handy-App (Build) am heutigen Tag: Häkchen **„Erinnerung vor dem Training“** – Standard
+   aus; im Browser steht nur ein Hinweis.
+10. Neue Inhalte zum Freigeben (Entwurf): Ratgeber **„Essen rund ums Training“** und die Snack-Liste (Banane vor dem
+    Training, Reiswaffeln mit Honig, Datteln, Skyr natur, Ein Glas Milch, Skyr mit Banane).
+
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
 - Bei Unsicherheit einfach fragen: „Erklär mir in einfachen Worten, was du gerade geändert hast.“

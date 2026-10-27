@@ -5908,3 +5908,11 @@ export const NUTRIENT_TIMING = {
   sideMaxKcal: 250,
   scoring: { proteinShortfall: 2, preTolerance: 1.5, carbFocus: 1.5 },
 } as const;
+
+/**
+ * Markierungen vor/nach dem Training nach Nährwerten (Nährstoff-Timing T3, Regel R22T, nur gelber Hinweis):
+ * „nach dem Training“ ab `postMinProteinEnergyShare` (15 %) der Energie aus Eiweiß. PRODUKTENTSCHEIDUNG – angelehnt an
+ * Kerksick CM et al. (2017), J Int Soc Sports Nutr 14:33 (Eiweiß und Kohlenhydrate nach dem Training). VOR LIVEGANG
+ * FACHLICH PRÜFEN.
+ */
+export const TRAINING_TAG_RULES = { postMinProteinEnergyShare: 0.15 } as const;

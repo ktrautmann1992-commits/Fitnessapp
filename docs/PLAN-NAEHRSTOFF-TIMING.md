@@ -135,3 +135,33 @@ bis 21:00    Mahlzeit nach dem Training – Lachs mit Kartoffeln · ca. 30 g Eiw
 ## 11. Umsetzungsstand
 
 - Plan freigegeben 27.10.2026.
+- **T0 Datenbank (umgesetzt, Branch `claude/naehrstoff-timing-impl`):** Migration `20261027160000_naehrstoff_timing.sql`
+  (`planned_sessions.start_time` optional, ganze Minuten 00:00–23:59, CHECK, Spalten-Recht zum Ändern; Trigger und RLS
+  unverändert; `meal_plan_items.user_chosen` Standard false) und `20261027160100_naehrstoff_timing_rpcs.sql` (neue
+  Fassungen von `private.insert_plan_sessions` – optionales Feld `start_time` – und `public.save_meal_plan` – optionales
+  Feld `user_chosen`, jeweils auf die neueste Fassung aufgesetzt). pgTAP `105_naehrstoff_timing.test.sql`,
+  `db-sync.test.ts`, Zod, Datenbank-Typen. Verschieben (Update, `swap_planned_sessions`) nimmt die Uhrzeit ohne neue
+  Fassung mit.
+- **T1 Core (umgesetzt):** `nutrition/timing.ts` (Zeitfenster, Rollen je Fenster, zwei Einheiten),
+  `training-meal-targets.ts` (Makro-Anteile je Mahlzeit, Verträglichkeit vor dem Training), `targets.ts`
+  (`trainingTiming` nur an Tagen mit eigener Uhrzeit), Rezeptwahl in `meal-plan.ts` (nur Reihenfolge),
+  `training-replan.ts` (Verschieben, Rückgängig, Einkaufslisten-Differenz), `training-timeline.ts` (Zeitleiste,
+  Snack/Beilage, unterwegs, ein Hinweis je Tag), `plan/session-time.ts`. Werte in `constants.ts`
+  (`SESSION_START_TIME`, `NUTRIENT_TIMING`, `TRAINING_TAG_RULES`) mit Quelle, VOR LIVEGANG FACHLICH PRÜFEN.
+  Tests `naehrstoff-timing.test.ts` (alle Grenzfälle aus 9 T1, Eigenschaftstest 200 Fälle: Tagessummen identisch,
+  Schnappschuss Altbestand).
+- **Umsetzungs-Entscheidungen (PRODUKTENTSCHEIDUNG, zur Fachprüfung):** Fett vor dem Training ≤ 30 % der Energie der
+  Portion, Ballaststoffe ≤ 15 g je 1000 kcal (mind. 8 g); Snack ≤ 5 g Fett, ≤ 3 g Ballaststoffe, ≤ 250 kcal;
+  KH-Verschiebung +25 %; Toleranz ±15 %; Standard-Start ohne Trainingszeit 17:30. Die **Rezeptwahl** des Essensplans
+  ändert sich nur an Tagen mit **eigener Uhrzeit** (Altbestand bleibt byte-gleich); die **Zeitleiste** gibt es an jedem
+  Trainingstag (sonst „ca.“). Die Anpassung beim Verschieben greift, wenn sich Rollen vor/nach dem Training ändern
+  (eigene Uhrzeit oder „Trainingszeit“); ohne beides gilt die bisherige automatische Neuplanung.
+- **T2 App (umgesetzt):** Karte „Essen rund ums Training“ in Ernährung · Tag, Uhrzeit im Tages-Blatt (Training),
+  Rückmeldung „Mahlzeiten an dein Training angepasst · Rückgängig“ mit Einkaufslisten-Hinweis und Vorschlägen für
+  selbst gewählte Gerichte, Erinnerung (lokal, Standard aus), Testmodus-e2e `naehrstoff-timing.spec.ts`.
+- **T3 Inhalte und Doku (umgesetzt, Entwürfe):** Ratgeber `content/guides/essen-rund-ums-training.json`, Snack-Liste
+  als Snack-Rezepte (Banane vor dem Training, Reiswaffeln mit Honig, Datteln, Skyr natur, Ein Glas Milch, Skyr mit
+  Banane), Prüfregel R22T (gelb: Markierung vor/nach Training passt nicht zu den Nährwerten), KONZEPT 6.3a,
+  HANDY-ANLEITUNG Teil 9w. Keine neuen Schema-Felder → kein eigener Inhalts-Branch nötig.
+- **Offen:** Kachel auf „Heute“ (optional, nicht gebaut); Fachprüfung aller Werte; Freigabe der Entwürfe; im
+  Supabase-Modus gibt es „Rückgängig“ nur, wenn der vollständige Plan auf dem Gerät liegt (sonst wird still angepasst).
