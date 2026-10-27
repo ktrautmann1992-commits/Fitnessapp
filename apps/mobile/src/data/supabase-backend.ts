@@ -717,11 +717,15 @@ export async function executeWriteOp(
       }
       return;
     }
-    // Nur Datum und Status (Trigger private.planned_sessions_before_update prüft den Rest).
+    // Nur Datum, Status und Uhrzeit (Trigger private.planned_sessions_before_update prüft den Rest).
     case 'update_planned_session': {
       const result = await client
         .from('planned_sessions')
-        .update({ scheduled_on: op.scheduledOn, status: op.status })
+        .update({
+          scheduled_on: op.scheduledOn,
+          status: op.status,
+          ...(op.startTime !== undefined ? { start_time: op.startTime } : {}),
+        })
         .eq('id', op.sessionId)
         .eq('user_id', userId)
         .select('id');
@@ -883,7 +887,7 @@ function userProductRejectCode(reason: NutritionRejectReason): BackendErrorCode 
 const MEAL_PLAN_ITEM_COLUMNS =
   'plan_id, date, slot, role, recipe_id, recipe_version, title_de, factor, kcal, protein_g, carbs_g, fat_g, ' +
   'substitutions, omitted_optional, ingredient_swaps, is_fill, prep_kind, cook_date, storage, meal_prep_plan_id, ' +
-  'day_status';
+  'day_status, user_chosen';
 
 /** Leerer Bestand (Tabellen fehlen noch bzw. offline ohne Zwischenspeicher). */
 const EMPTY_NUTRITION_CONTENT: DbNutritionContent = {

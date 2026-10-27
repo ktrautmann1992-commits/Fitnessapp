@@ -56,6 +56,8 @@ async function openDay(page: Page, date: string) {
 test('Wettkampf-Ernährung: Carb-Loading, Vorabend, Renntag mit Zeitleiste, Woche, Zahlen aus, 5 km, abgesagt', async ({
   page,
 }) => {
+  // Viele Tagesansichten nacheinander – lokal knapp an 60 s (wie die anderen Ernährungs-Tests mehr Zeit).
+  test.setTimeout(180_000);
   await onboardNutrition(page);
   await setCompetition(page);
 

@@ -1,7 +1,7 @@
 {
   "id": "lat-dehnung-stehend",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Seitliche Rumpfdehnung im Stand",
   "name_en": "Standing Lat Stretch",
   "aliases_de": [],
@@ -31,8 +31,8 @@
     "batch_id": null,
     "created_on": "2026-10-25",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
-    "review_note": "Entwurf Trainings-Modi (Aufwärmen & Dehnen, docs/PLAN-TRAINING-MODI.md 5) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft. Vorher: Entwurf Trainings-Modi (Aufwärmen & Dehnen, docs/PLAN-TRAINING-MODI.md 5) – Freigabe durch die Gründer/Fachprüfung ausstehend."
   }
 }

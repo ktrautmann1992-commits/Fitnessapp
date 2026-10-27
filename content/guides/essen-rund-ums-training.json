@@ -1,0 +1,56 @@
+{
+  "id": "essen-rund-ums-training",
+  "version": 1,
+  "status": "published",
+  "title_de": "Essen rund ums Training",
+  "intro_de": "Wann du vor und nach dem Training isst, ist zweitrangig gegenüber dem, was du über den ganzen Tag isst. Ein paar einfache Regeln helfen aber, dich vor dem Training wohlzufühlen und danach gut versorgt zu sein. Die App plant das automatisch – hier steht, warum.",
+  "sections": [
+    {
+      "heading_de": "Eiweiß gleichmäßig über den Tag",
+      "body_de": [
+        "Verteile dein Eiweiß auf mehrere Mahlzeiten statt es auf einmal zu essen. Als Richtwert gelten etwa 0,4 g Eiweiß pro kg Körpergewicht je Hauptmahlzeit, bei mindestens drei Mahlzeiten mit Eiweiß. Ab etwa 65 Jahren darf es je Mahlzeit etwas mehr sein, mindestens rund 25 g.",
+        "Ist eine Mahlzeit eher eiweißarm, reicht oft eine kleine Ergänzung, z. B. Joghurt, Quark, ein Ei oder ein Glas Milch."
+      ]
+    },
+    {
+      "heading_de": "Vor dem Training",
+      "body_de": [
+        "2–4 Stunden vorher passt eine normale Mahlzeit mit Kohlenhydraten, z. B. Reis, Nudeln, Kartoffeln oder Brot. Eher wenig Fett und wenig Ballaststoffe machen es dem Magen leichter.",
+        "30–60 Minuten vorher reicht bei Hunger ein kleiner Snack mit Kohlenhydraten und wenig Fett, z. B. eine Banane oder ein paar Reiswaffeln.",
+        "Trainierst du früh am Morgen, ist beides in Ordnung: ein kleiner Snack vorher oder das Frühstück direkt danach."
+      ]
+    },
+    {
+      "heading_de": "Nach dem Training",
+      "body_de": [
+        "Iss in den ersten 1–2 Stunden nach dem Training eine Mahlzeit mit Eiweiß und Kohlenhydraten. Nach längeren Ausdauereinheiten darf mehr Kohlenhydrat auf den Teller.",
+        "Trainierst du zweimal am Tag oder liegen weniger als 8 Stunden bis zur nächsten Einheit, ist die Mahlzeit dazwischen besonders wichtig: Dann lieber gut auffüllen, vor allem mit Kohlenhydraten."
+      ]
+    },
+    {
+      "heading_de": "Lange Einheiten ab 90 Minuten",
+      "body_de": [
+        "Bei langen Läufen oder Radtouren helfen unterwegs kleine Mengen Kohlenhydrate, z. B. eine Banane oder ein Gel. Als Richtwert gelten bis 2 Stunden etwa bis 30 g pro Stunde, darüber 30–60 g pro Stunde. Mehr nur, wenn du es im Training schon ausprobiert hast.",
+        "Trink regelmäßig nach Durst, als Richtwert 400–800 ml pro Stunde. Bei Hitze brauchst du mehr – und denk an Salz."
+      ],
+      "notice_de": "Unter 18 Jahren, in der Schwangerschaft oder bei Vorerkrankungen nicht ohne fachliche Absprache."
+    },
+    {
+      "heading_de": "Wenn sich dein Training verschiebt",
+      "body_de": [
+        "Verschiebst du eine Einheit auf einen anderen Tag oder eine andere Uhrzeit, passt die App die Mahlzeiten an. Was du schon gegessen hast und Gerichte, die du selbst gewählt hast, bleiben, wie sie sind. Mit „Rückgängig“ kommen die bisherigen Gerichte zurück.",
+        "Deine Tagesenergie und alle Schutzgrenzen bleiben dabei unverändert – nur die Verteilung über den Tag ändert sich."
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft. Vorher: Entwurf zu docs/PLAN-NAEHRSTOFF-TIMING.md (Abschnitte 1–6). Werte VOR LIVEGANG FACHLICH PRÜFEN (Ernährung)."
+  }
+}

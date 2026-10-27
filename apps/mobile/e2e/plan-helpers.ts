@@ -190,5 +190,13 @@ export async function expandNotices(page: Page, id: string) {
     .waitFor({ timeout: 5000 })
     .catch(() => undefined);
   if (!(await more.isVisible())) return;
-  if ((await more.getAttribute('aria-expanded')) !== 'true') await more.click();
+  if ((await more.getAttribute('aria-expanded')) === 'true') return;
+  // Liegt die Hinweis-Zeile unter einer anderen Seite (Stapel, z. B. „Mein Wettkampf“ über „Training“), ist sie nicht
+  // die aktuelle Seite – dann nichts aufklappen (seit 27.10.2026 fehlt der immer vorhandene Testinhalte-Hinweis, der
+  // die Zeile vorher schon früher aufgeklappt hatte).
+  const clickable = await more
+    .click({ trial: true, timeout: 2000 })
+    .then(() => true)
+    .catch(() => false);
+  if (clickable) await more.click();
 }

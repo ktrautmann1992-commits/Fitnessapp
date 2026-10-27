@@ -50,11 +50,11 @@ const CAUTIOUS: FlowSafetyInput = {
 };
 
 describe('Testmodus: Flow-Routinen und Posen', () => {
-  it('Bündel enthält die Flow-Entwürfe; Posen stehen nur in displayExercises', async () => {
+  it('Bündel enthält die Flow-Routinen (freigegeben 27.10.2026); Posen stehen nur in displayExercises', async () => {
     const { library, workouts } = await load();
     const flows = workouts.filter((w) => w.format === 'flow');
     expect(flows.length).toBeGreaterThanOrEqual(14);
-    expect(flows.every((w) => w.status === 'draft')).toBe(true);
+    expect(flows.every((w) => w.status === 'published')).toBe(true);
     expect(library.exercises.has('yoga-baum')).toBe(false);
     expect(library.displayExercises?.has('yoga-baum')).toBe(true);
     // Vorhandene Dehnungen bleiben normale Übungen.

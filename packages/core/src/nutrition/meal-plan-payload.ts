@@ -102,6 +102,11 @@ export const mealPlanItemPayloadSchema = z
     storage: z.enum(['fridge', 'freeze']).nullable(),
     meal_prep_plan_id: contentIdSchema.nullable(),
     day_status: z.enum(['complete', 'below_floor', 'no_targets']),
+    /**
+     * Nährstoff-Timing (T0, `meal_plan_items.user_chosen`): selbst gewählt – nur gesendet, wenn true (fehlt = false;
+     * gespeicherte Pläne ohne selbst gewählte Gerichte bleiben byte-gleich).
+     */
+    user_chosen: z.boolean().optional(),
   })
   .refine(
     (item) => {
@@ -218,6 +223,7 @@ export function toMealPlanPayload(
         storage: meal.storage,
         meal_prep_plan_id: meal.mealPrepPlanId,
         day_status: day.status,
+        ...(meal.chosen === true ? { user_chosen: true } : {}),
       })),
     ),
   });

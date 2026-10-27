@@ -1,4 +1,7 @@
 import {
+  minutesToStartTime,
+  sessionStartTimeRequestSchema,
+  startTimeToMinutes,
   type DataExportFile,
   type DaySwap,
   followUpBlockState,
@@ -294,6 +297,11 @@ export interface AppContextValue {
   moveSessionTo: (sessionId: string, targetDate: string) => Promise<MoveOutcome>;
   /** Training-Übersicht (Tages-Blatt): Einheit diese Woche auslassen (streichen, nie in die nächste Woche). */
   skipSession: (sessionId: string) => Promise<void>;
+  /**
+   * Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 6): Uhrzeit einer geplanten Einheit setzen („HH:MM“) bzw. die
+   * eigene Uhrzeit entfernen (null). Gleiche Regeln wie Verschieben (Trigger; Testmodus local-rules.ts). Fehler werfen.
+   */
+  setSessionStartTime: (sessionId: string, startTime: string | null) => Promise<void>;
   /** Folgeblock anhängen, wenn fällig (automatisch beim Anzeigen von „Heute“). */
   appendNextBlockIfDue: () => Promise<void>;
 
@@ -1547,6 +1555,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           usesHealthData: active.plan.uses_health_data,
           scheduledOn: result.kind === 'moved' ? result.date : session.scheduled_on,
           status: result.kind === 'moved' ? 'planned' : 'skipped',
+          startTime: rowStartTime(session.start_time),
         },
         rows,
       );
@@ -1611,6 +1620,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
             usesHealthData: active.plan.uses_health_data,
             scheduledOn: request.data.targetDate,
             status: 'planned',
+            startTime: rowStartTime(session.start_time),
           },
           rows,
         )
@@ -1637,6 +1647,33 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           usesHealthData: active.plan.uses_health_data,
           scheduledOn: session.scheduled_on,
           status: 'skipped',
+          startTime: rowStartTime(session.start_time),
+        },
+        rows,
+      );
+      setRows(next);
+      refreshPending();
+    },
+    [backend, refreshPending, rows],
+  );
+
+  const setSessionStartTime = useCallback(
+    async (sessionId: string, startTime: string | null) => {
+      if (!rows) throw new BackendError('not_signed_in');
+      const request = sessionStartTimeRequestSchema.safeParse({ sessionId, startTime });
+      const active = activePlan(rows);
+      const session = rows.plannedSessions.find((s) => s.id === sessionId);
+      if (!request.success || !active || !session || session.status !== 'planned') {
+        throw new BackendError('plan_rejected');
+      }
+      const next = await backend.updatePlannedSession(
+        {
+          sessionId,
+          planId: active.plan.id,
+          usesHealthData: active.plan.uses_health_data,
+          scheduledOn: session.scheduled_on,
+          status: 'planned',
+          startTime: request.data.startTime,
         },
         rows,
       );
@@ -1873,6 +1910,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       moveSession,
       moveSessionTo,
       skipSession,
+      setSessionStartTime,
       appendNextBlockIfDue,
       drafts,
       saveDraft,
@@ -1968,6 +2006,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       moveSession,
       moveSessionTo,
       skipSession,
+      setSessionStartTime,
       appendNextBlockIfDue,
       drafts,
       saveDraft,
@@ -2040,3 +2079,9 @@ export function useApp(): AppContextValue {
 
 /** Fehlende Pflicht-Einwilligungen werden immer gemeinsam erteilt (terms + privacy). */
 export const BASE_CONSENT_TYPES = REQUIRED_CONSENT_TYPES;
+
+/** Uhrzeit einer Zeile („HH:MM:SS“ vom Server, „HH:MM“ im Testmodus) als „HH:MM“ bzw. null (Nährstoff-Timing). */
+function rowStartTime(value: string | null): string | null {
+  const minutes = startTimeToMinutes(value);
+  return minutes === null ? null : minutesToStartTime(minutes);
+}

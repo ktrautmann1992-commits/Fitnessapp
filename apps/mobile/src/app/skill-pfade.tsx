@@ -84,7 +84,6 @@ export default function SkillPathsScreen() {
     );
   }
   const available = skillPathExerciseIds().some((id) => lib.exercises.get(id)?.status);
-  const drafts = skillPathExerciseIds().some((id) => lib.exercises.get(id)?.status === 'draft');
   const open = (exerciseId: string) =>
     router.push(`/uebungen/${encodeURIComponent(exerciseId)}` as Href);
 
@@ -93,11 +92,6 @@ export default function SkillPathsScreen() {
       <Body>{C.intro}</Body>
       <Body muted>{C.clean}</Body>
       <Body muted>{C.privacy}</Body>
-      {drafts ? (
-        <Notice tone="info" testID="skill-paths-test-content">
-          {C.testContent}
-        </Notice>
-      ) : null}
       {!available || !views ? (
         <Notice tone="info" testID="skill-paths-empty">
           {C.empty}

@@ -1,0 +1,56 @@
+name: live-cleanup
+
+# Live-Begleitung (Migration 20261027170000_live_companion.sql, docs/PLAN-PHASE-10.md 21.4):
+# Stündlich die Datenbank-Funktion live_cleanup() aufrufen – Sicherheitsnetz zusätzlich zu pg_cron (alle 5 min) und
+# dem Aufräumen bei jedem Start einer Begleitung. Schließt abgelaufene Sitzungen (Position sofort weg), löscht
+# Sitzungen 24 h nach Ablauf und die Prüfwerte der Ratenbremse nach 1 h – auch wenn niemand die App benutzt.
+# Ohne die GitHub-Secrets SUPABASE_URL/SUPABASE_SECRET_KEY endet der Workflow grün mit Hinweis.
+# Der Schlüssel wird nie ausgegeben (nur in einer Datei für curl, GitHub maskiert ihn zusätzlich). Keine Koordinaten
+# in der Ausgabe (die Funktion liefert nur eine Anzahl).
+on:
+  schedule:
+    # stündlich zur Minute 23 (UTC)
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Aufräumen (live_cleanup)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SECRET_KEY" ]; then
+            echo "::notice title=live-cleanup übersprungen::Es fehlen die GitHub-Secrets SUPABASE_URL und/oder SUPABASE_SECRET_KEY. Siehe docs/SETUP.md Teil B."
+            exit 0
+          fi
+          umask 077
+          headers="$RUNNER_TEMP/headers.txt"
+          {
+            echo "apikey: $SUPABASE_SECRET_KEY"
+            echo "Content-Type: application/json"
+            # Alter service_role-Schlüssel (JWT) gehört zusätzlich in Authorization.
+            case "$SUPABASE_SECRET_KEY" in eyJ*) echo "Authorization: Bearer $SUPABASE_SECRET_KEY" ;; esac
+          } > "$headers"
+          status=$(curl -sS -o "$RUNNER_TEMP/antwort.txt" -w '%{http_code}' -X POST \
+            -H @"$headers" --data '{}' "${SUPABASE_URL%/}/rest/v1/rpc/live_cleanup")
+          rm -f "$headers"
+          if [ "$status" = "404" ]; then
+            echo "::notice title=live-cleanup übersprungen::Funktion live_cleanup fehlt noch – Migration der Live-Begleitung ist noch nicht eingespielt (db-migrate)."
+            exit 0
+          fi
+          if [ "$status" != "200" ]; then
+            echo "::error title=live-cleanup fehlgeschlagen::HTTP $status"
+            exit 1
+          fi
+          echo "Geschlossene bzw. gelöschte Zeilen: $(cat "$RUNNER_TEMP/antwort.txt")"

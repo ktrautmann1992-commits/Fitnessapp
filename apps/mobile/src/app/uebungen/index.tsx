@@ -240,7 +240,6 @@ export default function GlossaryScreen() {
           ) : (
             <View style={styles.list}>
               {hits.map(({ exercise, muscleRole }) => {
-                const draft = exercise.status === 'draft';
                 const line = listLine(exercise);
                 const secondary = muscleRole === 'secondary';
                 return (
@@ -251,7 +250,6 @@ export default function GlossaryScreen() {
                       exercise.name_de,
                       line,
                       secondary ? t.glossary.muscleSecondary : null,
-                      draft ? t.glossary.testContent : null,
                     ]
                       .filter(Boolean)
                       .join(', ')}
@@ -274,11 +272,6 @@ export default function GlossaryScreen() {
                     {secondary ? (
                       <Text style={[styles.itemLine, { color: theme.textMuted }]}>
                         {t.glossary.muscleSecondary}
-                      </Text>
-                    ) : null}
-                    {draft ? (
-                      <Text style={[styles.itemLine, { color: theme.textMuted }]}>
-                        {t.glossary.testContent}
                       </Text>
                     ) : null}
                   </Pressable>

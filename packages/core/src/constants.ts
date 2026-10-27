@@ -6523,3 +6523,151 @@ export const GPX_IMPORT = {
   maxGapM: 50_000,
   nameMaxLength: 60,
 } as const;
+
+/**
+ * Live-Begleitung / Notfallkontakt (CLAUDE.md „Ausnahme … Live-Begleitung“, Gründer-Entscheidung 25.10.2026,
+ * docs/PLAN-PHASE-10.md Abschnitt 21; Regeln in live/). PFLICHT-Grenzen aus CLAUDE.md – Lockern nur mit neuer
+ * Gründer-Entscheidung (Test in live/live.test.ts):
+ * - `tokenBytes`: geheimes Link-Token aus 32 zufälligen Bytes = 256 Bit (CLAUDE.md: mindestens 128 Bit), als base64url
+ *   `tokenChars` Zeichen im Link-Fragment `/begleitung#t=…`; auf dem Server nur der SHA-256-Hash.
+ * - `sessionMaxH`: Höchstdauer je Sitzung 12 h (CLAUDE.md); danach ist der Link ungültig.
+ * - `linkGraceH`: nach „Angekommen“/Ende höchstens 2 h nur Status ohne Karte (CLAUDE.md, F4), dann ungültig.
+ * - `maxContacts`: höchstens 3 Notfallkontakte, nur auf dem Gerät (CLAUDE.md, F1).
+ * - `displayNameMax`: Anzeigename höchstens 30 Zeichen (CLAUDE.md, F8).
+ * Übrige Zahlen PRODUKTENTSCHEIDUNG (Plan 21.2–21.5):
+ * - `pushIntervalS` / `pushIntervalChoicesS`: Positions-Update alle 30 s (wählbar 15/30/60 s), aber nur bei ≥ `minMoveM`
+ *   Bewegung oder nach `heartbeatS` (Herzschlag „lebt noch“) – spart Akku (Plan 21.8 Risiko 1). Die Datenbank nimmt
+ *   höchstens ein Update je `serverMinGapS` an (sonst ignoriert).
+ * - `coordDecimals`: 5 Nachkommastellen ≈ 1 m (Spalte numeric(8,5)); `accuracyMaxM`: größere Genauigkeitsradien
+ *   werden gekappt (smallint).
+ * - `viewPollS`: die Begleit-Seite fragt alle 20 s nach; `staleWarnS`: Warnung „Seit 4 Min keine neue Position“ ab
+ *   3 min; `veryStaleS`: ab 15 min „sehr alt“ (Hinweis auf Funkloch/Akku).
+ * - `plannedMinutes`: geplante Dauer 5 min bis 12 h, ohne Plan-Einheit 60 min (nur für den Text „bis ca. …“ und die
+ *   „Kein Lebenszeichen“-Erinnerung).
+ * - `noSignOfLifeGraceMin`: lokale Erinnerung NUR an die Person selbst, wenn die Aufzeichnung die geplante Dauer um
+ *   30 min überschreitet (wählbar 15/30/60); kein Versand an Kontakte (CLAUDE.md, F6).
+ * - `rateLimit`: Lese-Funktion je IP höchstens 10 Abfragen/min, je Sitzung 30/min (= 10 Kontakte bei 20 s); Prüfwerte
+ *   (nur HMAC-Hashes bzw. Sitzungs-ids) nach 1 h gelöscht – wie die Warteliste.
+ * - `purgeAfterExpiryH`: Sitzungs-Metadaten (ohne Ort) bleiben 24 h nach Ablauf für „Diese Live-Begleitung ist
+ *   beendet.“, dann gelöscht; Positionen sind schon beim Ende bzw. Ablauf weg.
+ * - `messageMax`, `contactNameMax`: Länge der anpassbaren Nachricht und der Kontakt-Namen (nur auf dem Gerät).
+ * Notrufnummern: EU-weit 112 (Beschluss 91/396/EWG); Schweiz zusätzlich 144 (Sanität), Österreich 140 (Bergrettung im
+ * alpinen Gelände). Die Live-Begleitung ist kein Notruf-Ersatz.
+ */
+export const LIVE_COMPANION = {
+  tokenBytes: 32,
+  tokenChars: 43,
+  sessionMaxH: 12,
+  linkGraceH: 2,
+  purgeAfterExpiryH: 24,
+  maxContacts: 3,
+  displayNameMax: 30,
+  contactNameMax: 40,
+  messageMax: 200,
+  plannedMinutes: { min: 5, max: 720, default: 60 },
+  pushIntervalS: 30,
+  pushIntervalChoicesS: [15, 30, 60],
+  heartbeatS: 60,
+  minMoveM: 20,
+  serverMinGapS: 10,
+  coordDecimals: 5,
+  accuracyMaxM: 5000,
+  viewPollS: 20,
+  staleWarnS: 180,
+  veryStaleS: 900,
+  noSignOfLifeGraceMin: 30,
+  noSignOfLifeChoicesMin: [15, 30, 60],
+  rateLimit: { perIpPerMin: 10, perSessionPerMin: 30, keepH: 1 },
+  emergencyNumber: '112',
+} as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Nährstoff-Timing 2 – Essen rund ums Training (docs/PLAN-NAEHRSTOFF-TIMING.md, freigegeben 27.10.2026)
+//
+// Nur die VERTEILUNG innerhalb des Tages: Tagesenergie, Makro-Summen und alle Schutzgrenzen bleiben unverändert
+// (`clampCalorieTarget`, Strukturtest in training-meal-targets.test.ts). Alle Werte VOR LIVEGANG FACHLICH PRÜFEN.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Uhrzeit einer geplanten Einheit (`planned_sessions.start_time`, Etappe T0, Entscheidung 10): ganze Minuten von
+ * 00:00 (0) bis 23:59 (1439) – CHECK `planned_sessions_start_time_check` (db-sync.test.ts). `stepMinutes`: Schritte der
+ * Auswahl in der App (PRODUKTENTSCHEIDUNG).
+ */
+export const SESSION_START_TIME = { minMinutes: 0, maxMinutes: 1439, stepMinutes: 5 } as const;
+
+/**
+ * Regeln „Essen rund ums Training“ (Plan Abschnitte 1–5). VOR LIVEGANG FACHLICH PRÜFEN.
+ * 1. Eiweiß gleichmäßig: `proteinPerMealGPerKg` 0,4 g/kg je Hauptmahlzeit, mindestens `minProteinMeals` Mahlzeiten mit
+ *    Eiweiß; ab `seniorFromAge` (65) zusätzlich mindestens `seniorMinProteinPerMealG` (25 g, anabole Resistenz).
+ *    Richtwert mit Hinweis, keine harte Regel (Entscheidung 1). Quellen: Schoenfeld BJ, Aragon AA (2018), „How much
+ *    protein can the body use in a single meal for muscle-building?“, J Int Soc Sports Nutr 15:10; Jäger R et al.
+ *    (2017), ISSN Position Stand „Protein and exercise“, J Int Soc Sports Nutr 14:20; Bauer J et al. (2013), PROT-AGE,
+ *    J Am Med Dir Assoc 14(8):542–559.
+ * 2. Nach dem Training: Mahlzeit bis `postWithinMinutes` (2 h) danach mit `postProteinGPerKg` (0,4 g/kg, =
+ *    MEAL_TIMING_RULES.postProteinGPerKg). Nach Ausdauer ab `postEnduranceCarbFromMinutes` (60 min) mehr Kohlenhydrate;
+ *    bei zwei Einheiten am Tag bzw. weniger als `refuelGapMinutes` (8 h) bis zur nächsten Einheit Richtwert
+ *    `refuelCarbsGPerKg` (1 g/kg) in der Mahlzeit danach. Quellen: Kerksick CM et al. (2017), ISSN Position Stand
+ *    „Nutrient timing“, J Int Soc Sports Nutr 14:33; Thomas DT, Erdman KA, Burke LM (2016), Med Sci Sports Exerc
+ *    48(3):543–568; Burke LM et al. (2011), J Sports Sci 29 Suppl 1:S17–S27.
+ * 3. Vor dem Training: Mahlzeit 2–4 h vorher (`MEAL_TIMING_RULES.preMealMinutes`) kohlenhydratreich, Richtwert
+ *    `preMealCarbsGPerKgPerHour` (0,5 g/kg je Stunde Abstand), begrenzt auf `preMealCarbsGPerKg` 1–2 g/kg; Snack
+ *    30–60 min vorher (`MEAL_TIMING_RULES.preSnackMinutes`) klein mit `preSnackCarbsG` 15–30 g KH. Verträglichkeit je
+ *    Portion: Mahlzeit vorher höchstens `preMealMaxFatEnergyShare` (30 %) der Energie aus Fett und `preMealMaxFiberGPer1000Kcal` (15 g
+ *    je 1000 kcal, mindestens `preMealMinFiberLimitG` 8 g) Ballaststoffe, Snack höchstens
+ *    `preSnackMaxFatG`/`preSnackMaxFiberG`/`preSnackMaxKcal` – darüber rückt ein Rezept nach hinten, verboten ist es
+ *    nicht (PRODUKTENTSCHEIDUNG). Quelle: Thomas et al. (2016): 1–4 g/kg KH 1–4 h vorher, fett-/ballaststoffarm.
+ *    Frühes Training: Start vor `earlyBeforeMinutes` (8:00) → „kleiner Snack vorher oder Frühstück direkt danach“.
+ * 4. KH rund ums Training bei allen Zielen (Entscheidung 2): Mahlzeiten vor/nach dem Training bekommen `carbShift`
+ *    (+25 %) mehr Kohlenhydrate als ihr Energieanteil, die übrigen entsprechend weniger (Summe = Tagesmenge), Fett
+ *    gleicht die Energie je Mahlzeit aus. Ruhetage gleichmäßig. PRODUKTENTSCHEIDUNG.
+ * 5. Lange Einheiten: geplante Ausdauer ab `longSessionMinutes` (90 min) – Richtwert für unterwegs nach
+ *    `COMPETITION_NUTRITION.fueling` und Trinken nach Durst, nur Hinweis (Entscheidung 4). Quelle: Jeukendrup A (2014),
+ *    Sports Med 44 Suppl 1:S25–S33.
+ * - `defaultStartMinutes`: Ohne eigene Uhrzeit und ohne Angabe „Trainingszeit“ (bzw. „wechselnd“) nimmt die Zeitleiste
+ *   17:30 an und schreibt „ca.“ (= TRAINING_TIME_START_MINUTES.evening, PRODUKTENTSCHEIDUNG).
+ * - `dishTolerance` (±15 %): Ein Gericht „passt“, wenn Eiweiß bzw. KH höchstens so weit unter dem Richtwert liegen;
+ *   sonst kleine Beilage bzw. ehrlicher Hinweis (Plan Abschnitt 7, PRODUKTENTSCHEIDUNG). `sideMinGapG`: Beilage erst ab
+ *   so viel fehlendem Eiweiß; `sideMaxKcal`: Beilage höchstens so groß.
+ * - `scoring`: Gewichte der Rezeptwahl an Tagen mit eigener Uhrzeit (nur Reihenfolge, nie Filter oder Energie):
+ *   `proteinShortfall` Abzug je Anteil fehlenden Eiweißes am Richtwert, `preTolerance` Abzug je Überschreitung der
+ *   Fett-/Ballaststoff-Grenze vor dem Training, `carbFocus` Bonus je KH-Energieanteil in Mahlzeiten vor/nach dem
+ *   Training. PRODUKTENTSCHEIDUNG.
+ */
+export const NUTRIENT_TIMING = {
+  proteinPerMealGPerKg: 0.4,
+  minProteinMeals: 3,
+  seniorFromAge: AGE_PLAN_RULES.senior.fromAge,
+  seniorMinProteinPerMealG: 25,
+  postWithinMinutes: MEAL_TIMING_RULES.postMealMaxMinutes,
+  postProteinGPerKg: MEAL_TIMING_RULES.postProteinGPerKg,
+  postEnduranceCarbFromMinutes: 60,
+  refuelGapMinutes: 8 * 60,
+  refuelCarbsGPerKg: 1,
+  preMealMinutes: MEAL_TIMING_RULES.preMealMinutes,
+  preMealCarbsGPerKgPerHour: 0.5,
+  preMealCarbsGPerKg: { min: 1, max: 2 },
+  preSnackMinutes: MEAL_TIMING_RULES.preSnackMinutes,
+  preSnackCarbsG: { min: 15, max: 30 },
+  preMealMaxFatEnergyShare: 0.3,
+  preMealMaxFiberGPer1000Kcal: 15,
+  preMealMinFiberLimitG: 8,
+  preSnackMaxFatG: 5,
+  preSnackMaxFiberG: 3,
+  preSnackMaxKcal: 250,
+  earlyBeforeMinutes: 8 * 60,
+  carbShift: 0.25,
+  longSessionMinutes: MEAL_TIMING_RULES.longSessionMinutes,
+  defaultStartMinutes: TRAINING_TIME_START_MINUTES.evening,
+  dishTolerance: 0.15,
+  sideMinGapG: 5,
+  sideMaxKcal: 250,
+  scoring: { proteinShortfall: 2, preTolerance: 1.5, carbFocus: 1.5 },
+} as const;
+
+/**
+ * Markierungen vor/nach dem Training nach Nährwerten (Nährstoff-Timing T3, Regel R22T, nur gelber Hinweis):
+ * „nach dem Training“ ab `postMinProteinEnergyShare` (15 %) der Energie aus Eiweiß. PRODUKTENTSCHEIDUNG – angelehnt an
+ * Kerksick CM et al. (2017), J Int Soc Sports Nutr 14:33 (Eiweiß und Kohlenhydrate nach dem Training). VOR LIVEGANG
+ * FACHLICH PRÜFEN.
+ */
+export const TRAINING_TAG_RULES = { postMinProteinEnergyShare: 0.15 } as const;

@@ -38,7 +38,8 @@ describe('Vorlagen-Wahl', () => {
     expect(p.template_id).toBe('calisthenics-einsteiger-3t');
     expect(p.match_quality).not.toBe('fallback');
     expect(p.notes).not.toContain('location_mismatch');
-    expect(p.uses_draft_content).toBe(true);
+    // Seit der Freigabe (27.10.2026) keine Entwürfe mehr.
+    expect(p.uses_draft_content).toBe(false);
   });
 
   it('Fortgeschritten im Studio: Calisthenics-Fortgeschritten (ortsunabhängig, kein Orts-Hinweis)', () => {

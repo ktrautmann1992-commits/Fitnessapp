@@ -5,13 +5,15 @@ import { heading } from './plan-helpers';
 
 /**
  * Testphase (Gründer-Entscheidung 19.10.2026, docs/PLAN-PHASE-5.md „Nachtrag Testphase“) im TESTMODUS: Beispiel-
- * Inhalte als „freigegeben, nicht fachlich geprüft“ – so, wie sie in der Testphase aus der Datenbank kommen. Rezept-
- * suche mit kleinem Kennzeichen, Rezeptansicht und Ratgeber mit dezentem Hinweis „Testphase – noch nicht fachlich
- * geprüft“; kein „KI-Entwurf“/„Entwurf“. Ratgeber mit Dosierungs-Befund (R21H) bleiben ohne Fachprüfung Entwurf. Gegenprobe: Entwürfe (normaler Testmodus) ohne Testphase-Hinweis.
+ * Inhalte als „freigegeben, nicht fachlich geprüft“ – so, wie sie aus der Datenbank kommen. Seit der Gründer-
+ * Entscheidung 27.10.2026 (privater Nutzerkreis, höchstens 5 Personen) zeigt die App dazu KEIN Kennzeichen mehr:
+ * Rezeptsuche, Rezeptansicht, Kühlschrank-Suche und Ratgeber ohne „Testphase“, ohne „Entwurf“, ohne Allergen-Hinweis
+ * „nicht fachlich geprüft“. Ratgeber mit Dosierungs-Befund (R21H) bleiben ohne Fachprüfung Entwurf (Freigabe-Regel).
+ * Gegenprobe: Entwürfe (normaler Testmodus) behalten „Entwurf“ und den Allergen-Hinweis für Entwürfe.
  * Fester Start: Montag, 12.10.2026, 9 Uhr.
  */
 
-test('Testphase: Suche gekennzeichnet, Rezeptansicht und Ratgeber mit Hinweis', async ({
+test('Testphase: Suche, Rezeptansicht, Kühlschrank und Ratgeber ohne Prüf-Kennzeichen', async ({
   page,
 }) => {
   test.setTimeout(180_000);
@@ -20,34 +22,25 @@ test('Testphase: Suche gekennzeichnet, Rezeptansicht und Ratgeber mit Hinweis', 
   await heading(page, 'Training');
   await openNutrition(page);
 
-  // Suche: kleines Kennzeichen an den Treffern.
+  // Suche: kein Kennzeichen an den Treffern.
   await page.getByTestId('nutrition-recipe-search').click();
   await expect(page.getByTestId('recipe-search')).toBeVisible();
   const hit = page.getByTestId('recipe-search-hit-overnight-oats');
-  // Kleines Kennzeichen „Testphase“ (24.10.2026); ausgeschrieben im Namen für Bildschirmleser.
-  await expect(page.getByTestId('recipe-search-hit-overnight-oats-testphase')).toHaveText(
-    'Testphase',
-  );
-  await expect(hit).toHaveAttribute('aria-label', /Testphase – nicht fachlich geprüft/);
+  await expect(hit).toBeVisible();
+  await expect(page.getByTestId('recipe-search-hit-overnight-oats-testphase')).toHaveCount(0);
+  await expect(hit).not.toHaveAttribute('aria-label', /Testphase|fachlich geprüft/);
   await expect(hit).not.toContainText('Entwurf');
 
-  // Rezeptansicht: dezenter Hinweis, keine Entwurfs-Kennzeichen.
+  // Rezeptansicht: kein Hinweis, keine Entwurfs-Kennzeichen, keine Allergen-Warnung für Entwürfe.
   await hit.click();
   await expect(page.getByTestId('recipe')).toBeVisible();
-  await expect(page.getByTestId('recipe-testphase')).toHaveText(
-    'Testphase – noch nicht fachlich geprüft',
-  );
-  await expect(page.getByTestId('recipe-ai-draft')).toHaveCount(0);
-  await expect(page.getByTestId('recipe')).not.toContainText(
-    'Entwurf – fachlich noch nicht geprüft',
-  );
   await expect(page.getByTestId('recipe-ingredients')).toBeVisible();
-  // Wächter M2 (sichere Variante): Allergen-Warnung auch ohne Fachprüfung in der Testphase.
-  await expect(page.getByTestId('recipe-allergen-warning')).toHaveText(
-    'Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
-  );
+  await expect(page.getByTestId('recipe-testphase')).toHaveCount(0);
+  await expect(page.getByTestId('recipe-ai-draft')).toHaveCount(0);
+  await expect(page.getByTestId('recipe-allergen-warning')).toHaveCount(0);
+  await expect(page.getByTestId('recipe')).not.toContainText(/fachlich geprüft|Testphase|Entwurf/);
 
-  // Kühlschrank-Suche: Treffer ohne Fachprüfung → Allergen-Warnung (Wächter M2, sichere Variante).
+  // Kühlschrank-Suche: keine Warnung.
   await page.goto('/rezepte/kuehlschrank');
   await expect(page.getByTestId('fridge-search')).toBeVisible();
   await page
@@ -55,36 +48,28 @@ test('Testphase: Suche gekennzeichnet, Rezeptansicht und Ratgeber mit Hinweis', 
     .getByRole('checkbox', { name: 'Banane', exact: true })
     .click();
   await expect(page.getByTestId('fridge-results')).toBeVisible();
-  await expect(page.getByTestId('fridge-testphase-warning')).toHaveText(
-    'Testphase: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
-  );
+  await expect(page.getByTestId('fridge-testphase-warning')).toHaveCount(0);
   await expect(page.getByTestId('fridge-draft-warning')).toHaveCount(0);
 
-  // Ratgeber-Liste: Kennzeichen „Testphase“ (Wächter N1); demo-wettkampf bleibt Entwurf (R21H, s. u.).
+  // Ratgeber-Liste: kein Kennzeichen; demo-wettkampf bleibt Entwurf (R21H, s. u.).
   await page.goto('/ratgeber');
   await expect(page.getByTestId('guide-list')).toBeVisible();
-  await expect(page.getByTestId('guide-testphase-demo-unterwegs')).toHaveText(
-    'Testphase – noch nicht fachlich geprüft',
-  );
-  await expect(page.getByTestId('guide-testphase-demo-wettkampf')).toHaveCount(0);
+  await expect(page.getByTestId('guide-testphase-demo-unterwegs')).toHaveCount(0);
 
-  // Ratgeber ohne Dosierungs-Befund: Hinweis „Testphase“ statt „Entwurf“.
+  // Ratgeber ohne Dosierungs-Befund: weder „Testphase“ noch „Entwurf“.
   await page.goto('/ratgeber/demo-unterwegs');
   await expect(page.getByTestId('guide')).toBeVisible();
-  await expect(page.getByTestId('guide-testphase')).toHaveText(
-    'Testphase – noch nicht fachlich geprüft',
-  );
+  await expect(page.getByTestId('guide-testphase')).toHaveCount(0);
   await expect(page.getByTestId('guide-draft')).toHaveCount(0);
 
-  // Ratgeber mit Dosierungs-Befund (R21H) wird in der Testphase NICHT ohne Fachprüfung freigegeben (Wächter H1):
-  // im Testmodus bleibt er Entwurf.
+  // Ratgeber mit Dosierungs-Befund (R21H) wird ohne Fachprüfung NICHT freigegeben (Wächter H1): bleibt Entwurf.
   await page.goto('/ratgeber/demo-wettkampf');
   await expect(page.getByTestId('guide')).toBeVisible();
-  await expect(page.getByTestId('guide-draft')).toBeVisible();
+  await expect(page.getByTestId('guide-draft')).toHaveText('Entwurf');
   await expect(page.getByTestId('guide-testphase')).toHaveCount(0);
 });
 
-test('Gegenprobe: normaler Testmodus (Entwürfe) zeigt keinen Testphase-Hinweis', async ({
+test('Gegenprobe: normaler Testmodus (Entwürfe) behält „Entwurf“ und Allergen-Hinweis', async ({
   page,
 }) => {
   test.setTimeout(180_000);

@@ -75,6 +75,7 @@ describe('Regeltabelle (Plan Abschnitt 7, Phase 5 Abschnitte 5.3, 19.4 und 19.7)
       'R20H',
       'R21H',
       'R22',
+      'R22T',
       'R23H',
       'SK7H',
       'W6',

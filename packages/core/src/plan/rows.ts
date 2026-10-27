@@ -56,6 +56,8 @@ export interface PlannedSessionRow {
   workout_steps: JsonValue | null;
   /** Live-Anpassung (Phase 4b): letzte Plan-Änderung dieser Einheit (Kennzeichen „angepasst“); sonst null. */
   adjustment_id: string | null;
+  /** Nährstoff-Timing (T0): eigene Uhrzeit „HH:MM“ (Postgres liefert „HH:MM:SS“); null = Standard („ca.“). */
+  start_time: string | null;
 }
 
 /** Zeile aus planned_exercises. */

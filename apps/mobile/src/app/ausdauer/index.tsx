@@ -35,6 +35,7 @@ import { activitiesFromRows, routePoints } from '@/data/endurance-rows';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { berlinTodayIso } from '@/lib/format';
+import { restoreLiveCompanion } from '@/lib/live-companion';
 import { endRecording, restoreRecording } from '@/lib/recording-controller';
 import {
   parsePersistedRecording,
@@ -81,6 +82,11 @@ export default function EnduranceScreen() {
   // Sportarten Stufe 1 · Etappe W: beim Gehen „Gehen | Wandern | Bergwandern“, SAC-Stufe optional.
   const [walkKind, setWalkKind] = useState<WalkKind>('walk');
   const [sacPick, setSacPick] = useState<SacPick>(null);
+
+  // Live-Begleitung nach Neustart: läuft ihre Aufzeichnung nicht mehr, endet sie sofort (Position gelöscht).
+  useEffect(() => {
+    if (userId) void restoreLiveCompanion(app.backend);
+  }, [app.backend, userId]);
 
   // Nach Absturz/Neustart: gesicherte Aufzeichnung anbieten (nur eigenes Konto, nur wenn keine im Speicher läuft).
   useEffect(() => {

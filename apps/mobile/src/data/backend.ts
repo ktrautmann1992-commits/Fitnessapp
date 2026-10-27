@@ -96,6 +96,12 @@ export interface SessionUpdate {
   usesHealthData: boolean;
   scheduledOn: string;
   status: 'planned' | 'skipped';
+  /**
+   * Nährstoff-Timing (T0/T2): Uhrzeit „HH:MM“ bzw. null (eigene Uhrzeit entfernen); fehlt = unverändert. Verschieben
+   * schickt die aktuelle Uhrzeit mit, damit eine wartende Änderung der Uhrzeit nicht überholt wird (gleicher
+   * Warteschlangen-Schlüssel je Einheit).
+   */
+  startTime?: string | null;
 }
 
 /** Zwei geplante Einheiten desselben (aktiven) Plans tauschen (Etappe A1a, A-G4). */
