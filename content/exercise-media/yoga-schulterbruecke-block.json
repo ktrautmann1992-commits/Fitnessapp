@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-schulterbruecke-block",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-schulterbruecke-block-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, Füße aufgestellt, Becken liegt auf einem flachen Block unter dem Kreuzbein, Arme neben dem Körper.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

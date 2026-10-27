@@ -1,0 +1,44 @@
+{
+  "id": "yoga-stuhlhaltung",
+  "version": 1,
+  "status": "published",
+  "name_de": "Stuhlhaltung",
+  "name_en": "Chair Pose",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["abs", "upper_back"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["overhead"],
+  "description_de": "Wie auf einen unsichtbaren Stuhl setzen und die Arme nach vorn oben strecken. Kräftigt Beine und Rumpf.",
+  "steps_de": [
+    "Füße hüftbreit, Knie zeigen nach vorn.",
+    "Gesäß nach hinten unten schieben, als würdest du dich setzen.",
+    "Arme nach vorn oben strecken, Rücken lang.",
+    "Halten, dann langsam aufrichten."
+  ],
+  "tips_de": ["Nur so tief gehen, wie die Knie hinter den Zehenspitzen bleiben."],
+  "common_mistakes_de": ["Das Gewicht auf die Zehen verlagern."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-halbe-vorbeuge-block",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft."
+  }
+}

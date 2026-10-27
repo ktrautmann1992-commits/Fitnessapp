@@ -1,0 +1,38 @@
+{
+  "id": "yoga-girlande-block",
+  "version": 1,
+  "status": "published",
+  "name_de": "Tiefe Hocke auf dem Block",
+  "name_en": "Garland Pose on a Block",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["adductors", "glutes"],
+  "secondary_muscles": ["calves"],
+  "equipment_ids": ["yoga_block"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["deep_hip_flexion"],
+  "description_de": "In der tiefen Hocke auf einem Block sitzen, Ellbogen schieben die Knie sanft nach außen. Öffnet Hüfte und Sprunggelenke.",
+  "steps_de": [
+    "Etwas breiter als hüftbreit stehen, Fußspitzen leicht nach außen.",
+    "Einen Block hinter die Fersen legen.",
+    "In die Hocke sinken und das Gesäß auf den Block setzen.",
+    "Hände vor der Brust, Ellbogen innen an den Knien, Rücken lang."
+  ],
+  "tips_de": ["Mit zwei Blöcken übereinander ist die Hocke leichter."],
+  "common_mistakes_de": ["Die Fersen abheben und auf den Zehen balancieren."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft."
+  }
+}

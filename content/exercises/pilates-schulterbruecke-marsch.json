@@ -1,0 +1,38 @@
+{
+  "id": "pilates-schulterbruecke-marsch",
+  "version": 1,
+  "status": "published",
+  "name_de": "Brücke mit Marschieren",
+  "name_en": "Bridge March",
+  "aliases_de": [],
+  "movement_pattern": "hip_extension",
+  "primary_muscles": ["glutes"],
+  "secondary_muscles": ["hamstrings", "abs"],
+  "equipment_ids": ["mat"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": ["long_supine", "floor_transfer"],
+  "description_de": "In der Brücke das Becken oben halten und im Wechsel einen Fuß knapp vom Boden heben.",
+  "steps_de": [
+    "Rückenlage, Füße hüftbreit aufgestellt, Arme neben dem Körper.",
+    "Becken anheben, bis Schultern, Hüfte und Knie eine Linie bilden.",
+    "Einen Fuß knapp abheben und wieder absetzen, dann den anderen.",
+    "Das Becken bleibt dabei waagerecht."
+  ],
+  "tips_de": ["Die Füße etwas näher ans Gesäß setzen, wenn die Beinrückseite krampft."],
+  "common_mistakes_de": ["Das Becken zur Seite absinken lassen."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, ruhig weiteratmen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft."
+  }
+}

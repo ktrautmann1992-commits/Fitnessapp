@@ -56,8 +56,9 @@ describe('Workout-Bibliothek im Testmodus', () => {
   it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand, Lauf-Kraft, Rudern, Flows – freigegeben 27.10.2026)', async () => {
     const s = await setup();
     const published = s.workouts.filter((w) => w.status === 'published');
-    expect(published.length).toBe(56);
-    expect(s.workouts).toHaveLength(56);
+    // 56 + 10 Yoga-/Pilates-Routinen der Restpunkte A (27.10.2026).
+    expect(published.length).toBe(66);
+    expect(s.workouts).toHaveLength(66);
     expect(
       s.workouts
         .filter((w) => w.status === 'draft')

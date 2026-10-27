@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-palme",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-palme-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – hüftbreit stehen, beide Arme lang über den Kopf gestreckt, Handflächen zueinander.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

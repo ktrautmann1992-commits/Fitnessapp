@@ -54,9 +54,10 @@ const card = (page: Page, id: string) => page.getByTestId(`workout-card-${id}`);
 
 test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({ page }) => {
   await setup(page);
-  // 56 freigegebene Workouts (seit 27.10.2026 auch 4 Lauf-Kraft, 10 Rudern, 15 Yoga/Pilates/Mobility); ohne
-  // Gesundheits-Check ist „Sanft in den Morgen“ ausgeblendet (zu viele Umkehrhaltungen für den vorsichtigen Plan).
-  await expect(count(page)).toHaveText('55 Workouts');
+  // 66 freigegebene Workouts (seit 27.10.2026 auch 4 Lauf-Kraft, 10 Rudern, 15 Yoga/Pilates/Mobility, dazu 10
+  // Yoga-/Pilates-Routinen der Restpunkte); ohne Gesundheits-Check sind „Sanft in den Morgen“ (zu viele
+  // Umkehrhaltungen für den vorsichtigen Plan) und 2 Restpunkte-Routinen (gestützte Brücke) ausgeblendet.
+  await expect(count(page)).toHaveText('63 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
@@ -86,7 +87,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-1').click();
   await expect(page.getByTestId('workouts-no-match')).toBeVisible();
   await page.getByTestId('workouts-filter-reset').click();
-  await expect(count(page)).toHaveText('55 Workouts');
+  await expect(count(page)).toHaveText('63 Workouts');
 
   // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();
@@ -209,8 +210,10 @@ test('Yoga (Flow): Stuhl-Yoga mit Seitenwechsel, Pose überspringen; Kategorie Y
   // Kategorie „Yoga“ ist wählbar (Sportarten Stufe 1 · Etappe Y).
   await page.getByTestId('workouts-filter-toggle').click();
   await page.getByTestId('workouts-filter-category-yoga').click();
-  await expect(count(page)).toHaveText('5 Workouts');
+  // 5 aus Etappe Y + 4 der Restpunkte A (2 weitere mit Umkehrhaltung ohne Gesundheits-Check ausgeblendet).
+  await expect(count(page)).toHaveText('9 Workouts');
   await expect(card(page, 'yoga-sanft-in-den-morgen')).toHaveCount(0);
+  await expect(card(page, 'yoga-fuer-den-schreibtisch')).toBeVisible();
   await card(page, 'yoga-stuhl').click();
   await heading(page, 'Stuhl-Yoga');
   await expect(page.getByTestId('workout-exercises')).toContainText('je Seite (rechts / links)');

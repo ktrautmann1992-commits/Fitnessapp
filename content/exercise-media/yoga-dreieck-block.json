@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-dreieck-block",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-dreieck-block-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – breiter Stand, Oberkörper zur Seite geneigt, untere Hand auf einem Block, obere Hand zeigt nach oben.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -79,6 +79,7 @@ describe('Startbestand Yoga/Pilates/Mobility', () => {
       'yoga-beine-an-der-wand',
       'yoga-herabschauender-hund',
       'yoga-schulterbruecke',
+      'yoga-schulterbruecke-block',
       'yoga-vorbeuge-stehend',
     ]);
     for (const e of inversion) expect(e.safety_note_de.length).toBeGreaterThan(20);

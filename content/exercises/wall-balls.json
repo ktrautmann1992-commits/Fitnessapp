@@ -1,6 +1,6 @@
 {
   "id": "wall-balls",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "name_de": "Wall Balls",
   "name_en": "Wall Balls",
@@ -8,7 +8,7 @@
   "movement_pattern": "squat",
   "primary_muscles": ["quadriceps", "glutes"],
   "secondary_muscles": ["front_delts", "triceps", "abs"],
-  "equipment_ids": ["other"],
+  "equipment_ids": ["wall_ball"],
   "mechanics": "compound",
   "load_type": "weight",
   "unilateral": false,

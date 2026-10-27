@@ -158,7 +158,8 @@ describe('Einspiel-Paket', () => {
     const pkg = buildSeedPackage(result);
     expect(pkg.exercises.map((e) => e.id)).toEqual(result.exercises.map((e) => e.id));
     // 172 (inkl. 2 Rudern) + 50 Posen der Etappe Y + 17 Hyrox der Etappe H (Sportarten Stufe 1).
-    expect(pkg.exercises).toHaveLength(239);
+    // + 34 Posen der Restpunkte A (27.10.2026).
+    expect(pkg.exercises).toHaveLength(273);
     expect(pkg.plan_templates).toHaveLength(49);
   });
 

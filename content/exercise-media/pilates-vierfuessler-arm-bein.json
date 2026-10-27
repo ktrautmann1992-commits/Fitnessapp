@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pilates-vierfuessler-arm-bein",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pilates-vierfuessler-arm-bein-start.svg",
+      "alt_de": "Ausgangsposition: Vierfüßlerstand, ein Arm lang nach vorn und das gegenüberliegende Bein lang nach hinten gestreckt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

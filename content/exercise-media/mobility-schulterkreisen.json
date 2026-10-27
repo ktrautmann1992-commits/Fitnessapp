@@ -1,0 +1,20 @@
+{
+  "exercise_id": "mobility-schulterkreisen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "mobility-schulterkreisen-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – aufrecht stehen, Arme locker hängen, die Schultern kreisen langsam nach hinten.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

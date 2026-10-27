@@ -1,0 +1,38 @@
+{
+  "id": "pilates-meerjungfrau",
+  "version": 1,
+  "status": "published",
+  "name_de": "Meerjungfrau",
+  "name_en": "Mermaid",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["obliques"],
+  "secondary_muscles": ["lats"],
+  "equipment_ids": ["mat"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "Seitlich sitzen, Beine zu einer Seite angewinkelt, ein Arm streckt sich über den Kopf zur Seite.",
+  "steps_de": [
+    "Seitlich sitzen, beide Knie zu einer Seite gebeugt.",
+    "Eine Hand neben dir am Boden, den anderen Arm nach oben strecken.",
+    "Über die Seite lang werden und zur Seite neigen.",
+    "Zurück zur Mitte, nach einigen Wiederholungen die Seite wechseln."
+  ],
+  "tips_de": ["Wer unbequem sitzt, setzt sich im Schneidersitz oder auf einen Stuhl."],
+  "common_mistakes_de": ["Den Oberkörper nach vorn rund machen."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, ruhig weiteratmen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft."
+  }
+}

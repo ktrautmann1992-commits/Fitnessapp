@@ -1,6 +1,6 @@
 {
   "id": "hyrox-schlitten-schieben",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "name_de": "Schlitten schieben",
   "name_en": "Sled Push",
@@ -8,7 +8,7 @@
   "movement_pattern": "conditioning",
   "primary_muscles": ["quadriceps", "glutes"],
   "secondary_muscles": ["calves", "front_delts", "triceps"],
-  "equipment_ids": ["other"],
+  "equipment_ids": ["sled"],
   "mechanics": "compound",
   "load_type": "time",
   "unilateral": false,

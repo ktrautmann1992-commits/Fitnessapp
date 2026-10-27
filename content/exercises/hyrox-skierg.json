@@ -1,6 +1,6 @@
 {
   "id": "hyrox-skierg",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "name_de": "Ski-Ergometer",
   "name_en": "Ski Ergometer",
@@ -8,7 +8,7 @@
   "movement_pattern": "conditioning",
   "primary_muscles": ["lats", "triceps"],
   "secondary_muscles": ["abs", "glutes", "upper_back"],
-  "equipment_ids": ["other"],
+  "equipment_ids": ["ski_erg"],
   "mechanics": "compound",
   "load_type": "time",
   "unilateral": false,

@@ -2026,8 +2026,8 @@ Rückmeldung an Claude z. B. „Rudern: 1–6 ok, Split-Zeile zu klein“.
 Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle Posen und Routinen sind freigegeben (privater Nutzerkreis, 27.10.2026).
 
 1. **Ohne Konto testen** → Onboarding (Einsteiger, 2 Tage Kraft, z. B. Dienstag und Freitag) → **Zum Plan**.
-2. **Training → Workouts → Filter → Ziel „Yoga“** → 5 Routinen (ohne Gesundheits-Check fehlt „Sanft in den Morgen“ –
-   zu viele Umkehrhaltungen). **„Stuhl-Yoga“** antippen → bei den Posen steht „je Seite (rechts / links)“.
+2. **Training → Workouts → Filter → Ziel „Yoga“** → 9 Routinen (ohne Gesundheits-Check fehlen „Sanft in den Morgen“ –
+   zu viele Umkehrhaltungen – und zwei Routinen mit gestützter Brücke). **„Stuhl-Yoga“** antippen → bei den Posen steht „je Seite (rechts / links)“.
 3. **Workout starten** → Flow-Ansicht: großes Bild, Name, Ring mit Restzeit, Atem-Hinweis, „Als Nächstes“. Ohne
    Pausen-Bildschirm geht es zur nächsten Pose; bei Posen mit Seitenwechsel steht **„Rechte Seite“**, danach
    **„Linke Seite“**. **Pause/Weiter** und **„Pose überspringen“** ausprobieren; der Bildschirm bleibt an.
@@ -2065,7 +2065,13 @@ Chrome am Handy, Vorschau-Link, **Inkognito-Tab**, **Ohne Konto testen**.
 7. **Smartwatch (Android-App, neuer EAS-Build):** Beim Verbinden fragt Health Connect zusätzlich „Leistung“ – Einheiten
    am Rudergerät bekommen Ø Watt.
 
-Rückmeldung an Claude z. B. „Restpunkte: 1–7 ok, Gehzeit wirkt zu kurz“.
+8. **Neue Routinen** (freigegeben, privater Nutzerkreis): Training → Workouts → Ziel **Yoga** →
+   9 Routinen ohne Gesundheits-Check (u. a. „Yoga für den Schreibtisch“, „Gleichgewicht und Haltung“, „Rücken und
+   Schultern“, „Hüften sanft öffnen“); **Pilates** → „Rumpf kompakt“, „Rücken stärken“, „Hüfte und Seitlage“,
+   „Pilates im Stehen“. Bei Routinen mit Block steht „Matte, Block“ – der Filter **Ohne Geräte** zeigt sie trotzdem
+   (Ersatz Handtuch/Kissen).
+
+Rückmeldung an Claude z. B. „Restpunkte: 1–8 ok, Gehzeit wirkt zu kurz“.
 
 ## Teil 9h – Hyrox testen (Sportarten Stufe 1, Etappe H, 27.10.2026, Testmodus)
 

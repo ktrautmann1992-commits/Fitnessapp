@@ -34,7 +34,8 @@ describe('Startbestand (content/)', () => {
     expect(result.exercises.length).toBeGreaterThanOrEqual(45);
     // + 50 Yoga-/Pilates-/Mobility-Posen (Sportarten Stufe 1 · Etappe Y, Entwürfe) + 17 Hyrox-Stationen und Ersatz
     // (Etappe H).
-    expect(result.exercises.length).toBeLessThanOrEqual(250);
+    // + 34 Posen der Restpunkte A (27.10.2026).
+    expect(result.exercises.length).toBeLessThanOrEqual(290);
     expect(result.templates).toHaveLength(49);
     expect(extra.map((t) => t.id).sort()).toEqual([
       'calisthenics-einsteiger-2t',
@@ -96,7 +97,8 @@ describe('Startbestand (content/)', () => {
   it('jeder Inhalt ist Entwurf (ohne Prüfvermerk) oder freigegeben (mit Prüfer und Datum); KI-Kennzeichnung bleibt', () => {
     for (const item of [...result.exercises, ...result.templates]) {
       expect(['draft', 'published'], item.id).toContain(item.status);
-      expect(item.version, item.id).toBe(1);
+      // Geänderte freigegebene Inhalte bekommen eine höhere Version (Versionsregel des Validators).
+      expect(item.version, item.id).toBeGreaterThanOrEqual(1);
       expect(item.meta, item.id).toMatchObject({
         origin: 'claude_session',
         model: 'claude-opus-5-5',

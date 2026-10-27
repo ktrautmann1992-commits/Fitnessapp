@@ -1,0 +1,44 @@
+{
+  "id": "yoga-katze-kuh",
+  "version": 1,
+  "status": "published",
+  "name_de": "Katze-Kuh",
+  "name_en": "Cat-Cow",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["lower_back"],
+  "secondary_muscles": ["abs", "upper_back"],
+  "equipment_ids": ["mat"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer", "spinal_flexion"],
+  "description_de": "Im Vierfüßlerstand den Rücken im Wechsel sanft rund machen und lang nach unten sinken lassen – im Rhythmus des Atems.",
+  "steps_de": [
+    "In den Vierfüßlerstand kommen: Hände unter den Schultern, Knie unter der Hüfte.",
+    "Ausatmen: den Rücken rund machen, Kinn Richtung Brust.",
+    "Einatmen: den Bauch sinken lassen, Brustbein nach vorn, Blick leicht nach vorn.",
+    "Ruhig im eigenen Atemrhythmus wechseln."
+  ],
+  "tips_de": ["Klein anfangen und die Bewegung mit jedem Atemzug etwas größer werden lassen."],
+  "common_mistakes_de": ["Die Bewegung nur im Nacken machen statt in der ganzen Wirbelsäule."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [
+    {
+      "alternative_id": "mobility-katze-kuh-stuhl",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft."
+  }
+}

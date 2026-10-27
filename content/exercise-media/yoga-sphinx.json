@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-sphinx",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-sphinx-start.svg",
+      "alt_de": "Ausgangsposition: Bauchlage, Ellbogen unter den Schultern, Unterarme parallel nach vorn, Brust sanft angehoben.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

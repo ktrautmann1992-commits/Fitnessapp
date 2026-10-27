@@ -1,0 +1,20 @@
+{
+  "exercise_id": "mobility-hueftkreisen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "mobility-hueftkreisen-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – hüftbreit stehen, Knie locker, Hände an der Hüfte.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

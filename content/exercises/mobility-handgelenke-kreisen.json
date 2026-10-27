@@ -1,0 +1,38 @@
+{
+  "id": "mobility-handgelenke-kreisen",
+  "version": 1,
+  "status": "published",
+  "name_de": "Handgelenke kreisen",
+  "name_en": "Wrist Circles",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["forearms"],
+  "secondary_muscles": [],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Die Hände locker verschränken oder einzeln kreisen lassen – bereitet die Handgelenke auf Stützhaltungen vor.",
+  "steps_de": [
+    "Aufrecht sitzen oder stehen, Arme vor dem Körper.",
+    "Die Hände locker verschränken.",
+    "Die Handgelenke langsam in Kreisen bewegen.",
+    "Nach einigen Kreisen die Richtung wechseln."
+  ],
+  "tips_de": ["Die Schultern bleiben dabei locker."],
+  "common_mistakes_de": ["Zu schnell oder mit Druck kreisen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft."
+  }
+}

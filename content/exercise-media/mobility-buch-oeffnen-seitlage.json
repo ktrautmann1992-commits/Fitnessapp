@@ -1,0 +1,20 @@
+{
+  "exercise_id": "mobility-buch-oeffnen-seitlage",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "mobility-buch-oeffnen-seitlage-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – in Seitlage, Knie gebeugt, der obere Arm öffnet sich nach oben zur anderen Seite.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

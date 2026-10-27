@@ -1,0 +1,96 @@
+{
+  "id": "yoga-gleichgewicht",
+  "version": 1,
+  "status": "published",
+  "title_de": "Gleichgewicht und Haltung",
+  "summary_de": "Stehende Haltungen für Gleichgewicht und Kraft in den Beinen – mit Halt an Wand oder Stuhl.",
+  "category": "yoga",
+  "difficulty": 2,
+  "minutes": 10,
+  "format": "flow",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": ["yoga_block"],
+  "warmup_de": "Zwei Minuten auf der Stelle gehen und die Schultern kreisen.",
+  "cooldown_de": "Mit einer Wadendehnung an der Wand abschließen und locker ausschütteln.",
+  "exercises": [
+    {
+      "exercise_id": "mobility-hueftkreisen",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-palme",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-stuhlhaltung",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-krieger-3-wand",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "pilates-stehend-beinkreisen",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-halbe-vorbeuge-block",
+      "reps": null,
+      "duration_s": 70,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-dreieck-block",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "mobility-wade-wand",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft."
+  }
+}

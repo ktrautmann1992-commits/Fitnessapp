@@ -38,7 +38,7 @@ describe('selectPlanContent', () => {
   it('echter Inhaltsstand: live genau die freigegebenen Inhalte, Testmodus alles', () => {
     const result = validateContent(loadRepoContentFiles());
     const live = selectPlanContent(result, { allowDrafts: false });
-    // Posen (Yoga/Pilates/Mobility) nie in der Plan-Engine – nur in displayExercises.
+    // Posen (Yoga/Pilates/Mobility) stehen nie in der Plan-Engine – auch freigegeben nur zur Anzeige.
     const publishedExercises = result.exercises.filter(
       (e) => e.status === 'published' && !isFlowPoseId(e.id),
     );

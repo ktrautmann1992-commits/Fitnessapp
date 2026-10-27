@@ -12,7 +12,7 @@ import type { Limb, PoseSpec, Prop, SidePose } from './rig';
 // Grundhaltungen
 // ---------------------------------------------------------------------------------------------------------------
 
-function front(
+export function front(
   arms: { near: Limb; far: Limb },
   legs: { near: Limb; far: Limb } = { near: [-88, -90], far: [-92, -90] },
   props: Prop[] = [],
@@ -29,7 +29,7 @@ function front(
 }
 
 /** Vierfüßlerstand (Hände unter den Schultern, Knie unter der Hüfte). */
-const QUADRUPED: PoseSpec = {
+export const QUADRUPED: PoseSpec = {
   view: 'side',
   torso: 16,
   head: 16,
@@ -39,7 +39,7 @@ const QUADRUPED: PoseSpec = {
 };
 
 /** Rückenlage, Kopf rechts (Beine gestreckt). */
-function supine(
+export function supine(
   arms: { near: SidePose['arm']; far: SidePose['arm'] },
   legs: { near: SidePose['leg']; far: SidePose['leg'] } = {
     near: [180, 180, 90],
@@ -60,7 +60,7 @@ function supine(
 }
 
 /** Rückenlage mit aufgestellten Füßen (Becken fest, Füße per Zielpunkt). */
-function supineKneesBent(
+export function supineKneesBent(
   arms: { near: SidePose['arm']; far: SidePose['arm'] },
   props: Prop[] = [mat(-70, 70)],
 ): PoseSpec {
@@ -76,7 +76,11 @@ function supineKneesBent(
 }
 
 /** Bauchlage, Kopf rechts, Oberkörper leicht angehoben (Unterarme am Boden). */
-function prone(torso: number, arms: { near: Limb; far: Limb }, props: Prop[] = []): PoseSpec {
+export function prone(
+  torso: number,
+  arms: { near: Limb; far: Limb },
+  props: Prop[] = [],
+): PoseSpec {
   return {
     view: 'side',
     torso,
@@ -88,7 +92,7 @@ function prone(torso: number, arms: { near: Limb; far: Limb }, props: Prop[] = [
 }
 
 /** Aufrecht auf einem Stuhl sitzen (Stuhl links, Blick nach rechts). */
-function seated(
+export function seated(
   arms: { near: SidePose['arm']; far: SidePose['arm'] },
   legs?: { near: SidePose['leg']; far: SidePose['leg'] },
   extra: Partial<PoseSpec> = {},
@@ -103,13 +107,13 @@ function seated(
     ...extra,
   };
 }
-const HANDS_ON_THIGHS = {
+export const HANDS_ON_THIGHS = {
   near: { ik: [22, 38], bend: 'down', end: 0 } as SidePose['arm'],
   far: { ik: [20, 38], bend: 'down', end: 0 } as SidePose['arm'],
 };
 
 /** Aufrecht am Boden sitzen, Beine nach vorn. */
-function seatedFloor(
+export function seatedFloor(
   arms: { near: SidePose['arm']; far: SidePose['arm'] },
   legs: { near: Limb; far: Limb },
   torso = 88,
