@@ -70,7 +70,7 @@ test('Was habe ich da?: Auswahl, Übereinstimmung, nur Gewürze, Entwurf-Warnung
     'Alle Hauptzutaten hast du da.',
   );
   await expect(page.getByTestId('fridge-draft-warning')).toContainText(
-    'Allergene noch nicht fachlich geprüft',
+    'Allergen-Angaben noch nicht freigegeben',
   );
   await expect(page.getByTestId('fridge-results')).toContainText(/\d+\skcal\s·\s\d+\sg\sEiweiß/);
 

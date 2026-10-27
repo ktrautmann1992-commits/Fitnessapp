@@ -313,11 +313,6 @@ export default function FridgeSearchScreen() {
               <Notice tone="warning" testID="fridge-draft-warning">
                 {texts.allergenWarning}
               </Notice>
-            ) : found?.hasTestphase === true ? (
-              // Wächter Testphase M2 (sichere Variante): Treffer ohne Fachprüfung → Allergen-Warnung.
-              <Notice tone="warning" testID="fridge-testphase-warning">
-                {texts.testphaseAllergenWarning}
-              </Notice>
             ) : null}
             <View style={styles.list} testID="fridge-results">
               {cards.map((card) => (
@@ -374,7 +369,6 @@ function FridgeCard({
     `${texts.cardA11y(card.title)}, ${texts.matchA11y(card.percent)}`,
     numbers ? `${numbers.a11y}, ${t.nutrition.search.perServingA11y}` : null,
     card.isDraft ? texts.draft : null,
-    card.isTestphase ? texts.testphaseA11y : null,
   ]
     .filter((part): part is string => part !== null)
     .join('. ');
@@ -405,9 +399,6 @@ function FridgeCard({
               {texts.match(card.percent)}
             </Text>
             {card.isDraft ? <RecipeFlagChip label={texts.draft} a11y={texts.draft} /> : null}
-            {card.isTestphase ? (
-              <RecipeFlagChip label={texts.testphase} a11y={texts.testphaseA11y} />
-            ) : null}
           </View>
         </View>
       </View>

@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: 'Datenschutzerklärung' };
 
 export default function Datenschutz() {
   return (
-    <RechtsSeite titel="Datenschutzerklärung" stand={'Entwurf – Oktober 2026'}>
+    <RechtsSeite titel="Datenschutzerklärung" stand={'Oktober 2026'}>
       <h2>1. Verantwortlicher</h2>
       <p>
         <P>Name und Anschrift wie im Impressum, E-Mail-Adresse für Datenschutzanfragen</P>

@@ -64,7 +64,7 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
   await page.getByTestId('meal-lunch').click();
   await expect(page.getByTestId('recipe')).toBeVisible();
   await expect(page.getByTestId('recipe-allergen-warning')).toHaveText(
-    'Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
+    'Entwurf: Allergen-Angaben noch nicht freigegeben – bei Allergien bitte nicht verwenden.',
   );
   await expect(page.getByTestId('recipe-portion')).toContainText('Deine Portion');
   await expect(page.getByTestId('recipe-contains')).toContainText('Enthält');

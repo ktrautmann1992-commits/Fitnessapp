@@ -871,10 +871,10 @@ describe('content-seed: Workouts (docs/PLAN-WORKOUTS.md)', () => {
     const r = withWorkouts();
     const { result } = validateRepository({ cwd: r.root });
     expect(result.workouts.length).toBeGreaterThanOrEqual(20);
-    // Entwürfe (z. B. Lauf-Kraft, docs/PLAN-CALISTHENICS-SCHLINGE.md 4; 10 Rudern-Workouts, Etappe R) kommen nie ins Paket.
+    // Seit der Freigabe für den privaten Nutzerkreis (27.10.2026) sind alle Workouts freigegeben; Entwürfe kämen nie ins
+    // Paket (Gegenprobe unten).
     const published = result.workouts.filter((w) => w.status === 'published');
-    // 4 Lauf-Kraft-Entwürfe + 10 Rudern-Workouts (Etappe R) + 15 Yoga-/Pilates-/Mobility-Routinen (Sportarten Stufe 1 · Etappe Y).
-    expect(result.workouts.length - published.length).toBe(29);
+    expect(result.workouts.length - published.length).toBe(0);
     const strict = buildWorkoutSeedPackage(result);
     expect(strict.package.workouts).toEqual([]);
     expect(strict.waiting).toHaveLength(published.length);

@@ -60,9 +60,8 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await openPlanInfo(page);
   await expect(page.getByTestId('plan-info-bodyweight_limits')).toHaveCount(0);
   await expandNotices(page, 'today-notices');
-  await expect(page.getByTestId('plan-test-content')).toHaveText(
-    'Testinhalte – KI-Entwurf, nicht fachlich geprüft',
-  );
+  // Kein „Testinhalte“-Hinweis mehr (privater Nutzerkreis, Gründer-Entscheidung 27.10.2026).
+  await expect(page.getByTestId('plan-test-content')).toHaveCount(0);
   // Mi + Fr = 2 von 3 Einheiten in der Startwoche → Woche 1 = Einstiegswoche.
   await expect(page.getByRole('heading', { name: 'Woche 1 von 6' })).toBeVisible();
   await expect(page.getByText(/^Einstiegswoche: Wähle Gewichte/)).toBeVisible();

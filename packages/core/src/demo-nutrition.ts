@@ -264,7 +264,7 @@ export const DEMO_GUIDES: readonly Guide[] = [
     version: 1,
     status: 'draft',
     title_de: 'Unterwegs essen (Beispiel)',
-    intro_de: 'Beispiel-Ratgeber mit Testtexten für den Testmodus – noch nicht fachlich geprüft.',
+    intro_de: 'Beispiel-Ratgeber mit Testtexten für den Testmodus.',
     sections: [
       {
         heading_de: 'Grundregeln',

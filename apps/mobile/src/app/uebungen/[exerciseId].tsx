@@ -122,15 +122,6 @@ export default function GlossaryDetailScreen() {
       testID="glossary-detail"
       footer={footer}
     >
-      {entry.isDraft ? (
-        <Notice tone="info" testID="glossary-test-content">
-          {t.glossary.testContent}
-        </Notice>
-      ) : entry.notReviewed ? (
-        <Notice tone="info" testID="glossary-not-reviewed">
-          {t.glossary.notReviewed}
-        </Notice>
-      ) : null}
       {entry.aliases.length > 0 ? (
         <Body muted>{t.glossary.alsoCalled(entry.aliases.join(', '))}</Body>
       ) : null}

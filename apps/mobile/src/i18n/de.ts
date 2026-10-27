@@ -537,8 +537,6 @@ export const de = {
       'Für einen Plan fehlen noch Angaben (Erfahrung, Ziel oder Trainingstage). Ergänze sie unter Einstellungen → Training.',
     invalidInputs: 'Deine Angaben passen nicht zu den Regeln für einen Plan. Bitte prüfe sie.',
     loading: 'Dein Plan wird geladen …',
-    testContent: 'Testinhalte – KI-Entwurf, nicht fachlich geprüft',
-    notReviewed: 'Die Inhalte sind noch nicht fachlich geprüft.',
     offline: 'Offline – du siehst den zuletzt geladenen Plan.',
     droppedChange:
       'Eine Verschiebung konnte nicht übernommen werden – dein Plan wurde neu geladen.',
@@ -1496,8 +1494,6 @@ export const de = {
     reps: 'Wiederholungen',
     hold: 'Halten',
     unilateral: 'einseitig',
-    testContent: 'Testinhalt – noch nicht fachlich geprüft',
-    notReviewed: 'Noch nicht fachlich geprüft',
     alsoCalled: (names: string) => `auch genannt: ${names}`,
     englishName: (name: string) => `englisch: ${name}`,
     descriptionTitle: 'Beschreibung',

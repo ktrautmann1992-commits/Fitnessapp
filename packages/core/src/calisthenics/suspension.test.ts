@@ -179,7 +179,7 @@ describe('Plan erzeugen mit Schlingentrainer', () => {
     for (const goalType of ['general_fitness', 'muscle_gain', 'fat_loss'] as const) {
       const plan = generate(LIB, SLING, { goalType });
       expect(plan.template_id, goalType).toMatch(/-schlingentrainer$/);
-      expect(plan.uses_draft_content).toBe(true);
+      expect(plan.uses_draft_content).toBe(false);
       for (const s of plan.sessions.filter((x) => x.kind === 'strength')) {
         for (const e of s.exercises) {
           const ids = exercises.get(e.exercise_id)!.equipment_ids;

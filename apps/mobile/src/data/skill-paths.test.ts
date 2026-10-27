@@ -212,10 +212,10 @@ describe('Lauf-Kraft am Lauftag (runStrengthFor)', () => {
 });
 
 describe('Schlingentrainer im Testmodus', () => {
-  it('mit Entwürfen bereit, Bibliothek kennzeichnet Entwürfe', async () => {
+  it('bereit; seit der Freigabe (27.10.2026) ohne Entwürfe in der Bibliothek', async () => {
     const lib = await library();
     expect(suspensionTrainerReady(lib.exercises)).toBe(true);
-    expect(lib.containsDrafts).toBe(true);
+    expect(lib.containsDrafts).toBe(false);
   });
 });
 

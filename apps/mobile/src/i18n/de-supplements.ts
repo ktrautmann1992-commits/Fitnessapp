@@ -15,12 +15,9 @@ export const deSupplements = {
   disclaimerTitle: 'Bitte lesen',
   disclaimer:
     'Allgemeine Fitness-Informationen, keine ärztliche Beratung und kein Befund. Wir nennen Stoffe, keine Marken und keine Produkte. Shops und Werbung gibt es hier nicht.',
-  testPhase: 'Testphase – noch nicht fachlich geprüft',
-  drafts:
-    'Testmodus: Die Texte sind Entwürfe aus dem Repository – noch nicht freigegeben und noch nicht fachlich geprüft.',
   loading: 'Supplemente werden geladen …',
   loadFailed: 'Die Supplemente konnten nicht geladen werden.',
-  empty: 'Kommt bald: Die Texte zu den Supplementen werden gerade geprüft.',
+  empty: 'Kommt bald: Die Texte zu den Supplementen folgen.',
   cached: 'Offline: gespeicherte Texte.',
   incomplete:
     'Für die Supplemente brauchen wir deine Angaben aus der Einrichtung (Ziel und Erfahrung). Bitte schließe die Einrichtung ab.',

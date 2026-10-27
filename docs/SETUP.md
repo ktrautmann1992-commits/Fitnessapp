@@ -1194,6 +1194,11 @@ der Datei `content/einspiel-regeln.json` (`"nur_fachlich_geprueft": false` = Tes
 Livegang-Regel) – **keine** Variable und kein Secret nötig. Umstellen per Pull Request: `docs/HANDY-ANLEITUNG.md` Teil 7t.
 Ratgeber mit Dosierungs-Befund (R21H) kommen auch in der Testphase nur mit Fachprüfung in die Datenbank.
 
+**Privater Nutzerkreis (Gründer-Entscheidung 27.10.2026):** Alle Trainings-Inhalte (Übungen, Plan-Vorlagen, Workouts)
+und die Bergwander-Ratgeber sind freigegeben (Prüfer „Karsten (Auftrag an Claude)“, nicht fachlich geprüft). App und
+Website zeigen keine Hinweise „noch nicht fachlich geprüft“/„Testphase“/„Testinhalt“ mehr. Was vor einer öffentlichen
+oder kommerziellen Veröffentlichung zu prüfen ist: `docs/VOR-VEROEFFENTLICHUNG.md`.
+
 **Trainingsplan mit Supabase testen (ab Phase 3, Etappe C):** Die App nutzt live **nur freigegebene** Vorlagen und
 Übungen. Vor dem ersten Test mit Supabase deshalb erst Inhalte freigeben (Schritte oben, `content-seed` grün) – sonst
 zeigt „Heute“ richtigerweise „Für deine Angaben gibt es gerade keinen freigegebenen Plan“.

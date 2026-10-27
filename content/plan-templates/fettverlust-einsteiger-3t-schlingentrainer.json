@@ -1,7 +1,7 @@
 {
   "id": "fettverlust-einsteiger-3t-schlingentrainer",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Fettverlust · Einsteiger · 3 Tage · nur Schlingentrainer",
   "description_de": "Drei Ganzkörper-Einheiten pro Woche nur mit einem Schlingentrainer, je 30–45 Minuten. Ziel Fettverlust: zügige Ganzkörper-Übungen mit kurzen Pausen, damit die Kraft im Kaloriendefizit erhalten bleibt. Für Einsteiger mit zwei Wiederholungen Reserve. Anker sicher befestigen und vor jedem Training testen.",
   "goal_type": "fat_loss",
@@ -228,8 +228,8 @@
     "batch_id": null,
     "created_on": "2026-10-25",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
-    "review_note": "Entwurf „nur Schlingentrainer“ (docs/PLAN-CALISTHENICS-SCHLINGE.md 3.4) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft. Vorher: Entwurf „nur Schlingentrainer“ (docs/PLAN-CALISTHENICS-SCHLINGE.md 3.4) – Freigabe durch die Gründer/Fachprüfung ausstehend."
   }
 }

@@ -10,8 +10,9 @@ import { mainMusclesOf, sessionRoutine } from './warmup';
 
 const healthy = planSafetyRules(person(), MONDAY);
 const noCheck = planSafetyRules(person({ healthScreening: null }), MONDAY);
+/** Bibliothek ohne Beweglichkeits-/Dehnübungen (Muster `mobility`) – wie eine Datenbank, in der sie fehlen. */
 const published = new Map<string, Exercise>(
-  [...EXERCISES].filter(([, e]) => e.status === 'published'),
+  [...EXERCISES].filter(([, e]) => e.status === 'published' && e.movement_pattern !== 'mobility'),
 );
 const LEGS = strengthSession([
   'kniebeuge-langhantel',

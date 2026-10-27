@@ -4,9 +4,9 @@ import { heading, onboard } from './plan-helpers';
 
 /**
  * Calisthenics, Schlingentrainer und Lauf-Kraft im TESTMODUS (docs/PLAN-CALISTHENICS-SCHLINGE.md, Gründer-Freigabe
- * 25.10.2026): Skill-Pfade-Bildschirm (Testinhalt-Hinweis, Stufen, Sperren für Einsteiger), Schlingentrainer-Plan zu
+ * 25.10.2026): Skill-Pfade-Bildschirm (Stufen, Sperren für Einsteiger), Schlingentrainer-Plan zu
  * Hause mit Tausch-Alternative und Winkel-/Anker-Hinweis im Glossar, Lauf-Kraft-Block am Lauftag.
- * Alle Inhalte sind Entwürfe – im Testmodus sichtbar und als „Testinhalt“ gekennzeichnet.
+ * Alle Inhalte sind freigegeben (27.10.2026) – ohne „Testinhalt“-Kennzeichen.
  */
 
 const WEDNESDAY = new Date('2026-10-07T09:00:00+02:00');
@@ -38,7 +38,7 @@ async function start(page: Page, at: Date) {
   });
 }
 
-test('Skill-Pfade: Einstieg über „Mehr“, Testinhalt, aktuelle Stufe, Sperren für Einsteiger', async ({
+test('Skill-Pfade: Einstieg über „Mehr“, aktuelle Stufe, Sperren für Einsteiger', async ({
   page,
 }) => {
   await start(page, WEDNESDAY);
@@ -55,14 +55,14 @@ test('Skill-Pfade: Einstieg über „Mehr“, Testinhalt, aktuelle Stufe, Sperre
     homeEquipment: ['Klimmzugstange', 'Barren/Dip-Station'],
   });
   await toToday(page);
-  // Calisthenics-Vorlage (Entwurf) liefert Übungen mit Stange/Barren bzw. Körpergewicht.
+  // Calisthenics-Vorlage liefert Übungen mit Stange/Barren bzw. Körpergewicht.
   expect((await exerciseNames(page)).length).toBeGreaterThan(2);
   if (shots) await shot(page, 'plan-exercise', 'calisthenics-heute');
 
   await page.goto('/mehr');
   await page.getByTestId('more-skill-paths').click();
   await heading(page, 'Skill-Pfade');
-  await expect(page.getByTestId('skill-paths-test-content')).toContainText('Testinhalt');
+  await expect(page.getByTestId('skill-paths-test-content')).toHaveCount(0);
   await expect(page.getByTestId('skill-path-klimmzug')).toContainText('Klimmzug');
   await expect(page.getByTestId('skill-current-klimmzug')).toContainText('Stufe 1 von');
   await expect(page.getByTestId('skill-current-klimmzug')).toContainText('Noch nicht begonnen');
@@ -235,6 +235,6 @@ test('Lauf-Kraft: 15-Minuten-Block nach dem lockeren Lauf, mit Timer zu öffnen'
   await expect(block).toContainText('Runden');
   await shot(page, 'plan-run-strength', 'lauf-kraft-heute');
   await page.getByTestId('plan-run-strength-open').click();
-  await expect(page.getByTestId('workout-test-content')).toContainText('Testinhalt');
+  await expect(page.getByTestId('workout-test-content')).toHaveCount(0);
   if (shots) await page.screenshot({ path: `${shots}/lauf-kraft-einheit.png` });
 });

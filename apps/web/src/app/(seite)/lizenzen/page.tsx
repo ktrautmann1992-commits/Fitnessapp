@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: 'Lizenzen und Quellen' };
  */
 export default function Lizenzen() {
   return (
-    <RechtsSeite titel="Lizenzen und Quellen" stand={'Entwurf – Oktober 2026'}>
+    <RechtsSeite titel="Lizenzen und Quellen" stand={'Oktober 2026'}>
       <h2>Nährwerte unseres Lebensmittel-Katalogs</h2>
       <p>
         Nährwerte: Bundeslebensmittelschlüssel (BLS) 4.0, Max Rubner-Institut, Lizenz CC BY 4.0 (

@@ -151,9 +151,6 @@ export default function SupplementDetailScreen() {
           testID="supplement-detail-status"
         />
       ) : null}
-      {!detail.expertReviewed ? (
-        <Notice testID="supplement-testphase">{SUPP.testPhase}</Notice>
-      ) : null}
       {detail.evidence ? (
         <Body muted testID="supplement-detail-evidence">
           {SUPP.evidence[detail.evidence]}
