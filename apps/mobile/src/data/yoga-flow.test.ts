@@ -6,6 +6,7 @@
 import {
   buildWorkoutTimerPlan,
   CONSERVATIVE_PLAN_RULES,
+  isFlowPoseId,
   type FlowSafetyInput,
   normalizeLayout,
   type PlanLibrary,
@@ -24,10 +25,12 @@ import {
   seededBackend,
   TODAY,
   USER_ID,
+  uuidBackend,
 } from '../test/fixtures';
 import { isValidOp } from './local-rules';
 import { recentActivitiesFromRows, recoverySuggestionFromRows } from './recovery-routine';
 import type { AppLayoutRow, UserRows } from './types';
+import { draftToPayload } from './workout-draft';
 import { applyWriteOps } from './write-ops';
 import { startActiveRun, workoutLogDraft } from './workout-run';
 
@@ -75,6 +78,7 @@ describe('Testmodus: Flow-Routinen und Posen', () => {
     expect(active.workout).toBe(prepared.workout);
     expect(active.steps.some((s) => s.kind === 'work' && s.side === 'left')).toBe(true);
     const later = 10 * 60 * 1000;
+    let ids = 0;
     const { run } = workoutRunView(active.steps, active.run, later);
     const result = workoutLogDraft({
       active: { ...active, run },
@@ -84,7 +88,8 @@ describe('Testmodus: Flow-Routinen und Posen', () => {
       today: TODAY,
       sessionRpe: null,
       userNote: '',
-      newId: () => '00000000-0000-4000-8000-0000000000bb',
+      // Je Übung eine eigene ID (wie in der App).
+      newId: () => `00000000-0000-4000-8000-${String(++ids).padStart(12, '0')}`,
     });
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -92,6 +97,20 @@ describe('Testmodus: Flow-Routinen und Posen', () => {
     expect(result.draft.exercises.map((e) => e.planned.exerciseId)).toContain(
       'yoga-hund-an-der-wand',
     );
+    // Speichern im Testmodus (wie save_session_log): Posen sind freigegebene Übungen der Datenbank → kein „abgelehnt“.
+    const { backend } = uuidBackend(planPersonRows());
+    const payload = draftToPayload(result.draft, {
+      writeId: '00000000-0000-4000-8000-0000000000cc',
+      now: NOW,
+      today: TODAY,
+    });
+    expect(payload.exercises.some((e) => isFlowPoseId(e.exercise_id))).toBe(true);
+    expect((await backend.submitWorkout(result.draft, payload)).kind).toBe('saved');
+    // Name der Pose aus der Bibliothek (wie der Server).
+    const stored = (await backend.loadRows()).rows.exerciseLogs.find(
+      (e) => e.exercise_id === 'yoga-hund-an-der-wand',
+    );
+    expect(stored?.exercise_name_de).toBe(lookup.get('yoga-hund-an-der-wand')?.name_de);
     // Andere Formate: kein `workout` im Lauf (unverändert wie bisher).
     const circuit = workouts.find((w) => w.format === 'circuit');
     if (circuit) {

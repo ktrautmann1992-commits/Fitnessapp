@@ -248,7 +248,7 @@ test('Yoga (Flow): Stuhl-Yoga mit Seitenwechsel, Pose überspringen; Kategorie Y
   // Heute (Montag, trainingsfrei): nach dem Workout kein Vorschlag mehr …
   await page.goto('/uebersicht');
   await expect(page.getByTestId('overview-training')).toBeVisible();
-  await expect(page.getByTestId('overview-recovery')).toHaveCount(0);
+  await expect(page.getByTestId('overview-recovery-routine')).toHaveCount(0);
 });
 
 test('Heute: „Erholungstag: Mobility 15 min?“ an freien Tagen, abschaltbar in den Einstellungen', async ({
@@ -256,15 +256,15 @@ test('Heute: „Erholungstag: Mobility 15 min?“ an freien Tagen, abschaltbar i
 }) => {
   await setup(page);
   await page.goto('/uebersicht');
-  await expect(page.getByTestId('overview-recovery')).toContainText(
+  await expect(page.getByTestId('overview-recovery-routine')).toContainText(
     'Erholungstag: Mobility 15 min?',
   );
-  await page.getByTestId('overview-recovery-open').click();
+  await page.getByTestId('overview-recovery-routine-open').click();
   await heading(page, 'Erholungstag 15 Minuten');
 
   await page.goto('/settings?thema=training');
   await page.getByTestId('settings-recovery-routine').click();
   await page.goto('/uebersicht');
   await expect(page.getByTestId('overview-training')).toBeVisible();
-  await expect(page.getByTestId('overview-recovery')).toHaveCount(0);
+  await expect(page.getByTestId('overview-recovery-routine')).toHaveCount(0);
 });
