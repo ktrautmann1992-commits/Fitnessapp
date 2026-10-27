@@ -203,10 +203,7 @@ export function preWorkoutIssues(
   const snack = role === 'pre_snack';
   const issues: PreWorkoutIssue[] = [];
   if (portion.fat_g > preWorkoutMaxFatG(role, portion.kcal)) issues.push('fat');
-  if (
-    portion.fiber_g !== null &&
-    portion.fiber_g > preWorkoutMaxFiberG(role, portion.kcal)
-  ) {
+  if (portion.fiber_g !== null && portion.fiber_g > preWorkoutMaxFiberG(role, portion.kcal)) {
     issues.push('fiber');
   }
   if (snack && portion.kcal > T.preSnackMaxKcal) issues.push('kcal');

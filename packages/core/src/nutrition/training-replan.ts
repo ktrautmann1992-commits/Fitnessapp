@@ -248,7 +248,8 @@ export function adaptMealPlanToTraining(
       const fitting =
         rankSlotCandidates(ctx, slot, role, info.share, inWeek).find(fitsAt) ??
         rankSlotCandidates(ctx, slot, role, info.share, today).find(
-          (c) => state.withinRepeatLimits(c.recipe.id, mealTypeForSlot(slot), dayIndex) && fitsAt(c),
+          (c) =>
+            state.withinRepeatLimits(c.recipe.id, mealTypeForSlot(slot), dayIndex) && fitsAt(c),
         );
       if (mealProtected(date, meal, protection)) {
         selected.push(keep(variant));
