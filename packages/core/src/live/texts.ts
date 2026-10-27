@@ -235,8 +235,8 @@ export function sosLinks(input: {
 
 /** Anzeigename vorschlagen: Vorname aus dem Profil, Leerzeichen bereinigt, höchstens 30 Zeichen; leer → null. */
 export function defaultLiveDisplayName(firstName: string | null | undefined): string | null {
-  // eslint-disable-next-line no-control-regex -- Steuerzeichen entfernen
   const clean = (firstName ?? '')
+    // eslint-disable-next-line no-control-regex -- Steuerzeichen entfernen
     .replace(/[\u0000-\u001f\u007f]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
