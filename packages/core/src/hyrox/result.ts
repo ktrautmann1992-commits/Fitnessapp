@@ -1,6 +1,10 @@
 import { CARDIO_LOG_LIMITS, FREE_SESSION, HYROX_RESULT_LIMITS } from '../constants';
 import { HYROX_SPLIT_SEGMENTS, type HyroxSplitSegment } from '../enums';
-import { freeSessionLogFromInput, freeSessionPayloadIssue, type FreeSessionInput } from '../log/free-session';
+import {
+  freeSessionLogFromInput,
+  freeSessionPayloadIssue,
+  type FreeSessionInput,
+} from '../log/free-session';
 import { type HyroxSplit, type SessionLogPayload, sessionLogPayloadSchema } from '../log/schemas';
 
 /**
@@ -12,7 +16,8 @@ import { type HyroxSplit, type SessionLogPayload, sessionLogPayloadSchema } from
 /** Zeit-Text „1:23:45“ bzw. „4:05“ in eine Sekundenzahl (h:mm:ss, mm:ss oder ss). null = ungültig. */
 export function parseRaceTime(text: string): number | null {
   const parts = text.trim().split(':');
-  if (parts.length === 0 || parts.length > 3 || parts.some((p) => !/^\d{1,3}$/.test(p))) return null;
+  if (parts.length === 0 || parts.length > 3 || parts.some((p) => !/^\d{1,3}$/.test(p)))
+    return null;
   const nums = parts.map((p) => Number(p));
   const [h, m, s] =
     nums.length === 3 ? nums : nums.length === 2 ? [0, nums[0], nums[1]] : [0, 0, nums[0]];
@@ -44,7 +49,9 @@ export type HyroxResultError =
 /** Teilzeiten aus der Eingabe (Abschnitt → Text, leer = ohne Angabe) in Rennreihenfolge. */
 export function hyroxSplitsFromInput(
   input: Partial<Record<HyroxSplitSegment, string>>,
-): { readonly ok: true; readonly splits: HyroxSplit[] } | { readonly ok: false; readonly invalid: HyroxSplitSegment[] } {
+):
+  | { readonly ok: true; readonly splits: HyroxSplit[] }
+  | { readonly ok: false; readonly invalid: HyroxSplitSegment[] } {
   const splits: HyroxSplit[] = [];
   const invalid: HyroxSplitSegment[] = [];
   const L = HYROX_RESULT_LIMITS.splitS;
@@ -58,8 +65,10 @@ export function hyroxSplitsFromInput(
   return invalid.length > 0 ? { ok: false, invalid } : { ok: true, splits };
 }
 
-export interface HyroxResultInput
-  extends Pick<FreeSessionInput, 'id' | 'writeId' | 'performedOn' | 'today' | 'now' | 'notes'> {
+export interface HyroxResultInput extends Pick<
+  FreeSessionInput,
+  'id' | 'writeId' | 'performedOn' | 'today' | 'now' | 'notes'
+> {
   /** Gesamtzeit in Sekunden (Pflicht). */
   readonly totalS: number | null;
   readonly splits: readonly HyroxSplit[];
@@ -143,5 +152,10 @@ export function hyroxSplitSummary(
     else if (s.segment === 'roxzone') roxzoneS += s.duration_s;
     else stationS += s.duration_s;
   }
-  return { runS, stationS, roxzoneS, unassignedS: Math.max(0, totalS - runS - stationS - roxzoneS) };
+  return {
+    runS,
+    stationS,
+    roxzoneS,
+    unassignedS: Math.max(0, totalS - runS - stationS - roxzoneS),
+  };
 }

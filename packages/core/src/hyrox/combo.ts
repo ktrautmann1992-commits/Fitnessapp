@@ -61,7 +61,8 @@ const step = (
   seconds: number,
   effort: number,
   station?: HyroxStation,
-): WorkoutStep => (station ? { part, kind, seconds, effort, station } : { part, kind, seconds, effort });
+): WorkoutStep =>
+  station ? { part, kind, seconds, effort, station } : { part, kind, seconds, effort };
 
 /** Rundet auf 10 s ab (Schritte in ganzen 10 s, mindestens 10 s). */
 const floor10 = (s: number) => Math.floor(s / 10) * 10;
@@ -93,11 +94,17 @@ function assemble(
 export function hyroxComboWorkout(options: HyroxComboOptions): EnduranceWorkout | null {
   const { minutes, limits, easyEffort } = options;
   if (!limits.allowed || minutes < C.minMinutes) return null;
-  const effort = Math.min(C.effort, limits.effortCap);
-  if (effort < COMPETITION_INTENSITY.hardEffortMin) return null;
   const S = HYROX_PLAN.simulation;
   const simulation = options.simulation === true;
-  const stations = rotatedStations(simulation ? 0 : options.stationOffset, options.excludedCautionTags);
+  // Simulation kontrolliert (Anstrengung 5, zählt nicht ins 80/20-Budget), sonst zügig-hart.
+  const effort = simulation
+    ? Math.min(S.effort, limits.effortCap)
+    : Math.min(C.effort, limits.effortCap);
+  if (!simulation && effort < COMPETITION_INTENSITY.hardEffortMin) return null;
+  const stations = rotatedStations(
+    simulation ? 0 : options.stationOffset,
+    options.excludedCautionTags,
+  );
   if (stations.length === 0) return null;
   const fraction = simulation
     ? S.stationFraction
@@ -112,7 +119,13 @@ export function hyroxComboWorkout(options: HyroxComboOptions): EnduranceWorkout 
       const next = [
         ...block,
         step('main', 'work', runS, effort),
-        step('main', 'station', hyroxStationSeconds(station, fraction, C.minStationS), effort, station),
+        step(
+          'main',
+          'station',
+          hyroxStationSeconds(station, fraction, C.minStationS),
+          effort,
+          station,
+        ),
       ];
       const used = next.reduce((sum, s) => sum + s.seconds, 0);
       if (used > mainS || hardSeconds(next, limits.countWorkOnly) > budget) break;
@@ -170,6 +183,8 @@ export function hyroxTechniqueCombo(options: {
   readonly easyEffort: number;
   readonly stationOffset: number;
   readonly excludedCautionTags: readonly CautionTag[];
+  /** Plan mit „nur Gehen“ (Flag, ab 65): Text „zügig gehen“ statt „locker laufen“. */
+  readonly walk?: boolean;
 }): EnduranceWorkout | null {
   const T = HYROX_PLAN.technique;
   if (options.minutes < C.minMinutes) return null;
@@ -207,7 +222,7 @@ export function hyroxTechniqueCombo(options: {
     type: 'easy',
     name_de: texts.techniqueName,
     warmup_de: texts.techniqueWarmup,
-    main_de: texts.technique(rounds, stationParts(block, T.stationFraction)),
+    main_de: texts.technique(rounds, stationParts(block, T.stationFraction), options.walk === true),
     cooldown_de: texts.cooldown,
     steps,
     effort_target: effort,
@@ -248,6 +263,8 @@ export function hyroxComboRunOnly(
   return steps
     .filter((s) => s.kind !== 'station')
     .map((s) =>
-      options.easy && s.effort > easyEffort ? { ...s, kind: 'easy' as const, effort: easyEffort } : s,
+      options.easy && s.effort > easyEffort
+        ? { ...s, kind: 'easy' as const, effort: easyEffort }
+        : s,
     );
 }

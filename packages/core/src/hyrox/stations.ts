@@ -70,7 +70,11 @@ export function stationOfExercise(exerciseId: string): HyroxStation | null {
 }
 
 /** Baustein (Vorlage) der Stations-Einheit: Level × Phase (Tapering/Rennwoche/Erholung = Spitze, Erholungs-Dosierung). */
-export function stationSessionSpec(level: ExperienceLevel, phase: CompetitionPhase, cautious: boolean) {
+export function stationSessionSpec(
+  level: ExperienceLevel,
+  phase: CompetitionPhase,
+  cautious: boolean,
+) {
   const key = level === 'beginner' || cautious ? 'beginner' : 'advanced';
   const phaseKey = phase === 'base' || phase === 'build' ? phase : 'peak';
   return HYROX_PLAN.stationSessions[key][phaseKey];

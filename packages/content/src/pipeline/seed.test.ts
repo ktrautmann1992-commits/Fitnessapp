@@ -157,7 +157,7 @@ describe('Einspiel-Paket', () => {
     expect(result.issues.filter((issue) => issue.severity === 'error')).toEqual([]);
     const pkg = buildSeedPackage(result);
     expect(pkg.exercises.map((e) => e.id)).toEqual(result.exercises.map((e) => e.id));
-    expect(pkg.exercises).toHaveLength(170);
+    expect(pkg.exercises).toHaveLength(187); // + 17 Hyrox (Sportarten Stufe 1, Etappe H)
     expect(pkg.plan_templates).toHaveLength(49);
   });
 

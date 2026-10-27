@@ -1,0 +1,20 @@
+{
+  "exercise_id": "wall-balls",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "wall-balls-start.svg",
+      "alt_de": "Ausgangsposition: etwa eine Armlänge vor der Wand stehen, den Ball mit beiden Händen vor der Brust halten.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

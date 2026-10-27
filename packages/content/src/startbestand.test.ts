@@ -32,7 +32,8 @@ describe('Startbestand (content/)', () => {
   it('ca. 170 Übungen (Startbestand + Körpergewicht K1/K2 + Aufwärmen/Dehnen + Calisthenics/Schlingentrainer/Lauf-ABC) und 24 + 18 + 7 Plan-Vorlagen, alle mit gültigem Schema', () => {
     expect(strayFiles).toEqual([]);
     expect(result.exercises.length).toBeGreaterThanOrEqual(45);
-    expect(result.exercises.length).toBeLessThanOrEqual(180);
+    // + 17 Hyrox-Stationen und Ersatz (Sportarten Stufe 1, Etappe H).
+    expect(result.exercises.length).toBeLessThanOrEqual(200);
     expect(result.templates).toHaveLength(49);
     expect(extra.map((t) => t.id).sort()).toEqual([
       'calisthenics-einsteiger-2t',

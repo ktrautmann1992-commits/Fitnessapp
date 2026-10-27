@@ -1,0 +1,20 @@
+{
+  "exercise_id": "sandsack-ausfallschritte",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "sandsack-ausfallschritte-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, den Sandsack auf den Schultern hinter dem Kopf mit beiden Händen festhalten.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

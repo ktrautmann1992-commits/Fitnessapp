@@ -1,0 +1,20 @@
+{
+  "exercise_id": "band-zug-rueckwaerts-gehen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "band-zug-rueckwaerts-gehen-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, Arme auf Brusthöhe nach vorn gestreckt, Widerstandsband vor dir befestigt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

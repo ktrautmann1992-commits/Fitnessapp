@@ -19,6 +19,7 @@ import {
   wall,
 } from './equipment';
 import { CALISTHENICS_ILLUSTRATIONS } from './poses-calisthenics';
+import { HYROX_ILLUSTRATIONS } from './poses-hyrox';
 import type { Limb, PoseSpec, Prop, SidePose } from './rig';
 
 /**
@@ -1306,4 +1307,5 @@ export const EXERCISE_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustratio
 
   // --- Calisthenics, Schlingentrainer, Lauf-ABC (Entwürfe, docs/PLAN-CALISTHENICS-SCHLINGE.md) --------------------
   ...CALISTHENICS_ILLUSTRATIONS,
+  ...HYROX_ILLUSTRATIONS,
 };

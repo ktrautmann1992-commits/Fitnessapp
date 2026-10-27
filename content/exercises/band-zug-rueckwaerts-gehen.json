@@ -1,0 +1,49 @@
+{
+  "id": "band-zug-rueckwaerts-gehen",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Band-Rudern rückwärts gehend",
+  "name_en": "Banded Row Walk-Back",
+  "aliases_de": [],
+  "movement_pattern": "horizontal_pull",
+  "primary_muscles": ["upper_back", "lats"],
+  "secondary_muscles": ["biceps", "rear_delts", "quadriceps"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Ersatz für das Schlitten-Ziehen: ein festes Band in Brusthöhe greifen, rudern und dabei kleine Schritte rückwärts gehen, bis das Band stark gespannt ist.",
+  "steps_de": [
+    "Band in Brusthöhe sicher befestigen, beide Enden greifen.",
+    "Leicht in die Knie gehen, Arme zum Körper ziehen, Schulterblätter zusammen.",
+    "Mit gezogenen Armen zwei kleine Schritte rückwärts gehen, dann wieder nach vorn.",
+    "Für die angegebene Zeit wiederholen."
+  ],
+  "tips_de": ["Rumpf fest, kein Hohlkreuz.", "Kleine, kontrollierte Schritte."],
+  "common_mistakes_de": ["Band zu locker – kein Zug spürbar.", "Schultern ziehen zu den Ohren."],
+  "safety_note_de": "Befestigung vor jedem Satz prüfen und auf freie Fläche hinter dir achten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "rudern-band",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "tuerrahmen-rudern",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
+  }
+}

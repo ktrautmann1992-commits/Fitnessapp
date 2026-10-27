@@ -19,8 +19,9 @@ export function hyroxStationWeightKg(
   division: HyroxDivision,
   sex: HyroxWeightSex,
 ): number | null {
-  const weights: Partial<Record<HyroxStation, Record<'open' | 'pro', Record<HyroxWeightSex, number>>>> =
-    HYROX_FORMAT.weightsKg;
+  const weights: Partial<
+    Record<HyroxStation, Record<'open' | 'pro', Record<HyroxWeightSex, number>>>
+  > = HYROX_FORMAT.weightsKg;
   const row = weights[station];
   if (!row) return null;
   return row[division === 'pro' ? 'pro' : 'open'][sex];
@@ -91,7 +92,11 @@ export function hyroxStationSeconds(station: HyroxStation, fraction: number, min
   return Math.max(minS, Math.round((full * fraction) / 10) * 10);
 }
 
-/** Ansage im Timer: „Station: Wall Balls, etwa 25“ (Menge aus der Schritt-Dauer). */
+/** Ansage im Timer (zum Sprechen): „Station: 25 Wall Balls“ bzw. „Station: 250 Meter SkiErg“ (Menge aus der Dauer). */
 export function hyroxStationCue(station: HyroxStation, seconds: number): string {
-  return `Station: ${hyroxStationAmountText(station, hyroxFractionForSeconds(station, seconds))}`;
+  const amount = hyroxStationAmount(station, hyroxFractionForSeconds(station, seconds));
+  const name = HYROX_TEXTS_DE.stations[station];
+  return HYROX_FORMAT.stations[station].unit === 'reps'
+    ? `Station: ${amount} ${name}`
+    : `Station: ${amount} Meter ${name}`;
 }

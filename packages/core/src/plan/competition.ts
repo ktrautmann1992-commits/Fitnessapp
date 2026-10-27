@@ -631,12 +631,7 @@ function notAvailableReasons(ctx: Context, target: Target, creating = true): Fea
     reasons.push('minor_distance_limit');
   }
   // Sportarten Stufe 1 (HYROX_SAFETY): ab 65 nur mit ausdrücklicher Bestätigung – beim Erstellen.
-  if (
-    creating &&
-    target.discipline === 'hyrox' &&
-    ctx.senior &&
-    !ctx.hyroxSeniorConfirmed
-  ) {
+  if (creating && target.discipline === 'hyrox' && ctx.senior && !ctx.hyroxSeniorConfirmed) {
     reasons.push('hyrox_senior_confirmation');
   }
   return reasons;

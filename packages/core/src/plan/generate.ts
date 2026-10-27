@@ -567,8 +567,7 @@ function generatePlan(
       cooldown_de: s.cooldown_de,
       exercises: s.exercises,
     }));
-    const onlyStations =
-      picked.length === 0 && sessions.some((x) => x.focus === 'hyrox_stations');
+    const onlyStations = picked.length === 0 && sessions.some((x) => x.focus === 'hyrox_stations');
     if (!onlyStations && isVolumeReduced(templateForVolume, picked, library.exercises)) {
       notes.add('volume_reduced');
     }

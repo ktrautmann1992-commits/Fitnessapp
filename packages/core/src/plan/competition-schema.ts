@@ -174,7 +174,8 @@ export const competitionInputSchema = z
       (c.goal === 'finish' && (c.reference === null || c.discipline === 'hyrox')),
     {
       path: ['goal'],
-      message: 'Bei Rad, Triathlon und Hyrox gibt es nur das Ziel „Ankommen“ (Referenzzeit nur bei Hyrox).',
+      message:
+        'Bei Rad, Triathlon und Hyrox gibt es nur das Ziel „Ankommen“ (Referenzzeit nur bei Hyrox).',
     },
   )
   .refine((c) => (c.goal === 'time') === (c.targetTimeS !== null), {

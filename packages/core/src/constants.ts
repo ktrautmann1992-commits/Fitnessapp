@@ -5228,6 +5228,9 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'conditioning' },
       { tag: 'high_impact' },
       { tag: 'deep_hip_flexion' },
+      // Sportarten Stufe 1 (Hyrox, Plan 2.1): Wall Balls (tiefe Kniebeuge mit Wurf) belasten das Knie stark.
+      { exercise: 'wall-balls' },
+      { exercise: 'kniebeuge-schulterdruecken-kurzhantel' },
     ],
     any: [
       { pattern: 'squat' },
@@ -5285,6 +5288,11 @@ export const PAIN_REGION_LOAD = {
       { exercise: 'handstand-wand' },
       { exercise: 'handstand-frei' },
       { exercise: 'schlingentrainer-fallout' },
+      // Sportarten Stufe 1 (Hyrox, Plan 2.1): Farmer's Carry – schwere Last in den Händen, Rumpf hält.
+      { exercise: 'farmers-carry-kurzhantel' },
+      { exercise: 'farmers-carry-kettlebell' },
+      { exercise: 'koffer-tragen-einarmig' },
+      { exercise: 'taschen-tragen' },
     ],
     any: [
       { pattern: 'squat', loadTypes: ['weight'] },
@@ -5338,6 +5346,12 @@ export const PAIN_REGION_LOAD = {
       { exercise: 'l-sitz' },
       { exercise: 'muscle-up' },
       { exercise: 'muscle-up-negativ' },
+      // Sportarten Stufe 1 (Hyrox, Plan 2.1): Burpees stützen auf den Händen, Farmer's Carry greift schwer.
+      { exercise: 'burpee-weitsprung' },
+      { exercise: 'burpee-ohne-sprung' },
+      { exercise: 'farmers-carry-kurzhantel' },
+      { exercise: 'farmers-carry-kettlebell' },
+      { exercise: 'koffer-tragen-einarmig' },
     ],
     any: [
       { pattern: 'horizontal_push' },
@@ -5881,10 +5895,7 @@ export const HYROX_FORMAT = {
     { amount: number; unit: 'm' | 'reps'; estimatedFullS: number }
   >;
   weightsKg: Partial<
-    Record<
-      import('./enums').HyroxStation,
-      Record<'open' | 'pro', { female: number; male: number }>
-    >
+    Record<import('./enums').HyroxStation, Record<'open' | 'pro', { female: number; male: number }>>
   >;
   wallBallTargetM: { female: number; male: number };
 };
@@ -5903,7 +5914,9 @@ export const HYROX_FORMAT = {
  *   oder der Erholung danach. Stations-Menge: Startanteil je Level, je Belastungswoche höchstens ×(1 +
  *   `stationVolumeStep`) (Plan 2.1: +10 %/Woche), höchstens `maxFraction` der Rennmenge.
  * - `simulation`: höchstens einmal im ganzen Zyklus, in der letzten Belastungswoche der Spitze, nie in den letzten
- *   `notWithinDays` Tagen vor dem Renntag: alle 8 Stationen, Lauf und Stationen mit reduzierten Mengen.
+ *   `notWithinDays` Tagen vor dem Renntag: alle 8 Stationen, Lauf und Stationen mit reduzierten Mengen. Sie ersetzt in
+ *   dieser Woche den langen Lauf (am Tag des langen Laufs), kontrolliert mit Anstrengung `effort` (zügig, nie „alles
+ *   geben“) – so bleibt die 80/20-Regel gewahrt; als Art hyrox_combo zählt sie trotzdem für die 48-h-Regel.
  * - `technique`: Arzt-Hinweis (HYROX_SAFETY) → lockere „Technik-Kombi“ (Art easy, Anstrengung ≤ ENDURANCE_EFFORT.easyMax).
  * - `stationSessions`: 6 Stations-Einheiten (Einsteiger/Fortgeschritten × Basis/Aufbau/Spitze; Leistungssport wie
  *   Fortgeschritten) – Stationen in Rennreihenfolge, Sätze, Wiederholungen (doppelte Progression wie Kraft: erst Wdh.
@@ -5951,6 +5964,7 @@ export const HYROX_PLAN = {
     rounds: 8,
     runFraction: 0.5,
     stationFraction: 0.5,
+    effort: 5,
   },
   technique: { stationFraction: 0.25, minRounds: 2, maxRounds: 4 },
   stationTemplateDayIndex: 7,
@@ -6077,6 +6091,7 @@ export const HYROX_PLAN = {
     rounds: number;
     runFraction: number;
     stationFraction: number;
+    effort: number;
   };
   technique: { stationFraction: number; minRounds: number; maxRounds: number };
   stationTemplateDayIndex: number;
@@ -6164,6 +6179,7 @@ export const HYROX_STATION_EXERCISES = {
     'farmers-carry-kurzhantel',
     'farmers-carry-kettlebell',
     'koffer-tragen-einarmig',
+    'taschen-tragen',
     'unterarmstuetz',
   ],
   sandbag_lunges: [
@@ -6179,3 +6195,29 @@ export const HYROX_STATION_EXERCISES = {
     'kniebeuge-koerpergewicht',
   ],
 } as const satisfies Record<import('./enums').HyroxStation, readonly string[]>;
+
+/**
+ * Hyrox-Übungen (Etappe H), die NUR über die Stations-Ketten (HYROX_STATION_EXERCISES) oder ihre eigenen Alternativen
+ * in einen Plan kommen – nie über die Bibliotheks-Suche (Tausch Schritt 4/5, „Andere Übung“ Stufe 3, Aufwärm-Routine).
+ * So bleiben alle Pläne ohne Hyrox auch im Testmodus (mit Entwürfen) unverändert (Plan 9: Pläne ohne neue Disziplin
+ * byte-gleich). PRODUKTENTSCHEIDUNG – nach der Fachprüfung je Übung lockern.
+ */
+export const HYROX_ONLY_EXERCISE_IDS: readonly string[] = [
+  'hyrox-skierg',
+  'band-zug-ueber-kopf',
+  'hyrox-schlitten-schieben',
+  'ausfallschritt-gehen-kurzhantel',
+  'hyrox-schlitten-ziehen',
+  'band-zug-rueckwaerts-gehen',
+  'burpee-weitsprung',
+  'burpee-ohne-sprung',
+  'hyrox-rudergeraet',
+  'farmers-carry-kurzhantel',
+  'farmers-carry-kettlebell',
+  'koffer-tragen-einarmig',
+  'taschen-tragen',
+  'sandsack-ausfallschritte',
+  'ausfallschritt-gehen-koerpergewicht',
+  'wall-balls',
+  'kniebeuge-schulterdruecken-kurzhantel',
+];
