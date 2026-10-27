@@ -84,14 +84,16 @@ $$;
 -- ---------------------------------------------------------------------------------------------------------
 -- Enums
 -- ---------------------------------------------------------------------------------------------------------
+-- Sportarten Stufe 1 (20261027100000) hängt hyrox bzw. hyrox_combo hinten an (Test 93).
 select is(
   enum_range(null::public.competition_discipline)::text[],
-  array['5k', '10k', 'half_marathon', 'marathon', 'cycling', 'triathlon_sprint', 'triathlon_olympic'],
-  'Disziplinen: Laufen, Rad, Triathlon Sprint/Olympisch – keine Mittel-/Langdistanz, kein Schwimmen');
+  array['5k', '10k', 'half_marathon', 'marathon', 'cycling', 'triathlon_sprint', 'triathlon_olympic', 'hyrox'],
+  'Disziplinen: Laufen, Rad, Triathlon Sprint/Olympisch (+ Hyrox) – keine Mittel-/Langdistanz, kein Schwimmen');
 select is(
   enum_range(null::public.workout_type)::text[],
-  array['easy', 'recovery', 'long', 'strides', 'fartlek', 'tempo', 'intervals', 'race_pace', 'brick', 'technique'],
-  'Arten: Koppeltraining und Schwimmtechnik dazu');
+  array['easy', 'recovery', 'long', 'strides', 'fartlek', 'tempo', 'intervals', 'race_pace', 'brick', 'technique',
+    'hyrox_combo'],
+  'Arten: Koppeltraining und Schwimmtechnik dazu (+ Hyrox-Kombi)');
 
 -- ---------------------------------------------------------------------------------------------------------
 -- save_competition: Rad-Distanz

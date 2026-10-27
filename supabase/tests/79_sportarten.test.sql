@@ -72,7 +72,8 @@ grant execute on all functions in schema pg_temp to authenticated, anon;
 -- ---------------------------------------------------------------------------------------------------------
 -- Typ, Spalten und CHECKs
 -- ---------------------------------------------------------------------------------------------------------
-select is(array_length(enum_range(null::public.sport_type), 1), 27, 'sport_type: 27 Sportarten (inkl. other)');
+-- Sportarten Stufe 1 (20261027100000) hängt yoga und pilates hinten an (Test 94).
+select is(array_length(enum_range(null::public.sport_type), 1), 29, 'sport_type: 29 Sportarten (inkl. other, yoga, pilates)');
 select col_is_null('public', 'session_logs', 'sport', 'session_logs.sport darf null sein');
 select col_type_is('public', 'session_logs', 'sport_duration_s', 'integer', 'sport_duration_s integer');
 select col_type_is('public', 'session_logs', 'sport_distance_m', 'integer', 'sport_distance_m integer');
