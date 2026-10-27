@@ -485,7 +485,15 @@ export type StepSave =
   | { step: 'goal'; goal: GoalAnswer }
   /** null = „ohne festes Ziel“ (ein gespeichertes Wunschgewicht wird gelöscht). */
   | { step: 'weight_goal'; weightGoal: WeightGoal | null }
-  | { step: 'time_budget'; schedule: TrainingScheduleAnswer }
+  | {
+      step: 'time_budget';
+      schedule: TrainingScheduleAnswer;
+      /**
+       * Sportarten Stufe 1 · Etappe R: „Im Studio auch rudern“ (Gerät rowing_machine mit Ort gym). Nur bei einer
+       * Änderung gesetzt – fehlt = unverändert (ältere Abläufe bleiben gleich).
+       */
+      gymRowing?: boolean;
+    }
   | { step: 'equipment'; items: EquipmentItemInput[] }
   | { step: 'nutrition'; nutrition: NutritionStep }
   | { step: 'cooking'; cooking: CookingStep }

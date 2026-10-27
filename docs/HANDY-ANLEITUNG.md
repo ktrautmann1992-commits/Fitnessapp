@@ -2001,6 +2001,10 @@ Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Rudergerät-Übungen und Rude
 1. Onboarding: Ziel z. B. **„Fitness & Gesundheit“** (ohne Disziplin), Einsteiger, Trainingstage **Mo Kraft zu Hause, Di/Do/Sa
    Ausdauer**, Equipment zu Hause u. a. **Rudergerät** → **Training → Woche**: jede zweite Ausdauer-Einheit heißt
    **„Lockeres Rudern“** (gleiche Minuten wie ohne Rudergerät). Ohne Rudergerät gibt es kein Rudern im Plan.
+   **Studio:** Testdaten löschen, neu mit **Mo Kraft im Studio, Di/Do/Sa Ausdauer** → im Schritt „Trainingstage“ unten
+   **„Im Studio auch rudern (Rudergerät)“** ankreuzen (Standard aus) → gleiche Woche mit Rudern. Ohne Haken: kein
+   Rudern. Später ändern: **Mehr → Einstellungen → Training → „Im Studio auch rudern“** → Trainingstage → Haken → danach
+   „Plan neu erstellen“.
 2. Ruder-Einheit öffnen: Hinweis **„Technik am Rudergerät“** (Beine – Rumpf – Arme, Dämpfer 3–5). **Training
    starten** → Art **Rudern**, 20 min, Distanz **4,8** → Zeile **„Split 2:05 /500 m“** und „≈ … Watt (aus dem Split
    berechnet)“. Optional Ø Watt und Schlagzahl; **„Wiederholung hinzufügen“** → 500 m / 1:58 → Split je Wiederholung.

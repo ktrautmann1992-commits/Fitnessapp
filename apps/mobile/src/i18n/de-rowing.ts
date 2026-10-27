@@ -8,6 +8,11 @@ const R = ENDURANCE_MODALITY_ROW;
 
 export const deRowing = {
   techniqueTitle: 'Technik am Rudergerät',
+  gymOption: 'Im Studio auch rudern (Rudergerät)',
+  gymSettingsText:
+    'Ein- oder ausschalten im Schritt „Trainingstage“ (Standard aus). Danach „Plan neu erstellen“.',
+  gymOptionHint:
+    'Dann wird jede zweite Ausdauer-Einheit „Lockeres Rudern“ – gilt ab dem nächsten Plan („Plan neu erstellen“).',
   technique: MULTISPORT_TEXTS_DE.row.technique,
   split: (split: string) => `Split ${split} /500 m`,
   splitA11y: (minutes: number, seconds: number) =>
