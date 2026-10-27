@@ -66,3 +66,5 @@ export * from './supplements/profile-inputs';
 export * from './supplements/overview';
 // Gewichtstrend, Monatsrückblick, Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md).
 export * from './review';
+// Sportarten Stufe 1 · Etappe R: Indoor-Rudern (Split, Watt-Anzeige, Plausibilität, Intervall-Ergebnis).
+export * from './rowing';

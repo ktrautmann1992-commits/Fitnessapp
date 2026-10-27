@@ -1,4 +1,4 @@
-import { COMPETITION_TRIATHLON } from '../constants';
+import { COMPETITION_TRIATHLON, ENDURANCE_MODALITY_ROW } from '../constants';
 import type { EnduranceModality } from '../enums';
 import type { CompetitionPhase } from './competition-schema';
 import type { EnduranceVariant } from './endurance';
@@ -17,14 +17,24 @@ export type Sport = 'swim' | 'bike' | 'run';
 /** Sportart eines Tages beim Triathlon: eine Disziplin oder Koppeltraining (Rad → Lauf). */
 export type DaySport = Sport | 'brick';
 
+/**
+ * Sportart einer Einheit im Wochenbau (weekWorkouts): die drei Triathlon-Sportarten und – Sportarten Stufe 1 · Etappe R
+ * – Rudern (eigene Texte und Arten, nie Teil des Triathlons).
+ */
+export type WorkoutSport = Sport | 'row';
+
 /** Sportart einer Variante (Gehen zählt als Laufen – „Lauf-Disziplin“, auch im Geh-Lauf-Wechsel). */
-export function sportOfVariant(variant: EnduranceVariant): Sport {
+export function sportOfVariant(variant: EnduranceVariant): WorkoutSport {
   if (variant === 'easy_bike' || variant === 'ergometer') return 'bike';
   if (variant === 'easy_swim') return 'swim';
+  if (variant === 'easy_row') return 'row';
   return 'run';
 }
 
-/** Sportart einer gespeicherten Modalität (walk → Laufen). */
+/**
+ * Sportart einer gespeicherten Modalität (walk → Laufen) für die Triathlon-Minuten. Rudern (`row`) gehört zu keiner
+ * Triathlon-Disziplin → null (zählt in sportMinutes nicht; Ruder-Tage gibt es nur im Plan ohne Disziplin).
+ */
 export function sportOfModality(modality: EnduranceModality | null): Sport | null {
   if (modality === 'bike') return 'bike';
   if (modality === 'swim') return 'swim';
@@ -62,6 +72,45 @@ export const MULTISPORT_TEXTS_DE = {
         `${reps} × ${minutes} Minuten im geplanten Renntempo, dazwischen je 2 Minuten locker rollen.`,
     },
     alternative: 'Ausweichen: Ergometer oder Rollentrainer mit derselben Anstrengung.',
+  },
+  /**
+   * Indoor-Rudern (Sportarten Stufe 1 · Etappe R, docs/PLAN-SPORTARTEN-STUFE-1.md 2.3): locker mit Schlagzahl 18–22,
+   * Erholung, lang, Fahrtspiel, Tempo, Intervalle (4–8 × 500 m, 30/30, 3–5 × 1000 m), Technik. Zahlen aus
+   * ENDURANCE_MODALITY_ROW und ROW_WORKOUTS.
+   */
+  row: {
+    names: {
+      easy: 'Lockeres Rudern',
+      recovery: 'Erholungsrudern',
+      long: 'Langes Rudern',
+      fartlek: 'Fahrtspiel auf dem Rudergerät',
+      tempo: 'Tempo-Rudern',
+      intervals: 'Ruder-Intervalle',
+      technique: 'Rudertechnik',
+    },
+    warmupEasy: `5 Minuten locker rudern, Schlagzahl ${ENDURANCE_MODALITY_ROW.easyStrokeRate.min}–${ENDURANCE_MODALITY_ROW.easyStrokeRate.max}.`,
+    warmupHard:
+      '10 Minuten locker rudern, dann 3 × 10 Schläge zügig mit je 1 Minute locker dazwischen.',
+    cooldownEasy: '5 Minuten ganz locker ausrudern, dann Beine, Hüfte und Rücken leicht dehnen.',
+    cooldownHard: '5 Minuten ganz locker ausrudern.',
+    main: {
+      easy: `Gleichmäßig locker rudern, Schlagzahl ${ENDURANCE_MODALITY_ROW.easyStrokeRate.min}–${ENDURANCE_MODALITY_ROW.easyStrokeRate.max}: kraftvoll mit den Beinen abdrücken, ruhig nach vorne zurückrollen.`,
+      recovery: 'Ganz locker rudern, niedrige Schlagzahl – lieber zu leicht als zu schwer.',
+      long: `Gleichmäßig locker rudern, Schlagzahl ${ENDURANCE_MODALITY_ROW.easyStrokeRate.min}–${ENDURANCE_MODALITY_ROW.easyStrokeRate.max}, zwischendurch trinken; die zweite Hälfte nicht schneller.`,
+      fartlek: (reps: number) => `${reps} × 1 Minute zügig rudern, dazwischen je 2 Minuten locker.`,
+      tempo: (minutes: number) =>
+        `2 × ${minutes / 2} Minuten zügig rudern (nur kurze Sätze möglich), dazwischen 3 Minuten locker.`,
+      intervals500: (reps: number) =>
+        `${reps} × 500 m schnell (etwa 2 Minuten), dazwischen je 1:30 Minuten locker rudern. Nie „alles geben“.`,
+      intervals1000: (reps: number) =>
+        `${reps} × 1000 m zügig (etwa 4 Minuten), dazwischen je 3 Minuten locker rudern. Gleichmäßiger Split.`,
+      intervals30: (reps: number) =>
+        `${reps} × 30 Sekunden zügig, 30 Sekunden locker – im Wechsel, ohne Pause dazwischen.`,
+      technique:
+        'Technikübungen im Wechsel mit lockerem Rudern: nur Arme, dann Arme und Rumpf, dann ganzer Schlag; Pause am Ende des Durchzugs. Ruhig zurückrollen.',
+    },
+    technique: `Ablauf: Beine – Rumpf – Arme, zurück Arme – Rumpf – Beine. Dämpfer ${ENDURANCE_MODALITY_ROW.damper.min}–${ENDURANCE_MODALITY_ROW.damper.max} (höher ist nicht „mehr Training“). Rücken lang, Schultern locker, Griff locker.`,
+    alternative: 'Ausweichen: Rad-Ergometer oder zügiges Gehen mit derselben Anstrengung.',
   },
   swim: {
     names: {

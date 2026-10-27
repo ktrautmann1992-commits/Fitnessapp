@@ -121,8 +121,8 @@ const VARIANT_BY_MODALITY: Readonly<Record<EnduranceModality, EnduranceVariant>>
   walk: 'brisk_walk',
   bike: 'easy_bike',
   swim: 'easy_swim',
-  // Stufe 1: Fachlogik folgt (Etappe R, eigene Varianten „Rudern“) – vorerst wie das Ergometer-Rad (locker, sitzend).
-  row: 'easy_bike',
+  // Sportarten Stufe 1 · Etappe R: eigene Variante „Lockeres Rudern“.
+  row: 'easy_row',
 };
 
 /** Variante einer gespeicherten Ausdauer-Einheit (aus dem festen Namen, sonst aus der Modalität). */
@@ -168,6 +168,8 @@ export function applyCurrentEnduranceRules<T extends EnduranceSessionLike>(
   if (rules.enduranceWalkOnly || rules.pregnancyNotice) {
     if (variant === 'easy_run' || variant === 'walk_run') variant = 'brisk_walk';
     if (variant === 'easy_bike') variant = 'ergometer';
+    // Etappe R: Rudern bei Schwangerschaft bzw. „nur Gehen“ → zügiges Gehen (wie beim Erzeugen).
+    if (variant === 'easy_row') variant = 'brisk_walk';
   } else if (rules.noHealthCheck && variant === 'easy_run') {
     variant = 'walk_run';
   }
@@ -215,6 +217,8 @@ function applyCompetitionRules<T extends EnduranceSessionLike>(
   if (rules.enduranceWalkOnly || rules.pregnancyNotice) {
     if (variant === 'easy_run' || variant === 'walk_run') variant = 'brisk_walk';
     if (variant === 'easy_bike') variant = 'ergometer';
+    // Etappe R: Rudern bei Schwangerschaft bzw. „nur Gehen“ → zügiges Gehen (wie beim Erzeugen).
+    if (variant === 'easy_row') variant = 'brisk_walk';
   } else if (rules.noHealthCheck && variant === 'easy_run') {
     variant = 'walk_run';
   }
