@@ -5867,6 +5867,15 @@ export const RUN_STRENGTH_RULES = {
  * Quelle: ACOG Committee Opinion No. 804 (2020), Obstet Gynecol 135(4):e178–e188; Rest PRODUKTENTSCHEIDUNG.
  * VOR LIVEGANG FACHLICH PRÜFEN (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie – Entscheidung 12).
  */
+/**
+ * Posen der Yoga-/Pilates-/Mobility-Routinen (Übungs-IDs mit diesen Anfängen, Inhalts-Konvention wie
+ * BODYWEIGHT_TEMPLATE_ID_SUFFIX) gehören zur Workout-Bibliothek, NICHT zur Plan-Engine: selectPlanContent nimmt sie
+ * nicht in `exercises` (Erzeugen, Ersatz, Folgeblock, Aufwärmen & Dehnen), sondern nur in `displayExercises` (Anzeige,
+ * Timer, Tagebuch). So bleiben Pläne ohne Yoga byte-gleich (Plan 2.4: Aufwärmen & Dehnen unverändert).
+ * Quelle: PRODUKTENTSCHEIDUNG.
+ */
+export const FLOW_POSE_ID_PREFIXES = ['yoga-', 'pilates-', 'mobility-'] as const;
+
 export const FLOW_SAFETY = {
   activeAgingExcludedCautionTags: ['inversion'],
   holdCapFromAge: 65,

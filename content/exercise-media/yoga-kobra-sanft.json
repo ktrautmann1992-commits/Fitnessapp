@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-kobra-sanft",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-kobra-sanft-start.svg",
+      "alt_de": "Ausgangsposition: Bauchlage, Oberkörper leicht angehoben, Unterarme und Hände am Boden, Beine lang nach hinten.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

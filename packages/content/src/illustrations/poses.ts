@@ -19,6 +19,7 @@ import {
   wall,
 } from './equipment';
 import { CALISTHENICS_ILLUSTRATIONS } from './poses-calisthenics';
+import { YOGA_ILLUSTRATIONS } from './poses-yoga';
 import type { Limb, PoseSpec, Prop, SidePose } from './rig';
 
 /**
@@ -1306,4 +1307,7 @@ export const EXERCISE_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustratio
 
   // --- Calisthenics, Schlingentrainer, Lauf-ABC (Entwürfe, docs/PLAN-CALISTHENICS-SCHLINGE.md) --------------------
   ...CALISTHENICS_ILLUSTRATIONS,
+
+  // --- Yoga, Pilates, Mobility (Entwürfe, Sportarten Stufe 1 · Etappe Y) ------------------------------------------
+  ...YOGA_ILLUSTRATIONS,
 };

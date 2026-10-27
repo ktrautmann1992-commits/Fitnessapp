@@ -1,0 +1,20 @@
+{
+  "exercise_id": "mobility-beinrueckseite-band-liegend",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "mobility-beinrueckseite-band-liegend-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, ein Fuß aufgestellt, das andere Bein gestreckt nach oben, ein Widerstandsband um den Fuß, beide Hände halten das Band.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "mobility-hueft-90-90",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "mobility-hueft-90-90-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – am Boden sitzen, beide Beine im rechten Winkel nach einer Seite abgelegt, Hände hinter dem Körper aufgestützt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

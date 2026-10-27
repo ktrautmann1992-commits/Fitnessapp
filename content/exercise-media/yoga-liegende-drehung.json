@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-liegende-drehung",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-liegende-drehung-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, Knie angewinkelt und zur Seite gesunken, Arme seitlich auf Schulterhöhe abgelegt, Schultern am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

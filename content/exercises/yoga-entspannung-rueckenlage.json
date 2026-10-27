@@ -1,0 +1,44 @@
+{
+  "id": "yoga-entspannung-rueckenlage",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Entspannung in Rückenlage",
+  "name_en": "Relaxation Pose",
+  "aliases_de": ["Savasana"],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["lower_back"],
+  "secondary_muscles": [],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["long_supine", "floor_transfer"],
+  "description_de": "Flach auf dem Rücken liegen, Arme und Beine locker, und ruhig atmen. Der ruhige Abschluss eines Ablaufs.",
+  "steps_de": [
+    "Auf den Rücken legen, Beine locker ausgestreckt, Arme etwas vom Körper entfernt.",
+    "Handflächen zeigen nach oben, Augen schließen.",
+    "Ruhig atmen und den Körper schwer werden lassen.",
+    "Zum Aufstehen erst auf die Seite rollen."
+  ],
+  "tips_de": ["Ein Kissen unter den Knien entlastet den unteren Rücken."],
+  "common_mistakes_de": ["Zu schnell aufstehen."],
+  "safety_note_de": "Nicht zu lange flach auf dem Rücken bleiben, wenn dir dabei unwohl wird – dann auf die Seite drehen. Bei Schmerzen oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-entspannung-sitzend",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

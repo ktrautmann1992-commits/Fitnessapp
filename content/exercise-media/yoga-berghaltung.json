@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-berghaltung",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-berghaltung-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – aufrecht stehen, Füße hüftbreit, Arme locker neben dem Körper, Schultern entspannt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

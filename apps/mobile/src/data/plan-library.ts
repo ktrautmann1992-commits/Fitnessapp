@@ -1,6 +1,7 @@
 import {
   type Exercise,
   exerciseSchema,
+  isFlowPoseId,
   type PlanLibrary,
   planLibraryFromContent,
   type PlanTemplate,
@@ -89,7 +90,8 @@ export function contentFromDbRows(rows: LibraryDbRows): {
 export function libraryFromDbRows(rows: LibraryDbRows): PlanLibrary {
   const { exercises, templates } = contentFromDbRows(rows);
   const library = planLibraryFromContent(exercises, templates);
-  const display = new Map(library.exercises);
+  // Sportarten Stufe 1: Posen (isFlowPoseId) stehen schon in displayExercises – nie in `exercises`.
+  const display = new Map(library.displayExercises ?? library.exercises);
   for (const e of exercises) {
     if (e.status === 'archived') display.set(e.id, e);
   }
@@ -118,8 +120,11 @@ export function libraryFromCache(cached: CachedLibrary | null): PlanLibrary | nu
   });
   return {
     // Ersatz nie aus archivierten Übungen; die stehen nur zur Anzeige bereit.
+    // Posen der Yoga-/Pilates-/Mobility-Routinen (isFlowPoseId) ebenfalls nur zur Anzeige (Sportarten Stufe 1).
     exercises: new Map(
-      exercises.filter((e) => e.status !== 'archived').map((e) => [e.id, e] as const),
+      exercises
+        .filter((e) => e.status !== 'archived' && !isFlowPoseId(e.id))
+        .map((e) => [e.id, e] as const),
     ),
     displayExercises: new Map(exercises.map((e) => [e.id, e] as const)),
     templates: [],

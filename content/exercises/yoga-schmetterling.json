@@ -1,0 +1,44 @@
+{
+  "id": "yoga-schmetterling",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schmetterling",
+  "name_en": "Butterfly Pose",
+  "aliases_de": ["Baddha Konasana"],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["adductors"],
+  "secondary_muscles": ["glutes", "lower_back"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "Im Sitzen die Fußsohlen aneinanderlegen und die Knie zur Seite sinken lassen. Dehnt die Innenseite der Oberschenkel.",
+  "steps_de": [
+    "Aufrecht auf den Boden oder ein Kissen setzen.",
+    "Fußsohlen aneinanderlegen, Knie fallen locker zur Seite.",
+    "Hände um die Füße legen, mit langem Rücken sitzen.",
+    "Ruhig atmen, nicht mit den Knien wippen."
+  ],
+  "tips_de": ["Ein Kissen unter dem Gesäß hilft, aufrecht zu sitzen."],
+  "common_mistakes_de": ["Die Knie mit den Händen nach unten drücken."],
+  "safety_note_de": "Langsam auf den Boden und wieder hoch kommen, bei Bedarf an Stuhl oder Wand abstützen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "adduktoren-dehnen-stehend",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

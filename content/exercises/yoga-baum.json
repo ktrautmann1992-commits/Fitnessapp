@@ -1,0 +1,44 @@
+{
+  "id": "yoga-baum",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Baum",
+  "name_en": "Tree Pose",
+  "aliases_de": ["Vrksasana"],
+  "movement_pattern": "balance",
+  "primary_muscles": ["glutes"],
+  "secondary_muscles": ["abs", "calves"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Auf einem Bein stehen, die Fußsohle des anderen Beins liegt am Unterschenkel oder Oberschenkel. Übt Gleichgewicht und Haltung.",
+  "steps_de": [
+    "Aus der Berghaltung das Gewicht auf ein Bein verlagern.",
+    "Die Fußsohle des anderen Beins an den Knöchel, Unterschenkel oder Oberschenkel legen – nie ans Knie.",
+    "Hände vor der Brust zusammenlegen, Blick ruhig auf einen Punkt.",
+    "Halten und danach die Seite wechseln."
+  ],
+  "tips_de": ["Zum Einstieg die Zehen am Boden lassen und nur die Ferse an den Knöchel lehnen."],
+  "common_mistakes_de": ["Den Fuß gegen das Knie drücken.", "Die Hüfte zur Seite schieben."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-baum-wand",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

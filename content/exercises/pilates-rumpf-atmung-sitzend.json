@@ -1,0 +1,38 @@
+{
+  "id": "pilates-rumpf-atmung-sitzend",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Rumpfspannung im Sitzen",
+  "name_en": "Seated Core Breathing",
+  "aliases_de": [],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["lower_back"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Aufrecht auf dem Stuhl sitzen, beim Ausatmen den Bauch sanft nach innen ziehen und die Spannung halten. Rumpf-Einstieg ohne Liegen.",
+  "steps_de": [
+    "Aufrecht auf die vordere Hälfte eines stabilen Stuhls setzen, Füße hüftbreit.",
+    "Hände seitlich an die unteren Rippen legen.",
+    "Einatmen in die Hände, ausatmen und den Bauch sanft nach innen und oben ziehen.",
+    "Die Spannung leicht halten und ruhig weiteratmen."
+  ],
+  "tips_de": ["Die Schultern bleiben entspannt."],
+  "common_mistakes_de": ["Die Luft anhalten."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

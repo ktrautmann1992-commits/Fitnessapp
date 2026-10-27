@@ -1,6 +1,6 @@
 import type { Exercise, PlanTemplate } from '../content/schemas';
 import type { ContentValidationResult } from '../content/validate';
-import { BODYWEIGHT_TEMPLATE_ID_SUFFIX } from '../constants';
+import { BODYWEIGHT_TEMPLATE_ID_SUFFIX, FLOW_POSE_ID_PREFIXES } from '../constants';
 import { isBodyweightTemplate } from '../content/checks';
 import { isDryRunContent } from '../content/validate';
 
@@ -55,9 +55,10 @@ export function selectPlanContent(
       !redIds.has(`${kind}:${content.id}`)
     );
   };
-  const exercises = new Map(
-    result.exercises.filter((e) => usable('exercise', e)).map((e) => [e.id, e] as const),
-  );
+  const all = result.exercises.filter((e) => usable('exercise', e));
+  // Sportarten Stufe 1 (Etappe Y): Posen nur zur Anzeige (Workout-Bibliothek), nie für die Plan-Engine.
+  const exercises = new Map(all.filter((e) => !isFlowPoseId(e.id)).map((e) => [e.id, e] as const));
+  const poses = all.filter((e) => isFlowPoseId(e.id));
   const templates = result.templates
     .filter((t) => usable('plan_template', t))
     .filter((t) =>
@@ -67,7 +68,22 @@ export function selectPlanContent(
   const containsDrafts =
     [...exercises.values()].some((e) => e.status === 'draft') ||
     templates.some((t) => t.status === 'draft');
-  return { exercises, templates, containsDrafts };
+  return poses.length === 0
+    ? { exercises, templates, containsDrafts }
+    : {
+        exercises,
+        templates,
+        containsDrafts: containsDrafts || poses.some((e) => e.status === 'draft'),
+        displayExercises: new Map([...exercises, ...poses.map((e) => [e.id, e] as const)]),
+      };
+}
+
+/**
+ * Pose einer Yoga-/Pilates-/Mobility-Routine (FLOW_POSE_ID_PREFIXES)? Solche Übungen nutzt nur die Workout-Bibliothek,
+ * nie die Plan-Engine.
+ */
+export function isFlowPoseId(id: string): boolean {
+  return FLOW_POSE_ID_PREFIXES.some((prefix) => id.startsWith(prefix));
 }
 
 /** Bibliothek direkt aus Listen (z. B. aus der Datenbank, die nur `published` liefert). */

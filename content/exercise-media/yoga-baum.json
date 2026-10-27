@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-baum",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-baum-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – auf einem Bein stehen, die Fußsohle des anderen Beins liegt am Unterschenkel, Knie zeigt zur Seite, Hände vor der Brust.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "yoga-vorbeuge-stuhl",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Halbe Vorbeuge am Stuhl",
+  "name_en": "Half Forward Fold at a Chair",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["hamstrings"],
+  "secondary_muscles": ["lats", "lower_back"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Hände auf der Lehne eines Stuhls, Oberkörper mit langem Rücken nach vorn neigen. Dehnt die Beinrückseite, der Kopf bleibt über Herzhöhe.",
+  "steps_de": [
+    "Vor einen stabilen Stuhl stellen, Hände auf die Lehne legen.",
+    "Mit langem Rücken aus der Hüfte nach vorn neigen, bis die Beinrückseite angenehm zieht.",
+    "Knie leicht gebeugt, Kopf in Verlängerung des Rückens.",
+    "Ruhig atmen und halten."
+  ],
+  "tips_de": ["Der Stuhl steht an einer Wand, damit er nicht wegrutscht."],
+  "common_mistakes_de": ["Den Rücken rund machen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

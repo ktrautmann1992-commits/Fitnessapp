@@ -157,7 +157,8 @@ describe('Einspiel-Paket', () => {
     expect(result.issues.filter((issue) => issue.severity === 'error')).toEqual([]);
     const pkg = buildSeedPackage(result);
     expect(pkg.exercises.map((e) => e.id)).toEqual(result.exercises.map((e) => e.id));
-    expect(pkg.exercises).toHaveLength(170);
+    // 170 + 50 Posen der Etappe Y (Sportarten Stufe 1).
+    expect(pkg.exercises).toHaveLength(220);
     expect(pkg.plan_templates).toHaveLength(49);
   });
 
@@ -872,7 +873,8 @@ describe('content-seed: Workouts (docs/PLAN-WORKOUTS.md)', () => {
     expect(result.workouts.length).toBeGreaterThanOrEqual(20);
     // Entwürfe (z. B. Lauf-Kraft, docs/PLAN-CALISTHENICS-SCHLINGE.md 4) kommen nie ins Paket.
     const published = result.workouts.filter((w) => w.status === 'published');
-    expect(result.workouts.length - published.length).toBe(4);
+    // 4 Lauf-Kraft-Entwürfe + 15 Yoga-/Pilates-/Mobility-Routinen (Sportarten Stufe 1 · Etappe Y).
+    expect(result.workouts.length - published.length).toBe(19);
     const strict = buildWorkoutSeedPackage(result);
     expect(strict.package.workouts).toEqual([]);
     expect(strict.waiting).toHaveLength(published.length);

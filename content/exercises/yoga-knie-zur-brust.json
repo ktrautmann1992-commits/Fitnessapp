@@ -1,0 +1,44 @@
+{
+  "id": "yoga-knie-zur-brust",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Knie zur Brust",
+  "name_en": "Knees to Chest",
+  "aliases_de": ["Apanasana"],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["lower_back", "glutes"],
+  "secondary_muscles": [],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["long_supine", "floor_transfer"],
+  "description_de": "In Rückenlage beide Knie zur Brust holen und sanft halten. Entspannt den unteren Rücken.",
+  "steps_de": [
+    "Auf den Rücken legen und beide Knie anziehen.",
+    "Hände an die Schienbeine oder in die Kniekehlen legen.",
+    "Knie sanft Richtung Brust holen, Kopf und Schultern bleiben am Boden.",
+    "Ruhig atmen, gern sanft hin und her schaukeln."
+  ],
+  "tips_de": ["Mit den Händen in den Kniekehlen schont es die Knie."],
+  "common_mistakes_de": ["Den Kopf anheben und den Nacken anspannen."],
+  "safety_note_de": "Nicht zu lange flach auf dem Rücken bleiben, wenn dir dabei unwohl wird – dann auf die Seite drehen. Bei Schmerzen oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-kindhaltung-sitzend",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

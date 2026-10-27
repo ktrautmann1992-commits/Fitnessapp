@@ -1,0 +1,131 @@
+{
+  "id": "yoga-stuhl",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Stuhl-Yoga",
+  "summary_de": "Yoga im Sitzen und mit Halt an Stuhl oder Wand – ohne Knien, ohne Liegen, ohne Umkehrhaltung. Passt gut zu „Fit im Alter“.",
+  "category": "yoga",
+  "difficulty": 1,
+  "minutes": 12,
+  "format": "flow",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": [],
+  "warmup_de": "Einen stabilen Stuhl ohne Rollen an eine Wand stellen und aufrecht hinsetzen.",
+  "cooldown_de": "Noch einen Moment sitzen bleiben, bevor du aufstehst.",
+  "exercises": [
+    {
+      "exercise_id": "yoga-entspannung-sitzend",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Ankommen, ruhig atmen."
+    },
+    {
+      "exercise_id": "pilates-rumpf-atmung-sitzend",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-seitneige-stuhl",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-drehsitz-stuhl",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-brustoeffner-stuhl",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-krieger-2-stuhl",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-hueftbeuger-stuhl",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "gesaess-dehnen-sitzend",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-vorbeuge-stuhl",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-baum-wand",
+      "reps": null,
+      "duration_s": 25,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-hund-an-der-wand",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "mobility-nacken-seitneige",
+      "reps": null,
+      "duration_s": 25,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Zum Schluss sanft den Nacken lösen.",
+      "side": "both"
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

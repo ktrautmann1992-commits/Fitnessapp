@@ -1,0 +1,44 @@
+{
+  "id": "pilates-tischbein-wechsel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Fersentippen",
+  "name_en": "Toe Taps",
+  "aliases_de": [],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["quadriceps"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["long_supine", "floor_transfer"],
+  "description_de": "In Rückenlage, Beine im rechten Winkel angehoben, abwechselnd eine Ferse zum Boden tippen. Rumpf bleibt ruhig.",
+  "steps_de": [
+    "Auf den Rücken legen und beide Beine anheben, Knie über der Hüfte, Unterschenkel waagerecht.",
+    "Unteren Rücken sanft zur Matte ziehen.",
+    "Ausatmen und eine Ferse langsam zum Boden tippen, einatmen und zurückholen.",
+    "Abwechselnd wiederholen."
+  ],
+  "tips_de": ["Zum Einstieg einen Fuß am Boden stehen lassen."],
+  "common_mistakes_de": ["Das Hohlkreuz zulassen."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, gleichmäßig weiteratmen und den Rücken nicht ins Hohlkreuz fallen lassen. Bei Schmerzen oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "pilates-rumpf-atmung-sitzend",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

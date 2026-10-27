@@ -12,6 +12,8 @@ import type { StoredSession } from './view';
 
 export const LIB = repoLibrary();
 export const EXERCISES = LIB.exercises;
+/** Inklusive Posen der Yoga-/Pilates-/Mobility-Routinen (nur Anzeige, Sportarten Stufe 1). */
+export const DISPLAY_EXERCISES = LIB.displayExercises ?? LIB.exercises;
 
 export function ex(id: string): Exercise {
   const found = EXERCISES.get(id);

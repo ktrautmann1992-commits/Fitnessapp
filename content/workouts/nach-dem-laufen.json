@@ -1,0 +1,90 @@
+{
+  "id": "nach-dem-laufen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Nach dem Laufen",
+  "summary_de": "Zwölf Minuten für Waden, Beinrückseite, Oberschenkel, Hüftbeuger und Gesäß – direkt nach dem Lauf.",
+  "category": "mobility",
+  "difficulty": 1,
+  "minutes": 12,
+  "format": "flow",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": [],
+  "warmup_de": "Direkt nach dem Auslaufen starten, solange die Muskeln warm sind.",
+  "cooldown_de": "Ein paar Schritte locker gehen und etwas trinken.",
+  "exercises": [
+    {
+      "exercise_id": "wadendehnung-wand",
+      "reps": null,
+      "duration_s": 55,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "mobility-knie-zur-wand",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "oberschenkel-vorderseite-dehnen",
+      "reps": null,
+      "duration_s": 55,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-hund-an-der-wand",
+      "reps": null,
+      "duration_s": 65,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-hueftbeuger-stuhl",
+      "reps": null,
+      "duration_s": 55,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "gesaess-dehnen-sitzend",
+      "reps": null,
+      "duration_s": 55,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "beinrueckseite-dehnen-sitzend",
+      "reps": null,
+      "duration_s": 55,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

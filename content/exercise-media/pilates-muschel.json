@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pilates-muschel",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pilates-muschel-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – in Seitlage, Knie gebeugt, Füße auf einer Linie mit dem Gesäß, Kopf auf dem unteren Arm.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

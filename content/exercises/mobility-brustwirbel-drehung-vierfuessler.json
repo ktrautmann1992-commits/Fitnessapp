@@ -1,0 +1,44 @@
+{
+  "id": "mobility-brustwirbel-drehung-vierfuessler",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Brustwirbel-Drehung im Vierfüßlerstand",
+  "name_en": "Quadruped Thoracic Rotation",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["upper_back", "obliques"],
+  "secondary_muscles": ["lats"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer", "trunk_rotation"],
+  "description_de": "Im Vierfüßlerstand eine Hand an den Hinterkopf legen und den Ellbogen nach oben und unten drehen. Bewegt die Brustwirbelsäule.",
+  "steps_de": [
+    "In den Vierfüßlerstand gehen, Hände unter den Schultern, Knie unter der Hüfte.",
+    "Eine Hand an den Hinterkopf legen.",
+    "Den Ellbogen unter dem Körper zur anderen Hand führen, dann nach oben aufdrehen.",
+    "Ruhig wiederholen und danach die Seite wechseln."
+  ],
+  "tips_de": ["Das Becken bleibt über den Knien."],
+  "common_mistakes_de": ["Die Bewegung aus dem unteren Rücken machen."],
+  "safety_note_de": "Sanft drehen, nie ruckartig und nicht bis zum Anschlag. Die Bewegung kommt aus dem Brustkorb, der untere Rücken bleibt ruhig. Bei Schmerzen die Drehung lösen.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-drehsitz-stuhl",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

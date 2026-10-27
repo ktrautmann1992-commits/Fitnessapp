@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-knie-zur-brust",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-knie-zur-brust-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, beide Knie zur Brust gezogen, Hände an den Schienbeinen, Kopf am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pilates-hundert-gehockt",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pilates-hundert-gehockt-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, Beine angewinkelt angehoben, Kopf und Schultern leicht angehoben, Arme lang neben dem Körper knapp über der Matte.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

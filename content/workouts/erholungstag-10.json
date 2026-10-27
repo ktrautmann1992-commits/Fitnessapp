@@ -1,0 +1,96 @@
+{
+  "id": "erholungstag-10",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Erholungstag 10 Minuten",
+  "summary_de": "Zehn sanfte Minuten für trainingsfreie Tage: alles einmal bewegen, nichts anstrengen.",
+  "category": "mobility",
+  "difficulty": 1,
+  "minutes": 10,
+  "format": "flow",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": [],
+  "warmup_de": "Bequeme Kleidung, kein Aufwärmen nötig.",
+  "cooldown_de": "Einen Moment ruhig sitzen und durchatmen.",
+  "exercises": [
+    {
+      "exercise_id": "marschieren-auf-der-stelle",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Locker anfangen."
+    },
+    {
+      "exercise_id": "schulterblatt-kreisen",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "hueftkreisen-stehend",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "katze-kuh",
+      "reps": null,
+      "duration_s": 85,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "mobility-knie-zur-wand",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "oberschenkel-vorderseite-dehnen",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "beinrueckseite-dehnen-sitzend",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-entspannung-sitzend",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

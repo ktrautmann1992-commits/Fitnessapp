@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-taube",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-taube-start.svg",
+      "alt_de": "Ausgangsposition: vorderes Bein angewinkelt vor dem Körper auf der Matte, hinteres Bein lang nach hinten, Oberkörper aufrecht, Hände neben der Hüfte.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

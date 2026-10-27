@@ -4,6 +4,7 @@ import { FLOW_RULES, FLOW_SAFETY, RECOVERY_ROUTINE, WORKOUT_LIMITS } from '../co
 import type { Exercise } from '../content/schemas';
 import { makeExercise } from '../content/test-fixtures';
 import { painEffectOn, type PainEpisode } from '../modes/pain';
+import { isFlowPoseId, planLibraryFromContent } from '../plan/content-pool';
 import { planSafetyRules, type SafetyInputs } from '../plan/safety';
 import { checkWorkout } from './checks';
 import {
@@ -110,6 +111,17 @@ function flow(overrides: Partial<Workout> = {}): Workout {
     ...overrides,
   });
 }
+
+const PUBLISHED_META = {
+  origin: 'claude_session' as const,
+  model: 'claude-opus-5-5',
+  batch_id: null,
+  created_on: '2026-10-27',
+  expert_reviewed: false,
+  reviewed_by: 'Test',
+  reviewed_at: '2026-10-27',
+  review_note: null,
+};
 
 const OPEN: FlowSafetyInput = { excludedCautionTags: [], pain: null, holdCap: false };
 const rulesFor = (inputs: Partial<SafetyInputs>) =>
@@ -414,5 +426,28 @@ describe('Erholungstag: Mobility (RECOVERY_ROUTINE)', () => {
     expect(recoveryRoutineEnabled(null)).toBe(true);
     expect(recoveryRoutineEnabled({})).toBe(true);
     expect(recoveryRoutineEnabled({ recovery_routine: false })).toBe(false);
+  });
+});
+
+describe('Posen nie in der Plan-Engine (isFlowPoseId, selectPlanContent)', () => {
+  it('Posen stehen nur in displayExercises; ohne Posen bleibt die Bibliothek wie bisher', () => {
+    const posePublished = makeExercise({
+      id: 'yoga-baum',
+      status: 'published',
+      meta: PUBLISHED_META,
+    });
+    const normal = makeExercise({
+      id: 'kniebeuge-test',
+      status: 'published',
+      meta: PUBLISHED_META,
+    });
+    expect(isFlowPoseId('yoga-baum')).toBe(true);
+    expect(isFlowPoseId('pilates-muschel')).toBe(true);
+    expect(isFlowPoseId('mobility-knie-zur-wand')).toBe(true);
+    expect(isFlowPoseId('katze-kuh')).toBe(false);
+    const lib = planLibraryFromContent([normal, posePublished], []);
+    expect([...lib.exercises.keys()]).toEqual(['kniebeuge-test']);
+    expect([...(lib.displayExercises?.keys() ?? [])]).toEqual(['kniebeuge-test', 'yoga-baum']);
+    expect(planLibraryFromContent([normal], [])).not.toHaveProperty('displayExercises');
   });
 });

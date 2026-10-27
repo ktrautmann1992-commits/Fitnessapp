@@ -1,0 +1,38 @@
+{
+  "id": "yoga-entspannung-sitzend",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Entspannung im Sitzen",
+  "name_en": "Seated Relaxation",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["lower_back"],
+  "secondary_muscles": [],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Aufrecht und bequem auf dem Stuhl sitzen, Hände auf den Oberschenkeln, und ruhig atmen. Abschluss ohne Liegen.",
+  "steps_de": [
+    "Bequem und aufrecht auf einen Stuhl setzen, Füße am Boden.",
+    "Hände locker auf die Oberschenkel legen.",
+    "Augen schließen oder den Blick senken.",
+    "Ruhig ein- und ausatmen und den Körper schwer werden lassen."
+  ],
+  "tips_de": ["Die Ausatmung darf etwas länger sein als die Einatmung."],
+  "common_mistakes_de": ["Die Schultern hochziehen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}
