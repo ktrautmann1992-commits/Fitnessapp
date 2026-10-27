@@ -211,25 +211,6 @@ export const EQUIPMENT = [
     sortOrder: 120,
     homeSelectable: true,
   },
-  // Yoga/Pilates (Sportarten Stufe 1 · Restpunkte): Hilfsmittel, die jede Person ersetzen kann (OPTIONAL_AID_EQUIPMENT)
-  // – sie stehen an Posen und Routinen, schließen aber nie etwas aus. Nicht unter „Equipment zu Hause“ (nichts zu
-  // wählen), Kategorie `other`.
-  {
-    id: 'mat',
-    nameDe: 'Matte',
-    category: 'other',
-    hasWeights: false,
-    sortOrder: 300,
-    homeSelectable: false,
-  },
-  {
-    id: 'yoga_block',
-    nameDe: 'Block',
-    category: 'other',
-    hasWeights: false,
-    sortOrder: 310,
-    homeSelectable: false,
-  },
   // Studio-Geräte (Phase 2): nicht unter „Equipment zu Hause“ auswählbar.
   {
     id: 'power_rack',
@@ -285,6 +266,25 @@ export const EQUIPMENT = [
     category: 'machines',
     hasWeights: false,
     sortOrder: 260,
+    homeSelectable: false,
+  },
+  // Yoga/Pilates (Sportarten Stufe 1 · Restpunkte): Hilfsmittel, die jede Person ersetzen kann (OPTIONAL_AID_EQUIPMENT)
+  // – sie stehen an Posen und Routinen, schließen aber nie etwas aus. Nicht unter „Equipment zu Hause“ (nichts zu
+  // wählen), Kategorie `other`.
+  {
+    id: 'mat',
+    nameDe: 'Matte',
+    category: 'other',
+    hasWeights: false,
+    sortOrder: 300,
+    homeSelectable: false,
+  },
+  {
+    id: 'yoga_block',
+    nameDe: 'Block',
+    category: 'other',
+    hasWeights: false,
+    sortOrder: 310,
     homeSelectable: false,
   },
   {
