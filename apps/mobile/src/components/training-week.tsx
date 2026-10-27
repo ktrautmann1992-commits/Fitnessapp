@@ -44,6 +44,7 @@ import {
   weekRowMeta,
   weekRowTitle,
 } from '@/lib/week-status-format';
+import { SessionTimeBlock } from '@/components/session-time';
 import { useApp } from '@/state/app-state';
 import { useLogAssignments } from '@/state/use-log-assignments';
 
@@ -918,8 +919,13 @@ function OpenBlock({
   const today = todayIso();
   const rows = app.rows;
   const [info, setInfo] = useState<string | null>(null);
+  const [timeMessage, setTimeMessage] = useState<{
+    tone: 'success' | 'danger';
+    text: string;
+  } | null>(null);
   if (!rows) return null;
   const session = activePlan(rows)?.sessions.find((s) => s.id === open.sessionId) ?? null;
+  const sessionRow = rows.plannedSessions.find((s) => s.id === open.sessionId) ?? null;
   const exerciseCount = rows.plannedExercises.filter((e) => e.session_id === open.sessionId).length;
   const nameOf = (id: string) => rows.plannedSessions.find((s) => s.id === id)?.name_de ?? null;
   const start = session ? startKind(rows, session, today) : null;
@@ -948,6 +954,20 @@ function OpenBlock({
         title={W.sheet.title(weekdayShort(day.date), open.name_de)}
         meta={meta.join(' · ')}
       />
+      {/* Nährstoff-Timing: Uhrzeit an der Einheit (Essen rund ums Training richtet sich danach). */}
+      {movable && sessionRow !== null && day.date >= today ? (
+        <SessionTimeBlock
+          sessionId={open.sessionId}
+          startTime={sessionRow.start_time}
+          trainingTime={rows.nutritionSetup?.training_time ?? null}
+          onMessage={setTimeMessage}
+        />
+      ) : null}
+      {timeMessage ? (
+        <Notice tone={timeMessage.tone} testID="session-time-message">
+          {timeMessage.text}
+        </Notice>
+      ) : null}
       {open.missed && movable ? (
         <Notice tone="info" testID="plan-missed">
           {t.plan.missed}

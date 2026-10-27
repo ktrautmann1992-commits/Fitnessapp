@@ -103,6 +103,8 @@ export type WriteOp =
       usesHealthData: boolean;
       scheduledOn: string;
       status: PlannedSessionRow['status'];
+      /** Nährstoff-Timing: Uhrzeit „HH:MM“ bzw. null; fehlt = unverändert (Spalte start_time). */
+      startTime?: string | null;
     }
   /**
    * Zwei geplante Einheiten tauschen (public.swap_planned_sessions, Etappe A1a, A-G4). Nie in die Warteschlange: Der
@@ -455,6 +457,8 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
                     ? (s.original_date ?? s.scheduled_on)
                     : s.original_date,
                 scheduled_on: op.scheduledOn,
+                // Nährstoff-Timing: Uhrzeit nur, wenn mitgeschickt (fehlt = unverändert).
+                ...(op.startTime !== undefined ? { start_time: op.startTime } : {}),
               }
             : s,
         ),

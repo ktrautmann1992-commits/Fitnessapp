@@ -712,11 +712,15 @@ export async function executeWriteOp(
       }
       return;
     }
-    // Nur Datum und Status (Trigger private.planned_sessions_before_update prüft den Rest).
+    // Nur Datum, Status und Uhrzeit (Trigger private.planned_sessions_before_update prüft den Rest).
     case 'update_planned_session': {
       const result = await client
         .from('planned_sessions')
-        .update({ scheduled_on: op.scheduledOn, status: op.status })
+        .update({
+          scheduled_on: op.scheduledOn,
+          status: op.status,
+          ...(op.startTime !== undefined ? { start_time: op.startTime } : {}),
+        })
         .eq('id', op.sessionId)
         .eq('user_id', userId)
         .select('id');

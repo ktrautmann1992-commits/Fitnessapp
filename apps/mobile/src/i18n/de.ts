@@ -8,6 +8,7 @@
 import { deAdjust } from './de-adjust';
 import { deCompetition } from './de-competition';
 import { deCompetitionNutrition } from './de-competition-nutrition';
+import { deTrainingMeals } from './de-training-meals';
 import { deCustomMeals } from './de-custom-meals';
 import {
   deConsentsPage,
@@ -1686,6 +1687,8 @@ export const de = {
   competition: deCompetition,
   /** Wettkampf-Ernährung (Phase 10, Etappe W1). */
   competitionNutrition: deCompetitionNutrition,
+  /** Nährstoff-Timing 2: Essen rund ums Training (docs/PLAN-NAEHRSTOFF-TIMING.md). */
+  trainingMeals: deTrainingMeals,
   day: deDay,
   trainingWeek: deTrainingWeek,
   weekEval: deWeekEval,

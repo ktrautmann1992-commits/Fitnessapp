@@ -19,6 +19,7 @@ import {
   type StoredShoppingList,
   swapMealRecipe,
   uncheckAllShoppingItems,
+  undoTrainingAdaptation,
   weekHidesEnergyNumbers,
   withShoppingListRange,
 } from '@fitnessapp/core';
@@ -29,8 +30,14 @@ import {
   nutritionWeekStart,
   type NutritionWeekResult,
   showEnergyNumbers,
+  trainingMealProtectionFromRows,
 } from '@/data/nutrition-plan';
 import { useShoppingPrefs } from '@/lib/shopping-prefs';
+import {
+  clearTrainingAdjustment,
+  setTrainingAdjustment,
+  type TrainingAdjustmentEntry,
+} from '@/lib/training-meal-adjustment';
 import { useToday } from '@/lib/use-today';
 
 import { type NutritionLibraryState, useApp } from './app-state';
@@ -106,7 +113,17 @@ export function useNutritionWeek(date?: string): NutritionView {
     if (!planPending && shoppingList === undefined) return null;
     return {
       plan: planPending ? week.plan : null,
-      autoAdjusted: week.planState.action === 'replanned',
+      // Anpassung ans Training (Nährstoff-Timing): eigene Rückmeldung mit „Rückgängig“ statt „angepasst“.
+      autoAdjusted: week.planState.autoAdjusted && week.planState.action === 'replanned',
+      training:
+        week.planState.training === null
+          ? null
+          : {
+              weekStart: week.plan.weekStart,
+              previous: week.planState.training.previous,
+              adaptation: week.planState.training.adaptation,
+              shopping: week.planState.training.shopping,
+            },
       recipesChanged: week.planState.action === 'rebuilt',
       inputsKey: week.planState.inputsKey,
       shoppingList,
@@ -114,6 +131,7 @@ export function useNutritionWeek(date?: string): NutritionView {
   }, [week]);
   useEffect(() => {
     if (pending !== null) {
+      if (pending.training !== null) setTrainingAdjustment(pending.training);
       void persistMealPlan(pending.plan, {
         autoAdjusted: pending.autoAdjusted,
         recipesChanged: pending.recipesChanged,
@@ -168,6 +186,13 @@ export interface MealPlanActions {
     target: { date: string; slot: MealSlotId; index: number },
     substituteFoodId: string | null,
   ) => Promise<IngredientSwapOutcome>;
+  /**
+   * Nährstoff-Timing: „Rückgängig“ nach der Anpassung ans Training – die Gerichte davor kommen als „selbst gewählt“
+   * zurück (Regel in packages/core `undoTrainingAdaptation`). 'failed' = nicht möglich.
+   */
+  undoTraining: (entry: TrainingAdjustmentEntry) => Promise<'undone' | 'failed'>;
+  /** Vorschlag „Für vor dem Training wäre X besser – tauschen?“: gegen genau dieses Rezept tauschen. */
+  swapToRecipe: (date: string, slot: MealSlotId, recipeId: string) => Promise<MealSwapOutcome>;
 }
 
 /**
@@ -176,7 +201,7 @@ export interface MealPlanActions {
  * kein Plan.
  */
 export function useMealPlanActions(week: NutritionWeekResult | null): MealPlanActions | null {
-  const { saveMealPlan } = useApp();
+  const { saveMealPlan, rows } = useApp();
   return useMemo(() => {
     if (week?.kind !== 'ready' || week.plan === null || week.planState === null) return null;
     if (!week.planState.editable) return null;
@@ -204,6 +229,31 @@ export function useMealPlanActions(week: NutritionWeekResult | null): MealPlanAc
       otherSuggestions: () => save(mealPlanWithOtherSuggestions(plan, input)),
       refresh: () => save(refreshedMealPlan(plan, input)),
       dismissAdjusted: () => saveMealPlan(plan, { autoAdjusted: false, recipesChanged: false }),
+      undoTraining: async (entry) => {
+        const next = undoTrainingAdaptation(
+          entry.previous,
+          entry.adaptation,
+          input,
+          rows === null ? undefined : trainingMealProtectionFromRows(rows),
+        );
+        if (next === null) return 'failed';
+        try {
+          await save(next);
+        } catch {
+          return 'failed';
+        }
+        clearTrainingAdjustment(entry.weekStart);
+        return 'undone';
+      },
+      swapToRecipe: async (date, slot, recipeId) => {
+        const result = swapMealRecipe(plan, { date, slot }, input, { recipeId });
+        if (!result.ok) return { kind: 'failed', reason: result.reason };
+        await save(result.plan);
+        const meal = result.plan.days
+          .find((d) => d.date === date)
+          ?.meals.find((m) => m.slot === slot && !m.isFill);
+        return { kind: 'swapped', title: meal?.titleDe ?? '' };
+      },
       chooseMealPrepPlan: async (mealPrepPlan) => {
         const offer = applyMealPrepPlan(mealPrepPlan, {
           ...input,
@@ -230,7 +280,7 @@ export function useMealPlanActions(week: NutritionWeekResult | null): MealPlanAc
         return { kind: 'swapped' };
       },
     };
-  }, [saveMealPlan, week]);
+  }, [rows, saveMealPlan, week]);
 }
 
 export type ShoppingActionOutcome =

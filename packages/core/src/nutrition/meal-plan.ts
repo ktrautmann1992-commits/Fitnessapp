@@ -1800,6 +1800,11 @@ export function swapMealRecipe(
   plan: MealPlanWeek,
   target: { readonly date: string; readonly slot: MealSlotId },
   input: Omit<MealPlanInput, 'existingPlan' | 'variant'>,
+  /**
+   * Nährstoff-Timing (Vorschlag „Für vor dem Training wäre X besser – tauschen?“): nur gegen genau dieses Rezept
+   * tauschen (gleiche Regeln wie sonst; passt es nicht, `no_alternative`).
+   */
+  options: { readonly recipeId?: string } = {},
 ): SwapResult {
   const today = isoDateSchema.parse(input.today);
   if (target.date < today) return { ok: false, reason: 'past_day' };
@@ -1868,7 +1873,11 @@ export function swapMealRecipe(
   const share = dayTargets.slots.find((s) => s.slot === target.slot)?.share ?? 0;
   const maxMinutes = isWeekday(target.date) ? pool.profile.maxPrepMinutesWeekday : null;
   const candidates = rankCandidates(
-    slotCandidates(ctx, target.slot, { maxMinutes }).filter((c) => !inWeek.has(c.recipe.id)),
+    slotCandidates(ctx, target.slot, { maxMinutes }).filter((c) =>
+      options.recipeId === undefined
+        ? !inWeek.has(c.recipe.id)
+        : c.recipe.id === options.recipeId && c.recipe.id !== meal.recipeId,
+    ),
     scoreArgs(ctx, target.slot, meal.role, share),
     state,
     input.foods,
