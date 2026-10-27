@@ -175,6 +175,61 @@ export const EQUIPMENT = [
     sortOrder: 100,
     homeSelectable: true,
   },
+  // Sportarten Stufe 1 · Restpunkte (27.10.2026, 20261027180000_sportarten_rest_equipment.sql): Hyrox-Geräte. Kategorie
+  // `cardio` bzw. `other` – kein Kraft-Gerät (isStrengthEquipment), wer nur einen Sandsack hat, behält den
+  // Körpergewicht-Plan. Im Studio NICHT automatisch vorhanden (GYM_OPTIONAL_EQUIPMENT_IDS): nur mit der Angabe
+  // „Hyrox-Geräte im Studio“. Zu Hause wählbar (Sandsack, Wall Ball; Schlitten/Ski-Ergometer im Heim-Studio).
+  {
+    id: 'ski_erg',
+    nameDe: 'Ski-Ergometer',
+    category: 'cardio',
+    hasWeights: false,
+    sortOrder: 105,
+    homeSelectable: true,
+  },
+  {
+    id: 'sled',
+    nameDe: 'Schlitten (Sled)',
+    category: 'other',
+    hasWeights: false,
+    sortOrder: 110,
+    homeSelectable: true,
+  },
+  {
+    id: 'sandbag',
+    nameDe: 'Sandsack',
+    category: 'other',
+    hasWeights: false,
+    sortOrder: 115,
+    homeSelectable: true,
+  },
+  {
+    id: 'wall_ball',
+    nameDe: 'Wall Ball (Medizinball)',
+    category: 'other',
+    hasWeights: false,
+    sortOrder: 120,
+    homeSelectable: true,
+  },
+  // Yoga/Pilates (Sportarten Stufe 1 · Restpunkte): Hilfsmittel, die jede Person ersetzen kann (OPTIONAL_AID_EQUIPMENT)
+  // – sie stehen an Posen und Routinen, schließen aber nie etwas aus. Nicht unter „Equipment zu Hause“ (nichts zu
+  // wählen), Kategorie `other`.
+  {
+    id: 'mat',
+    nameDe: 'Matte',
+    category: 'other',
+    hasWeights: false,
+    sortOrder: 300,
+    homeSelectable: false,
+  },
+  {
+    id: 'yoga_block',
+    nameDe: 'Block',
+    category: 'other',
+    hasWeights: false,
+    sortOrder: 310,
+    homeSelectable: false,
+  },
   // Studio-Geräte (Phase 2): nicht unter „Equipment zu Hause“ auswählbar.
   {
     id: 'power_rack',
@@ -262,6 +317,39 @@ export function withImpliedEquipment(ids: Iterable<string>): string[] {
     }
   }
   return out;
+}
+
+/**
+ * Hyrox-Geräte (Sportarten Stufe 1 · Restpunkte, 27.10.2026): im Studio NICHT automatisch vorhanden – nur mit der
+ * ausdrücklichen Angabe „Hyrox-Geräte im Studio“ (gespeichert als user_equipment-Zeilen mit Ort `gym`, analog zu „Im
+ * Studio auch rudern“). Standard aus. Quelle: PRODUKTENTSCHEIDUNG (Gründer-Auftrag 27.10.2026).
+ */
+export const GYM_OPTIONAL_EQUIPMENT_IDS: readonly string[] = [
+  'ski_erg',
+  'sled',
+  'sandbag',
+  'wall_ball',
+];
+
+/**
+ * Hilfsmittel, die jede Person ersetzen kann (Yoga/Pilates): Sie stehen an Posen und Routinen (Anzeige), zählen aber
+ * nie als fehlendes Gerät – keine Routine fällt weg, wer keine Matte oder keinen Block hat. Ersatz-Text für die Anzeige.
+ * Entscheidung (Gründer-Auftrag 27.10.2026, dokumentiert in docs/PLAN-SPORTARTEN-STUFE-1.md 11): Matte gilt als immer
+ * vorhanden (Ersatz Handtuch, Decke oder Teppich), Block ebenso (Ersatz festes Kissen oder dickes Buch).
+ */
+export const OPTIONAL_AID_EQUIPMENT: Readonly<Record<string, string>> = {
+  mat: 'Handtuch, Decke oder Teppich',
+  yoga_block: 'festes Kissen oder dickes Buch',
+};
+
+/** Ist das Gerät ein ersetzbares Hilfsmittel (OPTIONAL_AID_EQUIPMENT)? */
+export function isOptionalAid(id: string): boolean {
+  return Object.hasOwn(OPTIONAL_AID_EQUIPMENT, id);
+}
+
+/** Geräte ohne ersetzbare Hilfsmittel (für „ohne Geräte“-Filter und Machbarkeit). */
+export function requiredEquipmentIds(ids: readonly string[]): string[] {
+  return ids.filter((id) => !isOptionalAid(id));
 }
 
 /** „Sonstiges“: nur hier ist (und muss) ein Freitext angegeben werden. */

@@ -509,5 +509,12 @@ export const deCompetition = {
     splitsExceed: 'Die Teilzeiten zusammen sind länger als die Gesamtzeit.',
     segments: HYROX_TEXTS_DE.segments,
     private: HYROX_TEXTS_DE.result.private,
+    // Restpunkte (27.10.2026): Hyrox-Geräte im Studio (Standard aus) und Reise-Modus im Timer.
+    gymOption: 'Hyrox-Geräte im Studio (Schlitten, Ski-Ergometer, Sandsack, Wall Ball)',
+    gymOptionHint:
+      'Nur ankreuzen, wenn dein Studio diese Geräte hat – dann planen wir die echten Stationen. Sonst ersetzen wir sie. Gilt ab dem nächsten Plan („Plan neu erstellen“).',
+    travelTitle: HYROX_TEXTS_DE.travel.name,
+    travelNotice: HYROX_TEXTS_DE.travel.notice,
+    travelStep: HYROX_TEXTS_DE.travel.step,
   },
 };

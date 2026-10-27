@@ -5,6 +5,7 @@ import {
   BARBELL_ID,
   createGoalStepSchema,
   goalPairBlockReason,
+  gymHyroxFromRows,
   hasGoal,
   isAllowedGoalPair,
   DEFAULT_SLOT_MINUTES,
@@ -412,6 +413,14 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
     (item) => item.location === 'gym' && item.equipmentId === 'rowing_machine',
   );
   const [gymRowing, setGymRowing] = useState(storedGymRowing);
+  // Restpunkte (27.10.2026): „Hyrox-Geräte im Studio“ – ausdrückliche Angabe (Standard aus), nur bei Hyrox angeboten.
+  const storedGymHyrox = gymHyroxFromRows(
+    (answers.equipment ?? []).map((item) => ({
+      equipment_id: item.equipmentId,
+      location: item.location,
+    })),
+  );
+  const [gymHyrox, setGymHyrox] = useState(storedGymHyrox);
 
   const [mode, setMode] = useState<TrainingScheduleMode>(initial?.mode ?? 'fixed');
   const [days, setDays] = useState<number[]>(() =>
@@ -563,6 +572,7 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
       step: 'time_budget',
       schedule: parsed.data,
       ...(gymRowing !== storedGymRowing ? { gymRowing } : {}),
+      ...(gymHyrox !== storedGymHyrox ? { gymHyrox } : {}),
     });
   }
 
@@ -705,6 +715,18 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
             testID="schedule-gym-rowing"
           />
           <Body muted>{t.rowing.gymOptionHint}</Body>
+        </Card>
+      ) : null}
+      {(discipline === 'hyrox' && input.slots.some((slot) => slot.kind === 'strength_gym')) ||
+      gymHyrox ? (
+        <Card>
+          <Checkbox
+            label={t.competition.hyrox.gymOption}
+            checked={gymHyrox}
+            onChange={setGymHyrox}
+            testID="schedule-gym-hyrox"
+          />
+          <Body muted>{t.competition.hyrox.gymOptionHint}</Body>
         </Card>
       ) : null}
 

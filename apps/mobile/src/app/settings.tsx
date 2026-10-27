@@ -350,8 +350,19 @@ export default function SettingsScreen() {
               description={t.rowing.gymSettingsText}
               onPress={() => router.push('/onboarding/time_budget?edit=1')}
               testID="settings-gym-rowing"
-              last
+              last={rows.goals?.discipline !== 'hyrox'}
             />
+            {/* Restpunkte (27.10.2026): „Hyrox-Geräte im Studio“ – nur bei Hyrox, ebenfalls im Schritt Trainingstage. */}
+            {rows.goals?.discipline === 'hyrox' ? (
+              <ListRow
+                icon="dumbbell"
+                label={t.competition.hyrox.gymOption}
+                description={t.rowing.gymSettingsText}
+                onPress={() => router.push('/onboarding/time_budget?edit=1')}
+                testID="settings-gym-hyrox"
+                last
+              />
+            ) : null}
           </ListGroup>
 
           {/* Trainings-Modi (docs/PLAN-TRAINING-MODI.md): Schon-Modus, Reise-Modus, Aufwärmen & Dehnen. */}

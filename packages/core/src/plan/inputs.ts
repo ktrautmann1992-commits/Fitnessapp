@@ -96,6 +96,12 @@ export const planInputsSchema = z
      * Schnappschuss (user_plans.inputs, private.assert_plan_inputs) – der Folgeblock liest sie aus den aktuellen Geräten.
      */
     gymRowing: z.boolean().optional(),
+    /**
+     * Sportarten Stufe 1 · Restpunkte (Hyrox, 27.10.2026): „Hyrox-Geräte im Studio“ (Schlitten, Ski-Ergometer,
+     * Sandsack, Wall Ball) = user_equipment-Zeilen mit Ort `gym` (GYM_OPTIONAL_EQUIPMENT_IDS). Optional wie gymRowing,
+     * nicht im Schnappschuss; wirkt nur auf die Stations-Einheiten im Hyrox-Plan.
+     */
+    gymHyrox: z.boolean().optional(),
   })
   .refine((value) => isAllowedGoalPair(value.goalType, value.secondaryGoalType), {
     path: ['secondaryGoalType'],

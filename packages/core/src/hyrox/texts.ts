@@ -64,6 +64,14 @@ export const HYROX_TEXTS_DE = {
     'In der Schwangerschaft erstellen wir keinen Hyrox-Plan. Sprich bitte mit deiner Ärztin oder deinem Arzt.',
   painRunOnly: 'Schon-Modus: Heute nur den Lauf-Teil der Kombi, die Stationen lässt du weg.',
   travelCircuit: 'Reise: Stationen als Körpergewicht-Zirkel.',
+  /** Reise-Modus im Timer (Restpunkte 27.10.2026): Kombi als „Lauf + Körpergewicht-Zirkel“. */
+  travel: {
+    name: 'Lauf + Körpergewicht-Zirkel',
+    notice:
+      'Reise-Modus: Statt der Stationen machst du eine Übung mit deinen Reise-Geräten – gleiche Zeit, gleiches Muster.',
+    step: (exercise: string | null) =>
+      exercise === null ? 'Zirkel: locker weiterlaufen' : `Zirkel: ${exercise}`,
+  },
   result: {
     name: 'Hyrox-Rennen',
     total: 'Gesamtzeit',

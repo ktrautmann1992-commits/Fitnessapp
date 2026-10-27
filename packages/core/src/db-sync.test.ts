@@ -421,6 +421,8 @@ describe('Listen', () => {
       '_equipment_home_selectable.sql',
       '_suspension_trainer.sql',
       '_calisthenics_equipment.sql',
+      // Sportarten Stufe 1 · Restpunkte: Hyrox-Geräte, Matte, Block.
+      '_sportarten_rest_equipment.sql',
     ]) {
       for (const m of readMigration(suffix).matchAll(rowPattern)) {
         catalog.set(m[1] as string, {

@@ -91,8 +91,8 @@ select is((select count(*)::int from public.travel_modes), 0, 'B sieht die Reise
 
 reset role;
 select is(
-  (select count(*)::int from public.equipment where not home_selectable), 7,
-  'Studio-only bleiben 7 Geräte (Barren ist jetzt auch zu Hause wählbar)'
+  (select count(*)::int from public.equipment where not home_selectable), 9,
+  'Studio-only bleiben 7 Geräte (Barren ist jetzt auch zu Hause wählbar), dazu Matte und Block (nichts zu wählen)'
 );
 
 select * from finish();

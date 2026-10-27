@@ -10,6 +10,8 @@ import {
   barbellLoadSteps,
   EQUIPMENT,
   findEquipment,
+  GYM_OPTIONAL_EQUIPMENT_IDS,
+  isOptionalAid,
   OTHER_EQUIPMENT_ID,
   withImpliedEquipment,
 } from '../equipment';
@@ -36,6 +38,11 @@ export interface EquipmentProfile {
 export interface EquipmentProfileOptions {
   /** suspensionTrainerReady(Bibliothek) – siehe EquipmentProfile.suspensionReady. */
   readonly suspensionReady?: boolean;
+  /**
+   * Sportarten Stufe 1 · Restpunkte: „Hyrox-Geräte im Studio“ (GYM_OPTIONAL_EQUIPMENT_IDS) – nur dann gehören Schlitten,
+   * Ski-Ergometer, Sandsack und Wall Ball zum Studio. Fehlt → wie bisher ohne diese Geräte.
+   */
+  readonly gymHyroxEquipment?: boolean;
 }
 
 /** Orte, die es nur draußen gibt (nie Teil des Studios). */
@@ -69,7 +76,8 @@ export function equipmentWeightSteps(
 }
 
 /**
- * Studio = alle Katalog-Geräte außer „Sonstiges“ und dem Calisthenics-Park (Annahme bis Phase 9b); Zuhause = eigene
+ * Studio = alle Katalog-Geräte außer „Sonstiges“, dem Calisthenics-Park und den Hyrox-Geräten (nur mit
+ * `gymHyroxEquipment`, Sportarten Stufe 1 · Restpunkte) (Annahme bis Phase 9b); Zuhause = eigene
  * Heim-Geräte inklusive der mitgebrachten (EQUIPMENT_IMPLIES: Park → Klimmzugstange + Barren);
  * „beides“ = Studio, Gewichtsstufen der Heim-Geräte bleiben bekannt.
  */
@@ -92,11 +100,15 @@ export function equipmentProfile(
       ...ready,
     };
   }
+  const hyroxAtGym = options.gymHyroxEquipment === true;
   return {
     location: 'gym',
     available: new Set(
       EQUIPMENT.map((item) => item.id).filter(
-        (id) => id !== OTHER_EQUIPMENT_ID && !OUTDOOR_ONLY_EQUIPMENT.includes(id),
+        (id) =>
+          id !== OTHER_EQUIPMENT_ID &&
+          !OUTDOOR_ONLY_EQUIPMENT.includes(id) &&
+          (hyroxAtGym || !GYM_OPTIONAL_EQUIPMENT_IDS.includes(id)),
       ),
     ),
     weights,
@@ -161,12 +173,12 @@ export function isSuspensionOnly(
   );
 }
 
-/** Sind alle nötigen Geräte da? */
+/** Sind alle nötigen Geräte da? Ersetzbare Hilfsmittel (Matte, Block – OPTIONAL_AID_EQUIPMENT) fehlen nie. */
 export function isExerciseFeasible(
   exercise: Pick<Exercise, 'equipment_ids'>,
   profile: Pick<EquipmentProfile, 'available'>,
 ): boolean {
-  return exercise.equipment_ids.every((id) => profile.available.has(id));
+  return exercise.equipment_ids.every((id) => isOptionalAid(id) || profile.available.has(id));
 }
 
 /** Schritt, über den der Ersatz gefunden wurde (1 = Übung selbst). */
