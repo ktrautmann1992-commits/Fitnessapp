@@ -295,6 +295,7 @@ const DISCIPLINE_DE: Record<EnduranceDiscipline, string> = {
   triathlon_long: 'Triathlon Langdistanz',
   cycling: 'Radfahren',
   swimming: 'Schwimmen',
+  hyrox: 'Hyrox',
 };
 
 const KIND_DE = {
