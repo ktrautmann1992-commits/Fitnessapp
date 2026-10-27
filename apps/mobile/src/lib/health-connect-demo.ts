@@ -176,8 +176,10 @@ export function demoRead(today: string, from: string, to: string): HcReadResult 
         },
       });
     }
-    // Sportarten Stufe 1 · Etappe W: Wanderung vorgestern (2,5 h, ca. 650 Hm auf und ab) → Gehen mit walk_kind hike.
-    if (i === 4) {
+    // Sportarten Stufe 1 · Etappe W: Wanderung vor 5 Tagen (2,5 h, ca. 650 Hm auf und ab) → Gehen mit walk_kind hike.
+    // Bewusst an einem Tag ohne andere Einheit der Beispiel-Uhr: die Läufe (i = 0, 2, 4) bleiben allein an ihrem Tag,
+    // damit Szenarien wie „Uhr-Lauf zählt für einen anderen Tag“ nicht durch eine zweite Einheit verfälscht werden.
+    if (i === 1) {
       const start = at(day, '09:00');
       sessions.push({
         record: {
