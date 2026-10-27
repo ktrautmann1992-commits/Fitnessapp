@@ -1,0 +1,20 @@
+{
+  "exercise_id": "einbeinstand-laeufer",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "einbeinstand-laeufer-start.svg",
+      "alt_de": "Ausgangsposition: auf einem Bein stehen, das andere Knie auf Hüfthöhe, Arme angewinkelt wie beim Laufen, Becken waagerecht.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-ausfallschritt",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-ausfallschritt-start.svg",
+      "alt_de": "Ausgangsposition: Rücken zum Anker, auf dem vorderen Bein stehen, der hintere Fuß liegt auf Kniehöhe in der Schlaufe.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

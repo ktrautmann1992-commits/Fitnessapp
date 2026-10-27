@@ -292,6 +292,72 @@ Beschriftung in `icon` der Bereichsfarbe. Kennzeilen und Abschnitts-Überschrift
   Rückfrage als `ListRow role="button"`. Destruktive Aktionen (Konto löschen, Testdaten löschen) als `ListRow
 tone="danger"` – rot, fett, Papierkorb-Icon, in eigener Gruppe am Ende.
 
+### Übungsliste Training (Entwurf B „kompakte Liste“, 26.10.2026)
+
+Gründer-Freigabe Entwurf B für die Krafteinheit auf „Training“ (`components/plan-strength.tsx`, aufgerufen von
+`SessionCard` in `components/plan.tsx`; Ausdauer-Einheiten bleiben unverändert):
+
+- **Kopf-Karte** (helle Karte, Radius 20): Icon-Chip Hantel (Trainingsblau), Kennzeile („Deine Einheit heute“),
+  Name als Überschrift, darunter drei Zahlen **Minuten · Übungen · Sätze** (20 px extra fett, Ansage „ca. 50 Minuten,
+  6 Übungen, 16 Sätze“), Kennzeile „Trainiert heute – Hauptmuskeln“ mit Muskel-Chips, Zeile „**Unterstützend:** …“
+  und – wenn die Einheit startbar ist (gleiche Regeln wie die Hero-Karte) – „Training starten“ bzw. „Heute nachholen“
+  (52 px, `plan-session-start`). **Nie doppelt:** Zeigt die Hero-Karte oben schon den Start-Knopf für dieselbe Einheit
+  (heute), entfällt er im Kopf; er erscheint nur ohne Hero-Start, z. B. beim Nachholen einer verpassten Einheit. Muskeln der Einheit: `sessionMuscleTiles` in `packages/core` (Hauptmuskel gewinnt).
+- **„Startgewicht finden“** steht nur noch **einmal** oben als aufklappbarer Hinweis (Rand links Trainingsblau
+  `strong`, Info-Icon, „Erstes Mal? So wählst du das Gewicht“) – nur wenn mindestens einer Übung ein Gewicht fehlt.
+  Aufgeklappt: wie man das Gewicht wählt und was „2–3 in Reserve“ heißt.
+- **Ablauf:** Abschnitts-Überschrift, darunter Aufwärmen (Icon „sun“) und Cool-down (Icon „moon“) als aufklappbare
+  Zeilen (52 px, Rolle Knopf mit „aufgeklappt“-Zustand, Dauer „ca. 5 Min“ bei Aufwärmen & Dehnen).
+- **Übungen in EINER Karte**, je Zeile: Bild der Ausgangsposition 64 px auf Trainingsblau `surface` (Illustration mit
+  `illustrationXml(…, { gap: surface })`, im Dunkelmodus die Dunkel-Farben der Illustrationen), Nummer als 22-px-Kreis
+  in Primärblau mit weißer Zahl; Name 16/700 als Link zur Anleitung; **eine Zahlenzeile** „**3 × 10** · 1:30 Pause ·
+  2–3 in Reserve“ (geschützte Leerzeichen, kein Umbruch im Wert); darunter Gewicht fett („40 kg“, „6 kg je Hantel“)
+  oder der kleine Marker „ⓘ Gewicht selbst finden“ in Link-Farbe; Kennzeichen, Hinweise der Progression und
+  `notes_de` klein grau; rechts „Tauschen“ als `IconButton variant="plain"` (44 × 44, Pfeile in Trainingsblau
+  `icon`). Unter der Zeile die **Muskel-Chips** (`MuscleChips`): 32 px hoch, rundes 24-px-Vorschaubild,
+  Hauptmuskel gefüllt in Trainingsblau `surface` mit Text in `--color-text`, unterstützend nur umrandet
+  (`cardBorder`) mit Nebentext-Grau. Die großen „Tauschen“-Knöpfe über die ganze Breite entfallen.
+- **Supersätze** bleiben erkennbar: Kennzeile „SUPERSATZ A“ in Trainingsblau und 4-px-Rand links in `strong`;
+  „Supersatz A“ steht auch in der Ansage.
+- **Bildschirmleser:** Der Name-Link liest die ganze Zeile: „1. Kniebeuge, 3 Sätze à 10 Wiederholungen, Pause
+  90 Sekunden, 2–3 Wiederholungen in Reserve, Gewicht selbst finden, Hauptmuskeln: Gesäß, Oberschenkel vorne,
+  unterstützend: Unterer Rücken“. Zahlenzeile, Chips, Bild und Nummer sind für Bildschirmleser ausgeblendet (keine
+  Doppelung). Tippflächen: Name ≥ 44 px (Polster nach außen), Tausch-Knopf 44 × 44, Bild öffnet ebenfalls die
+  Anleitung (nur Zusatz-Tippfläche, nicht fokussierbar).
+- **Kontrast:** Text auf Trainingsblau `surface` hell 16,4 : 1 bzw. dunkel 13,0 : 1; Nummer weiß auf Primärblau `#1f5bff` (5,3 : 1, hell und dunkel); Marker in `--color-link`
+  (hell 7,5 : 1, dunkel 9,1 : 1 auf der Karte); Pfeile in `icon` (7,5 · 8,2).
+- **Ohne Bibliothek bzw. Muskeldaten:** Zeilen ohne Chips, Kopf ohne Muskel-Zeilen, kein Absturz; fehlt die Bibliothek
+  laut Anzeige, steht wie bisher der Hinweis „Übungen können gerade nicht geprüft werden“.
+- Texte: `t.plan.list` (`apps/mobile/src/i18n/de.ts`); Werte: `exerciseSummary` (Plan) und `workoutTargetSummary`
+  (berechnete Vorgabe). Trainingsmodus und PDF-Druck behalten ihre ausgeschriebenen Sätze.
+- Prüfungen: `plan-strength.test.tsx`, `plan-format.test.ts`, `workout-format.test.ts`,
+  `packages/core/src/content/muscle-tiles.test.ts`, E2E `training-plan.spec.ts`.
+
+### Schlank: 5 Reiter, eine Frage je Seite (Gründer-Freigabe 26.10.2026)
+
+Vorschlag „App verschlanken“ (Entwürfe 1-heute … 8-navigation, Plan: `docs/PLAN-DASHBOARD.md` 11). Jede Seite
+beantwortet eine Frage: **Heute** („Was steht heute an?“), **Training** („Was trainiere ich?“), **Ernährung** („Was
+esse ich?“), **Einkaufen** („Was muss ich kaufen?“), **Mehr** („Alles andere“). Regeln für neue Bildschirme:
+
+- **Höchstens ein Hinweis offen.** Hinweise laufen über `NoticeStack` (Vorrang aus `packages/core` `noticeQueue`):
+  sperrende Hinweise (Einwilligung, Arzt, Plan abgelaufen, fremde Daten, Ernährungs-Sicherheit) immer vollständig,
+  sonst einer vollständig + Pille **„+N weitere Hinweise“** (44 px, Rand, Link-Farbe, Pfeil dreht beim Aufklappen,
+  `aria-expanded`).
+- **Umschalter statt weiterer Reiter** (`SegmentedSwitch`): graue Pillen-Fläche (`card.divider`), gewählter Teil weiß
+  (`surface`) mit leichtem Schatten und fett, Rolle `tab` mit „ausgewählt“, 44 px hoch. Training: Mein Plan · Workouts
+  · Übungen; Ernährung: Tag · Woche · Rezepte; Einkaufen: Diese Woche · Nächste Woche.
+- **Seltenes zuklappen** (`CollapsibleRow`): weiße Karte, Icon links, Titel 17/700 + Zusatz grau, Pfeil rechts (dreht
+  beim Aufklappen), Bildschirmleser hören „aufgeklappt/zugeklappt“. Beispiele: „Dein Plan: …“, „Wenn Essen oder
+  Gewicht dich belasten“ (Herz in Fehlerfarbe, nie ausblendbar), „Hast du wahrscheinlich da“.
+- **Aktionen ins ⋯-Menü** (`MoreMenu`): runder 44-px-Knopf oben rechts, Blatt von unten (Radius 24, Griff, Zeilen
+  52 px mit Icon, Schalter-Einträge mit Haken, Gefährliches in Fehlerfarbe, „Schließen“). Seitenkopf-Knöpfe über
+  `Screen headerAction` (z. B. ⚙ in Ernährung, `HeaderIconButton`).
+- **Werkzeuge als bunte Kacheln** (`TileGrid`, zu zweit) statt Knopf-Stapel – Bereichsfarbe je Ziel (Einkaufen
+  türkis, Ernährung grün, Fortschritt/Training blau).
+- Neue Strich-Icons: `home` (Reiter Heute), `share`, `print`, `chevron-left`, `filter`.
+- Bausteine: `apps/mobile/src/components/slim.tsx` (Tests `slim.test.tsx`), Umschalter Training
+  `components/training-switch.tsx`.
+
 ### Bausteine (`apps/mobile/src/components/design.tsx`)
 
 | Baustein       | Props (Auszug)                                                                                                                                                                                                                                                                                                   | Barrierefreiheit                                    |
@@ -303,7 +369,7 @@ tone="danger"` – rot, fett, Papierkorb-Icon, in eigener Gruppe am Ende.
 | `HeroCard`     | `eyebrow`, `eyebrowIcon?`, `meta?`, `title`, `subtitle?`, `actionLabel?`, `onAction?`, `actionIcon`, `actionRole`, `children`                                                                                                                                                                                    | Kennzeile = Überschrift; Knopf 52 px                |
 | `ListGroup`    | `children`                                                                                                                                                                                                                                                                                                       | –                                                   |
 | `ListRow`      | `icon?`, `label`, `description?`, `onPress?` (ohne: Anzeige-Zeile), `role` (Standard link), `tone` default/danger, `trailing?`, `disabled`, `last`                                                                                                                                                               | ≥ 44 px (52), Name = Text + Beschreibung            |
-| `IconButton`   | `icon`, `accessibilityLabel` (Pflicht), `onPress`                                                                                                                                                                                                                                                                | 44 × 44 px                                          |
+| `IconButton`   | `icon`, `accessibilityLabel` (Pflicht), `onPress`, `variant` outline/plain, `area?` (Icon-Farbe bei plain)                                                                                                                                                                                                       | 44 × 44 px                                          |
 | `StatValue`    | `value`, `label`, `size` md (20 px)/lg (22 px), `accessibilityLabel?`, `valueTestID?`                                                                                                                                                                                                                            | Zahl und Beschriftung zusammen                      |
 | `ProgressRing` | `size`, `stroke`, `fraction`, `overFraction?`, `color?`, `trackColor?`, `children`                                                                                                                                                                                                                               | Grafik ausgeblendet, Ansage setzt der Rahmen        |
 | `MiniBars`     | `values` (0–1), `area`, `highlightIndex?`, `height`, `accessibilityLabel` (Pflicht)                                                                                                                                                                                                                              | Rolle „Bild“ mit Ansage                             |

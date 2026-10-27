@@ -47,6 +47,7 @@ import {
 } from '@fitnessapp/core';
 
 import { loadNutritionCatalog } from './foods/catalog-loader';
+import { checkEatingOutMapping } from './foods/eating-out-mapping';
 
 /** Ordner unter `content/` je Inhaltsart (Übungen, Vorlagen – auch von der Pipeline genutzt). */
 export const CONTENT_FOLDERS: Record<ContentFileKind, string> = {
@@ -388,6 +389,8 @@ export interface ReportInput {
   readonly versionNote: string;
   /** Einspiel-Regel aus `content/einspiel-regeln.json`; fehlt = nur fachlich geprüft. */
   readonly seedSettings?: ContentSeedSettings;
+  /** Hinweise ohne Einfluss auf das Ergebnis (z. B. Auswärts-Zuordnung: „wartet auf Import“). */
+  readonly notes?: readonly string[];
 }
 
 /** Fehler insgesamt, die das Skript fehlschlagen lassen (inkl. fremder Dateien). */
@@ -414,6 +417,7 @@ export function formatReport(input: ReportInput): string {
         `ROT  DATEI   ${file}${file.includes(': ') ? '' : ': keine JSON-Datei – bitte entfernen oder umbenennen.'} [blockiert]`,
     ),
     ...[...errors, ...warnings].map(issueLine),
+    ...(input.notes ?? []).map((note) => `GELB HINWEIS  ${note}`),
     ...(result.issues.length + strayFiles.length === 0 ? ['Keine Befunde.'] : []),
     '',
     `Ergebnis: ${blocking} blockierende Fehler · ${errors.length + strayFiles.length - blocking} rote Fehler an Entwürfen/zurückgezogenen Inhalten · ${warnings.length} gelbe Hinweise`,
@@ -450,6 +454,9 @@ export function formatMarkdownSummary(input: ReportInput): string {
       ? ['| Regel | Inhalt | Status | Befund |', '| --- | --- | --- | --- |', ...rows]
       : ['Keine Befunde.']),
     '',
+    ...((input.notes ?? []).length > 0
+      ? ['#### Hinweise', '', ...(input.notes ?? []).map((note) => `- 🟡 ${note}`), '']
+      : []),
     ...coverageMarkdown(result),
     'Rot blockiert nur bei freigegebenen Inhalten (Schema-/Dateifehler immer). Regeln: docs/PLAN-PHASE-2.md Abschnitt 7, Supplemente (SK1–SK7): docs/PLAN-PHASE-6.md Abschnitt 6, Workouts (W1–W7): docs/PLAN-WORKOUTS.md.',
     '',
@@ -608,6 +615,14 @@ export function validateRepository(options: {
     }),
   );
   const recipeMediaProblems = checkRecipeMediaFolder(contentDir, recipeIds, repoRoot);
+  // Auswärts-Zuordnung (G-AV2): unbekannte Lebensmittel/Schemafehler blockieren, „wartet auf Import“ ist ein Hinweis.
+  const catalogIds = new Set(
+    nutrition.files.flatMap((file) => {
+      const id = (file.data as { id?: unknown } | undefined)?.id;
+      return typeof id === 'string' ? [id] : [];
+    }),
+  );
+  const eatingOut = checkEatingOutMapping(contentDir, catalogIds);
   return {
     result: validateContent(
       [
@@ -628,9 +643,11 @@ export function validateRepository(options: {
       ...seed.problems,
       ...mediaProblems,
       ...recipeMediaProblems,
+      ...eatingOut.problems,
     ],
     versionNote,
     seedSettings: seed.settings,
+    notes: eatingOut.notes,
   };
 }
 

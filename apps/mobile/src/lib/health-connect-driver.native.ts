@@ -229,6 +229,18 @@ export const healthConnectDriver: HealthConnectDriver = {
               )
             ).flatMap((h) => h.samples)
           : [];
+        // Lauf-Paket 2 (Kadenz): Schritte im Zeitraum der Einheit, nur Laufen/Gehen und nur mit Freigabe „Schritte“.
+        // Aggregat ohne Herkunfts-Filter: Health Connect entdoppelt Handy und Uhr selbst.
+        const group = mapExerciseType(r.exerciseType).group;
+        let steps: number | null = null;
+        if ((group === 'run' || group === 'walk') && has('steps')) {
+          try {
+            const agg = await aggregateRecord({ recordType: 'Steps', timeRangeFilter: range });
+            steps = typeof agg.COUNT_TOTAL === 'number' ? agg.COUNT_TOTAL : null;
+          } catch {
+            steps = null;
+          }
+        }
         sessions.push({
           record: {
             id,
@@ -237,7 +249,7 @@ export const healthConnectDriver: HealthConnectDriver = {
             endTime: r.endTime,
             dataOrigin: r.metadata?.dataOrigin ?? null,
           },
-          extras: { distanceM, kcal, heartRateSamples, ...(route ? { route } : {}) },
+          extras: { distanceM, kcal, heartRateSamples, steps, ...(route ? { route } : {}) },
         });
       }
     }

@@ -18,8 +18,10 @@ Grenzwerte in `packages/core/src/constants.ts` (`PAIN_REGION_LOAD`, `PAIN_MODE`,
 1. **Gratis, ohne KI.** Alle drei sind feste Regeln (keine Echtzeit-KI, keine Live-Anpassung im Sinne von KONZEPT 4.1,
    die auf Tagebuch-Daten reagiert). Schon-Modus und Aufwärmen sind Sicherheitsfunktionen (wie das Zyklus-Modul,
    ZY-G1: „kein Verkaufshebel“), der Reise-Modus ist Geräte-Anpassung wie KONZEPT 4 Punkt 2 (gratis). Deshalb keine
-   Premium-Prüfung; falls die Gründer anders entscheiden, wäre die Server-Prüfung über `private.has_entitlement_for`
-   in den RLS-Policies nachzurüsten.
+   Premium-Prüfung. **Gründer-Entscheidung 26.10.2026: Schon-Modus und Reise-Modus sind gratis (bestätigt).** Geprüft:
+   weder die App (kein Premium-/Testmodus-Schalter, kein Feature-Flag) noch der Server (RLS von `pain_episodes` und
+   `travel_modes` nur Eigentümer + Einwilligung, kein `has_entitlement_for`) prüfen Premium; E2E
+   `training-modes.spec.ts` läuft mit ausgeschaltetem „Live-Anpassung einschalten (Testmodus)“.
 2. **Nur Anzeige, Plan bleibt gespeichert.** Alle drei wirken als Schichten in `prepareSessionForDisplay()` – der
    gespeicherte Plan, Tagebuch-Zuordnung (`planned_exercise_id`) und Folgeblöcke bleiben unverändert. „Endet
    automatisch“ heißt: am Tag nach dem letzten Tag gibt es keine Schicht mehr. Reihenfolge: Sicherheitsregeln →
@@ -102,4 +104,4 @@ Grenzwerte in `packages/core/src/constants.ts` (`PAIN_REGION_LOAD`, `PAIN_MODE`,
 3. **Inhalte:** 16 Aufwärm-/Dehn-Entwürfe fachlich prüfen und freigeben; Schlingentrainer-Übungen (eigenes Paket).
 4. **Gewicht im Schon-Modus:** Derzeit sinken Sätze und RPE-Ziel, das vorgeschlagene Gewicht folgt weiter dem Tagebuch.
    Ein automatisch leichteres Gewicht würde die Progression als „verfehlt“ werten – Entscheidung offen.
-5. **Gratis/Premium** (Abschnitt 2 Nr. 1) bestätigen.
+5. ~~**Gratis/Premium** (Abschnitt 2 Nr. 1) bestätigen.~~ Erledigt: gratis (Gründer-Entscheidung 26.10.2026).

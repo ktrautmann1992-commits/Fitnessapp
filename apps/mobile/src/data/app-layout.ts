@@ -14,6 +14,8 @@ export function appLayoutRowFromDb(row: unknown): AppLayoutRow | null {
     tab_bar: value.tab_bar,
     // Spalte seit 22.10.2026 (vor `db-migrate` fehlt sie → Standard).
     ...(typeof value.step_goal === 'number' ? { step_goal: value.step_goal } : {}),
+    // Spalte seit 26.10.2026 (vor `db-migrate` fehlt sie → ältere Fassung).
+    ...(typeof value.layout_version === 'number' ? { layout_version: value.layout_version } : {}),
   });
   if (!parsed.success || typeof value.user_id !== 'string') return null;
   return { user_id: value.user_id, ...parsed.data };

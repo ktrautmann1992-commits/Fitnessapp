@@ -288,23 +288,13 @@ describe('recoveryTrend', () => {
   });
 });
 
-describe('recoveryOffer – nie Pflicht, nur mit Live-Anpassung', () => {
-  it('nur niedrig + offene Einheit heute + berechtigt → „leichter“', () => {
-    expect(recoveryOffer({ status: 'low', plannedSessionOpenToday: true, entitled: true })).toBe(
-      'lighter',
-    );
+describe('recoveryOffer – nie Pflicht, gratis für alle (Gründer-Entscheidung 26.10.2026)', () => {
+  it('nur niedrig + offene Einheit heute → „leichter“, ohne Premium-Prüfung', () => {
+    expect(recoveryOffer({ status: 'low', plannedSessionOpenToday: true })).toBe('lighter');
     for (const status of ['good', 'medium', 'unknown'] as const) {
-      expect(recoveryOffer({ status, plannedSessionOpenToday: true, entitled: true })).toBe(
-        'as_planned',
-      );
+      expect(recoveryOffer({ status, plannedSessionOpenToday: true })).toBe('as_planned');
     }
-    expect(recoveryOffer({ status: 'low', plannedSessionOpenToday: false, entitled: true })).toBe(
-      'as_planned',
-    );
-    // Gratis (ohne Live-Anpassung): Status sichtbar, aber kein Angebot.
-    expect(recoveryOffer({ status: 'low', plannedSessionOpenToday: true, entitled: false })).toBe(
-      'as_planned',
-    );
+    expect(recoveryOffer({ status: 'low', plannedSessionOpenToday: false })).toBe('as_planned');
   });
 });
 

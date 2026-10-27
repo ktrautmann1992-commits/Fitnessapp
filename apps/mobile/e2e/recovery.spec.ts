@@ -9,8 +9,8 @@ import { heading, onboard } from './plan-helpers';
  * mit der Beispiel-Uhr (21 Tage Schlaf/Ruhepuls/HRV; heute kurze Nacht, Ruhepuls höher, HRV niedriger → „niedrig“):
  * ohne Uhr Leerzustand mit „Uhr verbinden“ (eine Zeile, wie der Knopf der Kachel „Schritte“) → Beispiel-Uhr verbinden →
  * Kachel „Erholung“ mit Status, Gründen und 7-Tage-Verlauf → Smartwatch-Seite mit Werten und Regeln → „Heute“: Angebot
- * „Leichter trainieren“ / „Wie geplant“ (nie automatisch) → Trainingsmodus mit leichterer Vorgabe; ohne Live-Anpassung
- * nur der Hinweis. Fester Tag: Mittwoch, 28.10.2026 (Training Mo/Mi/Fr).
+ * „Leichter trainieren“ / „Wie geplant“ (nie automatisch) → Trainingsmodus mit leichterer Vorgabe; das Angebot ist
+ * gratis, auch ohne Live-Anpassung (Gründer-Entscheidung 26.10.2026). Fester Tag: Mittwoch, 28.10.2026 (Training Mo/Mi/Fr).
  */
 
 const WEDNESDAY = new Date('2026-10-28T09:00:00+01:00');
@@ -37,7 +37,7 @@ async function setup(page: Page) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function connectDemoWatch(page: Page) {
@@ -165,14 +165,14 @@ test('Erholung: Leerzustand → Beispiel-Uhr → Kachel „niedrig“ mit 7-Tage
   await shot(page, 'smartwatch-erholung', 'recovery-details');
 });
 
-test('Heute: Angebot „Leichter trainieren“ → leichtere Vorgabe im Training; „Wie geplant“; ohne Live-Anpassung nur Hinweis', async ({
+test('Heute: Angebot „Leichter trainieren“ → leichtere Vorgabe im Training; „Wie geplant“', async ({
   page,
 }) => {
   test.setTimeout(150_000);
   await setup(page);
   await connectDemoWatch(page);
 
-  // Live-Anpassung im Testmodus standardmäßig an → Angebot mit zwei Knöpfen, nichts automatisch.
+  // Angebot mit zwei Knöpfen, nichts automatisch.
   await page.goto('/today');
   await answerCrossDay(page);
   const offer = page.getByTestId('recovery-today-offer');
@@ -209,8 +209,8 @@ test('Heute: Angebot „Leichter trainieren“ → leichtere Vorgabe im Training
   // Training begonnen (Entwurf) → Wahl fest, kein „Doch wie geplant“ mehr. (In der App zurück – die Wahl liegt nur im
   // Arbeitsspeicher; nach einem Neuladen fragt die Karte nicht erneut, der Entwurf behält die leichtere Vorgabe.)
   await page.getByTestId('workout-done-0-0').click();
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).click();
-  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Zurück zum Training' }).click();
+  await heading(page, 'Training');
   await expect(page.getByTestId('recovery-today-chosen')).toBeVisible();
   await expect(page.getByTestId('recovery-today-undo')).toHaveCount(0);
 
@@ -218,13 +218,13 @@ test('Heute: Angebot „Leichter trainieren“ → leichtere Vorgabe im Training
   expect(await plannedSetsOfFirstExercise(page)).toBe(planned);
 });
 
-test('Ohne Live-Anpassung (Gratis): Status sichtbar, nur Hinweis, kein Angebot', async ({
+test('Ohne Live-Anpassung (Gratis): Angebot „Leichter trainieren“ trotzdem da (Gründer-Entscheidung 26.10.2026)', async ({
   page,
 }) => {
   test.setTimeout(150_000);
   await setup(page);
   await connectDemoWatch(page);
-  await page.goto('/settings');
+  await page.goto('/settings?thema=training');
   const box = page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' });
   await expect(box).toBeVisible();
   if ((await box.getAttribute('aria-checked')) !== 'false') await box.click();
@@ -232,10 +232,12 @@ test('Ohne Live-Anpassung (Gratis): Status sichtbar, nur Hinweis, kein Angebot',
 
   await page.goto('/today');
   await answerCrossDay(page);
-  await expect(page.getByTestId('recovery-today-info')).toContainText('Erholung heute: niedrig');
-  await expect(page.getByTestId('recovery-today-offer')).toHaveCount(0);
-  await expect(page.getByTestId('recovery-today-lighter')).toHaveCount(0);
-  await shot(page, 'heute-gratis-hinweis', 'recovery-today-info');
+  await expect(page.getByTestId('recovery-today-offer')).toContainText(
+    'Heute leichter trainieren?',
+  );
+  await expect(page.getByTestId('recovery-today-lighter')).toBeVisible();
+  await expect(page.getByTestId('recovery-today-planned')).toBeVisible();
+  await shot(page, 'heute-gratis-angebot', 'recovery-today-offer');
   // Status auf der Übersicht bleibt gratis.
   await page.goto('/uebersicht');
   await expect(page.getByTestId('overview-recovery-status')).toHaveText('niedrig');

@@ -43,7 +43,7 @@ async function onboardStudio(page: Page) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.goto('/uebersicht');
   await expect(page.getByTestId('overview-header')).toBeVisible();
 }
@@ -66,41 +66,39 @@ async function tileOrder(page: Page): Promise<string[]> {
   return found.sort((a, b) => a.y - b.y).map((f) => f.id);
 }
 
-test('Übersicht bearbeiten: ausblenden, verschieben mit Ansage, bleibt nach dem Neuladen, zurücksetzen', async ({
+test('Kacheln anpassen: ein-/ausblenden, verschieben mit Ansage, bleibt nach dem Neuladen, zurücksetzen', async ({
   page,
 }) => {
   test.setTimeout(120_000);
   await onboardStudio(page);
-  // „Mein Wettkampf“ steht im Standard direkt unter „Training heute“ (Gründer-Rückmeldung 20.10.2026).
+  // Standard seit „App verschlanken“ (26.10.2026): Training heute, Deine Woche, Ernährung … Wettkampf; Workouts,
+  // Körperdaten und „Schnell zu“ ausgeblendet (über „Kacheln anpassen“ wieder einblendbar).
   expect(await tileOrder(page)).toEqual([
     'overview-training',
-    'overview-competition',
-    'overview-nutrition',
-    'overview-body',
     'overview-progress',
+    'overview-nutrition',
+    'overview-competition',
   ]);
-  // Workouts-Kachel (Workout-Bibliothek) ist eine Kachel wie die anderen.
-  await expect(page.getByTestId('tile-workouts')).toBeVisible();
+  await expect(page.getByTestId('tile-workouts')).toHaveCount(0);
+  await expect(page.getByTestId('overview-body')).toHaveCount(0);
+  // „Kacheln anpassen“ steht auch unten auf der Seite.
+  await expect(page.getByTestId('overview-edit-bottom')).toBeVisible();
   await page.getByTestId('overview-edit-open').click();
   await expect(page.getByTestId('overview-edit')).toBeVisible();
   // Erste Kachel: „Nach oben“ geht nicht; letzte: „Nach unten“ geht nicht.
   await expect(page.getByTestId('overview-edit-up-training')).toBeDisabled();
   await expect(page.getByTestId('overview-edit-down-shortcuts')).toBeDisabled();
 
-  // Körperdaten ausblenden.
+  // Körperdaten einblenden.
   await page.getByRole('checkbox', { name: 'Körperdaten anzeigen' }).click();
-  await expect(page.getByTestId('overview-body')).toHaveCount(0);
-  await expect(page.getByTestId('overview-edit-live')).toHaveText('Körperdaten ist ausgeblendet.');
+  await expect(page.getByTestId('overview-body')).toBeVisible();
+  await expect(page.getByTestId('overview-edit-live')).toHaveText('Körperdaten wird angezeigt.');
 
   // „Mein Wettkampf“ ausblenden (ein-/ausblendbar wie alle Kacheln).
   await page.getByRole('checkbox', { name: 'Mein Wettkampf anzeigen' }).click();
   await expect(page.getByTestId('overview-competition')).toHaveCount(0);
 
-  // Ernährung dreimal nach oben (Knopf mit Namen für den Bildschirmleser), Ansage der neuen Stelle.
-  await page.getByRole('button', { name: 'Ernährung heute nach oben' }).click();
-  await expect(page.getByTestId('overview-edit-live')).toHaveText(
-    'Ernährung heute ist jetzt an Stelle 3 von 10.',
-  );
+  // Ernährung zweimal nach oben (Knopf mit Namen für den Bildschirmleser), Ansage der neuen Stelle.
   await page.getByRole('button', { name: 'Ernährung heute nach oben' }).click();
   await expect(page.getByTestId('overview-edit-live')).toHaveText(
     'Ernährung heute ist jetzt an Stelle 2 von 10.',
@@ -111,37 +109,27 @@ test('Übersicht bearbeiten: ausblenden, verschieben mit Ansage, bleibt nach dem
   );
   await page.getByTestId('overview-edit-done').click();
   await expect(page.getByTestId('overview-edit')).toHaveCount(0);
-  expect(await tileOrder(page)).toEqual([
-    'overview-nutrition',
-    'overview-training',
-    'overview-progress',
-  ]);
+  const changed = ['overview-nutrition', 'overview-training', 'overview-progress', 'overview-body'];
+  expect(await tileOrder(page)).toEqual(changed);
 
   // Neu laden → bleibt.
   await page.reload();
   await expect(page.getByTestId('overview-header')).toBeVisible();
-  expect(await tileOrder(page)).toEqual([
-    'overview-nutrition',
-    'overview-training',
-    'overview-progress',
-  ]);
+  expect(await tileOrder(page)).toEqual(changed);
 
   // Alle aus → Hinweis; zurücksetzen holt den Standard.
   await page.getByTestId('overview-edit-open').click();
   for (const name of [
-    'Training heute',
-    'Workouts',
     'Ernährung heute',
-    'Fortschritt',
+    'Training heute',
+    'Deine Woche',
     'Ausdauer',
     'Schritte',
     'Erholung',
-    'Schnell zu',
+    'Körperdaten',
   ]) {
     await page.getByRole('checkbox', { name: `${name} anzeigen` }).click();
   }
-  await expect(page.getByTestId('overview-recipes')).toHaveCount(0);
-  await expect(page.getByTestId('tile-workouts')).toHaveCount(0);
   await page.getByTestId('overview-edit-done').click();
   await expect(page.getByTestId('overview-all-hidden')).toContainText(
     'Alle Kacheln sind ausgeblendet.',
@@ -150,15 +138,14 @@ test('Übersicht bearbeiten: ausblenden, verschieben mit Ansage, bleibt nach dem
   await page.getByTestId('overview-edit-open').click();
   await page.getByTestId('overview-edit-reset').click();
   await expect(page.getByTestId('overview-edit-live')).toHaveText(
-    'Übersicht und Menüleiste sind wieder wie am Anfang.',
+    'Kacheln und Menüleiste sind wieder wie am Anfang.',
   );
   await page.getByTestId('overview-edit-done').click();
   expect(await tileOrder(page)).toEqual([
     'overview-training',
-    'overview-competition',
-    'overview-nutrition',
-    'overview-body',
     'overview-progress',
+    'overview-nutrition',
+    'overview-competition',
   ]);
 });
 
@@ -167,32 +154,32 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
 }) => {
   test.setTimeout(120_000);
   await onboardStudio(page);
-  expect(await tabs(page)).toEqual([
-    'Übersicht',
-    'Training',
-    'Workouts',
-    'Ernährung',
-    'Einkaufen',
-    'Mehr',
-  ]);
+  expect(await tabs(page)).toEqual(['Heute', 'Training', 'Ernährung', 'Einkaufen', 'Mehr']);
 
-  // Aus „Mehr“ öffnen.
+  // Aus „Mehr“ öffnen; Fortschritt liegt unter „Mehr“ → „Mehr“ bleibt markiert.
   await tabBar(page).getByRole('tab', { name: 'Mehr', exact: true }).click();
   await page.getByTestId('more-area-fortschritt').click();
   await heading(page, 'Fortschritt');
-  await expect(tabBar(page).locator('[aria-selected="true"]')).toHaveCount(0);
+  await expect(tabBar(page).locator('[aria-selected="true"]')).toHaveAttribute(
+    'aria-label',
+    'Mehr',
+  );
   await page.goto('/mehr');
   await page.getByTestId('more-menu-bar').click();
   await heading(page, 'Menüleiste anpassen');
   await expect(page.getByTestId('menu-bar-area-uebersicht')).toContainText('Immer dabei');
   await expect(page.getByTestId('menu-bar-area-mehr')).toContainText('Immer dabei');
 
-  // Schon 6 Knöpfe → Fortschritt geht nicht dazu, mit Grund.
+  // Workouts als 6. Knopf dazu (vor „Mehr“), dann ist voll → Fortschritt geht nicht dazu, mit Grund.
+  await page.getByRole('checkbox', { name: 'Workouts in der Menüleiste' }).click();
+  await expect(page.getByTestId('menu-bar-live')).toHaveText(
+    'Workouts ist jetzt in der Menüleiste.',
+  );
   await page.getByRole('checkbox', { name: 'Fortschritt in der Menüleiste' }).click();
   await expect(page.getByTestId('menu-bar-message')).toContainText(
     'Höchstens 6 Knöpfe – nimm erst einen heraus.',
   );
-  // Workouts heraus (steht dann unter „Mehr“), Fortschritt dazu → wieder 6 Knöpfe (vor „Mehr“).
+  // Workouts heraus (steht dann im Training), Fortschritt dazu → wieder 6 Knöpfe (vor „Mehr“).
   await page.getByRole('checkbox', { name: 'Workouts in der Menüleiste' }).click();
   await expect(page.getByTestId('menu-bar-live')).toHaveText('Workouts ist jetzt unter „Mehr“.');
   await page.getByRole('checkbox', { name: 'Fortschritt in der Menüleiste' }).click();
@@ -200,19 +187,18 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
     'Fortschritt ist jetzt in der Menüleiste.',
   );
   expect(await preview(page)).toEqual([
-    'Übersicht',
+    'Heute',
     'Training',
     'Ernährung',
     'Einkaufen',
     'Fortschritt',
     'Mehr',
   ]);
-
   // Einkaufen nach links → Ansage, neue Reihenfolge.
   await page.getByRole('button', { name: 'Einkaufen nach links' }).click();
   await expect(page.getByTestId('menu-bar-live')).toHaveText('Einkaufen ist jetzt Knopf 3 von 6.');
   expect(await preview(page)).toEqual([
-    'Übersicht',
+    'Heute',
     'Training',
     'Einkaufen',
     'Ernährung',
@@ -242,16 +228,18 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
   for (const name of ['Einkaufen', 'Ernährung', 'Fortschritt']) {
     await page.getByRole('checkbox', { name: `${name} in der Menüleiste` }).click();
   }
-  expect(await preview(page)).toEqual(['Übersicht', 'Training', 'Mehr']);
+  expect(await preview(page)).toEqual(['Heute', 'Training', 'Mehr']);
   await page.getByRole('checkbox', { name: 'Training in der Menüleiste' }).click();
   await expect(page.getByTestId('menu-bar-message')).toContainText('Mindestens 3 Knöpfe');
-  expect(await preview(page)).toEqual(['Übersicht', 'Training', 'Mehr']);
+  expect(await preview(page)).toEqual(['Heute', 'Training', 'Mehr']);
 
   // Ausgeblendete Bereiche stehen unter „Mehr“ und funktionieren (auch nach dem Neuladen).
   await page.goto('/mehr');
   await heading(page, 'Mehr');
-  expect(await tabs(page)).toEqual(['Übersicht', 'Training', 'Mehr']);
-  for (const area of ['workouts', 'ernaehrung', 'einkaufsliste', 'wettkampf', 'fortschritt']) {
+  expect(await tabs(page)).toEqual(['Heute', 'Training', 'Mehr']);
+  // Workouts gehören zum Training (Umschalter) – solange „Training“ einen Knopf hat, nicht doppelt unter „Mehr“.
+  await expect(page.getByTestId('more-area-workouts')).toHaveCount(0);
+  for (const area of ['ernaehrung', 'einkaufsliste', 'wettkampf', 'fortschritt']) {
     await expect(page.getByTestId(`more-area-${area}`)).toBeVisible();
   }
   await page.getByTestId('more-area-einkaufsliste').click();
@@ -264,7 +252,7 @@ test('Menüleiste anpassen: 6. Knopf, Regeln mit Grund, verschieben, ausgeblende
   await expect(page.getByTestId('menu-bar-live')).toHaveText(
     'Die Menüleiste ist wieder wie am Anfang.',
   );
-  const standard = ['Übersicht', 'Training', 'Workouts', 'Ernährung', 'Einkaufen', 'Mehr'];
+  const standard = ['Heute', 'Training', 'Ernährung', 'Einkaufen', 'Mehr'];
   expect(await preview(page)).toEqual(standard);
   await page.getByTestId('menu-bar-done').click();
   expect(await tabs(page)).toEqual(standard);

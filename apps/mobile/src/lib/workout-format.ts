@@ -4,7 +4,7 @@ import { type DraftTarget, draftTargetFrom } from '@/data/workout-draft';
 import { t } from '@/i18n';
 
 import { formatDecimal, formatKg } from './format';
-import { repsRange, reserveFromRpe, restText } from './plan-format';
+import { buildSummary, type ExerciseSummary, repsRange, reserveFromRpe } from './plan-format';
 
 /**
  * Anzeige-Texte des Trainingsmodus (rein, getestet in workout-format.test.ts). Keine Fachlogik: Vorgabe und Hinweis
@@ -80,11 +80,42 @@ export function hintText(target: Pick<DraftTarget, 'hint' | 'harderVariantName'>
   }
 }
 
-/** Zeilen für „Heute“: berechnete Vorgabe, Hinweise und Pause (null = Übung nicht prüfbar → Plan-Dosierung). */
-export function workoutTargetLines(item: WorkoutItem): string[] | null {
+/**
+ * Übung für die kompakte Liste auf „Heute“ (Entwurf B): berechnete Vorgabe, Gewicht bzw. „Gewicht selbst finden“,
+ * Pause, Reserve und die übrigen Hinweise (null = Übung nicht prüfbar → Plan-Dosierung).
+ */
+export function workoutTargetSummary(item: WorkoutItem): ExerciseSummary | null {
   if (!item.plan) return null;
-  const target = draftTargetFrom(item.plan, item.shown);
-  return [targetText(target), ...targetNotes(target), t.plan.rest(restText(item.shown.rest_s))];
+  return targetSummary(draftTargetFrom(item.plan, item.shown), item.shown.rest_s);
+}
+
+/** Kern von workoutTargetSummary (rein, getestet): Vorgabe + Pause der angezeigten Übung. */
+export function targetSummary(target: DraftTarget, restSeconds: number): ExerciseSummary {
+  const tg = target.targets;
+  const hold = target.loadType === 'time' && tg.target_duration_s !== null;
+  const needsWeight = target.loadType === 'weight' && tg.target_weight_kg === null;
+  const notes: string[] = [];
+  if (!needsWeight && target.source === 'start_weight') notes.push(t.workout.fromStartWeight);
+  if (tg.is_return) notes.push(t.workout.returnAfterPause);
+  const hint = hintText(target);
+  if (hint) notes.push(hint);
+  return buildSummary({
+    sets: tg.target_sets ?? 1,
+    reps: hold
+      ? null
+      : tg.target_reps !== null
+        ? String(tg.target_reps)
+        : repsRange(tg.reps_min ?? 0, tg.reps_max ?? tg.reps_min ?? 0),
+    holdSeconds: hold ? tg.target_duration_s : null,
+    restSeconds,
+    reserve: tg.target_rpe !== null ? reserveFromRpe(tg.target_rpe) : null,
+    weight:
+      target.loadType === 'weight' && tg.target_weight_kg !== null
+        ? weightText(tg.target_weight_kg, perPieceText(target))
+        : null,
+    findWeight: needsWeight ? (target.chooseLightest ? 'lightest' : 'find') : null,
+    notes,
+  });
 }
 
 /** Pace bzw. Geschwindigkeit (live beim Ausdauer-Eintrag): Anzeige und Bildschirmleser (km ausgeschrieben, 6.5). */

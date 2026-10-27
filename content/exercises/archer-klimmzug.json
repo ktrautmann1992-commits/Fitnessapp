@@ -1,0 +1,52 @@
+{
+  "id": "archer-klimmzug",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Archer-Klimmzug",
+  "name_en": "Archer Pull-up",
+  "aliases_de": ["Bogenschützen-Klimmzug"],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["biceps", "upper_back", "forearms"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 3,
+  "caution_tags": ["high_skill"],
+  "description_de": "Sehr weiter Griff: Ein Arm zieht, der andere bleibt fast gestreckt und hilft nur mit. Zwischenschritt zwischen sauberem Klimmzug und einarmigem Klimmzug.",
+  "steps_de": [
+    "Stange deutlich weiter als schulterbreit greifen.",
+    "Zu einer Hand hochziehen: dieser Arm beugt sich, der andere bleibt fast gestreckt.",
+    "Kinn über die Stange neben der ziehenden Hand.",
+    "Langsam absenken und die Seite wechseln."
+  ],
+  "tips_de": [
+    "Leichter: der helfende Arm darf etwas mehr beugen.",
+    "Wiederholungen je Seite zählen."
+  ],
+  "common_mistakes_de": ["Körper dreht sich stark ein.", "Schwung aus den Beinen."],
+  "safety_note_de": "Stange vorher auf festen Sitz prüfen und nur mit sicherem Griff hängen. Kontrolliert ab- und aufsteigen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "klimmzug",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "einarmiger-klimmzug-negativ",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "australian-pull-up",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "australian-pull-up-start.svg",
+      "alt_de": "Ausgangsposition: rücklings unter einer Stange auf Hüfthöhe, Hände greifen schulterbreit, Arme gestreckt, Fersen am Boden, Körper gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

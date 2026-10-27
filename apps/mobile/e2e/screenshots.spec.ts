@@ -183,7 +183,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await expect(page.getByTestId('done-plan')).toBeVisible();
     await shot('fertig');
     await page.getByRole('button', { name: 'Zum Plan' }).click();
-    await heading('Heute');
+    await heading('Training');
     await shot('heute');
     await page.getByTestId('plan-week').scrollIntoViewIfNeeded();
     await shot('heute-woche');
@@ -202,6 +202,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByTestId('day-sheet-close').click();
     await page.getByTestId('plan-medical-notice').scrollIntoViewIfNeeded();
     await shot('heute-kraft');
+    await page.getByTestId('plan-info-toggle').click();
     await page.getByTestId('plan-notes').scrollIntoViewIfNeeded();
     await shot('heute-hinweise');
     // Ausdauer-Eintrag (Etappe C2): Montag ist der Ausdauer-Tag.
@@ -219,11 +220,11 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByTestId('workout-effort-3').click();
     await shot('ausdauer-abschluss');
     await page.getByTestId('workout-save').click();
-    await heading('Heute');
+    await heading('Training');
     // Trainingsmodus (Phase 4, Etappe C1): Mittwoch ist der Kraft-Tag.
     await page.clock.setFixedTime(new Date('2026-10-07T09:00:00+02:00'));
     await page.goto('/today');
-    await heading('Heute');
+    await heading('Training');
     await page.getByTestId('workout-start').click();
     await expect(page.getByTestId('workout-exercise-0')).toBeVisible();
     await shot('training-start');
@@ -241,10 +242,10 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByTestId('workout-effort-6').click();
     await shot('training-abschluss');
     await page.getByTestId('workout-save').click();
-    await heading('Heute');
+    await heading('Training');
     await shot('heute-erledigt');
     // Woche, Verlauf, Eintrag (Etappe D).
-    await page.getByTestId('today-week').click();
+    await page.goto('/week');
     await heading('Deine Woche');
     await shot('woche');
     await page.getByTestId('week-summary').scrollIntoViewIfNeeded();
@@ -280,12 +281,16 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByRole('button', { name: 'Abbrechen' }).click();
     await page.goto('/settings');
     await heading('Einstellungen');
+    await shot('einstellungen-themen');
+    await page.goto('/settings?thema=konto');
+    await heading('Konto, Daten & Einwilligungen');
     await shot('einstellungen');
     await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
     await shot('widerruf-dialog');
     await page.getByRole('button', { name: 'Abbrechen' }).click();
     // Ernährung (Phase 5, Etappe N4): Karte „Essen heute“, Tag, Rezept, Einstellungen – mit Beispiel-Rezepten
     // (Testwerte), solange der echte Katalog fehlt.
+    await page.goto('/settings?thema=ernaehrung');
     await page.getByTestId('settings-nutrition-open').scrollIntoViewIfNeeded();
     await shot('einstellungen-ernaehrung');
     await page.goto('/ernaehrung');
@@ -309,12 +314,12 @@ for (const scheme of ['light', 'dark'] as const) {
     await shot('rezept');
     await page.getByTestId('recipe-contains').scrollIntoViewIfNeeded();
     await shot('rezept-enthaelt');
-    await page.goto('/today');
-    await heading('Heute');
-    await page.getByTestId('today-nutrition-card').scrollIntoViewIfNeeded();
+    await page.goto('/uebersicht');
+    await page.getByTestId('overview-nutrition').scrollIntoViewIfNeeded();
     await shot('heute-essen');
     // „Dein Tag“ (Etappe A2): heute neutral „Noch offen“, nach allen Mahlzeiten grün, Training.
-    await page.getByTestId('today-day').click();
+    await page.goto('/fortschritt');
+    await page.getByTestId('progress-day').click();
     await expect(page.getByTestId('day')).toBeVisible();
     await shot('dein-tag');
     const eaten = page.getByTestId('day-food').getByTestId(/^eaten-(?!done|undo)/);

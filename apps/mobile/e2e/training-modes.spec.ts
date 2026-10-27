@@ -26,7 +26,7 @@ const GYM_3_DAYS: Person = {
 
 async function toToday(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function exerciseNames(page: Page): Promise<string[]> {
@@ -41,9 +41,21 @@ async function shot(page: Page, testId: string, name: string) {
 }
 
 async function openSettingsEntry(page: Page, testId: string, title: string) {
-  await page.goto('/settings');
+  await page.goto('/settings?thema=training');
   await page.getByTestId(testId).click();
   await heading(page, title);
+}
+
+/**
+ * Gratis-Weg (Gründer-Entscheidung 26.10.2026: Schon- und Reise-Modus sind gratis): im Testmodus den Schalter
+ * „Live-Anpassung einschalten (Testmodus)“ ausschalten, damit kein Premium-Zugang im Spiel ist.
+ */
+async function withoutPremium(page: Page) {
+  await page.goto('/settings?thema=training');
+  const box = page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' });
+  await expect(box).toBeVisible();
+  if ((await box.getAttribute('aria-checked')) !== 'false') await box.click();
+  await expect(box).toHaveAttribute('aria-checked', 'false');
 }
 
 test.beforeEach(async ({ page }) => {
@@ -62,6 +74,7 @@ test('Schon-Modus: Körperkarte, Tausch ohne Knie-Übungen, Arzt-Hinweis bei „
   await toToday(page);
   const before = await exerciseNames(page);
   expect(before.some((name) => /Kniebeuge|Ausfallschritt|Beinpresse/.test(name))).toBe(true);
+  await withoutPremium(page);
 
   await openSettingsEntry(page, 'settings-pain-mode', 'Schmerz-/Verletzungsmodus');
   await expect(page.getByTestId('pain-disclaimer')).toContainText('ersetzt keinen ärztlichen Rat');
@@ -91,7 +104,7 @@ test('Schon-Modus: Körperkarte, Tausch ohne Knie-Übungen, Arzt-Hinweis bei „
 
   // „Heute“: Banner, Hinweise, keine Kniebeugen/Ausfallschritte/Beinpresse, Kennzeichen „heute geschont“.
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('modes-banner-pain')).toContainText('Schon-Modus bis 13.10.2026');
   await expect(page.getByTestId('modes-banner-pain')).toContainText('Geschont: Knie');
   await expect(page.getByTestId('session-mode-notice-pain_active')).toBeVisible();
@@ -199,11 +212,12 @@ test('Reise-Modus: Banner, Körpergewicht-Übungen, 30 Minuten, Schlingentrainer
   await onboard(page, GYM_3_DAYS);
   await toToday(page);
   const before = await exerciseNames(page);
+  await withoutPremium(page);
 
   await openSettingsEntry(page, 'settings-travel-mode', 'Reise-Modus');
   await page.getByTestId('travel-equipment-suspension_trainer').click();
   await expect(page.getByTestId('travel-suspension-note')).toContainText(
-    'noch keine eigenen Übungen',
+    'stellt deine Einheiten auf Schlingentrainer-Übungen um',
   );
   await page.getByTestId('travel-equipment-bodyweight').click();
   await page.getByTestId('travel-minutes-30').click();
@@ -218,7 +232,7 @@ test('Reise-Modus: Banner, Körpergewicht-Übungen, 30 Minuten, Schlingentrainer
   await expect(page.getByTestId('travel-item')).toContainText('Nur Körpergewicht');
 
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('modes-banner-travel')).toContainText('Reise-Modus bis 13.10.2026');
   await expect(page.getByTestId('modes-banner-travel')).toContainText('höchstens 30 min');
   await expect(page.getByText('für die Reise getauscht').first()).toBeVisible();
@@ -248,7 +262,7 @@ test('Aufwärmen & Dehnen: Block vor und nach dem Training, Überspringen, Schal
 }) => {
   await onboard(page, GYM_3_DAYS);
   await toToday(page);
-  await expect(page.getByTestId('plan-warmup')).toContainText('Aufwärmen (ca.');
+  await expect(page.getByTestId('plan-warmup')).toContainText(/Aufwärmen\s*ca\. \d+ Min/);
   await page.getByTestId('workout-start').click();
   const warmup = page.getByTestId('workout-warmup');
   await expect(warmup).toContainText('Aufwärmen');
@@ -263,11 +277,11 @@ test('Aufwärmen & Dehnen: Block vor und nach dem Training, Überspringen, Schal
   await expect(page.getByTestId('workout-warmup-item').first()).toBeVisible();
 
   // Schalter aus → kein Block mehr.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=training');
   await page.getByTestId('settings-warmup').click();
   await page.goto('/today');
-  await heading(page, 'Heute');
-  await expect(page.getByTestId('plan-warmup')).not.toContainText('Aufwärmen (ca.');
+  await heading(page, 'Training');
+  await expect(page.getByTestId('plan-warmup')).not.toContainText(/Aufwärmen\s*ca\. \d+ Min/);
   await page.getByTestId('workout-start').click();
   await expect(page.getByTestId('workout-exercise-0')).toBeVisible();
   await expect(page.getByTestId('workout-warmup')).toHaveCount(0);

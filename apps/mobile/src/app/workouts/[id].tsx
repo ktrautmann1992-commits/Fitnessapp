@@ -128,7 +128,9 @@ export default function WorkoutDetailScreen() {
       }
     >
       <StarRating difficulty={workout.difficulty} size="lg" testID="workout-detail-stars" />
-      {!workout.meta.expert_reviewed ? (
+      {workout.status === 'draft' ? (
+        <Notice testID="workout-test-content">{t.workouts.testContent}</Notice>
+      ) : !workout.meta.expert_reviewed ? (
         <Notice testID="workout-testphase">{t.workouts.testPhase}</Notice>
       ) : null}
       <Body>{workout.summary_de}</Body>

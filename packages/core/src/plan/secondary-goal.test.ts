@@ -218,8 +218,8 @@ describe('Vorlage folgt dem Hauptziel, Muster für beide Ziele (4.3, Wächter S1
         }
       }
     }
-    // 6 Einzelziele (inkl. Fit im Alter, FA1) + 11 Paare.
-    expect(SELECTIONS).toHaveLength(17);
+    // 7 Einzelziele (inkl. Fit im Alter, FA1, und Calisthenics) + 12 Paare.
+    expect(SELECTIONS).toHaveLength(19);
     expect(checked).toBe(SELECTIONS.length * 3 * 3 * 5);
   }, 120_000);
 

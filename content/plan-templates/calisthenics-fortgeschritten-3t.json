@@ -1,0 +1,271 @@
+{
+  "id": "calisthenics-fortgeschritten-3t",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Calisthenics · Fortgeschritten · 3 Tage",
+  "description_de": "Drei Ganzkörper-Einheiten pro Woche an Klimmzugstange und Barren (optional Parallettes oder Ringe), je 45–75 Minuten. Ziel Körperbeherrschung: saubere Klimmzüge und Dips, schwerere Liegestütz- und Kniebeuge-Stufen sowie Körperspannung für L-Sitz und Hebel. Skills wie Handstand, Muscle-up oder Front Lever kommen über die Skill-Pfade dazu, sobald die Voraussetzungen erfüllt sind.",
+  "goal_type": "calisthenics",
+  "experience_level": "advanced",
+  "sessions_per_week": 3,
+  "minutes_min": 45,
+  "minutes_max": 75,
+  "location": "home",
+  "required_equipment_ids": ["pull_up_bar", "dip_station"],
+  "optional_equipment_ids": ["parallettes", "gymnastic_rings"],
+  "sex": null,
+  "sessions": [
+    {
+      "day_index": 1,
+      "name_de": "Zug und Beine",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen, dann Handgelenke, Schultern und Hüfte kreisen und 2 leichte Sätze der ersten Übung.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "klimmzug",
+          "sets": 4,
+          "reps_min": 5,
+          "reps_max": 8,
+          "duration_s": null,
+          "rest_s": 150,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Stufe wechseln über „Skill-Pfade“, wenn das Ziel zweimal sauber gelingt."
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "dips-barren",
+          "sets": 3,
+          "reps_min": 6,
+          "reps_max": 10,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Stufe wechseln über „Skill-Pfade“, wenn das Ziel zweimal sauber gelingt."
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "pistol-kniebeuge-kasten",
+          "sets": 3,
+          "reps_min": 5,
+          "reps_max": 8,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "liegestuetz-fuesse-erhoeht",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "nordic-curl-assistiert",
+          "sets": 3,
+          "reps_min": 4,
+          "reps_max": 6,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "l-sitz-gehockt",
+          "sets": 3,
+          "reps_min": null,
+          "reps_max": null,
+          "duration_s": 15,
+          "rest_s": 90,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Halten, solange die Spannung sauber bleibt."
+        }
+      ]
+    },
+    {
+      "day_index": 2,
+      "name_de": "Druck und Hüfte",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen, dann Handgelenke, Schultern und Hüfte kreisen und 2 leichte Sätze der ersten Übung.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "diamant-liegestuetz",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Stufe wechseln über „Skill-Pfade“, wenn das Ziel zweimal sauber gelingt."
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "chin-up",
+          "sets": 3,
+          "reps_min": 5,
+          "reps_max": 8,
+          "duration_s": null,
+          "rest_s": 150,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "bulgarische-split-kniebeuge-stuhl",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 10,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "pike-liegestuetz",
+          "sets": 3,
+          "reps_min": 6,
+          "reps_max": 10,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Stufe wechseln über „Skill-Pfade“, wenn das Ziel zweimal sauber gelingt."
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "glute-bridge-einbeinig",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "hollow-body-halten",
+          "sets": 3,
+          "reps_min": null,
+          "reps_max": null,
+          "duration_s": 20,
+          "rest_s": 60,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Halten, solange die Spannung sauber bleibt."
+        }
+      ]
+    },
+    {
+      "day_index": 3,
+      "name_de": "Ganzkörper",
+      "focus": "full_body",
+      "warmup_de": "5 Minuten locker aufwärmen, dann Handgelenke, Schultern und Hüfte kreisen und 2 leichte Sätze der ersten Übung.",
+      "cooldown_de": "3–5 Minuten locker ausklingen lassen und ruhig atmen; optional die trainierten Muskeln leicht dehnen.",
+      "exercises": [
+        {
+          "order_no": 1,
+          "exercise_id": "archer-liegestuetz",
+          "sets": 3,
+          "reps_min": 5,
+          "reps_max": 8,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        },
+        {
+          "order_no": 2,
+          "exercise_id": "klimmzug",
+          "sets": 3,
+          "reps_min": 5,
+          "reps_max": 8,
+          "duration_s": null,
+          "rest_s": 150,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 3,
+          "exercise_id": "dips-barren",
+          "sets": 3,
+          "reps_min": 6,
+          "reps_max": 10,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        },
+        {
+          "order_no": 4,
+          "exercise_id": "pistol-kniebeuge-halt",
+          "sets": 3,
+          "reps_min": 6,
+          "reps_max": 8,
+          "duration_s": null,
+          "rest_s": 120,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        },
+        {
+          "order_no": 5,
+          "exercise_id": "rdl-einbeinig-koerpergewicht",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 10,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": "Wiederholungen je Seite."
+        },
+        {
+          "order_no": 6,
+          "exercise_id": "knieheben-haengend",
+          "sets": 3,
+          "reps_min": 8,
+          "reps_max": 12,
+          "duration_s": null,
+          "rest_s": 90,
+          "rpe_target": 8,
+          "superset_group": null,
+          "notes_de": null
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2.4) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

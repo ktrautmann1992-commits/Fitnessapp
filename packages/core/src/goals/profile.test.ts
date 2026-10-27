@@ -48,6 +48,8 @@ const ALLOWED = [
   'endurance>muscle_gain',
   // Fit im Alter (FA1, FA-G6): nur Abnehmen als Nebenziel.
   'active_aging>fat_loss',
+  // Calisthenics (docs/PLAN-CALISTHENICS-SCHLINGE.md 2): nur Abnehmen als Nebenziel.
+  'calisthenics>fat_loss',
 ];
 
 /** Tabelle 4.4: Energie-Anpassung, Eiweiß, KH nach Training. */
@@ -64,6 +66,8 @@ const TABLE_4_4: Record<string, { energy: number; protein: number; carbs: boolea
   'endurance>muscle_gain': { energy: 0, protein: 1.8, carbs: true },
   // docs/PLAN-FIT-IM-ALTER.md 11: −10 %, Eiweiß 1,5 g/kg (Spanne 1,2–1,5), PRODUKTENTSCHEIDUNG.
   'active_aging>fat_loss': { energy: -0.1, protein: 1.5, carbs: false },
+  // docs/PLAN-CALISTHENICS-SCHLINGE.md 2: wie Fitness → Abnehmen, PRODUKTENTSCHEIDUNG.
+  'calisthenics>fat_loss': { energy: -0.15, protein: 2.0, carbs: false },
 };
 
 const ALL_ORDERED_PAIRS = GOAL_TYPES.flatMap((primary) =>
@@ -72,9 +76,9 @@ const ALL_ORDERED_PAIRS = GOAL_TYPES.flatMap((primary) =>
 const key = (primary: GoalType, secondary: GoalType | null) => `${primary}>${secondary ?? ''}`;
 
 describe('Erlaubte Paare (Tabelle 4.2)', () => {
-  it('GOAL_COMBINATIONS = genau die 11 Paare der Tabelle (10 + Fit im Alter → Abnehmen)', () => {
+  it('GOAL_COMBINATIONS = genau die 12 Paare der Tabelle (10 + Fit im Alter → Abnehmen + Calisthenics → Abnehmen)', () => {
     expect(GOAL_COMBINATIONS.map(([p, s]) => key(p, s)).sort()).toEqual([...ALLOWED].sort());
-    expect(new Set(GOAL_COMBINATIONS.map(([p, s]) => key(p, s))).size).toBe(11);
+    expect(new Set(GOAL_COMBINATIONS.map(([p, s]) => key(p, s))).size).toBe(12);
   });
 
   it.each(ALL_ORDERED_PAIRS)(

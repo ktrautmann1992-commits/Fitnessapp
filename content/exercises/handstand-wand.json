@@ -1,0 +1,49 @@
+{
+  "id": "handstand-wand",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Handstand an der Wand",
+  "name_en": "Chest-to-Wall Handstand",
+  "aliases_de": ["Wandhandstand"],
+  "movement_pattern": "vertical_push",
+  "primary_muscles": ["front_delts"],
+  "secondary_muscles": ["triceps", "upper_back", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["overhead", "high_skill"],
+  "description_de": "Handstand mit dem Bauch zur Wand (über „Wand hochlaufen“ hinein). Körper gerade, Schultern weit herausgeschoben – halten.",
+  "steps_de": [
+    "Wie beim Wand-Hochlaufen in Position gehen, Hände etwa eine Handbreite vor der Wand.",
+    "Schultern zu den Ohren schieben, Arme gestreckt.",
+    "Bauch und Gesäß fest, nur die Zehen berühren die Wand.",
+    "Halten, dann Schritt für Schritt herauslaufen."
+  ],
+  "tips_de": ["Blick zwischen die Hände.", "Lieber mehrere kurze Versuche als einen langen."],
+  "common_mistakes_de": ["Hohlkreuz mit Bauch weg von der Wand.", "Ellbogen gebeugt."],
+  "safety_note_de": "Nur auf freier, weicher Fläche üben und das Aussteigen vorher üben. Bei Schwindel, Druckgefühl im Kopf oder Schmerzen in Handgelenk oder Schulter sofort beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "wandlaufen",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "handstand-frei",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

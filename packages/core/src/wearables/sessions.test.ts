@@ -118,6 +118,29 @@ describe('sessionFromHc', () => {
     ).toBe(true);
   });
 
+  it('Lauf-Paket 2: eigene Zonen-Grenzen (Herzfrequenz-Reserve) bestimmen die Zeit je Zone', () => {
+    const samples = [
+      { time: '2026-10-20T05:30:00Z', beatsPerMinute: 130 },
+      { time: '2026-10-20T05:30:10Z', beatsPerMinute: 130 },
+    ];
+    // % HFmax 190: 130 /min = 68 % → Zone 2; Karvonen (Ruhe 60): Grenzen 125/138/… → Zone 1.
+    const plain = sessionFromHc(record(), { heartRateSamples: samples }, { hfMax: 190 });
+    const reserve = sessionFromHc(
+      record(),
+      { heartRateSamples: samples, steps: 5000 },
+      { hfMax: 190, zones: { hfMax: 190, bounds: [125, 138, 151, 164, 177, 190] } },
+    );
+    expect(plain.kind === 'ok' && plain.session.heart_rate?.zone_s).toEqual([0, 10, 0, 0, 0]);
+    expect(reserve.kind === 'ok' && reserve.session.heart_rate).toEqual({
+      avg_bpm: 130,
+      max_bpm: 130,
+      zone_s: [10, 0, 0, 0, 0],
+      hf_max_used: 190,
+    });
+    // Schritte gehen nicht in den Import-Datensatz (nur Kadenz auf dem Gerät).
+    expect(reserve.kind === 'ok' && 'steps' in reserve.session).toBe(false);
+  });
+
   it('Tag = Beginn in Europe/Berlin (kurz vor Mitternacht UTC)', () => {
     const result = sessionFromHc(
       record({ startTime: '2026-10-20T22:30:00Z', endTime: '2026-10-20T23:30:00Z' }),

@@ -1,0 +1,54 @@
+{
+  "id": "schlingentrainer-beinbeuger",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Beinbeuger-Curl am Schlingentrainer",
+  "name_en": "Suspension Hamstring Curl",
+  "aliases_de": [],
+  "movement_pattern": "knee_flexion",
+  "primary_muscles": ["hamstrings"],
+  "secondary_muscles": ["glutes", "calves"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["long_supine", "floor_transfer"],
+  "description_de": "Rückenlage, Fersen in den Schlaufen, Hüfte hoch – dann die Fersen zum Gesäß ziehen. Kräftigt die Beinrückseite ohne Maschine.",
+  "steps_de": [
+    "Auf den Rücken legen, Fersen in die Schlaufen unter dem Anker.",
+    "Hüfte anheben, bis der Körper eine Linie bildet.",
+    "Fersen zum Gesäß ziehen, Hüfte bleibt oben.",
+    "Beine langsam wieder strecken."
+  ],
+  "tips_de": ["Leichter: Hüfte beim Strecken absetzen.", "Schwerer: einbeinig."],
+  "common_mistakes_de": ["Hüfte sinkt beim Anziehen ab.", "Schlaufen zu hoch eingestellt."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "beinbeuger-handtuch",
+      "reason": "home",
+      "priority": 1
+    },
+    {
+      "alternative_id": "beinbeuger-band",
+      "reason": "other_equipment",
+      "priority": 2
+    },
+    {
+      "alternative_id": "beinbeuger-maschine",
+      "reason": "other_equipment",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

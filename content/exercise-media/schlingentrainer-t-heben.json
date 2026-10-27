@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-t-heben",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-t-heben-start.svg",
+      "alt_de": "Ausgangsposition: Gesicht zum Anker, Arme gestreckt vor der Brust, Körper gerade nach hinten gelehnt, Fersen am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

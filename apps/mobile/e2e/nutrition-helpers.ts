@@ -145,15 +145,78 @@ export async function onboardNutrition(page: Page, person: NutritionPerson = {})
  * Wahl bleibt auf dem Gerät gespeichert).
  */
 export async function showCheckedShoppingItems(page: Page) {
+  // Seit 26.10.2026 im ⋯-Menü oben rechts (Blatt schließt nach dem Tippen).
+  await openShoppingMenu(page);
   const box = page.getByTestId('shopping-hide-checked');
   await expect(box).toBeVisible();
-  if ((await box.getAttribute('aria-checked')) === 'true') await box.click();
+  if ((await box.getAttribute('aria-checked')) === 'true') {
+    await box.click();
+    await openShoppingMenu(page);
+  }
   await expect(box).toHaveAttribute('aria-checked', 'false');
+  await closeShoppingMenu(page);
 }
 
 export async function openNutrition(page: Page) {
-  await page.getByTestId('today-nutrition').click();
+  // Seit „App verschlanken“ (26.10.2026) steht „Essen heute“ nicht mehr im Training – Reiter „Ernährung“.
+  await page
+    .getByRole('tablist', { name: 'Hauptmenü' })
+    .getByRole('tab', { name: 'Ernährung', exact: true })
+    .click();
   await expect(page.getByTestId('nutrition-day')).toBeVisible();
   await expect(page.getByTestId('nutrition-demo-banner')).toBeVisible();
   await expect(page.getByTestId('nutrition-meals')).toBeVisible();
+}
+
+/** Einkaufen: ⋯-Menü oben rechts öffnen (Weitergeben, PDF, Zeitraum, Erledigte, Häkchen – seit 26.10.2026). */
+export async function openShoppingMenu(page: Page) {
+  // Ein gerade schließendes Blatt erst ganz verschwinden lassen (Animation), dann öffnen.
+  await expect(page.getByTestId('shopping-menu-sheet')).toHaveCount(0);
+  await page.getByTestId('shopping-menu').click();
+  await expect(page.getByTestId('shopping-menu-sheet')).toBeVisible();
+}
+
+/** Einkaufen: ⋯-Menü mit „Schließen“ zumachen und warten, bis es weg ist. */
+export async function closeShoppingMenu(page: Page) {
+  await page.getByTestId('shopping-menu-done').click();
+  await expect(page.getByTestId('shopping-menu-sheet')).toHaveCount(0);
+}
+
+/** Einkaufen: Zeitraum-Wahl (3 Tage | Ganze Woche, eigener Zeitraum) über ⋯ → „Zeitraum wählen“ einblenden. */
+export async function openShoppingRange(page: Page) {
+  if (await page.getByTestId('shopping-range-controls').isVisible()) return;
+  await openShoppingMenu(page);
+  await page.getByTestId('shopping-menu-range').click();
+  await expect(page.getByTestId('shopping-range-controls')).toBeVisible();
+}
+
+/** Einkaufen: Schnell-Zeile „Etwas hinzufügen“ aufklappen (Name, Menge, Abteilung). */
+export async function openShoppingAdd(page: Page) {
+  if (await page.getByTestId('shopping-add-label').isVisible()) return;
+  await page.getByTestId('shopping-add-open').click();
+  await expect(page.getByTestId('shopping-add-label')).toBeVisible();
+}
+
+/** Einkaufen: Knopf „Scannen“ – Scanner-Bereich einblenden. */
+export async function openShoppingScan(page: Page) {
+  const open = page.getByTestId('shopping-scan-open');
+  if ((await open.getAttribute('aria-expanded')) !== 'true') await open.click();
+  await expect(open).toHaveAttribute('aria-expanded', 'true');
+}
+
+/** Einkaufen: „Erledigte ausblenden“ im ⋯-Menü umschalten (Blatt schließt danach). */
+export async function toggleHideChecked(page: Page) {
+  await openShoppingMenu(page);
+  await page.getByTestId('shopping-hide-checked').click();
+  await expect(page.getByTestId('shopping-menu-sheet')).toHaveCount(0);
+}
+
+/** Einkaufen: Stand von „Erledigte ausblenden“ prüfen (öffnet und schließt das ⋯-Menü). */
+export async function expectHideChecked(page: Page, on: boolean) {
+  await openShoppingMenu(page);
+  await expect(page.getByTestId('shopping-hide-checked')).toHaveAttribute(
+    'aria-checked',
+    String(on),
+  );
+  await closeShoppingMenu(page);
 }

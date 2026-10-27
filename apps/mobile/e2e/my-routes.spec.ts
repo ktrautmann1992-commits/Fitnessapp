@@ -30,7 +30,7 @@ async function setup(page: Page) {
     days: [['Montag', 'Kraft im Studio', 60]],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await seedDemoRoutes(page);
 }
 
@@ -220,7 +220,7 @@ test('Ausdauer ohne Meine Strecken: Leerzustand', async ({ page }) => {
     days: [['Montag', 'Kraft im Studio', 60]],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.goto('/ausdauer');
   await expect(page.getByTestId('my-routes-empty')).toContainText('Noch keine Strecke gemerkt.');
 });

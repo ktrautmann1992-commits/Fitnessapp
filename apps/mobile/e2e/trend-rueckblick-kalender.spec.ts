@@ -217,7 +217,7 @@ test.describe('Trainings im Handy-Kalender (Browser: .ics-Datei)', () => {
     page,
   }) => {
     await onboardNutrition(page);
-    await page.goto('/settings');
+    await page.goto('/settings?thema=geraete');
     await page.getByTestId('settings-device-calendar').click();
     await expect(page.getByTestId('device-calendar')).toBeVisible();
     await expect(page.getByTestId('device-calendar-web')).toContainText('.ics');

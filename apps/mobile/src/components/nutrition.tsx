@@ -1,10 +1,8 @@
 import {
   type CalorieCapCode,
-  cookDayMeals,
   type EmptySlot,
   type IntoleranceBlockReason,
   type MealPlanNoticeCode,
-  nextMealOfDay,
   type NutritionNoticeCode,
   type PlannedMeal,
   type UnavailableMeal,
@@ -16,6 +14,7 @@ import { type ReactNode, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { FavoriteMark } from '@/components/recipe-preference';
+import type { StackNotice } from '@/components/slim';
 import { RecipeThumb } from '@/components/recipe-image';
 import { ConfirmDialog } from '@/components/screen';
 import {
@@ -48,11 +47,9 @@ import {
   roleLabel,
   slotLabel,
 } from '@/lib/nutrition-format';
-import { intakeSummaryText } from '@/lib/food-log-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { useFoodLogDay } from '@/state/use-food-log';
-import { type MealPlanActions, type NutritionView, useNutritionWeek } from '@/state/use-nutrition';
+import { type MealPlanActions, type NutritionView } from '@/state/use-nutrition';
 import { Text } from '@/components/text';
 
 /**
@@ -341,6 +338,57 @@ export function NutritionNotices({
   );
 }
 
+/** Sicherheits-Hinweise der Ernährung – in der Hinweis-Zeile „sperrend“, also nie zugeklappt (26.10.2026). */
+const SAFETY_NOTICES = new Set<NutritionNoticeCode>([
+  'pregnancy_no_targets',
+  'underweight',
+  'severe_underweight',
+  'medical_consult',
+]);
+
+/**
+ * Dieselben Hinweise wie `NutritionNotices`, aber einzeln für die Hinweis-Zeile („App verschlanken“, 26.10.2026,
+ * components/slim.tsx `NoticeStack`): Sicherheit (Schwangerschaft, Untergewicht, ärztliche Abklärung) sperrend und
+ * immer sichtbar, fehlender Gesundheits-Check „handeln“, alles andere (Eiweiß bei Nierenerkrankung, Entwürfe,
+ * Allergene ungeprüft …) Info hinter dem Zähler. testIDs wie bisher.
+ */
+export function nutritionNoticeItems(
+  notices: readonly NutritionNoticeCode[],
+  planNotices: readonly MealPlanNoticeCode[],
+  showNumbers: boolean,
+): StackNotice[] {
+  return [
+    ...notices.map((code): StackNotice => ({
+      id: `notice-${code}`,
+      level: SAFETY_NOTICES.has(code)
+        ? 'blocking'
+        : code === 'health_check_missing'
+          ? 'action'
+          : 'info',
+      node: (
+        <Notice
+          tone={WARNING_NOTICES.has(code) ? 'warning' : 'info'}
+          testID={`nutrition-notice-${code}`}
+        >
+          <Body>{noticeText(code, showNumbers)}</Body>
+        </Notice>
+      ),
+    })),
+    ...planNotices.map((code): StackNotice => ({
+      id: `plan-notice-${code}`,
+      level: code === 'day_below_floor' ? 'action' : 'info',
+      node: (
+        <Notice
+          tone={code === 'day_below_floor' || code.startsWith('drafts') ? 'warning' : 'info'}
+          testID={`nutrition-plan-notice-${code}`}
+        >
+          <Body>{t.nutrition.planNotices[code]}</Body>
+        </Notice>
+      ),
+    })),
+  ];
+}
+
 const WARNING_NOTICES = new Set<NutritionNoticeCode>([
   'pregnancy_no_targets',
   'underweight',
@@ -550,122 +598,6 @@ const styles = StyleSheet.create({
   title: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
   detail: { fontSize: fontSize.sm, lineHeight: 20 },
 });
-
-/**
- * Karte „Essen heute“ auf „Heute“ (8.2 Nr. 1): Tagesziel (oder ohne Zahlen), nächste Mahlzeit mit Rolle, Kochtag,
- * Hinweis bei `below_floor`, Link „Ernährung“. Nur mit Ernährung (Testmodus; Supabase ab N7). Etappe E1: „Gegessen heute:
- * 3 Einträge“ (kcal nur mit Zahlen) und „Essen eintragen“.
- */
-export function NutritionTodayCard({ nowMinutes }: { nowMinutes: number }) {
-  const router = useRouter();
-  const app = useApp();
-  const view = useNutritionWeek();
-  // Ernährungstagebuch (Etappe E1): Anzahl der Einträge heute (kcal nur mit Zahlen) und „Essen eintragen“.
-  const foodLog = useFoodLogDay(todayIso(), view.showNumbers);
-  const texts = t.nutrition.todayCard;
-  if (!app.backend.supportsNutrition) return null;
-  const open = (
-    <Button
-      label={texts.open}
-      accessibilityLabel={texts.openA11y}
-      variant="secondary"
-      onPress={() => router.navigate('/ernaehrung' as Href)}
-      testID="today-nutrition"
-    />
-  );
-  if (view.setupMissing) {
-    return (
-      <Card>
-        <Heading level={2}>{texts.title}</Heading>
-        <Body>{t.nutrition.setupNeeded}</Body>
-        <Button
-          label={t.nutrition.setupButton}
-          onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
-          testID="today-nutrition-setup"
-        />
-      </Card>
-    );
-  }
-  const week = view.week;
-  const today = todayIso();
-  const targets = week?.kind === 'ready' ? week.targets.days.find((d) => d.date === today) : null;
-  const day =
-    week?.kind === 'ready' ? (week.plan?.days.find((d) => d.date === today) ?? null) : null;
-  const next = day ? nextMealOfDay(day, Math.min(Math.max(nowMinutes, 0), 24 * 60)) : null;
-  const cooking = day ? cookDayMeals(day) : [];
-  return (
-    <Card>
-      <View testID="today-nutrition-card" style={styles.list}>
-        <Heading level={2}>{texts.title}</Heading>
-        {view.library.kind === 'loading' || (view.library.kind === 'ready' && week === null) ? (
-          <Body muted>{t.nutrition.loading}</Body>
-        ) : null}
-        {week?.kind === 'incomplete' ? <Body muted>{t.nutrition.incomplete}</Body> : null}
-        {week?.kind === 'blocked' ? <ConsentBlockedNotice reason={week.reason} /> : null}
-        {view.library.kind === 'ready' && view.library.result.demo && week?.kind === 'ready' ? (
-          <Body muted testID="today-nutrition-demo">
-            {t.nutrition.todayCard.demo}
-          </Body>
-        ) : null}
-        {week?.kind === 'error' ? <Body muted>{t.nutrition.computeFailed}</Body> : null}
-        {view.library.kind === 'error' ? <Body muted>{t.nutrition.loadFailed}</Body> : null}
-        {targets && view.showNumbers && targets.targetKcal !== null ? (
-          <Body testID="today-nutrition-target">
-            {t.nutrition.target(formatKcal(targets.targetKcal))}
-          </Body>
-        ) : null}
-        {targets && targets.mode === 'no_targets' ? (
-          <Body muted>{t.nutrition.dayStatus.no_targets}</Body>
-        ) : null}
-        {day?.status === 'below_floor' ? (
-          <Notice tone="warning" testID="today-nutrition-below-floor">
-            {texts.belowFloor}
-          </Notice>
-        ) : null}
-        {next ? (
-          <Body testID="today-nutrition-next">
-            {texts.next(
-              roleLabel(next.role)
-                ? `${slotLabel(next.slot)} (${roleLabel(next.role)})`
-                : slotLabel(next.slot),
-              next.titleDe,
-            )}
-          </Body>
-        ) : day ? (
-          <Body muted>{texts.allDone}</Body>
-        ) : null}
-        {cooking.length > 0 ? (
-          <Body testID="today-nutrition-cook">
-            {texts.cookDay(cooking.map((m) => m.titleDe).join(', '))}
-          </Body>
-        ) : null}
-        {week?.kind === 'ready' && week.plan === null ? (
-          <Body muted>
-            {view.library.kind === 'ready' && view.library.result.awaitingReview === true
-              ? t.nutrition.noRecipesReview
-              : t.nutrition.noRecipes}
-          </Body>
-        ) : null}
-        {foodLog.consentValid ? (
-          <>
-            <Body testID="today-food-log">
-              {foodLog.intake.count === 0
-                ? t.foodLog.todayNone
-                : t.foodLog.todayLine(intakeSummaryText(foodLog.intake))}
-            </Body>
-            <Button
-              label={t.foodLog.todayAdd}
-              variant="secondary"
-              onPress={() => router.push(`/ernaehrung/eintragen?tag=${todayIso()}` as Href)}
-              testID="today-food-log-add"
-            />
-          </>
-        ) : null}
-        {open}
-      </View>
-    </Card>
-  );
-}
 
 function rangeText(range: { min: number; max: number }): string {
   return range.min === range.max

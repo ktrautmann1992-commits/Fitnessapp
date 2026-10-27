@@ -1,0 +1,48 @@
+{
+  "id": "stuetz-barren",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Stütz am Barren",
+  "name_en": "Parallel Bar Support Hold",
+  "aliases_de": ["Barrenstütz"],
+  "movement_pattern": "elbow_extension",
+  "primary_muscles": ["triceps"],
+  "secondary_muscles": ["chest", "front_delts", "abs"],
+  "equipment_ids": ["dip_station"],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Mit gestreckten Armen auf dem Barren stützen und halten. Gewöhnt Schultern und Handgelenke an das Körpergewicht – Grundlage für Dips.",
+  "steps_de": [
+    "Holme greifen und mit gestreckten Armen hochdrücken.",
+    "Schultern nach unten weg von den Ohren, Brust leicht vorn.",
+    "Beine ruhig, Bauch fest, gleichmäßig atmen."
+  ],
+  "tips_de": ["Leichter: Füße auf einem Kasten mitstützen lassen."],
+  "common_mistakes_de": ["Schultern sinken zu den Ohren.", "Ellbogen überstreckt."],
+  "safety_note_de": "Holme vorher auf festen Stand prüfen. Nur so tief absenken, wie die Schultern es ohne Ziehen erlauben. Bei Schmerzen in Schulter, Ellbogen oder Brustbein die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "dips-stuhl",
+      "reason": "home",
+      "priority": 1
+    },
+    {
+      "alternative_id": "dips-negativ-barren",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

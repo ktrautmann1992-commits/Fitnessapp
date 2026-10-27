@@ -66,6 +66,7 @@ export const GOAL_LABELS: Record<TemplateGoalType, string> = {
   muscle_gain: 'Muskelaufbau',
   fat_loss: 'Fettverlust',
   general_fitness: 'Allgemeine Fitness',
+  calisthenics: 'Calisthenics / Körperbeherrschung',
 };
 
 export const LEVEL_LABELS: Record<TemplateExperienceLevel, string> = {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import {
   type RecoveryChoice,
@@ -12,9 +12,8 @@ import { useWearables, wearableConsentsValid, wearableDriver } from '@/state/use
 
 /**
  * „Erholung aus der Uhr“ (25.10.2026): Zustand für Übersicht, „Heute“ und Smartwatch-Seite. Rechnet nichts selbst
- * (data/recovery.ts → packages/core). Der Status ist gratis; das Angebot „Leichter trainieren“ folgt der Live-Anpassung
- * (KONZEPT 4.1, Premium): im Testmodus der Schalter „Live-Anpassung einschalten“, im Supabase-Modus die Prüfung auf dem
- * Server (`live_adjustment_status`).
+ * (data/recovery.ts → packages/core). Status und Angebot „Leichter trainieren“ sind gratis (Gründer-Entscheidung
+ * 26.10.2026, keine Premium-Prüfung; die Live-Anpassung KONZEPT 4.1 bleibt Premium).
  */
 export function useRecovery(today: string): RecoveryState {
   const app = useApp();
@@ -33,39 +32,6 @@ export function useRecovery(today: string): RecoveryState {
       today,
     });
   }, [app, state, rows, today]);
-}
-
-/** Ergebnis der Server-Prüfung je Konto (einmal je App-Sitzung; Fehler/offline = nicht aktiv). */
-let serverStatus: { userId: string; active: boolean } | null = null;
-
-/** Darf die Erholung „Leichter trainieren“ anbieten (Live-Anpassung aktiv)? */
-export function useRecoveryOfferAllowed(): boolean {
-  const app = useApp();
-  const userId = app.session?.userId ?? null;
-  const local = app.backend.mode === 'local';
-  const [active, setActive] = useState<boolean>(() =>
-    serverStatus !== null && serverStatus.userId === userId ? serverStatus.active : false,
-  );
-  useEffect(() => {
-    if (local || !userId) return;
-    if (serverStatus?.userId === userId) {
-      setActive(serverStatus.active);
-      return;
-    }
-    let alive = true;
-    void app.backend
-      .liveAdjustmentActive()
-      .catch(() => false)
-      .then((value) => {
-        serverStatus = { userId, active: value };
-        if (alive) setActive(value);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [app.backend, local, userId]);
-  if (local) return app.liveAdjust.available && app.liveAdjust.simulatePremium;
-  return active;
 }
 
 /** Wahl „Leichter trainieren“/„Wie geplant“ für diese Einheit heute (nur Arbeitsspeicher). */

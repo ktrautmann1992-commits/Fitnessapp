@@ -640,6 +640,11 @@ export const deNutrition = {
     rangeInvalid: 'Der Zeitraum endet vor seinem Beginn.',
     rangeHint: 'Meal-Prep wird zum Kochtag gekauft; der Sonntag vor der Woche zählt zum Montag.',
     hideChecked: 'Erledigte ausblenden',
+    /** „App verschlanken“ (26.10.2026): ⋯-Menü, Umschalter, zugeklappte Zeilen. */
+    rangeMenu: 'Zeitraum wählen',
+    weekSwitchLabel: 'Woche der Einkaufsliste',
+    pantryRow: (count: number) => `Hast du wahrscheinlich da (${count})`,
+    recipesRow: (count: number) => `Aus diesen Rezepten (${count})`,
     /** Zeitraum-Wahl (docs/PLAN-EINKAUFEN-AUSDAUER.md 3, Gründer-Entscheidung 23.10.2026). */
     rangeModeLabel: 'Einkaufen für',
     rangeDays: '3 Tage',

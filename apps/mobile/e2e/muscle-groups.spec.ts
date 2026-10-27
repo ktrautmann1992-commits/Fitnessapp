@@ -26,7 +26,7 @@ const visible = (page: Page, id: string) => page.getByTestId(id).filter({ visibl
 
 async function toGlossary(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.getByTestId('today-glossary').click();
   await heading(page, 'Übungen');
 }

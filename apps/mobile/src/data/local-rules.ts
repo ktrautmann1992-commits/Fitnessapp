@@ -240,6 +240,10 @@ export function isValidOp(
         ...(op.row.step_goal === undefined || op.row.step_goal === null
           ? {}
           : { step_goal: op.row.step_goal }),
+        // Fassung (26.10.2026): die App speichert immer die aktuelle (toStoredLayout).
+        ...(op.row.layout_version === undefined || op.row.layout_version === null
+          ? {}
+          : { layout_version: op.row.layout_version }),
       };
       return (
         storedAppLayoutSchema.safeParse(stored).success &&

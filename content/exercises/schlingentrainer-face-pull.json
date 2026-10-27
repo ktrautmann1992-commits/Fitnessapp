@@ -1,0 +1,56 @@
+{
+  "id": "schlingentrainer-face-pull",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schlingentrainer-Face-Pull",
+  "name_en": "Suspension Face Pull",
+  "aliases_de": [],
+  "movement_pattern": "shoulder_isolation",
+  "primary_muscles": ["rear_delts"],
+  "secondary_muscles": ["upper_back", "biceps"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Zurückgelehnt die Griffe zum Gesicht ziehen, Ellbogen hoch und weit. Kräftigt hintere Schulter und Haltung.",
+  "steps_de": [
+    "Gesicht zum Anker, Griffe im Obergriff, zurücklehnen.",
+    "Ellbogen auf Schulterhöhe nach außen und hinten ziehen.",
+    "Hände kommen neben das Gesicht.",
+    "Langsam strecken."
+  ],
+  "tips_de": [
+    "Gesicht zum Anker: Füße weiter nach vorn (unter den Anker) = schwerer, weiter zurück = leichter."
+  ],
+  "common_mistakes_de": ["Ellbogen sinken ab.", "Kopf schiebt nach vorn."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schlingentrainer-t-heben",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "face-pull-kabel",
+      "reason": "other_equipment",
+      "priority": 2
+    },
+    {
+      "alternative_id": "y-t-w-vorgebeugt",
+      "reason": "home",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

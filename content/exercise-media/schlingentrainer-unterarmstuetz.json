@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-unterarmstuetz",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-unterarmstuetz-start.svg",
+      "alt_de": "Ausgangsposition: Unterarmstütz, Ellbogen unter den Schultern, Füße in den Schlaufen, Körper vom Kopf bis zu den Fersen gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

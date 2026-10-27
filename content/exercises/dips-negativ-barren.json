@@ -1,0 +1,48 @@
+{
+  "id": "dips-negativ-barren",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Negativ-Dips am Barren",
+  "name_en": "Negative Parallel Bar Dip",
+  "aliases_de": [],
+  "movement_pattern": "elbow_extension",
+  "primary_muscles": ["triceps", "chest"],
+  "secondary_muscles": ["front_delts"],
+  "equipment_ids": ["dip_station"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Oben im Stütz beginnen und langsam absenken; hoch geht es mit Hilfe der Füße. Baut Kraft für den ersten sauberen Dip auf.",
+  "steps_de": [
+    "In den Stütz am Barren gehen.",
+    "In 3 bis 4 Sekunden absenken, bis die Oberarme etwa waagerecht sind.",
+    "Mit den Füßen auf einem Kasten zurück nach oben steigen."
+  ],
+  "tips_de": ["Oberkörper leicht nach vorn, Ellbogen zeigen nach hinten."],
+  "common_mistakes_de": ["Zu tief sinken.", "Unten schnell fallen lassen."],
+  "safety_note_de": "Holme vorher auf festen Stand prüfen. Nur so tief absenken, wie die Schultern es ohne Ziehen erlauben. Bei Schmerzen in Schulter, Ellbogen oder Brustbein die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "stuetz-barren",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "dips-barren",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

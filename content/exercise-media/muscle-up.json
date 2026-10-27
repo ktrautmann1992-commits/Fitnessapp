@@ -1,0 +1,20 @@
+{
+  "exercise_id": "muscle-up",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "muscle-up-start.svg",
+      "alt_de": "Ausgangsposition: gestreckter Hang an der Stange, Hände etwa schulterbreit, Körper ruhig, Füße über dem Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

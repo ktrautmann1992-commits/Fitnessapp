@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-seitstuetz",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-seitstuetz-start.svg",
+      "alt_de": "Ausgangsposition: Seitstütz von vorn, Ellbogen unter der Schulter, Füße übereinander in den Schlaufen, Körper gerade, oberer Arm nach oben gestreckt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

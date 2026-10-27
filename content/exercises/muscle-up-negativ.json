@@ -1,0 +1,49 @@
+{
+  "id": "muscle-up-negativ",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Negativ-Muscle-up",
+  "name_en": "Negative Muscle-up",
+  "aliases_de": [],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats", "triceps"],
+  "secondary_muscles": ["chest", "biceps", "forearms"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["high_skill"],
+  "description_de": "Oben im Stütz über der Stange starten (mit einem Kasten hinaufsteigen) und langsam durch den Übergang bis in den Hang sinken. Lehrt den schwierigsten Teil des Muscle-ups.",
+  "steps_de": [
+    "Über einen stabilen Kasten in den Stütz über der Stange steigen.",
+    "Langsam in einen tiefen Dip senken.",
+    "Kontrolliert hinter die Stange in die Klimmzug-Position übergehen.",
+    "Weiter langsam bis zum gestreckten Hang absenken."
+  ],
+  "tips_de": ["Falscher Griff (Handgelenk über der Stange) erleichtert den Übergang."],
+  "common_mistakes_de": ["Übergang ungebremst.", "Ellbogen gehen weit nach außen."],
+  "safety_note_de": "Stange vorher auf festen Sitz prüfen und nur mit sicherem Griff hängen. Kontrolliert ab- und aufsteigen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "explosiver-klimmzug",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "muscle-up",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

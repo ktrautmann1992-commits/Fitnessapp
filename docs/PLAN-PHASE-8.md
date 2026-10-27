@@ -424,10 +424,13 @@ trainieren“ / „Wie geplant“, nie Pflicht). Ersetzt für diesen Umfang die 
   weniger (mind. 1), RPE −1 (mind. 5), gleiche Gewichte; Ausdauer hart → locker, Dauer × 0,8 (mind. 10 min). Die
   Sicherheitsregeln laufen danach unverändert; der gespeicherte Plan ändert sich nie (kein `plan_adjustments`-Eintrag –
   die Regel-Engine `adjust/*` ändert nur Einheiten ab morgen, Plan 8B B3).
-- **Gating wie die Live-Anpassung (Premium):** Supabase-Modus `live_adjustment_status()` vom Server (Feature-Flag
-  `live_adjustment` + `has_entitlement_for(…, 'premium')`), Testmodus Schalter „Live-Anpassung einschalten“. Ohne:
-  Status trotzdem sichtbar (gratis) mit neutralem Hinweis, aber kein Angebot. **Abweichung zu Plan 8B 18.1** (dort
-  „Heute leichter“ gratis) – Gründer-Vorgabe 25.10.2026, siehe 15.6.
+- **Gratis (Gründer-Entscheidung 26.10.2026):** Das Angebot gibt es für alle, ohne Premium-Prüfung – feste Regel ohne
+  KI, die den Plan nie ändert (wie „Heute leichter“ im Zyklus-Modul und Plan 8B 18.1). Vorher (Gründer-Vorgabe
+  25.10.2026) war es an die Live-Anpassung gekoppelt (`live_adjustment_status()` bzw. Testmodus-Schalter, ohne nur ein
+  Hinweis); diese Kopplung ist entfernt (`recoveryOffer` ohne `entitled`, kein `liveAdjustmentActive` im Backend). Die
+  Live-Anpassung selbst (KONZEPT 4.1, `live_adjustment_status()`, `/api/live-anpassung`) bleibt Premium. Auf dem
+  Server gab es für das Angebot nie eine eigene Prüfung (die Wahl liegt nur im Arbeitsspeicher, nichts wird gesendet) –
+  deshalb keine Migration.
 - Die Wahl liegt **nur im Arbeitsspeicher** (`data/recovery-choice.ts`, Konto + Tag + Einheit) – nichts wird
   gespeichert oder gesendet; nach Neustart fragt die Karte erneut. Ein begonnener Entwurf behält seine Vorgabe.
 
@@ -463,12 +466,12 @@ trainieren“ / „Wie geplant“, nie Pflicht). Ersetzt für diesen Umfang die 
 
 Core `wearables/recovery.test.ts` (Ampel, Grenzwerte genau auf der Schwelle, unter 18/ab 18/90 Jahre, keine Daten, nur
 Schlaf, ohne HRV, Basis < 7 bzw. genau 7 Tage, alte Werte > 14 Tage, Zukunftswerte, Ausreißer/Median, unplausible
-Werte, zwei Quellen je Tag, Medikamente, Verlauf, Angebot nur mit Berechtigung, HRV-Aggregat, Texte ohne medizinische
+Werte, zwei Quellen je Tag, Medikamente, Verlauf, Angebot gratis nur bei „niedrig“, HRV-Aggregat, Texte ohne medizinische
 Begriffe, Strukturtest ohne `cycle/`), `daily.test.ts`, `layout.test.ts`, `db-sync.test.ts`; App
 `data/recovery.test.ts` (Zustände, Beispiel-Uhr, alte Zeilen ohne HRV, Medikamente, Wahl nur im Speicher),
 `data/workout.test.ts` (leichtere Vorgabe Kraft/Ausdauer, Plan unverändert), `consent-texts`, `native-config`; E2E
 `e2e/recovery.spec.ts` (Leerzustand, Knopf einzeilig, Kachel, Smartwatch-Seite, Angebot, Training leichter, gratis nur
-Hinweis); pgTAP `68_recovery_hrv.test.sql` (Fassung 3, Spalte/CHECKs, Import mit/ohne HRV, Isolation, Export, Widerruf,
+Angebot auch ohne Live-Anpassung); pgTAP `68_recovery_hrv.test.sql` (Fassung 3, Spalte/CHECKs, Import mit/ohne HRV, Isolation, Export, Widerruf,
 Kaskade, Kachel).
 
 ### 15.6 Offen
@@ -476,8 +479,7 @@ Kaskade, Kachel).
 1. **Fachliche Prüfung der Schwellen** (6 h/7 h, +5 /min, 80 %, 14 Tage/7 Werte, „≥ 2 = niedrig“) vor dem Livegang.
 2. **Echtes Gerät:** ob Samsung Health HRV (RMSSD) und Ruhepuls überhaupt nach Health Connect schreibt (sonst bleibt
    „HRV: kein Wert“ bzw. nur Schlaf) und ob der Dialog „Herzfrequenzvariabilität“ zeigt – neuer EAS-Build nötig.
-3. **Gratis oder Premium?** Gründer-Vorgabe: Angebot folgt der Live-Anpassung (Premium, Server prüft); Plan 8B 18.1
-   sah „Heute leichter“ gratis vor. Im Supabase-Modus ist das Angebot aus, solange das Flag `live_adjustment` aus ist.
+3. ~~**Gratis oder Premium?**~~ Entschieden: **gratis** (Gründer-Entscheidung 26.10.2026), siehe 15.2.
 4. **`session_logs.day_variant`** (Phase 9 ZY5 / Plan 8B 4.6) fehlt noch: ein leichterer Tag wird als normaler
    Eintrag mit den tatsächlich gemachten (weniger) Sätzen gespeichert; die Steigerung zählt ihn wie jeden Eintrag
    (Schritt nur, wenn alle Sätze mit dem niedrigeren RPE-Ziel geschafft wurden). Kommt mit ZY5.

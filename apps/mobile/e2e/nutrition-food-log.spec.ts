@@ -34,7 +34,7 @@ async function favorites(page: Page): Promise<{ fav_key: string }[]> {
 async function start(page: Page) {
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 }
 
@@ -146,9 +146,9 @@ test('Gegessen per Tipp, Suche, Schnelleintrag mit Favorit, neu laden, ändern u
   await expect(page.getByTestId('food-log-message')).toHaveText('Eintrag gelöscht.');
   expect(await entries(page)).toHaveLength(4);
 
-  // „Heute“: Karte zeigt die Einträge.
-  await page.goto('/today');
-  await expect(page.getByTestId('today-food-log')).toContainText('Gegessen heute: 4 Einträge');
+  // „Heute“: Kachel „Ernährung heute“ zeigt die Einträge.
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-food-log')).toContainText('4 Einträge heute.');
 });
 
 test('Nachtragen bis 14 Tage, Kalorienzahlen aus, Widerruf löscht das Tagebuch (Favoriten bleiben)', async ({
@@ -212,7 +212,7 @@ test('Nachtragen bis 14 Tage, Kalorienzahlen aus, Widerruf löscht das Tagebuch 
   expect(await page.content()).not.toMatch(/kcal/);
 
   // Widerruf: Hinweis vorher, Einträge weg, Favoriten bleiben.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=konto');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   await expect(
     page.getByText(

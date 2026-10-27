@@ -1,0 +1,4284 @@
+{
+  "format": "alpha5-auswaerts-zuordnung",
+  "version": 1,
+  "status": "entwurf",
+  "fachpruefung_de": "VOR LIVEGANG FACHLICH PRÜFEN",
+  "origin": "claude_session",
+  "model": "claude-opus-5-5",
+  "created_on": "2026-10-26",
+  "note_de": "ENTWURF – VOR LIVEGANG FACHLICH PRÜFEN (Gründer-Entscheidung G-AV2, docs/PLAN-AUSWAERTS-VORRAT.md). Zuordnung „Auswärts essen“: Jedes Gericht ist eine Zutatenliste in Gramm je normaler Portion (Rohgewichte wie in Rezepten, Bratfett als Öl-Aufnahme) mit Begründung in source_de. Enthält NIE Nährwerte: Die Werte rechnet packages/core aus dem Lebensmittel-Katalog (BLS 4.0). Zutaten, die noch nicht im Katalog sind, stehen unter „foods“ (Quell-ID bzw. Suchbegriffe, wie alpha5-zuordnung.json) und kommen NUR über den Workflow foods-import in den Katalog; bis dahin bleibt das Gericht ohne Werte („wartet auf Import“). Mengen und Zusammensetzung sind Annahmen für eine übliche Portion – keine Gesundheitsaussagen. Freigabe je Gericht: status „released“ mit reviewed_by/reviewed_at per Pull Request.",
+  "foods": [
+    {
+      "food_id": "butter",
+      "name_de": "Butter",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "Q630000",
+        "search": ["Butter", "Süßrahmbutter", "Sauerrahmbutter"],
+        "state_de": "Butter (Süß- oder Sauerrahm), ungesalzen",
+        "category": "fats_oils"
+      },
+      "aliases_de": [],
+      "shopping_category": "chilled_dairy_eggs",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Butter (Süß- oder Sauerrahm), ungesalzen. Quell-ID Q630000 „Süßrahmbutter“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): Grundlebensmittel, ungesalzen; nicht gesalzen (Q6A4000) oder Butterschmalz. Für Butterbrezel, belegte Brötchen, Kuchen, Lasagne (9 Gerichte). Nicht „Butterschmalz“ oder „Halbfettbutter“."
+    },
+    {
+      "food_id": "mozzarella",
+      "name_de": "Mozzarella",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "M032100",
+        "search": ["Mozzarella"],
+        "state_de": "vollfett (mind. 40–45 % Fett i. Tr.)",
+        "category": "dairy"
+      },
+      "aliases_de": [],
+      "shopping_category": "chilled_dairy_eggs",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: vollfett (mind. 40–45 % Fett i. Tr.). Quell-ID M032100 „Mozzarella mind. 45 % Fett i. Tr.“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): genau passend. Vollfette Ware für Pizza und Lasagne; die fettreduzierte (M0A1000) ist schon als mozzarella-light im Katalog und passt hier nicht."
+    },
+    {
+      "food_id": "vollmilch-3-5",
+      "name_de": "Vollmilch 3,5 %",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "M111300",
+        "search": ["Vollmilch", "Kuhmilch 3,5 % Fett", "Milch 3,5 % Fett"],
+        "state_de": "3,5 % Fett, frisch, pasteurisiert",
+        "category": "dairy"
+      },
+      "aliases_de": [],
+      "shopping_category": "chilled_dairy_eggs",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: 3,5 % Fett, frisch, pasteurisiert. Quell-ID M111300 „Vollmilch frisch, 3,5 % Fett, pasteurisiert“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): genau passend. Cafés und Béchamel nutzen meist Vollmilch (Cappuccino, Latte Macchiato, Croque, Lasagne)."
+    },
+    {
+      "food_id": "tomatenketchup",
+      "name_de": "Tomatenketchup",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "R141100",
+        "search": ["Tomatenketchup", "Ketchup"],
+        "state_de": "verzehrfertig",
+        "category": "spices_sauces"
+      },
+      "aliases_de": [],
+      "shopping_category": "oils_vinegar_sauces",
+      "pantry": true,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: verzehrfertig. Quell-ID R141100 „Tomatenketchup“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): genau passend (nicht Curry-Gewürzketchup). Auch für Currysoße (angenähert, im Gericht vermerkt). Sellerie/Senf je nach Produkt – bei R19 prüfen."
+    },
+    {
+      "food_id": "mayonnaise",
+      "name_de": "Mayonnaise",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "Q991000",
+        "search": ["Mayonnaise", "Salatmayonnaise"],
+        "state_de": "Mayonnaise (ca. 80 % Fett) bzw. Salatmayonnaise – bei R19 festlegen",
+        "category": "spices_sauces"
+      },
+      "aliases_de": [],
+      "shopping_category": "oils_vinegar_sauces",
+      "pantry": true,
+      "units": {},
+      "groups": ["eggs", "mustard"],
+      "animal": ["egg"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Mayonnaise (ca. 80 % Fett) bzw. Salatmayonnaise – bei R19 festlegen. Quell-ID Q991000 „Mayonnaise (Fertigprodukt)“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): Mayonnaise (ca. 80 % Fett) statt Salatmayonnaise (Q993000) – höhere Energie, bei R19 prüfen. Pommes rot-weiß, Burger-Soße. Ei und Senf vorsichtig gesetzt."
+    },
+    {
+      "food_id": "bratwurst-schwein",
+      "name_de": "Bratwurst (Schwein)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "Y021312",
+        "search": ["Bratwurst", "Rostbratwurst", "Schwein Bratwurst"],
+        "state_de": "gebraten, verzehrfertig",
+        "category": "sausage_meat_products"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": [],
+      "animal": ["meat"],
+      "meat_kind": ["pork"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gebraten, verzehrfertig. Quell-ID Y021312 „Bratwurst gebraten“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): gebratener Zustand wie in den Gerichten (Bratfett enthalten). Currywurst und Bratwurst im Brötchen; gebratener Zustand (Bratfett damit enthalten)."
+    },
+    {
+      "food_id": "burgerbroetchen",
+      "name_de": "Burgerbrötchen",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "B511000",
+        "search": ["Hamburgerbrötchen", "Burger Brötchen", "Brötchen Hamburger", "Weizenbrötchen"],
+        "state_de": "Gebäck (Weizen, weich)",
+        "category": "bread_bakery"
+      },
+      "aliases_de": [],
+      "shopping_category": "bread_bakery",
+      "pantry": false,
+      "units": {},
+      "groups": ["gluten", "sesame"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Gebäck (Weizen, weich). Quell-ID B511000 „Weizenbrötchen“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): kein eigenes Hamburgerbrötchen in BLS 4.0 (Kandidaten nur Gerichte); Weizenbrötchen als Näherung wie hot-dog-broetchen, bei R19 prüfen. Sesam vorsichtig gesetzt (häufig bestreut); Milch/Ei je nach Rezeptur bei R19 prüfen."
+    },
+    {
+      "food_id": "rinderhackfleisch-20-fett",
+      "name_de": "Rinderhackfleisch (ca. 20 % Fett)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "U010100",
+        "search": ["Rind Hackfleisch", "Rinderhackfleisch"],
+        "state_de": "roh, ca. 20 % Fett (Burger-Patty)",
+        "category": "meat_beef_veal"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": ["beef"],
+      "animal": ["meat"],
+      "meat_kind": ["beef"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh, ca. 20 % Fett (Burger-Patty). Quell-ID U010100 „Rind Hackfleisch, roh“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): roh gewogen wie die Patties in den Gerichten; BLS hat nur eine Fettstufe für Rinderhack. Fast-Food-Patties sind fetter als das magere Rinderhack 5 % im Katalog (rinderhackfleisch-5-fett)."
+    },
+    {
+      "food_id": "schmelzkaese-scheiben",
+      "name_de": "Schmelzkäse-Scheiben",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "M771600",
+        "search": ["Schmelzkäse", "Scheiblettenkäse", "Schmelzkäsezubereitung"],
+        "state_de": "Scheiben",
+        "category": "dairy"
+      },
+      "aliases_de": [],
+      "shopping_category": "chilled_dairy_eggs",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Scheiben. Quell-ID M771600 „Schmelzkäse schnittfest, mind. 45 % Fett i. Tr.“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): schnittfeste Scheiben, übliche Fettstufe. Cheeseburger, großer Burger."
+    },
+    {
+      "food_id": "speck-durchwachsen",
+      "name_de": "Speck (durchwachsen)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "W411300",
+        "search": ["Speck durchwachsen", "Bauchspeck", "Schwein Bauch geräuchert"],
+        "state_de": "roh, geräuchert",
+        "category": "sausage_meat_products"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": [],
+      "animal": ["meat"],
+      "meat_kind": ["pork"],
+      "pregnancy_caution": true,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh, geräuchert. Quell-ID W411300 „Schwein Bauchspeck, Rohpökelware, geräuchert“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): roh geräuchert, wie im Gericht eingerechnet. Carbonara, Flammkuchen. Roh geräuchert → „pregnancy_caution“ wie Lachsschinken (im Gericht gegart)."
+    },
+    {
+      "food_id": "salami",
+      "name_de": "Salami",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "W140000",
+        "search": ["Salami"],
+        "state_de": "Rohwurst, schnittfest",
+        "category": "sausage_meat_products"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": ["beef"],
+      "animal": ["meat"],
+      "meat_kind": ["pork", "beef"],
+      "pregnancy_caution": true,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Rohwurst, schnittfest. Quell-ID W140000 „Salami“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): Grundeintrag, nicht fettreduziert. Pizza Salami. Rohwurst → „pregnancy_caution“; Schwein und Rind vorsichtig gesetzt."
+    },
+    {
+      "food_id": "schmand",
+      "name_de": "Schmand",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "M172700",
+        "search": ["Schmand", "Crème fraîche", "Saure Sahne"],
+        "state_de": "ca. 20–30 % Fett",
+        "category": "dairy"
+      },
+      "aliases_de": [],
+      "shopping_category": "chilled_dairy_eggs",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: ca. 20–30 % Fett. Quell-ID M172700 „Sauerrahm/Schmand, mind. 20 % Fett“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): genau passend. Flammkuchen-Belag (Schmand bzw. Crème fraîche)."
+    },
+    {
+      "food_id": "schlagsahne-30",
+      "name_de": "Schlagsahne 30 %",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "M173800",
+        "search": ["Schlagsahne", "Sahne 30 % Fett"],
+        "state_de": "mind. 30 % Fett, flüssig gewogen",
+        "category": "dairy"
+      },
+      "aliases_de": [],
+      "shopping_category": "chilled_dairy_eggs",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: mind. 30 % Fett, flüssig gewogen. Quell-ID M173800 „Schlagsahne mind. 30 % Fett“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): flüssig gewogen, ungesüßt; nicht Sprühsahne. Sahnehaube auf heißer Schokolade."
+    },
+    {
+      "food_id": "fladenbrot",
+      "name_de": "Fladenbrot (Pide)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "B782100",
+        "search": ["Fladenbrot", "Pide", "Türkisches Brot"],
+        "state_de": "Gebäck (Weizen)",
+        "category": "bread_bakery"
+      },
+      "aliases_de": [],
+      "shopping_category": "bread_bakery",
+      "pantry": false,
+      "units": {},
+      "groups": ["gluten", "sesame"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Gebäck (Weizen). Quell-ID B782100 „Weizenfladenbrot“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): genau passend. Döner im Fladenbrot. Sesam/Schwarzkümmel vorsichtig gesetzt."
+    },
+    {
+      "food_id": "doenerfleisch",
+      "name_de": "Dönerfleisch (gegart)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "V422072",
+        "search": ["Döner", "Dönerfleisch", "Drehspieß"],
+        "state_de": "gegart, verzehrfertig (Kalb/Rind bzw. Hähnchen)",
+        "category": "meat_beef_veal"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": ["beef", "poultry"],
+      "animal": ["meat"],
+      "meat_kind": ["beef", "poultry"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gegart, verzehrfertig (Kalb/Rind bzw. Hähnchen). Quell-ID V422072 „Geflügel Dönerfleisch, gegrillt“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): einziges Dönerfleisch in BLS 4.0 (Kalb/Rind nur als ganzes Gericht); gegart wie in den Gerichten. Döner und Dürüm. Fleischart je Imbiss verschieden → Rind und Geflügel vorsichtig gesetzt; Joghurt in der Marinade bei R19 prüfen."
+    },
+    {
+      "food_id": "gyrosfleisch-schwein",
+      "name_de": "Gyrosfleisch (Schwein, gebraten)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "Y384112",
+        "search": ["Gyros", "Schwein Nacken gebraten", "Schwein Nacken"],
+        "state_de": "gebraten, verzehrfertig",
+        "category": "meat_pork"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": [],
+      "animal": ["meat"],
+      "meat_kind": ["pork"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gebraten, verzehrfertig. Quell-ID Y384112 „Gyros (Schweinefleisch) gebraten“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): gebratener Zustand wie im Gericht. Gyros-Teller; gebratener Zustand (Bratfett damit enthalten)."
+    },
+    {
+      "food_id": "leberkaese",
+      "name_de": "Leberkäse",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "W233000",
+        "search": ["Leberkäse", "Fleischkäse"],
+        "state_de": "gebacken, verzehrfertig",
+        "category": "sausage_meat_products"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": ["beef"],
+      "animal": ["meat"],
+      "meat_kind": ["pork", "beef"],
+      "pregnancy_caution": true,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gebacken, verzehrfertig. Quell-ID W233000 „Fleischkäse einfach, fein/Original Bayerischer Leberkäse fein“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): Bayerischer Leberkäse ohne Leber, verzehrfertig. Leberkässemmel (Bayerischer Leberkäse ohne Leber); Rind vorsichtig gesetzt. „pregnancy_caution“ wegen R18 (Wort „Leber“) vorsichtig gesetzt – Aufheben nur bei R19 über die Ausnahmeliste mit Quelle."
+    },
+    {
+      "food_id": "matjeshering",
+      "name_de": "Matjeshering",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "T103100",
+        "search": ["Matjes", "Hering mariniert", "Bismarckhering"],
+        "state_de": "gesalzen bzw. mariniert, roh",
+        "category": "fish"
+      },
+      "aliases_de": [],
+      "shopping_category": "fish",
+      "pantry": false,
+      "units": {},
+      "groups": ["fish", "histamine"],
+      "animal": ["fish"],
+      "meat_kind": [],
+      "pregnancy_caution": true,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gesalzen bzw. mariniert, roh. Quell-ID T103100 „Matjeshering mild gesalzen“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): genau passend (roh, gesalzen). Fischbrötchen. Roher, gesalzener Fisch → „pregnancy_caution“; Fisch → Histamin."
+    },
+    {
+      "food_id": "brathaehnchen-mit-haut",
+      "name_de": "Brathähnchen mit Haut",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "V414172",
+        "search": ["Brathähnchen", "Hähnchen gegrillt", "Huhn mit Haut gebraten"],
+        "state_de": "gegrillt, mit Haut, ohne Knochen gewogen",
+        "category": "meat_poultry"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": ["poultry"],
+      "animal": ["meat"],
+      "meat_kind": ["poultry"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gegrillt, mit Haut, ohne Knochen gewogen. Quell-ID V414172 „Hähnchen ganz, entbeint, mit Haut, gegrillt“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): essbarer Anteil ohne Knochen, mit Haut, gegrillt. Halbes Grillhähnchen; essbarer Anteil ohne Knochen."
+    },
+    {
+      "food_id": "rindfleisch-gulasch",
+      "name_de": "Rindfleisch für Gulasch",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "U151100",
+        "search": ["Rind Schulter", "Rind Gulasch", "Rind Wade"],
+        "state_de": "roh (Schulter/Wade)",
+        "category": "meat_beef_veal"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": ["beef"],
+      "animal": ["meat"],
+      "meat_kind": ["beef"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh (Schulter/Wade). Quell-ID U151100 „Rind Gulasch (Bug) roh“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): roh gewogen wie in den Gerichten. Rindergulasch, roh gewogen wie in Rezepten."
+    },
+    {
+      "food_id": "schweineschulter",
+      "name_de": "Schweineschulter",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "U632100",
+        "search": ["Schwein Schulter", "Schwein Nacken", "Schwein Kamm"],
+        "state_de": "roh",
+        "category": "meat_pork"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": [],
+      "animal": ["meat"],
+      "meat_kind": ["pork"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: roh. Quell-ID U632100 „Schwein Kamm, roh“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): BLS 4.0 führt keine rohe Schweineschulter; Kamm (Nacken) ist das übliche Bratenstück, roh gewogen. Schweinebraten, roh gewogen wie in Rezepten."
+    },
+    {
+      "food_id": "kartoffelknoedel",
+      "name_de": "Kartoffelknödel",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "K241232",
+        "search": ["Kartoffelknödel", "Kartoffelkloß", "Knödel", "Kloß"],
+        "state_de": "gegart",
+        "category": "potatoes_starch"
+      },
+      "aliases_de": [],
+      "shopping_category": "pasta_rice_grains",
+      "pantry": false,
+      "units": {},
+      "groups": ["gluten"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gegart. Quell-ID K241232 „Kartoffelkloß halb und halb, tiefgefroren, gargezogen“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): einziger gegarter Kartoffelkloß; gegart wie im Gericht. Schweinebraten mit Knödel. Gluten vorsichtig (Grieß/Semmelbrösel in vielen Rezepturen)."
+    },
+    {
+      "food_id": "maultaschen",
+      "name_de": "Maultaschen",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "X760112",
+        "search": ["Maultasche", "Maultaschen"],
+        "state_de": "gegart (Fleischfüllung)",
+        "category": "composite_dishes"
+      },
+      "aliases_de": [],
+      "shopping_category": "chilled_dairy_eggs",
+      "pantry": false,
+      "units": {},
+      "groups": ["beef", "eggs", "gluten"],
+      "animal": ["meat", "egg"],
+      "meat_kind": ["pork", "beef"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: gegart (Fleischfüllung). Quell-ID X760112 „Maultaschen Schwäbische Art (mit Hackfleisch) gegart“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): gegart ohne Brühe (Brühe im Gericht getrennt). Schwäbische Maultaschen mit Fleisch-Spinat-Füllung; Schwein und Rind vorsichtig gesetzt."
+    },
+    {
+      "food_id": "schweinemett",
+      "name_de": "Schweinemett",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "U020100",
+        "search": ["Mett", "Hackepeter", "Schwein Hackfleisch gewürzt", "Schwein Hackfleisch"],
+        "state_de": "roh, gewürzt",
+        "category": "meat_pork"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": ["onion_garlic"],
+      "animal": ["meat"],
+      "meat_kind": ["pork"],
+      "pregnancy_caution": true,
+      "alcohol": false,
+      "max_fridge_days": 0,
+      "freezable": false,
+      "substitutes": [],
+      "reason_de": "Zustand: roh, gewürzt. Quell-ID U020100 „Schwein Hackfleisch, roh“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): kein eigenes Mett in BLS 4.0; rohes Schweinehack (wie hackfleisch-vom-schwein), Gewürze vernachlässigt. Mettbrötchen. Rohes Hackfleisch → „pregnancy_caution“; nur am Kauftag (R9)."
+    },
+    {
+      "food_id": "chai-latte-pulver",
+      "name_de": "Chai-Latte-Pulver",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": null,
+        "search": ["Chai", "Chai Latte"],
+        "state_de": "Pulver bzw. Sirup",
+        "category": "beverages"
+      },
+      "aliases_de": [],
+      "shopping_category": "drinks",
+      "pantry": true,
+      "units": {},
+      "groups": ["dairy", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Quell-ID offen: kein Chai-Pulver/-Sirup in BLS 4.0 (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0) – einziger Treffer „Latte macchiato“ (N418000) passt nicht. Gericht Chai Latte bleibt ohne Werte (kein Ersatz). Milchpulver vorsichtig gesetzt."
+    },
+    {
+      "food_id": "apfelsaft",
+      "name_de": "Apfelsaft",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "F110600",
+        "search": ["Apfelsaft"],
+        "state_de": "Saft (100 %)",
+        "category": "beverages"
+      },
+      "aliases_de": [],
+      "shopping_category": "drinks",
+      "pantry": false,
+      "units": {},
+      "groups": ["fructose"],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Saft (100 %). Quell-ID F110600 „Apfelsaft“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): genau passend, nicht angereichert. Apfelschorle (halb Saft, halb Wasser)."
+    },
+    {
+      "food_id": "haehnchen-nuggets",
+      "name_de": "Hähnchen-Nuggets",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "Y591112",
+        "search": ["Nuggets", "Hähnchen paniert", "Chicken Nuggets"],
+        "state_de": "paniert, frittiert, verzehrfertig",
+        "category": "meat_poultry"
+      },
+      "aliases_de": [],
+      "shopping_category": "frozen",
+      "pantry": false,
+      "units": {},
+      "groups": ["gluten", "poultry"],
+      "animal": ["meat"],
+      "meat_kind": ["poultry"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 1,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: paniert, frittiert, verzehrfertig. Quell-ID Y591112 „Hähnchenbrustfilet paniert, gebraten“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): keine Nuggets in BLS 4.0; paniertes, gebratenes Hähnchenbrustfilet als Näherung, bei R19 prüfen. Chicken Nuggets (6 Stück)."
+    },
+    {
+      "food_id": "speiseeis-vanille",
+      "name_de": "Speiseeis Vanille",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "S211500",
+        "search": ["Speiseeis Vanille", "Eiscreme Vanille", "Milchspeiseeis"],
+        "state_de": "Milchspeiseeis bzw. Eiscreme",
+        "category": "sugar_sweets"
+      },
+      "aliases_de": [],
+      "shopping_category": "frozen",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "eggs", "lactose"],
+      "animal": ["dairy", "egg"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Milchspeiseeis bzw. Eiscreme. Quell-ID S211500 „Speiseeis Vanille, in Waffeltüte“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): kein reines Vanilleeis in BLS 4.0; Vanilleeis mit Waffeltüte als Näherung (etwas mehr Kohlenhydrate), bei R19 prüfen. Milchshake. Eigelb vorsichtig gesetzt (viele Vanilleeis-Rezepturen)."
+    },
+    {
+      "food_id": "cola",
+      "name_de": "Cola (zuckerhaltig)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "N330000",
+        "search": ["Cola", "Colagetränk", "Limonade Cola"],
+        "state_de": "zuckerhaltig, nicht light",
+        "category": "beverages"
+      },
+      "aliases_de": [],
+      "shopping_category": "drinks",
+      "pantry": true,
+      "units": {},
+      "groups": [],
+      "animal": [],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: zuckerhaltig, nicht light. Quell-ID N330000 „Colagetränk koffeinhaltig“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): zuckerhaltig, nicht mit Süßungsmitteln. Cola im Becher (Fast Food)."
+    },
+    {
+      "food_id": "croissant",
+      "name_de": "Croissant",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "D771600",
+        "search": ["Croissant", "Plundergebäck", "Buttercroissant"],
+        "state_de": "Gebäck (Plunder-/Butterteig)",
+        "category": "pastries_sweets"
+      },
+      "aliases_de": [],
+      "shopping_category": "bread_bakery",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "eggs", "gluten", "lactose"],
+      "animal": ["dairy", "egg"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Gebäck (Plunder-/Butterteig). Quell-ID D771600 „Croissant (Hefeblätterteig/Plunderteig)“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): ungefüllt, genau passend. Croissant, Laugencroissant, Franzbrötchen (Plunderteig, im Gericht vermerkt)."
+    },
+    {
+      "food_id": "berliner-krapfen",
+      "name_de": "Berliner (Krapfen)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "D7A6200",
+        "search": ["Berliner", "Krapfen", "Pfannkuchen Hefe"],
+        "state_de": "Hefegebäck, frittiert, mit Füllung",
+        "category": "pastries_sweets"
+      },
+      "aliases_de": [],
+      "shopping_category": "bread_bakery",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "eggs", "gluten", "lactose"],
+      "animal": ["dairy", "egg"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Hefegebäck, frittiert, mit Füllung. Quell-ID D7A6200 „Berliner/Pfannkuchen/Krapfen (Hefeteig) frittiert, gefüllt mit Konfitüre“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): genau passend. Berliner mit Konfitüre."
+    },
+    {
+      "food_id": "streuselkuchen",
+      "name_de": "Streuselkuchen",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "D461500",
+        "search": ["Streuselkuchen", "Hefekuchen Streusel"],
+        "state_de": "Hefeteig mit Butterstreuseln",
+        "category": "pastries_sweets"
+      },
+      "aliases_de": [],
+      "shopping_category": "bread_bakery",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "eggs", "gluten", "lactose"],
+      "animal": ["dairy", "egg"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Hefeteig mit Butterstreuseln. Quell-ID D461500 „Streuselkuchen (Hefeteig)“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): genau passend. Bäckerei-Stück; als ganzes Gebäck aus der Quelle statt aus Zutaten (genauer)."
+    },
+    {
+      "food_id": "wiener-wuerstchen",
+      "name_de": "Wiener Würstchen",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "W211200",
+        "search": ["Wiener", "Wiener Würstchen", "Würstchen"],
+        "state_de": "Brühwurst, gegart",
+        "category": "sausage_meat_products"
+      },
+      "aliases_de": [],
+      "shopping_category": "meat_sausage",
+      "pantry": false,
+      "units": {},
+      "groups": ["beef"],
+      "animal": ["meat"],
+      "meat_kind": ["pork", "beef"],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Brühwurst, gegart. Quell-ID W211200 „Wiener Würstchen“ (Lauf „kandidaten“ 40307807050 vom 26.10.2026, BLS 4.0): Brühwurst, schon gegart. Linseneintopf mit Würstchen, Hot Dog. Schwein und Rind vorsichtig gesetzt."
+    }
+  ],
+  "dishes": [
+    {
+      "id": "auswaerts-schnitzel-pommes",
+      "name_de": "Schnitzel Wiener Art mit Pommes",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "schweineschnitzel",
+          "g": 160
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 20
+        },
+        {
+          "food_id": "paniermehl",
+          "g": 25
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 42
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "salz",
+          "g": 1
+        },
+        {
+          "food_id": "zitronensaft",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen). Bratfett als Öl-Aufnahme eingerechnet.",
+      "note_de": "Schweineschnitzel paniert (Ei, Paniermehl), in Öl gebraten; Mehl zum Panieren vernachlässigt.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-schnitzel-kartoffelsalat",
+      "name_de": "Schnitzel mit Kartoffelsalat",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "schweineschnitzel",
+          "g": 160
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 20
+        },
+        {
+          "food_id": "paniermehl",
+          "g": 25
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 32
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 25
+        },
+        {
+          "food_id": "gemuesebruehe-zubereitet",
+          "g": 60
+        },
+        {
+          "food_id": "apfelessig",
+          "g": 10
+        },
+        {
+          "food_id": "senf",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen). Bratfett als Öl-Aufnahme eingerechnet.",
+      "note_de": "Süddeutscher Kartoffelsalat mit Brühe, Essig und Öl (ohne Mayonnaise).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-jaegerschnitzel-pommes",
+      "name_de": "Jägerschnitzel mit Pommes",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "schweineschnitzel",
+          "g": 160
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 20
+        },
+        {
+          "food_id": "paniermehl",
+          "g": 25
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 47
+        },
+        {
+          "food_id": "champignons",
+          "g": 100
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 20
+        },
+        {
+          "food_id": "kochsahne-15",
+          "g": 60
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "salz",
+          "g": 1
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen). Bratfett als Öl-Aufnahme eingerechnet.",
+      "note_de": "Paniert mit Pilz-Rahmsoße (Kochsahne 15 %).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-cordon-bleu-pommes",
+      "name_de": "Cordon bleu mit Pommes",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "schweineschnitzel",
+          "g": 160
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 20
+        },
+        {
+          "food_id": "paniermehl",
+          "g": 25
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 42
+        },
+        {
+          "food_id": "kochschinken",
+          "g": 30
+        },
+        {
+          "food_id": "gouda",
+          "g": 30
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "salz",
+          "g": 1
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen). Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-hueftsteak-ofenkartoffel",
+      "name_de": "Hüftsteak mit Ofenkartoffel und Kräuterquark",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller (200 g Steak)",
+      "items": [
+        {
+          "food_id": "rinderhueftsteak",
+          "g": 200
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 10
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 300
+        },
+        {
+          "food_id": "magerquark",
+          "g": 80
+        },
+        {
+          "food_id": "schnittlauch-frisch",
+          "g": 5
+        },
+        {
+          "food_id": "salatmix",
+          "g": 50
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen). Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-lachs-reis-gemuese",
+      "name_de": "Lachsfilet mit Reis und Gemüse",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller (160 g Lachs)",
+      "items": [
+        {
+          "food_id": "lachsfilet",
+          "g": 160
+        },
+        {
+          "food_id": "basmatireis-trocken",
+          "g": 80
+        },
+        {
+          "food_id": "brokkoli",
+          "g": 120
+        },
+        {
+          "food_id": "karotte",
+          "g": 60
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-spaghetti-bolognese",
+      "name_de": "Spaghetti Bolognese",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "spaghetti-trocken",
+          "g": 125
+        },
+        {
+          "food_id": "rinderhackfleisch-5-fett",
+          "g": 50
+        },
+        {
+          "food_id": "hackfleisch-vom-schwein",
+          "g": 50
+        },
+        {
+          "food_id": "passierte-tomaten",
+          "g": 150
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 30
+        },
+        {
+          "food_id": "karotte",
+          "g": 30
+        },
+        {
+          "food_id": "tomatenmark",
+          "g": 10
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 10
+        },
+        {
+          "food_id": "parmesan",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Gemischtes Hackfleisch (halb Rind 5 %, halb Schwein).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-spaghetti-napoli",
+      "name_de": "Spaghetti mit Tomatensoße",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "spaghetti-trocken",
+          "g": 125
+        },
+        {
+          "food_id": "passierte-tomaten",
+          "g": 180
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 25
+        },
+        {
+          "food_id": "knoblauch",
+          "g": 3
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 12
+        },
+        {
+          "food_id": "parmesan",
+          "g": 10
+        },
+        {
+          "food_id": "basilikum",
+          "g": 2
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-penne-arrabbiata",
+      "name_de": "Penne all’arrabbiata",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "spaghetti-trocken",
+          "g": 125
+        },
+        {
+          "food_id": "gehackte-tomaten-dose",
+          "g": 180
+        },
+        {
+          "food_id": "knoblauch",
+          "g": 4
+        },
+        {
+          "food_id": "sambal-oelek",
+          "g": 5
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 12
+        },
+        {
+          "food_id": "petersilie-frisch",
+          "g": 3
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Nudeln aus Hartweizen (Katalog „Teigwaren eifrei“), Chili als Sambal Oelek.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-gnocchi-tomate",
+      "name_de": "Gnocchi mit Tomatensoße und Parmesan",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "gnocchi-kuehlregal",
+          "g": 300
+        },
+        {
+          "food_id": "passierte-tomaten",
+          "g": 150
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 10
+        },
+        {
+          "food_id": "parmesan",
+          "g": 15
+        },
+        {
+          "food_id": "basilikum",
+          "g": 2
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-pilzrisotto",
+      "name_de": "Pilzrisotto",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "risottoreis",
+          "g": 90
+        },
+        {
+          "food_id": "champignons",
+          "g": 120
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 25
+        },
+        {
+          "food_id": "gemuesebruehe-zubereitet",
+          "g": 300
+        },
+        {
+          "food_id": "parmesan",
+          "g": 20
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Mit Olivenöl statt Butter angesetzt.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-caesar-salad",
+      "name_de": "Caesar Salad mit Hähnchen",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Schüssel",
+      "items": [
+        {
+          "food_id": "romanasalat",
+          "g": 150
+        },
+        {
+          "food_id": "haehnchenbrustfilet",
+          "g": 120
+        },
+        {
+          "food_id": "parmesan",
+          "g": 20
+        },
+        {
+          "food_id": "toastbrot-weizen",
+          "g": 30
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 20
+        },
+        {
+          "food_id": "zitronensaft",
+          "g": 10
+        },
+        {
+          "food_id": "senf",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Dressing vereinfacht aus Öl, Zitrone, Senf, Parmesan (ohne Mayonnaise/Sardellen).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-griechischer-salat",
+      "name_de": "Griechischer Bauernsalat",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Schüssel",
+      "items": [
+        {
+          "food_id": "tomate",
+          "g": 150
+        },
+        {
+          "food_id": "gurke",
+          "g": 120
+        },
+        {
+          "food_id": "paprika-rot",
+          "g": 60
+        },
+        {
+          "food_id": "rote-zwiebel",
+          "g": 30
+        },
+        {
+          "food_id": "feta",
+          "g": 80
+        },
+        {
+          "food_id": "oliven-schwarz",
+          "g": 20
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-thai-curry-haehnchen",
+      "name_de": "Thai-Curry mit Hähnchen und Reis",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "haehnchenbrustfilet",
+          "g": 140
+        },
+        {
+          "food_id": "kokosmilch",
+          "g": 120
+        },
+        {
+          "food_id": "paprika-rot",
+          "g": 60
+        },
+        {
+          "food_id": "zucchini",
+          "g": 60
+        },
+        {
+          "food_id": "basmatireis-trocken",
+          "g": 80
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 8
+        },
+        {
+          "food_id": "sojasauce",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Currypaste vernachlässigt (kleine Menge).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-pad-thai",
+      "name_de": "Pad Thai mit Garnelen",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "reisnudeln-trocken",
+          "g": 100
+        },
+        {
+          "food_id": "garnelen-tk-roh-geschaelt",
+          "g": 100
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 50
+        },
+        {
+          "food_id": "fruehlingszwiebel",
+          "g": 20
+        },
+        {
+          "food_id": "erdnussmus",
+          "g": 10
+        },
+        {
+          "food_id": "sojasauce",
+          "g": 15
+        },
+        {
+          "food_id": "limettensaft",
+          "g": 10
+        },
+        {
+          "food_id": "zucker",
+          "g": 8
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Erdnüsse als Erdnussmus, Fischsoße durch Sojasoße angenähert.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-burrito",
+      "name_de": "Burrito mit Rind, Reis und Bohnen",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "vollkorn-tortilla",
+          "g": 90
+        },
+        {
+          "food_id": "rinderhackfleisch-5-fett",
+          "g": 80
+        },
+        {
+          "food_id": "express-reis-beutel-gegart",
+          "g": 80
+        },
+        {
+          "food_id": "schwarze-bohnen-dose-abgetropft",
+          "g": 60
+        },
+        {
+          "food_id": "mais-dose-abgetropft",
+          "g": 30
+        },
+        {
+          "food_id": "gouda",
+          "g": 25
+        },
+        {
+          "food_id": "tomate",
+          "g": 40
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Katalog „Weizentortilla“; Salsa als frische Tomate.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-bauernfruehstueck",
+      "name_de": "Bauernfrühstück",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Pfanne",
+      "items": [
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 100
+        },
+        {
+          "food_id": "kochschinken",
+          "g": 40
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 40
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 15
+        },
+        {
+          "food_id": "gurke",
+          "g": 50
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen). Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-kaesespaetzle",
+      "name_de": "Käsespätzle mit Röstzwiebeln",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "eierspaetzle-getrocknet",
+          "g": 125
+        },
+        {
+          "food_id": "gouda",
+          "g": 70
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 50
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Käse als Gouda 48 %; regional oft Bergkäse/Emmentaler (ähnliche Werte, vor Freigabe prüfen).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-pizza-margherita",
+      "name_de": "Pizza Margherita",
+      "category": "restaurant",
+      "portion": "pizza",
+      "basis_de": "1 Pizza (ca. 30 cm)",
+      "items": [
+        {
+          "food_id": "passierte-tomaten",
+          "g": 100
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 10
+        },
+        {
+          "food_id": "basilikum",
+          "g": 3
+        },
+        {
+          "food_id": "weizenmehl-type-405",
+          "g": 160
+        },
+        {
+          "food_id": "mozzarella",
+          "g": 125
+        },
+        {
+          "food_id": "salz",
+          "g": 3
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Teig aus Weizenmehl Type 405, Wasser, Salz, Hefe (Wasser und Hefe ohne Nährwert-Einfluss).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-pizza-salami",
+      "name_de": "Pizza Salami",
+      "category": "restaurant",
+      "portion": "pizza",
+      "basis_de": "1 Pizza (ca. 30 cm)",
+      "items": [
+        {
+          "food_id": "passierte-tomaten",
+          "g": 100
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 10
+        },
+        {
+          "food_id": "weizenmehl-type-405",
+          "g": 160
+        },
+        {
+          "food_id": "mozzarella",
+          "g": 110
+        },
+        {
+          "food_id": "salami",
+          "g": 50
+        },
+        {
+          "food_id": "salz",
+          "g": 3
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-pizza-funghi",
+      "name_de": "Pizza Funghi",
+      "category": "restaurant",
+      "portion": "pizza",
+      "basis_de": "1 Pizza (ca. 30 cm)",
+      "items": [
+        {
+          "food_id": "passierte-tomaten",
+          "g": 100
+        },
+        {
+          "food_id": "champignons",
+          "g": 80
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 10
+        },
+        {
+          "food_id": "weizenmehl-type-405",
+          "g": 160
+        },
+        {
+          "food_id": "mozzarella",
+          "g": 110
+        },
+        {
+          "food_id": "salz",
+          "g": 3
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-pizza-tonno",
+      "name_de": "Pizza Tonno",
+      "category": "restaurant",
+      "portion": "pizza",
+      "basis_de": "1 Pizza (ca. 30 cm)",
+      "items": [
+        {
+          "food_id": "passierte-tomaten",
+          "g": 100
+        },
+        {
+          "food_id": "thunfisch-dose-im-eigenen-saft-abgetropft",
+          "g": 80
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 30
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 10
+        },
+        {
+          "food_id": "weizenmehl-type-405",
+          "g": 160
+        },
+        {
+          "food_id": "mozzarella",
+          "g": 110
+        },
+        {
+          "food_id": "salz",
+          "g": 3
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-flammkuchen",
+      "name_de": "Flammkuchen Elsässer Art",
+      "category": "restaurant",
+      "portion": "pizza",
+      "basis_de": "1 Flammkuchen",
+      "items": [
+        {
+          "food_id": "zwiebel",
+          "g": 60
+        },
+        {
+          "food_id": "weizenmehl-type-405",
+          "g": 130
+        },
+        {
+          "food_id": "schmand",
+          "g": 100
+        },
+        {
+          "food_id": "speck-durchwachsen",
+          "g": 50
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 8
+        },
+        {
+          "food_id": "salz",
+          "g": 2
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Dünner Teig aus Weizenmehl, Wasser, Öl.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-lasagne",
+      "name_de": "Lasagne",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Portion",
+      "items": [
+        {
+          "food_id": "lasagneplatten",
+          "g": 80
+        },
+        {
+          "food_id": "rinderhackfleisch-5-fett",
+          "g": 100
+        },
+        {
+          "food_id": "passierte-tomaten",
+          "g": 150
+        },
+        {
+          "food_id": "parmesan",
+          "g": 15
+        },
+        {
+          "food_id": "butter",
+          "g": 15
+        },
+        {
+          "food_id": "weizenmehl-type-405",
+          "g": 15
+        },
+        {
+          "food_id": "vollmilch-3-5",
+          "g": 150
+        },
+        {
+          "food_id": "mozzarella",
+          "g": 40
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "note_de": "Béchamel aus Butter, Mehl und Vollmilch; Mozzarella zum Überbacken.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-spaghetti-carbonara",
+      "name_de": "Spaghetti Carbonara",
+      "category": "restaurant",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "spaghetti-trocken",
+          "g": 125
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 60
+        },
+        {
+          "food_id": "parmesan",
+          "g": 25
+        },
+        {
+          "food_id": "speck-durchwachsen",
+          "g": 50
+        }
+      ],
+      "source_de": "Annahme: übliche Restaurant-Portion im DACH-Raum; Mengen nach Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“ und DGE-Qualitätsstandard (Rezeptmengen).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-pommes",
+      "name_de": "Pommes frites",
+      "category": "imbiss",
+      "portion": "plate",
+      "basis_de": "1 Schale (ca. 150 g)",
+      "items": [
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 22
+        },
+        {
+          "food_id": "salz",
+          "g": 1
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“. Bratfett als Öl-Aufnahme eingerechnet.",
+      "note_de": "Aus 250 g rohen Kartoffeln mit 22 g Öl-Aufnahme beim Frittieren; ohne Soße.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-pommes-rot-weiss",
+      "name_de": "Pommes rot-weiß",
+      "category": "imbiss",
+      "portion": "plate",
+      "basis_de": "1 Schale",
+      "items": [
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 22
+        },
+        {
+          "food_id": "salz",
+          "g": 1
+        },
+        {
+          "food_id": "tomatenketchup",
+          "g": 30
+        },
+        {
+          "food_id": "mayonnaise",
+          "g": 25
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“. Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-currywurst-pommes",
+      "name_de": "Currywurst mit Pommes",
+      "category": "imbiss",
+      "portion": "plate",
+      "basis_de": "1 Portion",
+      "items": [
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 22
+        },
+        {
+          "food_id": "salz",
+          "g": 1
+        },
+        {
+          "food_id": "bratwurst-schwein",
+          "g": 130
+        },
+        {
+          "food_id": "tomatenketchup",
+          "g": 60
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“. Bratfett als Öl-Aufnahme eingerechnet.",
+      "note_de": "Currysoße als Tomatenketchup angenähert (Currypulver vernachlässigt).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-currywurst",
+      "name_de": "Currywurst (ohne Beilage)",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "1 Wurst mit Soße",
+      "items": [
+        {
+          "food_id": "bratwurst-schwein",
+          "g": 130
+        },
+        {
+          "food_id": "tomatenketchup",
+          "g": 60
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "note_de": "Currysoße als Tomatenketchup angenähert (Currypulver vernachlässigt).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-bratwurst-broetchen",
+      "name_de": "Bratwurst im Brötchen",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "weizenbroetchen",
+          "g": 60
+        },
+        {
+          "food_id": "senf",
+          "g": 10
+        },
+        {
+          "food_id": "bratwurst-schwein",
+          "g": 120
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-doener",
+      "name_de": "Döner Kebab",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "1 Döner im Fladenbrot",
+      "items": [
+        {
+          "food_id": "blattsalat",
+          "g": 30
+        },
+        {
+          "food_id": "tomate",
+          "g": 40
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 20
+        },
+        {
+          "food_id": "rotkohl",
+          "g": 30
+        },
+        {
+          "food_id": "joghurt-1-5",
+          "g": 40
+        },
+        {
+          "food_id": "knoblauch",
+          "g": 2
+        },
+        {
+          "food_id": "fladenbrot",
+          "g": 150
+        },
+        {
+          "food_id": "doenerfleisch",
+          "g": 120
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-duerum",
+      "name_de": "Dürüm Döner",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "1 Dürüm",
+      "items": [
+        {
+          "food_id": "vollkorn-tortilla",
+          "g": 100
+        },
+        {
+          "food_id": "blattsalat",
+          "g": 30
+        },
+        {
+          "food_id": "tomate",
+          "g": 40
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 20
+        },
+        {
+          "food_id": "joghurt-1-5",
+          "g": 40
+        },
+        {
+          "food_id": "knoblauch",
+          "g": 2
+        },
+        {
+          "food_id": "doenerfleisch",
+          "g": 120
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-haehnchen-duerum",
+      "name_de": "Hähnchen-Dürüm",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "1 Dürüm",
+      "items": [
+        {
+          "food_id": "vollkorn-tortilla",
+          "g": 100
+        },
+        {
+          "food_id": "haehnchenschenkelfilet-ohne-haut",
+          "g": 130
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 12
+        },
+        {
+          "food_id": "blattsalat",
+          "g": 30
+        },
+        {
+          "food_id": "tomate",
+          "g": 40
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 20
+        },
+        {
+          "food_id": "rotkohl",
+          "g": 30
+        },
+        {
+          "food_id": "joghurt-1-5",
+          "g": 40
+        },
+        {
+          "food_id": "knoblauch",
+          "g": 2
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "note_de": "Hähnchenfleisch als Schenkelfilet mit Bratfett; Fladen als Weizentortilla (Yufka ähnlich).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-falafel-teller",
+      "name_de": "Falafel-Teller mit Hummus und Salat",
+      "category": "imbiss",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "falafel-kuehlregal",
+          "g": 150
+        },
+        {
+          "food_id": "hummus",
+          "g": 60
+        },
+        {
+          "food_id": "tomate",
+          "g": 60
+        },
+        {
+          "food_id": "gurke",
+          "g": 60
+        },
+        {
+          "food_id": "salatmix",
+          "g": 40
+        },
+        {
+          "food_id": "joghurt-1-5",
+          "g": 40
+        },
+        {
+          "food_id": "knoblauch",
+          "g": 2
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-falafel-wrap",
+      "name_de": "Falafel-Wrap",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "1 Wrap",
+      "items": [
+        {
+          "food_id": "vollkorn-tortilla",
+          "g": 80
+        },
+        {
+          "food_id": "falafel-kuehlregal",
+          "g": 100
+        },
+        {
+          "food_id": "hummus",
+          "g": 30
+        },
+        {
+          "food_id": "tomate",
+          "g": 40
+        },
+        {
+          "food_id": "salatmix",
+          "g": 25
+        },
+        {
+          "food_id": "joghurt-1-5",
+          "g": 40
+        },
+        {
+          "food_id": "knoblauch",
+          "g": 2
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-gyros-teller",
+      "name_de": "Gyros-Teller mit Pommes und Tzatziki",
+      "category": "imbiss",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 22
+        },
+        {
+          "food_id": "salz",
+          "g": 1
+        },
+        {
+          "food_id": "gyrosfleisch-schwein",
+          "g": 180
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 20
+        },
+        {
+          "food_id": "joghurt-1-5",
+          "g": 80
+        },
+        {
+          "food_id": "gurke",
+          "g": 30
+        },
+        {
+          "food_id": "knoblauch",
+          "g": 3
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“. Bratfett als Öl-Aufnahme eingerechnet.",
+      "note_de": "Tzatziki aus Joghurt 1,5 %, Gurke, Knoblauch und Öl (griechischer Joghurt fehlt im Katalog).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-frikadelle-broetchen",
+      "name_de": "Frikadelle im Brötchen",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "weizenbroetchen",
+          "g": 60
+        },
+        {
+          "food_id": "rinderhackfleisch-5-fett",
+          "g": 45
+        },
+        {
+          "food_id": "hackfleisch-vom-schwein",
+          "g": 45
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 10
+        },
+        {
+          "food_id": "paniermehl",
+          "g": 10
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 15
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 6
+        },
+        {
+          "food_id": "senf",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“. Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-leberkaessemmel",
+      "name_de": "Leberkässemmel",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "1 Semmel",
+      "items": [
+        {
+          "food_id": "weizenbroetchen",
+          "g": 60
+        },
+        {
+          "food_id": "senf",
+          "g": 10
+        },
+        {
+          "food_id": "leberkaese",
+          "g": 120
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-fischbroetchen",
+      "name_de": "Fischbrötchen (Matjes/Bismarck)",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "weizenbroetchen",
+          "g": 60
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 15
+        },
+        {
+          "food_id": "matjeshering",
+          "g": 70
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-lachsbroetchen",
+      "name_de": "Räucherlachs-Brötchen",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "weizenbroetchen",
+          "g": 60
+        },
+        {
+          "food_id": "raeucherlachs",
+          "g": 40
+        },
+        {
+          "food_id": "meerrettich-glas",
+          "g": 10
+        },
+        {
+          "food_id": "blattsalat",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-bratkartoffeln",
+      "name_de": "Bratkartoffeln",
+      "category": "imbiss",
+      "portion": "plate",
+      "basis_de": "1 Portion",
+      "items": [
+        {
+          "food_id": "kartoffeln",
+          "g": 300
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 40
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 20
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“. Bratfett als Öl-Aufnahme eingerechnet.",
+      "note_de": "Ohne Speck.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-reibekuchen-apfelmus",
+      "name_de": "Reibekuchen mit Apfelmus",
+      "category": "imbiss",
+      "portion": "plate",
+      "basis_de": "3 Reibekuchen",
+      "items": [
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 30
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 30
+        },
+        {
+          "food_id": "speisestaerke",
+          "g": 10
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 25
+        },
+        {
+          "food_id": "apfelmus-ungesuesst",
+          "g": 100
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“. Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-gebratene-nudeln",
+      "name_de": "Gebratene Nudeln mit Gemüse",
+      "category": "imbiss",
+      "portion": "plate",
+      "basis_de": "1 Box",
+      "items": [
+        {
+          "food_id": "mie-nudeln",
+          "g": 100
+        },
+        {
+          "food_id": "asia-gemuesemischung-tk",
+          "g": 150
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 30
+        },
+        {
+          "food_id": "sojasauce",
+          "g": 15
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-gebratene-nudeln-haehnchen",
+      "name_de": "Gebratene Nudeln mit Hähnchen",
+      "category": "imbiss",
+      "portion": "plate",
+      "basis_de": "1 Box",
+      "items": [
+        {
+          "food_id": "mie-nudeln",
+          "g": 100
+        },
+        {
+          "food_id": "haehnchenbrustfilet",
+          "g": 100
+        },
+        {
+          "food_id": "asia-gemuesemischung-tk",
+          "g": 120
+        },
+        {
+          "food_id": "sojasauce",
+          "g": 15
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-gebratener-reis",
+      "name_de": "Gebratener Reis mit Ei und Gemüse",
+      "category": "imbiss",
+      "portion": "plate",
+      "basis_de": "1 Box",
+      "items": [
+        {
+          "food_id": "express-reis-beutel-gegart",
+          "g": 250
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 50
+        },
+        {
+          "food_id": "erbsen-tk",
+          "g": 40
+        },
+        {
+          "food_id": "karotte",
+          "g": 40
+        },
+        {
+          "food_id": "sojasauce",
+          "g": 15
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-halbes-haehnchen",
+      "name_de": "Halbes Grillhähnchen",
+      "category": "imbiss",
+      "portion": "piece",
+      "basis_de": "½ Hähnchen",
+      "items": [
+        {
+          "food_id": "brathaehnchen-mit-haut",
+          "g": 280
+        }
+      ],
+      "source_de": "Annahme: übliche Imbiss-Portion im DACH-Raum; Mengen nach üblichen Stückgewichten im Handel und Standardrezept, Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "note_de": "Essbarer Anteil eines halben Hähnchens ohne Knochen (ca. 280 g).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-kantine-fleisch",
+      "name_de": "Kantinen-Tagesgericht mit Fleisch",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller (Fleisch, Beilage, Gemüse, Soße)",
+      "items": [
+        {
+          "food_id": "schweineschnitzel",
+          "g": 150
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 10
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "gruene-bohnen-tk",
+          "g": 150
+        },
+        {
+          "food_id": "kochsahne-15",
+          "g": 50
+        },
+        {
+          "food_id": "speisestaerke",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung). Bratfett als Öl-Aufnahme eingerechnet.",
+      "note_de": "Typischer Teller: 150 g Fleisch (mager), Salzkartoffeln, Gemüse, Rahmsoße. Grobe Schätzung.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-kantine-vegetarisch",
+      "name_de": "Kantinen-Tagesgericht vegetarisch",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller (Nudeln, Gemüse, Käsesoße)",
+      "items": [
+        {
+          "food_id": "vollkornnudeln",
+          "g": 110
+        },
+        {
+          "food_id": "zucchini",
+          "g": 80
+        },
+        {
+          "food_id": "paprika-rot",
+          "g": 70
+        },
+        {
+          "food_id": "brokkoli",
+          "g": 80
+        },
+        {
+          "food_id": "kochsahne-15",
+          "g": 60
+        },
+        {
+          "food_id": "gouda",
+          "g": 30
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 8
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "note_de": "Typischer vegetarischer Teller; grobe Schätzung.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-kantine-fisch",
+      "name_de": "Kantinen-Tagesgericht mit Fisch",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller (Fisch, Kartoffeln, Gemüse, Soße)",
+      "items": [
+        {
+          "food_id": "seelachsfilet-tk",
+          "g": 150
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 15
+        },
+        {
+          "food_id": "paniermehl",
+          "g": 20
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 15
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "erbsen-tk",
+          "g": 60
+        },
+        {
+          "food_id": "karotte",
+          "g": 80
+        },
+        {
+          "food_id": "kochsahne-15",
+          "g": 40
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung). Bratfett als Öl-Aufnahme eingerechnet.",
+      "note_de": "Seelachs paniert gebraten; grobe Schätzung.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-haehnchen-reis-gemuese",
+      "name_de": "Hähnchenbrust mit Reis und Gemüse",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "haehnchenbrustfilet",
+          "g": 150
+        },
+        {
+          "food_id": "basmatireis-trocken",
+          "g": 80
+        },
+        {
+          "food_id": "brokkoli",
+          "g": 100
+        },
+        {
+          "food_id": "karotte",
+          "g": 60
+        },
+        {
+          "food_id": "kochsahne-15",
+          "g": 40
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 8
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-chili-con-carne",
+      "name_de": "Chili con Carne mit Brot",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "rinderhackfleisch-5-fett",
+          "g": 100
+        },
+        {
+          "food_id": "kidneybohnen-dose-abgetropft",
+          "g": 100
+        },
+        {
+          "food_id": "mais-dose-abgetropft",
+          "g": 50
+        },
+        {
+          "food_id": "gehackte-tomaten-dose",
+          "g": 150
+        },
+        {
+          "food_id": "paprika-rot",
+          "g": 50
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 30
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 8
+        },
+        {
+          "food_id": "weizenbroetchen",
+          "g": 50
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-chili-sin-carne",
+      "name_de": "Chili sin Carne mit Reis",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "kidneybohnen-dose-abgetropft",
+          "g": 100
+        },
+        {
+          "food_id": "schwarze-bohnen-dose-abgetropft",
+          "g": 60
+        },
+        {
+          "food_id": "mais-dose-abgetropft",
+          "g": 50
+        },
+        {
+          "food_id": "gehackte-tomaten-dose",
+          "g": 150
+        },
+        {
+          "food_id": "paprika-rot",
+          "g": 60
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 30
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 8
+        },
+        {
+          "food_id": "basmatireis-trocken",
+          "g": 70
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-gemuesecurry-reis",
+      "name_de": "Gemüse-Curry mit Reis",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "kichererbsen-dose-abgetropft",
+          "g": 80
+        },
+        {
+          "food_id": "blumenkohl",
+          "g": 100
+        },
+        {
+          "food_id": "karotte",
+          "g": 60
+        },
+        {
+          "food_id": "zucchini",
+          "g": 60
+        },
+        {
+          "food_id": "kokosmilch",
+          "g": 80
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 8
+        },
+        {
+          "food_id": "basmatireis-trocken",
+          "g": 75
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-frikadelle-bratkartoffeln",
+      "name_de": "Frikadelle mit Bratkartoffeln",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "rinderhackfleisch-5-fett",
+          "g": 60
+        },
+        {
+          "food_id": "hackfleisch-vom-schwein",
+          "g": 60
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 15
+        },
+        {
+          "food_id": "paniermehl",
+          "g": 12
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 50
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 22
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung). Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-linseneintopf",
+      "name_de": "Linseneintopf (ohne Würstchen)",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "linsen-dose-abgetropft",
+          "g": 150
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 100
+        },
+        {
+          "food_id": "karotte",
+          "g": 50
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 30
+        },
+        {
+          "food_id": "gemuesebruehe-zubereitet",
+          "g": 200
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 5
+        },
+        {
+          "food_id": "apfelessig",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung). Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-linseneintopf-wurst",
+      "name_de": "Linseneintopf mit Würstchen",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "linsen-dose-abgetropft",
+          "g": 150
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 100
+        },
+        {
+          "food_id": "karotte",
+          "g": 50
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 30
+        },
+        {
+          "food_id": "gemuesebruehe-zubereitet",
+          "g": 200
+        },
+        {
+          "food_id": "wiener-wuerstchen",
+          "g": 100
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-tomatensuppe",
+      "name_de": "Tomatensuppe",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller (300 ml)",
+      "items": [
+        {
+          "food_id": "passierte-tomaten",
+          "g": 200
+        },
+        {
+          "food_id": "gemuesebruehe-zubereitet",
+          "g": 80
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 20
+        },
+        {
+          "food_id": "kochsahne-15",
+          "g": 20
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-kartoffelsuppe",
+      "name_de": "Kartoffelsuppe",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller (300 ml)",
+      "items": [
+        {
+          "food_id": "kartoffeln",
+          "g": 150
+        },
+        {
+          "food_id": "karotte",
+          "g": 40
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 20
+        },
+        {
+          "food_id": "gemuesebruehe-zubereitet",
+          "g": 150
+        },
+        {
+          "food_id": "kochsahne-15",
+          "g": 20
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung). Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-salatbar",
+      "name_de": "Salatbar-Teller mit Dressing",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "salatmix",
+          "g": 80
+        },
+        {
+          "food_id": "tomate",
+          "g": 60
+        },
+        {
+          "food_id": "gurke",
+          "g": 60
+        },
+        {
+          "food_id": "karotte",
+          "g": 40
+        },
+        {
+          "food_id": "mais-dose-abgetropft",
+          "g": 30
+        },
+        {
+          "food_id": "kichererbsen-dose-abgetropft",
+          "g": 40
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 10
+        },
+        {
+          "food_id": "balsamico-essig",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-ofenkartoffel-quark",
+      "name_de": "Ofenkartoffel mit Kräuterquark",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "kartoffeln",
+          "g": 350
+        },
+        {
+          "food_id": "magerquark",
+          "g": 125
+        },
+        {
+          "food_id": "milch-1-5",
+          "g": 20
+        },
+        {
+          "food_id": "schnittlauch-frisch",
+          "g": 5
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung). Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-milchreis-kirschen",
+      "name_de": "Milchreis mit Kirschen",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Schale",
+      "items": [
+        {
+          "food_id": "milchreis-rundkornreis",
+          "g": 60
+        },
+        {
+          "food_id": "milch-1-5",
+          "g": 300
+        },
+        {
+          "food_id": "zucker",
+          "g": 15
+        },
+        {
+          "food_id": "sauerkirschen-glas-abgetropft",
+          "g": 80
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "note_de": "Mit fettarmer Milch; in Kantinen oft Vollmilch (dann etwas mehr).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-pfannkuchen",
+      "name_de": "Pfannkuchen mit Apfelmus",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "2 Pfannkuchen",
+      "items": [
+        {
+          "food_id": "dinkelmehl-type-630",
+          "g": 80
+        },
+        {
+          "food_id": "milch-1-5",
+          "g": 150
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 60
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 10
+        },
+        {
+          "food_id": "apfelmus-ungesuesst",
+          "g": 100
+        },
+        {
+          "food_id": "zucker",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "note_de": "Mehl als Dinkelmehl 630 (Katalog; Weizenmehl fehlt noch).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-seelachs-kartoffelsalat",
+      "name_de": "Paniertes Seelachsfilet mit Kartoffelsalat",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "seelachsfilet-tk",
+          "g": 150
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 15
+        },
+        {
+          "food_id": "paniermehl",
+          "g": 20
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 25
+        },
+        {
+          "food_id": "kartoffeln",
+          "g": 250
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 20
+        },
+        {
+          "food_id": "gemuesebruehe-zubereitet",
+          "g": 60
+        },
+        {
+          "food_id": "apfelessig",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung). Bratfett als Öl-Aufnahme eingerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-gulasch-nudeln",
+      "name_de": "Rindergulasch mit Nudeln",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "eierspaetzle-getrocknet",
+          "g": 100
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 60
+        },
+        {
+          "food_id": "paprika-rot",
+          "g": 40
+        },
+        {
+          "food_id": "tomatenmark",
+          "g": 15
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 10
+        },
+        {
+          "food_id": "rindfleisch-gulasch",
+          "g": 150
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-schweinebraten-knoedel",
+      "name_de": "Schweinebraten mit Knödel",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "schweineschulter",
+          "g": 180
+        },
+        {
+          "food_id": "kartoffelknoedel",
+          "g": 200
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 30
+        },
+        {
+          "food_id": "gemuesebruehe-zubereitet",
+          "g": 100
+        },
+        {
+          "food_id": "speisestaerke",
+          "g": 5
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-maultaschen",
+      "name_de": "Maultaschen in Brühe",
+      "category": "kantine",
+      "portion": "plate",
+      "basis_de": "3 Maultaschen",
+      "items": [
+        {
+          "food_id": "gemuesebruehe-zubereitet",
+          "g": 250
+        },
+        {
+          "food_id": "maultaschen",
+          "g": 225
+        }
+      ],
+      "source_de": "Annahme: Kantinen-Portion Mittagessen nach DGE-Qualitätsstandard für die Betriebsverpflegung (Rezeptmengen der Gemeinschaftsverpflegung).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-laugenbrezel",
+      "name_de": "Laugenbrezel",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Brezel (ca. 80 g)",
+      "items": [
+        {
+          "food_id": "laugenbrezel",
+          "g": 80
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-butterbrezel",
+      "name_de": "Butterbrezel",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Brezel",
+      "items": [
+        {
+          "food_id": "laugenbrezel",
+          "g": 80
+        },
+        {
+          "food_id": "butter",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-broetchen",
+      "name_de": "Brötchen (Weizen), pur",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Brötchen (ca. 60 g)",
+      "items": [
+        {
+          "food_id": "weizenbroetchen",
+          "g": 60
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-vollkornbroetchen",
+      "name_de": "Vollkornbrötchen, pur",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Brötchen (ca. 70 g)",
+      "items": [
+        {
+          "food_id": "vollkornbroetchen",
+          "g": 70
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-kaesebroetchen",
+      "name_de": "Käsebrötchen",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "weizenbroetchen",
+          "g": 60
+        },
+        {
+          "food_id": "gouda",
+          "g": 30
+        },
+        {
+          "food_id": "blattsalat",
+          "g": 10
+        },
+        {
+          "food_id": "butter",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-schinkenbroetchen",
+      "name_de": "Schinkenbrötchen",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "weizenbroetchen",
+          "g": 60
+        },
+        {
+          "food_id": "kochschinken",
+          "g": 30
+        },
+        {
+          "food_id": "blattsalat",
+          "g": 10
+        },
+        {
+          "food_id": "butter",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-putenbrust-vollkorn",
+      "name_de": "Vollkornbrötchen mit Putenbrust und Frischkäse",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "vollkornbroetchen",
+          "g": 70
+        },
+        {
+          "food_id": "frischkaese-light",
+          "g": 20
+        },
+        {
+          "food_id": "putenbrust-aufschnitt",
+          "g": 30
+        },
+        {
+          "food_id": "gurke",
+          "g": 20
+        },
+        {
+          "food_id": "blattsalat",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-mettbroetchen",
+      "name_de": "Mettbrötchen",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "weizenbroetchen",
+          "g": 60
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 10
+        },
+        {
+          "food_id": "schweinemett",
+          "g": 60
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-croissant",
+      "name_de": "Croissant",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "croissant",
+          "g": 60
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-laugencroissant",
+      "name_de": "Laugencroissant",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "croissant",
+          "g": 70
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "note_de": "Laugencroissant als Croissant (Plunderteig) gerechnet.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-franzbroetchen",
+      "name_de": "Franzbrötchen",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "croissant",
+          "g": 85
+        },
+        {
+          "food_id": "zucker",
+          "g": 8
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "note_de": "Franzbrötchen als Plundergebäck mit Zimt-Zucker (Zimt vernachlässigt).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-berliner",
+      "name_de": "Berliner / Krapfen",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "berliner-krapfen",
+          "g": 70
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-streuselkuchen",
+      "name_de": "Streuselkuchen",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "streuselkuchen",
+          "g": 100
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-kaesekuchen",
+      "name_de": "Käsekuchen",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "magerquark",
+          "g": 100
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 25
+        },
+        {
+          "food_id": "zucker",
+          "g": 25
+        },
+        {
+          "food_id": "speisestaerke",
+          "g": 8
+        },
+        {
+          "food_id": "weizenmehl-type-405",
+          "g": 25
+        },
+        {
+          "food_id": "butter",
+          "g": 12
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "note_de": "Boden als Mürbeteig aus Mehl und Butter.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-apfelkuchen",
+      "name_de": "Apfelkuchen",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "apfel",
+          "g": 80
+        },
+        {
+          "food_id": "zucker",
+          "g": 20
+        },
+        {
+          "food_id": "huehnerei",
+          "g": 15
+        },
+        {
+          "food_id": "weizenmehl-type-405",
+          "g": 35
+        },
+        {
+          "food_id": "butter",
+          "g": 20
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "note_de": "Rührteig aus Mehl, Butter, Ei, Zucker.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-laugenstange-kaese",
+      "name_de": "Laugenstange mit Käse überbacken",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "laugenbrezel",
+          "g": 80
+        },
+        {
+          "food_id": "gouda",
+          "g": 25
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-toast-hawaii",
+      "name_de": "Toast Hawaii",
+      "category": "baeckerei",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "toastbrot-weizen",
+          "g": 30
+        },
+        {
+          "food_id": "kochschinken",
+          "g": 25
+        },
+        {
+          "food_id": "ananas-dose-abgetropft",
+          "g": 35
+        },
+        {
+          "food_id": "gouda",
+          "g": 25
+        }
+      ],
+      "source_de": "Annahme: übliches Stückgewicht in Bäckereien im DACH-Raum (Handelsstückgewichte), Belag nach Standardrezept.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-espresso",
+      "name_de": "Espresso",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Tasse (30 ml)",
+      "items": [
+        {
+          "food_id": "espresso-zubereitet",
+          "g": 30
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-cappuccino",
+      "name_de": "Cappuccino (fettarme Milch)",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Tasse (0,2 l)",
+      "items": [
+        {
+          "food_id": "espresso-zubereitet",
+          "g": 30
+        },
+        {
+          "food_id": "milch-1-5",
+          "g": 150
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-cappuccino-vollmilch",
+      "name_de": "Cappuccino (Vollmilch)",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Tasse (0,2 l)",
+      "items": [
+        {
+          "food_id": "espresso-zubereitet",
+          "g": 30
+        },
+        {
+          "food_id": "vollmilch-3-5",
+          "g": 150
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-latte-macchiato",
+      "name_de": "Latte Macchiato (fettarme Milch)",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Glas (0,3 l)",
+      "items": [
+        {
+          "food_id": "espresso-zubereitet",
+          "g": 30
+        },
+        {
+          "food_id": "milch-1-5",
+          "g": 250
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-latte-macchiato-vollmilch",
+      "name_de": "Latte Macchiato (Vollmilch)",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Glas (0,3 l)",
+      "items": [
+        {
+          "food_id": "espresso-zubereitet",
+          "g": 30
+        },
+        {
+          "food_id": "vollmilch-3-5",
+          "g": 250
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-milchkaffee",
+      "name_de": "Milchkaffee (fettarme Milch)",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Tasse (0,3 l)",
+      "items": [
+        {
+          "food_id": "espresso-zubereitet",
+          "g": 60
+        },
+        {
+          "food_id": "milch-1-5",
+          "g": 200
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "note_de": "Kaffee als Espresso (Katalog), Filterkaffee hat praktisch dieselben Werte.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-cappuccino-soja",
+      "name_de": "Cappuccino mit Sojadrink",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Tasse (0,2 l)",
+      "items": [
+        {
+          "food_id": "espresso-zubereitet",
+          "g": 30
+        },
+        {
+          "food_id": "sojadrink-ungesuesst",
+          "g": 150
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "note_de": "Café-Sojadrinks sind oft gesüßt (dann mehr Zucker).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-kakao",
+      "name_de": "Heiße Schokolade",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Tasse (0,25 l)",
+      "items": [
+        {
+          "food_id": "milch-1-5",
+          "g": 250
+        },
+        {
+          "food_id": "kakaopulver-stark-entoelt",
+          "g": 10
+        },
+        {
+          "food_id": "zucker",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "note_de": "Mit fettarmer Milch, ohne Sahnehaube.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-kakao-sahne",
+      "name_de": "Heiße Schokolade mit Sahne",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Tasse (0,25 l)",
+      "items": [
+        {
+          "food_id": "milch-1-5",
+          "g": 250
+        },
+        {
+          "food_id": "kakaopulver-stark-entoelt",
+          "g": 10
+        },
+        {
+          "food_id": "zucker",
+          "g": 15
+        },
+        {
+          "food_id": "schlagsahne-30",
+          "g": 30
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-chai-latte",
+      "name_de": "Chai Latte",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Tasse (0,3 l)",
+      "items": [
+        {
+          "food_id": "milch-1-5",
+          "g": 250
+        },
+        {
+          "food_id": "chai-latte-pulver",
+          "g": 20
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-orangensaft",
+      "name_de": "Orangensaft",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Glas (0,2 l)",
+      "items": [
+        {
+          "food_id": "orangensaft",
+          "g": 200
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-apfelschorle",
+      "name_de": "Apfelschorle",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Glas (0,4 l)",
+      "items": [
+        {
+          "food_id": "wasser",
+          "g": 200
+        },
+        {
+          "food_id": "apfelsaft",
+          "g": 200
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-smoothie",
+      "name_de": "Bananen-Beeren-Smoothie",
+      "category": "cafe",
+      "portion": "drink",
+      "basis_de": "1 Becher (0,3 l)",
+      "items": [
+        {
+          "food_id": "banane",
+          "g": 120
+        },
+        {
+          "food_id": "beeren-mischung-tk",
+          "g": 100
+        },
+        {
+          "food_id": "orangensaft",
+          "g": 100
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-bircher-muesli",
+      "name_de": "Bircher Müsli",
+      "category": "cafe",
+      "portion": "plate",
+      "basis_de": "1 Schale",
+      "items": [
+        {
+          "food_id": "haferflocken",
+          "g": 50
+        },
+        {
+          "food_id": "milch-1-5",
+          "g": 100
+        },
+        {
+          "food_id": "joghurt-1-5",
+          "g": 50
+        },
+        {
+          "food_id": "apfel",
+          "g": 80
+        },
+        {
+          "food_id": "honig",
+          "g": 10
+        },
+        {
+          "food_id": "mandeln",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-ruehrei-brot",
+      "name_de": "Rührei mit Brot",
+      "category": "cafe",
+      "portion": "plate",
+      "basis_de": "1 Teller (3 Eier)",
+      "items": [
+        {
+          "food_id": "huehnerei",
+          "g": 165
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 8
+        },
+        {
+          "food_id": "vollkornbrot",
+          "g": 60
+        },
+        {
+          "food_id": "schnittlauch-frisch",
+          "g": 3
+        },
+        {
+          "food_id": "tomate",
+          "g": 50
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "note_de": "In Öl gebraten (mit Butter etwas mehr).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-avocado-brot",
+      "name_de": "Avocado-Brot",
+      "category": "cafe",
+      "portion": "plate",
+      "basis_de": "2 Scheiben",
+      "items": [
+        {
+          "food_id": "vollkornbrot",
+          "g": 100
+        },
+        {
+          "food_id": "avocado",
+          "g": 80
+        },
+        {
+          "food_id": "tomate",
+          "g": 50
+        },
+        {
+          "food_id": "zitronensaft",
+          "g": 5
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-fruehstueck-kontinental",
+      "name_de": "Frühstück „Kontinental“ (Brötchen, Käse, Konfitüre)",
+      "category": "cafe",
+      "portion": "plate",
+      "basis_de": "1 Teller",
+      "items": [
+        {
+          "food_id": "weizenbroetchen",
+          "g": 120
+        },
+        {
+          "food_id": "gouda",
+          "g": 30
+        },
+        {
+          "food_id": "erdbeerkonfituere",
+          "g": 25
+        },
+        {
+          "food_id": "butter",
+          "g": 20
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-croque",
+      "name_de": "Croque Monsieur",
+      "category": "cafe",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "toastbrot-weizen",
+          "g": 60
+        },
+        {
+          "food_id": "kochschinken",
+          "g": 30
+        },
+        {
+          "food_id": "gouda",
+          "g": 30
+        },
+        {
+          "food_id": "butter",
+          "g": 10
+        },
+        {
+          "food_id": "vollmilch-3-5",
+          "g": 30
+        }
+      ],
+      "source_de": "Annahme: übliche Tassen-/Glasgröße bzw. Frühstücksportion im Café im DACH-Raum (Füllmengen der Gastronomie).",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-hamburger",
+      "name_de": "Hamburger",
+      "category": "fastfood",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "zwiebel",
+          "g": 10
+        },
+        {
+          "food_id": "gurke",
+          "g": 10
+        },
+        {
+          "food_id": "senf",
+          "g": 5
+        },
+        {
+          "food_id": "burgerbroetchen",
+          "g": 50
+        },
+        {
+          "food_id": "rinderhackfleisch-20-fett",
+          "g": 60
+        },
+        {
+          "food_id": "tomatenketchup",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliche Fast-Food-Portion im DACH-Raum (typische Stückgewichte, ohne Markenbezug), Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-cheeseburger",
+      "name_de": "Cheeseburger",
+      "category": "fastfood",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "zwiebel",
+          "g": 10
+        },
+        {
+          "food_id": "gurke",
+          "g": 10
+        },
+        {
+          "food_id": "senf",
+          "g": 5
+        },
+        {
+          "food_id": "burgerbroetchen",
+          "g": 50
+        },
+        {
+          "food_id": "rinderhackfleisch-20-fett",
+          "g": 60
+        },
+        {
+          "food_id": "tomatenketchup",
+          "g": 15
+        },
+        {
+          "food_id": "schmelzkaese-scheiben",
+          "g": 20
+        }
+      ],
+      "source_de": "Annahme: übliche Fast-Food-Portion im DACH-Raum (typische Stückgewichte, ohne Markenbezug), Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-big-burger",
+      "name_de": "Großer Burger (doppelt, mit Soße)",
+      "category": "fastfood",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "blattsalat",
+          "g": 20
+        },
+        {
+          "food_id": "zwiebel",
+          "g": 10
+        },
+        {
+          "food_id": "gurke",
+          "g": 15
+        },
+        {
+          "food_id": "burgerbroetchen",
+          "g": 75
+        },
+        {
+          "food_id": "rinderhackfleisch-20-fett",
+          "g": 120
+        },
+        {
+          "food_id": "schmelzkaese-scheiben",
+          "g": 20
+        },
+        {
+          "food_id": "mayonnaise",
+          "g": 20
+        }
+      ],
+      "source_de": "Annahme: übliche Fast-Food-Portion im DACH-Raum (typische Stückgewichte, ohne Markenbezug), Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-chicken-nuggets",
+      "name_de": "Chicken Nuggets",
+      "category": "fastfood",
+      "portion": "piece",
+      "basis_de": "6 Stück",
+      "items": [
+        {
+          "food_id": "haehnchen-nuggets",
+          "g": 100
+        }
+      ],
+      "source_de": "Annahme: übliche Fast-Food-Portion im DACH-Raum (typische Stückgewichte, ohne Markenbezug), Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-fastfood-pommes",
+      "name_de": "Pommes (Fast Food)",
+      "category": "fastfood",
+      "portion": "plate",
+      "basis_de": "mittlere Portion (ca. 115 g)",
+      "items": [
+        {
+          "food_id": "kartoffeln",
+          "g": 190
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 16
+        },
+        {
+          "food_id": "salz",
+          "g": 1
+        }
+      ],
+      "source_de": "Annahme: übliche Fast-Food-Portion im DACH-Raum (typische Stückgewichte, ohne Markenbezug), Orientierung BZfE „Lebensmittel-Portionsgrößen“. Bratfett als Öl-Aufnahme eingerechnet.",
+      "note_de": "Gleiche Annahme wie Imbiss-Pommes; klein/mittel/groß über die Größe.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-chicken-wrap",
+      "name_de": "Chicken-Wrap (gegrillt)",
+      "category": "fastfood",
+      "portion": "piece",
+      "basis_de": "1 Wrap",
+      "items": [
+        {
+          "food_id": "vollkorn-tortilla",
+          "g": 70
+        },
+        {
+          "food_id": "haehnchenbrustfilet",
+          "g": 80
+        },
+        {
+          "food_id": "rapsoel",
+          "g": 5
+        },
+        {
+          "food_id": "blattsalat",
+          "g": 20
+        },
+        {
+          "food_id": "tomate",
+          "g": 30
+        },
+        {
+          "food_id": "gouda",
+          "g": 15
+        },
+        {
+          "food_id": "joghurt-1-5",
+          "g": 40
+        },
+        {
+          "food_id": "knoblauch",
+          "g": 2
+        }
+      ],
+      "source_de": "Annahme: übliche Fast-Food-Portion im DACH-Raum (typische Stückgewichte, ohne Markenbezug), Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "note_de": "Soße als Joghurtsoße; mit Mayonnaise-Soße deutlich mehr.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-hot-dog",
+      "name_de": "Hot Dog",
+      "category": "fastfood",
+      "portion": "piece",
+      "basis_de": "1 Stück",
+      "items": [
+        {
+          "food_id": "zwiebel",
+          "g": 15
+        },
+        {
+          "food_id": "senf",
+          "g": 10
+        },
+        {
+          "food_id": "hot-dog-broetchen",
+          "g": 60
+        },
+        {
+          "food_id": "wiener-wuerstchen",
+          "g": 60
+        },
+        {
+          "food_id": "tomatenketchup",
+          "g": 15
+        }
+      ],
+      "source_de": "Annahme: übliche Fast-Food-Portion im DACH-Raum (typische Stückgewichte, ohne Markenbezug), Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-milchshake",
+      "name_de": "Milchshake Vanille",
+      "category": "fastfood",
+      "portion": "drink",
+      "basis_de": "1 Becher (0,3 l)",
+      "items": [
+        {
+          "food_id": "milch-1-5",
+          "g": 200
+        },
+        {
+          "food_id": "speiseeis-vanille",
+          "g": 100
+        }
+      ],
+      "source_de": "Annahme: übliche Fast-Food-Portion im DACH-Raum (typische Stückgewichte, ohne Markenbezug), Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-cola",
+      "name_de": "Cola",
+      "category": "fastfood",
+      "portion": "drink",
+      "basis_de": "1 Becher (0,4 l)",
+      "items": [
+        {
+          "food_id": "cola",
+          "g": 400
+        }
+      ],
+      "source_de": "Annahme: übliche Fast-Food-Portion im DACH-Raum (typische Stückgewichte, ohne Markenbezug), Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    },
+    {
+      "id": "auswaerts-salat-bowl-haehnchen",
+      "name_de": "Salat-Bowl mit Hähnchen",
+      "category": "fastfood",
+      "portion": "plate",
+      "basis_de": "1 Bowl",
+      "items": [
+        {
+          "food_id": "salatmix",
+          "g": 80
+        },
+        {
+          "food_id": "haehnchenbrustfilet",
+          "g": 100
+        },
+        {
+          "food_id": "express-reis-beutel-gegart",
+          "g": 100
+        },
+        {
+          "food_id": "mais-dose-abgetropft",
+          "g": 30
+        },
+        {
+          "food_id": "tomate",
+          "g": 50
+        },
+        {
+          "food_id": "gurke",
+          "g": 50
+        },
+        {
+          "food_id": "olivenoel",
+          "g": 10
+        },
+        {
+          "food_id": "zitronensaft",
+          "g": 10
+        }
+      ],
+      "source_de": "Annahme: übliche Fast-Food-Portion im DACH-Raum (typische Stückgewichte, ohne Markenbezug), Orientierung BZfE „Lebensmittel-Portionsgrößen“.",
+      "status": "draft"
+    }
+  ]
+}

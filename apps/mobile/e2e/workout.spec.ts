@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Trainingsmodus im TESTMODUS (docs/PLAN-PHASE-4.md Etappe C1 – Kraft, C2 – Ausdauer und Pausentimer) mit festem
@@ -62,7 +62,7 @@ const STUDIO_3_DAYS = {
 
 async function toToday(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 /** Gewicht des ersten Satzes per „+“ auf `clicks` × 2,5 kg (Studio ohne eigene Stufen), gilt für alle Sätze. */
@@ -142,7 +142,8 @@ test('Kraft-Einheit komplett: Sätze, Alternative, „nicht gemacht“, Abschlus
   await page.getByTestId('workout-notes').fill('Griff etwas enger');
   await page.getByTestId('workout-save').click();
 
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   await expect(page.getByTestId('plan-completed')).toContainText('Erledigt (teilweise)');
 
@@ -180,8 +181,8 @@ test('Kraft-Einheit komplett: Sätze, Alternative, „nicht gemacht“, Abschlus
   ).toBeVisible();
   await expect(page.getByTestId('workout-swap-0')).toHaveCount(0);
   await expect(page.getByTestId('workout-notes')).toHaveValue('Griff etwas enger');
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).first().click();
-  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Zurück zum Training' }).first().click();
+  await heading(page, 'Training');
 });
 
 test('Progression nach zwei Einheiten sichtbar: kalibriert, dann eine Wiederholung mehr', async ({
@@ -195,29 +196,31 @@ test('Progression nach zwei Einheiten sichtbar: kalibriert, dann eine Wiederholu
   await setWeight(page, 0, 8);
   await tickAll(page, 0);
   await page.getByTestId('workout-save').click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
 
   // Eine Woche später (gleiche Einheit A): Vorschlag aus dem ersten Eintrag.
   await page.clock.setFixedTime(new Date('2026-10-14T09:00:00+02:00'));
   await page.goto('/today');
-  await heading(page, 'Heute');
-  await expect(page.getByTestId('plan-exercise').first()).toContainText(
-    '3 × 8 Wiederholungen mit 18,5 kg',
-  );
+  await heading(page, 'Training');
+  // Kompakte Liste (Entwurf B): Zahlen und Gewicht in eigenen Zeilen.
+  await expect(page.getByTestId('plan-exercise-dose-0')).toContainText('3 × 8 ·');
+  await expect(page.getByTestId('plan-exercise-weight-0')).toHaveText('18,5 kg');
   await page.getByTestId('workout-start').click();
   await expect(page.getByTestId('workout-target-0')).toHaveText('3 × 8 Wiederholungen mit 18,5 kg');
   await expect(page.getByTestId('workout-weight-0-0-value')).toHaveText('18,5 kg');
   await tickAll(page, 0);
   await page.getByTestId('workout-save').click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
 
   // Noch eine Woche später: alle Wiederholungen geschafft → eine Wiederholung mehr.
   await page.clock.setFixedTime(new Date('2026-10-21T09:00:00+02:00'));
   await page.goto('/today');
-  await heading(page, 'Heute');
-  await expect(page.getByTestId('plan-exercise').first()).toContainText(
-    '3 × 9 Wiederholungen mit 18,5 kg',
-  );
+  await heading(page, 'Training');
+  // Kompakte Liste (Entwurf B): Zahlen und Gewicht in eigenen Zeilen.
+  await expect(page.getByTestId('plan-exercise-dose-0')).toContainText('3 × 9 ·');
+  await expect(page.getByTestId('plan-exercise-weight-0')).toHaveText('18,5 kg');
 });
 
 test('Entwurf nach Neu laden, beforeunload-Warnung und Abmelden mit Nachfrage', async ({
@@ -247,16 +250,18 @@ test('Entwurf nach Neu laden, beforeunload-Warnung und Abmelden mit Nachfrage', 
   await expect(page.getByTestId('workout-done-0-0')).toHaveAttribute('aria-checked', 'true');
   // … und beim Öffnen der App fragt „Heute“: fortsetzen, speichern oder verwerfen?
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-draft')).toContainText(
     'Du hast ein Training vom 07.10.2026 nicht beendet',
   );
   await expect(page.getByTestId('workout-start')).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await page.getByTestId('workout-draft-continue').click();
   await expect(page.getByTestId('workout-done-0-0')).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByTestId('workout-weight-0-1-value')).toHaveText('20 kg');
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).first().click();
-  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Zurück zum Training' }).first().click();
+  await heading(page, 'Training');
 
   // Abmelden mit offenem Entwurf → Nachfrage; „Jetzt senden“ hilft im Testmodus nicht → erneut fragen.
   await page.getByRole('tab', { name: 'Mehr' }).click();
@@ -294,10 +299,11 @@ test('Offline eintragen und später neu laden: Training bleibt gespeichert', asy
   await expect(page.getByTestId('workout-weight-0-2-value')).toHaveText('20 kg');
   await tickAll(page, 0);
   await page.getByTestId('workout-save').click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   await context.setOffline(false);
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('plan-completed')).toBeVisible();
   expect((await storedRows(page)).sessionLogs).toHaveLength(1);
 });
@@ -311,12 +317,13 @@ test('Widerruf „Tagebuch behalten“: Einträge bleiben ohne Vorgaben aus dem 
   await setWeight(page, 0, 8);
   await tickAll(page, 0);
   await page.getByTestId('workout-save').click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   let rows = await storedRows(page);
   expect(rows.sessionLogs[0]?.from_health_plan).toBe(true);
   expect(rows.exerciseLogs[0]?.target_sets).not.toBeNull();
 
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=konto');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   const dialog = page.getByTestId('dialog-revoke');
   await expect(dialog).toContainText('Dein Tagebuch bleibt');
@@ -414,7 +421,8 @@ test('Ausdauer mit Pace: Art, Dauer, Distanz mit Komma, Pace live, Gesprächstes
   );
   await page.getByTestId('workout-save').click();
 
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   await expect(page.getByTestId('plan-completed')).toContainText('Erledigt');
   const rows = await storedRows(page);
@@ -435,8 +443,8 @@ test('Ausdauer mit Pace: Art, Dauer, Distanz mit Komma, Pace live, Gesprächstes
   await page.getByTestId('workout-view').click();
   await expect(page.getByTestId('workout-cardio-distance')).toHaveValue('6');
   await expect(page.getByTestId('workout-cardio-speed')).toContainText('Pace: 5:30 min/km');
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).first().click();
-  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Zurück zum Training' }).first().click();
+  await heading(page, 'Training');
 });
 
 test('Pausentimer nach jedem Satz: −15/+15 s, Ende sichtbar, Überspringen; Bildschirm-an-Schalter', async ({
@@ -486,9 +494,9 @@ test('Pausentimer nach jedem Satz: −15/+15 s, Ende sichtbar, Überspringen; Bi
   await expect(page.getByTestId('rest-timer')).toHaveCount(0);
 
   // Einstellungen: „Bildschirm im Training anlassen“ (Standard an), abschaltbar – nur auf diesem Gerät gespeichert.
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).first().click();
-  await heading(page, 'Heute');
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.getByRole('button', { name: 'Zurück zum Training' }).first().click();
+  await heading(page, 'Training');
+  await page.goto('/settings?thema=training');
   const keepAwake = page.getByRole('checkbox', { name: 'Bildschirm im Training anlassen' });
   await expect(keepAwake).toHaveAttribute('aria-checked', 'true');
   await keepAwake.click();

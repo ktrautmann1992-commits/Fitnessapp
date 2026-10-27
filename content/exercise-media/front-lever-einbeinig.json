@@ -1,0 +1,20 @@
+{
+  "exercise_id": "front-lever-einbeinig",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "front-lever-einbeinig-start.svg",
+      "alt_de": "Ausgangsposition: unter der Klimmzugstange, Arme gestreckt, Körper waagerecht, ein Bein gestreckt, das andere zur Brust gezogen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

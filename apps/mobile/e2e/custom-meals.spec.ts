@@ -39,7 +39,7 @@ async function meals(page: Page): Promise<StoredMeal[]> {
 async function start(page: Page) {
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 }
 
@@ -351,7 +351,7 @@ test('Kalorienzahlen aus (nirgends kcal), ohne Werte, 100 Gerichte, Widerruf lö
   await expect(page.getByText('Du hast schon 100 eigene Gerichte.')).toBeVisible();
 
   // Widerruf: Hinweis vorher, Gerichte und Tagebuch weg.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=konto');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   await expect(page.getByText(/samt Schnelleintrag-Favoriten, eigenen Gerichten/)).toBeVisible();
   await page.getByRole('button', { name: 'Tagebuch behalten (empfohlen)' }).click();

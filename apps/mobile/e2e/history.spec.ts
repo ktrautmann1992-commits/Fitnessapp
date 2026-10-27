@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Woche, Verlauf, Eintrag und Datenexport im TESTMODUS (docs/PLAN-PHASE-4.md Etappe D) mit festem Datum Mittwoch,
@@ -62,7 +62,8 @@ async function trainToday(page: Page, notes = 'Griff eng') {
   await page.getByTestId('workout-effort-7').click();
   await page.getByTestId('workout-notes').fill(notes);
   await page.getByTestId('workout-save').click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
   return count;
 }
@@ -81,7 +82,7 @@ test('Woche: Status mit Zeichen und Wort, Summen, Blättern, nachgeholt am tats�
 }) => {
   await onboard(page, STUDIO_3_DAYS);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const sets = await trainToday(page);
 
   // Testdaten: Die erledigte Einheit war ursprünglich für Dienstag geplant (nachgeholt am Mittwoch, H2), und ein
@@ -104,7 +105,7 @@ test('Woche: Status mit Zeichen und Wort, Summen, Blättern, nachgeholt am tats�
   });
   await writeDb(page, db);
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   await page.getByTestId('today-week').click();
   await heading(page, 'Deine Woche');
@@ -146,7 +147,7 @@ test('Verlauf: Eintrag ansehen, ändern und löschen; Verlauf je Übung; leerer 
 }) => {
   await onboard(page, STUDIO_3_DAYS);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Leer: noch keine Einträge.
   await page.getByTestId('today-history').click();
@@ -155,7 +156,7 @@ test('Verlauf: Eintrag ansehen, ändern und löschen; Verlauf je Übung; leerer 
     'Noch keine Einträge – dein erstes Training erscheint hier.',
   );
   await page.getByRole('button', { name: 'Zurück' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   await trainToday(page, 'Griff eng');
   await page.getByTestId('today-history').click();
@@ -203,7 +204,7 @@ test('Verlauf: Eintrag ansehen, ändern und löschen; Verlauf je Übung; leerer 
   await heading(page, 'Verlauf');
   await expect(page.getByTestId('history-empty')).toBeVisible();
   await page.getByRole('button', { name: 'Zurück' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('workout-start')).toHaveText('Training starten');
 });
 
@@ -212,7 +213,7 @@ test('Export: Hinweis vor dem Herunterladen, Datei mit Tagebuch, Konto und Einwi
 }) => {
   await onboard(page, STUDIO_3_DAYS);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await trainToday(page, 'Griff eng');
 
   // Datenexport liegt seit 18.10.2026 unter „Mein Konto“ (docs/PLAN-DASHBOARD.md 2.3).

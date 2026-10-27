@@ -1,0 +1,47 @@
+{
+  "id": "handstand-frei",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Freier Handstand",
+  "name_en": "Freestanding Handstand",
+  "aliases_de": ["Handstand"],
+  "movement_pattern": "vertical_push",
+  "primary_muscles": ["front_delts"],
+  "secondary_muscles": ["triceps", "upper_back", "abs", "forearms"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["overhead", "high_skill"],
+  "description_de": "Handstand ohne Wand: kurze Halteversuche mit sicherem Aussteigen. Das Gleichgewicht kommt aus den Fingern und den Schultern.",
+  "steps_de": [
+    "Auf freier, weicher Fläche mit einem Bein kontrolliert hochschwingen.",
+    "Körper gerade stapeln: Hände, Schultern, Hüfte, Füße.",
+    "Mit Fingerdruck ausgleichen und halten.",
+    "Aussteigen: seitlich mit einer Hand weiterdrehen und auf die Füße kommen."
+  ],
+  "tips_de": [
+    "Erst das seitliche Aussteigen üben.",
+    "Zählen in kurzen Versuchen von 5 bis 20 Sekunden."
+  ],
+  "common_mistakes_de": ["Zu viel Schwung beim Hochgehen.", "Hohlkreuz statt gerader Linie."],
+  "safety_note_de": "Nur auf freier, weicher Fläche üben und das Aussteigen vorher üben. Bei Schwindel, Druckgefühl im Kopf oder Schmerzen in Handgelenk oder Schulter sofort beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "handstand-wand",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

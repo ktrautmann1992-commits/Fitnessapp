@@ -28,11 +28,11 @@ async function setup(page: Page, consent: boolean) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function openSmartwatch(page: Page) {
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   await page.getByTestId('settings-smartwatch').click();
   await expect(page.getByTestId('smartwatch')).toBeVisible();
 }
@@ -131,7 +131,7 @@ test('Widerruf „Smartwatch-Daten“ in den Einwilligungen löscht Puls und Tag
   await page.getByTestId('smartwatch-consent-accept').click();
   await page.getByTestId('smartwatch-connect').click();
   await expect(page.getByTestId('smartwatch-message')).toContainText('Abgleich fertig');
-  await page.goto('/settings');
+  await page.goto('/settings?thema=konto');
   await page.getByTestId('settings-wearable-revoke').click();
   await page.getByRole('button', { name: 'Widerrufen und löschen' }).click();
   await expect(

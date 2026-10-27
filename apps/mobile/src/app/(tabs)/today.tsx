@@ -14,7 +14,7 @@ import {
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useFocusEffect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { CycleTodayCard } from '@/components/cycle-entry';
 import { RecoveryTodayCard } from '@/components/recovery';
@@ -27,8 +27,9 @@ import { ModesBanner } from '@/components/training-modes';
 import { deModes } from '@/i18n/de-training-modes';
 import { CountdownCard, PhaseBand } from '@/components/competition';
 import { FewerDaysCard, SessionAdjustedNotice } from '@/components/live-adjust';
-import { NutritionTodayCard } from '@/components/nutrition';
-import { HeroCard, Tile } from '@/components/design';
+import { CollapsibleRow, NoticeStack, type StackNotice } from '@/components/slim';
+import { TrainingSwitch } from '@/components/training-switch';
+import { HeroCard, Icon, Tile } from '@/components/design';
 import { MedicalNotice, SessionCard } from '@/components/plan';
 import { Text } from '@/components/text';
 import {
@@ -60,11 +61,13 @@ import type { WorkoutDraft } from '@/data/workout-draft';
 import { startKind, trainedTodayOther, workoutView } from '@/data/workout-session';
 import { planNoticeFor } from '@/data/training-attention';
 import { routineFor } from '@/data/training-routine';
+import { runStrengthFor } from '@/data/run-strength';
+import { useWorkoutLibrary } from '@/state/use-workouts';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { createPlanErrorText, errorText } from '@/lib/error-text';
 import { formatDateDe, todayIso } from '@/lib/format';
-import { workoutTargetLines } from '@/lib/workout-format';
+import { workoutTargetSummary } from '@/lib/workout-format';
 import { dayLabel, weekdayName, weekdayShort } from '@/lib/plan-format';
 import { appFont } from '@/lib/fonts';
 import { isoDateParam } from '@/lib/route-param';
@@ -80,7 +83,7 @@ import {
   PLAN_RECREATE_NEEDED,
   useApp,
 } from '@/state/app-state';
-import { HydrationCard } from '@/components/hydration';
+
 import { healthConsentStatus, isReminderDue, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { useLargeView } from '@/lib/accessibility';
@@ -111,8 +114,6 @@ export default function TodayScreen() {
   const warmupSetting = useWarmupSetting();
   const theme = useThemeColors();
   const today = todayIso();
-  const clock = new Date();
-  const nowMinutes = clock.getHours() * 60 + clock.getMinutes();
   const params = useLocalSearchParams<{ tag?: string }>();
   const dayParam = isoDateParam(params.tag);
   const [selected, setSelected] = useState(dayParam ?? today);
@@ -157,6 +158,8 @@ export default function TodayScreen() {
   useEffect(() => {
     void ensureLibrary();
   }, [ensureLibrary]);
+  // Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4): Einheiten aus der Workout-Bibliothek.
+  const workoutLibrary = useWorkoutLibrary();
   useEffect(() => {
     // Folgeblock automatisch, sobald die letzte Woche des Blocks beginnt (5.10).
     if (library.kind === 'ready') void appendNextBlockIfDue();
@@ -263,115 +266,78 @@ export default function TodayScreen() {
     }
   }
 
-  const header = (
-    <>
-      {/* Gründer-Rückmeldung 20.10.2026: Wettkampfplan deutlich oben im Training, wenn ein Wettkampf existiert. */}
-      {competition ? (
-        // Design 20.10.2026: Kachel in Wettkampf-Orange mit Pokal (ganz antippbar, Link).
-        <Tile
-          variant="row"
-          area="wettkampf"
-          icon="trophy"
-          title={t.competition.trainingLink}
-          role="link"
-          accessibilityLabel={t.competition.trainingLinkA11y(competition.stored.competition.name)}
-          accessibilityHint={t.competition.trainingLinkHint}
-          onPress={() => router.navigate('/wettkampf' as Href)}
-          testID="today-competition-plan"
-        />
-      ) : null}
-      {outdated ? (
-        <Notice tone="warning" title={t.steps.healthConsent.reconsentTitle} testID="plan-reconsent">
-          <Body>{t.today.healthReconsent}</Body>
-          <Button
-            label={t.today.reconsentButton}
-            variant="secondary"
-            onPress={() => router.push('/health-consent')}
-          />
-          <Button
-            label={t.today.reconsentDecline}
-            variant="secondary"
-            onPress={() => setDeclineDialog(true)}
-          />
-        </Notice>
-      ) : null}
-      {app.backend.mode === 'local' || lib?.containsDrafts ? (
-        <Notice tone="info" testID="plan-test-content">
-          {t.plan.testContent}
-        </Notice>
-      ) : null}
-      {app.planMessage === GOALS_REJECTED ? (
-        <Notice tone="warning" testID="goals-rejected">
-          <Body>{t.steps.goal.rejected}</Body>
-          <Button label={t.common.close} variant="link" onPress={app.clearPlanMessage} />
-        </Notice>
-      ) : null}
-      {app.planMessage === PLAN_CHANGE_DROPPED ? (
-        <Notice tone="warning">
-          <Body>{t.plan.droppedChange}</Body>
-          <Button label={t.common.close} variant="link" onPress={app.clearPlanMessage} />
-        </Notice>
-      ) : null}
-      {app.planMessage === COMPETITION_GOAL_UNREACHABLE ? (
-        <Notice
-          tone="warning"
-          title={t.competition.goalUnreachableTitle}
-          testID="competition-goal-unreachable"
-        >
-          <Body>{t.competition.goalUnreachableText}</Body>
-          <Button label={t.plan.recreate} onPress={() => void create()} loading={busy} />
-        </Notice>
-      ) : null}
-      {app.planMessage === COMPETITION_PLAN_ENDED ? (
-        <Notice tone="info" title={t.competition.planEndedTitle} testID="competition-plan-ended">
-          <Body>{t.competition.planEndedText}</Body>
-          <Button label={t.plan.recreate} onPress={() => void create()} loading={busy} />
-        </Notice>
-      ) : null}
-      {app.planMessage === PLAN_RECREATE_NEEDED ? (
-        <Notice tone="warning" testID="plan-recreate-needed">
-          <Body>{t.plan.recreateNeeded}</Body>
-          <Button label={t.plan.recreate} onPress={() => void create()} loading={busy} />
-        </Notice>
-      ) : null}
-      {message ? (
-        <Notice tone={message.tone} testID="plan-message">
-          {message.text}
-        </Notice>
-      ) : null}
-      {app.workoutMessage ? (
-        <Notice
-          tone={
-            app.workoutMessage.kind === 'saved' || app.workoutMessage.kind === 'orphaned'
-              ? 'success'
-              : app.workoutMessage.kind === 'queued'
-                ? 'info'
-                : 'warning'
-          }
-          testID="workout-message"
-        >
-          <Body>{workoutMessageText(app.workoutMessage)}</Body>
-          <Button label={t.common.close} variant="link" onPress={app.clearWorkoutMessage} />
-        </Notice>
-      ) : null}
-      {app.sessionExpired ? (
-        <Notice tone="warning" testID="session-expired">
-          {t.settings.sessionExpired}
-        </Notice>
-      ) : null}
-      {app.foreignData ? (
-        <Notice tone="warning" title={t.settings.foreignTitle} testID="foreign-data">
-          <Body>{t.settings.foreignText}</Body>
-          <Button
-            label={t.settings.foreignConfirm}
-            variant="danger"
-            onPress={() => setForeignDialog(true)}
-          />
-        </Notice>
-      ) : null}
-      {app.drafts.map((draft) => (
+  // „App verschlanken“ (26.10.2026): Hinweise als Hinweis-Zeile – höchstens einer vollständig, Rest hinter „+N“
+  // (Vorrang in packages/core `noticeQueue`). Sperrende Hinweise (Einwilligung, Plan neu, fremde Daten) bleiben oben.
+  const noticeItems: (StackNotice | null)[] = [
+    outdated
+      ? {
+          id: 'reconsent',
+          level: 'blocking',
+          node: (
+            <Notice
+              tone="warning"
+              title={t.steps.healthConsent.reconsentTitle}
+              testID="plan-reconsent"
+            >
+              <Body>{t.today.healthReconsent}</Body>
+              <Button
+                label={t.today.reconsentButton}
+                variant="secondary"
+                onPress={() => router.push('/health-consent')}
+              />
+              <Button
+                label={t.today.reconsentDecline}
+                variant="secondary"
+                onPress={() => setDeclineDialog(true)}
+              />
+            </Notice>
+          ),
+        }
+      : null,
+    app.planMessage === PLAN_RECREATE_NEEDED
+      ? {
+          id: 'recreate-needed',
+          level: 'blocking',
+          node: (
+            <Notice tone="warning" testID="plan-recreate-needed">
+              <Body>{t.plan.recreateNeeded}</Body>
+              <Button label={t.plan.recreate} onPress={() => void create()} loading={busy} />
+            </Notice>
+          ),
+        }
+      : null,
+    app.foreignData
+      ? {
+          id: 'foreign',
+          level: 'blocking',
+          node: (
+            <Notice tone="warning" title={t.settings.foreignTitle} testID="foreign-data">
+              <Body>{t.settings.foreignText}</Body>
+              <Button
+                label={t.settings.foreignConfirm}
+                variant="danger"
+                onPress={() => setForeignDialog(true)}
+              />
+            </Notice>
+          ),
+        }
+      : null,
+    message
+      ? {
+          id: 'message',
+          level: message.tone === 'success' ? 'success' : 'action',
+          node: (
+            <Notice tone={message.tone} testID="plan-message">
+              {message.text}
+            </Notice>
+          ),
+        }
+      : null,
+    ...app.drafts.map((draft): StackNotice => ({
+      id: `draft-${draft.key}`,
+      level: 'action',
+      node: (
         <DraftNotice
-          key={draft.key}
           draft={draft}
           busy={busy}
           onOpen={() => router.push(`/workout/${draft.key}` as Href)}
@@ -379,41 +345,186 @@ export default function TodayScreen() {
           onKeep={() => void keepDraft(draft)}
           onDiscard={() => setDiscardDraftKey(draft.key)}
         />
-      ))}
-      {app.offline ? <Notice tone="warning">{t.plan.offline}</Notice> : null}
-      {isReminderDue(rows, today) ? <Notice tone="info">{t.today.measurementDue}</Notice> : null}
+      ),
+    })),
+    app.workoutMessage
+      ? {
+          id: 'workout-message',
+          level:
+            app.workoutMessage.kind === 'saved' || app.workoutMessage.kind === 'orphaned'
+              ? 'success'
+              : 'action',
+          node: (
+            <Notice
+              tone={
+                app.workoutMessage.kind === 'saved' || app.workoutMessage.kind === 'orphaned'
+                  ? 'success'
+                  : app.workoutMessage.kind === 'queued'
+                    ? 'info'
+                    : 'warning'
+              }
+              testID="workout-message"
+            >
+              <Body>{workoutMessageText(app.workoutMessage)}</Body>
+              <Button label={t.common.close} variant="link" onPress={app.clearWorkoutMessage} />
+            </Notice>
+          ),
+        }
+      : null,
+    app.planMessage === GOALS_REJECTED
+      ? {
+          id: 'goals-rejected',
+          level: 'action',
+          node: (
+            <Notice tone="warning" testID="goals-rejected">
+              <Body>{t.steps.goal.rejected}</Body>
+              <Button label={t.common.close} variant="link" onPress={app.clearPlanMessage} />
+            </Notice>
+          ),
+        }
+      : null,
+    app.planMessage === PLAN_CHANGE_DROPPED
+      ? {
+          id: 'change-dropped',
+          level: 'action',
+          node: (
+            <Notice tone="warning">
+              <Body>{t.plan.droppedChange}</Body>
+              <Button label={t.common.close} variant="link" onPress={app.clearPlanMessage} />
+            </Notice>
+          ),
+        }
+      : null,
+    app.planMessage === COMPETITION_GOAL_UNREACHABLE
+      ? {
+          id: 'competition-unreachable',
+          level: 'action',
+          node: (
+            <Notice
+              tone="warning"
+              title={t.competition.goalUnreachableTitle}
+              testID="competition-goal-unreachable"
+            >
+              <Body>{t.competition.goalUnreachableText}</Body>
+              <Button label={t.plan.recreate} onPress={() => void create()} loading={busy} />
+            </Notice>
+          ),
+        }
+      : null,
+    app.planMessage === COMPETITION_PLAN_ENDED
+      ? {
+          id: 'competition-ended',
+          level: 'action',
+          node: (
+            <Notice
+              tone="info"
+              title={t.competition.planEndedTitle}
+              testID="competition-plan-ended"
+            >
+              <Body>{t.competition.planEndedText}</Body>
+              <Button label={t.plan.recreate} onPress={() => void create()} loading={busy} />
+            </Notice>
+          ),
+        }
+      : null,
+    app.sessionExpired
+      ? {
+          id: 'session-expired',
+          level: 'action',
+          node: (
+            <Notice tone="warning" testID="session-expired">
+              {t.settings.sessionExpired}
+            </Notice>
+          ),
+        }
+      : null,
+    app.offline
+      ? {
+          id: 'offline',
+          level: 'action',
+          node: <Notice tone="warning">{t.plan.offline}</Notice>,
+        }
+      : null,
+    isReminderDue(rows, today)
+      ? {
+          id: 'measurement-due',
+          level: 'info',
+          node: <Notice tone="info">{t.today.measurementDue}</Notice>,
+        }
+      : null,
+    // Wettkampf (WP4): Countdown bzw. Einladung, wenn im Onboarding ein Datum angegeben wurde.
+    competition && countdown
+      ? {
+          id: 'competition-countdown',
+          level: 'info',
+          node: (
+            <CountdownCard
+              countdown={countdown}
+              discipline={competition.stored.competition.discipline}
+              distanceKm={competition.stored.competition.distanceKm}
+              name={competition.stored.competition.name}
+              onOpen={() => router.push('/wettkampf' as Href)}
+            />
+          ),
+        }
+      : rows.goals?.goal_type === 'endurance' &&
+          rows.goals.target_date !== null &&
+          rows.goals.target_date > today &&
+          !rows.competitions.some((c) => c.status === 'planned')
+        ? {
+            id: 'competition-invite',
+            level: 'info',
+            node: (
+              <Notice tone="info" title={t.competition.invite} testID="competition-invite">
+                <Body>{t.competition.inviteText(dayLabel(rows.goals.target_date))}</Body>
+                <Button
+                  label={t.competition.add}
+                  variant="secondary"
+                  onPress={() => router.push('/wettkampf?neu=1' as Href)}
+                  testID="competition-invite-open"
+                />
+              </Notice>
+            ),
+          }
+        : null,
+    // Testinhalte (im Testmodus immer da) als letzter Info-Hinweis – Wichtigeres steht davor.
+    app.backend.mode === 'local' || lib?.containsDrafts
+      ? {
+          id: 'test-content',
+          level: 'info',
+          node: (
+            <Notice tone="info" testID="plan-test-content">
+              {t.plan.testContent}
+            </Notice>
+          ),
+        }
+      : null,
+  ];
+
+  // Gründer-Rückmeldung 20.10.2026: Wettkampfplan deutlich oben im Training, wenn ein Wettkampf existiert (Entwurf
+  // 2-training: oranger Countdown oben – steht über der Hinweis-Zeile, ist kein Hinweis).
+  const competitionLink = competition ? (
+    // Design 20.10.2026: Kachel in Wettkampf-Orange mit Pokal (ganz antippbar, Link).
+    <Tile
+      variant="row"
+      area="wettkampf"
+      icon="trophy"
+      title={t.competition.trainingLink}
+      role="link"
+      accessibilityLabel={t.competition.trainingLinkA11y(competition.stored.competition.name)}
+      accessibilityHint={t.competition.trainingLinkHint}
+      onPress={() => router.navigate('/wettkampf' as Href)}
+      testID="today-competition-plan"
+    />
+  ) : null;
+
+  const header = (
+    <>
       {/* Etappe E: einmaliges Angebot nach der ersten Messung (nur App, nie im Onboarding). */}
       <MeasurementNotificationOffer />
       {/* Etappe Z5 (F10): Karte nur bei „erreicht“ bzw. „Zeitraum vorbei“ – ohne Zahlen, kein Fortschritt (F13). */}
       {weightGoal ? <WeightGoalLifecycleCard overview={weightGoal} zurueck="heute" /> : null}
-      {/* Wettkampf (WP4): Countdown bzw. Einladung, wenn im Onboarding ein Datum angegeben wurde. */}
-      {competition && countdown ? (
-        <CountdownCard
-          countdown={countdown}
-          discipline={competition.stored.competition.discipline}
-          distanceKm={competition.stored.competition.distanceKm}
-          name={competition.stored.competition.name}
-          onOpen={() => router.push('/wettkampf' as Href)}
-        />
-      ) : rows.goals?.goal_type === 'endurance' &&
-        rows.goals.target_date !== null &&
-        rows.goals.target_date > today &&
-        !rows.competitions.some((c) => c.status === 'planned') ? (
-        <Notice tone="info" title={t.competition.invite} testID="competition-invite">
-          <Body>{t.competition.inviteText(dayLabel(rows.goals.target_date))}</Body>
-          <Button
-            label={t.competition.add}
-            variant="secondary"
-            onPress={() => router.push('/wettkampf?neu=1' as Href)}
-            testID="competition-invite-open"
-          />
-        </Notice>
-      ) : null}
     </>
-  );
-
-  const footer = (
-    <Button label={t.today.settings} variant="secondary" onPress={() => router.push('/settings')} />
   );
 
   const dialogs = (
@@ -459,8 +570,10 @@ export default function TodayScreen() {
   // --- Kein Plan ------------------------------------------------------------------------------------------
   if (!active) {
     return (
-      <Screen area="training" icon="dumbbell" title={t.today.title} testID="today" footer={footer}>
-        <Body muted>{t.today.greeting}</Body>
+      <Screen area="training" icon="dumbbell" title={t.today.title} testID="today">
+        <TrainingSwitch selected="plan" prefix="today" exercisesTestID="today-glossary" />
+        {competitionLink}
+        <NoticeStack items={noticeItems} testID="today-notices" />
         {header}
         <Card>
           <Heading level={2}>{t.plan.emptyTitle}</Heading>
@@ -474,15 +587,6 @@ export default function TodayScreen() {
             loading={busy}
           />
         </Card>
-        <NutritionTodayCard nowMinutes={nowMinutes} />
-        {/* Tagesauswertung (Etappe A2): Essen und Training heute. */}
-        <Button
-          label={t.day.openToday}
-          accessibilityLabel={t.day.openA11y(t.day.today)}
-          variant="secondary"
-          onPress={() => router.push(`/tag/${today}` as Href)}
-          testID="today-day"
-        />
         {rows.sessionLogs.length > 0 ? (
           // Das Tagebuch bleibt auch ohne Plan (z. B. nach dem Widerruf) – Verlauf erreichbar.
           <Button
@@ -492,12 +596,6 @@ export default function TodayScreen() {
             testID="today-history"
           />
         ) : null}
-        <Button
-          label={t.glossary.allExercises}
-          variant="secondary"
-          onPress={() => router.push('/uebungen' as Href)}
-          testID="today-glossary"
-        />
         {dialogs}
       </Screen>
     );
@@ -577,7 +675,7 @@ export default function TodayScreen() {
   const shown = display?.shown ?? null;
   const context = display?.context ?? null;
   const view = selectedInfo?.view ?? null;
-  const targets = view?.items.map(workoutTargetLines);
+  const targets = view?.items.map(workoutTargetSummary);
   const log = selectedSession ? logForSession(rows, selectedSession.id) : null;
   const hasDraft = selectedInfo?.hasDraft ?? false;
   const pendingUpload =
@@ -601,6 +699,12 @@ export default function TodayScreen() {
       : null;
   const todayInfo =
     todayOpen && selectedSession?.id === todayOpen.id ? selectedInfo : sessionInfo(todayOpen);
+  /** Zeigt die Hero-Karte „Training starten“ für diese Einheit (gleiche Regel wie TodayHero)? */
+  const heroStarts = (sessionId: string) =>
+    todayOpen !== null &&
+    todayOpen.id === sessionId &&
+    todayInfo !== null &&
+    startableNow(todayOpen, todayInfo);
   const question =
     focused && week.assignmentsReady && sheetDate === null && swapTarget === null
       ? (week.status?.questions[0] ?? null)
@@ -761,6 +865,7 @@ export default function TodayScreen() {
     }
   }
 
+  // Werkzeugleiste (Entwurf 2-training): Kalender · Verlauf · Tag tauschen · PDF. Übungen stehen im Umschalter oben.
   const toolbar = (
     <TrainingToolbar
       items={[
@@ -789,22 +894,75 @@ export default function TodayScreen() {
           testID: 'today-swap',
         },
         {
-          key: 'exercises',
-          icon: 'book',
-          label: W.toolbar.exercises,
-          accessibilityLabel: t.glossary.allExercises,
-          onPress: () => router.push('/uebungen' as Href),
-          testID: 'today-glossary',
+          // Plan als PDF (docs/PLAN-PDF-EXPORT.md P3): Hinweis bei Gesundheitsbezug zeigt die Druckansicht.
+          key: 'pdf',
+          icon: 'print',
+          label: t.slim.training.pdf,
+          accessibilityLabel: t.printView.button,
+          onPress: () => router.push('/plan/drucken' as Href),
+          testID: 'plan-print',
         },
       ]}
     />
   );
 
+  // Plan-Hinweise oben (Hinweis-Zeile): „Plan neu erstellen?“ (abgelaufen/strengere Regeln = sperrend) und
+  // „Wettkampf passt nicht zum Plan“.
+  const planNotices: (StackNotice | null)[] = [
+    notice.kind !== 'none'
+      ? {
+          id: 'plan-offer',
+          level: notice.kind === 'offer' ? 'action' : 'blocking',
+          node: (
+            <Notice
+              tone={notice.kind === 'offer' ? 'info' : 'danger'}
+              title={
+                notice.kind === 'ended'
+                  ? t.plan.endedTitle
+                  : notice.kind === 'stricter'
+                    ? t.plan.offerStricterTitle
+                    : t.plan.offerTitle
+              }
+              testID="plan-offer"
+            >
+              <Body>
+                {notice.kind === 'ended'
+                  ? t.plan.endedText
+                  : notice.kind === 'stricter'
+                    ? t.plan.offerStricterText
+                    : notice.versionOnly
+                      ? t.plan.offerVersion
+                      : t.plan.offerText}
+              </Body>
+              <Button label={t.plan.recreate} onPress={() => void create()} loading={busy} />
+            </Notice>
+          ),
+        }
+      : null,
+    planView.mismatch
+      ? {
+          id: 'competition-mismatch',
+          level: 'action',
+          node: (
+            <Notice tone="warning" testID="competition-plan-mismatch">
+              <Body>{t.competition.planMismatch}</Body>
+              <Button
+                label={t.competition.openCompetition}
+                variant="secondary"
+                onPress={() => router.push('/wettkampf' as Href)}
+              />
+            </Notice>
+          ),
+        }
+      : null,
+  ];
+  const infoNotices = planInfoNotices(plan, lib);
+
   return (
-    <Screen area="training" icon="dumbbell" title={t.today.title} testID="today" footer={footer}>
-      <Body muted testID="today-date">
-        {dayLabel(today)}
-      </Body>
+    <Screen area="training" icon="dumbbell" title={t.today.title} testID="today">
+      <TrainingSwitch selected="plan" prefix="today" exercisesTestID="today-glossary" />
+      {competitionLink}
+      <NoticeStack items={[...noticeItems, ...planNotices]} testID="today-notices" />
       {header}
       {/* Live-Anpassung (Phase 4b, 8.1): offener Vorschlag „Weniger Trainingstage?“ oben. */}
       <FewerDaysCard today={today} />
@@ -816,44 +974,65 @@ export default function TodayScreen() {
         onTravel={() => router.push('/reise-modus' as Href)}
         onPain={() => router.push('/schmerz-modus' as Href)}
       />
-      {notice.kind !== 'none' ? (
-        <Notice
-          tone={notice.kind === 'offer' ? 'info' : 'danger'}
-          title={
-            notice.kind === 'ended'
-              ? t.plan.endedTitle
-              : notice.kind === 'stricter'
-                ? t.plan.offerStricterTitle
-                : t.plan.offerTitle
-          }
-          testID="plan-offer"
-        >
-          <Body>
-            {notice.kind === 'ended'
-              ? t.plan.endedText
-              : notice.kind === 'stricter'
-                ? t.plan.offerStricterText
-                : notice.versionOnly
-                  ? t.plan.offerVersion
-                  : t.plan.offerText}
-          </Body>
-          <Button label={t.plan.recreate} onPress={() => void create()} loading={busy} />
-        </Notice>
-      ) : null}
 
+      {/* Deine Woche (Entwurf s1): 7 Tage mit Zustand; Tippen öffnet das Tages-Blatt (Woche, Tag, Tauschen). */}
+      <View style={styles.weekHead}>
+        <View style={styles.weekTitle} testID="plan-week-title">
+          <Heading level={2}>{W.weekTitle}</Heading>
+          {week.status ? (
+            <Text
+              style={[styles.weekCount, appFont('bold'), { color: theme.textMuted }]}
+              testID="plan-week-count"
+            >
+              · {weekCountText(week.status.summary)}
+            </Text>
+          ) : null}
+          {/* „Woche ansehen“ als Pfeil neben der Überschrift (statt eigener Link-Zeile, Entwurf 1/2). */}
+          <Pressable
+            accessibilityRole="link"
+            accessibilityLabel={W.openWeekA11y}
+            onPress={() => router.push('/week' as Href)}
+            testID="today-week"
+            hitSlop={4}
+            style={({ pressed }) => [styles.weekLink, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <Icon name="chevron" size={20} color={theme.link} />
+          </Pressable>
+        </View>
+      </View>
+      {week.status ? (
+        <>
+          <WeekStrip days={week.status.days} onSelect={openDay} />
+          <StripLegend />
+        </>
+      ) : null}
       {planWeek ? <PhaseBand week={planWeek} shortDays={planView.shortDays} /> : null}
-      {planView.mismatch ? (
-        <Notice tone="warning" testID="competition-plan-mismatch">
-          <Body>{t.competition.planMismatch}</Body>
-          <Button
-            label={t.competition.openCompetition}
-            variant="secondary"
-            onPress={() => router.push('/wettkampf' as Href)}
-          />
+      {/* Woche im Block (Einstiegs-/Erholungswoche) als eine Zeile (Entwurf: „Woche 1 von 6 – Einstiegswoche …“). */}
+      {blockWeek ? (
+        <Notice
+          tone="info"
+          testID="plan-week-header"
+          titleAsHeader
+          title={
+            blockWeek.weekNo === 0
+              ? t.plan.week0
+              : t.plan.weekHeader(blockWeek.weekNo, blockWeek.weeksInBlock)
+          }
+        >
+          {blockWeek.isIntroWeek ? (
+            <Body muted>
+              {t.plan.introWeek}: {t.plan.introWeekText}
+            </Body>
+          ) : null}
+          {blockWeek.isDeload ? (
+            <Body muted>
+              {t.plan.deloadWeek}: {t.plan.deloadWeekText}
+            </Body>
+          ) : null}
         </Notice>
       ) : null}
 
-      {/* Arzt-Hinweis vor JEDER Einheit – das Feld liegt am Plan (auch offline). */}
+      {/* Arzt-Hinweis vor JEDER Einheit – das Feld liegt am Plan (auch offline). Nie zugeklappt. */}
       {plan.medical_notice && (todayOpen || selectedSession) ? <MedicalNotice /> : null}
       {/* Erholung aus der Uhr (25.10.2026): bei niedriger Erholung „Leichter trainieren“ / „Wie geplant“ (nie Pflicht). */}
       {todayOpen && todayOpen.scheduled_on === today && todayInfo?.start === 'today' ? (
@@ -884,84 +1063,6 @@ export default function TodayScreen() {
         onView={(logId) => router.push(`/log/${logId}` as Href)}
       />
 
-      {/* Deine Woche (Entwurf s1): 7 Tage mit Zustand, Legende, „statt Sa“; Tippen öffnet das Tages-Blatt. */}
-      <View style={styles.weekHead}>
-        <View style={styles.weekTitle} testID="plan-week-title">
-          <Heading level={2}>{W.weekTitle}</Heading>
-          {week.status ? (
-            <Text
-              style={[styles.weekCount, appFont('bold'), { color: theme.textMuted }]}
-              testID="plan-week-count"
-            >
-              · {weekCountText(week.status.summary)}
-            </Text>
-          ) : null}
-        </View>
-      </View>
-      {week.status ? (
-        <>
-          <WeekStrip days={week.status.days} onSelect={openDay} />
-          <StripLegend />
-        </>
-      ) : null}
-      <View style={styles.links}>
-        <View style={styles.linkItem}>
-          <Button
-            label={W.openWeek}
-            accessibilityLabel={W.openWeekA11y}
-            variant="link"
-            onPress={() => router.push('/week' as Href)}
-            testID="today-week"
-          />
-        </View>
-        <View style={styles.linkItem}>
-          {/* Tagesauswertung (Etappe A2): Essen und Training heute. */}
-          <Button
-            label={t.day.openToday}
-            accessibilityLabel={t.day.openA11y(t.day.today)}
-            variant="link"
-            onPress={() => router.push(`/tag/${today}` as Href)}
-            testID="today-day"
-          />
-        </View>
-      </View>
-
-      {/* Große Ansicht (FA5, Plan 12 Nr. 2): weniger Elemente – Kalender, Verlauf, Tauschen und Übungen liegen hinter
-          „Mehr anzeigen“. */}
-      {largeView ? (
-        <Button
-          label={showMore ? t.accessibility.todayLess : t.accessibility.todayMore}
-          variant="link"
-          expanded={showMore}
-          onPress={() => setShowMore((v) => !v)}
-          testID="today-more"
-        />
-      ) : null}
-      {!largeView || showMore ? toolbar : null}
-      {/* Woche im Block (Einstiegs-/Erholungswoche) – unter der Leiste, damit die Woche oben ruhig bleibt. */}
-      {blockWeek ? (
-        <View style={styles.blockWeek} testID="plan-week-header">
-          <Heading level={2}>
-            {blockWeek.weekNo === 0
-              ? t.plan.week0
-              : t.plan.weekHeader(blockWeek.weekNo, blockWeek.weeksInBlock)}
-          </Heading>
-          {blockWeek.isIntroWeek ? (
-            <Body muted>
-              {t.plan.introWeek}: {t.plan.introWeekText}
-            </Body>
-          ) : null}
-          {blockWeek.isDeload ? (
-            <Body muted>
-              {t.plan.deloadWeek}: {t.plan.deloadWeekText}
-            </Body>
-          ) : null}
-        </View>
-      ) : null}
-
-      {/* Ernährung (Phase 5, Etappe N4): Karte „Essen heute“. */}
-      <NutritionTodayCard nowMinutes={nowMinutes} />
-
       {/* Einheit des gewählten Tages mit Übungen (Tauschen einzelner Übungen, Vorgaben) – Standard: heute. */}
       <View testID="today-detail" style={styles.detail}>
         {selectedSession && shown ? (
@@ -975,8 +1076,36 @@ export default function TodayScreen() {
                 selected === today ? t.plan.todaySession : t.plan.sessionOn(dayLabel(selected))
               }
               {...(targets && selectedSession.status === 'planned' ? { targets } : {})}
+              today={selected === today}
+              // Nie doppelt: zeigt die Hero-Karte oben schon „Training starten“ für diese Einheit, entfällt der Knopf
+              // im Kopf der Einheit (nur andere Tage, z. B. Nachholen).
+              start={
+                selectedInfo &&
+                startableNow(selectedSession, selectedInfo) &&
+                !heroStarts(selectedSession.id)
+                  ? {
+                      label: startLabelFor(selectedSession, selectedInfo),
+                      onPress: () => router.push(`/workout/${selectedSession.id}` as Href),
+                    }
+                  : null
+              }
               paceProfile={paceProfile}
               swapPaused={display?.modeActive === true && selectedSession.kind === 'strength'}
+              runStrength={
+                selectedSession.kind === 'endurance' && selectedSession.status !== 'skipped'
+                  ? runStrengthFor({
+                      date: selectedSession.scheduled_on,
+                      sessions: active.sessions,
+                      library: lib,
+                      workouts: workoutLibrary.kind === 'ready' ? workoutLibrary.workouts : null,
+                      rules,
+                      modes: trainingModes.state,
+                    })
+                  : null
+              }
+              onOpenRunStrength={(workoutId) =>
+                router.push(`/workouts/${encodeURIComponent(workoutId)}` as Href)
+              }
               routine={
                 warmupSetting.enabled
                   ? routineFor({
@@ -1074,10 +1203,30 @@ export default function TodayScreen() {
         ) : null}
       </View>
 
-      {/* Trinken (25.10.2026): Ring, +250/+500 ml, 7 Tage. */}
-      <HydrationCard today={today} testID="today-hydration" />
+      {/* Große Ansicht (FA5, Plan 12 Nr. 2): weniger Elemente – Kalender, Verlauf, Tauschen und PDF liegen hinter
+          „Mehr anzeigen“. */}
+      {largeView ? (
+        <Button
+          label={showMore ? t.accessibility.todayLess : t.accessibility.todayMore}
+          variant="link"
+          expanded={showMore}
+          onPress={() => setShowMore((v) => !v)}
+          testID="today-more"
+        />
+      ) : null}
+      {!largeView || showMore ? toolbar : null}
 
-      <Card>
+      {/* Plan-Infos als eine Zeile zum Aufklappen (Entwurf 2-training): Vorlage, Qualität, Hinweise. */}
+      <CollapsibleRow
+        icon="info"
+        title={
+          planNameLine(plan)
+            ? t.slim.training.planInfoTitle(planNameLine(plan) ?? '')
+            : t.slim.training.planInfoFallback
+        }
+        subtitle={t.slim.training.planInfoHint}
+        testID="plan-info"
+      >
         {planNameLine(plan) ? <Body testID="plan-name">{planNameLine(plan)}</Body> : null}
         <Body muted>{planTitleText(plan)}</Body>
         <Body>{t.plan.quality[plan.match_quality]}</Body>
@@ -1099,24 +1248,18 @@ export default function TodayScreen() {
             ))}
           </View>
         ) : null}
-      </Card>
-      {planInfoNotices(plan, lib).map((notice) => (
-        <Notice
-          key={notice}
-          title={t.plan.infoNotices[notice].title}
-          testID={`plan-info-${notice}`}
-        >
-          <Body>{t.plan.infoNotices[notice].text}</Body>
-        </Notice>
-      ))}
-      {/* Plan als PDF (docs/PLAN-PDF-EXPORT.md P3): Hinweis bei Gesundheitsbezug zeigt die Druckansicht. */}
-      <Button
-        label={t.printView.button}
-        variant="secondary"
-        accessibilityHint={t.printView.buttonHint}
-        onPress={() => router.push('/plan/drucken' as Href)}
-        testID="plan-print"
-      />
+        {infoNotices.map((code) => (
+          <Notice key={code} title={t.plan.infoNotices[code].title} testID={`plan-info-${code}`}>
+            <Body>{t.plan.infoNotices[code].text}</Body>
+          </Notice>
+        ))}
+        <Button
+          label={t.settings.recreatePlan}
+          variant="secondary"
+          onPress={() => router.push('/settings?thema=profil' as Href)}
+          testID="plan-info-settings"
+        />
+      </CollapsibleRow>
       {dialogs}
       <DaySheet
         date={sheetDate}
@@ -1166,6 +1309,28 @@ interface SessionInfo {
  * Hero-Karte „Heute“ (Entwurf s1): offene Einheit mit „Training starten“, erledigte Einheit mit Werten und „statt Sa“
  * bzw. Ruhetag mit der nächsten Einheit. Erledigt steht immer am tatsächlichen Tag (Wochen-Status aus dem Core).
  */
+/** Beschriftung des Start-Knopfs (Hero-Karte und Kopf der Einheit). */
+function startLabelFor(session: StoredSession, info: SessionInfo): string {
+  return session.kind === 'endurance'
+    ? info.start === 'today'
+      ? t.today.startEndurance
+      : t.today.catchUpEndurance
+    : info.start === 'today'
+      ? t.today.startWorkout
+      : t.today.catchUp;
+}
+
+/**
+ * Darf der Kopf der Krafteinheit „Training starten“ zeigen? Dieselben Regeln wie die Hero-Karte: startbar, kein
+ * Entwurf, Einheit nicht leer (Präferenz/Modus) und Übungen geprüft (Bibliothek da).
+ */
+function startableNow(session: StoredSession, info: SessionInfo): boolean {
+  const shown = info.display?.shown ?? null;
+  if (session.kind !== 'strength' || info.start === null || info.hasDraft) return false;
+  if (shown === null || shown.libraryMissing || !info.view) return false;
+  return shown.emptyByPreference !== true && shown.emptyByMode !== true;
+}
+
 function TodayHero({
   day,
   session,
@@ -1194,14 +1359,7 @@ function TodayHero({
       W.hero.minutes(modeShown ? modeShown.estimated_minutes : session.estimated_minutes),
       session.kind === 'strength' && count > 0 ? W.hero.exercises(count) : null,
     ].filter((v): v is string => v !== null);
-    const startLabel =
-      session.kind === 'endurance'
-        ? info.start === 'today'
-          ? t.today.startEndurance
-          : t.today.catchUpEndurance
-        : info.start === 'today'
-          ? t.today.startWorkout
-          : t.today.catchUp;
+    const startLabel = startLabelFor(session, info);
     const emptyStart =
       session.kind === 'strength' &&
       (shown?.emptyByPreference === true || shown?.emptyByMode === true);
@@ -1307,11 +1465,16 @@ function TodayHero({
 
 const styles = StyleSheet.create({
   weekHead: { gap: spacing.xs },
-  weekTitle: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 6 },
+  weekTitle: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 6 },
   weekCount: { fontSize: 16, lineHeight: 22 },
+  weekLink: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 'auto',
+    width: 44,
+    height: 44,
+  },
   blockWeek: { gap: 4 },
-  links: { flexDirection: 'row', flexWrap: 'wrap', columnGap: spacing.md },
-  linkItem: { flexGrow: 1 },
   detail: { gap: spacing.md },
   heroTag: {
     alignSelf: 'flex-start',

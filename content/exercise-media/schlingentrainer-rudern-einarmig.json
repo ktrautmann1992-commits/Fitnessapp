@@ -1,0 +1,20 @@
+{
+  "exercise_id": "schlingentrainer-rudern-einarmig",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "schlingentrainer-rudern-einarmig-start.svg",
+      "alt_de": "Ausgangsposition: Gesicht zum Anker, ein Griff in einer Hand, Arm gestreckt, Körper gerade nach hinten gelehnt, freier Arm an der Seite.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

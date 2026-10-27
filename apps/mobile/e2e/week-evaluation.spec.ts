@@ -21,7 +21,7 @@ const THURSDAY = '2026-10-15';
 async function start(page: Page, person: Parameters<typeof onboardNutrition>[1] = {}) {
   await onboardNutrition(page, person);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 /** Schnelleintrag für einen Tag (Testwert, Bezeichnung „Mahlzeit“). */

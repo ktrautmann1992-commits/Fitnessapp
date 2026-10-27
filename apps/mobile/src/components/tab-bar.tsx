@@ -1,5 +1,5 @@
 import { areaColors, cardColors, fontSize, maxContentWidth, spacing } from '@fitnessapp/ui';
-import type { NavArea } from '@fitnessapp/core';
+import { highlightedTab, type NavArea } from '@fitnessapp/core';
 import { createContext, useContext } from 'react';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,8 +15,9 @@ import { Text } from '@/components/text';
 /**
  * Untere Menüleiste (docs/PLAN-DASHBOARD.md 3; seit 20.10.2026 docs/PLAN-EINKAUFEN-AUSDAUER.md EA-1 und 4): die
  * Knöpfe kommen aus der Anordnung der Person (`useAppLayout`, Regeln in packages/core/src/layout.ts) – Standard
- * Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr (Workouts nur, wenn der Bereich vorhanden ist).
- * „Fortschritt“ steht als Kachel und unter „Mehr“, ebenso „Wettkampf“ (wählbar, nicht im Standard). Ist ein Bereich ohne Knopf geöffnet, ist kein Knopf markiert.
+ * seit „App verschlanken“ (26.10.2026) Heute · Training · Ernährung · Einkaufen · Mehr. „Workouts“, „Wettkampf“ und
+ * „Fortschritt“ sind wählbar (sonst im Training bzw. unter „Mehr“). Ist ein Bereich ohne Knopf geöffnet, ist sein
+ * Reiter markiert (Workouts → Training, Wettkampf/Fortschritt → Mehr, packages/core `highlightedTab`), sonst keiner.
  * Bei 6 Knöpfen etwas kleinere Schrift und Symbol-Fläche, damit es auch auf 320 px breiten Handys passt. Farben aus
  * den Design-Tokens (hell/dunkel), Tippfläche ≥ 56 px, für Bildschirmleser Rolle „Tab“ mit „ausgewählt“.
  * Aussehen seit 20.10.2026 wie Entwurf „Übersicht neu“: Strich-Icons je Bereich (lib/area-style.ts), der aktive Knopf
@@ -73,7 +74,9 @@ export function TabBar({ state, navigation }: TabBarProps) {
     .map((name) => state.routes.find((route) => route.name === name))
     .filter((route): route is { key: string; name: TabName } => route !== undefined);
   const compact = routes.length >= 6;
-  const focusedName = state.routes[state.index]?.name;
+  // Unterbereiche markieren ihren Reiter (Workouts → Training, Wettkampf/Fortschritt → Mehr; packages/core).
+  const openName = state.routes[state.index]?.name;
+  const focusedName = highlightedTab(layout.tabs, openName);
   return (
     <View
       role="tablist"
@@ -101,7 +104,8 @@ export function TabBar({ state, navigation }: TabBarProps) {
               target: route.key,
               canPreventDefault: true,
             });
-            if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
+            // Markiert, aber gerade ein Unterbereich offen (z. B. Workouts unter „Training“) → zum Reiter wechseln.
+            if (route.name !== openName && !event.defaultPrevented) navigation.navigate(route.name);
           };
           return (
             <Pressable

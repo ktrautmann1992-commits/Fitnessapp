@@ -1,0 +1,20 @@
+{
+  "exercise_id": "l-sitz-gehockt",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "l-sitz-gehockt-start.svg",
+      "alt_de": "Ausgangsposition: Stütz am Boden, Hände neben der Hüfte, Arme gestreckt, Gesäß und Füße angehoben, Knie zur Brust gezogen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

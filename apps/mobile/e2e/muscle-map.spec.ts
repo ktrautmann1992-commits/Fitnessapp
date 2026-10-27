@@ -24,7 +24,7 @@ const HOME_3_DAYS = {
 
 async function toToday(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 test.beforeEach(async ({ page }) => {

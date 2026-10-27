@@ -1,0 +1,38 @@
+{
+  "id": "laeufer-kniehub-stand",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Läufer-Kniehub mit Wadenheben",
+  "name_en": "Runner A-March with Calf Raise",
+  "aliases_de": ["A-Stand"],
+  "movement_pattern": "balance",
+  "primary_muscles": ["calves", "glutes"],
+  "secondary_muscles": ["quadriceps", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Aus dem Einbeinstand das Knie hochziehen und gleichzeitig auf den Vorfuß des Standbeins gehen – die Abdruckhaltung beim Laufen, ohne Sprung.",
+  "steps_de": [
+    "Auf einem Bein stehen, Arme wie beim Laufen.",
+    "Knie des freien Beins kräftig auf Hüfthöhe ziehen.",
+    "Gleichzeitig auf den Vorfuß des Standbeins hochdrücken.",
+    "Kontrolliert zurück, nach dem Satz Seite wechseln."
+  ],
+  "tips_de": ["Leichter: ohne Wadenheben, nur Kniehub."],
+  "common_mistakes_de": ["Oberkörper kippt nach hinten.", "Standknie gestreckt durchgedrückt."],
+  "safety_note_de": "Neben einer Wand oder Stuhllehne üben, um bei Bedarf Halt zu haben. Bei Schmerzen in Fuß, Knie oder Hüfte die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

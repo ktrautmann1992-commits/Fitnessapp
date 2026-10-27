@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard, openPlanInfo } from './plan-helpers';
 
 /**
  * Wettkampf im TESTMODUS (docs/PLAN-PHASE-10.md Abschnitt 8, Etappe WP4) mit festem Startdatum Mittwoch, 07.10.2026
@@ -67,13 +67,14 @@ test('Wettkampf: Ampel, Plan mit Phasen, Pace, Intervall-Timer, Countdown, Ergeb
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Grundlagen-Plan: Hinweis auf „Mein Wettkampf“ statt „kommt später“.
+  await openPlanInfo(page);
   await expect(page.getByTestId('plan-notes')).toContainText('Einstellungen → Mein Wettkampf');
   await expect(page.getByTestId('competition-phase-band')).toHaveCount(0);
 
   // --- Wettkampf anlegen ----------------------------------------------------------------------------------
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByTestId('settings-competition').click();
   await heading(page, 'Mein Wettkampf');
   await expect(page.getByText('Noch kein Wettkampf')).toBeVisible();
@@ -173,12 +174,12 @@ test('Wettkampf: Ampel, Plan mit Phasen, Pace, Intervall-Timer, Countdown, Ergeb
   );
 
   // --- Plan auf „Heute“: Phasen-Band, Countdown, Art, Pace, Distanz-Richtwert -----------------------------
-  await page.getByRole('button', { name: 'Zurück' }).click();
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).click();
-  await heading(page, 'Heute');
+  await page.goto('/today');
+  await heading(page, 'Training');
   await expect(page.getByTestId('competition-phase-band')).toContainText(
     'Basis · Einstiegswoche (bis zum Renntag 16 Wochen)',
   );
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('competition-countdown')).toContainText(
     'Noch 116 Tage bis zum Halbmarathon',
   );
@@ -224,7 +225,7 @@ test('Wettkampf: Ampel, Plan mit Phasen, Pace, Intervall-Timer, Countdown, Ergeb
   await expect(page.getByTestId('interval-logged')).toContainText('7 Minuten eingetragen');
   await expect(page.getByTestId('workout-cardio-minutes')).toHaveValue('7');
   await page.getByTestId('workout-save').click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('plan-completed')).toBeVisible();
 
   // --- Countdown im Kalender, Renntag markiert ------------------------------------------------------------
@@ -243,7 +244,8 @@ test('Wettkampf: Ampel, Plan mit Phasen, Pace, Intervall-Timer, Countdown, Ergeb
   // --- Renntag: Ergebnis eintragen (freie Einheit A1b mit Verweis) ----------------------------------------
   await page.clock.setSystemTime(new Date('2027-01-31T15:00:00+01:00'));
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('competition-countdown')).toContainText(
     'Heute ist Renntag: Halbmarathon',
   );
@@ -266,6 +268,7 @@ test('Wettkampf: Ampel, Plan mit Phasen, Pace, Intervall-Timer, Countdown, Ergeb
   expect(resultLog?.notes).toBe('Ergebnis: 1:58:20 · Gut eingeteilt');
   // Danach: Erholung und Frage nach dem nächsten Ziel.
   const overview = page.getByTestId('competition');
+  await expandNotices(page, 'today-notices');
   await expect(overview.getByTestId('competition-countdown')).toContainText(
     'Erholung nach dem Rennen',
   );
@@ -280,6 +283,7 @@ test('Wettkampf: Ampel, Plan mit Phasen, Pace, Intervall-Timer, Countdown, Ergeb
   await fillDate(page, 'Renntag', '18', '04', '2027');
   await page.getByTestId('competition-save-countdown').click();
   await expect(page.getByTestId('competition-message')).toContainText('Wettkampf gespeichert');
+  await expandNotices(page, 'today-notices');
   await expect(overview.getByTestId('competition-countdown')).toContainText(
     'Noch 77 Tage bis zum 10 km',
   );
@@ -319,8 +323,9 @@ test('Ohne Gesundheits-Check: Einladung aus dem Onboarding-Datum, Ampel „Nicht
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Datum aus dem Onboarding → Einladung „Wettkampf eintragen“ (vorbelegt).
+  await expandNotices(page, 'today-notices');
   const invite = page.getByTestId('competition-invite');
   await expect(invite).toContainText('Sonntag, 17.01.');
   await page.getByTestId('competition-invite-open').click();
@@ -339,6 +344,7 @@ test('Ohne Gesundheits-Check: Einladung aus dem Onboarding-Datum, Ampel „Nicht
   // Countdown ohne Plan-Bezug (kein Gesundheitsdatum).
   await page.getByTestId('competition-save-countdown').click();
   const overview = page.getByTestId('competition');
+  await expandNotices(page, 'today-notices');
   await expect(overview.getByTestId('competition-countdown')).toContainText(
     'Noch 102 Tage bis zum 10 km',
   );
@@ -358,8 +364,9 @@ test('Ohne Gesundheits-Check: Einladung aus dem Onboarding-Datum, Ampel „Nicht
   });
   // „Heute“: Countdown statt Einladung, kein Phasen-Band (kein Wettkampfplan).
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('competition-invite')).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('today').getByTestId('competition-countdown')).toContainText(
     'Noch 102 Tage bis zum 10 km',
   );
@@ -382,8 +389,8 @@ test('Übersicht bei Grundlagen-Plan: Ampel sichtbar, „Zu kurz“ ohne Knopf, 
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await heading(page, 'Training');
+  await page.goto('/settings?thema=profil');
   await page.getByTestId('settings-competition').click();
   await page.getByTestId('competition-add').click();
   await heading(page, 'Wettkampf eintragen');
@@ -460,8 +467,8 @@ test('Gesundheits-Flag: Ampel höchstens „Knapp“ mit Hinweis „nur Gehen“
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await heading(page, 'Training');
+  await page.goto('/settings?thema=profil');
   await page.getByTestId('settings-competition').click();
   await page.getByTestId('competition-add').click();
   await fillDate(page, 'Renntag', '28', '03', '2027');
@@ -491,9 +498,8 @@ test('Gesundheits-Flag: Ampel höchstens „Knapp“ mit Hinweis „nur Gehen“
   expect(types.every((type) => type === 'easy' || type === 'long' || type === 'recovery')).toBe(
     true,
   );
-  await page.getByRole('button', { name: 'Zurück' }).click();
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).click();
-  await heading(page, 'Heute');
+  await page.goto('/today');
+  await heading(page, 'Training');
   await expect(page.getByTestId('plan-medical-notice')).toBeVisible();
   const details = page.getByTestId('plan-endurance');
   await expect(details).toContainText('Art: Locker');

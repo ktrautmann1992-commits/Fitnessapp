@@ -38,7 +38,7 @@ async function openPhoto(page: Page) {
 async function start(page: Page) {
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 }
 
@@ -77,7 +77,7 @@ async function seed(page: Page, rows: { created_at: string; status: string }[]) 
       })),
     } as StoredDb;
   });
-  await page.getByTestId('today-nutrition').click();
+  await page.goto('/ernaehrung');
   await expect(page.getByTestId('nutrition-day')).toBeVisible();
 }
 
@@ -214,7 +214,7 @@ test('Per Foto: offline ein klarer Hinweis, kein Aufruf', async ({ page, context
   expect(await usage(page)).toEqual([]);
 
   // Widerruf in den Einstellungen → „Per Foto“ fragt wieder nach der Einwilligung.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=konto');
   await expect(page.getByTestId('settings-photo-consent')).toContainText('Version 1');
   await page.getByTestId('settings-photo-revoke').click();
   await page.getByTestId('dialog-revoke_photo').getByRole('button', { name: 'Widerrufen' }).click();

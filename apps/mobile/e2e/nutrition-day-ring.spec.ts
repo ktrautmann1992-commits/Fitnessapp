@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 import { onboardNutrition, openNutrition } from './nutrition-helpers';
-import { heading } from './plan-helpers';
+import { expandNotices, heading } from './plan-helpers';
 
 /**
  * Tagesansicht Ernährung mit Kalorien-Ring (Gründer-Wunsch 20.10.2026, docs/HANDY-ANLEITUNG.md Teil 7r) im TESTMODUS:
@@ -31,7 +31,7 @@ test('Ring, Makros, Mahlzeiten-Karten mit „+“, Überschreitung rot mit Worte
   test.setTimeout(180_000);
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 
   // Kopf: „Heute“ + Datum mit Kalenderwoche.
@@ -114,6 +114,7 @@ test('Ring, Makros, Mahlzeiten-Karten mit „+“, Überschreitung rot mit Worte
 
   // Offline: Hinweis, Eintragen bleibt möglich.
   await context.setOffline(true);
+  await expandNotices(page, 'nutrition-notice-line');
   await expect(page.getByTestId('nutrition-offline')).toBeVisible();
   await expect(page.getByTestId('meal-card-add-lunch')).toBeVisible();
   await context.setOffline(false);

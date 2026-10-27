@@ -24,6 +24,7 @@ import { deEndurance } from './de-endurance';
 import { deLoop } from './de-loop';
 import { deRacePace } from './de-race-pace';
 import { deShoes } from './de-shoes';
+import { deRunner } from './de-runner';
 import { deHydration } from './de-hydration';
 import { deFoodLog } from './de-food-log';
 import { deFoodPhoto } from './de-food-photo';
@@ -43,6 +44,8 @@ import { deSessionKcal } from './de-session-kcal';
 import { deSports } from './de-sports';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
+import { deSlim } from './de-slim';
+import { deCalisthenics } from './de-calisthenics';
 import { deTrainingWeek } from './de-training-week';
 import { deWidget } from './de-widget';
 import { deDeviceCalendar, deMonthReview, deWeightTrend } from './de-review';
@@ -304,6 +307,7 @@ export const de = {
         general_fitness: 'Fitness & Gesundheit',
         endurance: 'Ausdauer',
         active_aging: 'Fit im Alter',
+        calisthenics: 'Calisthenics / Körperbeherrschung',
       },
       discipline: 'Disziplin (optional)',
       disciplines: {
@@ -488,7 +492,8 @@ export const de = {
     mealprepValue: (days: number) => `Meal-Prep an ${days} Tagen pro Woche`,
   },
   today: {
-    title: 'Heute',
+    // Reiter „Training“ (bis 26.10.2026 hieß der Kopf „Heute“ – „Heute“ ist jetzt die Startseite).
+    title: 'Training',
     greeting: 'Schön, dass du da bist!',
     measurementDue: 'Zeit zum Nachmessen: Deine Körperumfänge sind fällig.',
     healthReconsent:
@@ -618,13 +623,46 @@ export const de = {
     duration: (minutes: number) => `ca. ${minutes} Minuten`,
     warmup: 'Aufwärmen',
     cooldown: 'Cool-down',
-    exercises: 'Übungen',
-    setsReps: (sets: number, reps: string) => `${sets} × ${reps} Wiederholungen`,
-    setsHold: (sets: number, seconds: number) => `${sets} × ${seconds} Sekunden halten`,
-    rest: (pause: string) => `Pause ${pause}`,
     reserve: (reps: string) => `ca. ${reps} Wiederholungen in Reserve`,
-    startWeight: 'Startgewicht finden',
-    targetWeight: (kg: string) => `Zielgewicht ${kg} kg`,
+    /** Kompakte Übungsliste (Entwurf B, 26.10.2026): eine Zeile Zahlen je Übung, Kopf mit Muskeln. */
+    list: {
+      dose: (sets: number, reps: string) => `${sets} × ${reps}`,
+      hold: (sets: number, seconds: number) => `${sets} × ${seconds} s`,
+      rest: (time: string) => `${time} Pause`,
+      reserve: (reps: string) => `${reps} in Reserve`,
+      findWeight: 'Gewicht selbst finden',
+      chooseLightest: 'Leichteste Stufe nehmen',
+      superset: (group: string) => `Supersatz ${group}`,
+      factMinutes: 'Minuten',
+      factExercises: 'Übungen',
+      factSets: 'Sätze',
+      factsA11y: (minutes: number, exercises: number, sets: number) =>
+        `ca. ${minutes} Minuten, ${exercises} ${exercises === 1 ? 'Übung' : 'Übungen'}, ${sets} ${sets === 1 ? 'Satz' : 'Sätze'}`,
+      musclesToday: 'Trainiert heute – Hauptmuskeln',
+      muscles: 'Trainiert – Hauptmuskeln',
+      supporting: 'Unterstützend:',
+      sequence: 'Ablauf',
+      warmupMinutes: (minutes: number) => `ca. ${minutes} Min`,
+      showMore: 'Mehr anzeigen',
+      showLess: 'Weniger anzeigen',
+      startWeightTitle: 'Startgewicht finden',
+      startWeightSubtitle: 'Erstes Mal? So wählst du das Gewicht',
+      startWeightText:
+        'Wähle ein Gewicht, mit dem du alle Wiederholungen sauber schaffst und noch etwa 2–3 übrig hättest. Lieber etwas zu leicht als zu schwer.',
+      reserveText:
+        '„2–3 in Reserve“ heißt: Am Ende des Satzes könntest du noch 2–3 Wiederholungen sauber schaffen.',
+      // Bildschirmleser: ganze Wörter statt „3 × 10“ und „1:30“.
+      a11y: {
+        sets: (sets: number) => (sets === 1 ? '1 Satz' : `${sets} Sätze`),
+        reps: (sets: string, reps: string) => `${sets} à ${reps} Wiederholungen`,
+        hold: (sets: string, seconds: number) => `${sets} à ${seconds} Sekunden halten`,
+        rest: (time: string) => `Pause ${time}`,
+        reserve: (reps: string) => `${reps} Wiederholungen in Reserve`,
+        weight: (weight: string) => `Gewicht ${weight}`,
+        primary: (names: string) => `Hauptmuskeln: ${names}`,
+        secondary: (names: string) => `unterstützend: ${names}`,
+      },
+    },
     substituted: 'ersetzt (Gerät fehlt)',
     adjusted: 'angepasst an deine aktuellen Angaben',
     hiddenExercises:
@@ -689,7 +727,7 @@ export const de = {
       'Die Übungen können gerade nicht geprüft werden. Bitte kurz online gehen – dann kannst du starten.',
     alternativesLocked: 'Alternativen gehen erst nach kurzem Online-Gehen.',
     editing: 'Du änderst ein gespeichertes Training. Übungen lassen sich dabei nicht tauschen.',
-    back: 'Zurück zu Heute',
+    back: 'Zurück zum Training',
     // Übung
     target: (sets: number, reps: string, weight: string | null) =>
       weight
@@ -912,7 +950,7 @@ export const de = {
     enduranceA11y: (minutes: number, km: string) => `Ausdauer: ${minutes} Minuten, ${km} Kilometer`,
     olderHint: 'Ältere Wochen findest du im Verlauf.',
     empty: 'In dieser Woche ist nichts geplant und nichts eingetragen.',
-    back: 'Zurück zu Heute',
+    back: 'Zurück zum Training',
   },
   /** Trainingskalender mit Drag-and-drop (docs/PLAN-AUSWERTUNG.md 3, Etappe A1a). */
   calendar: {
@@ -1241,7 +1279,7 @@ export const de = {
     clearText:
       'Alle Angaben auf diesem Gerät werden gelöscht. Danach startest du wieder ganz von vorn.',
     clearConfirm: 'Alles löschen',
-    back: 'Zurück zu Heute',
+    back: 'Zurück',
     training: 'Training',
     trainingText: 'Ändere deine Angaben oder erstelle deinen Plan neu.',
     editInputs: 'Angaben ändern',
@@ -1652,6 +1690,8 @@ export const de = {
   weekEval: deWeekEval,
   /** Menüleiste, Übersicht, Fortschritt, Mehr, Mein Konto (docs/PLAN-DASHBOARD.md). */
   tabs: deTabs,
+  /** „App verschlanken“ (26.10.2026): Umschalter, Hinweis-Zeile, ⋯-Menüs, Einstellungs-Themen. */
+  slim: deSlim,
   dashboard: deDashboard,
   progressHub: deProgressHub,
   weightTrend: deWeightTrend,
@@ -1706,10 +1746,13 @@ export const de = {
   endurance: deEndurance,
   // Schuh-Kilometerzähler und Renn-Pace-Plan (docs/PLAN-PHASE-10.md Abschnitt 22).
   shoes: deShoes,
+  runner: deRunner,
   racePace: deRacePace,
   hydration: deHydration,
   // Workout-Bibliothek (docs/PLAN-WORKOUTS.md)
   workouts: deWorkouts,
+  // Calisthenics-Skill-Pfade, Schlingentrainer, Lauf-Kraft (docs/PLAN-CALISTHENICS-SCHLINGE.md)
+  calisthenics: deCalisthenics,
   /** Smartwatch über Health Connect (Phase 8). */
   wearables: deWearables,
   sessionKcal: deSessionKcal,

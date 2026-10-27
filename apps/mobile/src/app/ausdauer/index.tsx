@@ -15,6 +15,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { AreaButton, SectionLabel } from '@/components/design';
 import { MyRouteTiles, shortDayDe } from '@/components/my-routes';
 import { ProgressCard } from '@/components/progress-card';
+import { DarknessNotice, LoadAmpelCard, RacePredictionCard } from '@/components/runner';
 import { VoiceCueSettingsCard } from '@/components/voice-cues';
 import { LiveRegion } from '@/components/calendar';
 import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
@@ -115,6 +116,14 @@ export default function EnduranceScreen() {
     () => enduranceTotals(activities, { period, anchor }),
     [activities, period, anchor],
   );
+  // Dunkelheits-Hinweis vor dem Start (Lauf-Paket 2): grob der Startort des letzten Laufs (nur auf dem Gerät gerechnet,
+  // in core auf 0,1° gerundet) – vor dem Start fragt die App keinen Standort ab.
+  const lastStart = useMemo(() => {
+    const latest = [...(result?.routes ?? [])].sort((a, b) =>
+      b.started_at.localeCompare(a.started_at),
+    )[0];
+    return latest ? (points.get(latest.id)?.[0] ?? null) : null;
+  }, [result, points]);
 
   if (app.status.kind === 'loading') {
     return (
@@ -233,6 +242,7 @@ export default function EnduranceScreen() {
                 horizontal
               />
             ) : null}
+            {!isWeb || testMode ? <DarknessNotice position={lastStart} basis="last" /> : null}
             {(!isWeb || testMode) && sport === 'bike' ? (
               <BikeTypeChoice
                 eBike={eBike}
@@ -348,6 +358,10 @@ export default function EnduranceScreen() {
           testID="endurance-progress"
         />
       ) : null}
+
+      {/* Lauf-Paket 2: Belastungs-Ampel (7 zu 28 Tage, 10-%-Regel) und Zeitprognose (Riegel). */}
+      <LoadAmpelCard activities={activities} />
+      <RacePredictionCard activities={activities} />
 
       <Card>
         <View style={styles.section}>

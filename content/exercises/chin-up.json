@@ -1,0 +1,49 @@
+{
+  "id": "chin-up",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Klimmzug im Untergriff",
+  "name_en": "Chin-up",
+  "aliases_de": ["Chin-up"],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats", "biceps"],
+  "secondary_muscles": ["upper_back", "forearms"],
+  "equipment_ids": ["pull_up_bar"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Klimmzug mit den Handflächen zum Körper: Der Bizeps hilft mehr mit, deshalb für viele etwas leichter als der Klimmzug im Obergriff.",
+  "steps_de": [
+    "Stange schulterbreit im Untergriff fassen, Handflächen zeigen zu dir.",
+    "Aus dem gestreckten Hang die Schulterblätter nach unten ziehen.",
+    "Brust zur Stange ziehen, bis das Kinn darüber ist.",
+    "Langsam bis zu gestreckten Armen absenken."
+  ],
+  "tips_de": ["Leichter: mit Widerstandsband unter einem Fuß.", "Ellbogen zeigen nach vorn unten."],
+  "common_mistakes_de": ["Halbe Wiederholungen ohne gestreckte Arme.", "Kopf nach vorn schieben."],
+  "safety_note_de": "Stange vorher auf festen Sitz prüfen und nur mit sicherem Griff hängen. Kontrolliert ab- und aufsteigen. Bei Schmerzen in Schulter, Ellbogen oder Handgelenk die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "klimmzug-band-unterstuetzt",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "klimmzug",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Calisthenics-Skill-Pfade (docs/PLAN-CALISTHENICS-SCHLINGE.md 2) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

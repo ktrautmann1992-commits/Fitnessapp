@@ -239,7 +239,7 @@ export function unpackOriginal(
  */
 export function diagnoseOriginal(
   buffer: Buffer,
-  def: Pick<SourceDefinition, 'format' | 'sheet' | 'csvDelimiter'>,
+  def: Pick<SourceDefinition, 'format' | 'sheet' | 'csvDelimiter' | 'headerRow'>,
 ): string[] {
   const lines = [`Größe ${buffer.length} Bytes`];
   if (isZip(buffer)) {
@@ -253,7 +253,17 @@ export function diagnoseOriginal(
       lines.push(`Tabellenblätter: ${readXlsxSheetNames(buffer).join(', ') || '–'}`);
       const rows = readXlsxRows(buffer, def.sheet);
       lines.push(`Zeilen im Blatt ${def.sheet ?? '(erstes)'}: ${rows.length}`);
-      lines.push(headerLine(rows[0] ?? []));
+      // Aufbau der ersten Zeilen OHNE Inhalte (keine Namen, keine Werte): Anzahl gefüllter Zellen. Titelzeilen vor
+      // der Kopfzeile haben nur wenige gefüllte Zellen – daraus `headerRow` ablesen (neue Quelle, Plan 19.3).
+      const filled = rows.slice(0, 8).map((row) => row.filter((cell) => cell.trim() !== '').length);
+      lines.push(`Gefüllte Zellen je Zeile (Zeile 0–${filled.length - 1}): ${filled.join(', ')}`);
+      const widest = Math.max(0, ...filled);
+      const guess = filled.findIndex((count) => count >= widest / 2);
+      if (guess > 0 && guess !== (def.headerRow ?? 0)) {
+        lines.push(`Vermutete Kopfzeile: Zeile ${guess} (\`headerRow\` ist ${def.headerRow ?? 0})`);
+        lines.push(headerLine(rows[guess] ?? []));
+      }
+      lines.push(headerLine(rows[def.headerRow ?? 0] ?? []));
     } catch (error) {
       lines.push(`xlsx nicht lesbar: ${(error as Error).message}`);
     }

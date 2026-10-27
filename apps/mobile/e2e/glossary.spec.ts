@@ -25,7 +25,7 @@ const HOME_3_DAYS = {
 
 async function toToday(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 const count = (page: Page) => page.getByTestId('glossary-count');
@@ -144,15 +144,15 @@ test("Link aus „Heute“ und Einstellungen; „So geht's“ im Training – Pa
   await heading(page, label);
   await heading(page, "So geht's");
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Einstellungen → „Übungen (Glossar)“.
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=training');
   await page.getByTestId('settings-glossary').click();
   await heading(page, 'Übungen');
   await page.getByRole('button', { name: 'Zurück', exact: true }).click();
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).click();
-  await heading(page, 'Heute');
+  await page.goto('/today');
+  await heading(page, 'Training');
 
   // Trainingsmodus: Satz abhaken → Pause läuft; „So geht's“ aufklappen bleibt im Training, Pause läuft weiter.
   await page.getByTestId('workout-start').click();

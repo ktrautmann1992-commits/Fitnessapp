@@ -43,7 +43,7 @@ const pantry = async (page: Page) => ((await db(page)).rows.pantryItems ?? []) a
 async function start(page: Page, forceDemo = false) {
   await onboardNutrition(page, { forceDemo });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 test('Unterwegs: Kategorie, Portion, Eintragen als Schätzwert, Zuletzt, Suche, Favorit', async ({
@@ -211,6 +211,8 @@ test('Vorrat in Einkaufsliste („Schon im Vorrat“, fast leer, nach Einkauf ak
     },
   }));
   await page.goto('/einkaufsliste');
+  // Seit 26.10.2026 in der zugeklappten Zeile „Hast du wahrscheinlich da“.
+  await page.getByTestId('shopping-pantry-toggle').click();
   await expect(page.getByTestId('shopping-in-pantry')).toBeVisible();
   await page.getByTestId('shopping-in-pantry-toggle').click();
   await expect(page.getByTestId(`shopping-in-pantry-${a?.itemKey ?? ''}`)).toContainText(

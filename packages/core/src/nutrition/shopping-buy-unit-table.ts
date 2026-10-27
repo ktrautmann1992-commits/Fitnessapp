@@ -175,6 +175,15 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   zitronensaft: loose('Zitrone', 'Zitronen', 40, 'für den Saft'),
   zucchini: loose('Zucchini', 'Zucchini', 250),
   zwiebel: loose('Zwiebel', 'Zwiebeln', 80),
+  aprikosen: loose('Aprikose', 'Aprikosen', 40),
+  aubergine: loose('Aubergine', 'Auberginen', 300),
+  maracuja: loose('Maracuja', 'Maracujas', 20),
+  pastinake: loose('Pastinake', 'Pastinaken', 150),
+  pfirsich: loose('Pfirsich', 'Pfirsiche', 130),
+  rosenkohl: pack('Beutel', 'Rosenkohl', [500]),
+  wassermelone: pack('Stück', 'Wassermelone', [1000, 2000]),
+  'zitronenschale-bio-abgerieben': loose('Bio-Zitrone', 'Bio-Zitronen', 4, 'für die Schale'),
+  zuckerschoten: pack('Schale', 'Zuckerschoten', [150]),
 
   // --- Tiefkühl ---
   'asia-gemuesemischung-tk': pack('Beutel', 'TK-Asia-Gemüse', [450, 750]),
@@ -188,6 +197,9 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   'himbeeren-tk': pack('Beutel', 'TK-Himbeeren', [300, 750]),
   'mango-tk': pack('Beutel', 'TK-Mango', [500]),
   'seelachsfilet-tk': pack('Packung', 'TK-Seelachsfilet', [400]),
+  'haehnchen-nuggets': pack('Packung', 'TK-Hähnchen-Nuggets', [450]),
+  'speiseeis-vanille': pack('Packung', 'Vanilleeis', [900], { measure: 'ml', gPerUnit: 0.55 }),
+  'suesskirschen-tk-entsteint': pack('Beutel', 'TK-Süßkirschen', [300, 750]),
 
   // --- Kühlregal: Milchprodukte und Eier ---
   eiklar: pack('Packung', 'Eiklar', [500, 1000]),
@@ -207,6 +219,14 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   parmesan: pack('Stück', 'Parmesan', [150]),
   ricotta: pack('Becher', 'Ricotta', [250]),
   'skyr-natur': pack('Becher', 'Skyr natur', [150, 500]),
+  butter: pack('Packung', 'Butter', [250]),
+  'gouda-light-scheiben': pack('Packung', 'Gouda leicht in Scheiben', [150]),
+  maultaschen: pack('Packung', 'Maultaschen', [360]),
+  mozzarella: pack('Packung', 'Mozzarella', [125]),
+  'schlagsahne-30': pack('Becher', 'Schlagsahne 30 %', [200]),
+  schmand: pack('Becher', 'Schmand', [200]),
+  'schmelzkaese-scheiben': pack('Packung', 'Schmelzkäse-Scheiben', [200]),
+  'vollmilch-3-5': pack('Packung', 'Vollmilch 3,5 %', [1000], { measure: 'ml', gPerUnit: 1.03 }),
 
   // --- Fleisch und Wurst ---
   'hackfleisch-vom-schwein': pack('Packung', 'Schweinehackfleisch', [400, 500]),
@@ -227,6 +247,19 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   schweinefilet: pack('Packung', 'Schweinefilet', [500]),
   'schweinehackfleisch-mager': pack('Packung', 'Schweinehackfleisch mager', [400]),
   schweineschnitzel: pack('Packung', 'Schweineschnitzel', [400]),
+  'brathaehnchen-mit-haut': pack('Packung', 'Brathähnchen', [1200]),
+  'bratwurst-schwein': pack('Packung', 'Bratwurst', [400]),
+  doenerfleisch: pack('Packung', 'Dönerfleisch', [300]),
+  'gefluegelwuerstchen-fettreduziert': pack('Packung', 'Geflügelwürstchen', [200, 400]),
+  'gyrosfleisch-schwein': pack('Packung', 'Gyros', [400, 600]),
+  leberkaese: pack('Packung', 'Leberkäse', [200]),
+  'rinderhackfleisch-20-fett': pack('Packung', 'Rinderhackfleisch', [400, 500]),
+  'rindfleisch-gulasch': pack('Packung', 'Rindergulasch', [500]),
+  salami: pack('Packung', 'Salami', [100]),
+  schweinemett: pack('Packung', 'Schweinemett', [250]),
+  schweineschulter: pack('Packung', 'Schweineschulter', [1000]),
+  'speck-durchwachsen': pack('Packung', 'Speck durchwachsen', [100, 200]),
+  'wiener-wuerstchen': pack('Packung', 'Wiener Würstchen', [250, 400]),
 
   // --- Fisch ---
   kabeljaufilet: pack('Packung', 'Kabeljaufilet', [250, 400]),
@@ -234,6 +267,7 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   'nordseekrabben-gekocht-geschaelt': pack('Packung', 'Nordseekrabben', [100]),
   raeucherforellenfilet: pack('Packung', 'Räucherforellenfilet', [125]),
   raeucherlachs: pack('Packung', 'Räucherlachs', [100, 200]),
+  matjeshering: pack('Packung', 'Matjesfilets', [200]),
 
   // --- Kühlregal pflanzlich ---
   'falafel-kuehlregal': pack('Packung', 'Falafel', [200]),
@@ -249,6 +283,11 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   'sojajoghurt-natur': pack('Becher', 'Sojajoghurt natur', [500]),
   'sojaschnetzel-trocken': pack('Packung', 'Sojaschnetzel', [150]),
   'tofu-natur': pack('Packung', 'Tofu natur', [200, 400]),
+  'mandeldrink-ungesuesst': pack('Packung', 'Mandeldrink ungesüßt', [1000], {
+    measure: 'ml',
+    gPerUnit: 1,
+  }),
+  'veganer-reibekaese': pack('Beutel', 'Vegane Käsealternative, gerieben', [150]),
 
   // --- Nudeln, Reis, Getreide ---
   'basmatireis-trocken': pack('Packung', 'Basmatireis', [500, 1000]),
@@ -270,11 +309,14 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   vollkornnudeln: pack('Packung', 'Vollkornnudeln', [500]),
   'vollkornspaghetti-trocken': pack('Packung', 'Vollkornspaghetti', [500]),
   weichweizengriess: pack('Packung', 'Weichweizengrieß', [500]),
+  kartoffelknoedel: pack('Packung', 'Kartoffelknödel', [400]),
+  'makkaroni-trocken': pack('Packung', 'Makkaroni', [500]),
 
   // --- Konserven und Gläser (Abtropfgewicht → Dose) ---
   'ananas-dose-abgetropft': can('Ananas', 340, '580 ml'),
   'apfelmus-ungesuesst': pack('Glas', 'Apfelmus ungesüßt', [710]),
   'gehackte-tomaten-dose': pack('Dose', 'Gehackte Tomaten', [400]),
+  'gewuerzgurken-glas': pack('Glas', 'Gewürzgurken', [360], { labels: ['720 ml'] }),
   'kichererbsen-dose-abgetropft': can('Kichererbsen', 240, '400 g'),
   'kidneybohnen-dose-abgetropft': can('Kidneybohnen', 250, '400 g'),
   kokosmilch: pack('Dose', 'Kokosmilch', [400], { labels: ['400 ml'] }),
@@ -301,6 +343,7 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   kuerbiskerne: pack('Packung', 'Kürbiskerne', [200]),
   'leinsamen-geschrotet': pack('Packung', 'Leinsamen geschrotet', [250]),
   mandeln: pack('Packung', 'Mandeln', [200]),
+  'pistazienkerne-ungesalzen': pack('Packung', 'Pistazienkerne', [100, 200]),
   rosinen: pack('Packung', 'Rosinen', [250]),
   sesam: pack('Packung', 'Sesam', [100]),
   walnuesse: pack('Packung', 'Walnüsse', [200]),
@@ -320,10 +363,19 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   vollkorntoast: pack('Packung', 'Vollkorntoast', [500]),
   weizenbroetchen: loose('Brötchen', 'Brötchen', 60),
   zwieback: pack('Packung', 'Zwieback', [225]),
+  'berliner-krapfen': loose('Berliner', 'Berliner', 70),
+  burgerbroetchen: pack('Packung', 'Burgerbrötchen', [4], { measure: 'pcs', gPerUnit: 75 }),
+  butterkekse: pack('Packung', 'Butterkekse', [200]),
+  croissant: loose('Croissant', 'Croissants', 60),
+  fladenbrot: loose('Fladenbrot', 'Fladenbrote', 400),
+  'hot-dog-broetchen': pack('Packung', 'Hot-Dog-Brötchen', [4], { measure: 'pcs', gPerUnit: 60 }),
+  panko: pack('Packung', 'Panko', [200]),
+  streuselkuchen: loose('Stück Streuselkuchen', 'Stück Streuselkuchen', 100),
 
   // --- Frühstück ---
   haferflocken: pack('Packung', 'Haferflocken', [500, 1000]),
   haferkleie: pack('Packung', 'Haferkleie', [500]),
+  'cornflakes-ungezuckert': pack('Packung', 'Cornflakes ungezuckert', [375]),
   ahornsirup: stock('Ahornsirup'),
   erdbeerkonfituere: stock('Erdbeerkonfitüre'),
   honig: stock('Honig'),
@@ -339,6 +391,8 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   senf: stock('Senf'),
   'sambal-oelek': stock('Sambal Oelek'),
   'meerrettich-glas': stock('Meerrettich'),
+  mayonnaise: stock('Mayonnaise'),
+  tomatenketchup: stock('Tomatenketchup'),
 
   // --- Gewürze und Backzutaten ---
   backkakao: stock('Backkakao'),
@@ -353,12 +407,18 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   salz: stock('Salz'),
   speisestaerke: stock('Speisestärke'),
   zucker: stock('Zucker'),
+  'instant-puddingpulver-zuckerfrei': pack('Packung', 'Instant-Puddingpulver', [40]),
+  roestzwiebeln: pack('Packung', 'Röstzwiebeln', [150]),
+  'weizenmehl-type-405': pack('Packung', 'Weizenmehl Type 405', [1000]),
 
   // --- Getränke und Sonstiges ---
   'espresso-zubereitet': stock('Espresso'),
   instantkaffee: stock('Instantkaffee'),
   orangensaft: pack('Packung', 'Orangensaft', [1000], { measure: 'ml', gPerUnit: 1.04 }),
   wasser: stock('Wasser', 'aus der Leitung'),
+  apfelsaft: pack('Packung', 'Apfelsaft', [1000], { measure: 'ml', gPerUnit: 1.05 }),
+  cola: pack('Flasche', 'Cola', [1000, 1500], { measure: 'ml', gPerUnit: 1.04 }),
+  'schwarzer-tee-aufgebrueht': stock('Schwarzer Tee'),
   eiswuerfel: stock('Eiswürfel', 'aus dem Gefrierfach'),
   'zartbitterschokolade-70': pack('Tafel', 'Zartbitterschokolade 70 %', [100]),
 };

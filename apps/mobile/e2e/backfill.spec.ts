@@ -44,11 +44,11 @@ async function setup(page: Page, today: Date = THURSDAY) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Drei Tage später: Dienstag ist verpasst.
   await page.clock.setFixedTime(today);
   await page.reload();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.getByTestId('today-calendar').click();
   await heading(page, 'Kalender');
 }

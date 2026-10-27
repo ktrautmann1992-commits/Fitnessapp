@@ -28,7 +28,7 @@ const ownProducts = async (page: Page) =>
 async function start(page: Page) {
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 }
 
@@ -88,7 +88,10 @@ test('Produkt per Nummer: gefunden, Quelle, 1 Portion eintragen, Tagessumme; Wer
     'Produktdaten: Open Food Facts (openfoodfacts.org), Lizenz ODbL 1.0',
   );
   await expect(page.getByTestId('food-product-card')).not.toContainText(/Nutri-Score/i);
-  await expect(page.locator('img')).toHaveCount(0);
+  // Keine Produktbilder und keine Bilder von fremden Servern (eigene Bilder im Bundle, z. B. Muskel-Chips auf
+  // „Training“, sind erlaubt).
+  await expect(page.getByTestId('food-product-card').locator('img')).toHaveCount(0);
+  await expect(page.locator('img[src^="http"], img[src^="//"]')).toHaveCount(0);
   await testIdsClean(page);
 
   // Attrappe: kein Link zu Open Food Facts (ausgedachte Testnummern); der Lizenz-Link führt zu „Lizenzen und Quellen“.
@@ -219,7 +222,7 @@ test('Kalorienzahlen aus: keine kcal im DOM, kein eigenes Produkt; Lizenzen und 
   expect(await page.content()).not.toMatch(/kcal/);
 
   // Lizenzen und Quellen (Einstellungen).
-  await page.goto('/settings');
+  await page.goto('/settings?thema=konto');
   await page.getByTestId('settings-licenses').click();
   await expect(page.getByTestId('licenses-off')).toContainText('Open Database License (ODbL 1.0');
   await expect(page.getByTestId('licenses-off')).toContainText('DbCL 1.0');

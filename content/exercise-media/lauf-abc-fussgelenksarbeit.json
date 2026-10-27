@@ -1,0 +1,20 @@
+{
+  "exercise_id": "lauf-abc-fussgelenksarbeit",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "lauf-abc-fussgelenksarbeit-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, Arme angewinkelt wie beim Laufen, eine Ferse leicht angehoben, der Ballen bleibt am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

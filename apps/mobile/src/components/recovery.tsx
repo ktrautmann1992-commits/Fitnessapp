@@ -24,7 +24,7 @@ import { t } from '@/i18n';
 import { appFont } from '@/lib/fonts';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
-import { useRecovery, useRecoveryChoice, useRecoveryOfferAllowed } from '@/state/use-recovery';
+import { useRecovery, useRecoveryChoice } from '@/state/use-recovery';
 
 const R = t.recovery;
 const T = RECOVERY_TEXTS_DE;
@@ -222,9 +222,10 @@ export function RecoveryTile({ today }: { today: string }) {
 }
 
 /**
- * Karte auf „Heute“ bei niedriger Erholung und heute geplanter, noch offener Einheit. Mit Live-Anpassung (Premium bzw.
- * Testmodus-Schalter): Angebot „Leichter trainieren“ / „Wie geplant“ – nie automatisch, jederzeit vor dem Start
- * umkehrbar. Ohne: nur der Hinweis (Status ist gratis). `locked` = Training schon begonnen (Entwurf) – Wahl fest.
+ * Karte auf „Heute“ bei niedriger Erholung und heute geplanter, noch offener Einheit: Angebot „Leichter trainieren“ /
+ * „Wie geplant“ – nie automatisch, jederzeit vor dem Start umkehrbar. Gratis für alle (Gründer-Entscheidung
+ * 26.10.2026, keine Premium-Prüfung; die Live-Anpassung KONZEPT 4.1 bleibt Premium). `locked` = Training schon
+ * begonnen (Entwurf) – Wahl fest.
  */
 export function RecoveryTodayCard({
   today,
@@ -237,12 +238,11 @@ export function RecoveryTodayCard({
 }) {
   const app = useApp();
   const state = useRecovery(today);
-  const allowed = useRecoveryOfferAllowed();
   const choice = useRecoveryChoice(today, session.id);
   const userId = app.session?.userId ?? null;
   if (state.kind !== 'ready' || !userId) return null;
   const status = state.today.status;
-  const offer = recoveryOffer({ status, plannedSessionOpenToday: true, entitled: allowed });
+  const offer = recoveryOffer({ status, plannedSessionOpenToday: true });
   const choose = (next: 'lighter' | 'as_planned') =>
     setRecoveryChoice({ userId, day: today, sessionId: session.id, choice: next });
 
@@ -283,18 +283,7 @@ export function RecoveryTodayCard({
       </View>
     );
   }
-  if (status !== 'low' || locked) return null;
-  if (offer !== 'lighter') {
-    // Gratis bzw. ohne Live-Anpassung: Status und neutraler Hinweis, kein Angebot.
-    return (
-      <Notice tone="info" title={R.today.infoTitle} testID="recovery-today-info">
-        <Body>{RECOVERY_SUMMARY_DE.low}</Body>
-        <Body muted style={styles.small}>
-          {R.today.infoHint}
-        </Body>
-      </Notice>
-    );
-  }
+  if (offer !== 'lighter' || locked) return null;
   const reasons = recoveryReasonsDe(state.today);
   return (
     <Card>

@@ -15,7 +15,9 @@ import type { UserRows } from './types';
 
 /**
  * Testmodus: Workouts aus dem Bündel, geprüft mit denselben Regeln wie content:validate (gegen die gebündelten
- * Übungen). Nur freigegebene ohne blockierenden Befund – wie der Seed, der nur so etwas einspielt.
+ * Übungen). Nur freigegebene ohne blockierenden Befund – wie der Seed, der nur so etwas einspielt. Ausnahme: Entwürfe
+ * der Kategorie „Lauf-Kraft“ (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) – sie hängen am Laufplan und sollen im Testmodus
+ * prüfbar sein; die App kennzeichnet sie als „Testinhalt“ (wie Übungs-Entwürfe). Im Supabase-Modus nie (RLS).
  */
 export function workoutsFromBundle(
   files: readonly ContentFile[],
@@ -26,7 +28,11 @@ export function workoutsFromBundle(
   const blocked = new Set(
     result.blocking.filter((issue) => issue.kind === 'workout').map((issue) => issue.id),
   );
-  return result.workouts.filter((w) => w.status === 'published' && !blocked.has(w.id));
+  return result.workouts.filter(
+    (w) =>
+      (w.status === 'published' || (w.status === 'draft' && w.category === 'run_strength')) &&
+      !blocked.has(w.id),
+  );
 }
 
 /** Supabase: Zeilen der Tabelle `workouts` (RLS: nur freigegebene) → Workouts; ungültige werden übergangen. */

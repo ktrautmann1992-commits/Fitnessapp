@@ -4401,3 +4401,20 @@ bleiben **nur im Buch**. **Zusatzregel (hart):** nur Rezepte, für die schon ein
 - **Tests:** `app-selection.test.ts` (echte Datei: Regel je Gruppe, 150 ± 3, Foto je Rezept, Pläne vollständig, keine
   Namens-Dubletten, Mindestbestand der Engine ×1,5 je Ernährungsform und Mahlzeit, ≥ 5 Snacks „ohne Kochen“; Fehlerfälle),
   `alpha5.test.ts` (Import nur der Auswahl, Pläne, Bericht, Abbruch bei ungültiger Auswahl/fehlendem Foto).
+
+## Nachtrag 25.10.2026: Zweitquelle Schweizer Nährwertdatenbank 7.1 (Schritt 1)
+
+- Gründer-Auftrag 25.10.2026 („Mach alles wie du es empfiehlst“): Zweitquelle nach 19.3 für die 38 Zutaten ohne BLS-Zeile
+  (v. a. Gewürze, Proteinpulver, Sojaskyr, Erythrit, Tempeh). Ohne sie kommen nur etwa 77 der 306 Rezepte in die App.
+- `sources.ts`: neuer Eintrag `ch_naehrwertdatenbank` 7.1 mit direkter Datei-Adresse
+  `https://naehrwertdaten.ch/wp-content/uploads/2026/07/Schweizer_Nahrwertdatenbank.xlsx` (vom Gründer aus der
+  Download-Seite kopiert) und Lizenz-Wortlaut (Screenshot Gründer): kostenlos, mit Quellenvermerk auch kommerziell,
+  ausdrücklich für Ernährungstagebuch-Apps. Spalten, Kopfzeile und Quell-ID-Format sind noch **angenommen**
+  (`columnsStatus: unconfirmed`, `originalSha256: null`) → nur Modus „kandidaten“ möglich.
+- Neu: `headerRow` (Titelzeilen vor der Kopfzeile überspringen) und eine inhaltsfreie Diagnose (gefüllte Zellen je Zeile,
+  vermutete Kopfzeile) für ungeprüfte Quellen.
+- Zuordnung: Die 38 offenen Zutaten zeigen jetzt auf die Zweitquelle (`ref: null`, Suchbegriffe ergänzt). BLS hat
+  Vorrang; jede Zutat hat genau eine Quelle.
+- Nächste Schritte: Lauf `foods-import` (Quelle `ch_naehrwertdatenbank`, Version `7.1`, Modus `kandidaten`) → Spalten,
+  `headerRow`, Prüfsumme und Quell-IDs per PR festnageln (Gründer merged) → Modus `import` (Gründer merged) →
+  `alpha5-import`, Freigabe, Einspielen.

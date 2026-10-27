@@ -1,5 +1,9 @@
 import {
   calorieRing,
+  cookDayMeals,
+  evaluationMealPlanUsable,
+  mealCardEntrySlot,
+  mealCardGroup,
   type DashboardTileId,
   goalFill,
   latestBodyWeight,
@@ -9,9 +13,9 @@ import {
   weekTrainingProgress,
 } from '@fitnessapp/core';
 import { Redirect, useRouter, type Href } from 'expo-router';
-import { brandColors, fontSize, heroColors, spacing } from '@fitnessapp/ui';
+import { brandColors, cardColors, fontSize, heroColors, radius, spacing } from '@fitnessapp/ui';
 import { Fragment, type ReactNode, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { CompetitionTile } from '@/components/competition-tile';
 import {
@@ -24,6 +28,7 @@ import {
 } from '@/components/dashboard';
 import {
   HeroCard,
+  Icon,
   IconButton,
   ProgressRing,
   StatValue,
@@ -54,13 +59,16 @@ import { appFont } from '@/lib/fonts';
 import { percentText, ringCenterText } from '@/lib/nutrition-day-format';
 import { formatKcal, roleLabel, slotLabel } from '@/lib/nutrition-format';
 import { dayLabel, longDayLabel } from '@/lib/plan-format';
-import { useDeviceSchemeName, useThemeColors } from '@/lib/theme';
+import { useColorSchemeName, useDeviceSchemeName, useThemeColors } from '@/lib/theme';
+import { useWeekStatus, WeekStrip } from '@/components/training-week';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { useAppLayout } from '@/state/use-app-layout';
 import { useWorkoutLibrary } from '@/state/use-workouts';
 import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
-import { useFoodLogDay } from '@/state/use-food-log';
+import { useFoodLogActions, useFoodLogDay } from '@/state/use-food-log';
+import { PlanMealEaten } from '@/components/food-log';
+import { NoticeStack } from '@/components/slim';
 import { useNutritionWeek } from '@/state/use-nutrition';
 import { Text } from '@/components/text';
 
@@ -137,11 +145,8 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
 
   const visibleTiles = layout.tiles.filter((x) => x.visible).map((x) => x.id);
   // Kleine Kacheln stehen zu zweit nebeneinander (Entwurf), wenn sie in der Reihenfolge der Person aufeinander folgen.
-  const small = (id: DashboardTileId) =>
-    id === 'workouts' ||
-    id === 'endurance' ||
-    id === 'steps' ||
-    (id === 'nutrition' && app.backend.supportsNutrition);
+  // „App verschlanken“ (26.10.2026): „Ernährung heute“ ist eine breite Karte („Als Nächstes“ + Abhaken).
+  const small = (id: DashboardTileId) => id === 'workouts' || id === 'endurance' || id === 'steps';
   const groups: DashboardTileId[][] = [];
   for (const id of visibleTiles) {
     const last = groups[groups.length - 1];
@@ -237,34 +242,71 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
       <OverviewHeader today={today} editing={editing} onEdit={() => setEditing(true)} />
       {/* Etappe E: einmaliges Angebot nach der ersten Messung (nur App, nie im Onboarding). */}
       <MeasurementNotificationOffer />
-      {urgent ? (
-        // Deutlich wie auf „Heute“: strengere Regeln bzw. Plan abgelaufen → neu erstellen.
-        <Notice
-          tone="danger"
-          title={planNotice.kind === 'ended' ? t.plan.endedTitle : t.plan.offerStricterTitle}
-          testID="overview-plan-urgent"
-        >
-          <Body>{planNotice.kind === 'ended' ? t.plan.endedText : t.plan.offerStricterText}</Body>
-          <Button
-            label={t.dashboard.attention.recreate}
-            onPress={() => router.navigate('/today')}
-          />
-        </Notice>
-      ) : null}
-      {others.length > 0 ? (
-        <Notice tone="info" title={t.dashboard.attention.title} testID="overview-attention">
-          <Body>
-            {others.includes('plan_offer') && others.length === 1
-              ? t.dashboard.attention.planOffer
-              : t.dashboard.attention.text}
-          </Body>
-          <Button
-            label={t.dashboard.attention.open}
-            variant="secondary"
-            onPress={() => router.navigate('/today')}
-          />
-        </Notice>
-      ) : null}
+      {/* Hinweis-Zeile („App verschlanken“, 26.10.2026): höchstens ein Hinweis offen, Rest hinter „+N“. */}
+      <NoticeStack
+        testID="overview-notices"
+        items={[
+          urgent
+            ? {
+                id: 'plan-urgent',
+                level: 'blocking',
+                // Deutlich wie im Training: strengere Regeln bzw. Plan abgelaufen → neu erstellen.
+                node: (
+                  <Notice
+                    tone="danger"
+                    title={
+                      planNotice.kind === 'ended' ? t.plan.endedTitle : t.plan.offerStricterTitle
+                    }
+                    testID="overview-plan-urgent"
+                  >
+                    <Body>
+                      {planNotice.kind === 'ended' ? t.plan.endedText : t.plan.offerStricterText}
+                    </Body>
+                    <Button
+                      label={t.dashboard.attention.recreate}
+                      onPress={() => router.navigate('/today')}
+                    />
+                  </Notice>
+                ),
+              }
+            : null,
+          others.length > 0
+            ? {
+                id: 'attention',
+                level: 'action',
+                node: (
+                  <Notice
+                    tone="info"
+                    title={t.dashboard.attention.title}
+                    testID="overview-attention"
+                  >
+                    <Body>
+                      {others.includes('plan_offer') && others.length === 1
+                        ? t.dashboard.attention.planOffer
+                        : t.dashboard.attention.text}
+                    </Body>
+                    <Button
+                      label={t.dashboard.attention.open}
+                      variant="secondary"
+                      onPress={() => router.navigate('/today')}
+                    />
+                  </Notice>
+                ),
+              }
+            : null,
+          app.backend.mode === 'local' || library?.containsDrafts
+            ? {
+                id: 'test-content',
+                level: 'info',
+                node: (
+                  <Notice tone="info" testID="overview-test-content">
+                    {t.plan.testContent}
+                  </Notice>
+                ),
+              }
+            : null,
+        ]}
+      />
       {/* Etappe E2: Kacheln in der Reihenfolge der Person, ausgeblendete fehlen (Hinweise oben bleiben immer). */}
       {editing ? <DashboardEditor onDone={() => setEditing(false)} /> : null}
       {visibleTiles.length === 0 && !editing ? (
@@ -283,6 +325,15 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
           <Fragment key={group[0]}>{tile(group[0] as DashboardTileId)}</Fragment>
         ),
       )}
+      {/* Entwurf 1-heute: „Kacheln anpassen“ unten (zusätzlich zum Stift oben). */}
+      {!editing ? (
+        <Button
+          label={t.dashboard.edit.title}
+          variant="link"
+          onPress={() => setEditing(true)}
+          testID="overview-edit-bottom"
+        />
+      ) : null}
     </Screen>
   );
 }
@@ -496,6 +547,11 @@ function NutritionTile({ today }: { today: string }) {
   const app = useApp();
   const view = useNutritionWeek();
   const foodLog = useFoodLogDay(today, view.showNumbers);
+  const foodLogActions = useFoodLogActions();
+  const [eatenMessage, setEatenMessage] = useState<{
+    text: string;
+    tone: 'success' | 'danger';
+  } | null>(null);
   const ringColors = useAreaColors('ernaehrung');
   const theme = useThemeColors();
   const hero = heroColors[useDeviceSchemeName()];
@@ -548,6 +604,15 @@ function NutritionTile({ today }: { today: string }) {
           return fill ? [{ key, fill, color }] : [];
         })
       : [];
+  // „Als Nächstes“ mit einem Tipp abhaken (Entwurf 1-heute) – nur an einem gespeicherten Plan (Regel in core).
+  const planState = week?.kind === 'ready' ? week.planState : null;
+  const eatenAllowed = evaluationMealPlanUsable({
+    planStored: planState?.action === 'stored',
+    weekEditable: planState?.editable === true,
+    date: today,
+    today,
+  });
+  const canLog = foodLog.supported && foodLog.consentValid && foodLog.dateStatus === 'ok';
   return (
     <DashboardTile
       title={texts.title}
@@ -555,9 +620,6 @@ function NutritionTile({ today }: { today: string }) {
       icon="utensils"
       testID="overview-nutrition"
       tint="corner"
-      pressTestID="overview-nutrition-open"
-      accessibilityLabel={center ? `${texts.title}: ${center.a11y}` : texts.open}
-      onPress={() => router.navigate('/ernaehrung' as Href)}
     >
       {loading ? <LoadingState label={texts.loading} /> : null}
       {view.library.kind === 'error' || week?.kind === 'error' ? (
@@ -647,7 +709,27 @@ function NutritionTile({ today }: { today: string }) {
           {texts.target(formatKcal(targetKcal))}
         </Body>
       ) : null}
-      {!ring && next ? (
+      {/* Kennzeichnung der Testwerte (K2), Hinweis bei unvollständigem Tag, Kochtag (bis 26.10.2026 „Essen heute“). */}
+      {view.library.kind === 'ready' && view.library.result.demo && week?.kind === 'ready' ? (
+        <Body muted testID="overview-nutrition-demo" style={styles.small}>
+          {t.nutrition.todayCard.demo}
+        </Body>
+      ) : null}
+      {day?.status === 'below_floor' ? (
+        <Notice tone="warning" testID="overview-nutrition-below-floor">
+          {t.nutrition.todayCard.belowFloor}
+        </Notice>
+      ) : null}
+      {day && cookDayMeals(day).length > 0 ? (
+        <Body testID="overview-nutrition-cook" style={styles.small}>
+          {t.nutrition.todayCard.cookDay(
+            cookDayMeals(day)
+              .map((m) => m.titleDe)
+              .join(', '),
+          )}
+        </Body>
+      ) : null}
+      {next ? (
         <Body testID="overview-nutrition-next" style={styles.small}>
           {texts.next(
             roleLabel(next.role)
@@ -670,6 +752,48 @@ function NutritionTile({ today }: { today: string }) {
           {texts.entries(foodLog.intake.count)}
         </Body>
       ) : null}
+      <View style={styles.actions}>
+        {next && eatenAllowed ? (
+          <View style={styles.action}>
+            <PlanMealEaten
+              meal={next}
+              date={today}
+              view={foodLog}
+              actions={foodLogActions}
+              onMessage={setEatenMessage}
+            />
+          </View>
+        ) : null}
+        {canLog ? (
+          <View style={styles.action}>
+            <Button
+              label={texts.log}
+              icon="plus"
+              variant="secondary"
+              onPress={() =>
+                router.push(
+                  (next
+                    ? `/ernaehrung/eintragen?tag=${today}&platz=${mealCardEntrySlot(mealCardGroup(next.slot))}`
+                    : `/ernaehrung/eintragen?tag=${today}`) as Href,
+                )
+              }
+              testID="overview-nutrition-log"
+            />
+          </View>
+        ) : null}
+      </View>
+      {eatenMessage ? (
+        <Notice tone={eatenMessage.tone} testID="overview-nutrition-message">
+          {eatenMessage.text}
+        </Notice>
+      ) : null}
+      <Button
+        label={texts.open}
+        variant="link"
+        accessibilityLabel={center ? `${texts.open}: ${center.a11y}` : texts.open}
+        onPress={() => router.navigate('/ernaehrung' as Href)}
+        testID="overview-nutrition-open"
+      />
     </DashboardTile>
   );
 }
@@ -721,46 +845,56 @@ function BodyTile({
   );
 }
 
-/** Kachel „Fortschritt“ (breit, ganz antippbar): diese Woche erledigt / geplant / offen (packages/core). */
+/**
+ * Kachel „Deine Woche“ (bis 26.10.2026 „Fortschritt“; Entwurf 1-heute): Kopf „Deine Woche · 0 von 3 erledigt ›“
+ * (Link zu Mehr › Fortschritt) und der Wochenstreifen wie im Training – Tippen auf einen Tag öffnet ihn im Training.
+ * Zahlen aus packages/core (weekTrainingProgress, Wochen-Status).
+ */
 function ProgressTile({ rows, today }: { rows: UserRows; today: string }) {
   const router = useRouter();
+  const theme = useThemeColors();
   const texts = t.dashboard.progress;
   const active = activePlan(rows);
   const week = active ? weekTrainingProgress(active.sessions, today) : null;
+  const status = useWeekStatus(today);
   const summary = week ? texts.week(week.completed, week.planned) : texts.noPlan;
+  const card = cardColors[useColorSchemeName()];
   return (
-    <DashboardTile
-      title={texts.title}
-      area="fortschritt"
-      icon="trend"
+    <View
+      style={[styles.weekCard, { backgroundColor: theme.surface, borderColor: card.border }]}
       testID="overview-progress"
-      pressTestID="overview-progress-open"
-      accessibilityLabel={`${texts.title}: ${summary}`}
-      onPress={() => router.navigate('/fortschritt' as Href)}
     >
-      {week && week.planned > 0 ? (
-        <View
-          style={styles.stats}
-          accessible
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel={`${t.dashboard.edit.tiles.progress}: ${summary}`}
+        onPress={() => router.navigate('/fortschritt' as Href)}
+        testID="overview-progress-open"
+        style={({ pressed }) => [styles.weekHead, { opacity: pressed ? 0.75 : 1 }]}
+      >
+        <Text
+          accessibilityRole="header"
+          aria-level={2}
+          style={[styles.weekTitle, appFont('bold'), { color: theme.text }]}
+        >
+          {t.dashboard.edit.tiles.progress}
+        </Text>
+        <Text
+          style={[styles.weekCount, appFont('semibold'), { color: theme.textMuted }]}
           accessibilityLabel={summary}
           testID="overview-progress-week"
         >
-          <View style={styles.stat}>
-            <StatValue value={String(week.completed)} label={texts.statDone} />
-          </View>
-          <View style={styles.stat}>
-            <StatValue value={String(week.planned)} label={texts.statPlanned} />
-          </View>
-          <View style={styles.stat}>
-            <StatValue value={String(week.open)} label={texts.statOpen} />
-          </View>
-        </View>
-      ) : (
-        <Body muted testID="overview-progress-week" style={styles.small}>
-          {summary}
-        </Body>
-      )}
-    </DashboardTile>
+          {week && week.planned > 0 ? texts.short(week.completed, week.planned) : summary}
+        </Text>
+        <Icon name="chevron" size={18} color={theme.textMuted} />
+      </Pressable>
+      {active && status.status ? (
+        <WeekStrip
+          days={status.status.days}
+          testID="overview-week"
+          onSelect={(date) => router.navigate(`/today?tag=${date}` as Href)}
+        />
+      ) : null}
+    </View>
   );
 }
 
@@ -776,4 +910,10 @@ const styles = StyleSheet.create({
   macroShort: { fontSize: 12, lineHeight: 16 },
   stats: { flexDirection: 'row', gap: spacing.sm },
   stat: { flex: 1, minWidth: 0 },
+  weekCard: { borderWidth: 1, borderRadius: radius.lg, padding: spacing.md, gap: spacing.sm },
+  weekHead: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44 },
+  weekTitle: { flex: 1, fontSize: 19, lineHeight: 25 },
+  weekCount: { fontSize: fontSize.sm, lineHeight: 20 },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  action: { flexGrow: 1, flexBasis: 140 },
 });

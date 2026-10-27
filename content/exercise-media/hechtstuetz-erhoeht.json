@@ -1,0 +1,20 @@
+{
+  "exercise_id": "hechtstuetz-erhoeht",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "hechtstuetz-erhoeht-start.svg",
+      "alt_de": "Ausgangsposition: Füße auf einem Stuhl, Hände schulterbreit am Boden, Hüfte hoch über den Schultern, Arme gestreckt, Kopf zwischen den Armen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

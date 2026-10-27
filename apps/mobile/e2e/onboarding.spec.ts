@@ -404,15 +404,17 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   expect(rows?.reminder?.enabled).toBe(true);
 
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await expect(page.getByRole('heading', { name: 'Heute', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Training', exact: true })).toBeVisible();
   // Neustart nach dem Onboarding → direkt die Übersicht (Startseite seit 18.10.2026).
   await page.goto('/');
   await expect(page.getByTestId('overview-header')).toBeVisible();
 
   await page.getByRole('tab', { name: 'Mehr' }).click();
+  // Mehr → Einstellungen (7 Themen seit 26.10.2026) → Erinnerungen.
   await page.getByRole('link', { name: 'Einstellungen' }).click();
   await expect(page.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
-  await expect(page.getByText(/^Version 1, erteilt am \d{2}\.\d{2}\.\d{4}$/).first()).toBeVisible();
+  await page.getByTestId('settings-topic-erinnerungen').click();
+  await expect(page.getByRole('heading', { name: 'Erinnerungen' })).toBeVisible();
   await expect(page.getByText(/^Nächste Messung: \d{2}\.\d{2}\.\d{4}$/)).toBeVisible();
 
   // Mess-Erinnerung: Grenzen 7–90 Tage.
@@ -423,7 +425,10 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   await page.getByRole('button', { name: 'Speichern' }).click();
   await expect(page.getByText('Gespeichert.')).toBeVisible();
 
-  // Widerruf health_data → Bestätigung → alle Gesundheitsdaten gelöscht.
+  // Konto, Daten & Einwilligungen: Fassung der Einwilligung; Widerruf health_data → alle Gesundheitsdaten gelöscht.
+  await page.getByTestId('settings-back').click();
+  await page.getByTestId('settings-topic-konto').click();
+  await expect(page.getByText(/^Version 1, erteilt am \d{2}\.\d{2}\.\d{4}$/).first()).toBeVisible();
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   await expect(page.getByText(/löscht alle Körper- und Gesundheitsdaten/)).toBeVisible();
   await page.getByRole('button', { name: 'Tagebuch behalten (empfohlen)' }).click();
@@ -485,7 +490,7 @@ test('ohne Einwilligung Gesundheitsdaten: keine Körperdaten, kein Gesundheits-C
   await page.goto('/onboarding/body_metrics');
   await expect(page.getByTestId('overview-header')).toBeVisible();
   await page.getByRole('tab', { name: 'Mehr' }).click();
-  await page.getByRole('link', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=konto');
   // Erste Karte „Nicht erteilt“ = Gesundheitsdaten (seit E3 steht darunter auch „Gerichte per Foto auswerten“).
   await expect(page.getByText('Nicht erteilt').first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Gesundheitsdaten: Einwilligen' })).toBeVisible();

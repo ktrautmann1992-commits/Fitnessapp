@@ -2,14 +2,17 @@ import {
   attemptCompareText,
   averagePaceOrSpeedText,
   averagePaceS,
+  cadenceHint,
   compareAttempts,
   distanceText,
   durationText,
   elevationStats,
   gpxFileName,
+  gradeAdjustedPace,
   isoDateInTimeZone,
   paceColoredRuns,
   paceSegments,
+  paceText,
   ROUTE_DIFFICULTIES,
   type RouteDifficulty,
   runHighlights,
@@ -40,9 +43,10 @@ import {
 import { ProgressCard } from '@/components/progress-card';
 import { RouteMatchSection } from '@/components/route-match-card';
 import { RouteWeatherSection } from '@/components/route-weather';
+import { PulseZonesDetail, useRunCadence } from '@/components/runner';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { SessionKcalStat } from '@/components/session-kcal';
-import { HeartZonesBar, WearableLogInfo } from '@/components/wearables';
+import { WearableLogInfo } from '@/components/wearables';
 import {
   Body,
   Button,
@@ -69,6 +73,7 @@ import { useWearables } from '@/state/use-wearables';
 const E = t.endurance;
 const D = E.detail;
 const WR = t.wearables.route;
+const RN = t.runner;
 const NO_POINTS: { lat: number; lng: number }[] = [];
 
 /**
@@ -88,6 +93,7 @@ export default function RouteDetailScreen() {
   const app = useApp();
   const { state, reload } = useTrackedRoutes();
   const wearables = useWearables();
+  const cadenceById = useRunCadence();
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -157,9 +163,28 @@ export default function RouteDetailScreen() {
   const eBike =
     info.sport === 'bike' &&
     (linkedCardio ? linkedCardio.e_bike === true : (saved?.e_bike ?? info.e_bike) === true);
-  const heart =
-    watch && logId
-      ? (wearableRows?.heartRates.find((h) => h.session_log_id === logId) ?? null)
+  // Puls der Uhr (Lauf der Uhr oder mit einer Uhr-Einheit zusammengeführte Aufzeichnung) – nur mit Einwilligung
+  // vorhanden, nie auf dem Story-Bild.
+  const heart = logId
+    ? (wearableRows?.heartRates.find((h) => h.session_log_id === logId) ?? null)
+    : null;
+  // Lauf-Paket 2: Kadenz (Schritte der Uhr, nur auf diesem Gerät gemerkt) und bergbereinigtes Tempo (GAP).
+  const wearableSession = logId
+    ? (wearableRows?.sessions.find((w) => w.session_log_id === logId) ?? null)
+    : null;
+  const cadenceSport = info.sport === 'run' || info.sport === 'walk' ? info.sport : null;
+  const cadence =
+    cadenceSport && wearableSession ? (cadenceById[wearableSession.external_id] ?? null) : null;
+  const cadenceHintKey =
+    cadence !== null && cadenceSport ? cadenceHint(cadence, cadenceSport) : null;
+  const gap =
+    info.sport === 'run'
+      ? gradeAdjustedPace({
+          distanceM: info.distance_m,
+          movingS: info.moving_s,
+          profile,
+          segments,
+        })
       : null;
   const watchKcal =
     watch && logId
@@ -285,7 +310,7 @@ export default function RouteDetailScreen() {
       {watch ? mapCard : null}
       {heart ? (
         <Card>
-          <HeartZonesBar summary={heart} />
+          <PulseZonesDetail summary={heart} externalId={wearableSession?.external_id ?? null} />
         </Card>
       ) : null}
 
@@ -322,11 +347,41 @@ export default function RouteDetailScreen() {
             }}
             logId={info.session_log_id}
           />
+          {gap ? (
+            <View style={styles.statCell}>
+              <StatValue
+                size="lg"
+                label={RN.gap.label}
+                value={paceText(gap.gapS)}
+                valueTestID="route-gap"
+              />
+            </View>
+          ) : null}
+          {cadence !== null && cadenceSport ? (
+            <View style={styles.statCell}>
+              <StatValue
+                size="lg"
+                label={RN.cadence.label}
+                value={RN.cadence.value(cadence)}
+                valueTestID="route-cadence"
+              />
+            </View>
+          ) : null}
         </View>
+        {gap ? <Body muted>{RN.gap.explain}</Body> : null}
+        {cadence !== null && cadenceSport ? (
+          <Body muted testID="route-cadence-hint">
+            {cadenceHintKey
+              ? `${RN.cadence.hints[cadenceHintKey]} ${RN.cadence.source}`
+              : RN.cadence.source}
+          </Body>
+        ) : null}
       </Card>
 
       {/* Phase 8: Puls der Uhr, wenn die Aufzeichnung mit einer Uhr-Einheit zusammengeführt wurde. */}
-      {info.session_log_id ? <WearableLogInfo logId={info.session_log_id} compact={watch} /> : null}
+      {info.session_log_id ? (
+        <WearableLogInfo logId={info.session_log_id} compact={watch || heart !== null} />
+      ) : null}
 
       {comparison && saved?.is_favorite ? (
         <Notice tone="info" title={D.compare} testID="route-compare">

@@ -67,6 +67,15 @@ describe('eigene Illustrationen (Entscheidung B)', () => {
     expect(dark).toContain('#e3ebff');
     expect(dark).not.toBe(light);
   });
+
+  it('illustrationXml ersetzt einzelne Rollen (Rand in der Farbe der Fläche)', () => {
+    const source = exerciseMediaFor('liegestuetz', 'start_position')!.source;
+    if (source.kind !== 'svg') throw new Error('SVG erwartet');
+    const xml = illustrationXml(source.template, 'dark', { gap: '#1c2a4d' });
+    expect(xml).toContain('#1c2a4d');
+    expect(xml).not.toContain('#151922');
+    expect(xml).toContain('#e3ebff');
+  });
 });
 
 describe('exerciseMediaFor', () => {

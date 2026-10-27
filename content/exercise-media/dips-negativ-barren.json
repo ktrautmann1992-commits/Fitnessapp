@@ -1,0 +1,20 @@
+{
+  "exercise_id": "dips-negativ-barren",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "dips-negativ-barren-start.svg",
+      "alt_de": "Ausgangsposition: oben im Stütz am Barren, Arme gestreckt, Schultern tief, Oberkörper leicht nach vorn, Beine angewinkelt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

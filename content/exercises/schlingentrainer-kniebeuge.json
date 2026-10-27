@@ -1,0 +1,49 @@
+{
+  "id": "schlingentrainer-kniebeuge",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kniebeuge am Schlingentrainer",
+  "name_en": "Suspension Squat",
+  "aliases_de": [],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors"],
+  "equipment_ids": ["suspension_trainer"],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Kniebeuge mit den Griffen in der Hand: Die Gurte geben Halt, so bleibt der Oberkörper aufrecht und die Tiefe sauber.",
+  "steps_de": [
+    "Gesicht zum Anker, Griffe vor der Brust, Füße schulterbreit.",
+    "Gesäß nach hinten unten senken, die Arme strecken sich.",
+    "So tief, wie der Rücken gerade bleibt.",
+    "Über die Fersen aufstehen, die Arme helfen nur wenig."
+  ],
+  "tips_de": ["Weniger mit den Armen ziehen = schwerer.", "Gut zum Lernen der Tiefe."],
+  "common_mistakes_de": ["Mit den Armen hochziehen.", "Knie fallen nach innen."],
+  "safety_note_de": "Anker über Kopfhöhe an einem tragfähigen Punkt befestigen; an der Tür nur auf der Seite, zu der sich die Tür schließt, und die Tür abschließen. Belastung vor dem ersten Satz vorsichtig testen. Bei Schmerzen die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "kniebeuge-stuhl",
+      "reason": "home",
+      "priority": 1
+    },
+    {
+      "alternative_id": "schlingentrainer-einbeinige-kniebeuge",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-25",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Schlingentrainer (docs/PLAN-CALISTHENICS-SCHLINGE.md 3) – Freigabe durch die Gründer/Fachprüfung ausstehend."
+  }
+}

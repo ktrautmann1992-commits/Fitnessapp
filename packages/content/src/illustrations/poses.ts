@@ -18,6 +18,7 @@ import {
   table,
   wall,
 } from './equipment';
+import { CALISTHENICS_ILLUSTRATIONS } from './poses-calisthenics';
 import type { Limb, PoseSpec, Prop, SidePose } from './rig';
 
 /**
@@ -1302,4 +1303,7 @@ export const EXERCISE_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustratio
     pose: front({ near: [-115, -95], far: [-72, -60] }, [], { near: [-125, -92], far: [-62, -62] }),
     alt: 'Ausgangsposition: von vorn – breiter Stand, ein Knie gebeugt, das andere Bein gestreckt, Hände an den Oberschenkeln.',
   },
+
+  // --- Calisthenics, Schlingentrainer, Lauf-ABC (Entwürfe, docs/PLAN-CALISTHENICS-SCHLINGE.md) --------------------
+  ...CALISTHENICS_ILLUSTRATIONS,
 };

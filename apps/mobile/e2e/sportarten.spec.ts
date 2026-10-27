@@ -44,7 +44,7 @@ async function setup(page: Page, today: Date, days: Parameters<typeof onboard>[1
   await page.evaluate(() => window.localStorage.clear());
   await onboard(page, { consent: true, level: /^Einsteiger/, goal: 'Muskelaufbau', days });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function enterSport(

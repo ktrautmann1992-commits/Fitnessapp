@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Training-Übersicht (docs/PLAN-AUSWERTUNG.md „Training-Übersicht“, Gründer-Freigabe 23.10.2026), Web-Export im Testmodus, Handy-Ansicht:
@@ -25,7 +25,7 @@ async function setup(page: Page, days: Parameters<typeof onboard>[1]['days'], co
   await page.evaluate(() => window.localStorage.clear());
   await onboard(page, { consent, level: /^Einsteiger/, goal: 'Muskelaufbau', days });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 test('Leiste: 7 Tage mit Zustand, Legende, Werkzeugleiste; Blatt legt eine Einheit auf einen anderen Tag', async ({
@@ -65,6 +65,7 @@ test('Leiste: 7 Tage mit Zustand, Legende, Werkzeugleiste; Blatt legt eine Einhe
   await expect(sheet.getByTestId('day-sheet-move-info')).toContainText('Freitag');
   await sheet.getByTestId('day-sheet-chip-2026-10-25').click();
   await expect(page.getByTestId('day-sheet')).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toHaveText('Auf Sonntag verschoben.');
   await expect(cell(page, '2026-10-25')).toHaveAccessibleName(/verschoben von Sa/);
   await expect(cell(page, SAT)).toHaveAccessibleName(/Ruhetag \(verschoben auf So\)/);
@@ -75,6 +76,7 @@ test('Leiste: 7 Tage mit Zustand, Legende, Werkzeugleiste; Blatt legt eine Einhe
   await page.getByTestId('day-sheet-skip').click();
   await expect(page.getByRole('heading', { name: 'Einheit auslassen?' })).toBeVisible();
   await page.getByRole('button', { name: 'Einheit auslassen' }).click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toHaveText('Die Einheit entfällt diese Woche.');
   await expect(cell(page, THU)).toHaveAccessibleName(/– entfällt/);
   await expect(page.getByTestId('plan-week-count')).toHaveText('· 0 von 1 Einheit');
@@ -114,13 +116,13 @@ test('Uhr-Lauf an einem Tag ohne Plan: einmalige Frage → „Ja“ → Sa vorge
   await expect(page.getByTestId('cross-day-dialog')).toHaveCount(0);
 
   // Beispiel-Uhr verbinden (Testmodus): Läufe u. a. am Dienstag 20.10. – dort ist nichts geplant.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   await page.getByTestId('settings-smartwatch').click();
   await page.getByTestId('smartwatch-consent-accept').click();
   await page.getByTestId('smartwatch-connect').click();
   await expect(page.getByTestId('smartwatch-message')).toContainText('Abgleich fertig');
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Frage statt stiller Zuordnung.
   const dialog = page.getByTestId('cross-day-dialog');
@@ -132,6 +134,7 @@ test('Uhr-Lauf an einem Tag ohne Plan: einmalige Frage → „Ja“ → Sa vorge
   // Bis zur Antwort: Dienstag erledigt (freie Einheit), Samstag geplant.
   await page.getByTestId('cross-day-yes').click();
   await expect(dialog).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toContainText('Zählt für Sa');
   await expect(cell(page, TUE)).toHaveAccessibleName(/erledigt, statt Sa/);
   await expect(cell(page, TUE)).toContainText('statt Sa');
@@ -140,7 +143,7 @@ test('Uhr-Lauf an einem Tag ohne Plan: einmalige Frage → „Ja“ → Sa vorge
 
   // Bleibt nach dem Neuladen – keine zweite Frage.
   await page.reload();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(cell(page, SAT)).toHaveAccessibleName(/vorgezogen/);
   await expect(page.getByTestId('cross-day-dialog')).toHaveCount(0);
 
@@ -164,7 +167,7 @@ test('Uhr-Lauf an einem Tag ohne Plan: einmalige Frage → „Ja“ → Sa vorge
   await page.getByTestId('day-sheet-close').click();
   await expect(page.getByTestId(`week-day-${SAT}`)).toContainText('geplant');
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('cross-day-dialog')).toHaveCount(0);
 });
 
@@ -175,7 +178,7 @@ test('„Nein, zusätzliche Einheit“: Samstag bleibt geplant, Dienstag erledig
     ['Montag', 'Kraft im Studio', 45],
     ['Samstag', 'Ausdauer', 30],
   ]);
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   await page.getByTestId('settings-smartwatch').click();
   await page.getByTestId('smartwatch-consent-accept').click();
   await page.getByTestId('smartwatch-connect').click();

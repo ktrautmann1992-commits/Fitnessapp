@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { expectA4, pageHeights, pdfPageCount } from './print-helpers';
-import { heading, next, onboard } from './plan-helpers';
+import { expandNotices, heading, next, onboard, openPlanInfo } from './plan-helpers';
 
 /**
  * Trainingsplan im TESTMODUS (docs/PLAN-PHASE-3.md Abschnitt 10, Etappe C) mit festem Datum:
@@ -55,9 +55,11 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await expect(page.getByTestId('done-info-bodyweight_limits')).toHaveCount(0);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
 
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Studio-Plan: kein Körpergewicht-Hinweis (Etappe K4).
+  await openPlanInfo(page);
   await expect(page.getByTestId('plan-info-bodyweight_limits')).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-test-content')).toHaveText(
     'Testinhalte – KI-Entwurf, nicht fachlich geprüft',
   );
@@ -65,11 +67,34 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await expect(page.getByRole('heading', { name: 'Woche 1 von 6' })).toBeVisible();
   await expect(page.getByText(/^Einstiegswoche: Wähle Gewichte/)).toBeVisible();
   await expect(page.getByText('Deine Einheit heute')).toBeVisible();
-  await expect(page.getByTestId('plan-exercise').first()).toContainText('Wiederholungen');
-  await expect(page.getByTestId('plan-exercise').first()).toContainText(
-    'Wiederholungen in Reserve',
+  // Kompakte Liste (Entwurf B, 26.10.2026): eine Zeile Zahlen, „Gewicht selbst finden“ als kleiner Marker, der lange
+  // Text „Startgewicht finden“ nur EINMAL oben als aufklappbarer Hinweis.
+  const first = page.getByTestId('plan-exercise').first();
+  await expect(first).toContainText(/\d+ × \d+/);
+  await expect(first).toContainText(/in\sReserve/);
+  await expect(first).toContainText('Gewicht selbst finden');
+  await expect(first.getByTestId('plan-exercise-link')).toHaveAttribute(
+    'aria-label',
+    /Sätze à .* Wiederholungen, Pause .*, .* Wiederholungen in Reserve, Gewicht selbst finden, Hauptmuskeln: /,
   );
-  await expect(page.getByTestId('plan-exercise').first()).toContainText('Startgewicht finden');
+  await expect(page.getByRole('button', { name: /^Tauschen$/ })).toHaveCount(0);
+  await expect(page.getByTestId('plan-session-facts')).toHaveAttribute(
+    'aria-label',
+    /^ca\. \d+ Minuten, \d+ Übungen, \d+ Sätze$/,
+  );
+  await expect(page.getByTestId('plan-session-muscles')).toContainText(
+    'Trainiert heute – Hauptmuskeln',
+  );
+  // „Training starten“ nie doppelt: heute steht der Knopf nur in der Hero-Karte, nicht im Kopf der Einheit.
+  await expect(page.getByTestId('workout-start')).toHaveCount(1);
+  await expect(page.getByTestId('plan-session-start')).toHaveCount(0);
+  await expect(page.getByTestId('plan-start-weight-hint')).toHaveCount(1);
+  await expect(page.getByTestId('plan-start-weight-text')).toHaveCount(0);
+  await page.getByTestId('plan-start-weight-toggle').click();
+  await expect(page.getByTestId('plan-start-weight-text')).toContainText(
+    'Wähle ein Gewicht, mit dem du alle Wiederholungen sauber schaffst',
+  );
+  await expect(page.getByText(/^Startgewicht finden: Wähle/)).toHaveCount(0);
   await expect(page.getByTestId('plan-medical-notice')).toHaveCount(0);
 
   // Wochenübersicht Mo–So, heute hervorgehoben; Montag liegt vor dem Planstart (Ruhetag).
@@ -92,6 +117,7 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await page.getByTestId('day-sheet-skip').click();
   await expect(page.getByRole('heading', { name: 'Einheit streichen?' })).toBeVisible();
   await page.getByRole('button', { name: 'Einheit streichen' }).click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toHaveText(
     'Diese Woche ist kein Tag mehr frei – die Einheit entfällt.',
   );
@@ -106,6 +132,7 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await expect(page.getByText('Einheit am Freitag, 09.10.')).toBeVisible();
   // Tag-Chip „Mi“ im Tages-Blatt (dieselbe Prüfung wie der Kalender).
   await page.getByTestId('day-sheet-chip-2026-10-07').click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toHaveText('Auf Mittwoch verschoben.');
   await expect(
     week.getByRole('button', { name: /^Mittwoch, 07\.10\.: .*verschoben von Fr/ }),
@@ -121,7 +148,7 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
 
   // Neu laden: gleicher Stand aus dem Gerätespeicher.
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByText('Deine Einheit heute')).toBeVisible();
   // Schon einmal verschoben, in derselben Woche nichts mehr frei → würde gestrichen.
   await page
@@ -133,7 +160,7 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await page.getByTestId('day-sheet-close').click();
 
   // Angaben ändern (Einstellungen → Training) → „Plan neu erstellen?“ → neuer Plan.
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);
@@ -144,7 +171,8 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await page.getByRole('radio', { name: 'Donnerstag: Ausdauer' }).click();
   await page.getByRole('radio', { name: 'Donnerstag: 30 Minuten' }).click();
   await next(page);
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-offer')).toContainText('Deine Angaben haben sich geändert');
   await page.getByTestId('plan-offer').getByRole('button', { name: 'Plan neu erstellen' }).click();
   await expect(page.getByTestId('plan-message')).toHaveText('Dein neuer Plan ist fertig.');
@@ -157,16 +185,44 @@ test('Studio 3 Tage: Plan auf „Heute“, Wochenübersicht, Verschieben und Str
   await expect(page.getByText('Deine Einheit heute')).toBeVisible();
 
   // Einstellungen → Plan neu erstellen (mit Bestätigung).
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await page.getByRole('button', { name: 'Plan neu erstellen' }).click();
   await page.getByRole('button', { name: 'Neu erstellen', exact: true }).click();
   await expect(page.getByTestId('settings').getByText('Dein neuer Plan ist fertig.')).toBeVisible();
 
-  // Testdaten löschen → alles weg, auch der Plan.
+  // Testdaten löschen (Thema „Konto, Daten & Einwilligungen“) → alles weg, auch der Plan.
+  await page.goto('/settings?thema=konto');
   await page.getByRole('button', { name: 'Testdaten löschen' }).click();
   await page.getByRole('button', { name: 'Alles löschen' }).click();
   await expect(page.getByRole('button', { name: "Los geht's" })).toBeVisible();
   expect(await page.evaluate((key) => window.localStorage.getItem(key), LOCAL_DB)).toBeNull();
+});
+
+test('Kopf der Einheit: „Heute nachholen“ nur ohne Start-Knopf in der Hero-Karte', async ({
+  page,
+}) => {
+  await onboard(page, {
+    consent: true,
+    yesQuestion: null,
+    level: /^Einsteiger/,
+    goal: 'Muskelaufbau',
+    days: [
+      ['Montag', 'Kraft im Studio', 60],
+      ['Mittwoch', 'Kraft im Studio', 60],
+    ],
+  });
+  await page.getByRole('button', { name: 'Zum Plan' }).click();
+  await heading(page, 'Training');
+  // Donnerstag (Ruhetag): die verpasste Einheit vom Mittwoch ansehen – nachholbar, die Hero-Karte hat keinen Start-Knopf.
+  await page.clock.setFixedTime(new Date('2026-10-08T09:00:00+02:00'));
+  await page.goto('/today?tag=2026-10-07');
+  await heading(page, 'Training');
+  await expect(page.getByTestId('workout-start')).toHaveCount(0);
+  const start = page.getByTestId('plan-session-start');
+  await expect(start).toHaveCount(1);
+  await expect(start).toHaveText('Heute nachholen');
+  await start.click();
+  await expect(page.getByTestId('workout')).toBeVisible();
 });
 
 test('Ausdauer ohne Gesundheits-Check: Geh-Lauf-Wechsel, Anstrengung, vorsichtiger Start', async ({
@@ -184,16 +240,18 @@ test('Ausdauer ohne Gesundheits-Check: Geh-Lauf-Wechsel, Anstrengung, vorsichtig
   });
   await expect(page.getByTestId('done-plan')).toContainText('Ausdauer-Grundlage – 10 km');
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByRole('heading', { name: 'Geh-Lauf-Wechsel' })).toBeVisible();
   const details = page.getByTestId('plan-endurance');
   await expect(details).toContainText('Anstrengung 3 von 10');
   await expect(details).toContainText('1 Minute laufen, 2 Minuten gehen');
   // Start-Deckel „vorsichtig“ (ohne Check): höchstens 20 Minuten je Einheit.
   await expect(details).toContainText(/^(1\d|20) Minuten/);
+  await openPlanInfo(page);
   await expect(
     page.getByText('Ohne Gesundheits-Check planen wir vorsichtig.', { exact: true }),
   ).toBeVisible();
+  await openPlanInfo(page);
   await expect(page.getByTestId('plan-notes')).toContainText(
     'Das ist dein Grundlagen-Plan (locker). Einen Wettkampfplan rückwärts ab Renntag mit langen Läufen, Tempo und Tapering erstellst du unter Einstellungen → Mein Wettkampf.',
   );
@@ -225,7 +283,7 @@ test('Start mitten in der Woche: alle Lauf-Tage in der Wochenübersicht der näc
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.getByTestId('today-week').click();
   await heading(page, 'Deine Woche');
   // Diese Woche: nur noch der Samstag-Lauf (Mo/Di lagen vor dem Planstart).
@@ -265,8 +323,10 @@ test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundl
   await expect(page.getByTestId('done-plan')).toContainText('Ausdauer-Grundlage – Marathon');
   await expect(page.getByTestId('done-plan')).not.toContainText('Allgemeine Fitness');
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
+  await openPlanInfo(page);
   await expect(page.getByText('Ausdauer-Grundlage – Marathon', { exact: true })).toBeVisible();
+  await openPlanInfo(page);
   await expect(page.getByTestId('plan-notes')).toContainText(
     'Das ist dein Grundlagen-Plan (locker). Einen Wettkampfplan rückwärts ab Renntag mit langen Läufen, Tempo und Tapering erstellst du unter Einstellungen → Mein Wettkampf.',
   );
@@ -283,7 +343,7 @@ test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundl
   expect(kinds).toContain('endurance');
   expect(kinds.some((k) => k !== 'endurance')).toBe(true);
   // Einstellungen zeigen denselben Titel.
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=profil');
   await expect(
     page.getByTestId('settings').getByText('Ausdauer-Grundlage – Marathon', { exact: true }),
   ).toBeVisible();
@@ -299,8 +359,8 @@ test('Ziel Marathon: Trainingstage mit Ausdauer vorbelegt → „Ausdauer-Grundl
   // Eigene Änderung: Samstag abwählen und speichern.
   await page.getByRole('checkbox', { name: 'Samstag' }).click();
   await next(page);
-  await heading(page, 'Heute');
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await heading(page, 'Training');
+  await page.goto('/settings?thema=profil');
   await page.getByRole('link', { name: 'Angaben ändern' }).click();
   await heading(page, 'Deine Trainingserfahrung');
   await next(page);
@@ -327,14 +387,15 @@ test('vorsichtiger Plan mit Arzt-Hinweis; Widerruf löscht den Plan vollständig
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('plan-medical-notice')).toContainText(
     'Bitte kläre vor dem Training ärztlich ab',
   );
+  await openPlanInfo(page);
   await expect(page.getByText('Dein Plan ist bewusst vorsichtig aufgebaut.')).toBeVisible();
   // RPE höchstens 7 → mindestens 3 Wiederholungen in Reserve; kein Über-Kopf-Drücken.
   for (const text of await page.getByTestId('plan-exercise').allInnerTexts()) {
-    expect(text).toMatch(/ca\. ([3-9]|\d–\d) Wiederholungen in Reserve/);
+    expect(text).toMatch(/([3-9]|\d–\d)\sin\sReserve/);
     expect(text).not.toMatch(/Schulterdrücken|Langhantel-Kniebeuge/);
   }
   // Arzt-Hinweis auch über anderen Einheiten der Woche.
@@ -347,7 +408,7 @@ test('vorsichtiger Plan mit Arzt-Hinweis; Widerruf löscht den Plan vollständig
   let rows = await storedRows(page);
   expect(rows.plans[0]).toMatchObject({ uses_health_data: true, medical_notice: true });
 
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=konto');
   await page.getByRole('button', { name: 'Gesundheitsdaten: Widerrufen' }).click();
   await page.getByRole('button', { name: 'Tagebuch behalten (empfohlen)' }).click();
   await expect(page.getByText(/Deine Gesundheitsdaten wurden gelöscht/)).toBeVisible();
@@ -356,10 +417,11 @@ test('vorsichtiger Plan mit Arzt-Hinweis; Widerruf löscht den Plan vollständig
   expect(rows.plannedSessions).toEqual([]);
   expect(rows.plannedExercises).toEqual([]);
 
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).click();
+  await page.goto('/today');
   await expect(page.getByRole('heading', { name: 'Noch kein Plan' })).toBeVisible();
   await expect(page.getByText(/wurden mit dem Widerruf gelöscht/)).toBeVisible();
   await page.getByRole('button', { name: 'Neuen Plan erstellen' }).click();
+  await openPlanInfo(page);
   await expect(
     page.getByText('Ohne Gesundheits-Check planen wir vorsichtig.', { exact: true }),
   ).toBeVisible();
@@ -382,7 +444,7 @@ test('veraltete Einwilligung: zuerst Neu-Einwilligung, Ablehnen → Plan ohne Ge
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Neue Fassung simulieren: gespeicherte Einwilligung auf Version 0 setzen.
   await page.evaluate((key) => {
     const db = JSON.parse(window.localStorage.getItem(key) ?? '{}');
@@ -392,13 +454,15 @@ test('veraltete Einwilligung: zuerst Neu-Einwilligung, Ablehnen → Plan ohne Ge
     window.localStorage.setItem(key, JSON.stringify(db));
   }, LOCAL_DB);
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Ganz oben, vor allem anderen.
   const first = page.getByTestId('today').getByRole('alert').first();
   await expect(first).toContainText('Neue Fassung der Einwilligung');
   await page.getByRole('button', { name: 'Ablehnen – Plan ohne Gesundheits-Check' }).click();
   await page.getByRole('button', { name: 'Neuen Plan erstellen' }).click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toHaveText('Dein neuer Plan ist fertig.');
+  await openPlanInfo(page);
   await expect(
     page.getByText('Ohne Gesundheits-Check planen wir vorsichtig.', { exact: true }),
   ).toBeVisible();
@@ -423,11 +487,13 @@ test('Zuhause ohne Geräte, 7 Tage: Deckel, Ruhetage und verständliche Hinweise
     'Ohne Geräte ist der Trainingsreiz begrenzt',
   );
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
+  await openPlanInfo(page);
   const bodyweightInfo = page.getByTestId('plan-info-bodyweight_limits');
   await expect(bodyweightInfo).toContainText('Training ohne Geräte');
   await expect(bodyweightInfo).toContainText('Ohne Geräte ist der Trainingsreiz begrenzt');
   await expect(bodyweightInfo).toContainText('Einstellungen → Angaben ändern');
+  await openPlanInfo(page);
   const notes = page.getByTestId('plan-notes');
   await expect(notes).toContainText('Mehr als 4 Kraft-Einheiten planen wir nicht');
   // Etappe K1: ohne Geräte gibt es jetzt Türrahmen-Rudern – kein Hinweis „Ziehen fehlt“ mehr.
@@ -472,10 +538,10 @@ test('verpasste Einheit: Plan am Montag, Uhr Mittwoch → Montags-Einheit versch
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.clock.setFixedTime(WEDNESDAY);
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const week = page.getByTestId('plan-week');
   await week.getByRole('button', { name: /^Montag/ }).click();
   await expect(page.getByTestId('plan-missed')).toHaveText(
@@ -484,6 +550,7 @@ test('verpasste Einheit: Plan am Montag, Uhr Mittwoch → Montags-Einheit versch
   // Mi belegt, Do/Sa neben Fr, So neben Mo der Folgewoche → nichts frei → streichen (nie in die nächste Woche).
   await page.getByTestId('day-sheet-skip').click();
   await page.getByRole('button', { name: 'Einheit streichen' }).click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toHaveText(
     'Diese Woche ist kein Tag mehr frei – die Einheit entfällt.',
   );
@@ -508,14 +575,15 @@ test('verpasste Einheit mit freiem Tag: Mo/Fr, Uhr Mittwoch → Montags-Einheit 
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.clock.setFixedTime(WEDNESDAY);
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const week = page.getByTestId('plan-week');
   await week.getByRole('button', { name: /^Montag/ }).click();
   await expect(page.getByTestId('plan-missed')).toBeVisible();
   await page.getByTestId('day-sheet-chip-2026-10-07').click();
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('plan-message')).toHaveText('Auf Mittwoch verschoben.');
   await expect(
     week.getByRole('button', { name: /^Mittwoch, 07\.10\.: .*verschoben von Mo/ }),
@@ -540,7 +608,7 @@ test('Plan als PDF: Hinweis bei Gesundheitsangaben, Druckansicht, Name, Querform
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   // Druckdialog des Browsers abfangen (zählt nur die Aufrufe).
   await page.evaluate(() => {
     const w = window as unknown as { __prints: number };
@@ -574,7 +642,7 @@ test('Plan als PDF: Hinweis bei Gesundheitsangaben, Druckansicht, Name, Querform
       },
       [title, sub],
     );
-  const todayStyle = await appStyle('Heute', 'Deine Woche');
+  const todayStyle = await appStyle('Training', 'Deine Woche');
   expect(todayStyle.title).not.toBeNull();
   expect(todayStyle.sub).not.toBeNull();
 
@@ -584,7 +652,7 @@ test('Plan als PDF: Hinweis bei Gesundheitsangaben, Druckansicht, Name, Querform
   await expect(page.getByTestId('print-preview')).toHaveCount(0);
   await expect(page.locator('#alpha5-print-root')).toHaveCount(0);
   await page.getByRole('button', { name: 'Abbrechen' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.evaluate(() => {
     const w = window as unknown as { __prints: number };
     w.__prints = 0;
@@ -594,15 +662,15 @@ test('Plan als PDF: Hinweis bei Gesundheitsangaben, Druckansicht, Name, Querform
   });
 
   // Hinweis vor dem Erzeugen (§4) – Abbrechen führt zurück.
-  await page.getByRole('button', { name: 'Als PDF speichern' }).click();
+  await page.getByTestId('plan-print').click();
   await heading(page, 'Bevor du speicherst');
   await expect(
     page.getByText('Dieser Plan berücksichtigt deine Gesundheitsangaben.'),
   ).toBeVisible();
   await expect(page.getByTestId('print-preview')).toHaveCount(0);
   await page.getByRole('button', { name: 'Abbrechen' }).click();
-  await heading(page, 'Heute');
-  await page.getByRole('button', { name: 'Als PDF speichern' }).click();
+  await heading(page, 'Training');
+  await page.getByTestId('plan-print').click();
   await page.getByRole('button', { name: 'Weiter', exact: true }).click();
 
   // Druckansicht mit Vorschau.
@@ -659,7 +727,7 @@ test('Plan als PDF: Hinweis bei Gesundheitsangaben, Druckansicht, Name, Querform
 
   // Zurück: Druck-Kopie und Stile sind wieder weg.
   await page.getByRole('button', { name: 'Zurück zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.locator('#alpha5-print-root')).toHaveCount(0);
   await expect(page.locator('#alpha5-print-style')).toHaveCount(0);
 });
@@ -677,8 +745,8 @@ test('Plan als PDF ohne Gesundheitsangaben: kein Hinweis, direkt zur Druckansich
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
-  await page.getByRole('button', { name: 'Als PDF speichern' }).click();
+  await heading(page, 'Training');
+  await page.getByTestId('plan-print').click();
   await heading(page, 'Plan als PDF');
   await expect(page.getByText('Bevor du speicherst')).toHaveCount(0);
   await expect(page.getByTestId('print-preview')).toContainText('Körper');

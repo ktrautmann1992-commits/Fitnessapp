@@ -9,12 +9,13 @@ Fast Food) oder Suche → Gericht antippen → Portion (klein ¾ · normal · gr
 Getränke klein/normal/groß) → „Eintragen“. „Zuletzt unterwegs“ trägt mit einem Tipp dieselbe Portion erneut ein;
 Favoriten öffnen das Gericht. Werte immer mit „ca.“ und Kennzeichen „Schätzwert“.
 
-**Keine erfundenen Nährwerte.** Jedes Gericht ist in `packages/core/src/nutrition/eating-out-table.ts` eine
-Zutatenliste (Gramm roh je normaler Portion, wie eigene Gerichte aus Zutaten). Die Werte rechnet
+**Keine erfundenen Nährwerte.** Jedes Gericht ist in der Zuordnungsdatei
+`content/food-mapping/auswaerts-zuordnung.json` (seit G-AV2, siehe 1.4) eine Zutatenliste (Gramm roh je normaler
+Portion, wie eigene Gerichte aus Zutaten) mit Begründung `source_de`. Die Werte rechnet
 `eatingOutRawValues` mit `computeRecipeFacts` aus dem Lebensmittel-Katalog (BLS 4.0); gerundet auf 10 kcal und ganze
 Gramm. Bratfett ist als Öl-Aufnahme eingerechnet (Pommes: 250 g rohe Kartoffeln + 22 g Öl ≈ 150 g Portion). Kein
-Ersatz durch „ähnliche“ Lebensmittel: Fehlt eine wesentliche Zutat (Butter, Mozzarella, Bratwurst, Fladenbrot …), ist
-das Gericht ein Entwurf ohne Werte und erscheint in der App nicht.
+Ersatz durch „ähnliche“ Lebensmittel: Ist eine Zutat noch nicht im Katalog (Butter, Mozzarella, Bratwurst, Fladenbrot …
+– „wartet auf Import“), bleibt das Gericht ohne Werte und erscheint in der App nicht.
 
 **Tagebuch:** als Schnelleintrag „Auswärts gegessen“ (feste Bezeichnung aus `QUICK_ENTRY_LABELS`) – keine
 Datenbank-Änderung, gleiche Grenzen und Rückfrage ab 1.500 kcal. Der Gerichtname wird NICHT gespeichert (Datenschutz
@@ -34,7 +35,9 @@ unterwegs werden gerade geprüft“ mit Weg zum Schnelleintrag.
 
 - **B = 21** berechenbar mit dem geprüften Katalog – sofort in der Vorschau, nach Freigabe auch live.
 - **K = 44** berechenbar, sobald die genannten Katalog-Entwürfe die Katalog-Prüfung (R19) bestehen.
-- **F = 46** Entwürfe ohne Werte – Zutat fehlt im Katalog (BLS-Import nötig).
+- **F = 46** Entwürfe ohne Werte – Zutat fehlt im Katalog (BLS-Import nötig). Seit G-AV2 hat jede dieser Zutaten
+  eine Katalog-ID und Grammzahl in der Zuordnungsdatei (Liste in 1.4); die Spalte „fehlt“ unten nennt den alten
+  Stand.
 
 Werte unten: normale Portion, aus dem Katalog gerechnet (E = Eiweiß, KH = Kohlenhydrate, F = Fett, je g).
 
@@ -173,17 +176,69 @@ Werte unten: normale Portion, aus dem Katalog gerechnet (E = Eiweiß, KH = Kohle
    Mayonnaise (2), Schmelzkäse (2), Speck (2), Wiener Würstchen (2), je 1: Apfelsaft, Brathähnchen mit Haut, Chai,
    Cola, Fladenbrot, Gyrosfleisch, Nuggets, Hot-Dog-Brötchen, Knödel, Leberkäse, Matjes/Bismarck, Maultaschen,
    Rindergulasch, Salami, Schlagsahne, Schmand/Crème fraîche, Schweinebraten, Mett, Vanilleeis. Danach erst die
-   Gerichte freigeben (sonst bleiben sie ohne Werte). Die Zuordnungsdatei `alpha5-zuordnung.json` ist bisher nur für
-   Alpha5-Zutaten; für die neuen Lebensmittel braucht es eine kurze Entscheidung, wo die Zuordnung liegt (G-AV2).
+   Gerichte freigeben (sonst bleiben sie ohne Werte). **Erledigt durch G-AV2 (1.4):** Die Zuordnung liegt in
+   `content/food-mapping/auswaerts-zuordnung.json`, `foods-import` liest sie mit.
 
 ### 1.3 Gründer-Fragen
 
 - **G-AV1:** Gerichtname im Tagebuch? Heute „Auswärts gegessen · ca. … kcal“ (keine DB-Änderung, kein Freitext). Mit
   einer neuen Herkunft `eating_out` (Spalte `eating_out_id`, neue Fassung von `save_food_log_entries`) könnte der Name
   wie bei eigenen Gerichten angezeigt werden.
-- **G-AV2:** Ablage der Zuordnung für die fehlenden BLS-Lebensmittel (siehe 1.2 Nr. 3).
+- **G-AV2 (entschieden 26.10.2026):** Ablage der Zuordnung für die fehlenden BLS-Lebensmittel – eigene
+  Zuordnungsdatei + foods-import-Erweiterung (1.4).
 - **G-AV3:** „Zuletzt unterwegs“ liegt unverschlüsselt im Gerätespeicher (nur IDs, keine Zeit/Werte, je Konto) – ok,
   oder in den verschlüsselten Ernährungs-Speicher verschieben und beim Widerruf leeren?
+
+### 1.4 Zuordnungsdatei `auswaerts-zuordnung.json` (G-AV2, 26.10.2026)
+
+ENTWURF – **VOR LIVEGANG FACHLICH PRÜFEN** (Pflichtfeld `fachpruefung_de`). Keine Nährwerte in der Datei, keine
+Gesundheitsaussagen.
+
+- **`dishes` (111):** je Gericht `items` (`food_id` + `g` je normaler Portion, höchstens 600 g), `source_de`
+  (Begründung der Portion: DGE-Qualitätsstandard, BZfE-Portionsgrößen, Stückgewichte – Pflicht), `note_de`
+  (Annahmen), `status` (`released` nur mit `reviewed_by`/`reviewed_at`). Geladen und geprüft (Zod) in
+  `packages/core/src/nutrition/eating-out-mapping.ts`; ungültige Datei → keine Gerichte (nie falsche Werte).
+- **`foods` (33):** Lebensmittel, die der Katalog noch braucht – gleiche Felder wie `alpha5-zuordnung.json`
+  (Suchbegriffe, Zustand, Gruppen, Tierart, Haltbarkeit, Begründung), alle mit `source.ref: null` (Quell-IDs werden
+  nie geraten). Ein Lebensmittel steht nur in EINER der beiden Zuordnungsdateien.
+- **content:validate** (eigener Code): blockierend bei Schemafehler, fehlender Begründung, unbekannter Lebensmittel-ID
+  (weder Katalog noch `foods` noch Alpha5-Zuordnung), doppelter Zuordnung, Eintrag, den foods-import ablehnen würde.
+  Nicht blockierend (Abschnitt „Hinweise“): „N Lebensmittel warten auf Import“ und „ohne Quell-ID“. Der Validator von
+  `main` kennt die Datei noch nicht und ignoriert sie (geprüft: 0 blockierend).
+- **foods-import:** liest beide Dateien (`loadImportMapping`). Modus „kandidaten“ listet die 33 neuen Lebensmittel mit
+  Kandidaten; Quell-ID per Pull Request in `auswaerts-zuordnung.json` eintragen; Modus „import“ schreibt sie wie alle
+  anderen nach `content/foods/` (einzige Schreibstelle, Quellauszug nur über den Workflow).
+
+**Wartet auf Import (35 Lebensmittel, 46 Gerichte):** neu in `foods` (Quell-ID offen): butter (8 Gerichte),
+tomatenketchup (6), mozzarella (5), vollmilch-3-5 (4), bratwurst-schwein (3), burgerbroetchen (3), croissant (3),
+rinderhackfleisch-20-fett (3), doenerfleisch (2), mayonnaise (2), schmelzkaese-scheiben (2), speck-durchwachsen (2),
+wiener-wuerstchen (2), je 1: apfelsaft, berliner-krapfen, brathaehnchen-mit-haut, chai-latte-pulver, cola, fladenbrot,
+gyrosfleisch-schwein, haehnchen-nuggets, kartoffelknoedel, leberkaese, matjeshering, maultaschen, rindfleisch-gulasch,
+salami, schlagsahne-30, schmand, schweinemett, schweineschulter, speiseeis-vanille, streuselkuchen. Schon in
+`alpha5-zuordnung.json` mit Quell-ID, nur noch nicht importiert: weizenmehl-type-405 (8), hot-dog-broetchen (1).
+
+**Ablauf nach dem Merge (Handy, GitHub-App):**
+
+1. Actions → foods-import → Run workflow (Branch main, Modus „kandidaten“).
+2. Zusammenfassung des Laufs an Claude geben → Claude trägt die Quell-IDs per Pull Request ein, ihr merged.
+3. foods-import Modus „import“ → Import-Pull-Request prüfen und mergen.
+4. Katalog-Prüfung (R19) der neuen Lebensmittel.
+5. Gerichte fachlich prüfen und freigeben.
+
+Bis dahin bleiben die 46 Gerichte ohne Werte; die übrigen verhalten sich unverändert (Vorschau: weiter 21 Gerichte).
+
+**Stand 26.10.2026 (Kandidatenlauf 40307807050, BLS 4.0):** Quell-IDs für 32 der 33 neuen Lebensmittel per Pull
+Request in `auswaerts-zuordnung.json` eingetragen (Begründung je Eintrag in `reason_de`). Näherungen, bei R19 prüfen:
+burgerbroetchen → Weizenbrötchen (B511000), schweineschulter → Schwein Kamm roh (U632100), schweinemett → Schwein
+Hackfleisch roh (U020100), haehnchen-nuggets → Hähnchenbrustfilet paniert, gebraten (Y591112), speiseeis-vanille →
+Vanilleeis in Waffeltüte (S211500), doenerfleisch → Geflügel-Dönerfleisch (V422072), mayonnaise → Mayonnaise 80 %
+(Q991000). Nächster Schritt: foods-import Modus „import“.
+
+**Offen:** Chai-Latte-Pulver ist nicht in BLS 4.0 (einziger Treffer „Latte macchiato“) – `source.ref` bleibt `null`,
+Chai Latte bleibt ohne Werte. Die neu angenommenen
+Mengen für die bisher fehlenden Zutaten (z. B. Pizza 160 g Mehl + 110–125 g Mozzarella, Döner 150 g Fladenbrot +
+120 g Fleisch, ½ Hähnchen 280 g essbar) sind Annahmen und Teil der Fachprüfung. Leberkäse trägt wegen R18 (Wort
+„Leber“) vorsichtig „pregnancy_caution“.
 
 ## 2. Vorratsschrank
 

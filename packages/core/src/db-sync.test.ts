@@ -387,7 +387,8 @@ describe('Enums', () => {
   });
 
   it('Vorlagen-Matrix (Ziele, Level) entspricht packages/core', () => {
-    expect(quotedListAfter(allSql, 'check (goal_type in (')).toEqual([
+    // Neueste Fassung (Calisthenics-Vorlagen seit *_calisthenics_rules.sql).
+    expect(lastQuotedListAfter(allSql, 'check (goal_type in (')).toEqual([
       ...enums.TEMPLATE_GOAL_TYPES,
     ]);
     expect(quotedListAfter(allSql, 'check (experience_level in (')).toEqual([
@@ -407,6 +408,7 @@ describe('Listen', () => {
       '_seed_equipment.sql',
       '_equipment_home_selectable.sql',
       '_suspension_trainer.sql',
+      '_calisthenics_equipment.sql',
     ]) {
       for (const m of readMigration(suffix).matchAll(rowPattern)) {
         catalog.set(m[1] as string, {
@@ -654,10 +656,10 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
     expect(lastFile).toMatch(/_plan_inputs_secondary_goal\.sql$/);
   });
 
-  it('private.goal_pair_allowed = GOAL_COMBINATIONS (Paarliste aus der NEUESTEN Fassung, seit FA1 *_active_aging_rules.sql)', () => {
+  it('private.goal_pair_allowed = GOAL_COMBINATIONS (Paarliste aus der NEUESTEN Fassung, seit Calisthenics *_calisthenics_rules.sql)', () => {
     const marker = 'create or replace function private.goal_pair_allowed(';
     const lastFile = migrationFiles.filter((name) => readMigration(name).includes(marker)).at(-1);
-    expect(lastFile).toMatch(/_active_aging_rules\.sql$/);
+    expect(lastFile).toMatch(/_calisthenics_rules\.sql$/);
     const body = allSql.slice(allSql.lastIndexOf(marker));
     const list = body.slice(body.indexOf(' in ('), body.indexOf('$$;'));
     const pairs = [...list.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map(
@@ -666,7 +668,7 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
     expect(pairs.sort()).toEqual(
       GOAL_COMBINATIONS.map(([primary, secondary]) => `${primary}>${secondary}`).sort(),
     );
-    expect(pairs).toHaveLength(11);
+    expect(pairs).toHaveLength(12);
   });
 
   it('plan_keys der neuesten save_training_plan-Fassung unverändert', () => {
@@ -1294,20 +1296,32 @@ describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.m
     return Number(match[1]);
   };
 
-  it('neueste Fassung von save_app_layout in *_app_layout_recovery.sql (Kachel „Erholung“, 25.10.2026)', () => {
-    expect(migrationFiles.filter((n) => readMigration(n).includes(saveMarker)).at(-1)).toMatch(
-      /_app_layout_recovery\.sql$/,
-    );
+  it('Fassung *_app_layout_recovery.sql (Kachel „Erholung“, 25.10.2026): nur die Kachel-Liste neu', () => {
+    const recovery = saveBody(readMigration('_app_layout_recovery.sql'));
     expect(DASHBOARD_TILES).toContain('competition');
     expect(DASHBOARD_TILES).toContain('steps');
     expect(DASHBOARD_TILES).toContain('recovery');
     // Gegenüber der Schritte-Fassung ändert sich nur die Kachel-Liste.
     const steps = saveBody(readMigration('_app_layout_steps.sql'));
-    expect(save.replace(/tile_ids constant text\[\] := array\[[^\]]*\];/, '')).toBe(
+    expect(recovery.replace(/tile_ids constant text\[\] := array\[[^\]]*\];/, '')).toBe(
       steps.replace(/tile_ids constant text\[\] := array\[[^\]]*\];/, ''),
     );
+    expect(recovery).toContain("array['dashboard_tiles', 'step_goal', 'tab_bar']");
+  });
+
+  it('neueste Fassung von save_app_layout in *_app_layout_version.sql („App verschlanken“, 26.10.2026)', () => {
+    expect(migrationFiles.filter((n) => readMigration(n).includes(saveMarker)).at(-1)).toMatch(
+      /_app_layout_version\.sql$/,
+    );
+    const migration = readMigration('_app_layout_version.sql');
     expect(NAV_AREAS).toContain('wettkampf');
-    // Die bisherigen Prüfungen der Vorgängerfassung bleiben (Zeile für Zeile enthalten).
+    // Kachel- und Bereichs-Listen unverändert gegenüber der Erholungs-Fassung.
+    const recovery = saveBody(readMigration('_app_layout_recovery.sql'));
+    for (const name of ['tile_ids', 'area_ids']) {
+      const pattern = new RegExp(`${name} constant text\\[\\] := array\\[[^\\]]*\\];`);
+      expect(pattern.exec(save)?.[0]).toBe(pattern.exec(recovery)?.[0]);
+    }
+    // Die bisherigen Prüfungen der Vorgängerfassungen bleiben (Zeile für Zeile enthalten).
     const previous = saveBody(readMigration('_app_layout_competition.sql'));
     for (const check of [
       "raise exception 'Nicht angemeldet.' using errcode = 'insufficient_privilege';",
@@ -1321,10 +1335,36 @@ describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.m
       expect(previous).toContain(check);
       expect(save).toContain(check);
     }
-    expect(save).toContain("array['dashboard_tiles', 'step_goal', 'tab_bar']");
-    expect(save).toContain(
+    for (const check of [
+      "raise exception 'Ungültiges Schrittziel.' using errcode = 'invalid_parameter_value';",
       'step_goal = case when has_goal then excluded.step_goal else s.step_goal end',
+    ]) {
+      expect(recovery).toContain(check);
+      expect(save).toContain(check);
+    }
+    // Erlaubte Felder: Pflicht dashboard_tiles + tab_bar, optional step_goal und layout_version.
+    expect(list('allowed_keys')).toEqual([
+      'dashboard_tiles',
+      'layout_version',
+      'step_goal',
+      'tab_bar',
+    ]);
+    expect(save).toContain("if not (p_layout ? 'dashboard_tiles' and p_layout ? 'tab_bar')");
+    // Fassung: 1 bis APP_LAYOUT.versionMax, Funktion und CHECK der Spalte; die App speichert APP_LAYOUT.version.
+    expect(constant('layout_version_max')).toBe(APP_LAYOUT.versionMax);
+    expect(migration).toContain(
+      `layout_version is null or layout_version between 1 and ${APP_LAYOUT.versionMax}`,
     );
+    expect(APP_LAYOUT.version).toBeGreaterThanOrEqual(1);
+    expect(APP_LAYOUT.version).toBeLessThanOrEqual(APP_LAYOUT.versionMax);
+    expect(save).toContain(
+      "raise exception 'Ungültige Fassung.' using errcode = 'invalid_parameter_value';",
+    );
+    expect(save).toContain('layout_version = excluded.layout_version');
+    // Kein Gesundheitsdatum, kein Widerruf; RLS/Export unverändert (keine neue Tabelle, keine neue Policy).
+    expect(migration).not.toContain('consents_after_revoke');
+    expect(migration).not.toContain('create table');
+    expect(migration).not.toContain('policy');
   });
 
   it('Schrittziel: Grenzen = STEP_GOAL (Funktion und CHECK der Spalte)', () => {
@@ -4043,7 +4083,15 @@ describe('Rezept-Favoriten in der Datenbank (Gründer-Freigabe 25.10.2026, KONZE
 
 describe('Trainings-Modi in der Datenbank (docs/PLAN-TRAINING-MODI.md 7)', () => {
   const sql = readMigration('_training_modes.sql');
-  const enumValues = (name: string) => quotedListAfter(sql, `create type public.${name} as enum (`);
+  // Werte aus der Migration plus spätere `alter type … add value` (Calisthenics: Reise-Geräte Ringe/Park).
+  const enumValues = (name: string) => [
+    ...quotedListAfter(sql, `create type public.${name} as enum (`),
+    ...[
+      ...allSql.matchAll(
+        new RegExp(`alter type public\\.${name} add value (?:if not exists )?'([^']+)'`, 'g'),
+      ),
+    ].map((match) => match[1] as string),
+  ];
 
   it('Aufzählungen = Listen im Core', () => {
     expect(enumValues('body_region')).toEqual([...BODY_REGIONS]);

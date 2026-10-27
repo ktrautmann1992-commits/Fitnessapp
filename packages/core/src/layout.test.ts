@@ -1,7 +1,8 @@
 /**
- * Übersicht und Menüleiste anpassen (docs/PLAN-EINKAUFEN-AUSDAUER.md 4): Ränder (erste/letzte), alle Kacheln aus,
- * 7 Knöpfe abgelehnt, ohne „Mehr“/„Übersicht“ nicht möglich, unbekannte/doppelte IDs, neue Kachel nach einem Update,
- * fehlender Bereich (Workouts vor dem Zusammenführen), kaputter Speicher, Idempotenz.
+ * Übersicht und Menüleiste anpassen (docs/PLAN-EINKAUFEN-AUSDAUER.md 4, seit 26.10.2026 „App verschlanken“,
+ * docs/PLAN-DASHBOARD.md 11): Ränder (erste/letzte), alle Kacheln aus, 7 Knöpfe abgelehnt, ohne „Mehr“/„Heute“ nicht
+ * möglich, unbekannte/doppelte IDs, neue Kachel nach einem Update, fehlender Bereich, kaputter Speicher, Idempotenz,
+ * Umstellung alter Standards (nur Unverändertes, nur alte Fassung), markierter Knopf.
  */
 import { describe, expect, it } from 'vitest';
 
@@ -9,7 +10,9 @@ import { APP_LAYOUT } from './constants';
 import {
   areasInMore,
   DASHBOARD_TILES,
+  DEFAULT_TILES,
   defaultLayout,
+  highlightedTab,
   moveTab,
   moveTile,
   NAV_AREAS,
@@ -24,30 +27,112 @@ import {
 } from './layout';
 
 const WITHOUT_WORKOUTS: NavArea[] = NAV_AREAS.filter((a) => a !== 'workouts');
+const V = APP_LAYOUT.version;
+const OLD_TABS: NavArea[] = [
+  'uebersicht',
+  'today',
+  'workouts',
+  'ernaehrung',
+  'einkaufsliste',
+  'mehr',
+];
+const NEW_TABS: NavArea[] = ['uebersicht', 'today', 'ernaehrung', 'einkaufsliste', 'mehr'];
 
 describe('defaultLayout', () => {
-  it('= Stand 20.10.2026: alle Kacheln sichtbar; Übersicht · Training · Workouts · Ernährung · Einkaufen · Mehr', () => {
+  it('= „App verschlanken“ (26.10.2026): Heute · Training · Ernährung · Einkaufen · Mehr; Kacheln wie Entwurf', () => {
     const layout = defaultLayout();
-    expect(layout.tiles).toEqual(DASHBOARD_TILES.map((id) => ({ id, visible: true })));
-    expect(layout.tabs).toEqual([
-      'uebersicht',
-      'today',
-      'workouts',
-      'ernaehrung',
-      'einkaufsliste',
-      'mehr',
+    expect(layout.tabs).toEqual(NEW_TABS);
+    expect(layout.tiles).toEqual([
+      { id: 'training', visible: true },
+      { id: 'progress', visible: true },
+      { id: 'nutrition', visible: true },
+      { id: 'endurance', visible: true },
+      { id: 'steps', visible: true },
+      { id: 'recovery', visible: true },
+      { id: 'competition', visible: true },
+      { id: 'workouts', visible: false },
+      { id: 'body', visible: false },
+      { id: 'shortcuts', visible: false },
     ]);
-    expect(layout.tabs).toHaveLength(APP_LAYOUT.tabsMax);
+    // Jede Kachel genau einmal im Standard.
+    expect(DEFAULT_TILES.map((t) => t.id).sort()).toEqual([...DASHBOARD_TILES].sort());
+    // „Workouts“, „Wettkampf“, „Fortschritt“ bleiben wählbar (unter „Mehr“).
+    expect(areasInMore(layout)).toEqual(['workouts', 'wettkampf', 'fortschritt']);
   });
 
-  it('ohne Bereich „Workouts“ (Route fehlt) → 5 Knöpfe', () => {
-    expect(defaultLayout(WITHOUT_WORKOUTS).tabs).toEqual([
-      'uebersicht',
-      'today',
-      'ernaehrung',
-      'einkaufsliste',
-      'mehr',
-    ]);
+  it('ohne Bereich „Workouts“ (Route fehlt) → dieselben 5 Knöpfe', () => {
+    expect(defaultLayout(WITHOUT_WORKOUTS).tabs).toEqual(NEW_TABS);
+  });
+
+  it('Standard ist eine Kopie (DEFAULT_TILES bleibt unverändert)', () => {
+    expect(defaultLayout().tiles[0]).not.toBe(DEFAULT_TILES[0]);
+    expect(defaultLayout().tiles).toEqual(DEFAULT_TILES);
+  });
+});
+
+describe('Umstellung alter Standards (26.10.2026)', () => {
+  const oldTiles = DASHBOARD_TILES.map((id) => ({ id, visible: true }));
+
+  it('unveränderter alter Standard (ohne Fassung) → neuer Standard (Leiste und Kacheln)', () => {
+    expect(normalizeLayout({ dashboard_tiles: oldTiles, tab_bar: OLD_TABS })).toEqual(
+      defaultLayout(),
+    );
+    // Ältere Fassungen mit weniger Kacheln (vor „Schritte“/„Erholung“) zählen auch als unverändert.
+    const older = oldTiles.filter((t) => t.id !== 'steps' && t.id !== 'recovery');
+    expect(normalizeLayout({ dashboard_tiles: older, tab_bar: OLD_TABS })).toEqual(defaultLayout());
+    // Fassung 1 bzw. null ausdrücklich gespeichert = alt.
+    for (const layoutVersion of [1, null]) {
+      expect(
+        normalizeLayout({
+          dashboard_tiles: oldTiles,
+          tab_bar: OLD_TABS,
+          layout_version: layoutVersion,
+        }),
+      ).toEqual(defaultLayout());
+    }
+  });
+
+  it('alter Standard ohne Bereich „Workouts“ (Route fehlt) → neuer Standard', () => {
+    expect(
+      normalizeLayout(
+        { dashboard_tiles: oldTiles, tab_bar: OLD_TABS.filter((a) => a !== 'workouts') },
+        WITHOUT_WORKOUTS,
+      ).tabs,
+    ).toEqual(NEW_TABS);
+  });
+
+  it('selbst Zusammengestelltes bleibt (nur das Unveränderte wird umgestellt)', () => {
+    const ownTabs = ['uebersicht', 'today', 'fortschritt', 'ernaehrung', 'einkaufsliste', 'mehr'];
+    const hidden = oldTiles.map((t) => (t.id === 'body' ? { ...t, visible: false } : t));
+    const layout = normalizeLayout({ dashboard_tiles: hidden, tab_bar: ownTabs });
+    expect(layout.tabs).toEqual(ownTabs);
+    expect(layout.tiles).toEqual(hidden);
+    // Umsortiert (alle sichtbar) gilt als verändert …
+    const moved = [oldTiles[1], oldTiles[0], ...oldTiles.slice(2)];
+    const kept = normalizeLayout({ dashboard_tiles: moved, tab_bar: OLD_TABS });
+    expect(kept.tiles).toEqual(moved);
+    // … die unveränderte alte Leiste wird trotzdem umgestellt.
+    expect(kept.tabs).toEqual(NEW_TABS);
+    // Leere Kachel-Liste ist kein „unverändert“ (alle Kacheln kommen mit Standard-Sichtbarkeit dazu).
+    expect(normalizeLayout({ dashboard_tiles: [], tab_bar: OLD_TABS }).tiles).toEqual(
+      defaultLayout().tiles,
+    );
+  });
+
+  it('neue Fassung: dieselbe Leiste bewusst gewählt („Workouts“ an 3. Stelle) bleibt erhalten', () => {
+    const chosen = { dashboard_tiles: oldTiles, tab_bar: OLD_TABS, layout_version: V };
+    const layout = normalizeLayout(chosen);
+    expect(layout.tabs).toEqual(OLD_TABS);
+    expect(layout.tiles).toEqual(oldTiles);
+    expect(toStoredLayout(layout).layout_version).toBe(V);
+    expect(normalizeLayout(toStoredLayout(layout))).toEqual(layout);
+    // Spätere App-Fassung (höhere Zahl) → ebenfalls nichts umstellen; ungültige Fassung → Standard (Zod).
+    expect(normalizeLayout({ ...chosen, layout_version: V + 1 }).tabs).toEqual(OLD_TABS);
+    expect(normalizeLayout({ ...chosen, layout_version: 0 })).toEqual(defaultLayout());
+    expect(normalizeLayout({ ...chosen, layout_version: 1.5 })).toEqual(defaultLayout());
+    expect(normalizeLayout({ ...chosen, layout_version: APP_LAYOUT.versionMax + 1 })).toEqual(
+      defaultLayout(),
+    );
   });
 });
 
@@ -58,7 +143,7 @@ describe('normalizeLayout', () => {
     }
   });
 
-  it('unbekannte und doppelte IDs fallen weg, fehlende Kacheln an ihrer Standardstelle (sichtbar)', () => {
+  it('unbekannte und doppelte IDs fallen weg, fehlende Kacheln an ihrer Standardstelle (Standard-Sichtbarkeit)', () => {
     const layout = normalizeLayout({
       dashboard_tiles: [
         { id: 'progress', visible: false },
@@ -70,20 +155,20 @@ describe('normalizeLayout', () => {
     });
     expect(layout.tiles).toEqual([
       { id: 'progress', visible: false },
+      { id: 'nutrition', visible: true },
       { id: 'endurance', visible: true },
       { id: 'steps', visible: true },
       { id: 'recovery', visible: true },
-      { id: 'shortcuts', visible: true },
-      { id: 'training', visible: true },
       { id: 'competition', visible: true },
-      { id: 'workouts', visible: true },
-      { id: 'nutrition', visible: true },
-      { id: 'body', visible: true },
+      { id: 'workouts', visible: false },
+      { id: 'body', visible: false },
+      { id: 'shortcuts', visible: false },
+      { id: 'training', visible: true },
     ]);
     expect(layout.tabs).toEqual(['uebersicht', 'fortschritt', 'mehr']);
   });
 
-  it('neue Kachel nach einem Update (z. B. „Workouts“): hinter ihrem Standard-Vorgänger', () => {
+  it('neue Kachel nach einem Update: hinter ihrem Standard-Vorgänger', () => {
     const layout = normalizeLayout({
       dashboard_tiles: [
         { id: 'shortcuts', visible: true },
@@ -95,14 +180,14 @@ describe('normalizeLayout', () => {
     expect(layout.tiles.map((t) => t.id)).toEqual([
       'shortcuts',
       'training',
-      'competition',
-      'workouts',
-      'nutrition',
-      'body',
       'progress',
+      'nutrition',
       'endurance',
       'steps',
       'recovery',
+      'competition',
+      'workouts',
+      'body',
     ]);
   });
 
@@ -118,30 +203,20 @@ describe('normalizeLayout', () => {
         { id: 'endurance', visible: true },
         { id: 'shortcuts', visible: true },
       ],
-      tab_bar: ['uebersicht', 'today', 'workouts', 'ernaehrung', 'einkaufsliste', 'mehr'],
+      tab_bar: ['uebersicht', 'today', 'ernaehrung', 'fortschritt', 'mehr'],
     };
     const layout = normalizeLayout(old);
-    expect(layout.tiles.slice(0, 4)).toEqual([
-      { id: 'nutrition', visible: true },
-      { id: 'training', visible: true },
-      { id: 'competition', visible: true },
-      { id: 'workouts', visible: false },
-    ]);
     expect(layout.tiles).toHaveLength(DASHBOARD_TILES.length);
-    // Standard: direkt hinter „Training heute“ (weit oben).
-    expect(
-      defaultLayout()
-        .tiles.map((t) => t.id)
-        .slice(0, 2),
-    ).toEqual(['training', 'competition']);
-    // Ohne „Training heute“ im Speicher: „Training heute“ und „Mein Wettkampf“ kommen ganz nach oben.
-    expect(
-      normalizeLayout({ ...old, dashboard_tiles: old.dashboard_tiles.slice(2) }).tiles[0],
-    ).toEqual({ id: 'training', visible: true });
-    expect(
-      normalizeLayout({ ...old, dashboard_tiles: old.dashboard_tiles.slice(2) }).tiles[1],
-    ).toEqual({ id: 'competition', visible: true });
-    // Die Menüleiste bleibt, wie sie war (kein neuer Knopf „Wettkampf“).
+    // Standard-Vorgänger von „competition“ ist „recovery“ (hinter „steps“ hinter „endurance“).
+    expect(layout.tiles.map((t) => t.id).slice(5)).toEqual([
+      'endurance',
+      'steps',
+      'recovery',
+      'competition',
+      'shortcuts',
+    ]);
+    expect(layout.tiles.find((t) => t.id === 'competition')?.visible).toBe(true);
+    // Die eigene Menüleiste bleibt, wie sie war (kein neuer Knopf „Wettkampf“).
     expect(layout.tabs).toEqual(old.tab_bar);
     expect(normalizeLayout(toStoredLayout(layout))).toEqual(layout);
   });
@@ -166,11 +241,22 @@ describe('normalizeLayout', () => {
   });
 
   it('fehlender Bereich (Workouts ohne Route) fällt weg; neuer Bereich kommt nicht von selbst in eine eigene Leiste', () => {
-    const stored = toStoredLayout(defaultLayout());
-    expect(normalizeLayout(stored, WITHOUT_WORKOUTS).tabs).not.toContain('workouts');
-    const own = { ...toStoredLayout(defaultLayout(WITHOUT_WORKOUTS)) };
-    expect(normalizeLayout(own).tabs).not.toContain('workouts');
-    expect(areasInMore(normalizeLayout(own))).toEqual(['workouts', 'wettkampf', 'fortschritt']);
+    const stored = {
+      dashboard_tiles: [],
+      tab_bar: ['uebersicht', 'today', 'workouts', 'fortschritt', 'mehr'],
+      layout_version: V,
+    };
+    expect(normalizeLayout(stored, WITHOUT_WORKOUTS).tabs).toEqual([
+      'uebersicht',
+      'today',
+      'fortschritt',
+      'mehr',
+    ]);
+    expect(areasInMore(normalizeLayout(stored))).toEqual([
+      'ernaehrung',
+      'einkaufsliste',
+      'wettkampf',
+    ]);
   });
 
   it('idempotent', () => {
@@ -179,6 +265,30 @@ describe('normalizeLayout', () => {
       tab_bar: ['today', 'uebersicht', 'mehr', 'workouts'],
     });
     expect(normalizeLayout(toStoredLayout(once))).toEqual(once);
+    const legacy = normalizeLayout({
+      dashboard_tiles: DASHBOARD_TILES.map((id) => ({ id, visible: true })),
+      tab_bar: OLD_TABS,
+    });
+    expect(normalizeLayout(toStoredLayout(legacy))).toEqual(legacy);
+  });
+});
+
+describe('highlightedTab (welcher Knopf ist markiert)', () => {
+  it('eigener Knopf; Workouts → Training; Wettkampf/Fortschritt → Mehr; sonst keiner', () => {
+    const tabs = defaultLayout().tabs;
+    expect(highlightedTab(tabs, 'ernaehrung')).toBe('ernaehrung');
+    expect(highlightedTab(tabs, 'workouts')).toBe('today');
+    expect(highlightedTab(tabs, 'wettkampf')).toBe('mehr');
+    expect(highlightedTab(tabs, 'fortschritt')).toBe('mehr');
+    expect(highlightedTab(tabs, undefined)).toBeNull();
+    expect(highlightedTab(tabs, 'raketen')).toBeNull();
+    // Hat die Person „Workouts“ bzw. „Wettkampf“ als eigenen Knopf, ist dieser markiert.
+    expect(highlightedTab(OLD_TABS, 'workouts')).toBe('workouts');
+    expect(highlightedTab(['uebersicht', 'wettkampf', 'mehr'], 'wettkampf')).toBe('wettkampf');
+    // Ohne „Training“ in der Leiste ist bei Workouts nichts markiert.
+    expect(highlightedTab(['uebersicht', 'ernaehrung', 'mehr'], 'workouts')).toBeNull();
+    // Ohne Elternknopf (Einkaufen nicht in der Leiste) → keiner.
+    expect(highlightedTab(['uebersicht', 'today', 'mehr'], 'einkaufsliste')).toBeNull();
   });
 });
 
@@ -187,14 +297,10 @@ describe('Kacheln', () => {
     const layout = defaultLayout();
     expect(moveTile(layout, 'training', 'up')).toBe(layout);
     expect(moveTile(layout, 'shortcuts', 'down')).toBe(layout);
-    const moved = moveTile(layout, 'workouts', 'up');
-    expect(moved.tiles.map((t) => t.id).slice(0, 3)).toEqual([
-      'training',
-      'workouts',
-      'competition',
-    ]);
-    expect(tilePosition(moved, 'workouts')).toEqual({ index: 2, count: 10 });
-    expect(tilePosition(moveTile(moved, 'workouts', 'down'), 'workouts')).toEqual({
+    const moved = moveTile(layout, 'nutrition', 'up');
+    expect(moved.tiles.map((t) => t.id).slice(0, 3)).toEqual(['training', 'nutrition', 'progress']);
+    expect(tilePosition(moved, 'nutrition')).toEqual({ index: 2, count: 10 });
+    expect(tilePosition(moveTile(moved, 'nutrition', 'down'), 'nutrition')).toEqual({
       index: 3,
       count: 10,
     });
@@ -212,7 +318,18 @@ describe('Kacheln', () => {
 
 describe('Menüleiste', () => {
   it('7. Knopf abgelehnt (max), unter 3 abgelehnt (min), Übersicht/Mehr fest, fehlender Bereich', () => {
-    const full = defaultLayout();
+    // Standard hat 5 Knöpfe – „Workouts“ passt noch als 6., dann ist voll.
+    const added6 = setTabShown(defaultLayout(), 'workouts', true);
+    if (!added6.ok) throw new Error(added6.reason);
+    const full = added6.layout;
+    expect(full.tabs).toEqual([
+      'uebersicht',
+      'today',
+      'ernaehrung',
+      'einkaufsliste',
+      'workouts',
+      'mehr',
+    ]);
     expect(setTabShown(full, 'fortschritt', true)).toEqual({ ok: false, reason: 'max' });
     expect(setTabShown(full, 'mehr', false)).toEqual({ ok: false, reason: 'fixed' });
     expect(setTabShown(full, 'uebersicht', false)).toEqual({ ok: false, reason: 'fixed' });
@@ -249,7 +366,6 @@ describe('Menüleiste', () => {
     expect(moveTab(layout, 'einkaufsliste', 'up').tabs).toEqual([
       'uebersicht',
       'today',
-      'workouts',
       'einkaufsliste',
       'ernaehrung',
       'mehr',
@@ -257,8 +373,8 @@ describe('Menüleiste', () => {
   });
 
   it('„Mehr“ zeigt alle Bereiche ohne Knopf; sameLayout', () => {
-    // „Wettkampf“ ist nicht im Standard, steht unter „Mehr“ als erster Bereich.
-    expect(areasInMore(defaultLayout())).toEqual(['wettkampf', 'fortschritt']);
+    // „Workouts“, „Wettkampf“ und „Fortschritt“ sind nicht im Standard, stehen unter „Mehr“.
+    expect(areasInMore(defaultLayout())).toEqual(['workouts', 'wettkampf', 'fortschritt']);
     expect(areasInMore(defaultLayout(WITHOUT_WORKOUTS), WITHOUT_WORKOUTS)).toEqual([
       'wettkampf',
       'fortschritt',
@@ -288,8 +404,13 @@ describe('Kachel „Schritte“ und Schrittziel (22.10.2026)', () => {
       { id: 'endurance', visible: true },
       { id: 'steps', visible: true },
       { id: 'recovery', visible: true },
-      { id: 'training', visible: false },
+      // „competition“ fehlte ebenfalls → hinter ihrem Standard-Vorgänger („recovery“).
+      { id: 'competition', visible: true },
     ]);
+    expect(layout.tiles.find((t) => t.id === 'training')).toEqual({
+      id: 'training',
+      visible: false,
+    });
   });
 
   it('„Erholung“ (25.10.2026): Standard direkt hinter „Schritte“; in alten Anordnungen hinter „Schritte“ ergänzt', () => {
@@ -302,13 +423,17 @@ describe('Kachel „Schritte“ und Schrittziel (22.10.2026)', () => {
       ],
       tab_bar: ['uebersicht', 'today', 'mehr'],
     });
-    expect(layout.tiles.slice(0, 3)).toEqual([
+    expect(layout.tiles.slice(0, 4)).toEqual([
       { id: 'steps', visible: false },
       { id: 'recovery', visible: true },
-      // „shortcuts“ fehlte ebenfalls → hinter ihrem Standard-Vorgänger („recovery“).
-      { id: 'shortcuts', visible: true },
+      // „competition“ und „workouts“ fehlten ebenfalls → hinter ihrem Standard-Vorgänger, Standard-Sichtbarkeit.
+      { id: 'competition', visible: true },
+      { id: 'workouts', visible: false },
     ]);
-    expect(layout.tiles[3]).toEqual({ id: 'training', visible: true });
+    expect(layout.tiles.find((t) => t.id === 'training')).toEqual({
+      id: 'training',
+      visible: true,
+    });
   });
 
   it('Schrittziel wird mit gespeichert; ohne Ziel fehlt das Feld; ungültig → nicht speicherbar', () => {

@@ -30,12 +30,14 @@ export function sha256Hex(data: Buffer | string): string {
 /** Zeilen (Zellen-Texte) der Original-Datei, erste Zeile = Kopfzeile. */
 export function readOriginalRecords(
   buffer: Buffer,
-  def: Pick<SourceDefinition, 'format' | 'sheet' | 'csvDelimiter'>,
+  def: Pick<SourceDefinition, 'format' | 'sheet' | 'csvDelimiter' | 'headerRow'>,
 ): string[][] {
-  const records =
+  // Zeilen vor der Kopfzeile (Titel, Hinweise) fallen weg; die Kopfzeile ist danach immer die erste Zeile.
+  const records = (
     def.format === 'xlsx'
       ? readXlsxRows(buffer, def.sheet)
-      : parseCsv(buffer.toString('utf8'), def.csvDelimiter);
+      : parseCsv(buffer.toString('utf8'), def.csvDelimiter)
+  ).slice(def.headerRow ?? 0);
   if (records.length < 2) {
     throw new Error('Original-Datei: keine Datenzeilen gefunden.');
   }
