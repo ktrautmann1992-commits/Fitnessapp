@@ -1,7 +1,7 @@
 {
   "id": "reiswaffeln-mit-honig",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Reiswaffeln mit Honig",
   "description_de": "Zwei Reiswaffeln mit etwas Honig – knusprig und schnell gegessen.",
   "meal_types": ["snack"],
@@ -57,8 +57,8 @@
     "batch_id": null,
     "created_on": "2026-10-27",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
-    "review_note": "Snack-Liste Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 7) – Entwurf, Freigabe offen."
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft. Vorher: Snack-Liste Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 7) – Entwurf, Freigabe offen."
   }
 }

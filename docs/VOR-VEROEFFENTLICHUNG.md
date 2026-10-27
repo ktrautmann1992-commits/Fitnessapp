@@ -44,7 +44,8 @@ Prüfung `expert_reviewed` per Pull Request auf `true` setzen.
 | Ratgeber „Höhe und Höhenkrankheit“, „Sicher Bergwandern“ (inkl. Notrufnummern)                              | Bergführer:in, Sportmedizin                       |
 | Hyrox-, Lauf-, Rad-, Triathlon-Regeln und Textbausteine (Wochenumfang, Tempo, Intervalle, Wettkampfplanung) | Lauf-/Hyrox-/Triathlon-Trainer:in                 |
 | Supplemente (18): Dosierungen, Warnhinweise, Evidenzstufen                                                  | Ernährungsfachkraft, Sportmedizin                 |
-| Rezepte (104), Allergene, Salz-Hinweise R11, Meal-Prep-Haltbarkeit, Ratgeber „Unterwegs essen“              | Ernährungsfachkraft                               |
+| Rezepte (110, inkl. 6 Snacks rund ums Training), Allergene, Salz-Hinweise R11, Meal-Prep-Haltbarkeit        | Ernährungsfachkraft                               |
+| Ratgeber „Unterwegs essen“, „Essen rund ums Training“; Nährstoff-Timing-Regeln (`NUTRIENT_TIMING`)          | Ernährungsfachkraft                               |
 | „Auswärts essen“ (`content/food-mapping/auswaerts-zuordnung.json`, Status „entwurf“), Packungsgrößen        | Ernährungsfachkraft                               |
 | Zyklus-Modul, Schon-Modus (Schmerz/Verletzung), Fit im Alter, Erholung/HRV, Herzfrequenz-Zonen              | Sportmedizin, Gynäkologie, Physiotherapie         |
 

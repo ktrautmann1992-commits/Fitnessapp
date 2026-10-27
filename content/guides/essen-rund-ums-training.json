@@ -1,7 +1,7 @@
 {
   "id": "essen-rund-ums-training",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Essen rund ums Training",
   "intro_de": "Wann du vor und nach dem Training isst, ist zweitrangig gegenüber dem, was du über den ganzen Tag isst. Ein paar einfache Regeln helfen aber, dich vor dem Training wohlzufühlen und danach gut versorgt zu sein. Die App plant das automatisch – hier steht, warum.",
   "sections": [
@@ -49,8 +49,8 @@
     "batch_id": null,
     "created_on": "2026-10-27",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
-    "review_note": "Entwurf zu docs/PLAN-NAEHRSTOFF-TIMING.md (Abschnitte 1–6). Werte VOR LIVEGANG FACHLICH PRÜFEN (Ernährung)."
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft. Vorher: Entwurf zu docs/PLAN-NAEHRSTOFF-TIMING.md (Abschnitte 1–6). Werte VOR LIVEGANG FACHLICH PRÜFEN (Ernährung)."
   }
 }

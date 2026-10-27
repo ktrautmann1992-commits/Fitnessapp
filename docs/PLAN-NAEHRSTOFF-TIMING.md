@@ -159,9 +159,9 @@ bis 21:00    Mahlzeit nach dem Training – Lachs mit Kartoffeln · ca. 30 g Eiw
 - **T2 App (umgesetzt):** Karte „Essen rund ums Training“ in Ernährung · Tag, Uhrzeit im Tages-Blatt (Training),
   Rückmeldung „Mahlzeiten an dein Training angepasst · Rückgängig“ mit Einkaufslisten-Hinweis und Vorschlägen für
   selbst gewählte Gerichte, Erinnerung (lokal, Standard aus), Testmodus-e2e `naehrstoff-timing.spec.ts`.
-- **T3 Inhalte und Doku (umgesetzt, Entwürfe):** Ratgeber `content/guides/essen-rund-ums-training.json`, Snack-Liste
+- **T3 Inhalte und Doku (umgesetzt, freigegeben 27.10.2026 für den privaten Kreis, nicht fachlich geprüft):** Ratgeber `content/guides/essen-rund-ums-training.json`, Snack-Liste
   als Snack-Rezepte (Banane vor dem Training, Reiswaffeln mit Honig, Datteln, Skyr natur, Ein Glas Milch, Skyr mit
   Banane), Prüfregel R22T (gelb: Markierung vor/nach Training passt nicht zu den Nährwerten), KONZEPT 6.3a,
   HANDY-ANLEITUNG Teil 9n. Keine neuen Schema-Felder → kein eigener Inhalts-Branch nötig.
-- **Offen:** Kachel auf „Heute“ (optional, nicht gebaut); Fachprüfung aller Werte; Freigabe der Entwürfe; im
+- **Offen:** Kachel auf „Heute“ (optional, nicht gebaut); Fachprüfung aller Werte (docs/VOR-VEROEFFENTLICHUNG.md); im
   Supabase-Modus gibt es „Rückgängig“ nur, wenn der vollständige Plan auf dem Gerät liegt (sonst wird still angepasst).
