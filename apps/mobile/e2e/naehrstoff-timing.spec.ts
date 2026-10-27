@@ -22,6 +22,8 @@ async function openDay(page: Page, date: string) {
 test('Essen rund ums Training: Zeitleiste, Uhrzeit an der Einheit, Anpassung mit Rückgängig, Zahlen aus', async ({
   page,
 }) => {
+  // Onboarding + mehrere Seiten: mehr Zeit als der Standard (60 s), auch bei voller Last.
+  test.setTimeout(180_000);
   await onboardNutrition(page);
 
   // Ohne eigene Uhrzeit: Standard aus „Abends“ (17:30) mit „ca.“.

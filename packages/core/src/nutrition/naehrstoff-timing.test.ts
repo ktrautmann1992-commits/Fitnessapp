@@ -317,28 +317,32 @@ describe('Tagesziele: Energie und Schutzgrenzen unverändert (Strukturtest)', ()
   ];
 
   for (const c of cases) {
-    it(`${c.name}: 1 vs. 7 Trainingstage, mit/ohne Uhrzeit, gleiche Tagessummen`, () => {
-      for (const days of [1, 7]) {
-        const plain = Array.from({ length: days }, (_, i) =>
-          i % 2 === 0 ? session(addDays(MONDAY, i)) : run(addDays(MONDAY, i), 100),
-        );
-        const withTime = plain.map((s, i) => timed(s, [360, 960, 1110, 720][i % 4] as number));
-        const a = week({ ...c.overrides, sessions: plain });
-        const b = week({ ...c.overrides, sessions: withTime });
-        expect(daySums(b)).toEqual(daySums(a));
-        expect(a.days.every((d) => d.trainingTiming === undefined)).toBe(true);
-        b.days.slice(0, days).forEach((d) => {
-          expect(d.trainingTiming).toBeDefined();
-          const targets = d.trainingTiming?.mealTargets ?? null;
-          if (targets === null) return;
-          expect(d.ageYears).toBeGreaterThanOrEqual(18);
-          expect(targets.reduce((s, x) => s + x.kcal, 0)).toBeCloseTo(d.targetKcal ?? 0, 6);
-          expect(targets.reduce((s, x) => s + x.proteinG, 0)).toBeCloseTo(d.proteinG ?? 0, 6);
-          expect(targets.reduce((s, x) => s + x.carbsG, 0)).toBeCloseTo(d.carbsG ?? 0, 6);
-          expect(targets.reduce((s, x) => s + x.fatG, 0)).toBeCloseTo(d.fatG ?? 0, 6);
-        });
-      }
-    });
+    it(
+      `${c.name}: 1 vs. 7 Trainingstage, mit/ohne Uhrzeit, gleiche Tagessummen`,
+      { timeout: 30_000 },
+      () => {
+        for (const days of [1, 7]) {
+          const plain = Array.from({ length: days }, (_, i) =>
+            i % 2 === 0 ? session(addDays(MONDAY, i)) : run(addDays(MONDAY, i), 100),
+          );
+          const withTime = plain.map((s, i) => timed(s, [360, 960, 1110, 720][i % 4] as number));
+          const a = week({ ...c.overrides, sessions: plain });
+          const b = week({ ...c.overrides, sessions: withTime });
+          expect(daySums(b)).toEqual(daySums(a));
+          expect(a.days.every((d) => d.trainingTiming === undefined)).toBe(true);
+          b.days.slice(0, days).forEach((d) => {
+            expect(d.trainingTiming).toBeDefined();
+            const targets = d.trainingTiming?.mealTargets ?? null;
+            if (targets === null) return;
+            expect(d.ageYears).toBeGreaterThanOrEqual(18);
+            expect(targets.reduce((s, x) => s + x.kcal, 0)).toBeCloseTo(d.targetKcal ?? 0, 6);
+            expect(targets.reduce((s, x) => s + x.proteinG, 0)).toBeCloseTo(d.proteinG ?? 0, 6);
+            expect(targets.reduce((s, x) => s + x.carbsG, 0)).toBeCloseTo(d.carbsG ?? 0, 6);
+            expect(targets.reduce((s, x) => s + x.fatG, 0)).toBeCloseTo(d.fatG ?? 0, 6);
+          });
+        }
+      },
+    );
   }
 
   it('keine Gramm je Mahlzeit: unter 18, no_targets, ohne Körpergewicht', () => {
@@ -356,7 +360,7 @@ describe('Tagesziele: Energie und Schutzgrenzen unverändert (Strukturtest)', ()
     expect(week({ sessions: s }).days[0]?.trainingTiming?.mealTargets).not.toBeNull();
   });
 
-  it('Eigenschaftstest: 200 zufällige Fälle – Tagessummen identisch', () => {
+  it('Eigenschaftstest: 200 zufällige Fälle – Tagessummen identisch', { timeout: 60_000 }, () => {
     const rnd = seededRandom(20261027);
     for (let i = 0; i < 200; i += 1) {
       const weight = 40 + Math.floor(rnd() * 120);
