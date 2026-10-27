@@ -2066,6 +2066,52 @@ nur dort):
    Burpee-Weitsprünge; Gesundheits-Check mit Hinweis → „Technik-Kombi (locker)“ statt harter Kombi; Schwangerschaft →
    kein Hyrox-Plan.
 
+## Teil 9l – So testest du die Live-Begleitung (27.10.2026, Testmodus + echte App)
+
+**Was es ist:** Während einer Aufzeichnung kannst du Vertrauenspersonen per geheimem Link zeigen, wo du gerade bist –
+nur auf deinen Tipp, höchstens 12 h, jederzeit mit einem Tipp beendbar. Notfallkontakte bleiben nur auf dem Handy.
+Im Testmodus wird nichts gesendet: Der Link zeigt eine **Demo-Seite** mit ausgedachten Daten.
+
+**A) Testmodus im Vorschau-Link (ohne Konto)**
+1. Vorschau-Link der **App** aus dem Pull Request öffnen → **Ohne Konto testen** → Onboarding bis **Geschafft!**.
+2. **Mehr → Einstellungen → Smartwatch & Apps → „Notfallkontakte & Live-Begleitung“**.
+3. **Kontakt hinzufügen** → Name „Anna“, Telefon „0171 1234567“ → **Speichern**. In der Liste steht „+491711234567 ·
+   Standard“. Ein 4. Kontakt geht nicht (höchstens 3).
+4. Unten **„Dein Name für die Begleit-Seite“** eintragen → **Speichern**.
+5. **Mehr → Ausdauer → „Demo-Aufzeichnung starten (Testmodus)“**.
+6. Unter den großen Zahlen **„Live-Begleitung starten“** antippen → Anna ist angehakt, dein Name steht drin → **Starten und
+   Link teilen**. Der Teilen-Dialog des Handys geht auf mit „Ich bin laufen. Hier siehst du live, wo ich gerade bin (bis
+   ca. …): …/begleitung#t=demo“.
+7. Den Link im Handy-Browser öffnen: Seite **„Alex (Demo) ist unterwegs“**, „Laufen“, „läuft seit 25 Min“, „zuletzt
+   aktualisiert vor …“, Karte mit **einem** Punkt, Knopf **In Karten-App öffnen**, Hinweis „Im Notfall immer 112 …“.
+8. Zurück in der App: Banner **„Live-Begleitung aktiv · Sichtbar für Anna“** mit **Angekommen** und **Beenden**.
+9. **SOS** antippen → **112 anrufen**, **SMS an Anna**, **WhatsApp an Anna**, **Anna anrufen**. Antippen öffnet nur die
+   jeweilige App mit vorbereitetem Text und letztem Standort – **senden tippst du selbst**. **Schließen**.
+10. **Angekommen** antippen (ein Tipp) → „Angekommen gemeldet – deine Position ist gelöscht.“
+
+**B) Website-Seite direkt:** `https://fitnessapp-web-eight.vercel.app/begleitung#t=demo` (bzw. der Vorschau-Link der
+**Website** + `/begleitung#t=demo`) zeigt dieselbe Demo. Ohne `#t=…` steht nur „Diese Live-Begleitung ist beendet.“
+
+**C) Echte App (Android-APK/TestFlight, mit Konto, draußen):** erst nach den Einstellungen unten.
+1. Aufzeichnung starten → **Live-Begleitung starten** → Link per WhatsApp an ein zweites Handy schicken.
+2. Am zweiten Handy: Punkt bewegt sich etwa alle 30 s mit; „zuletzt aktualisiert vor …“ zählt hoch.
+3. **Pause** → Seite zeigt „macht gerade Pause“. **Angekommen** → Seite zeigt „ist angekommen (Uhrzeit)“ **ohne Karte**.
+4. Handy 3 min ohne Empfang (Flugmodus) → Seite warnt „Seit 3 Min keine neue Position – evtl. Funkloch oder Akku leer“.
+5. Akku messen: 60 min mit und ohne Live-Begleitung vergleichen (Plan 21.8).
+
+**Einmalige Einstellungen (Gründer):**
+1. **Supabase:** nichts zu tun – die Migration spielt `db-migrate` beim Merge ein. Prüfen (Handy-Browser): supabase.com →
+   Projekt → **Database → Extensions** → „pg_cron“ ist **an** (dann räumt die Datenbank alle 5 min selbst auf). Falls aus:
+   einschalten und in GitHub **Actions → db-migrate → Run workflow** erneut starten. Die stündliche GitHub Action
+   **live-cleanup** läuft zusätzlich und braucht nur die schon vorhandenen Secrets `SUPABASE_URL` und `SUPABASE_SECRET_KEY`.
+2. **Vercel, Projekt „Web“:** nichts Neues nötig – es reicht der schon eingetragene Supabase-„Secret key“
+   (`SUPABASE_SECRET_KEY`). Optional ein eigener Schlüssel `LIVE_VIEW_SECRET` (mind. 32 zufällige Zeichen, aus dem
+   Passwort-Manager): vercel.com → Projekt → **Settings → Environment Variables** → Production + Preview → **Save** →
+   **Deployments → ⋯ → Redeploy**.
+3. **Expo/EAS und Vercel-Projekt „App“:** `EXPO_PUBLIC_WEB_URL` = Adresse der Website (z. B.
+   `https://fitnessapp-web-eight.vercel.app`). Fehlt sie, nimmt die App genau diese Adresse.
+4. **Eigene Kurz-Domain (F9):** später zusammen mit der Mail-Domain – dann nur `EXPO_PUBLIC_WEB_URL` ändern.
+
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
 - Bei Unsicherheit einfach fragen: „Erklär mir in einfachen Worten, was du gerade geändert hast.“

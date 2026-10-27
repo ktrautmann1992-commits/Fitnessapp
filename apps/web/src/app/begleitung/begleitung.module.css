@@ -1,0 +1,130 @@
+/* Begleit-Seite (/begleitung) – schlank, Handy zuerst. Werte aus packages/ui/theme.css (hell und dunkel). */
+
+.seite {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md) var(--space-xxl);
+}
+
+.marke {
+  margin: 0 0 var(--space-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ansicht {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.titel {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.text {
+  margin: 0;
+}
+
+.zeile {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-sm);
+  align-items: center;
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.sportart,
+.pause {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+}
+
+.aktualisiert {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.warnung {
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-warning);
+  font-weight: var(--font-weight-semibold);
+}
+
+.hinweis {
+  margin: 0;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.karte {
+  width: 100%;
+  height: min(60vh, 420px);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+/* Alte Position: Karte entsättigt, damit niemand sie für aktuell hält (Text-Warnung steht darüber). */
+.karte--alt {
+  filter: grayscale(1);
+}
+
+.knopf {
+  display: inline-block;
+  align-self: flex-start;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+}
+
+.knopf:focus-visible {
+  outline: 3px solid var(--color-link);
+  outline-offset: 2px;
+}
+
+.notfall {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.notfall p {
+  margin: 0 0 var(--space-xs);
+}
+
+.klein {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.demo {
+  margin: 0;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--color-border);
+  font-size: var(--font-size-sm);
+}

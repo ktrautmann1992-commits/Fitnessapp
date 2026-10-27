@@ -6498,3 +6498,60 @@ export const HYROX_ONLY_EXERCISE_IDS: readonly string[] = [
   'wall-balls',
   'kniebeuge-schulterdruecken-kurzhantel',
 ];
+
+/**
+ * Live-Begleitung / Notfallkontakt (CLAUDE.md „Ausnahme … Live-Begleitung“, Gründer-Entscheidung 25.10.2026,
+ * docs/PLAN-PHASE-10.md Abschnitt 21; Regeln in live/). PFLICHT-Grenzen aus CLAUDE.md – Lockern nur mit neuer
+ * Gründer-Entscheidung (Test in live/live.test.ts):
+ * - `tokenBytes`: geheimes Link-Token aus 32 zufälligen Bytes = 256 Bit (CLAUDE.md: mindestens 128 Bit), als base64url
+ *   `tokenChars` Zeichen im Link-Fragment `/begleitung#t=…`; auf dem Server nur der SHA-256-Hash.
+ * - `sessionMaxH`: Höchstdauer je Sitzung 12 h (CLAUDE.md); danach ist der Link ungültig.
+ * - `linkGraceH`: nach „Angekommen“/Ende höchstens 2 h nur Status ohne Karte (CLAUDE.md, F4), dann ungültig.
+ * - `maxContacts`: höchstens 3 Notfallkontakte, nur auf dem Gerät (CLAUDE.md, F1).
+ * - `displayNameMax`: Anzeigename höchstens 30 Zeichen (CLAUDE.md, F8).
+ * Übrige Zahlen PRODUKTENTSCHEIDUNG (Plan 21.2–21.5):
+ * - `pushIntervalS` / `pushIntervalChoicesS`: Positions-Update alle 30 s (wählbar 15/30/60 s), aber nur bei ≥ `minMoveM`
+ *   Bewegung oder nach `heartbeatS` (Herzschlag „lebt noch“) – spart Akku (Plan 21.8 Risiko 1). Die Datenbank nimmt
+ *   höchstens ein Update je `serverMinGapS` an (sonst ignoriert).
+ * - `coordDecimals`: 5 Nachkommastellen ≈ 1 m (Spalte numeric(8,5)); `accuracyMaxM`: größere Genauigkeitsradien
+ *   werden gekappt (smallint).
+ * - `viewPollS`: die Begleit-Seite fragt alle 20 s nach; `staleWarnS`: Warnung „Seit 4 Min keine neue Position“ ab
+ *   3 min; `veryStaleS`: ab 15 min „sehr alt“ (Hinweis auf Funkloch/Akku).
+ * - `plannedMinutes`: geplante Dauer 5 min bis 12 h, ohne Plan-Einheit 60 min (nur für den Text „bis ca. …“ und die
+ *   „Kein Lebenszeichen“-Erinnerung).
+ * - `noSignOfLifeGraceMin`: lokale Erinnerung NUR an die Person selbst, wenn die Aufzeichnung die geplante Dauer um
+ *   30 min überschreitet (wählbar 15/30/60); kein Versand an Kontakte (CLAUDE.md, F6).
+ * - `rateLimit`: Lese-Funktion je IP höchstens 10 Abfragen/min, je Sitzung 30/min (= 10 Kontakte bei 20 s); Prüfwerte
+ *   (nur HMAC-Hashes bzw. Sitzungs-ids) nach 1 h gelöscht – wie die Warteliste.
+ * - `purgeAfterExpiryH`: Sitzungs-Metadaten (ohne Ort) bleiben 24 h nach Ablauf für „Diese Live-Begleitung ist
+ *   beendet.“, dann gelöscht; Positionen sind schon beim Ende bzw. Ablauf weg.
+ * - `messageMax`, `contactNameMax`: Länge der anpassbaren Nachricht und der Kontakt-Namen (nur auf dem Gerät).
+ * Notrufnummern: EU-weit 112 (Beschluss 91/396/EWG); Schweiz zusätzlich 144 (Sanität), Österreich 140 (Bergrettung im
+ * alpinen Gelände). Die Live-Begleitung ist kein Notruf-Ersatz.
+ */
+export const LIVE_COMPANION = {
+  tokenBytes: 32,
+  tokenChars: 43,
+  sessionMaxH: 12,
+  linkGraceH: 2,
+  purgeAfterExpiryH: 24,
+  maxContacts: 3,
+  displayNameMax: 30,
+  contactNameMax: 40,
+  messageMax: 200,
+  plannedMinutes: { min: 5, max: 720, default: 60 },
+  pushIntervalS: 30,
+  pushIntervalChoicesS: [15, 30, 60],
+  heartbeatS: 60,
+  minMoveM: 20,
+  serverMinGapS: 10,
+  coordDecimals: 5,
+  accuracyMaxM: 5000,
+  viewPollS: 20,
+  staleWarnS: 180,
+  veryStaleS: 900,
+  noSignOfLifeGraceMin: 30,
+  noSignOfLifeChoicesMin: [15, 30, 60],
+  rateLimit: { perIpPerMin: 10, perSessionPerMin: 30, keepH: 1 },
+  emergencyNumber: '112',
+} as const;

@@ -99,6 +99,9 @@ export const DATA_EXPORT_TABLES = [
   'shoes',
   'shoe_defaults',
   'shoe_assignments',
+  // Live-Begleitung (docs/PLAN-PHASE-10.md 21.4): eigene Sitzungen ohne token_hash (*_live_export_my_data.sql);
+  // Positionen sind nach dem Ende gelöscht, Notfallkontakte liegen nur auf dem Gerät.
+  'live_sessions',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

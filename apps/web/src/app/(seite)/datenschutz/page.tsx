@@ -164,7 +164,27 @@ export default function Datenschutz() {
         <P>bei der rechtlichen Prüfung bestätigen (Rechtsgrundlage Einwilligung, kein AVV nötig)</P>
       </p>
 
-      <h2>10. Deine Rechte</h2>
+      <h2>10. App: Live-Begleitung und Notfallkontakte</h2>
+      <p>
+        Nur wenn du es während einer Aufzeichnung (Laufen, Rad, Gehen){' '}
+        <strong>selbst antippst</strong>, speichern wir für diese Einheit deinen Anzeigenamen, die
+        Sportart, Start- und Endzeit und jeweils <strong>nur deine letzte Position</strong> (keine
+        Strecke) in unserer Datenbank in Frankfurt (Abschnitt 6). Personen, denen du den geheimen
+        Link selbst schickst, sehen im Browser nur Name, Sportart, Startzeit, „zuletzt aktualisiert“
+        und diese letzte Position – keine Gesundheitsdaten. Nach „Angekommen“ oder Beenden wird die
+        Position sofort gelöscht; der Link zeigt dann höchstens 2 Stunden nur noch den Status und
+        ist spätestens 12 Stunden nach dem Start ungültig. Die übrigen Angaben löschen wir
+        automatisch 24 Stunden danach. Die Begleit-Seite setzt keine Cookies, nutzt keine Analyse
+        und wird nicht von Suchmaschinen erfasst; ihre IP-Adresse nutzen wir nur als verschlüsselten
+        Prüfwert gegen massenhafte Abfragen (nach 1 Stunde gelöscht). Die Karte lädt Kacheln von
+        OpenFreeMap (IP-Adresse wie bei jedem Abruf). <strong>Notfallkontakte</strong> (Name,
+        Telefon, E-Mail) bleiben verschlüsselt nur auf deinem Gerät und werden nie an uns
+        übertragen; wir schicken ihnen nichts. Rechtsgrundlage: Vertrag auf deinen Wunsch (Art. 6
+        Abs. 1 b DSGVO).{' '}
+        <P>bei der rechtlichen Prüfung bestätigen (inkl. DSFA-Ergänzung „Live-Begleitung“)</P>
+      </p>
+
+      <h2>11. Deine Rechte</h2>
       <ul>
         <li>Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17)</li>
         <li>Einschränkung (Art. 18), Datenübertragbarkeit (Art. 20), Widerspruch (Art. 21)</li>
@@ -176,7 +196,7 @@ export default function Datenschutz() {
       </ul>
       <p>In der App kannst du deine Daten jederzeit exportieren und dein Konto löschen.</p>
 
-      <h2>11. Änderungen</h2>
+      <h2>12. Änderungen</h2>
       <p>
         <P>Hinweis zur Aktualisierung dieser Erklärung</P>
       </p>
