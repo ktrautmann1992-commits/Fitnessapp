@@ -173,6 +173,12 @@ export const deModes = {
       'Heute kürzer und locker (Anstrengung höchstens 3 von 10). Gelenkschonend geht z. B. Rad-Ergometer oder Schwimmen – nur, wenn es sich gut anfühlt.',
     pain_endurance_check:
       'Diese Einheit hat einen festen Ablauf. Mach sie heute nur, wenn sie sich gut anfühlt – sonst lieber locker oder Pause.',
+    pain_row_alternative:
+      'Rudern belastet unteren Rücken, Knie und Handgelenke. Heute lieber Rad-Ergometer oder zügiges Gehen mit derselben Dauer – nur, wenn es sich gut anfühlt.',
+    travel_row_hotel_gym:
+      'Rudern geht, wenn im Hotel-Gym ein Rudergerät steht – sonst Laufband, Rad-Ergometer oder zügiges Gehen.',
+    travel_row_alternative:
+      'Unterwegs ohne Rudergerät: Mach die Einheit als zügiges Gehen oder lockeren Lauf mit derselben Dauer.',
   } satisfies Record<ModeNotice, string>,
   marks: {
     travel: 'für die Reise getauscht',

@@ -8,6 +8,7 @@ import {
   exerciseLogStatusFor,
   type FreeSessionResult,
   freeSessionLogFromInput,
+  formatDuration,
   freeSessionName,
   incrementKindFor,
   type ExerciseLogPayload,
@@ -15,6 +16,8 @@ import {
   initialSets,
   type LoadType,
   type LoggedSet,
+  parseRowClock,
+  parseRowIntervals,
   type PlannedExerciseDraft,
   type ProgressHint,
   type ProgressSource,
@@ -184,6 +187,17 @@ export interface DraftCardio {
    * dieses Geräts), gespeichert wird dann normales Rad.
    */
   eBike?: boolean;
+  /** Sportarten Stufe 1 · Etappe R (nur Rudern wirksam): Ø Watt, Ø Schlagzahl als Text; fehlt = leer. */
+  powerW?: string;
+  strokeRate?: string;
+  /** Intervall-Ergebnis je Wiederholung: Distanz in m und Zeit „m:ss“ (Text). Fehlt = keine Zeilen. */
+  intervals?: DraftRowInterval[];
+}
+
+/** Eine Zeile des Intervall-Ergebnisses beim Rudern, wie getippt. */
+export interface DraftRowInterval {
+  distanceM: string;
+  time: string;
 }
 
 // ---------------------------------------------------------------------------------------------------------
@@ -611,6 +625,11 @@ export function draftCardioFromRow(row: {
   elevation_m: number | null;
   /** Fehlt bei älteren lokalen Zeilen = normales Rad. */
   e_bike?: boolean;
+  /** Etappe R (nur Rudern); fehlt bei älteren Zeilen. */
+  avg_power_w?: number | null;
+  stroke_rate?: number | null;
+  /** jsonb – geprüft mit parseRowIntervals. */
+  intervals?: unknown;
 }): DraftCardio {
   const { hours, minutes } = splitDuration(row.duration_s);
   return {
@@ -620,6 +639,16 @@ export function draftCardioFromRow(row: {
     distanceKm: row.distance_m === null ? '' : formatDecimal(row.distance_m / 1000),
     elevationM: row.elevation_m === null ? '' : String(row.elevation_m),
     eBike: row.e_bike === true,
+    ...(row.modality === 'row'
+      ? {
+          powerW: row.avg_power_w == null ? '' : String(row.avg_power_w),
+          strokeRate: row.stroke_rate == null ? '' : String(row.stroke_rate),
+          intervals: (parseRowIntervals(row.intervals) ?? []).map((r) => ({
+            distanceM: String(r.distance_m),
+            time: formatDuration(r.duration_s),
+          })),
+        }
+      : {}),
   };
 }
 
@@ -632,6 +661,19 @@ export function cardioInputOf(cardio: DraftCardio): CardioInput {
     distanceKm: parseDecimal(cardio.distanceKm),
     elevationM: parseDecimal(cardio.elevationM),
     eBike: cardio.eBike === true,
+    // Rudern (Etappe R): Watt, Schlagzahl und Intervalle – nur bei Rudern geprüft und gesendet (cardioLogFromInput).
+    ...(cardio.modality === 'row'
+      ? {
+          row: {
+            avgPowerW: parseDecimal(cardio.powerW ?? ''),
+            strokeRate: parseDecimal(cardio.strokeRate ?? ''),
+            intervals: (cardio.intervals ?? []).map((r) => ({
+              distanceM: parseDecimal(r.distanceM),
+              durationS: parseRowClock(r.time),
+            })),
+          },
+        }
+      : {}),
   };
 }
 

@@ -4,7 +4,7 @@ import {
   SPORT_INTENSITY,
   TRAINING_MET,
 } from '../constants';
-import type { CardioInterval } from '../log/schemas';
+import { type CardioInterval, cardioIntervalSchema } from '../log/schemas';
 
 /**
  * Indoor-Rudern (Sportarten Stufe 1 · Etappe R, docs/PLAN-SPORTARTEN-STUFE-1.md 2.3): Split je 500 m, Watt (nur
@@ -166,6 +166,21 @@ export function rowMet(effort: number | null): number {
   if (effort >= highEffortMin) return high;
   const share = (effort - lowEffortMax) / (highEffortMin - lowEffortMax);
   return Math.round((low + (high - low) * share) * 10) / 10;
+}
+
+/**
+ * Gespeichertes Intervall-Ergebnis (cardio_logs.intervals, jsonb) an der Grenze prüfen: Liste mit 1–30 gültigen
+ * Wiederholungen, sonst null (nie eine halbe Liste).
+ */
+export function parseRowIntervals(value: unknown): CardioInterval[] | null {
+  if (!Array.isArray(value) || value.length === 0 || value.length > R.intervalsMax) return null;
+  const out: CardioInterval[] = [];
+  for (const item of value) {
+    const parsed = cardioIntervalSchema.safeParse(item);
+    if (!parsed.success) return null;
+    out.push(parsed.data);
+  }
+  return out;
 }
 
 /** Ein Gerät zu Hause (wie PlanInputs.homeEquipment). */

@@ -19,6 +19,7 @@ import {
   wall,
 } from './equipment';
 import { CALISTHENICS_ILLUSTRATIONS } from './poses-calisthenics';
+import { ROWING_ILLUSTRATIONS } from './poses-rowing';
 import type { Limb, PoseSpec, Prop, SidePose } from './rig';
 
 /**
@@ -1306,4 +1307,7 @@ export const EXERCISE_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustratio
 
   // --- Calisthenics, Schlingentrainer, Lauf-ABC (Entwürfe, docs/PLAN-CALISTHENICS-SCHLINGE.md) --------------------
   ...CALISTHENICS_ILLUSTRATIONS,
+
+  // --- Indoor-Rudern (Entwürfe, docs/PLAN-SPORTARTEN-STUFE-1.md 2.3) --------------------------------------------
+  ...ROWING_ILLUSTRATIONS,
 };

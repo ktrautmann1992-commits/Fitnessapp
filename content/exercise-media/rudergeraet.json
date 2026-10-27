@@ -1,0 +1,20 @@
+{
+  "exercise_id": "rudergeraet",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "rudergeraet-start.svg",
+      "alt_de": "Ausgangsposition: auf dem Rollsitz des Rudergeräts sitzen, Füße im Stemmbrett, Knie gebeugt, Oberkörper leicht nach vorn geneigt, Griff mit langen Armen fassen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}
