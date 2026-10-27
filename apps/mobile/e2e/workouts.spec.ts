@@ -54,9 +54,9 @@ const card = (page: Page, id: string) => page.getByTestId(`workout-card-${id}`);
 
 test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({ page }) => {
   await setup(page);
-  // 51 freigegebene Workouts (davon 10 Rudern, 14 Yoga/Pilates/Mobility – freigegeben 27.10.2026); ohne Gesundheits-Check ist
-  // „Sanft in den Morgen“ ausgeblendet (zu viele Umkehrhaltungen für den vorsichtigen Plan).
-  await expect(count(page)).toHaveText('51 Workouts');
+  // 56 freigegebene Workouts (seit 27.10.2026 auch 4 Lauf-Kraft, 10 Rudern, 15 Yoga/Pilates/Mobility); ohne
+  // Gesundheits-Check ist „Sanft in den Morgen“ ausgeblendet (zu viele Umkehrhaltungen für den vorsichtigen Plan).
+  await expect(count(page)).toHaveText('55 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
@@ -86,7 +86,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-1').click();
   await expect(page.getByTestId('workouts-no-match')).toBeVisible();
   await page.getByTestId('workouts-filter-reset').click();
-  await expect(count(page)).toHaveText('51 Workouts');
+  await expect(count(page)).toHaveText('55 Workouts');
 
   // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();
