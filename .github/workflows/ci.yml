@@ -21,7 +21,7 @@ jobs:
     name: Lint, Typen, Tests, Build
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
-    timeout-minutes: 45 # E2E allein ~22 min; unter Last (mehrere parallele Läufe) reichten 30 nicht
+    timeout-minutes: 75 # E2E allein ~25 min (246 Specs); mit Unit-Tests, Build und Last reichten 45 nicht mehr
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
