@@ -333,3 +333,34 @@ letzten Spitzen-Woche ≥ 10 Tage vor dem Rennen mit Anstrengung 5). Vorläufige
 100 min/Woche, langer Lauf 50 min; Tapering 7 Tage). App: Hyrox im Onboarding und in „Mein Wettkampf“ (Division, Bestätigung
 ab 65, Lauf-Referenz), Stations-Hinweis, Timer-Ansage der Station, Ergebnis mit Teilzeiten. 17 Übungen als Entwürfe mit
 Piktogramm. Tests: `packages/core/src/hyrox/hyrox-plan.test.ts`, `apps/mobile/src/data/hyrox-result.test.ts`.
+
+**Restpunkte (27.10.2026, Gründer-Auftrag „Bau die App komplett fertig“, Branch `claude/sportarten-rest`, Inhalte in
+`claude/sportarten-rest-inhalte`).**
+
+- **Wandern – GPX-Import:** „Ausdauer → Rundkurs vorschlagen → GPX-Datei einlesen“. Die Datei wird nur auf dem Gerät
+  gelesen (`packages/core/src/routes/gpx-import.ts`, Grenzen `GPX_IMPORT`, Zod-geprüfte Punkte; Spur- bzw. Routenpunkte
+  mit Höhe, Zeiten werden nicht übernommen) und als gemerkte Strecke auf diesem Gerät abgelegt (wie gemerkte Runden,
+  nie auf dem Server) – mit Anstieg, Abstieg, höchstem Punkt, Höhenprofil und Gehzeit-Schätzung (DIN 33466/DAV).
+  „Wofür?“ Wandern/Bergwandern/Gehen/Laufen/Rad; „Wandern“ startet die Aufzeichnung mit der Strecke als Leitlinie.
+  Browser: Dateiauswahl; App: System-Dateiauswahl über `expo-file-system` (neuer EAS-Build nötig).
+- **Wandern ohne GPS:** beim Eintragen/Nachtragen „Wie bist du unterwegs?“ Gehen/Wandern/Bergwandern
+  (`cardio_logs.walk_kind`). Aktivitätenliste und Story-Bild zeigen „Wanderung“/„Bergwanderung“ (neues Feld `walkKind`
+  der Positivliste, kein Gesundheitsdatum; Privatzone unverändert).
+- **Hyrox-Geräte:** Ski-Ergometer, Schlitten, Sandsack, Wall Ball im Geräte-Katalog (Migration
+  `20261027180000_sportarten_rest_equipment.sql`, pgTAP 115). Zu Hause wählbar; im Studio **nicht** automatisch
+  (`GYM_OPTIONAL_EQUIPMENT_IDS`) – nur mit „Hyrox-Geräte im Studio“ im Schritt Trainingstage (nur bei Hyrox, Standard
+  aus, gespeichert als Studio-Zeilen wie „Im Studio auch rudern“, Plan-Angabe `gymHyrox`). Die Stations-Übungen zeigen in
+  `claude/sportarten-rest-inhalte` auf die echten Geräte.
+- **Reise-Modus Hyrox:** In der Kombi wird im Intervall-Timer jeder Stations-Schritt zu „Zirkel: <Übung>“ mit den
+  Reise-Geräten (`hyroxTravelStationNames`), Hinweis „Lauf + Körpergewicht-Zirkel“.
+- **Ratgeber:** „Hyrox – so läuft der Tag“ (`hyrox-renntag`), „Roxzone & Pacing“ (`hyrox-roxzone-pacing`), veröffentlicht.
+- **Rudern:** Nachtragen zeigt dieselben Felder wie Eintragen (Ø Watt, Schlagzahl, Intervalle – Playwright
+  `rowing-backfill.spec.ts`). Health Connect liest Ø Watt am Rudergerät (`READ_POWER`, getrennt gefragt wie die
+  Trainingsrouten; ohne Freigabe bleibt Watt leer). **Offen:** Schlagzahl – Health Connect hat keinen Datentyp für die
+  Ruder-Schlagzahl.
+- **Matte und Block:** im Katalog als ersetzbare Hilfsmittel (`OPTIONAL_AID_EQUIPMENT`: Matte → Handtuch/Decke, Block →
+  Kissen/Buch). Entscheidung: Sie fehlen nie – `isExerciseFeasible` und der Filter „ohne Geräte“ ignorieren sie, keine
+  Routine fällt weg; nicht unter „Equipment zu Hause“ wählbar.
+- **Übungsbilder:** Dips an Ringen (jetzt von vorn, Ringe sichtbar), Front Lever gehockt, Vorbeuge im Stand und Abrollen
+  im Stand neu gezeichnet. Seitlage-Posen bleiben in der Vorderansicht (Kniebeugung in Seitlage ist im Rig nur
+  angedeutet).

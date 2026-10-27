@@ -2042,6 +2042,31 @@ Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle Posen und Routinen sind 
 
 Rückmeldung an Claude z. B. „Yoga: 1–8 ok, Bild beim Dreieck unklar“.
 
+## Teil 9r – Sportarten-Restpunkte testen (27.10.2026, Testmodus)
+
+Chrome am Handy, Vorschau-Link, **Inkognito-Tab**, **Ohne Konto testen**.
+
+1. **GPX-Datei:** **Mehr → Ausdauer → Rundkurs vorschlagen** → Karte **„GPX-Datei einlesen“** → **GPX-Datei öffnen**
+   (eigene .gpx-Datei, z. B. aus einem Wanderportal) oder **Beispiel-Tour laden (Testmodus)** → Strecke, Anstieg,
+   Abstieg, höchster Punkt, **Gehzeit (Schätzung)** → „Wofür?“ **Bergwandern** → **Strecke merken** → unter
+   **Gemerkte Strecken** steht „… · GPX“ mit ↓ Hm und Gehzeit. Eine Textdatei ergibt „Das ist keine GPX-Datei“.
+2. **Wandern ohne GPS:** Ausdauer → **Eintragen ohne GPS** → Ausdauer → **Gehen** → **Einheit starten** → „Wie bist du
+   unterwegs?“ **Bergwandern**, 2 h 30, 9 km → Speichern → in der Liste „Bergwanderung · …“. Teilen-Bild zeigt
+   „Bergwanderung“ (ohne Puls, ohne kcal).
+3. **Rudern nachtragen:** Eintragen ohne GPS → Ausdauer → **Rudern** → Felder Ø Watt, Schlagzahl, Intervalle wie beim
+   Eintragen.
+4. **Hyrox-Geräte:** Onboarding mit Ziel **Hyrox-Wettkampf** und einem Tag **Kraft im Studio** → im Schritt
+   „Trainingstage“ **„Hyrox-Geräte im Studio“** (Standard aus). Ohne Haken: Hinweis „Ohne Schlitten – wir ersetzen die
+   Station“; mit Haken (und den Inhalten aus `claude/sportarten-rest-inhalte`): echte Stationen. Zu Hause sind
+   Ski-Ergometer, Schlitten, Sandsack und Wall Ball unter „Equipment zu Hause“ wählbar.
+5. **Hyrox im Reise-Modus:** Einstellungen → Reise-Modus „Nur Körpergewicht“ für heute → Kombi-Einheit öffnen → Timer
+   zeigt „Lauf + Körpergewicht-Zirkel“ und je Station „Zirkel: …“.
+6. **Ratgeber:** „Hyrox – so läuft der Tag“ und „Roxzone & Pacing“.
+7. **Smartwatch (Android-App, neuer EAS-Build):** Beim Verbinden fragt Health Connect zusätzlich „Leistung“ – Einheiten
+   am Rudergerät bekommen Ø Watt.
+
+Rückmeldung an Claude z. B. „Restpunkte: 1–7 ok, Gehzeit wirkt zu kurz“.
+
 ## Teil 9h – Hyrox testen (Sportarten Stufe 1, Etappe H, 27.10.2026, Testmodus)
 
 So testest du es am Handy (Vorschau-Link aus dem Pull Request, Testmodus – alle Hyrox-Übungen sind Entwürfe und erscheinen

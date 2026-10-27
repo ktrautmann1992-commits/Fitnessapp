@@ -317,9 +317,9 @@ export const CALISTHENICS_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustr
       pelvis: [0, 92],
       near: { arm: [-97, -93, -90], leg: [-93, -90, -90], legScale: [1, 0.55] },
       far: { arm: [-83, -87, -90], leg: [-87, -90, -90], legScale: [1, 0.55] },
-      props: [...ring({ j: 'nearHand' }, -24, 168), ...ring({ j: 'farHand' }, 24, 168)],
+      props: [...ring({ j: 'nearHand' }, -24, 164), ...ring({ j: 'farHand' }, 24, 164)],
     },
-    alt: 'Ausgangsposition von vorn: ruhiger Stütz an den Ringen, Arme gestreckt, Ringe neben der Hüfte, Knie angewinkelt, Füße hinten.',
+    alt: 'Ausgangsposition: von vorn – ruhiger Stütz an den Ringen, Arme gestreckt, Ringe neben der Hüfte, Knie angewinkelt, Füße hinten.',
   },
   // --- Liegestütz -------------------------------------------------------------------------------------------------
   'diamant-liegestuetz': {
