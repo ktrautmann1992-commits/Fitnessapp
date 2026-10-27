@@ -8,7 +8,7 @@
   "movement_pattern": "squat",
   "primary_muscles": ["quadriceps", "glutes"],
   "secondary_muscles": ["front_delts", "triceps", "abs"],
-  "equipment_ids": ["other"],
+  "equipment_ids": ["wall_ball"],
   "mechanics": "compound",
   "load_type": "weight",
   "unilateral": false,

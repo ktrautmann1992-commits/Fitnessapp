@@ -8,7 +8,7 @@
   "movement_pattern": "horizontal_pull",
   "primary_muscles": ["upper_back", "lats"],
   "secondary_muscles": ["biceps", "forearms", "glutes"],
-  "equipment_ids": ["other"],
+  "equipment_ids": ["sled"],
   "mechanics": "compound",
   "load_type": "time",
   "unilateral": false,
