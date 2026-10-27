@@ -71,6 +71,18 @@ const TYPES = Object.keys(HC_RECORD_TYPES) as WearableDataType[];
 /** Leserecht „Trainingsrouten“ (READ_EXERCISE_ROUTES; über den Bibliotheks-Patch, sonst ignoriert). */
 const ROUTE_PERMISSION = { accessType: 'read', recordType: 'ExerciseRoute' } as const;
 
+/**
+ * Leserecht „Leistung“ (READ_POWER, Restpunkte Rudern 27.10.2026): Ø Watt für Einheiten am Rudergerät. Getrennt
+ * gefragt wie die Trainingsrouten; ohne Freigabe bleibt Watt leer.
+ */
+const POWER_PERMISSION = { accessType: 'read', recordType: 'Power' } as const;
+
+function hasPowerPermission(
+  permissions: readonly { accessType: string; recordType: string }[],
+): boolean {
+  return permissions.some((p) => p.accessType === 'read' && p.recordType === 'Power');
+}
+
 function hasRoutePermission(
   permissions: readonly { accessType: string; recordType: string }[],
 ): boolean {
@@ -165,6 +177,14 @@ export const healthConnectDriver: HealthConnectDriver = {
     } catch {
       // nicht unterstützt
     }
+    // Leistung (Watt) fürs Rudergerät – ebenfalls getrennt, damit eine Ablehnung nichts anderes berührt.
+    try {
+      await requestPermission([
+        POWER_PERMISSION as unknown as Parameters<typeof requestPermission>[0][number],
+      ]);
+    } catch {
+      // nicht unterstützt
+    }
     return typesFrom(granted as { accessType: string; recordType: string }[]);
   },
   grantedTypes: async () => {
@@ -182,6 +202,15 @@ export const healthConnectDriver: HealthConnectDriver = {
         heartRateVariabilities: [],
       };
     const has = (type: WearableDataType) => granted.includes(type);
+    // Watt nur mit Freigabe „Leistung“ (READ_POWER) und nur am Rudergerät.
+    let powerAllowed = false;
+    try {
+      powerAllowed = hasPowerPermission(
+        (await getGrantedPermissions()) as { accessType: string; recordType: string }[],
+      );
+    } catch {
+      powerAllowed = false;
+    }
     const sessions: HcReadResult['sessions'][number][] = [];
     if (has('exercise')) {
       const records = await readAll<{
@@ -241,6 +270,19 @@ export const healthConnectDriver: HealthConnectDriver = {
             steps = null;
           }
         }
+        let avgPowerW: number | null = null;
+        if (powerAllowed && group === 'row') {
+          try {
+            const agg = await aggregateRecord({
+              recordType: 'Power',
+              timeRangeFilter: range,
+              ...(origin ? { dataOriginFilter: origin } : {}),
+            });
+            avgPowerW = agg.POWER_AVG?.inWatts ?? null;
+          } catch {
+            avgPowerW = null;
+          }
+        }
         sessions.push({
           record: {
             id,
@@ -249,7 +291,14 @@ export const healthConnectDriver: HealthConnectDriver = {
             endTime: r.endTime,
             dataOrigin: r.metadata?.dataOrigin ?? null,
           },
-          extras: { distanceM, kcal, heartRateSamples, steps, ...(route ? { route } : {}) },
+          extras: {
+            distanceM,
+            kcal,
+            heartRateSamples,
+            steps,
+            ...(route ? { route } : {}),
+            ...(avgPowerW !== null ? { avgPowerW } : {}),
+          },
         });
       }
     }

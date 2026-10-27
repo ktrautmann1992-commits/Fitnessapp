@@ -61,6 +61,12 @@ export const CALENDAR_PERMISSION_TEXT =
  * Aktivität des Plugins) und die Smartwatch-Seite vor dem Systemdialog.
  */
 export const HEALTH_CONNECT_ROUTE_PERMISSION = 'android.permission.health.READ_EXERCISE_ROUTES';
+/**
+ * Sportarten Stufe 1 · Restpunkte (Rudern, 27.10.2026): Leistung in Watt (READ_POWER) – nur für Einheiten am
+ * Rudergerät gelesen (Ø Watt → cardio_logs.avg_power_w), getrennt gefragt wie die Trainingsrouten; kein
+ * Gesundheitsdatum (Leistung am Gerät, kein Puls). Abwählbar; ohne Freigabe bleibt Watt leer.
+ */
+export const HEALTH_CONNECT_POWER_PERMISSION = 'android.permission.health.READ_POWER';
 export const HEALTH_CONNECT_READ_PERMISSIONS = [
   'android.permission.health.READ_EXERCISE',
   'android.permission.health.READ_DISTANCE',
@@ -71,6 +77,7 @@ export const HEALTH_CONNECT_READ_PERMISSIONS = [
   'android.permission.health.READ_STEPS',
   'android.permission.health.READ_HEART_RATE_VARIABILITY',
   HEALTH_CONNECT_ROUTE_PERMISSION,
+  HEALTH_CONNECT_POWER_PERMISSION,
 ] as const;
 
 /**
