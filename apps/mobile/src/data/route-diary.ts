@@ -5,6 +5,7 @@ import {
   plannedEnduranceForRecording,
   type StoredSession,
   type TrackSummary,
+  type WalkKind,
   type WorkoutStep,
 } from '@fitnessapp/core';
 
@@ -65,6 +66,8 @@ export function recordingDiaryDraft(
     newId: () => string;
     /** E-Bike (nur beim Rad wirksam); fehlt = normales Rad. */
     eBike?: boolean;
+    /** Sportarten Stufe 1: Art der Geh-Einheit (nur beim Gehen wirksam); fehlt = Gehen. */
+    walkKind?: WalkKind | null;
   },
 ): WorkoutDraft | null {
   const values = diaryValuesFromSummary(summary);
@@ -100,6 +103,7 @@ export function recordingDiaryDraft(
       distanceKm: (values.distanceM / 1000).toFixed(3).replace('.', ','),
       elevationM: values.elevationM === null ? '' : String(values.elevationM),
       eBike: values.modality === 'bike' && options.eBike === true,
+      ...(values.modality === 'walk' && options.walkKind ? { walkKind: options.walkKind } : {}),
     },
     options.now,
   );

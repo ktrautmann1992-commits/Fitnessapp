@@ -111,7 +111,10 @@ function sessionValid(s: WearableSessionImport, now: string): boolean {
     ...FREE_SESSION.names.endurance,
     strength: FREE_SESSION.names.strength,
   };
-  if (s.group !== 'other' && s.name_de !== names[s.group]) return false;
+  // Sportarten Stufe 1 (wie import_wearable_batch): Geh-Einheit heißt je Art (walk_kind, fehlt = Gehen).
+  const expected =
+    s.group === 'walk' ? FREE_SESSION.names.walkKinds[s.walk_kind ?? 'walk'] : names[s.group];
+  if (s.group !== 'other' && s.name_de !== expected) return false;
   const nowMs = Date.parse(now);
   if (Date.parse(s.started_at) < nowMs - WEARABLE_SYNC.importMaxAgeDays * 86_400_000) return false;
   if (Date.parse(s.finished_at) > nowMs + WEARABLE_SYNC.clockSkewS * 1000) return false;

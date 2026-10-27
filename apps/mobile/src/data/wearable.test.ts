@@ -493,10 +493,23 @@ describe('Abgleich mit der Beispiel-Uhr (runWearableSync)', () => {
     });
     expect(first).toMatchObject({
       kind: 'imported',
-      result: { created: 5, merged: 0, skipped: 0 },
+      // Sportarten Stufe 1 · Etappe W: + Beispiel-Wanderung (Health Connect 37).
+      result: { created: 6, merged: 0, skipped: 0 },
     });
     const rows = (await backend.loadRows()).rows;
-    expect(rows.sessionLogs.filter((l) => l.source === 'health_connect')).toHaveLength(5);
+    expect(rows.sessionLogs.filter((l) => l.source === 'health_connect')).toHaveLength(6);
+    // Wanderung → Gehen mit walk_kind hike, Name „Wanderung“; die Route trägt Art, Abstieg und höchsten Punkt.
+    const hikeLog = rows.sessionLogs.find((l) => l.name_de === 'Wanderung');
+    expect(rows.cardioLogs.find((c) => c.session_log_id === hikeLog?.id)).toMatchObject({
+      modality: 'walk',
+      walk_kind: 'hike',
+    });
+    const hikeRoute = (await backend.loadTrackedRoutes()).routes.find(
+      (r) => r.wearable_session_log_id === hikeLog?.id,
+    );
+    expect(hikeRoute).toMatchObject({ sport: 'walk', walk_kind: 'hike', name: 'Wanderung' });
+    expect(hikeRoute?.elevation_loss_m).toBeGreaterThan(600);
+    expect(hikeRoute?.max_altitude_m).toBeGreaterThan(1400);
     const w = (await backend.wearables.load()).rows;
     expect(w.heartRates.length).toBe(4);
     expect(w.heartRates.every((h) => h.hf_max_used === 183)).toBe(true); // 36 Jahre → 208 − 25,2 = 182,8

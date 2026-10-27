@@ -4,6 +4,7 @@ import {
   cardioLogFromInput,
   CONSERVATIVE_PLAN_RULES,
   type EnduranceModality,
+  type WalkKind,
   type Exercise,
   exerciseLogStatusFor,
   type FreeSessionResult,
@@ -184,6 +185,8 @@ export interface DraftCardio {
    * dieses Geräts), gespeichert wird dann normales Rad.
    */
   eBike?: boolean;
+  /** Sportarten Stufe 1: Art der Geh-Einheit (nur beim Gehen wirksam); fehlt = Gehen. */
+  walkKind?: WalkKind | null;
 }
 
 // ---------------------------------------------------------------------------------------------------------
@@ -611,6 +614,8 @@ export function draftCardioFromRow(row: {
   elevation_m: number | null;
   /** Fehlt bei älteren lokalen Zeilen = normales Rad. */
   e_bike?: boolean;
+  /** Fehlt bei älteren lokalen Zeilen = Gehen. */
+  walk_kind?: WalkKind | null;
 }): DraftCardio {
   const { hours, minutes } = splitDuration(row.duration_s);
   return {
@@ -620,6 +625,7 @@ export function draftCardioFromRow(row: {
     distanceKm: row.distance_m === null ? '' : formatDecimal(row.distance_m / 1000),
     elevationM: row.elevation_m === null ? '' : String(row.elevation_m),
     eBike: row.e_bike === true,
+    ...(row.modality === 'walk' && row.walk_kind ? { walkKind: row.walk_kind } : {}),
   };
 }
 
@@ -632,6 +638,7 @@ export function cardioInputOf(cardio: DraftCardio): CardioInput {
     distanceKm: parseDecimal(cardio.distanceKm),
     elevationM: parseDecimal(cardio.elevationM),
     eBike: cardio.eBike === true,
+    walkKind: cardio.modality === 'walk' ? (cardio.walkKind ?? null) : null,
   };
 }
 

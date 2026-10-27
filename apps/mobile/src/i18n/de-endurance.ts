@@ -52,6 +52,26 @@ export const deEndurance = {
     ofWhich: (meters: number, count: number) =>
       `davon E-Bike: ${km(meters)} · ${count} ${count === 1 ? 'Fahrt' : 'Fahrten'}`,
   },
+  // Sportarten Stufe 1 · Etappe W: Wandern/Bergwandern (Hinweis-Texte selbst: HIKING_SAFETY_DE in packages/core).
+  hiking: {
+    kindLabel: 'Wie bist du unterwegs?',
+    kinds: { walk: 'Gehen', hike: 'Wandern', mountain_hike: 'Bergwandern' },
+    nouns: { walk: 'Spaziergang', hike: 'Wanderung', mountain_hike: 'Bergwanderung' },
+    descent: 'Abstieg',
+    highest: 'Höchster Punkt',
+    approx: (meters: number) => `ca. ${meters.toLocaleString('de-DE')} m`,
+    timeLabel: 'Gehzeit (Schätzung)',
+    timeValue: (minutes: number) =>
+      minutes >= 60
+        ? `ca. ${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')} min`
+        : `ca. ${minutes} min`,
+    timeNote:
+      'Nach DIN 33466/DAV: 4 km/h, 300 Hm/h bergauf, 500 Hm/h bergab – ohne Pausen. Deine Zeit kann abweichen.',
+    timeNoElevation: 'Ohne Höhenmeter gerechnet (keine Höhen aufgezeichnet).',
+    sacValue: (grade: number) => `SAC T${grade}`,
+    /** Bein-Hinweis am Folgetag: „Nach deiner Wanderung (Sa) …“. */
+    legSource: { hike: 'deiner Wanderung', mountain_hike: 'deiner Bergwanderung' },
+  },
   record: {
     title: 'Aufzeichnen',
     chooseSport: 'Was zeichnest du auf?',

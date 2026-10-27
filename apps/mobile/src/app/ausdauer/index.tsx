@@ -6,6 +6,8 @@ import {
   shiftPeriod,
   TRACKED_ROUTE_SPORTS,
   type TrackedRouteSport,
+  isHikeKind,
+  type WalkKind,
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
@@ -19,6 +21,12 @@ import { DarknessNotice, LoadAmpelCard, RacePredictionCard } from '@/components/
 import { VoiceCueSettingsCard } from '@/components/voice-cues';
 import { LiveRegion } from '@/components/calendar';
 import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
+import {
+  HikingSafetyCard,
+  SacGradeChoice,
+  type SacPick,
+  WalkKindChoice,
+} from '@/components/hiking';
 import { ActivityRow, TotalsView } from '@/components/endurance';
 import { ShoeOverview } from '@/components/shoes';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -70,6 +78,9 @@ export default function EnduranceScreen() {
   const bikeChoice = useBikeChoice(userId);
   const [eBikePicked, setEBikePicked] = useState<boolean | null>(null);
   const eBike = eBikePicked ?? bikeChoice.eBike ?? false;
+  // Sportarten Stufe 1 · Etappe W: beim Gehen „Gehen | Wandern | Bergwandern“, SAC-Stufe optional.
+  const [walkKind, setWalkKind] = useState<WalkKind>('walk');
+  const [sacPick, setSacPick] = useState<SacPick>(null);
 
   // Nach Absturz/Neustart: gesicherte Aufzeichnung anbieten (nur eigenes Konto, nur wenn keine im Speicher läuft).
   useEffect(() => {
@@ -186,7 +197,12 @@ export default function EnduranceScreen() {
   }
 
   const periodLabel = period === 'week' ? E.totals.week : E.totals.month;
-  const bikeParam = sport === 'bike' ? `&ebike=${eBike ? '1' : '0'}` : '';
+  const bikeParam =
+    sport === 'bike'
+      ? `&ebike=${eBike ? '1' : '0'}`
+      : sport === 'walk' && isHikeKind(walkKind)
+        ? `&walk=${walkKind}${sacPick !== null ? `&sac=${sacPick}` : ''}`
+        : '';
 
   return (
     <Screen area="ausdauer" icon="run" title={E.title} testID="endurance">
@@ -253,13 +269,31 @@ export default function EnduranceScreen() {
                 testID="endurance-bike-type"
               />
             ) : null}
+            {(!isWeb || testMode) && sport === 'walk' ? (
+              <View style={styles.section} testID="endurance-walk-kind">
+                <WalkKindChoice walkKind={walkKind} onChange={setWalkKind} />
+                {isHikeKind(walkKind) ? (
+                  <SacGradeChoice value={sacPick} onChange={setSacPick} testID="endurance-sac" />
+                ) : null}
+                <HikingSafetyCard
+                  phase="before"
+                  walkKind={walkKind}
+                  sacGrade={sacPick}
+                  testID="endurance-hiking-safety"
+                />
+              </View>
+            ) : null}
             {!isWeb ? (
               <AreaButton
                 area="ausdauer"
                 icon="play"
                 label={E.record.start}
                 accessibilityLabel={E.record.startA11y(
-                  sport === 'bike' && eBike ? E.eBike.sport : E.sports[sport],
+                  sport === 'bike' && eBike
+                    ? E.eBike.sport
+                    : sport === 'walk'
+                      ? E.hiking.kinds[walkKind]
+                      : E.sports[sport],
                 )}
                 onPress={() =>
                   router.push(`/ausdauer/aufzeichnen?sport=${sport}${bikeParam}` as Href)

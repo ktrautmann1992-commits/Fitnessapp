@@ -4,6 +4,9 @@ import {
   routeHistory,
   TRACKED_ROUTE_LIMITS,
   type TrackedRouteRow,
+  elevationFromProfile,
+  hikingTimeEstimate,
+  isHikeKind,
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
@@ -34,6 +37,7 @@ import { forgetTrackedRoutes, useTrackedRoutes } from '@/state/use-tracked-route
 
 const E = t.endurance;
 const R = t.endurance.routes;
+const HK = t.endurance.hiking;
 const NO_SEGMENTS: never[] = [];
 
 /**
@@ -110,7 +114,21 @@ export default function MyRouteScreen() {
     );
   }
 
-  const sport = favorite.e_bike ? E.eBike.sport : E.sports[favorite.sport];
+  const sport = favorite.e_bike
+    ? E.eBike.sport
+    : favorite.sport === 'walk' && isHikeKind(favorite.walk_kind)
+      ? HK.kinds[favorite.walk_kind]
+      : E.sports[favorite.sport];
+  // Wandern (Etappe W): Gehzeit-Schätzung nach DIN 33466/DAV für gespeicherte Geh-Strecken (nur Anzeige).
+  const profileElevation = elevationFromProfile(favorite.elevation_profile);
+  const walkTime =
+    favorite.sport === 'walk'
+      ? hikingTimeEstimate({
+          distanceM: favorite.distance_m,
+          gainM: favorite.elevation_gain_m ?? profileElevation?.gainM ?? null,
+          lossM: favorite.elevation_loss_m ?? profileElevation?.lossM ?? null,
+        })
+      : null;
   const last = attempts.at(-1) ?? null;
   const lastRow = last ? (byId.get(last.routeId) ?? null) : null;
   const previousRow = last?.previousRouteId ? (byId.get(last.previousRouteId) ?? null) : null;
@@ -182,7 +200,22 @@ export default function MyRouteScreen() {
             <StatValue size="lg" label={R.statElevation} value={`${favorite.elevation_gain_m} m`} />
           </Card>
         ) : null}
+        {walkTime ? (
+          <Card style={styles.statCard}>
+            <StatValue
+              size="lg"
+              label={HK.timeLabel}
+              value={HK.timeValue(walkTime.minutes)}
+              valueTestID="my-route-walk-time"
+            />
+          </Card>
+        ) : null}
       </View>
+      {walkTime ? (
+        <Body muted testID="my-route-walk-time-note">
+          {walkTime.withoutElevation ? `${HK.timeNote} ${HK.timeNoElevation}` : HK.timeNote}
+        </Body>
+      ) : null}
 
       {last && lastRow ? (
         <LastTimeCard
@@ -251,8 +284,8 @@ export default function MyRouteScreen() {
                     onPress={() =>
                       router.push(
                         `/ausdauer/aufzeichnen?sport=${favorite.sport}&base=${favorite.id}${
-                          Platform.OS === 'web' ? '&demo=1' : ''
-                        }` as Href,
+                          isHikeKind(favorite.walk_kind) ? `&walk=${favorite.walk_kind}` : ''
+                        }${Platform.OS === 'web' ? '&demo=1' : ''}` as Href,
                       )
                     }
                     testID="my-route-again"

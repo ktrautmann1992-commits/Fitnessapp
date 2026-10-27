@@ -119,8 +119,10 @@ import {
   applyTrackedRouteUpdate,
   detachRouteLogs,
   logEBikeToRoutes,
+  logWalkKindToRoutes,
   type RouteCounter,
   routeEBikeToLog,
+  routeWalkKindToLog,
 } from './tracked-route-rows';
 import {
   applySessionLog,
@@ -1242,10 +1244,12 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
               }
             : (db.logCounter ?? null);
           // E-Bike: verknüpfte Rad-Strecke folgt dem Eintrag (wie save_session_log).
+          // Wandern (Stufe 1): ebenso die Art der Geh-Einheit.
+          const linkedCardio = {
+            cardioLogs: next.cardioLogs.filter((c) => c.session_log_id === id),
+          };
           const trackedRoutes = db.trackedRoutes
-            ? logEBikeToRoutes(db.trackedRoutes, {
-                cardioLogs: next.cardioLogs.filter((c) => c.session_log_id === id),
-              })
+            ? logWalkKindToRoutes(logEBikeToRoutes(db.trackedRoutes, linkedCardio), linkedCardio)
             : db.trackedRoutes;
           await save({ ...db, rows: next, logCounter, trackedRoutes });
           await drafts.remove(draft.key);
@@ -1700,8 +1704,13 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       if (next === 'invalid' || next === 'not_found') throw new BackendError('route_rejected');
       // E-Bike angegeben: verknüpfter Rad-Eintrag folgt (wie update_tracked_route, Revision + 1).
       const route = next.find((r) => r.id === payload.id);
-      const nextRows =
+      const eBikeRows =
         payload.e_bike !== undefined && route ? routeEBikeToLog(rows, route, now) : rows;
+      // Wandern (Stufe 1): Art angegeben → verknüpfter Geh-Eintrag folgt (wie update_tracked_route).
+      const nextRows =
+        payload.walk_kind !== undefined && route
+          ? routeWalkKindToLog(eBikeRows, route, now)
+          : eBikeRows;
       await save({ ...db, rows: nextRows, trackedRoutes: next });
     },
     setRouteMatch: async (routeId, favoriteId, state) => {
