@@ -1,7 +1,8 @@
 # Sportarten Stufe 1 – Hyrox, Wandern/Bergwandern, Indoor-Rudern, Yoga/Pilates/Mobility
 
-Gründer-Freigabe des Umfangs 25.10.2026 („Einbauen“). **Dieses Dokument ist der Plan – noch keine Umsetzung.** Nach
-CLAUDE.md wird erst nach Freigabe dieses Plans (und der offenen Entscheidungen in Abschnitt 10) gebaut.
+Gründer-Freigabe des Umfangs 25.10.2026 („Einbauen“). **Plan samt Mockups freigegeben am 27.10.2026 („Sportarten
+Stufe 1 passt“)** – alle Empfehlungen aus Abschnitt 10 gelten als entschieden. Umsetzung in zwei Schritten: erst
+Datenbank-Grundlage (alle Enums, Spalten, Server-Fassungen, Zod), danach Core, App und Inhalte je Sportart.
 
 Anders als Stufe 2 (`docs/PLAN-SPORTARTEN.md`: nur eintragen, Uhr, kcal, Belastung) bekommen diese vier Sportarten
 **echtes, strukturiertes Training** – aber immer über die vorhandenen Bausteine: Ziele und Plan-Engine, Wettkampfplan
@@ -235,7 +236,7 @@ ohnehin alles offen (`premium_open`).
    „Mein Wettkampf“, Woche, Stations-/Kombi-Timer, Ergebnis mit Teilzeiten).
 5. **Abschluss:** `docs/KONZEPT.md` (1, 4, 5.1, 10.1, 12), Ratgeber, Story-Bilder, Fachprüfung der Konstanten.
 
-## 10. Offene Entscheidungen (mit Empfehlung)
+## 10. Entscheidungen (Empfehlungen freigegeben 27.10.2026)
 
 1. **Hyrox als Ziel:** eigene Ausdauer-Disziplin „Hyrox“ (Empfehlung) statt neuem Hauptziel – nutzt Wettkampfplan,
    Nebenziel bleibt möglich.
