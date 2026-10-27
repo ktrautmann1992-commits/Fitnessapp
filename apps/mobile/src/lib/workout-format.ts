@@ -125,6 +125,15 @@ export function cardioSpeedTexts(speed: CardioSpeed): { text: string; a11y: stri
   if (speed.kind === 'kmh' || speed.paceS === null) return [speedLine];
   const minutes = Math.floor(speed.paceS / 60);
   const seconds = speed.paceS % 60;
+  // Rudern (Etappe R): Split je 500 m statt km/h.
+  if (speed.kind === 'per_500m') {
+    return [
+      {
+        text: t.rowing.split(formatDuration(speed.paceS)),
+        a11y: t.rowing.splitA11y(minutes, seconds),
+      },
+    ];
+  }
   const pace =
     speed.kind === 'per_km'
       ? {

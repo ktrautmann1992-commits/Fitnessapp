@@ -1,5 +1,6 @@
 import { CARDIO_LOG_LIMITS, CARDIO_PLAUSIBILITY_KMH, TALK_TEST_BANDS } from '../constants';
 import type { EnduranceModality, WalkKind } from '../enums';
+import { type RowCardioInput, type RowInputError, rowValuesFromInput } from '../rowing/input';
 import type { CardioLogPayload } from './schemas';
 
 /**
@@ -80,20 +81,28 @@ export function loggedEnduranceMinutes(logs: readonly CardioLogRef[]): Map<strin
 // ---------------------------------------------------------------------------------------------------------
 
 /**
- * Welche Kennzahl die App live zeigt: Laufen/Gehen Pace je km (dazu km/h), Rad km/h, Schwimmen Pace je 100 m.
+ * Welche Kennzahl die App live zeigt: Laufen/Gehen Pace je km (dazu km/h), Rad km/h, Schwimmen Pace je 100 m,
+ * Rudern (Sportarten Stufe 1 · Etappe R) Split je 500 m.
  */
-export type CardioSpeedKind = 'per_km' | 'kmh' | 'per_100m';
+export type CardioSpeedKind = 'per_km' | 'kmh' | 'per_100m' | 'per_500m';
 
 export function cardioSpeedKind(modality: EnduranceModality): CardioSpeedKind {
   if (modality === 'bike') return 'kmh';
   if (modality === 'swim') return 'per_100m';
+  if (modality === 'row') return 'per_500m';
   return 'per_km';
+}
+
+/** Sekunden je 500 m (Rudern, gerundet). */
+export function paceSecondsPer500m(durationS: number, distanceM: number | null): number | null {
+  if (!validDistance(distanceM) || durationS <= 0) return null;
+  return Math.round(durationS / (distanceM / 500));
 }
 
 /** Live-Anzeige von Pace bzw. Geschwindigkeit; null ohne Distanz oder ohne gültige Dauer. */
 export interface CardioSpeed {
   readonly kind: CardioSpeedKind;
-  /** Sekunden je km (per_km) bzw. je 100 m (per_100m); null bei kmh. */
+  /** Sekunden je km (per_km), je 100 m (per_100m) bzw. je 500 m (per_500m); null bei kmh. */
   readonly paceS: number | null;
   readonly kmh: number;
   /** Schneller als CARDIO_PLAUSIBILITY_KMH der Art → „Bitte prüfen“ (nur Warnung). */
@@ -116,7 +125,9 @@ export function cardioSpeed(
         ? paceSecondsPerKm(durationS, distanceM)
         : kind === 'per_100m'
           ? paceSecondsPer100m(durationS, distanceM)
-          : null,
+          : kind === 'per_500m'
+            ? paceSecondsPer500m(durationS, distanceM)
+            : null,
     kmh,
     check: cardioPlausibility(modality, durationS, distanceM) === 'check_speed',
   };
@@ -142,9 +153,21 @@ export interface CardioInput {
   readonly eBike?: boolean;
   /** Sportarten Stufe 1: Art der Geh-Einheit (nur bei Gehen wirksam); fehlt/null/„walk“ = Gehen (Feld fehlt). */
   readonly walkKind?: WalkKind | null;
+  /**
+   * Sportarten Stufe 1 · Etappe R: Watt, Schlagzahl und Intervall-Ergebnis (nur bei Rudern wirksam, rowValuesFromInput).
+   * Fehlt = ohne diese Werte (wie bisher).
+   */
+  readonly row?: RowCardioInput;
 }
 
-export type CardioInputField = 'duration' | 'distance' | 'elevation';
+export type CardioInputField =
+  | 'duration'
+  | 'distance'
+  | 'elevation'
+  // Etappe R (nur Rudern):
+  | 'power'
+  | 'strokeRate'
+  | 'intervals';
 export type CardioInputError =
   /** Dauer fehlt (Pflicht). */
   | 'duration_missing'
@@ -155,7 +178,8 @@ export type CardioInputError =
   | 'distance_invalid'
   | 'distance_range'
   | 'elevation_invalid'
-  | 'elevation_range';
+  | 'elevation_range'
+  | RowInputError;
 
 export type CardioInputResult =
   | { readonly ok: true; readonly cardio: CardioLogPayload }
@@ -213,9 +237,12 @@ export function cardioLogFromInput(input: CardioInput): CardioInputResult {
       errors.elevation = 'elevation_range';
     }
   }
+  const row = input.modality === 'row' && input.row ? rowValuesFromInput(input.row) : null;
+  if (row && !row.ok) Object.assign(errors, row.errors);
   if (Object.keys(errors).length > 0 || durationS === null || distance === 'invalid') {
     return { ok: false, errors };
   }
+  const rowValues = row && row.ok ? row : null;
   return {
     ok: true,
     cardio: {
@@ -230,6 +257,10 @@ export function cardioLogFromInput(input: CardioInput): CardioInputResult {
       (input.walkKind === 'hike' || input.walkKind === 'mountain_hike')
         ? { walk_kind: input.walkKind }
         : {}),
+      // Rudern (Etappe R): nur gesendet, wenn angegeben (fehlt = null, wie save_session_log).
+      ...(rowValues?.avgPowerW != null ? { avg_power_w: rowValues.avgPowerW } : {}),
+      ...(rowValues?.strokeRate != null ? { stroke_rate: rowValues.strokeRate } : {}),
+      ...(rowValues?.intervals ? { intervals: rowValues.intervals } : {}),
     },
   };
 }

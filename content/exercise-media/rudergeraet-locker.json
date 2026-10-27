@@ -1,0 +1,20 @@
+{
+  "exercise_id": "rudergeraet-locker",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "rudergeraet-locker-start.svg",
+      "alt_de": "Ausgangsposition: locker auf dem Rollsitz des Rudergeräts sitzen, Füße im Stemmbrett, Knie gebeugt, Griff mit langen Armen und lockeren Händen fassen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

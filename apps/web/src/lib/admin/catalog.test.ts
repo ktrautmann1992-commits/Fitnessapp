@@ -48,13 +48,13 @@ function withData(file: ContentFile, change: (data: Record<string, unknown>) => 
 }
 
 describe('Katalog aus den Repository-Dateien', () => {
-  it('Startbestand + Körpergewicht (K1/K2) + 16 Aufwärm-/Dehnübungen + 74 Calisthenics/Schlinge/Lauf-Kraft: 170 Übungen, 24 + 18 + 7 Vorlagen, keine kaputten Dateien, nichts blockiert', () => {
-    expect(catalog.exercises).toHaveLength(170);
+  it('Startbestand + Körpergewicht (K1/K2) + 16 Aufwärm-/Dehnübungen + 74 Calisthenics/Schlinge/Lauf-Kraft + 2 Rudern: 172 Übungen, 24 + 18 + 7 Vorlagen, keine kaputten Dateien, nichts blockiert', () => {
+    expect(catalog.exercises).toHaveLength(172);
     expect(catalog.templates).toHaveLength(49);
     expect(catalog.brokenFiles).toEqual([]);
     expect(catalog.blockingTotal).toBe(0);
     expect(countByStatus(catalog.exercises.map((e) => e.exercise.status))).toEqual({
-      draft: 170,
+      draft: 172,
       published: 0,
       archived: 0,
     });
@@ -68,7 +68,7 @@ describe('Katalog aus den Repository-Dateien', () => {
     expect(published.blockingTotal).toBe(0);
     expect(countByStatus(published.exercises.map((e) => e.exercise.status))).toEqual({
       draft: 0,
-      published: 170,
+      published: 172,
       archived: 0,
     });
     expect(
@@ -227,7 +227,7 @@ describe('Filter und Suche', () => {
     const clean = filterTemplates(catalog.templates, parseFilters({ fehler: 'ohne' }));
     expect(warned.length + clean.length).toBe(49);
     expect(filterTemplates(catalog.templates, parseFilters({ fehler: 'rot' }))).toEqual([]);
-    expect(filterExercises(catalog.exercises, parseFilters({ ki: 'offen' }))).toHaveLength(170);
+    expect(filterExercises(catalog.exercises, parseFilters({ ki: 'offen' }))).toHaveLength(172);
     expect(filterExercises(catalog.exercises, parseFilters({ ki: 'geprueft' }))).toEqual([]);
   });
 

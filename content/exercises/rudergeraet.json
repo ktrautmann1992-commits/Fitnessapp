@@ -1,0 +1,47 @@
+{
+  "id": "rudergeraet",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Rudergerät",
+  "name_en": "Rowing Machine",
+  "aliases_de": ["Indoor-Rudern", "Ruderergometer"],
+  "movement_pattern": "conditioning",
+  "primary_muscles": ["quadriceps", "glutes", "upper_back"],
+  "secondary_muscles": ["hamstrings", "lats", "biceps", "abs", "lower_back"],
+  "equipment_ids": ["rowing_machine"],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["deep_hip_flexion"],
+  "description_de": "Rudern am Rudergerät: Ganzkörper-Ausdauer, bei der die Kraft vor allem aus den Beinen kommt. Die Reihenfolge Beine – Rumpf – Arme macht den Schlag rund und schont den Rücken.",
+  "steps_de": [
+    "Dämpfer auf 3–5 stellen, Füße im Stemmbrett festschnallen, Riemen über den breitesten Teil des Fußes.",
+    "Auslage: Knie gebeugt, Schienbeine fast senkrecht, Arme lang, Oberkörper leicht nach vorn geneigt, Rücken lang.",
+    "Durchzug: erst mit den Beinen kräftig abdrücken, dann den Oberkörper leicht nach hinten lehnen, zum Schluss den Griff zum unteren Brustbein ziehen.",
+    "Rückweg in umgekehrter Reihenfolge: Arme strecken, Oberkörper nach vorn neigen, dann die Knie beugen und ruhig nach vorn rollen.",
+    "Locker im Rhythmus bleiben: Durchzug zügig, Rückweg etwa doppelt so lang."
+  ],
+  "tips_de": [
+    "Locker rudern mit einer Schlagzahl von etwa 18–22 Schlägen pro Minute.",
+    "Ein höherer Dämpfer ist nicht „mehr Training“ – 3–5 fühlt sich an wie ein Boot im Wasser.",
+    "Griff locker mit den Fingern halten, Handgelenke gerade, Schultern unten lassen."
+  ],
+  "common_mistakes_de": [
+    "Mit den Armen ziehen, bevor die Beine gestreckt sind.",
+    "Rundrücken in der Auslage oder weit nach hinten lehnen am Ende des Durchzugs.",
+    "Knie beugen, bevor die Arme über den Knien sind – dann stößt der Griff an die Knie."
+  ],
+  "safety_note_de": "Ruhig beginnen und Technik vor Tempo. Bei Beschwerden im unteren Rücken, in Knien oder Handgelenken lieber Rad-Ergometer oder zügiges Gehen wählen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden aufhören.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe R (Indoor-Rudern, docs/PLAN-SPORTARTEN-STUFE-1.md 2.3) – Fachprüfung (Entscheidung 12) und Freigabe ausstehend."
+  }
+}

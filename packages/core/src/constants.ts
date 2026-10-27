@@ -1306,8 +1306,10 @@ export const ACTIVITY_FACTORS = {
  *   Pläne bleiben normales Rad. Werte aus der Suche nach dem Compendium (pacompendium.com), Wortlaut der Codes NICHT
  *   gegen das Original geprüft – VOR LIVEGANG FACHLICH PRÜFEN.
  * - Rudern 4,8 / 8,5 (Sportarten Stufe 1, Plan 5 „Startwerte“): 02071 „rowing, stationary, general, moderate effort“ /
- *   02073 „rowing, stationary, 150 watts, vigorous effort“ – gegen das Original bzw. Compendium 2024 prüfen; die
- *   Zuordnung zur Anstrengung folgt mit Etappe R (Entscheidung 8: v1 nur MET nach Anstrengung).
+ *   02073 „rowing, stationary, 150 watts, vigorous effort“ – gegen das Original bzw. Compendium 2024 prüfen. Weil
+ *   die Spanne groß ist, gilt beim Rudern (Etappe R, Entscheidung 8: v1 nur MET nach Anstrengung, keine
+ *   Watt-Formel) die Zuordnung von SPORT_INTENSITY: bis Anstrengung 3 `low`, ab 8 `high`, dazwischen linear
+ *   (rowMet in rowing/metrics.ts); ohne Angabe `fallback`.
  */
 export const TRAINING_MET = {
   strength: 3.5,
@@ -5903,3 +5905,103 @@ export const EMERGENCY_NUMBERS = {
   string,
   readonly { number: string; kind: 'general' | 'alpine' | 'rega' | 'ambulance' }[]
 >;
+
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 1 · Etappe R · Indoor-Rudern (docs/PLAN-SPORTARTEN-STUFE-1.md 2.3 und 5)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Indoor-Rudern (Ausdauer-Art `row`) – Plausibilität, Watt-Anzeige, Technik, Plan, Schon- und Reise-Modus:
+ * - `splitS`: Split je 500 m zwischen 1:10 und 4:00 (70–240 s); schneller bzw. langsamer → nur Warnung „Bitte prüfen“
+ *   (wie CARDIO_PLAUSIBILITY_KMH: 1:10 /500 m ≈ 25,7 km/h). `strokeRate` 10–60 Schläge/min (= CARDIO_LOG_LIMITS),
+ *   `intervalsMax` 30 Wiederholungen (= CARDIO_LOG_LIMITS.intervalsMax).
+ * - Watt NUR zur Anzeige: Concept2-Formel P = 2,80 / (s/m)³ (Pace in Sekunden je Meter), `wattFactor` 2,80. Die kcal
+ *   rechnen in v1 nur über TRAINING_MET.endurance.row nach Anstrengung (Entscheidung 8, keine Watt-Kalorienformel).
+ * - `easyStrokeRate` 18–22 /min für lockeres Rudern, `damper` 3–5 (Dämpfer-Einstellung, nicht „10 = mehr Training“).
+ * - `pain`: Rudern belastet unteren Rücken, Knie und Handgelenk; bei Beschwerden dort ab „mittel“ schlägt die App
+ *   Rad-Ergometer oder Gehen vor (Schon-Modus, nur Hinweis; die Person entscheidet).
+ * - `travelEquipment`: Reise-Modus – Rudern nur im Hotel-Gym (falls dort ein Rudergerät steht), sonst Ersatz durch
+ *   Gehen oder Laufen.
+ * - `planAlternateEvery` 2: Im Plan ohne Wettkampf und ohne Disziplin wird mit Rudergerät zu Hause (Geräte-Angabe)
+ *   jede zweite Ausdauer-Einheit „Lockeres Rudern“ – gleiche 10-%-Regel, Erholungswochen und Start-Deckel; kein
+ *   Rudern bei Schwangerschaft oder „nur Gehen“ (dann zügiges Gehen).
+ * Quellen: Concept2 „Pace/Watt calculator“ (concept2.com, Indoor Rowers → Training → Calculators) und Concept2
+ * „Damper Setting“ / Technik-Leitfaden „The Rowing Stroke“ (Beine – Rumpf – Arme); Weltrekorde über 2.000 m ca.
+ * 1:27 /500 m. Schon-Modus: Soligard T et al. (2016), Br J Sports Med 50(17):1030–1041 (Belastung anpassen statt
+ * pausieren). PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const ENDURANCE_MODALITY_ROW = {
+  equipmentId: 'rowing_machine',
+  splitDistanceM: 500,
+  splitS: { min: 70, max: 240 },
+  strokeRate: { min: 10, max: 60 },
+  easyStrokeRate: { min: 18, max: 22 },
+  intervalsMax: 30,
+  wattFactor: 2.8,
+  damper: { min: 3, max: 5 },
+  pain: { regions: ['lower_back', 'knee', 'wrist'], fromIntensity: 'moderate' },
+  travelEquipment: ['hotel_gym'],
+  planAlternateEvery: 2,
+} as const satisfies {
+  equipmentId: string;
+  splitDistanceM: number;
+  splitS: { min: number; max: number };
+  strokeRate: { min: number; max: number };
+  easyStrokeRate: { min: number; max: number };
+  intervalsMax: number;
+  wattFactor: number;
+  damper: { min: number; max: number };
+  pain: { regions: readonly BodyRegion[]; fromIntensity: PainIntensity };
+  travelEquipment: readonly TravelEquipment[];
+  planAlternateEvery: number;
+};
+
+/**
+ * Harte und Technik-Einheiten beim Rudern (Wochenbau wie Rad/Schwimmen: weekWorkouts mit Sportart `row`), Anstrengung
+ * nach Borg CR10 wie Laufen (keine Watt-Vorgabe):
+ * - `fartlek` 1 min zügig / 2 min locker (4–8 ×), `tempo` 2 gleiche Abschnitte mit `tempo.restS` locker dazwischen,
+ *   zusammen `minMinutes`–`maxMinutes` je Level,
+ * - Intervalle: `m500` 4–8 × 500 m (≈ 2 min, `workS`) mit 1:30 locker, `m1000` 3–5 × 1000 m (≈ 4 min) mit 3 min
+ *   locker, `s30` 10–15 × 30 s zügig / 30 s locker (höchstens 15, damit die Schritte unter WORKOUT_STEP_LIMITS bleiben);
+ *   Aufbau 500 m, Spitze 1000 m, Tapering 30/30,
+ * - `technique`: ab 20 min, die Hälfte des Hauptteils Technikübungen (Anstrengung locker-unten, Art `easy`, weil die
+ *   Art `technique` dem Schwimmen vorbehalten ist).
+ * Harte Einheiten wie bisher erst ab dem Aufbau, 80/20-Budget, Deckel und Abstände unverändert (COMPETITION_*).
+ * Quelle: übliche Indoor-Ruder-Trainingspraxis (Concept2 „Training Guide“ / „Workout of the Day“: 4–8 × 500 m,
+ * 3–5 × 1000 m, 30/30) – PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const ROW_WORKOUTS = {
+  fartlek: { workS: 60, restS: 120, minReps: 4, maxReps: 8, effort: 6 },
+  tempo: {
+    minMinutes: 12,
+    maxMinutes: { beginner: 16, advanced: 24, competitive: 30 },
+    restS: 180,
+    effort: 7,
+  },
+  intervals: {
+    m500: { workS: 120, restS: 90, minReps: 4, maxReps: 8, effort: 8, distanceM: 500 },
+    m1000: { workS: 240, restS: 180, minReps: 3, maxReps: 5, effort: 7, distanceM: 1000 },
+    s30: { workS: 30, restS: 30, minReps: 10, maxReps: 15, effort: 7, distanceM: null },
+  },
+  technique: { minMinutes: 20, drillShare: 0.5, effort: 3 },
+} as const satisfies {
+  fartlek: { workS: number; restS: number; minReps: number; maxReps: number; effort: number };
+  tempo: {
+    minMinutes: number;
+    maxMinutes: Record<ExperienceLevel, number>;
+    restS: number;
+    effort: number;
+  };
+  intervals: Record<
+    'm500' | 'm1000' | 's30',
+    {
+      workS: number;
+      restS: number;
+      minReps: number;
+      maxReps: number;
+      effort: number;
+      distanceM: number | null;
+    }
+  >;
+  technique: { minMinutes: number; drillShare: number; effort: number };
+};

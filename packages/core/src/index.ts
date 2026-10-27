@@ -68,3 +68,5 @@ export * from './supplements/overview';
 export * from './review';
 // Sportarten Stufe 1 · Etappe W: Wandern/Bergwandern (docs/PLAN-SPORTARTEN-STUFE-1.md 2.2).
 export * from './hiking';
+// Sportarten Stufe 1 · Etappe R: Indoor-Rudern (Split, Watt-Anzeige, Plausibilität, Intervall-Ergebnis).
+export * from './rowing';

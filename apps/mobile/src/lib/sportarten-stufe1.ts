@@ -8,15 +8,11 @@
 /** Ausdauer- bzw. Wettkampf-Disziplin Hyrox – Etappe H. */
 export const PENDING_DISCIPLINES: ReadonlySet<string> = new Set(['hyrox']);
 
-/** Ausdauer-Art Rudern (Eintragen/Nachtragen) – Etappe R. */
-export const PENDING_ENDURANCE_MODALITIES: ReadonlySet<string> = new Set(['row']);
+/** Ausdauer-Art Rudern (Eintragen/Nachtragen) – seit Etappe R wählbar; Liste bleibt für spätere Arten. */
+export const PENDING_ENDURANCE_MODALITIES: ReadonlySet<string> = new Set([]);
 
-/** Workout-Kategorien ohne freigegebene Inhalte – Etappen Y (Yoga, Pilates) und R (Rudern). */
-export const PENDING_WORKOUT_CATEGORIES: ReadonlySet<string> = new Set([
-  'yoga',
-  'pilates',
-  'rowing',
-]);
+/** Workout-Kategorien ohne Inhalte – Etappe Y (Yoga, Pilates); Rudern seit Etappe R wählbar. */
+export const PENDING_WORKOUT_CATEGORIES: ReadonlySet<string> = new Set(['yoga', 'pilates']);
 
 /** Sportart-Einträge Yoga und Pilates – Etappe Y. */
 export const PENDING_SPORTS: ReadonlySet<string> = new Set(['yoga', 'pilates']);

@@ -1,0 +1,44 @@
+{
+  "id": "rudern-einstieg",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rudern: Einstieg",
+  "summary_de": "Sanfter Start am Rudergerät: lange lockere Abschnitte und kurze ruhige Technik-Minuten. Für alle, die das Rudern kennenlernen.",
+  "category": "rowing",
+  "difficulty": 1,
+  "minutes": 20,
+  "format": "interval",
+  "rounds": 6,
+  "round_rest_s": 10,
+  "equipment_ids": ["rowing_machine"],
+  "warmup_de": "5 Minuten locker rudern (Schlagzahl 18–22), Dämpfer 3–5. Dabei die Reihenfolge üben: Beine – Rumpf – Arme, zurück Arme – Rumpf – Beine.",
+  "cooldown_de": "5 Minuten ganz locker ausrudern, danach Beine, Hüfte und oberen Rücken sanft dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "rudergeraet-locker",
+      "reps": null,
+      "duration_s": 120,
+      "sets": null,
+      "rest_s": 10,
+      "note_de": "Ganz locker, Schlagzahl 18–20."
+    },
+    {
+      "exercise_id": "rudergeraet",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 10,
+      "note_de": "Ruhig und sauber: Beine – Rumpf – Arme, Schlagzahl um 20."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe R (Indoor-Rudern, docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Fachprüfung (Entscheidung 12) und Freigabe ausstehend."
+  }
+}

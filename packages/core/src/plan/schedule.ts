@@ -724,7 +724,12 @@ function triathlonVariant(sport: DaySport, runVariant: EnduranceVariant, walkOnl
 }
 
 /** Texte der Einheit kommen vom Wochenbau (Art, Sportart) statt aus ENDURANCE_TEXTS_DE (Laufen; WP5 Rad, Schwimmen). */
-const WORKOUT_TEXT_VARIANTS: readonly EnduranceVariant[] = ['easy_run', 'easy_bike', 'easy_swim'];
+const WORKOUT_TEXT_VARIANTS: readonly EnduranceVariant[] = [
+  'easy_run',
+  'easy_bike',
+  'easy_swim',
+  'easy_row',
+];
 
 function competitionWeekBuild(
   weeks: readonly WeekPlan[],
@@ -1080,7 +1085,10 @@ export interface NextPlanBlockOptions {
   readonly library: ReadonlyMap<string, Exercise>;
   /** Geräte-Profile je Ort (für den Tausch in der Fassung des Tages). */
   readonly profiles: ReadonlyMap<EquipmentLocation, Pick<EquipmentProfile, 'available'>>;
-  readonly endurance: Pick<EnduranceContext, 'goalType' | 'discipline' | 'experienceLevel'>;
+  readonly endurance: Pick<
+    EnduranceContext,
+    'goalType' | 'discipline' | 'experienceLevel' | 'rowing'
+  >;
   /** Belastungswochen aller bisherigen Blöcke (Geh-Lauf-Wechsel der Einsteiger). */
   readonly loadWeeksBefore?: number;
   /**

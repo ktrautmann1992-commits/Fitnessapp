@@ -20,6 +20,7 @@ import { useThemeColors } from '@/lib/theme';
 
 import { StepList } from './competition';
 import { ModeNoticesBlock, routineSummary } from './training-modes';
+import { RowTechniqueNotice } from './rowing';
 import type { RunStrengthForDay } from '@/data/run-strength';
 import { deModes } from '@/i18n/de-training-modes';
 import { HeroCard } from './design';
@@ -176,6 +177,10 @@ export function SessionCard({
             <Notice tone="info" title={t.competition.openWaterTitle} testID="plan-open-water">
               <Body>{MULTISPORT_TEXTS_DE.openWater}</Body>
             </Notice>
+          ) : null}
+          {/* Etappe R: Technik-Hinweis bei jeder Ruder-Einheit. */}
+          {session.endurance_modality === 'row' ? (
+            <RowTechniqueNotice testID="plan-row-technique" />
           ) : null}
         </View>
       ) : null}

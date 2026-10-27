@@ -1,6 +1,12 @@
-import { PAIN_MODE, TEMPLATE_DOSAGE_LIMITS } from '../constants';
+import { ENDURANCE_MODALITY_ROW, PAIN_MODE, TEMPLATE_DOSAGE_LIMITS } from '../constants';
 import type { Exercise } from '../content/schemas';
-import type { CautionTag, PlannedSessionKind } from '../enums';
+import type {
+  BodyRegion,
+  CautionTag,
+  EnduranceModality,
+  PlannedSessionKind,
+  TravelEquipment,
+} from '../enums';
 import { fitSessionToMinutes, type PlannedExerciseDraft } from '../plan/adapt';
 import { type EquipmentProfile, findSubstitute } from '../plan/equipment-profile';
 import { type ExercisePair, replaceShownExercise, type SwapRecord } from '../plan/preferences';
@@ -40,6 +46,10 @@ export const MODE_NOTICES = [
   'pain_medical_advice',
   'pain_endurance_easier',
   'pain_endurance_check',
+  // Sportarten Stufe 1 · Etappe R (Indoor-Rudern): nur Hinweise mit Ersatz-Vorschlag, die Einheit bleibt.
+  'pain_row_alternative',
+  'travel_row_hotel_gym',
+  'travel_row_alternative',
 ] as const;
 export type ModeNotice = (typeof MODE_NOTICES)[number];
 
@@ -237,6 +247,36 @@ export interface EnduranceModeFields {
   readonly estimated_minutes: number;
   readonly effort_target: number | null;
   readonly workout_steps?: readonly unknown[] | null;
+  /** Etappe R: Art der Ausdauer-Einheit (Rudern → Ersatz-Hinweise). Fehlt → wie bisher. */
+  readonly endurance_modality?: EnduranceModality | null;
+}
+
+/**
+ * Rudern an Modus-Tagen (Sportarten Stufe 1 · Etappe R, ENDURANCE_MODALITY_ROW): Beschwerden in unterem Rücken, Knie
+ * oder Handgelenk ab „mittel“ → Hinweis „statt Rudern Rad-Ergometer oder Gehen“; Reise-Modus → mit Hotel-Gym „nur,
+ * wenn dort ein Rudergerät steht“, sonst „Ersatz Gehen oder Laufen“. Nur Hinweise – die Person entscheidet.
+ */
+export function rowModeNotices(modes: DisplayModes): ModeNotice[] {
+  const R = ENDURANCE_MODALITY_ROW;
+  const notices: ModeNotice[] = [];
+  const order = ['mild', 'moderate', 'severe'];
+  const regions: readonly BodyRegion[] = R.pain.regions;
+  if (
+    modes.pain?.regions.some(
+      (r) =>
+        regions.includes(r.region) &&
+        order.indexOf(r.intensity) >= order.indexOf(R.pain.fromIntensity),
+    )
+  ) {
+    notices.push('pain_row_alternative');
+  }
+  if (modes.travel) {
+    const gym: readonly TravelEquipment[] = R.travelEquipment;
+    notices.push(
+      gym.includes(modes.travel.equipment) ? 'travel_row_hotel_gym' : 'travel_row_alternative',
+    );
+  }
+  return notices;
 }
 
 /**
@@ -278,6 +318,7 @@ export function applyModesToEndurance<T extends EnduranceModeFields>(
       }
     }
   }
+  if (session.endurance_modality === 'row') notices.push(...rowModeNotices(modes));
   if (minutes === session.estimated_minutes && effort === session.effort_target) {
     return { session, notices };
   }

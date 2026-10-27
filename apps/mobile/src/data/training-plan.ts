@@ -6,6 +6,7 @@ import {
   experienceLevelSchema,
   type GeneratePlanResult,
   generateTrainingPlan,
+  hasRowingMachine,
   HEALTH_FLAGS,
   type HealthFlag,
   isBodyweightTemplateId,
@@ -265,6 +266,8 @@ export function nextBlockFromRows(
       goalType: snapshot.goalType,
       discipline: snapshot.discipline,
       experienceLevel: snapshot.experienceLevel,
+      // Etappe R: Rudergerät zu Hause → wie beim Erstellen jede zweite Ausdauer-Einheit Rudern (ohne Disziplin).
+      ...(hasRowingMachine(snapshot.homeEquipment) ? { rowing: true } : {}),
     },
     loadWeeksBefore,
     previousStartGroup: startGroupOf(active, rows.profile.birth_date),

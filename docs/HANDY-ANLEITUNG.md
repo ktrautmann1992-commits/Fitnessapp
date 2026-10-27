@@ -1994,6 +1994,29 @@ Steht in einem älteren Teil „Heute → …“, meint er den Reiter **Training
 7. **Schmerz-/Verletzungsmodus** (Einstellungen, siehe Teil 9t) für Knie oder Sprunggelenk eintragen → die Wander-Karten zeigen zusätzlich den
    Schon-Hinweis.
 
+## Teil 9w-R – Indoor-Rudern testen (27.10.2026, Testmodus)
+
+Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Rudergerät-Übungen und Rudern-Workouts sind Entwürfe („Testinhalt“).
+
+1. Onboarding: Ziel z. B. **„Fitness & Gesundheit“** (ohne Disziplin), Einsteiger, Trainingstage **Mo Kraft zu Hause, Di/Do/Sa
+   Ausdauer**, Equipment zu Hause u. a. **Rudergerät** → **Training → Woche**: jede zweite Ausdauer-Einheit heißt
+   **„Lockeres Rudern“** (gleiche Minuten wie ohne Rudergerät). Ohne Rudergerät gibt es kein Rudern im Plan.
+2. Ruder-Einheit öffnen: Hinweis **„Technik am Rudergerät“** (Beine – Rumpf – Arme, Dämpfer 3–5). **Training
+   starten** → Art **Rudern**, 20 min, Distanz **4,8** → Zeile **„Split 2:05 /500 m“** und „≈ … Watt (aus dem Split
+   berechnet)“. Optional Ø Watt und Schlagzahl; **„Wiederholung hinzufügen“** → 500 m / 1:58 → Split je Wiederholung.
+   Speichern → im Verlauf stehen Split, Watt, Schlagzahl und das Intervall-Ergebnis.
+3. Prüfen: Schlagzahl **70** → Fehler am Feld; Distanz **10** km in 20 min → „Bitte prüfen: Der Split ist schneller als
+   1:10 /500 m“ (nur Hinweis).
+4. **Training → Workouts** → Filter **Rudern**: 10 Workouts (z. B. „4 × 500 m“, „30/30“) mit Timer.
+5. **Schon-Modus** einschalten (wie Teil 9t) mit **Knie „mittel“** → an der Ruder-Einheit: „Heute lieber
+   Rad-Ergometer oder zügiges Gehen“. **Reise-Modus „Nur Körpergewicht“** → „Unterwegs ohne Rudergerät …“.
+6. **Nachtragen** → Art **Rudern** ist wählbar (freie Einheit „Rudern“).
+
+Smartwatch: Health Connect „Rudergerät“ (54) kommt als **Rudern** mit Dauer und Distanz ins Tagebuch; „Rudern“ im Boot
+(53) bleibt „Sonstige Sportart“.
+
+Rückmeldung an Claude z. B. „Rudern: 1–6 ok, Split-Zeile zu klein“.
+
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
 - Bei Unsicherheit einfach fragen: „Erklär mir in einfachen Worten, was du gerade geändert hast.“

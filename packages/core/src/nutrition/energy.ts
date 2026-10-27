@@ -14,6 +14,7 @@ import {
 } from '../constants';
 import { daysBetween } from '../dates';
 import type { ActivityLevel, Sex, WalkKind } from '../enums';
+import { rowMet } from '../rowing/metrics';
 import { bodyMassIndex, type DatedValue } from './body-data';
 import { sexSchema } from '../validation';
 import { activityLevelSchema, type NutritionSession, nutritionSessionSchema } from './schemas';
@@ -125,6 +126,8 @@ export function metForSession(
 ): number {
   if (session.kind === 'strength') return TRAINING_MET.strength;
   if (session.enduranceModality === null) return TRAINING_MET.unknownEndurance;
+  // Rudern (Sportarten Stufe 1 · Etappe R): große Spanne 4,8–8,5 → linear nach Anstrengung (rowMet).
+  if (session.enduranceModality === 'row') return rowMet(session.effortTarget);
   const table =
     session.enduranceModality === 'bike' && session.eBike === true
       ? TRAINING_MET.eBike

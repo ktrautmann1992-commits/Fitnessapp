@@ -54,7 +54,8 @@ const card = (page: Page, id: string) => page.getByTestId(`workout-card-${id}`);
 
 test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({ page }) => {
   await setup(page);
-  await expect(count(page)).toHaveText('27 Workouts');
+  // 27 freigegebene + 10 Rudern-Entwürfe (Etappe R, im Testmodus als „Testinhalt“ in der Liste).
+  await expect(count(page)).toHaveText('37 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
@@ -64,7 +65,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   // Filter sind zugeklappt („Filter“ antippen).
   await page.getByTestId('workouts-filter-toggle').click();
   await page.getByTestId('workouts-filter-stars-5').click();
-  await expect(count(page)).toHaveText('2 Workouts');
+  await expect(count(page)).toHaveText('3 Workouts');
   await expect(card(page, 'koerpergewicht-extrem')).toBeVisible();
   await expect(card(page, 'bauch-blitz')).toHaveCount(0);
 
@@ -84,7 +85,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-1').click();
   await expect(page.getByTestId('workouts-no-match')).toBeVisible();
   await page.getByTestId('workouts-filter-reset').click();
-  await expect(count(page)).toHaveText('27 Workouts');
+  await expect(count(page)).toHaveText('37 Workouts');
 
   // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();

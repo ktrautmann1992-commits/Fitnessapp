@@ -4,6 +4,7 @@ import {
   ENDURANCE_DELOAD_VOLUME_FACTOR,
   ENDURANCE_EFFORT,
   ENDURANCE_SESSION_LIMITS,
+  ENDURANCE_MODALITY_ROW,
   ENDURANCE_START_RULES,
 } from '../constants';
 import type { EnduranceDiscipline, EnduranceModality, GoalType } from '../enums';
@@ -17,7 +18,14 @@ import { capWeeklyIncrease, increasedMinutes, scaledMinutes } from './volume';
 
 /** Konkrete Form einer Ausdauer-Einheit (Name und Text), zur Modalität in planned_sessions. */
 export type EnduranceVariant =
-  'easy_run' | 'walk_run' | 'brisk_walk' | 'easy_bike' | 'ergometer' | 'easy_swim';
+  | 'easy_run'
+  | 'walk_run'
+  | 'brisk_walk'
+  | 'easy_bike'
+  | 'ergometer'
+  | 'easy_swim'
+  // Sportarten Stufe 1 · Etappe R: Indoor-Rudern (nur mit Rudergerät, enduranceVariant `rowing`).
+  | 'easy_row';
 
 export const ENDURANCE_VARIANT_MODALITY: Readonly<Record<EnduranceVariant, EnduranceModality>> = {
   easy_run: 'run',
@@ -26,6 +34,7 @@ export const ENDURANCE_VARIANT_MODALITY: Readonly<Record<EnduranceVariant, Endur
   easy_bike: 'bike',
   ergometer: 'bike',
   easy_swim: 'swim',
+  easy_row: 'row',
 };
 
 /**
@@ -40,6 +49,7 @@ export const ENDURANCE_TEXTS_DE = {
     easy_bike: 'Lockere Radeinheit',
     ergometer: 'Ergometer locker',
     easy_swim: 'Lockeres Schwimmen',
+    easy_row: 'Lockeres Rudern',
   },
   warmup: {
     easy_run: '5 Minuten zügig gehen.',
@@ -48,6 +58,7 @@ export const ENDURANCE_TEXTS_DE = {
     easy_bike: '5 Minuten locker einrollen.',
     ergometer: '5 Minuten locker einrollen.',
     easy_swim: '5 Minuten locker einschwimmen.',
+    easy_row: `5 Minuten locker rudern (Schlagzahl ${ENDURANCE_MODALITY_ROW.easyStrokeRate.min}–${ENDURANCE_MODALITY_ROW.easyStrokeRate.max}), Dämpfer ${ENDURANCE_MODALITY_ROW.damper.min}–${ENDURANCE_MODALITY_ROW.damper.max}; Reihenfolge Beine – Rumpf – Arme, zurück Arme – Rumpf – Beine.`,
   },
   cooldown: {
     easy_run: '5 Minuten locker auslaufen bzw. gehen, leicht dehnen.',
@@ -56,6 +67,7 @@ export const ENDURANCE_TEXTS_DE = {
     easy_bike: '5 Minuten locker ausrollen, leicht dehnen.',
     ergometer: '5 Minuten locker ausrollen, leicht dehnen.',
     easy_swim: '5 Minuten locker ausschwimmen.',
+    easy_row: '5 Minuten ganz locker ausrudern, dann Beine, Hüfte und Rücken leicht dehnen.',
   },
   walkRunPattern: '1 Minute laufen, 2 Minuten gehen – im Wechsel.',
   talkTest: (effort: number) =>
@@ -77,6 +89,11 @@ export interface EnduranceContext {
     | 'noHealthCheck'
   >;
   readonly experienceLevel: 'beginner' | 'advanced' | 'competitive';
+  /**
+   * Sportarten Stufe 1 · Etappe R: Rudergerät zu Hause (hasRowingMachine). Nur im Plan ohne Disziplin wird dann jede
+   * zweite Ausdauer-Einheit Rudern (ENDURANCE_MODALITY_ROW.planAlternateEvery). Fehlt/false → wie bisher.
+   */
+  readonly rowing?: boolean;
 }
 
 const TRIATHLON: readonly (EnduranceDiscipline | null)[] = [
@@ -90,12 +107,13 @@ const TRIATHLON: readonly (EnduranceDiscipline | null)[] = [
  * Modalität einer Ausdauer-Einheit – die strengste Zeile gewinnt (Tabelle 5.5):
  * Schwangerschaft → zügiges Gehen bzw. Ergometer (nie Rad im Freien), bei Schwimmen lockeres Schwimmen;
  * Flag/ab 65 → zügiges Gehen, bei Rad Ergometer, bei Schwimmen lockeres Schwimmen; ohne Check → Geh-Lauf-Wechsel;
- * Einsteiger in den ersten Belastungswochen → Geh-Lauf-Wechsel; sonst nach Disziplin (Triathlon abwechselnd).
+ * Einsteiger in den ersten Belastungswochen → Geh-Lauf-Wechsel; ohne Disziplin mit Rudergerät (`rowing`, Etappe R) jede
+ * zweite Einheit lockeres Rudern (nicht ohne Check); sonst nach Disziplin (Triathlon abwechselnd).
  * `loadWeek` = Nummer der Belastungswoche seit Planstart (0 = Woche 0), `index` = laufende Nummer der
  * Ausdauer-Einheit (für den Wechsel beim Triathlon).
  */
 export function enduranceVariant(
-  ctx: Pick<EnduranceContext, 'discipline' | 'rules' | 'experienceLevel'>,
+  ctx: Pick<EnduranceContext, 'discipline' | 'rules' | 'experienceLevel' | 'rowing'>,
   loadWeek: number,
   index: number,
 ): EnduranceVariant {
@@ -112,6 +130,17 @@ export function enduranceVariant(
     ctx.rules.noHealthCheck ||
     (ctx.experienceLevel === 'beginner' && loadWeek <= ENDURANCE_BEGINNER_WALK_RUN_WEEKS);
   const run: EnduranceVariant = walkRun ? 'walk_run' : 'easy_run';
+  // Rudern (Etappe R): nur ohne Disziplin, mit Rudergerät; jede zweite Einheit. Nie bei Schwangerschaft/„nur Gehen“
+  // (oben schon zügiges Gehen) und nie ohne Gesundheits-Check (Geh-Lauf-Wechsel bleibt, vorsichtig).
+  if (
+    ctx.rowing === true &&
+    !ctx.rules.noHealthCheck &&
+    d === null &&
+    index % ENDURANCE_MODALITY_ROW.planAlternateEvery ===
+      ENDURANCE_MODALITY_ROW.planAlternateEvery - 1
+  ) {
+    return 'easy_row';
+  }
   if (d === 'swimming') return 'easy_swim';
   if (d === 'cycling') return 'easy_bike';
   if (triathlon) return alternate ? 'easy_bike' : run;

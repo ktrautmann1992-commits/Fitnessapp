@@ -1,0 +1,44 @@
+{
+  "id": "rudern-500er-8",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rudern: 8 × 500 m",
+  "summary_de": "Acht schnelle 500-Meter-Abschnitte – eine fordernde Einheit für Erfahrene. Lieber den Split halten als zu schnell anfangen.",
+  "category": "rowing",
+  "difficulty": 5,
+  "minutes": 28,
+  "format": "interval",
+  "rounds": 8,
+  "round_rest_s": 0,
+  "equipment_ids": ["rowing_machine"],
+  "warmup_de": "8–10 Minuten locker rudern (Schlagzahl 18–22), Dämpfer 3–5, dann 3 × 10 Schläge etwas zügiger mit je 1 Minute locker dazwischen.",
+  "cooldown_de": "5 Minuten ganz locker ausrudern, danach Beine, Hüfte und oberen Rücken sanft dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "rudergeraet",
+      "reps": null,
+      "duration_s": 120,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "500 m schnell (etwa 2 Minuten), gleichmäßiger Split."
+    },
+    {
+      "exercise_id": "rudergeraet-locker",
+      "reps": null,
+      "duration_s": 90,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Ganz locker erholen."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe R (Indoor-Rudern, docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Fachprüfung (Entscheidung 12) und Freigabe ausstehend."
+  }
+}
