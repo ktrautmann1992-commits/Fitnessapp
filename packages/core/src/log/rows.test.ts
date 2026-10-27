@@ -96,6 +96,7 @@ function sessionLog(
     sport: null,
     sport_duration_s: null,
     sport_distance_m: null,
+    hyrox_splits: null,
     ...overrides,
   };
 }
@@ -334,6 +335,10 @@ describe('applySessionLog', () => {
         distance_m: 5000,
         elevation_m: null,
         e_bike: false,
+        avg_power_w: null,
+        stroke_rate: null,
+        intervals: null,
+        walk_kind: null,
       },
     ]);
     expect(next.sessionLogs[0]).toMatchObject({
@@ -364,6 +369,10 @@ describe('Löschen und Verweise', () => {
         distance_m: null,
         elevation_m: null,
         e_bike: false,
+        avg_power_w: null,
+        stroke_rate: null,
+        intervals: null,
+        walk_kind: null,
       },
     ],
   });

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
+import { HYROX_DIVISIONS, type HyroxDivision } from '../enums';
 import {
   COMPETITION_DISTANCE_M,
   COMPETITION_INPUT_LIMITS,
@@ -81,6 +82,8 @@ export interface CompetitionRow {
   start_reference_start_group: EnduranceStartGroup | null;
   effective_goal: CompetitionGoal | null;
   uses_health_data: boolean;
+  /** Sportarten Stufe 1: Hyrox-Division – gesetzt genau bei Disziplin hyrox (CHECK competitions_hyrox_division). */
+  hyrox_division: HyroxDivision | null;
   created_at: string;
   updated_at: string;
 }
@@ -109,6 +112,11 @@ export interface SaveCompetitionPayload {
   readonly start_reference_session_cap: number | null;
   readonly start_reference_start_group: EnduranceStartGroup | null;
   readonly effective_goal: CompetitionGoal | null;
+  /**
+   * Sportarten Stufe 1: Hyrox-Division – Pflicht genau bei Disziplin hyrox, sonst fehlt das Feld (so nimmt auch ein
+   * Server vor der Stufe-1-Migration die übrigen Wettkämpfe weiter an; save_competition: erlaubt, nicht Pflicht).
+   */
+  readonly hyrox_division?: HyroxDivision | null;
 }
 
 const R = COMPETITION_START_REFERENCE;
@@ -187,8 +195,17 @@ export const saveCompetitionPayloadSchema = z
       .nullable(),
     start_reference_start_group: z.enum(ENDURANCE_START_GROUPS).nullable(),
     effective_goal: z.enum(COMPETITION_GOALS).nullable(),
+    // Optional (Sportarten Stufe 1): wie required_keys in save_competition.
+    hyrox_division: z.enum(HYROX_DIVISIONS).nullable().optional(),
   })
   .superRefine((p, ctx) => {
+    if ((p.discipline === 'hyrox') !== (p.hyrox_division != null)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['hyrox_division'],
+        message: 'Division genau bei Hyrox.',
+      });
+    }
     if (p.name !== p.name.trim()) {
       ctx.addIssue({ code: 'custom', path: ['name'], message: 'Name mit Leerzeichen am Rand.' });
     }
@@ -275,6 +292,8 @@ export function toSaveCompetitionPayload(params: {
   readonly competition: CompetitionInput;
   readonly longRunWeekday?: number | null;
   readonly plan: CompetitionPlanBasis | null;
+  /** Sportarten Stufe 1: nur bei Hyrox; fehlt = Open (Fachlogik der Auswahl folgt in Etappe H). */
+  readonly hyroxDivision?: HyroxDivision | null;
 }): SaveCompetitionPayload {
   const c: Competition = competitionInputSchema.parse(params.competition);
   const plan = params.plan;
@@ -296,6 +315,7 @@ export function toSaveCompetitionPayload(params: {
     start_reference_session_cap: start?.sessionCap ?? null,
     start_reference_start_group: start?.startGroup ?? null,
     effective_goal: plan?.effectiveGoal ?? null,
+    ...(c.discipline === 'hyrox' ? { hyrox_division: params.hyroxDivision ?? 'open' } : {}),
   };
   return saveCompetitionPayloadSchema.parse(payload);
 }
@@ -339,6 +359,7 @@ export function storedCompetitionFromRow(
     | 'start_reference_start_group'
     | 'effective_goal'
     | 'result_session_log_id'
+    | 'hyrox_division'
   >,
 ): StoredCompetition | null {
   const parsed = saveCompetitionPayloadSchema.safeParse({
@@ -358,6 +379,7 @@ export function storedCompetitionFromRow(
     start_reference_session_cap: row.start_reference_session_cap,
     start_reference_start_group: row.start_reference_start_group,
     effective_goal: row.effective_goal,
+    hyrox_division: row.hyrox_division,
   });
   if (!parsed.success) return null;
   const p = parsed.data;

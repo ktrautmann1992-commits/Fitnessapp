@@ -52,6 +52,8 @@ describe('competitionInputSchema', () => {
       'cycling',
       'triathlon_sprint',
       'triathlon_olympic',
+      // Sportarten Stufe 1 (per `add value`): Hyrox.
+      'hyrox',
     ]);
     const withPlan = [
       '5k',
@@ -61,6 +63,7 @@ describe('competitionInputSchema', () => {
       'cycling',
       'triathlon_sprint',
       'triathlon_olympic',
+      'hyrox',
     ];
     for (const d of ENDURANCE_DISCIPLINES) {
       const ok = competitionInputSchema.safeParse({

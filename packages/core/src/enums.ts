@@ -66,6 +66,9 @@ export const ENDURANCE_DISCIPLINES = [
   'triathlon_long',
   'cycling',
   'swimming',
+  // Sportarten Stufe 1 (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1; Datenbank per `alter type … add value` in
+  // 20261027100000_sportarten_stufe1_enums.sql): Hyrox als Ausdauer- und Wettkampf-Disziplin.
+  'hyrox',
 ] as const;
 export type EnduranceDiscipline = (typeof ENDURANCE_DISCIPLINES)[number];
 
@@ -206,6 +209,9 @@ export const CAUTION_TAGS = [
   'trunk_rotation',
   'deep_hip_flexion',
   'hip_cross_midline',
+  // Sportarten Stufe 1 (Yoga/Pilates, docs/PLAN-SPORTARTEN-STUFE-1.md 2.4): Umkehrhaltung – Kopf unter Herzhöhe
+  // (z. B. herabschauender Hund, Schulterstand). Datenbank per `alter type … add value` (20261027100000).
+  'inversion',
 ] as const;
 export type CautionTag = (typeof CAUTION_TAGS)[number];
 
@@ -218,7 +224,15 @@ export type AlternativeReason = (typeof ALTERNATIVE_REASONS)[number];
  * 7.3): leichte Kraft-Einheit mit Schwerpunkt Gleichgewicht (`kind = 'strength'`, keine neue Einheit-Art) – per
  * `alter type … add value` in einer eigenen Migrationsdatei.
  */
-export const SESSION_FOCUSES = ['full_body', 'upper', 'lower', 'balance'] as const;
+export const SESSION_FOCUSES = [
+  'full_body',
+  'upper',
+  'lower',
+  'balance',
+  // Sportarten Stufe 1 (Hyrox, docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): Stations-Einheit = Kraft-Einheit (`kind =
+  // 'strength'`) mit Übungen für die 8 Hyrox-Stationen. Datenbank per `alter type … add value` (20261027100000).
+  'hyrox_stations',
+] as const;
 export type SessionFocus = (typeof SESSION_FOCUSES)[number];
 
 /** Rolle im Redaktionsbereich (Tabelle admin_users). */
@@ -298,9 +312,11 @@ export type PlannedSessionKind = (typeof PLANNED_SESSION_KINDS)[number];
 
 /**
  * Modalität einer Ausdauer-Einheit: Laufen (auch Geh-Lauf-Wechsel), zügiges Gehen, Rad (auch Ergometer),
- * Schwimmen (nur Dauer + Anstrengung, keine Technik – Frage 3).
+ * Schwimmen (nur Dauer + Anstrengung, keine Technik – Frage 3). `row` = Indoor-Rudern am Rudergerät (Sportarten
+ * Stufe 1, docs/PLAN-SPORTARTEN-STUFE-1.md 2.3; Datenbank per `alter type … add value` in 20261027100000) – keine
+ * GPS-Aufzeichnung (TRACKED_ROUTE_SPORTS bleibt run/bike/walk).
  */
-export const ENDURANCE_MODALITIES = ['run', 'walk', 'bike', 'swim'] as const;
+export const ENDURANCE_MODALITIES = ['run', 'walk', 'bike', 'swim', 'row'] as const;
 export type EnduranceModality = (typeof ENDURANCE_MODALITIES)[number];
 
 /**
@@ -365,6 +381,70 @@ export const TRACKED_ROUTE_SPORTS = ['run', 'bike', 'walk'] as const;
 export type TrackedRouteSport = (typeof TRACKED_ROUTE_SPORTS)[number];
 
 // ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 1 (Gründer-Freigabe 27.10.2026, docs/PLAN-SPORTARTEN-STUFE-1.md 3,
+// 20261027100000_sportarten_stufe1_enums.sql): Wandern/Bergwandern und Hyrox
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Art einer Geh-Einheit (Postgres-Enum `walk_kind`): Gehen, Wandern, Bergwandern. Nur bei Ausdauer-Art bzw. Strecken-
+ * Sportart `walk` (cardio_logs.walk_kind, tracked_routes.walk_kind); null = Gehen wie bisher. Die Sportart bleibt
+ * `walk` – Summen, Schuhe, Live-Begleitung und Wetter funktionieren unverändert (wie `e_bike` beim Rad).
+ */
+export const WALK_KINDS = ['walk', 'hike', 'mountain_hike'] as const;
+export type WalkKind = (typeof WALK_KINDS)[number];
+
+/**
+ * Division eines Hyrox-Wettkampfs (Postgres-Enum `hyrox_division`, Spalte competitions.hyrox_division – gesetzt genau
+ * bei Disziplin `hyrox`). Open und Pro mit eigenen Gewichten; Doubles und Staffel nur als Angabe (gleicher Plan,
+ * Entscheidung 2). Unter 18 nur Open (HYROX_SAFETY, Server-Prüfung in save_competition).
+ */
+export const HYROX_DIVISIONS = ['open', 'pro', 'doubles', 'relay'] as const;
+export type HyroxDivision = (typeof HYROX_DIVISIONS)[number];
+
+/**
+ * Die 8 Hyrox-Stationen in Rennreihenfolge (Plan 2.1; Mengen und Gewichte folgen in HYROX_FORMAT nach dem Rulebook der
+ * laufenden Saison). KEIN Postgres-Enum: Text mit fester Liste in private.workout_steps_valid (Schritt-Typ `station`)
+ * und private.hyrox_splits_valid (Teilzeiten).
+ */
+export const HYROX_STATIONS = [
+  'ski_erg',
+  'sled_push',
+  'sled_pull',
+  'burpee_broad_jumps',
+  'rowing',
+  'farmers_carry',
+  'sandbag_lunges',
+  'wall_balls',
+] as const;
+export type HyroxStation = (typeof HYROX_STATIONS)[number];
+
+/**
+ * Abschnitte eines Hyrox-Rennens für die Teilzeiten (session_logs.hyrox_splits, höchstens 17): 8 × 1 km Laufen, die 8
+ * Stationen und die Roxzone (Wechselzone, Summe). Reihenfolge = Rennablauf; die Liste steht gleich in
+ * private.hyrox_splits_valid (db-sync.test.ts).
+ */
+export const HYROX_SPLIT_SEGMENTS = [
+  'run_1',
+  'ski_erg',
+  'run_2',
+  'sled_push',
+  'run_3',
+  'sled_pull',
+  'run_4',
+  'burpee_broad_jumps',
+  'run_5',
+  'rowing',
+  'run_6',
+  'farmers_carry',
+  'run_7',
+  'sandbag_lunges',
+  'run_8',
+  'wall_balls',
+  'roxzone',
+] as const;
+export type HyroxSplitSegment = (typeof HYROX_SPLIT_SEGMENTS)[number];
+
+// ---------------------------------------------------------------------------------------------------------
 // Sportarten Stufe 2 (Gründer-Freigabe 25.10.2026, docs/PLAN-SPORTARTEN.md, 20261025160000_sport_enums.sql)
 // ---------------------------------------------------------------------------------------------------------
 
@@ -401,6 +481,11 @@ export const SPORT_IDS = [
   'kayaking',
   'dancing',
   'other',
+  // Sportarten Stufe 1 (docs/PLAN-SPORTARTEN-STUFE-1.md 2.4, Kategorie `mind_body`): Studio-Kurs eintragen, Uhr-Arten
+  // „Yoga“/„Pilates“. Postgres hängt neue Werte hinten an (`alter type … add value`) – deshalb nach `other`; die
+  // Anzeige-Reihenfolge kommt aus SPORT_CATEGORIES/SPORT_CATALOGUE.
+  'yoga',
+  'pilates',
 ] as const;
 export type SportId = (typeof SPORT_IDS)[number];
 
@@ -414,6 +499,8 @@ export const SPORT_CATEGORIES = [
   'water',
   'indoor_cardio',
   'dance',
+  // Sportarten Stufe 1: Yoga, Pilates.
+  'mind_body',
   'other',
 ] as const;
 export type SportCategory = (typeof SPORT_CATEGORIES)[number];

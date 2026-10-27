@@ -1,9 +1,14 @@
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
-import { DAILY_METRIC_LIMITS, HEART_RATE_LIMITS, WEARABLE_SYNC } from '../constants';
+import {
+  CARDIO_LOG_LIMITS,
+  DAILY_METRIC_LIMITS,
+  HEART_RATE_LIMITS,
+  WEARABLE_SYNC,
+} from '../constants';
 import { isoDateInTimeZone } from '../dates';
-import { type EnduranceModality, WEARABLE_PROVIDERS } from '../enums';
+import { type EnduranceModality, WALK_KINDS, WEARABLE_PROVIDERS } from '../enums';
 
 /**
  * Smartwatch-Daten über Health Connect (Phase 8 Etappe 1, docs/PLAN-PHASE-8.md 3, 5, 6): Listen und Eingabe-Schemas
@@ -58,14 +63,17 @@ export function originFromPackage(packageName: string | null | undefined): Weara
 }
 
 /**
- * Sportart-Gruppe einer übernommenen Einheit: die vier Ausdauer-Arten des Tagebuchs, Kraft (freie Kraft-Einheit) und
- * „Sonstige“ (Yoga, Wandern, Tennis … – freie Einheit mit Titel, ohne Übungen). Gruppen entscheiden auch über Doppel.
+ * Sportart-Gruppe einer übernommenen Einheit: die Ausdauer-Arten des Tagebuchs, Kraft (freie Kraft-Einheit) und
+ * „Sonstige“ (Yoga, Tennis … – freie Einheit mit Titel, ohne Übungen). Gruppen entscheiden auch über Doppel.
+ * Sportarten Stufe 1: `row` = Rudergerät (Health Connect 54) als Ausdauer-Art Rudern; Wandern über `walk` mit
+ * `walk_kind` (Zuordnung der Uhr-Arten folgt in Etappe W/R).
  */
 export const WEARABLE_SESSION_GROUPS = [
   'run',
   'walk',
   'bike',
   'swim',
+  'row',
   'strength',
   'other',
 ] as const;
@@ -135,9 +143,22 @@ export const wearableSessionImportSchema = z
     heart_rate: heartRateSummarySchema.nullable(),
     merge_into: z.uuid().nullable(),
     possible_duplicate_of: z.uuid().nullable(),
+    /**
+     * Sportarten Stufe 1 – optional (fehlt = null, ältere App-Fassungen): Art der Geh-Einheit (nur Gruppe `walk`; der
+     * Name ist dann FREE_SESSION.names.walkKinds), Leistung und Schlagzahl (nur Gruppe `row`, CARDIO_LOG_LIMITS).
+     */
+    walk_kind: z.enum(WALK_KINDS).nullable().optional(),
+    avg_power_w: int(CARDIO_LOG_LIMITS.avgPowerW).nullable().optional(),
+    stroke_rate: int(CARDIO_LOG_LIMITS.strokeRate).nullable().optional(),
   })
   .strict()
   .superRefine((s, ctx) => {
+    if (s.walk_kind != null && s.group !== 'walk') {
+      ctx.addIssue({ code: 'custom', message: 'walk_kind_only_walk', path: ['walk_kind'] });
+    }
+    if ((s.avg_power_w != null || s.stroke_rate != null) && s.group !== 'row') {
+      ctx.addIssue({ code: 'custom', message: 'row_values_only_row', path: ['avg_power_w'] });
+    }
     if (secondsBetween(s.started_at, s.finished_at) !== s.duration_s) {
       ctx.addIssue({ code: 'custom', message: 'duration_mismatch', path: ['duration_s'] });
     }

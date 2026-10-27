@@ -121,6 +121,8 @@ const VARIANT_BY_MODALITY: Readonly<Record<EnduranceModality, EnduranceVariant>>
   walk: 'brisk_walk',
   bike: 'easy_bike',
   swim: 'easy_swim',
+  // Stufe 1: Fachlogik folgt (Etappe R, eigene Varianten „Rudern“) – vorerst wie das Ergometer-Rad (locker, sitzend).
+  row: 'easy_bike',
 };
 
 /** Variante einer gespeicherten Ausdauer-Einheit (aus dem festen Namen, sonst aus der Modalität). */

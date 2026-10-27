@@ -161,6 +161,9 @@ export function minorPlanAllowed(
   if (isTriathlonCompetitionDiscipline(discipline)) {
     return (G.minorTriathlon as readonly string[]).includes(discipline);
   }
+  // Sportarten Stufe 1 (Hyrox): unter 18 erlaubt, aber nur Division Open (Server: save_competition) – Fachlogik folgt
+  // in Etappe H (HYROX_SAFETY). = private.competition_minor_allowed.
+  if (discipline === 'hyrox') return true;
   return (
     RUN_COMPETITION_DISCIPLINES.indexOf(discipline) <=
     RUN_COMPETITION_DISCIPLINES.indexOf(G.minorMaxDiscipline)

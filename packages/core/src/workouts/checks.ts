@@ -13,8 +13,8 @@ import { buildWorkoutTimerPlan, estimateWorkoutSeconds } from './timer';
  * - W2: Jede Übung existiert; ein freigegebenes Workout enthält nur freigegebene Übungen.
  * - W3: Geräte im Katalog und genau die Vereinigung der Geräte aller Übungen (Filter „ohne Geräte“ stimmt immer).
  * - W4: Format passt zur Belastungsart: Halte-/Zeitübungen nach Sekunden, Übungen mit Gewicht nach Wiederholungen.
- * - W5: Sicherheit: 1–2 Sterne nur leichte Übungen (Schwierigkeit ≤ 2, ohne „high_skill“) und mit Pausen; 1 Stern
- *       ohne Sprünge („high_impact“).
+ * - W5: Sicherheit: 1–2 Sterne nur leichte Übungen (Schwierigkeit ≤ 2, ohne „high_skill“) und mit Pausen (außer im
+ *       Format `flow`, das ohne Pausen-Bildschirm läuft); 1 Stern ohne Sprünge („high_impact“).
  * - W6 (gelb): Angegebene Dauer passt zur geschätzten Dauer (±20 %, mindestens ±2 Minuten).
  * - W7: Textregeln (keine Heil-/Gesundheitsversprechen, keine Marken) wie bei Rezepten.
  */
@@ -141,7 +141,13 @@ export function checkWorkout(workout: Workout, library: ExerciseLookup): Content
         );
       }
       const last = i === workout.exercises.length - 1;
-      const restApplies = workout.format === 'sets_reps' ? (item.sets ?? 1) > 1 || !last : !last;
+      // Flow (Sportarten Stufe 1): Pose für Pose ohne Pausen-Bildschirm – die Übergänge sind Teil des Ablaufs.
+      const restApplies =
+        workout.format === 'flow'
+          ? false
+          : workout.format === 'sets_reps'
+            ? (item.sets ?? 1) > 1 || !last
+            : !last;
       if (restApplies && item.rest_s < L.easyMinRestS) {
         issues.push(
           makeIssue(
@@ -153,7 +159,7 @@ export function checkWorkout(workout: Workout, library: ExerciseLookup): Content
         );
       }
     });
-    if (workout.rounds > 1 && workout.round_rest_s < L.easyMinRestS) {
+    if (workout.format !== 'flow' && workout.rounds > 1 && workout.round_rest_s < L.easyMinRestS) {
       issues.push(
         makeIssue(
           'W5',

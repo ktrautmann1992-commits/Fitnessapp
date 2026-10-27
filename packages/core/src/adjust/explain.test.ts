@@ -117,6 +117,7 @@ describe('Zeilen → Eingaben (eine Abbildung für App und Server, A0)', () => {
       sport: null,
       sport_duration_s: null,
       sport_distance_m: null,
+      hyrox_splits: null,
     };
     const exercise = {
       id: 'el1',

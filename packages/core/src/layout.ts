@@ -134,6 +134,9 @@ export const storedAppLayoutSchema = z.strictObject({
   // Fassung der Anordnung (26.10.2026, Spalte `layout_version`): fehlt bzw. null = alte Fassung (vor „App
   // verschlanken“). Spätere App-Fassungen dürfen höhere Zahlen speichern.
   layout_version: z.number().int().min(1).max(APP_LAYOUT.versionMax).nullable().optional(),
+  // „Erholungs-Routine vorschlagen“ (Sportarten Stufe 1, 27.10.2026, Spalte `recovery_routine`): fehlt = Standard an;
+  // save_app_layout behält ohne das Feld die gespeicherte Einstellung.
+  recovery_routine: z.boolean().optional(),
 });
 export type StoredAppLayout = z.infer<typeof storedAppLayoutSchema>;
 

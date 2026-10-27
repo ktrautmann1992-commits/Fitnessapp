@@ -1,4 +1,5 @@
 import type { ExerciseProgress } from '../log/types';
+import type { WorkoutStep } from '../plan/intensity';
 
 /**
  * Typen der Live-Anpassung (docs/PLAN-PHASE-4B.md Abschnitte 4.3, 4.4 und 5). Die Aufzählungen entsprechen den
@@ -88,12 +89,7 @@ export interface SessionChange {
   readonly is_deload?: boolean;
   readonly estimated_minutes?: number;
   /** Nur Wettkampfplan (lockere Art): Schritte passend zur neuen Dauer bzw. Distanz-Richtwert. */
-  readonly workout_steps?: readonly {
-    readonly part: 'warmup' | 'main' | 'cooldown';
-    readonly kind: 'work' | 'easy' | 'rest';
-    readonly seconds: number;
-    readonly effort: number;
-  }[];
+  readonly workout_steps?: readonly WorkoutStep[];
   readonly target_distance_m?: number | null;
   readonly exercises?: readonly ExerciseChange[];
 }
