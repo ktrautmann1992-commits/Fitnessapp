@@ -101,7 +101,10 @@ export function mealPlanRowsFromDb(
       inputs: plan.inputs,
       items: items
         .filter((item) => item.plan_id === plan.id)
-        .map(({ plan_id: _planId, ...item }) => item),
+        // Nährstoff-Timing (T0): user_chosen nur, wenn true – wie toMealPlanPayload (Abgleich mit dem vollständigen Plan).
+        .map(({ plan_id: _planId, user_chosen: chosen, ...item }) =>
+          chosen === true ? { ...item, user_chosen: true } : item,
+        ),
     };
     const record = parseMealPlanRecord({ usesHealthData: plan.uses_health_data, payload });
     if (record === null) return [];

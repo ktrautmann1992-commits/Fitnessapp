@@ -6555,3 +6555,94 @@ export const LIVE_COMPANION = {
   rateLimit: { perIpPerMin: 10, perSessionPerMin: 30, keepH: 1 },
   emergencyNumber: '112',
 } as const;
+
+// ---------------------------------------------------------------------------------------------------------
+// Nährstoff-Timing 2 – Essen rund ums Training (docs/PLAN-NAEHRSTOFF-TIMING.md, freigegeben 27.10.2026)
+//
+// Nur die VERTEILUNG innerhalb des Tages: Tagesenergie, Makro-Summen und alle Schutzgrenzen bleiben unverändert
+// (`clampCalorieTarget`, Strukturtest in training-meal-targets.test.ts). Alle Werte VOR LIVEGANG FACHLICH PRÜFEN.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Uhrzeit einer geplanten Einheit (`planned_sessions.start_time`, Etappe T0, Entscheidung 10): ganze Minuten von
+ * 00:00 (0) bis 23:59 (1439) – CHECK `planned_sessions_start_time_check` (db-sync.test.ts). `stepMinutes`: Schritte der
+ * Auswahl in der App (PRODUKTENTSCHEIDUNG).
+ */
+export const SESSION_START_TIME = { minMinutes: 0, maxMinutes: 1439, stepMinutes: 5 } as const;
+
+/**
+ * Regeln „Essen rund ums Training“ (Plan Abschnitte 1–5). VOR LIVEGANG FACHLICH PRÜFEN.
+ * 1. Eiweiß gleichmäßig: `proteinPerMealGPerKg` 0,4 g/kg je Hauptmahlzeit, mindestens `minProteinMeals` Mahlzeiten mit
+ *    Eiweiß; ab `seniorFromAge` (65) zusätzlich mindestens `seniorMinProteinPerMealG` (25 g, anabole Resistenz).
+ *    Richtwert mit Hinweis, keine harte Regel (Entscheidung 1). Quellen: Schoenfeld BJ, Aragon AA (2018), „How much
+ *    protein can the body use in a single meal for muscle-building?“, J Int Soc Sports Nutr 15:10; Jäger R et al.
+ *    (2017), ISSN Position Stand „Protein and exercise“, J Int Soc Sports Nutr 14:20; Bauer J et al. (2013), PROT-AGE,
+ *    J Am Med Dir Assoc 14(8):542–559.
+ * 2. Nach dem Training: Mahlzeit bis `postWithinMinutes` (2 h) danach mit `postProteinGPerKg` (0,4 g/kg, =
+ *    MEAL_TIMING_RULES.postProteinGPerKg). Nach Ausdauer ab `postEnduranceCarbFromMinutes` (60 min) mehr Kohlenhydrate;
+ *    bei zwei Einheiten am Tag bzw. weniger als `refuelGapMinutes` (8 h) bis zur nächsten Einheit Richtwert
+ *    `refuelCarbsGPerKg` (1 g/kg) in der Mahlzeit danach. Quellen: Kerksick CM et al. (2017), ISSN Position Stand
+ *    „Nutrient timing“, J Int Soc Sports Nutr 14:33; Thomas DT, Erdman KA, Burke LM (2016), Med Sci Sports Exerc
+ *    48(3):543–568; Burke LM et al. (2011), J Sports Sci 29 Suppl 1:S17–S27.
+ * 3. Vor dem Training: Mahlzeit 2–4 h vorher (`MEAL_TIMING_RULES.preMealMinutes`) kohlenhydratreich, Richtwert
+ *    `preMealCarbsGPerKgPerHour` (0,5 g/kg je Stunde Abstand), begrenzt auf `preMealCarbsGPerKg` 1–2 g/kg; Snack
+ *    30–60 min vorher (`MEAL_TIMING_RULES.preSnackMinutes`) klein mit `preSnackCarbsG` 15–30 g KH. Verträglichkeit je
+ *    Portion: Mahlzeit vorher höchstens `preMealMaxFatEnergyShare` (30 %) der Energie aus Fett und `preMealMaxFiberGPer1000Kcal` (15 g
+ *    je 1000 kcal, mindestens `preMealMinFiberLimitG` 8 g) Ballaststoffe, Snack höchstens
+ *    `preSnackMaxFatG`/`preSnackMaxFiberG`/`preSnackMaxKcal` – darüber rückt ein Rezept nach hinten, verboten ist es
+ *    nicht (PRODUKTENTSCHEIDUNG). Quelle: Thomas et al. (2016): 1–4 g/kg KH 1–4 h vorher, fett-/ballaststoffarm.
+ *    Frühes Training: Start vor `earlyBeforeMinutes` (8:00) → „kleiner Snack vorher oder Frühstück direkt danach“.
+ * 4. KH rund ums Training bei allen Zielen (Entscheidung 2): Mahlzeiten vor/nach dem Training bekommen `carbShift`
+ *    (+25 %) mehr Kohlenhydrate als ihr Energieanteil, die übrigen entsprechend weniger (Summe = Tagesmenge), Fett
+ *    gleicht die Energie je Mahlzeit aus. Ruhetage gleichmäßig. PRODUKTENTSCHEIDUNG.
+ * 5. Lange Einheiten: geplante Ausdauer ab `longSessionMinutes` (90 min) – Richtwert für unterwegs nach
+ *    `COMPETITION_NUTRITION.fueling` und Trinken nach Durst, nur Hinweis (Entscheidung 4). Quelle: Jeukendrup A (2014),
+ *    Sports Med 44 Suppl 1:S25–S33.
+ * - `defaultStartMinutes`: Ohne eigene Uhrzeit und ohne Angabe „Trainingszeit“ (bzw. „wechselnd“) nimmt die Zeitleiste
+ *   17:30 an und schreibt „ca.“ (= TRAINING_TIME_START_MINUTES.evening, PRODUKTENTSCHEIDUNG).
+ * - `dishTolerance` (±15 %): Ein Gericht „passt“, wenn Eiweiß bzw. KH höchstens so weit unter dem Richtwert liegen;
+ *   sonst kleine Beilage bzw. ehrlicher Hinweis (Plan Abschnitt 7, PRODUKTENTSCHEIDUNG). `sideMinGapG`: Beilage erst ab
+ *   so viel fehlendem Eiweiß; `sideMaxKcal`: Beilage höchstens so groß.
+ * - `scoring`: Gewichte der Rezeptwahl an Tagen mit eigener Uhrzeit (nur Reihenfolge, nie Filter oder Energie):
+ *   `proteinShortfall` Abzug je Anteil fehlenden Eiweißes am Richtwert, `preTolerance` Abzug je Überschreitung der
+ *   Fett-/Ballaststoff-Grenze vor dem Training, `carbFocus` Bonus je KH-Energieanteil in Mahlzeiten vor/nach dem
+ *   Training. PRODUKTENTSCHEIDUNG.
+ */
+export const NUTRIENT_TIMING = {
+  proteinPerMealGPerKg: 0.4,
+  minProteinMeals: 3,
+  seniorFromAge: AGE_PLAN_RULES.senior.fromAge,
+  seniorMinProteinPerMealG: 25,
+  postWithinMinutes: MEAL_TIMING_RULES.postMealMaxMinutes,
+  postProteinGPerKg: MEAL_TIMING_RULES.postProteinGPerKg,
+  postEnduranceCarbFromMinutes: 60,
+  refuelGapMinutes: 8 * 60,
+  refuelCarbsGPerKg: 1,
+  preMealMinutes: MEAL_TIMING_RULES.preMealMinutes,
+  preMealCarbsGPerKgPerHour: 0.5,
+  preMealCarbsGPerKg: { min: 1, max: 2 },
+  preSnackMinutes: MEAL_TIMING_RULES.preSnackMinutes,
+  preSnackCarbsG: { min: 15, max: 30 },
+  preMealMaxFatEnergyShare: 0.3,
+  preMealMaxFiberGPer1000Kcal: 15,
+  preMealMinFiberLimitG: 8,
+  preSnackMaxFatG: 5,
+  preSnackMaxFiberG: 3,
+  preSnackMaxKcal: 250,
+  earlyBeforeMinutes: 8 * 60,
+  carbShift: 0.25,
+  longSessionMinutes: MEAL_TIMING_RULES.longSessionMinutes,
+  defaultStartMinutes: TRAINING_TIME_START_MINUTES.evening,
+  dishTolerance: 0.15,
+  sideMinGapG: 5,
+  sideMaxKcal: 250,
+  scoring: { proteinShortfall: 2, preTolerance: 1.5, carbFocus: 1.5 },
+} as const;
+
+/**
+ * Markierungen vor/nach dem Training nach Nährwerten (Nährstoff-Timing T3, Regel R22T, nur gelber Hinweis):
+ * „nach dem Training“ ab `postMinProteinEnergyShare` (15 %) der Energie aus Eiweiß. PRODUKTENTSCHEIDUNG – angelehnt an
+ * Kerksick CM et al. (2017), J Int Soc Sports Nutr 14:33 (Eiweiß und Kohlenhydrate nach dem Training). VOR LIVEGANG
+ * FACHLICH PRÜFEN.
+ */
+export const TRAINING_TAG_RULES = { postMinProteinEnergyShare: 0.15 } as const;

@@ -52,3 +52,6 @@ export * from './targets';
 export * from './timing';
 export * from './units';
 export * from './hydration';
+export * from './training-meal-targets';
+export * from './training-replan';
+export * from './training-timeline';

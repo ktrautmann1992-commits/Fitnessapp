@@ -646,6 +646,28 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
   geplanten Einheit mit passenden, skalierten Rezepten samt Erinnerung („Rezepte automatisch passend zu jeder
   Trainingseinheit“ in Abschnitt 13).
 
+#### 6.3a Nährstoff-Timing 2 – Essen rund ums Training (Gratis, ohne KI, Gründer-Freigabe 27.10.2026)
+
+Plan: `docs/PLAN-NAEHRSTOFF-TIMING.md` (alle Entscheidungen in Abschnitt 10). Ergänzt 6.3 um die **Verteilung
+innerhalb des Tages** – Tagesenergie, Defizit-Grenzen, Grundumsatz-Schutz und alle Schutzgrenzen bleiben unverändert
+(`clampCalorieTarget`, Strukturtest).
+- **Uhrzeit an der Einheit** (`planned_sessions.start_time`, optional): im Tages-Blatt des Reiters Training
+  einstellbar; ohne eigene Uhrzeit gilt „Trainingszeit“ (bzw. 17:30) mit „ca.“. Die Uhrzeit wandert beim Verschieben mit.
+- **Eiweiß gleichmäßig:** ca. 0,4 g/kg je Hauptmahlzeit (ab 65 mind. 25 g) als Richtwert mit Hinweis; **nach dem
+  Training** 0,4 g/kg; **zwei Einheiten** bzw. < 8 h Abstand: ca. 1 g/kg KH in der Mahlzeit dazwischen; **vor dem
+  Training** 2–4 h vorher kohlenhydratreich, eher wenig Fett/Ballaststoffe (Bewertung nach Nährwerten je Portion),
+  Snack 30–60 min vorher; **KH-Verschiebung** zu den Mahlzeiten rund ums Training bei allen Zielen; **ab 90 min**
+  Ausdauer Richtwert für unterwegs + Trinken (nur Hinweis).
+- **Zeitleiste in Ernährung · Tag** mit **echten Gerichten** (Rezept + Portion, Werte klein darunter), ggf. Snack oder
+  kleine Beilage aus dem Bestand („Auf die Einkaufsliste“), „Warum?“ je Eintrag, höchstens **ein** Timing-Hinweis je Tag.
+- **Verschieben:** Mahlzeiten wandern mit – nur die betroffenen Tage, unpassende Gerichte werden getauscht
+  (Rückmeldung „Mahlzeiten an dein Training angepasst · Rückgängig“, Einkaufsliste angepasst). **Nie automatisch**
+  geändert: als gegessen eingetragene und selbst gewählte Gerichte (`meal_plan_items.user_chosen`) – dort nur ein
+  Vorschlag „… wäre besser – tauschen?“.
+- **Ausnahmen:** unter 18, ohne Einwilligung/Körpergewicht, „Kalorienzahlen“ aus und `no_targets`: keine Gramm, nur
+  Zeitfenster, Gerichte und allgemeine Hinweise. Erinnerung vor dem Training nur lokal, Standard aus.
+- Ohne eigene Uhrzeit und ohne „Trainingszeit“ plant die Engine genau wie bisher (Altbestand unverändert).
+
 ### 6.4 Kalorien per Foto (Premium, KI)
 - Foto der Mahlzeit → KI-API (Gemini, Gründer-Entscheidung 14.10.2026) mit Bildeingabe schätzt Lebensmittel und
   Portionen → Abgleich mit Lebensmitteldatenbank
