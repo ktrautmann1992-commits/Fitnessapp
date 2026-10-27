@@ -48,6 +48,7 @@ import { deSlim } from './de-slim';
 import { deCalisthenics } from './de-calisthenics';
 import { deTrainingWeek } from './de-training-week';
 import { deWidget } from './de-widget';
+import { deRowing } from './de-rowing';
 import { deDeviceCalendar, deMonthReview, deWeightTrend } from './de-review';
 
 export const de = {
@@ -321,7 +322,7 @@ export const de = {
         triathlon_long: 'Triathlon Langdistanz',
         cycling: 'Radfahren',
         swimming: 'Schwimmen',
-        hyrox: 'Hyrox',
+        hyrox: 'Hyrox-Wettkampf',
       },
       targetDate: 'Wettkampf-Datum (optional)',
       targetDateHint:
@@ -1769,6 +1770,8 @@ export const de = {
   loop: deLoop,
   /** Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md, 25.10.2026). */
   widget: deWidget,
+  /** Indoor-Rudern (Sportarten Stufe 1 · Etappe R). */
+  rowing: deRowing,
 } as const;
 
 /** Typ, den jede Übersetzung erfüllen muss (Texte als string, Funktionen mit gleicher Signatur). */

@@ -46,6 +46,7 @@ import {
 } from '@/lib/week-status-format';
 import { useApp } from '@/state/app-state';
 import { useLogAssignments } from '@/state/use-log-assignments';
+import { useTrackedRoutes } from '@/state/use-tracked-routes';
 
 /**
  * Training-Übersicht (docs/PLAN-AUSWERTUNG.md „Training-Übersicht“, Gründer-Freigabe 23.10.2026): Wochen-Leiste, Legende,
@@ -918,6 +919,7 @@ function OpenBlock({
   const today = todayIso();
   const rows = app.rows;
   const [info, setInfo] = useState<string | null>(null);
+  const trackedRoutes = useTrackedRoutes();
   if (!rows) return null;
   const session = activePlan(rows)?.sessions.find((s) => s.id === open.sessionId) ?? null;
   const exerciseCount = rows.plannedExercises.filter((e) => e.session_id === open.sessionId).length;
@@ -931,7 +933,12 @@ function OpenBlock({
   // Wie das frühere „Einheit verschieben“: kein freier Tag (ohne Tausch) → Text „kein Tag mehr frei“.
   const noFreeDay = firstMoveDay(targets) === null;
   // Sportarten Stufe 2: sanfter Hinweis nach Sport mit hoher Beinbelastung am Vortag (nur Vorschlag).
-  const legHint = legLoadHintsFromRows(rows, today).find((h) => h.sessionId === open.sessionId);
+  // Sportarten Stufe 1 · Etappe W: Wanderung ab 120 min oder 600 Hm Abstieg (Abstieg aus der Strecke).
+  const legHint = legLoadHintsFromRows(
+    rows,
+    today,
+    trackedRoutes.state.kind === 'ready' ? trackedRoutes.state.result.routes : [],
+  ).find((h) => h.sessionId === open.sessionId);
   const meta = [
     open.missed ? W.sheet.missedMeta : W.sheet.planned,
     open.estimatedMinutes ? W.hero.minutes(open.estimatedMinutes) : null,
@@ -955,7 +962,12 @@ function OpenBlock({
       ) : null}
       {legHint ? (
         <Notice tone="info" testID="day-sheet-leg-hint">
-          {`${t.sports.legHint[legHint.reason](sportName(legHint.sport), weekdayShort(legHint.sportDate))} ${t.sports.legHint.note}`}
+          {`${t.sports.legHint[legHint.reason](
+            legHint.sport === 'hike' || legHint.sport === 'mountain_hike'
+              ? t.endurance.hiking.legSource[legHint.sport]
+              : sportName(legHint.sport),
+            weekdayShort(legHint.sportDate),
+          )} ${t.sports.legHint.note}`}
         </Notice>
       ) : null}
       {hasDraft ? (

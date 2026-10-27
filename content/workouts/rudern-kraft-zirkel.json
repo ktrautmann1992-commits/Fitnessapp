@@ -1,0 +1,60 @@
+{
+  "id": "rudern-kraft-zirkel",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rudern & Körpergewicht",
+  "summary_de": "Zirkel aus Rudern und Körpergewicht-Übungen: 2 Minuten rudern, dann Kniebeugen, Liegestütz und Unterarmstütz. Drei Runden.",
+  "category": "rowing",
+  "difficulty": 3,
+  "minutes": 17,
+  "format": "interval",
+  "rounds": 3,
+  "round_rest_s": 60,
+  "equipment_ids": ["rowing_machine"],
+  "warmup_de": "5 Minuten locker rudern (Schlagzahl 18–22), Dämpfer 3–5. Dabei die Reihenfolge üben: Beine – Rumpf – Arme, zurück Arme – Rumpf – Beine.",
+  "cooldown_de": "5 Minuten ganz locker ausrudern, danach Beine, Hüfte und oberen Rücken sanft dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "rudergeraet",
+      "reps": null,
+      "duration_s": 120,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Gleichmäßig zügig, Schlagzahl 22–24."
+    },
+    {
+      "exercise_id": "kniebeuge-koerpergewicht",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "liegestuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Bei Bedarf mit den Knien am Boden."
+    },
+    {
+      "exercise_id": "unterarmstuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe R (Indoor-Rudern, docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Fachprüfung (Entscheidung 12) und Freigabe ausstehend."
+  }
+}

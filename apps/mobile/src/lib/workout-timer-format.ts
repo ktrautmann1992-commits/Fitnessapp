@@ -58,7 +58,12 @@ export function stepAnnouncement(
   names: ExerciseNames,
 ): string {
   if (view.finished || view.step === null) return t.workouts.finish.title;
-  const title = stepTitle(view.step, names);
+  // Flow mit Seitenwechsel (Sportarten Stufe 1): „Krieger II, rechte Seite“.
+  const side =
+    view.step.kind === 'work' && view.step.side
+      ? `, ${view.step.side === 'right' ? 'rechte Seite' : 'linke Seite'}`
+      : '';
+  const title = `${stepTitle(view.step, names)}${side}`;
   if (view.step.kind === 'work' && view.step.reps !== null) {
     return `${title}: ${doseText(view.step, names)}`;
   }

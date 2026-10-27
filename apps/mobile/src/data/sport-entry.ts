@@ -1,5 +1,6 @@
 import {
   addDays,
+  isHikeKind,
   type LegLoadHint,
   legLoadHints,
   recentSports,
@@ -15,6 +16,7 @@ import {
   type SportWeekSummary,
   sportWeekSummary,
   startOfIsoWeek,
+  type TrackedRouteRow,
 } from '@fitnessapp/core';
 
 import { parseDecimal } from '../lib/format';
@@ -213,22 +215,43 @@ export function recentSportsFromRows(
 
 /** Plan-Hinweise nach Sport mit hoher Beinbelastung (nur aktiver Plan, ab heute). */
 export function legLoadHintsFromRows(
-  rows: Pick<UserRows, 'sessionLogs' | 'plannedSessions' | 'plans'>,
+  rows: Pick<UserRows, 'sessionLogs' | 'plannedSessions' | 'plans'> &
+    Partial<Pick<UserRows, 'cardioLogs'>>,
   today: string,
+  /** Sportarten Stufe 1: Strecken (Abstieg einer Wanderung); fehlt = nur die Dauer zählt. */
+  routes: readonly Pick<TrackedRouteRow, 'session_log_id' | 'elevation_loss_m'>[] = [],
 ): LegLoadHint[] {
   const activePlanIds = new Set(rows.plans.filter((p) => p.status === 'active').map((p) => p.id));
   const since = addDays(today, -1);
+  const cardioByLog = new Map((rows.cardioLogs ?? []).map((c) => [c.session_log_id, c] as const));
+  const lossByLog = new Map(routes.map((r) => [r.session_log_id, r.elevation_loss_m] as const));
   return legLoadHints({
     today,
     logs: rows.sessionLogs
       .filter((l) => l.performed_on >= since)
-      .map((l) => ({
-        id: l.id,
-        performed_on: l.performed_on,
-        sport: sportForLog(l),
-        durationS: sportLogDurationS(l),
-        effort: l.session_rpe,
-      })),
+      .map((l) => {
+        const sport = sportForLog(l);
+        const cardio = cardioByLog.get(l.id);
+        // Wanderung/Bergwanderung (Etappe W): Dauer und Abstieg der verknüpften Strecke.
+        if (sport === null && cardio?.modality === 'walk' && isHikeKind(cardio.walk_kind)) {
+          return {
+            id: l.id,
+            performed_on: l.performed_on,
+            sport: null,
+            durationS: cardio.duration_s,
+            effort: l.session_rpe,
+            walkKind: cardio.walk_kind,
+            elevationLossM: lossByLog.get(l.id) ?? null,
+          };
+        }
+        return {
+          id: l.id,
+          performed_on: l.performed_on,
+          sport,
+          durationS: sportLogDurationS(l),
+          effort: l.session_rpe,
+        };
+      }),
     sessions: rows.plannedSessions.map((s) => ({
       ...s,
       plan_active: activePlanIds.has(s.plan_id),

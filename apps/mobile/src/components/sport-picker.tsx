@@ -15,7 +15,6 @@ import { Text } from '@/components/text';
 import { Body, Button, TextField } from '@/components/ui';
 import { t } from '@/i18n';
 import { appFont } from '@/lib/fonts';
-import { PENDING_SPORTS } from '@/lib/sportarten-stufe1';
 import { useThemeColors } from '@/lib/theme';
 
 /**
@@ -38,6 +37,7 @@ export const SPORT_ICONS: Readonly<Record<SportIcon, IconName>> = {
   bike: 'bike',
   stopwatch: 'stopwatch',
   dots: 'dots',
+  lotus: 'lotus',
 };
 
 export function sportIcon(sport: SportId): IconName {
@@ -107,10 +107,7 @@ export function SportPicker({
 }) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(value === null);
-  const results = useMemo(
-    () => searchSports(query, { onlyGps }).filter((id) => !PENDING_SPORTS.has(id)),
-    [query, onlyGps],
-  );
+  const results = useMemo(() => searchSports(query, { onlyGps }), [query, onlyGps]);
   const groups = useMemo(() => sportsByCategory(results), [results]);
   const recentShown = recent.filter((id) => !onlyGps || SPORT_CATALOGUE[id].gps);
 

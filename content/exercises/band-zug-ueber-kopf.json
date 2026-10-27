@@ -1,0 +1,55 @@
+{
+  "id": "band-zug-ueber-kopf",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Band-Zug über Kopf",
+  "name_en": "Banded Straight-Arm Pulldown",
+  "aliases_de": ["Ski-Zug mit Band"],
+  "movement_pattern": "vertical_pull",
+  "primary_muscles": ["lats"],
+  "secondary_muscles": ["triceps", "abs"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "compound",
+  "load_type": "band",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Ersatz für das Ski-Ergometer: ein hoch befestigtes Band mit fast gestreckten Armen nach unten ziehen, Hüfte beugt leicht mit.",
+  "steps_de": [
+    "Band oben an einer Tür oder Stange sicher befestigen, beide Enden greifen.",
+    "Einen Schritt zurückgehen, Arme fast gestreckt vor dem Kopf.",
+    "Arme in einem Bogen nach unten bis zu den Oberschenkeln ziehen, Hüfte leicht beugen.",
+    "Langsam zurück nach oben führen."
+  ],
+  "tips_de": [
+    "Schultern bleiben tief, weg von den Ohren.",
+    "Bauch fest, damit kein Hohlkreuz entsteht."
+  ],
+  "common_mistakes_de": [
+    "Ellbogen stark beugen und zur Ruderbewegung machen.",
+    "Band schnappt unkontrolliert zurück."
+  ],
+  "safety_note_de": "Befestigung vor jedem Satz prüfen, das Band darf nicht abrutschen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "latziehen-band",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "latziehen",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
+  }
+}

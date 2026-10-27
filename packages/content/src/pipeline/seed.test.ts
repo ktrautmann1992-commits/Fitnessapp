@@ -157,7 +157,8 @@ describe('Einspiel-Paket', () => {
     expect(result.issues.filter((issue) => issue.severity === 'error')).toEqual([]);
     const pkg = buildSeedPackage(result);
     expect(pkg.exercises.map((e) => e.id)).toEqual(result.exercises.map((e) => e.id));
-    expect(pkg.exercises).toHaveLength(170);
+    // 172 (inkl. 2 Rudern) + 50 Posen der Etappe Y + 17 Hyrox der Etappe H (Sportarten Stufe 1).
+    expect(pkg.exercises).toHaveLength(239);
     expect(pkg.plan_templates).toHaveLength(49);
   });
 
@@ -870,9 +871,10 @@ describe('content-seed: Workouts (docs/PLAN-WORKOUTS.md)', () => {
     const r = withWorkouts();
     const { result } = validateRepository({ cwd: r.root });
     expect(result.workouts.length).toBeGreaterThanOrEqual(20);
-    // Entwürfe (z. B. Lauf-Kraft, docs/PLAN-CALISTHENICS-SCHLINGE.md 4) kommen nie ins Paket.
+    // Entwürfe (z. B. Lauf-Kraft, docs/PLAN-CALISTHENICS-SCHLINGE.md 4; 10 Rudern-Workouts, Etappe R) kommen nie ins Paket.
     const published = result.workouts.filter((w) => w.status === 'published');
-    expect(result.workouts.length - published.length).toBe(4);
+    // 4 Lauf-Kraft-Entwürfe + 10 Rudern-Workouts (Etappe R) + 15 Yoga-/Pilates-/Mobility-Routinen (Sportarten Stufe 1 · Etappe Y).
+    expect(result.workouts.length - published.length).toBe(29);
     const strict = buildWorkoutSeedPackage(result);
     expect(strict.package.workouts).toEqual([]);
     expect(strict.waiting).toHaveLength(published.length);

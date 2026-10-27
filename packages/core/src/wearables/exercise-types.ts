@@ -9,15 +9,26 @@ import type { WearableSessionGroup } from './schema';
  * - Laufen, Laufband → run; Gehen → walk; Rad, Ergometer → bike; Schwimmen (Becken, offen) → swim,
  * - Krafttraining, Gewichtheben, Calisthenics und einzelne Kraftübungen (Bankdrücken, Kniebeuge …) → freie
  *   Kraft-Einheit (A1b) ohne Übungen,
- * - alles andere (Yoga, Wandern, Tennis, Rudern, Crosstrainer …) → freie Einheit „Sonstige“ mit deutschem Titel.
+ * - Rudergerät (54, Sportarten Stufe 1 · Etappe R) → Ausdauer Rudern,
+ * - alles andere (Yoga, Wandern, Tennis, Rudern im Boot, Crosstrainer …) → freie Einheit „Sonstige“ mit deutschem Titel.
  *   Sportarten Stufe 2 (docs/PLAN-SPORTARTEN.md): Arten aus dem Sportarten-Katalog bekommen ihre Sportart
  *   (WEARABLE_SPORT_TYPES, kcal/Belastung je Sportart); alle übrigen „Sonstigen“ zählen als „Sonstige Sportart“.
  */
 
 const RUN = [56, 57];
 const WALK = [79];
+/**
+ * Sportarten Stufe 1 · Etappe W: Wandern 37 → Gehen/Wanderung, Schneeschuhwandern 63 → Gehen/Bergwanderung
+ * (walk_kind; Name der freien Einheit je Art wie der Server, FREE_SESSION.names.walkKinds).
+ */
+const HIKE_KINDS: Readonly<Record<number, 'hike' | 'mountain_hike'>> = {
+  37: 'hike',
+  63: 'mountain_hike',
+};
 const BIKE = [8, 9];
 const SWIM = [73, 74];
+/** Sportarten Stufe 1 · Etappe R: Rudergerät (54) → Ausdauer Rudern; Rudern im Boot (53) bleibt „Sonstige“. */
+const ROW = [54];
 /** Krafttraining (70), Gewichtheben (81), Calisthenics (13) und einzelne Kraftübungen. */
 const STRENGTH = [
   70, 81, 13, 1, 3, 6, 7, 15, 17, 18, 19, 20, 21, 22, 23, 24, 30, 42, 43, 49, 67, 77,
@@ -78,6 +89,8 @@ export interface MappedExerciseType {
   readonly group: WearableSessionGroup;
   /** Name im Tagebuch: bei Ausdauer/Kraft der feste Name der freien Einheit (A1b), sonst der deutsche Titel. */
   readonly nameDe: string;
+  /** Art der Geh-Einheit (nur Wandern/Schneeschuhwandern); fehlt = Gehen. */
+  readonly walkKind?: 'hike' | 'mountain_hike';
 }
 
 /** Health-Connect-Trainingsart → Gruppe und Name im Tagebuch. */
@@ -85,8 +98,11 @@ export function mapExerciseType(hcType: number): MappedExerciseType {
   const names = FREE_SESSION.names;
   if (RUN.includes(hcType)) return { group: 'run', nameDe: names.endurance.run };
   if (WALK.includes(hcType)) return { group: 'walk', nameDe: names.endurance.walk };
+  const hike = HIKE_KINDS[hcType];
+  if (hike) return { group: 'walk', nameDe: names.walkKinds[hike], walkKind: hike };
   if (BIKE.includes(hcType)) return { group: 'bike', nameDe: names.endurance.bike };
   if (SWIM.includes(hcType)) return { group: 'swim', nameDe: names.endurance.swim };
+  if (ROW.includes(hcType)) return { group: 'row', nameDe: names.endurance.row };
   if (STRENGTH.includes(hcType)) return { group: 'strength', nameDe: names.strength };
   return { group: 'other', nameDe: WEARABLE_OTHER_TITLES[hcType] ?? OTHER_TITLE };
 }
@@ -123,6 +139,10 @@ export const WEARABLE_SPORT_TYPES: Readonly<Record<number, SportId>> = {
   75: 'table_tennis',
   76: 'tennis',
   78: 'volleyball',
+  // Sportarten Stufe 1 (Etappe Y, docs/PLAN-SPORTARTEN-STUFE-1.md 2.4): Pilates 48, Yoga 83. „Dehnen“ 71 bleibt wie
+  // bisher „Sonstige Sportart“ mit Titel „Dehnen“ (kein Studio-Kurs; die Sportart Yoga wäre zu viel gesagt).
+  48: 'pilates',
+  83: 'yoga',
 };
 
 /** Sportart einer Health-Connect-Art: Ausdauer/Kraft → null; Katalog-Art → Sportart; sonst `other`. */

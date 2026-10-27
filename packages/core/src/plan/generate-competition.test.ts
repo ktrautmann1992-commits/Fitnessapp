@@ -221,6 +221,11 @@ describe('Wächter-Befunde WP1 am fertigen Plan', () => {
 
 /** JSON ohne `activeAging: false` (neues Feld der Sicherheitsregeln, Fit im Alter FA1). */
 function withoutActiveAgingFalse(key: string, value: unknown): unknown {
+  // Sportarten Stufe 1 (Etappe Y): die Regel-Liste kennt neu `inversion` (vorsichtig, Schwangerschaft) und
+  // `trunk_rotation` (Schwangerschaft) – keine Übung vor Stufe 1 trägt sie, die Einheiten bleiben byte-gleich.
+  if (key === 'excludedCautionTags' && Array.isArray(value)) {
+    return value.filter((tag) => tag !== 'inversion' && tag !== 'trunk_rotation');
+  }
   return key === 'activeAging' && value === false ? undefined : value;
 }
 

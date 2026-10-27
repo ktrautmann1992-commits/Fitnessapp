@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-krieger-1",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-krieger-1-start.svg",
+      "alt_de": "Ausgangsposition: großer Ausfallschritt, vorderes Knie über dem Knöchel gebeugt, hinteres Bein gestreckt mit der Ferse am Boden, Arme gestreckt über dem Kopf.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

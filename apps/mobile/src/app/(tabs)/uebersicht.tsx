@@ -41,6 +41,7 @@ import { EnduranceTile } from '@/components/endurance-tile';
 import { Screen } from '@/components/screen';
 import { StepsTile } from '@/components/steps';
 import { RecoveryTile } from '@/components/recovery';
+import { RecoveryRoutineCard } from '@/components/recovery-routine-card';
 import { MeasurementNotificationOffer } from '@/components/notifications';
 import { Body, Button, Heading, LoadingState, Notice } from '@/components/ui';
 import { weightGoalOverviewFromRows } from '@/components/weight-goal';
@@ -169,7 +170,13 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
   const tileContent = (id: DashboardTileId): ReactNode => {
     switch (id) {
       case 'training':
-        return <TrainingTile rows={rows} today={today} planNotice={planNotice} />;
+        return (
+          <>
+            <TrainingTile rows={rows} today={today} planNotice={planNotice} />
+            {/* Sportarten Stufe 1 (Etappe Y): Vorschlag „Erholungstag: Mobility“ – nur an freien Tagen. */}
+            <RecoveryRoutineCard rows={rows} today={today} />
+          </>
+        );
       // Gründer-Rückmeldung 20.10.2026: Wettkampfplan leicht finden.
       case 'competition':
         return <CompetitionTile rows={rows} today={today} />;

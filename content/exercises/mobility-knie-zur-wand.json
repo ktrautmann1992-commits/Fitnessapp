@@ -1,0 +1,38 @@
+{
+  "id": "mobility-knie-zur-wand",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Knie zur Wand",
+  "name_en": "Knee to Wall",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["calves"],
+  "secondary_muscles": [],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Vor einer Wand stehend das Knie über die Zehen zur Wand schieben, die Ferse bleibt am Boden. Bewegt das Sprunggelenk.",
+  "steps_de": [
+    "Mit einem Fuß etwa eine Handbreit vor einer Wand stehen, Hände an der Wand.",
+    "Das Knie nach vorn zur Wand schieben, die Ferse bleibt am Boden.",
+    "Zurück in den Stand und ruhig wiederholen.",
+    "Danach die Seite wechseln."
+  ],
+  "tips_de": ["Das Knie zeigt über die Mitte des Fußes."],
+  "common_mistakes_de": ["Die Ferse vom Boden lösen."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, nur im angenehmen Bewegungsumfang. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

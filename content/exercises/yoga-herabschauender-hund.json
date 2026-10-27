@@ -1,0 +1,47 @@
+{
+  "id": "yoga-herabschauender-hund",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Herabschauender Hund",
+  "name_en": "Downward-Facing Dog",
+  "aliases_de": ["Adho Mukha Svanasana"],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["hamstrings", "calves"],
+  "secondary_muscles": ["lats", "front_delts"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["inversion", "floor_transfer"],
+  "description_de": "Umgedrehtes V: Hände und Füße am Boden, Gesäß hoch. Dehnt Beinrückseite, Waden und Schultern – der Kopf liegt unter Herzhöhe.",
+  "steps_de": [
+    "Aus dem Vierfüßlerstand die Zehen aufstellen.",
+    "Ausatmen und das Gesäß nach oben und hinten schieben, bis Arme und Rücken eine Linie bilden.",
+    "Knie dürfen gebeugt bleiben, Fersen sinken Richtung Boden.",
+    "Kopf hängt locker zwischen den Armen, ruhig atmen."
+  ],
+  "tips_de": ["Ein langer Rücken ist wichtiger als gestreckte Beine."],
+  "common_mistakes_de": [
+    "Den Rücken rund machen, um die Fersen auf den Boden zu bringen.",
+    "Die Schultern zu den Ohren ziehen."
+  ],
+  "safety_note_de": "Kopf liegt unter Herzhöhe: langsam in die Pose und langsam wieder aufrichten. Bei Schwindel, Druck im Kopf oder ungewohnten Beschwerden sofort lösen. In der Schwangerschaft und mit Hinweis aus dem Gesundheits-Check zeigt die App eine Variante ohne Umkehrhaltung.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-hund-an-der-wand",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

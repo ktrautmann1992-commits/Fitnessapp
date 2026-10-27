@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pilates-einbeinkreisen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pilates-einbeinkreisen-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, ein Fuß aufgestellt, das andere Bein gestreckt nach oben, Arme neben dem Körper.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

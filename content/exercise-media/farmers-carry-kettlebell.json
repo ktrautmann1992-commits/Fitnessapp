@@ -1,0 +1,20 @@
+{
+  "exercise_id": "farmers-carry-kettlebell",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "farmers-carry-kettlebell-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, je eine Kettlebell seitlich an den gestreckten Armen, Schultern tief.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

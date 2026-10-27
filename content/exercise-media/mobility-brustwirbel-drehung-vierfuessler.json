@@ -1,0 +1,20 @@
+{
+  "exercise_id": "mobility-brustwirbel-drehung-vierfuessler",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "mobility-brustwirbel-drehung-vierfuessler-start.svg",
+      "alt_de": "Ausgangsposition: Vierfüßlerstand, Hände unter den Schultern, Knie unter der Hüfte, eine Hand liegt am Hinterkopf, Ellbogen zeigt zur Seite.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

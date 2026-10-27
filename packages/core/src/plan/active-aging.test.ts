@@ -34,6 +34,8 @@ const PLAN = {
     'floor_transfer',
     'spinal_flexion',
     'trunk_rotation',
+    // Sportarten Stufe 1 (Yoga, FLOW_SAFETY): keine Umkehrhaltungen.
+    'inversion',
   ] as CautionTag[],
   loadWeeks: 4,
   effortMax: 3,

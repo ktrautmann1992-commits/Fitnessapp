@@ -6,6 +6,8 @@ import {
   type EnduranceModality,
   PLANNED_SESSION_KINDS,
   SPORT_IDS,
+  WALK_KINDS,
+  type WalkKind,
 } from '../enums';
 import type { LogSource, PlannedSessionKind, SportId } from '../enums';
 import { metForSession } from '../nutrition/energy';
@@ -30,6 +32,10 @@ export const sessionCaloriesInputSchema = z.strictObject({
   enduranceModality: z.enum(ENDURANCE_MODALITIES).nullable(),
   /** E-Bike (TRAINING_MET.eBike, niedriger als normales Rad); nur bei Sportart Rad wirksam. Fehlt = false. */
   eBike: z.boolean().default(false),
+  /**
+   * Sportarten Stufe 1: Art der Geh-Einheit (TRAINING_MET.hike/mountainHike); nur bei Gehen wirksam. Fehlt = Gehen.
+   */
+  walkKind: z.enum(WALK_KINDS).nullable().default(null),
   /** Geplante Intensität 1–4 (`effort_target`); null = unbekannt (höherer Wert). */
   effortTarget: z.number().int().min(1).max(4).nullable(),
   /** Dauer in Sekunden (bei Strecken die Bewegungszeit); null = unbekannt. */
@@ -109,6 +115,7 @@ export function sessionCalories(raw: SessionCaloriesInput): SessionCalories {
           enduranceModality: input.kind === 'endurance' ? input.enduranceModality : null,
           effortTarget: input.effortTarget,
           eBike: input.eBike,
+          walkKind: input.walkKind,
         });
   const kcal = met * input.bodyWeightKg * (durationS / 3600);
   return { kcal: roundKcal(kcal), source: 'estimate', reason: null, met };
@@ -155,6 +162,8 @@ export interface SessionCaloriesLogInput {
     readonly duration_s: number;
     /** E-Bike (cardio_logs.e_bike); fehlt bei älteren Zeilen = false. */
     readonly e_bike?: boolean;
+    /** Sportarten Stufe 1: Art der Geh-Einheit (cardio_logs.walk_kind); fehlt bei älteren Zeilen = Gehen. */
+    readonly walk_kind?: WalkKind | null;
   } | null;
   readonly planned: {
     readonly endurance_modality: EnduranceModality | null;
@@ -197,6 +206,9 @@ export function sessionCaloriesInputForLog(
     effortTarget: input.planned?.effort_target ?? null,
     durationS: sessionLogDurationS(input),
     eBike: input.cardio?.modality === 'bike' && input.cardio.e_bike === true,
+    ...(input.cardio?.modality === 'walk' && input.cardio.walk_kind
+      ? { walkKind: input.cardio.walk_kind }
+      : {}),
     ...(sport === null ? {} : { sport, effort: input.log.session_rpe ?? null }),
   };
 }

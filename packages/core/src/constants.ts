@@ -496,7 +496,9 @@ export const DEFAULT_TRAINING_DAYS: Readonly<Record<number, readonly number[]>> 
 export const CONSERVATIVE_PLAN_RULES = {
   rpeMax: 7,
   beginnerTemplatesOnly: true,
-  excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill'],
+  // Sportarten Stufe 1 (Yoga/Pilates): + Umkehrhaltungen (Kopf unter Herzhöhe; Blutdruck-/Schwindel-Risiko bei
+  // Auffälligkeiten im Gesundheits-Check). PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+  excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill', 'inversion'],
   overheadFlags: ['injury', 'medical_clearance_recommended'],
 } as const satisfies {
   rpeMax: number;
@@ -509,9 +511,15 @@ export const CONSERVATIVE_PLAN_RULES = {
  * Schwangerschaft: zusätzlich keine Übungen in langer Rückenlage.
  * Quelle: ACOG Committee Opinion Nr. 804 (2020), „Physical Activity and Exercise During Pregnancy and the
  * Postpartum Period“, Obstet Gynecol 135(4):e178–e188.
+ * Sportarten Stufe 1 (Yoga/Pilates, docs/PLAN-SPORTARTEN-STUFE-1.md 5): außerdem keine Umkehrhaltungen
+ * (`inversion`) und keine tiefen Drehungen (`trunk_rotation`, Drehen bis zum Anschlag) – gleiche Quelle (ACOG 804:
+ * Yoga-Haltungen, die lange Rückenlage oder Umkehrhaltungen erfordern, meiden; kein „Hot Yoga“). Vor Stufe 1 trug
+ * keine Übung diese Merkmale – Pläne ohne Yoga bleiben unverändert. PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
  */
 export const PREGNANCY_EXCLUDED_CAUTION_TAGS = [
   'long_supine',
+  'trunk_rotation',
+  'inversion',
 ] as const satisfies readonly CautionTag[];
 
 /**
@@ -1306,8 +1314,10 @@ export const ACTIVITY_FACTORS = {
  *   Pläne bleiben normales Rad. Werte aus der Suche nach dem Compendium (pacompendium.com), Wortlaut der Codes NICHT
  *   gegen das Original geprüft – VOR LIVEGANG FACHLICH PRÜFEN.
  * - Rudern 4,8 / 8,5 (Sportarten Stufe 1, Plan 5 „Startwerte“): 02071 „rowing, stationary, general, moderate effort“ /
- *   02073 „rowing, stationary, 150 watts, vigorous effort“ – gegen das Original bzw. Compendium 2024 prüfen; die
- *   Zuordnung zur Anstrengung folgt mit Etappe R (Entscheidung 8: v1 nur MET nach Anstrengung).
+ *   02073 „rowing, stationary, 150 watts, vigorous effort“ – gegen das Original bzw. Compendium 2024 prüfen. Weil
+ *   die Spanne groß ist, gilt beim Rudern (Etappe R, Entscheidung 8: v1 nur MET nach Anstrengung, keine
+ *   Watt-Formel) die Zuordnung von SPORT_INTENSITY: bis Anstrengung 3 `low`, ab 8 `high`, dazwischen linear
+ *   (rowMet in rowing/metrics.ts); ohne Angabe `fallback`.
  */
 export const TRAINING_MET = {
   strength: 3.5,
@@ -1321,6 +1331,16 @@ export const TRAINING_MET = {
   unknownEndurance: 7.0,
   /** Rad mit elektrischer Unterstützung (nur mit Sportart Rad, siehe oben). */
   eBike: { low: 4.0, high: 6.0, fallback: 6.0 },
+  /**
+   * Sportarten Stufe 1 (Wandern/Bergwandern, docs/PLAN-SPORTARTEN-STUFE-1.md 2.2/5): nur bei Ausdauer-Art Gehen mit
+   * walk_kind `hike` bzw. `mountain_hike`. Startwerte ~5,3 / ~7,8 aus dem Plan: 17080 „hiking, cross country“ bzw.
+   * 17012 „backpacking, hiking or organized walking with a daypack“ (Ainsworth 2011 Compendium; Wortlaut und Werte
+   * gegen das Original bzw. Compendium 2024 prüfen). v1 ein Wert je Art (freie Einheiten haben keine geplante
+   * Anstrengung), kein Höhenmeter-Zuschlag (Entscheidung 8); die Uhr geht vor. PRODUKTENTSCHEIDUNG, VOR LIVEGANG
+   * FACHLICH PRÜFEN.
+   */
+  hike: { low: 5.3, high: 5.3, fallback: 5.3 },
+  mountainHike: { low: 7.8, high: 7.8, fallback: 7.8 },
   /** `effort_target` bis einschließlich diesem Wert gilt als „sehr locker“. */
   lowEffortMax: 2,
 } as const;
@@ -1361,6 +1381,8 @@ export const SESSION_KCAL = {
 
 /** Icon-Schlüssel einer Sportart (Strich-Icons der App, apps/mobile/src/components/design.tsx). */
 export type SportIcon =
+  // Sportarten Stufe 1: Yoga/Pilates (Sitzhaltung, Strich-Icon in apps/mobile/src/components/design.tsx).
+  | 'lotus'
   | 'mountain'
   | 'ball'
   | 'racket'
@@ -1441,7 +1463,7 @@ export interface SportDefinition {
  * - Yoga 2,5 / 4,0 (Sportarten Stufe 1): 02150 „yoga, Hatha“ / 02170 „yoga, Power“.
  * - Pilates 3,0 / 3,8: 02105 „pilates, general“ / hoch kein Code (2011) – Analogie 02101 „stretching, mild“ nicht
  *   passend, deshalb PRODUKTENTSCHEIDUNG (zügiges Mattenprogramm); gegen das Compendium 2024 prüfen.
- *   Icon vorläufig „stopwatch“ (eigenes Icon mit Etappe Y).
+ *   Icon „lotus“ (Etappe Y).
  * `typicalEffort`, `legLoad`, `impact`, `gps`/`gpsProfile` und die Suchbegriffe: PRODUKTENTSCHEIDUNG (sportpraktische
  * Einschätzung), VOR LIVEGANG FACHLICH PRÜFEN. Schwimmen bleibt Ausdauer-Art (TRAINING_MET.endurance.swim).
  */
@@ -1774,7 +1796,7 @@ export const SPORT_CATALOGUE = {
   yoga: {
     nameDe: 'Yoga',
     category: 'mind_body',
-    icon: 'stopwatch',
+    icon: 'lotus',
     gps: false,
     gpsProfile: null,
     met: { low: 2.5, high: 4.0 },
@@ -1786,7 +1808,7 @@ export const SPORT_CATALOGUE = {
   pilates: {
     nameDe: 'Pilates',
     category: 'mind_body',
-    icon: 'stopwatch',
+    icon: 'lotus',
     gps: false,
     gpsProfile: null,
     met: { low: 3.0, high: 3.8 },
@@ -2104,7 +2126,8 @@ export const COMPETITION_NUTRITION = {
     // COMPETITION_CYCLING.estimatedSpeedKmh.
     triathlon_sprint: { beginner: 110, advanced: 85, competitive: 70 },
     triathlon_olympic: { beginner: 210, advanced: 165, competitive: 140 },
-    // Sportarten Stufe 1 (Hyrox, docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): VORLÄUFIG – Fachlogik und Werte folgen in Etappe H.
+    // Sportarten Stufe 1 (Hyrox, Etappe H): Orientierung an veröffentlichten Ergebnislisten (Durchschnitt ca. 90 min,
+    // Einsteiger oft 1:45–2:00 h) – unbestätigt, nur für die Ernährung am Renntag.
     hyrox: { beginner: 120, advanced: 90, competitive: 70 },
   },
 } as const;
@@ -3580,8 +3603,10 @@ export const COMPETITION_REQUIRED_PEAK = {
     // keine Zielzeit bei Rad und Triathlon). Rad: je Distanzklasse in COMPETITION_CYCLING.classes.
     triathlon_sprint: { weeklyMinutes: 180, longRunMinutes: 75 },
     triathlon_olympic: { weeklyMinutes: 300, longRunMinutes: 120 },
-    // Sportarten Stufe 1 (Hyrox, docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): VORLÄUFIG – Fachlogik und Werte folgen in Etappe H.
-    hyrox: { weeklyMinutes: 120, longRunMinutes: 60 },
+    // Sportarten Stufe 1 (Hyrox, Etappe H): Ausdauer-Minuten (Lauf + Kombi) wie 10 km „Ankommen“ – Lauf-Anteil 8 km,
+    // Renndauer ca. 1–2 h; langer Lauf 50 min (höchstens 90). So erreichen Einsteiger den Spitzenumfang mit der
+    // 10-%-Kette genau zum Mindestvorlauf von 12 Wochen (Test „Tabelle passt zur Kette“, hyrox-plan.test.ts).
+    hyrox: { weeklyMinutes: 100, longRunMinutes: 50 },
   },
   // Zielzeit nur beim Laufen (WP5: Rad und Triathlon nur „Ankommen“).
   time: {
@@ -3627,7 +3652,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 10,
     triathlon_sprint: 7,
     triathlon_olympic: 10,
-    hyrox: 7, // Stufe 1 (Hyrox): vorläufig, Etappe H
+    hyrox: 7, // Etappe H: Renndauer ca. 1–2 h wie 10 km bis Halbmarathon (Bosquet 2007: 8–14 Tage)
   },
   taperFactors: { 1: [0.7], 2: [0.75, 0.6] },
   raceWeekFactor: 0.4,
@@ -3639,7 +3664,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 3,
     triathlon_sprint: 2,
     triathlon_olympic: 3,
-    hyrox: 2, // Stufe 1 (Hyrox): vorläufig, Etappe H
+    hyrox: 2, // Etappe H: wie 10 km
   },
   buildWeeks: {
     '5k': 2,
@@ -3649,7 +3674,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 4,
     triathlon_sprint: 3,
     triathlon_olympic: 4,
-    hyrox: 3, // Stufe 1 (Hyrox): vorläufig, Etappe H
+    hyrox: 3, // Etappe H: Kombi-Einheiten ab Aufbau (HYROX_PLAN.combo) brauchen Zeit
   },
   recoveryWeeks: {
     '5k': 1,
@@ -3659,7 +3684,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 1,
     triathlon_sprint: 1,
     triathlon_olympic: 1,
-    hyrox: 1, // Stufe 1 (Hyrox): vorläufig, Etappe H
+    hyrox: 1, // Etappe H: wie 10 km
   },
   recoveryFactors: [0.5, 0.6],
   restDaysBeforeRace: 1,
@@ -3818,7 +3843,7 @@ export const COMPETITION_INTENSITY = {
       cycling: 6,
       triathlon_sprint: 7,
       triathlon_olympic: 6,
-      hyrox: 7, // Stufe 1 (Hyrox): vorläufig wie 10 km, Etappe H
+      hyrox: 7, // Etappe H: ungenutzt – Hyrox plant kein Renntempo (HYROX_PLAN.runHardTypes)
     },
   },
   hardEffortCap: { general: 8, minor: 7, senior: 6 },
@@ -3863,7 +3888,7 @@ export const COMPETITION_WORKOUTS = {
       cycling: 600,
       triathlon_sprint: 180,
       triathlon_olympic: 300,
-      hyrox: 300, // Stufe 1 (Hyrox): vorläufig wie 10 km, Etappe H
+      hyrox: 300, // Etappe H: ungenutzt (kein Renntempo bei Hyrox)
     },
     restS: 120,
     minReps: 2,
@@ -5225,6 +5250,9 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'conditioning' },
       { tag: 'high_impact' },
       { tag: 'deep_hip_flexion' },
+      // Sportarten Stufe 1 (Hyrox, Plan 2.1): Wall Balls (tiefe Kniebeuge mit Wurf) belasten das Knie stark.
+      { exercise: 'wall-balls' },
+      { exercise: 'kniebeuge-schulterdruecken-kurzhantel' },
     ],
     any: [
       { pattern: 'squat' },
@@ -5262,6 +5290,8 @@ export const PAIN_REGION_LOAD = {
       { muscle: 'front_delts' },
       { muscle: 'side_delts' },
       { muscle: 'rear_delts' },
+      // Sportarten Stufe 1 (Yoga): Umkehrhaltungen stützen meist über Arme und Schultern.
+      { tag: 'inversion' },
     ],
   },
   lower_back: {
@@ -5282,6 +5312,11 @@ export const PAIN_REGION_LOAD = {
       { exercise: 'handstand-wand' },
       { exercise: 'handstand-frei' },
       { exercise: 'schlingentrainer-fallout' },
+      // Sportarten Stufe 1 (Hyrox, Plan 2.1): Farmer's Carry – schwere Last in den Händen, Rumpf hält.
+      { exercise: 'farmers-carry-kurzhantel' },
+      { exercise: 'farmers-carry-kettlebell' },
+      { exercise: 'koffer-tragen-einarmig' },
+      { exercise: 'taschen-tragen' },
     ],
     any: [
       { pattern: 'squat', loadTypes: ['weight'] },
@@ -5335,6 +5370,12 @@ export const PAIN_REGION_LOAD = {
       { exercise: 'l-sitz' },
       { exercise: 'muscle-up' },
       { exercise: 'muscle-up-negativ' },
+      // Sportarten Stufe 1 (Hyrox, Plan 2.1): Burpees stützen auf den Händen, Farmer's Carry greift schwer.
+      { exercise: 'burpee-weitsprung' },
+      { exercise: 'burpee-ohne-sprung' },
+      { exercise: 'farmers-carry-kurzhantel' },
+      { exercise: 'farmers-carry-kettlebell' },
+      { exercise: 'koffer-tragen-einarmig' },
     ],
     any: [
       { pattern: 'horizontal_push' },
@@ -5345,6 +5386,13 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'vertical_pull', loadTypes: ['bodyweight'] },
       { muscle: 'forearms' },
       { exercise: 'kettlebell-swing' },
+      // Sportarten Stufe 1 (Yoga/Pilates): Umkehrhaltungen und Posen mit Stütz auf den Händen.
+      { tag: 'inversion' },
+      { exercise: 'yoga-herabschauender-hund' },
+      { exercise: 'yoga-kobra-sanft' },
+      { exercise: 'pilates-schwimmen' },
+      { exercise: 'mobility-weltbeste-dehnung' },
+      { exercise: 'mobility-brustwirbel-drehung-vierfuessler' },
     ],
   },
   hip: {
@@ -5378,6 +5426,8 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'core_flexion' },
       { tag: 'overhead' },
       { tag: 'spinal_loading' },
+      // Sportarten Stufe 1 (Yoga): Umkehrhaltungen (Kopf unter Herzhöhe, Last auf Nacken/Schultern).
+      { tag: 'inversion' },
     ],
     any: [
       { pattern: 'vertical_pull' },
@@ -5426,7 +5476,8 @@ export const PAIN_MODE = {
   minSets: 1,
   conservative: {
     rpeMax: 6,
-    excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill'],
+    // Sportarten Stufe 1: + Umkehrhaltungen (wie CONSERVATIVE_PLAN_RULES).
+    excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill', 'inversion'],
   },
   endurance: {
     lowerBodyRegions: ['knee', 'hip', 'ankle', 'lower_back'],
@@ -5825,3 +5876,625 @@ export const RUN_STRENGTH_RULES = {
   minItems: number;
   units: { strength: readonly string[]; drills: string; gentle: string };
 };
+
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 1 · Etappe W: Wandern/Bergwandern (docs/PLAN-SPORTARTEN-STUFE-1.md 2.2 und 5)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Gehzeit-Schätzung für Wanderungen (nur Anzeige, für gespeicherte Strecken): horizontal `horizontalKmh` km/h,
+ * Aufstieg `ascentMPerH` Hm/h, Abstieg `descentMPerH` Hm/h; Gehzeit = größerer der beiden Werte (horizontal,
+ * vertikal) + halber kleinerer; ohne Pausen. Angezeigt auf `roundToMin` Minuten gerundet („ca.“); unter `minDistanceM`
+ * keine Schätzung. Quelle: DIN 33466 „Wanderwege“; DAV/SAC-Gehzeitberechnung. Rundung und Mindestdistanz:
+ * PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const HIKING_TIME = {
+  horizontalKmh: 4,
+  ascentMPerH: 300,
+  descentMPerH: 500,
+  roundToMin: 5,
+  minDistanceM: 500,
+} as const;
+
+/**
+ * Bergwander-Hinweise (nie blockierend, Texte HIKING_SAFETY_DE in hiking/texts-de.ts):
+ * - `altitudeHintM`: ab dieser Höhe Hinweis Höhenkrankheit (langsam aufsteigen, Warnzeichen, absteigen) und – mit
+ *   Arzt-Hinweis oder in der Schwangerschaft – „vorher ärztlich besprechen“; `sleepGainPerDayM` = Faustregel
+ *   Schlafhöhe +300–500 m je Tag. Quelle: Luks AM et al. (2019), „Wilderness Medical Society Clinical Practice
+ *   Guidelines for the Prevention and Treatment of Acute Altitude Illness: 2019 Update“, Wilderness Environ Med
+ *   30(4S):S3–S18.
+ * - `sac`: SAC-Wanderskala T1–T6; die App begleitet T1–`accompaniedMax` (wählbar), ab T4 nur der Hinweis „Alpines
+ *   Gelände – außerhalb dessen, was die App begleitet“ (nie Sperre, Entscheidung 10). Quelle: SAC-Wanderskala
+ *   (Schweizer Alpen-Club); DAV „Sicher Bergwandern“.
+ * - `descentHintM`: ab so viel Abstieg Hinweis Knie/Stöcke/Tempo in der Auswertung.
+ * - `legLoad`: Wanderung/Bergwanderung zählt für den Bein-Hinweis am Folgetag (LEG_LOAD_HINT) ab `minMinutes`
+ *   Minuten ODER `minDescentM` Höhenmetern Abstieg (Plan 2.2). Gehen (Spaziergang) zählt nicht.
+ * Quelle der Schwellen descentHintM/legLoad: PRODUKTENTSCHEIDUNG. Alles VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const HIKING_SAFETY = {
+  altitudeHintM: 2500,
+  sleepGainPerDayM: { min: 300, max: 500 },
+  sac: { min: 1, accompaniedMax: 3, scaleMax: 6 },
+  descentHintM: 600,
+  legLoad: { minMinutes: 120, minDescentM: 600 },
+} as const;
+
+/**
+ * Notrufnummern je Land für die Bergwander-Hinweise (Reihenfolge = Anzeige; `kind` steuert die Beschriftung):
+ * DE 112; AT 140 (Alpinnotruf) und 112; CH 1414 (Rega, Luftrettung), 144 (Sanität) und 112; IT 118 (Rettungsdienst)
+ * und 112. Quelle: offizielle Angaben der Länder/Rettungsdienste (Bergrettung Österreich, Rega, 112.eu) – VOR
+ * LIVEGANG PRÜFEN.
+ */
+export const EMERGENCY_NUMBERS = {
+  DE: [{ number: '112', kind: 'general' }],
+  AT: [
+    { number: '140', kind: 'alpine' },
+    { number: '112', kind: 'general' },
+  ],
+  CH: [
+    { number: '1414', kind: 'rega' },
+    { number: '144', kind: 'ambulance' },
+    { number: '112', kind: 'general' },
+  ],
+  IT: [
+    { number: '118', kind: 'ambulance' },
+    { number: '112', kind: 'general' },
+  ],
+} as const satisfies Record<
+  string,
+  readonly { number: string; kind: 'general' | 'alpine' | 'rega' | 'ambulance' }[]
+>;
+
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 1 · Etappe R · Indoor-Rudern (docs/PLAN-SPORTARTEN-STUFE-1.md 2.3 und 5)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Indoor-Rudern (Ausdauer-Art `row`) – Plausibilität, Watt-Anzeige, Technik, Plan, Schon- und Reise-Modus:
+ * - `splitS`: Split je 500 m zwischen 1:10 und 4:00 (70–240 s); schneller bzw. langsamer → nur Warnung „Bitte prüfen“
+ *   (wie CARDIO_PLAUSIBILITY_KMH: 1:10 /500 m ≈ 25,7 km/h). `strokeRate` 10–60 Schläge/min (= CARDIO_LOG_LIMITS),
+ *   `intervalsMax` 30 Wiederholungen (= CARDIO_LOG_LIMITS.intervalsMax).
+ * - Watt NUR zur Anzeige: Concept2-Formel P = 2,80 / (s/m)³ (Pace in Sekunden je Meter), `wattFactor` 2,80. Die kcal
+ *   rechnen in v1 nur über TRAINING_MET.endurance.row nach Anstrengung (Entscheidung 8, keine Watt-Kalorienformel).
+ * - `easyStrokeRate` 18–22 /min für lockeres Rudern, `damper` 3–5 (Dämpfer-Einstellung, nicht „10 = mehr Training“).
+ * - `pain`: Rudern belastet unteren Rücken, Knie und Handgelenk; bei Beschwerden dort ab „mittel“ schlägt die App
+ *   Rad-Ergometer oder Gehen vor (Schon-Modus, nur Hinweis; die Person entscheidet).
+ * - `travelEquipment`: Reise-Modus – Rudern nur im Hotel-Gym (falls dort ein Rudergerät steht), sonst Ersatz durch
+ *   Gehen oder Laufen.
+ * - `planAlternateEvery` 2: Im Plan ohne Wettkampf und ohne Disziplin wird mit Rudergerät zu Hause (Geräte-Angabe)
+ *   jede zweite Ausdauer-Einheit „Lockeres Rudern“ – gleiche 10-%-Regel, Erholungswochen und Start-Deckel; kein
+ *   Rudern bei Schwangerschaft oder „nur Gehen“ (dann zügiges Gehen).
+ * Quellen: Concept2 „Pace/Watt calculator“ (concept2.com, Indoor Rowers → Training → Calculators) und Concept2
+ * „Damper Setting“ / Technik-Leitfaden „The Rowing Stroke“ (Beine – Rumpf – Arme); Weltrekorde über 2.000 m ca.
+ * 1:27 /500 m. Schon-Modus: Soligard T et al. (2016), Br J Sports Med 50(17):1030–1041 (Belastung anpassen statt
+ * pausieren). PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const ENDURANCE_MODALITY_ROW = {
+  equipmentId: 'rowing_machine',
+  splitDistanceM: 500,
+  splitS: { min: 70, max: 240 },
+  strokeRate: { min: 10, max: 60 },
+  easyStrokeRate: { min: 18, max: 22 },
+  intervalsMax: 30,
+  wattFactor: 2.8,
+  damper: { min: 3, max: 5 },
+  pain: { regions: ['lower_back', 'knee', 'wrist'], fromIntensity: 'moderate' },
+  travelEquipment: ['hotel_gym'],
+  planAlternateEvery: 2,
+} as const satisfies {
+  equipmentId: string;
+  splitDistanceM: number;
+  splitS: { min: number; max: number };
+  strokeRate: { min: number; max: number };
+  easyStrokeRate: { min: number; max: number };
+  intervalsMax: number;
+  wattFactor: number;
+  damper: { min: number; max: number };
+  pain: { regions: readonly BodyRegion[]; fromIntensity: PainIntensity };
+  travelEquipment: readonly TravelEquipment[];
+  planAlternateEvery: number;
+};
+
+/**
+ * Harte und Technik-Einheiten beim Rudern (Wochenbau wie Rad/Schwimmen: weekWorkouts mit Sportart `row`), Anstrengung
+ * nach Borg CR10 wie Laufen (keine Watt-Vorgabe):
+ * - `fartlek` 1 min zügig / 2 min locker (4–8 ×), `tempo` 2 gleiche Abschnitte mit `tempo.restS` locker dazwischen,
+ *   zusammen `minMinutes`–`maxMinutes` je Level,
+ * - Intervalle: `m500` 4–8 × 500 m (≈ 2 min, `workS`) mit 1:30 locker, `m1000` 3–5 × 1000 m (≈ 4 min) mit 3 min
+ *   locker, `s30` 10–15 × 30 s zügig / 30 s locker (höchstens 15, damit die Schritte unter WORKOUT_STEP_LIMITS bleiben);
+ *   Aufbau 500 m, Spitze 1000 m, Tapering 30/30,
+ * - `technique`: ab 20 min, die Hälfte des Hauptteils Technikübungen (Anstrengung locker-unten, Art `easy`, weil die
+ *   Art `technique` dem Schwimmen vorbehalten ist).
+ * Harte Einheiten wie bisher erst ab dem Aufbau, 80/20-Budget, Deckel und Abstände unverändert (COMPETITION_*).
+ * Quelle: übliche Indoor-Ruder-Trainingspraxis (Concept2 „Training Guide“ / „Workout of the Day“: 4–8 × 500 m,
+ * 3–5 × 1000 m, 30/30) – PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const ROW_WORKOUTS = {
+  fartlek: { workS: 60, restS: 120, minReps: 4, maxReps: 8, effort: 6 },
+  tempo: {
+    minMinutes: 12,
+    maxMinutes: { beginner: 16, advanced: 24, competitive: 30 },
+    restS: 180,
+    effort: 7,
+  },
+  intervals: {
+    m500: { workS: 120, restS: 90, minReps: 4, maxReps: 8, effort: 8, distanceM: 500 },
+    m1000: { workS: 240, restS: 180, minReps: 3, maxReps: 5, effort: 7, distanceM: 1000 },
+    s30: { workS: 30, restS: 30, minReps: 10, maxReps: 15, effort: 7, distanceM: null },
+  },
+  technique: { minMinutes: 20, drillShare: 0.5, effort: 3 },
+} as const satisfies {
+  fartlek: { workS: number; restS: number; minReps: number; maxReps: number; effort: number };
+  tempo: {
+    minMinutes: number;
+    maxMinutes: Record<ExperienceLevel, number>;
+    restS: number;
+    effort: number;
+  };
+  intervals: Record<
+    'm500' | 'm1000' | 's30',
+    {
+      workS: number;
+      restS: number;
+      minReps: number;
+      maxReps: number;
+      effort: number;
+      distanceM: number | null;
+    }
+  >;
+  technique: { minMinutes: number; drillShare: number; effort: number };
+};
+
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 1 · Etappe Y – Yoga/Pilates/Mobility (docs/PLAN-SPORTARTEN-STUFE-1.md 2.4, 5; Logik in
+// packages/core/src/workouts/flow.ts und recovery-routine.ts). FLOW_RULES (Pose/Routine) steht bei WORKOUT_LIMITS.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Sicherheitsfilter für Posen (Format `flow`) über die vorhandenen Regeln (PlanSafetyRules.excludedCautionTags,
+ * Schon-Modus): `inversion` ist ausgeschlossen bei Schwangerschaft (PREGNANCY_EXCLUDED_CAUTION_TAGS), vorsichtigem
+ * Plan (CONSERVATIVE_PLAN_RULES), konservativem Schon-Modus (PAIN_MODE.conservative) und beim Ziel „Fit im Alter“
+ * (`activeAgingExcludedCautionTags`, zusätzlich zu ACTIVE_AGING_RULES – die Server-Prüfung
+ * private.planned_exercise_active_aging_guard bleibt unverändert, weil Posen nie als geplante Übung gespeichert werden).
+ * - `holdCapFromAge`: ab 65 bzw. bei „Fit im Alter“ werden Halteposen (Belastungsart Zeit) auf FLOW_RULES.seniorHoldMaxS
+ *   gekürzt (wie ACTIVE_AGING_RULES.strengthHoldMaxS – Pressatmung vermeiden, Pelliccia A et al. (2021), ESC-Leitlinie
+ *   Sportkardiologie, Eur Heart J 42(1):17–96).
+ * - `swapReasons`: Reihenfolge, in der Alternativen einer gesperrten Pose geprüft werden (leichter zuerst, dann
+ *   „für Zuhause“/anderes Gerät) – Stuhl-/Wand-Varianten sind als `easier` eingetragen.
+ * Quelle: ACOG Committee Opinion No. 804 (2020), Obstet Gynecol 135(4):e178–e188; Rest PRODUKTENTSCHEIDUNG.
+ * VOR LIVEGANG FACHLICH PRÜFEN (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie – Entscheidung 12).
+ */
+/**
+ * Posen der Yoga-/Pilates-/Mobility-Routinen (Übungs-IDs mit diesen Anfängen, Inhalts-Konvention wie
+ * BODYWEIGHT_TEMPLATE_ID_SUFFIX) gehören zur Workout-Bibliothek, NICHT zur Plan-Engine: selectPlanContent nimmt sie
+ * nicht in `exercises` (Erzeugen, Ersatz, Folgeblock, Aufwärmen & Dehnen), sondern nur in `displayExercises` (Anzeige,
+ * Timer, Tagebuch). So bleiben Pläne ohne Yoga byte-gleich (Plan 2.4: Aufwärmen & Dehnen unverändert).
+ * Quelle: PRODUKTENTSCHEIDUNG.
+ */
+export const FLOW_POSE_ID_PREFIXES = ['yoga-', 'pilates-', 'mobility-'] as const;
+
+export const FLOW_SAFETY = {
+  activeAgingExcludedCautionTags: ['inversion'],
+  holdCapFromAge: 65,
+  swapReasons: ['easier', 'home', 'other_equipment'],
+} as const satisfies {
+  activeAgingExcludedCautionTags: readonly CautionTag[];
+  holdCapFromAge: number;
+  swapReasons: readonly ('easier' | 'home' | 'other_equipment' | 'harder')[];
+};
+
+/**
+ * Vorschlag „Erholungstag: Mobility“ auf „Heute“ (Plan 2.4, Entscheidung 13): nur ein Vorschlag aus festen Regeln,
+ * KEINE geplante Einheit – zählt weder für die Planerfüllung noch für die 10-%-Regel; erledigt = freie Einheit (Quelle
+ * „workout“). Abschaltbar (app_layout_settings.recovery_routine, Standard an).
+ * - nur an trainingsfreien Tagen (keine bzw. nur gestrichene Einheit) oder in einer Erholungswoche (`is_deload`) nach
+ *   erledigter Einheit; nicht, wenn heute schon ein Workout eingetragen ist,
+ * - Routinen der Kategorie `mobility` im Format `flow`, `minutes` 10–20 Min. (Ziel `targetMinutes`), höchstens
+ *   `maxStars` Sterne (Anstrengung ≤ `effortMax` von 10), die der Sicherheitsfilter nicht ausblendet (Schon-Modus),
+ * - Auswahl nach den Hauptmuskeln der letzten `lookbackDays` Tage (Kraft: Hauptmuskeln der eingetragenen Übungen,
+ *   Ausdauer: `enduranceMuscles` je Art; höchstens `mainMuscles` Muskeln), danach Nähe zu `targetMinutes`, dann ID.
+ * Quelle: PRODUKTENTSCHEIDUNG (Muskelzuordnung der Ausdauer-Arten nach gängiger Bewegungslehre) – VOR LIVEGANG
+ * FACHLICH PRÜFEN.
+ */
+export const RECOVERY_ROUTINE = {
+  minutes: { min: 10, max: 20 },
+  targetMinutes: 15,
+  maxStars: 2,
+  effortMax: 3,
+  lookbackDays: 2,
+  mainMuscles: 3,
+  enduranceMuscles: {
+    run: ['calves', 'hamstrings', 'quadriceps', 'glutes'],
+    walk: ['calves', 'hamstrings', 'glutes'],
+    bike: ['quadriceps', 'glutes', 'hamstrings'],
+    swim: ['lats', 'upper_back', 'front_delts'],
+    row: ['upper_back', 'lats', 'quadriceps', 'glutes'],
+  },
+} as const satisfies {
+  minutes: { min: number; max: number };
+  targetMinutes: number;
+  maxStars: number;
+  effortMax: number;
+  lookbackDays: number;
+  mainMuscles: number;
+  enduranceMuscles: Record<'run' | 'walk' | 'bike' | 'swim' | 'row', readonly MuscleGroup[]>;
+};
+
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 1 · Etappe H – Hyrox (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1, 5, 9 Punkt 4; Plan samt Empfehlungen
+// freigegeben 27.10.2026). „Hyrox“ nur beschreibend (Entscheidung 3: kein Logo, kein Anschein einer Kooperation).
+// Alle Werte ohne harte Quelle: PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN (Hyrox-Trainer:in, Entscheidung 12).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Rennformat (Plan 2.1): 8 × (1 km Laufen + 1 Station), Stationen in Rennreihenfolge (HYROX_STATIONS) mit Menge und
+ * Einheit; Gewichte je Division und Geschlecht in kg (Schlitten inkl. Schlitten, Farmer's Carry je Hand), Wall-Ball-
+ * Zielhöhe in m. Doubles und Staffel nutzen in der App die Open-Gewichte (Entscheidung 2: nur Angabe, gleicher Plan).
+ * Quelle: HYROX Rulebook Singles, Saison 25/26 (hyrox.com/rulebook, PDF „25_26_HYROX_RulebookSingles_EN“, Tabelle der
+ * Divisionen) – übernommen aus der Tabellenwiedergabe der Websuche am 27.10.2026; das PDF selbst war aus der Sitzung
+ * nicht abrufbar. Deshalb ALLE Gewichte und Mengen „unbestätigt“ bis zum Abgleich mit dem Original der laufenden Saison
+ * 26/27. Besonders unbestätigt: Wall Balls Women Open (eine Quelle nennt für 25/26 75 statt 100 Wiederholungen).
+ * Mindestalter laut Rulebook 16 Jahre am Renntag (= MIN_AGE_YEARS).
+ * `estimatedFullS`: grobe Dauer einer ganzen Station für Freizeit-Starter (nur für die Zeit-Schritte der Kombi-Einheit,
+ * nie als Ziel angezeigt) – Orientierung an veröffentlichten Durchschnitts-Teilzeiten, PRODUKTENTSCHEIDUNG, unbestätigt.
+ */
+export const HYROX_FORMAT = {
+  rulebookSeason: '25/26',
+  rounds: 8,
+  runM: 1000,
+  minAgeYears: 16,
+  stations: {
+    ski_erg: { amount: 1000, unit: 'm', estimatedFullS: 300 },
+    sled_push: { amount: 50, unit: 'm', estimatedFullS: 180 },
+    sled_pull: { amount: 50, unit: 'm', estimatedFullS: 210 },
+    burpee_broad_jumps: { amount: 80, unit: 'm', estimatedFullS: 270 },
+    rowing: { amount: 1000, unit: 'm', estimatedFullS: 300 },
+    farmers_carry: { amount: 200, unit: 'm', estimatedFullS: 120 },
+    sandbag_lunges: { amount: 100, unit: 'm', estimatedFullS: 270 },
+    wall_balls: { amount: 100, unit: 'reps', estimatedFullS: 330 },
+  },
+  // Rulebook 25/26 (unbestätigt): Open Women/Men, Pro Women/Men. Ohne Gewicht: SkiErg, Burpee-Weitsprünge, Rudern.
+  weightsKg: {
+    sled_push: { open: { female: 102, male: 152 }, pro: { female: 152, male: 202 } },
+    sled_pull: { open: { female: 78, male: 103 }, pro: { female: 103, male: 153 } },
+    farmers_carry: { open: { female: 16, male: 24 }, pro: { female: 24, male: 32 } },
+    sandbag_lunges: { open: { female: 10, male: 20 }, pro: { female: 20, male: 30 } },
+    wall_balls: { open: { female: 4, male: 6 }, pro: { female: 6, male: 9 } },
+  },
+  wallBallTargetM: { female: 2.7, male: 3.0 },
+} as const satisfies {
+  rulebookSeason: string;
+  rounds: number;
+  runM: number;
+  minAgeYears: number;
+  stations: Record<
+    import('./enums').HyroxStation,
+    { amount: number; unit: 'm' | 'reps'; estimatedFullS: number }
+  >;
+  weightsKg: Partial<
+    Record<import('./enums').HyroxStation, Record<'open' | 'pro', { female: number; male: number }>>
+  >;
+  wallBallTargetM: { female: number; male: number };
+};
+
+/**
+ * Hyrox-Wettkampfplan (Plan 2.1, Entscheidungen 1, 4 und 5):
+ * - `minimumLeadWeeks`: Mindestvorlauf 8 Wochen, Einsteiger 12 (Entscheidung 4) – = COMPETITION_LEAD_WEEKS.minimum.hyrox.
+ * - `weekPattern`: Wochenbau je Zahl der Trainingstage (Lauf, Station, Kombi) – Vorschlag für „Deine Trainingstage“
+ *   (Plan 2.1: 3 = 1+1+1, 4 = 2+1+1, 5 = 3+1+1; 6–7 Tage mehr Lauf, 1–2 Tage ohne Kombi). Station = Kraft-Tag
+ *   (Fokus hyrox_stations), Lauf und Kombi = Ausdauer-Tage.
+ * - `combo`: Kombi-Einheit („1 km + Station“, workout_type hyrox_combo, harte Art) im Muster des Koppeltrainings
+ *   (COMPETITION_TRIATHLON.brick): 8 min Einlaufen, Runden aus Lauf-Abschnitt (`runSegmentS` ≈ 1 km zügig, Anstrengung
+ *   `effort`; passen keine `minRounds` Runden, ≈ 500 m – `runSegmentFractions`) und Station (Anteil der Rennmenge), 4 min
+ *   Auslaufen; `minRounds`–`maxRounds` Runden, Einheit mindestens `minMinutes`. Ab Aufbau für alle, in der Basis nur `basePhaseLevels` außerhalb der vorsichtigen Startgruppe
+ *   (Plan 2.1: Einsteiger/vorsichtig in der Basis ohne Kombi); nie in einer Erholungswoche, in Woche 0, in der Rennwoche
+ *   oder der Erholung danach. Stations-Menge: Startanteil je Level, je Belastungswoche höchstens ×(1 +
+ *   `stationVolumeStep`) (Plan 2.1: +10 %/Woche), höchstens `maxFraction` der Rennmenge.
+ * - `simulation`: höchstens einmal im ganzen Zyklus, in der letzten Belastungswoche der Spitze, nie in den letzten
+ *   `notWithinDays` Tagen vor dem Renntag: alle 8 Stationen, Lauf und Stationen mit reduzierten Mengen. Sie ersetzt in
+ *   dieser Woche den langen Lauf (am Tag des langen Laufs), kontrolliert mit Anstrengung `effort` (zügig, nie „alles
+ *   geben“) – so bleibt die 80/20-Regel gewahrt; als Art hyrox_combo zählt sie trotzdem für die 48-h-Regel.
+ * - `technique`: Arzt-Hinweis (HYROX_SAFETY) → lockere „Technik-Kombi“ (Art easy, Anstrengung ≤ ENDURANCE_EFFORT.easyMax).
+ * - `stationSessions`: 6 Stations-Einheiten (Einsteiger/Fortgeschritten × Basis/Aufbau/Spitze; Leistungssport wie
+ *   Fortgeschritten) – Stationen in Rennreihenfolge, Sätze, Wiederholungen (doppelte Progression wie Kraft: erst Wdh.
+ *   bis zum oberen Ende, dann Gewicht), Zeit-Übungen in Sekunden, Pause, RPE (Deckel der Sicherheitsregeln gilt).
+ *   Tapering/Rennwoche/Erholung: Spitze in Erholungs-Dosierung (deloadDosage).
+ * - `stationTemplateDayIndex`: Platz der Stations-Einheit in planned_sessions.template_day_index (Pflichtfeld bei Kraft;
+ *   die Stations-Einheit kommt nicht aus der Vorlagen-Rotation).
+ * - `runHardTypes`: harte Lauf-Arten je Phase (Plan 2.1: Fahrtspiel, Tempo, Intervalle; kein Renntempo – das übernimmt
+ *   die Kombi).
+ * Quellen: Concurrent Training – Wilson JM et al. (2012), „Concurrent training: a meta-analysis examining interference
+ * of aerobic and resistance exercises“, J Strength Cond Res 26(8):2293–2307 (Kraft- und Ausdauerreize trennen); 10-%-
+ * und Deload-Regeln wie bisher (ENDURANCE_START_RULES, DELOAD_DOSAGE); Rest PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH
+ * PRÜFEN.
+ */
+export const HYROX_PLAN = {
+  minimumLeadWeeks: { beginner: 12, advanced: 8, competitive: 8 },
+  weekPattern: {
+    1: { run: 1, station: 0, combo: 0 },
+    2: { run: 1, station: 1, combo: 0 },
+    3: { run: 1, station: 1, combo: 1 },
+    4: { run: 2, station: 1, combo: 1 },
+    5: { run: 3, station: 1, combo: 1 },
+    6: { run: 4, station: 1, combo: 1 },
+    7: { run: 5, station: 1, combo: 1 },
+  },
+  combo: {
+    phases: ['base', 'build', 'peak', 'taper'],
+    basePhaseLevels: ['advanced', 'competitive'],
+    warmupS: 480,
+    cooldownS: 240,
+    runSegmentS: { beginner: 420, advanced: 360, competitive: 330 },
+    runSegmentFractions: [1, 0.5],
+    effort: 7,
+    minRounds: 2,
+    maxRounds: 6,
+    minMinutes: 25,
+    minStationS: 30,
+    startFraction: { beginner: 0.25, advanced: 0.4, competitive: 0.5 },
+    stationVolumeStep: 0.1,
+    maxFraction: 0.75,
+  },
+  simulation: {
+    phase: 'peak',
+    notWithinDays: 10,
+    rounds: 8,
+    runFraction: 0.5,
+    stationFraction: 0.5,
+    effort: 5,
+  },
+  technique: { stationFraction: 0.25, minRounds: 2, maxRounds: 4 },
+  stationTemplateDayIndex: 7,
+  stationSessions: {
+    beginner: {
+      base: {
+        stations: ['sled_pull', 'rowing', 'farmers_carry', 'sandbag_lunges', 'wall_balls'],
+        sets: 2,
+        reps: [10, 12],
+        durationS: 40,
+        restS: 90,
+        rpe: 6,
+      },
+      build: {
+        stations: [
+          'ski_erg',
+          'sled_push',
+          'sled_pull',
+          'farmers_carry',
+          'sandbag_lunges',
+          'wall_balls',
+        ],
+        sets: 3,
+        reps: [8, 12],
+        durationS: 45,
+        restS: 90,
+        rpe: 7,
+      },
+      peak: {
+        stations: [
+          'ski_erg',
+          'sled_push',
+          'sled_pull',
+          'burpee_broad_jumps',
+          'farmers_carry',
+          'sandbag_lunges',
+          'wall_balls',
+        ],
+        sets: 3,
+        reps: [10, 12],
+        durationS: 60,
+        restS: 75,
+        rpe: 7,
+      },
+    },
+    advanced: {
+      base: {
+        stations: [
+          'ski_erg',
+          'sled_push',
+          'sled_pull',
+          'farmers_carry',
+          'sandbag_lunges',
+          'wall_balls',
+        ],
+        sets: 3,
+        reps: [8, 12],
+        durationS: 45,
+        restS: 90,
+        rpe: 7,
+      },
+      build: {
+        stations: [
+          'ski_erg',
+          'sled_push',
+          'sled_pull',
+          'burpee_broad_jumps',
+          'farmers_carry',
+          'sandbag_lunges',
+          'wall_balls',
+        ],
+        sets: 3,
+        reps: [10, 15],
+        durationS: 60,
+        restS: 75,
+        rpe: 7,
+      },
+      peak: {
+        stations: [
+          'ski_erg',
+          'sled_push',
+          'sled_pull',
+          'burpee_broad_jumps',
+          'rowing',
+          'farmers_carry',
+          'sandbag_lunges',
+          'wall_balls',
+        ],
+        sets: 3,
+        reps: [12, 15],
+        durationS: 60,
+        restS: 60,
+        rpe: 7.5,
+      },
+    },
+  },
+  runHardTypes: {
+    build: { beginner: ['fartlek'], other: ['tempo', 'intervals'] },
+    peak: { beginner: ['tempo'], other: ['intervals', 'tempo'] },
+    taper: { beginner: ['fartlek'], other: ['tempo'] },
+  },
+} as const satisfies {
+  minimumLeadWeeks: Record<ExperienceLevel, number>;
+  weekPattern: Record<1 | 2 | 3 | 4 | 5 | 6 | 7, { run: number; station: number; combo: number }>;
+  combo: {
+    phases: readonly string[];
+    basePhaseLevels: readonly ExperienceLevel[];
+    warmupS: number;
+    cooldownS: number;
+    runSegmentS: Record<ExperienceLevel, number>;
+    runSegmentFractions: readonly number[];
+    effort: number;
+    minRounds: number;
+    maxRounds: number;
+    minMinutes: number;
+    minStationS: number;
+    startFraction: Record<ExperienceLevel, number>;
+    stationVolumeStep: number;
+    maxFraction: number;
+  };
+  simulation: {
+    phase: string;
+    notWithinDays: number;
+    rounds: number;
+    runFraction: number;
+    stationFraction: number;
+    effort: number;
+  };
+  technique: { stationFraction: number; minRounds: number; maxRounds: number };
+  stationTemplateDayIndex: number;
+  stationSessions: Record<
+    'beginner' | 'advanced',
+    Record<
+      'base' | 'build' | 'peak',
+      {
+        stations: readonly import('./enums').HyroxStation[];
+        sets: number;
+        reps: readonly [number, number];
+        durationS: number;
+        restS: number;
+        rpe: number;
+      }
+    >
+  >;
+  runHardTypes: Record<
+    'build' | 'peak' | 'taper',
+    Record<'beginner' | 'other', readonly ('fartlek' | 'tempo' | 'intervals')[]>
+  >;
+};
+
+/**
+ * Sicherheitsregeln Hyrox (Plan 2.1/5; strengste Regel gewinnt, wie Wettkampfplan Tabelle 3.3):
+ * - ohne Gesundheits-Check kein Plan, Schwangerschaft → kein Hyrox-Plan (Hinweis Ärztin/Arzt) – wie jeder Wettkampfplan,
+ * - unter 18 nur Division `minorDivisions` (Open) und RPE ≤ `minorRpeMax` (= AGE_PLAN_RULES.minor.rpeMax),
+ * - Arzt-Hinweis (Gesundheits-Flag) → keine harte Kombi, stattdessen lockere Technik-Kombi (HYROX_PLAN.technique),
+ * - ab `seniorFromAge` nur mit ausdrücklicher Bestätigung beim Erstellen und ohne Burpee-Weitsprünge
+ *   (`seniorExcludedCautionTags`; Kombi und Simulation lassen die Station dann aus).
+ * Quelle: bestehende Regeln (Phase 3, Wettkampfplan WP3), Altersklassen laut HYROX Rulebook 25/26 (Mindestalter 16) –
+ * PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const HYROX_SAFETY = {
+  minorDivisions: ['open'],
+  minorRpeMax: 8,
+  seniorFromAge: 65,
+  seniorExcludedCautionTags: ['high_impact'],
+  seniorExcludedStations: ['burpee_broad_jumps'],
+} as const satisfies {
+  minorDivisions: readonly import('./enums').HyroxDivision[];
+  minorRpeMax: number;
+  seniorFromAge: number;
+  seniorExcludedCautionTags: readonly CautionTag[];
+  seniorExcludedStations: readonly import('./enums').HyroxStation[];
+};
+
+/**
+ * Übungen je Station (Plan 2.1 „Equipment“, Entscheidung 5): Ersatz-Kette wie in der Plan-Engine (gleiches Muster,
+ * gleicher Hauptmuskel, nie schwerer). Die erste Übung ist die Station selbst; sie braucht oft ein Gerät, das der
+ * Geräte-Katalog nicht kennt (Schlitten, SkiErg, Wall Ball, Sandsack → Gerät „Sonstiges“, also nie verfügbar) – dann gilt
+ * die erste machbare und erlaubte Übung der Kette und die App zeigt „Ohne Schlitten – wir ersetzen die Station“. Das
+ * Ende jeder Kette sind freigegebene Übungen des Startbestands, damit die Einheit auch ohne die neuen (Entwurfs-)Übungen
+ * entsteht. Quelle: Plan 2.1 – PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const HYROX_STATION_EXERCISES = {
+  ski_erg: [
+    'hyrox-skierg',
+    'band-zug-ueber-kopf',
+    'latziehen-band',
+    'kettlebell-swing',
+    'hampelmann',
+  ],
+  sled_push: [
+    'hyrox-schlitten-schieben',
+    'ausfallschritt-gehen-kurzhantel',
+    'bulgarische-split-kniebeuge',
+    'step-up-stufe',
+  ],
+  sled_pull: [
+    'hyrox-schlitten-ziehen',
+    'band-zug-rueckwaerts-gehen',
+    'kurzhantelrudern-einarmig',
+    'rudern-band',
+    'tuerrahmen-rudern',
+  ],
+  burpee_broad_jumps: [
+    'burpee-weitsprung',
+    'burpee-ohne-sprung',
+    'liegestuetz-erhoeht',
+    'kniebeuge-koerpergewicht',
+  ],
+  rowing: ['hyrox-rudergeraet', 'kabelrudern', 'rudern-band', 'tuerrahmen-rudern'],
+  farmers_carry: [
+    'farmers-carry-kurzhantel',
+    'farmers-carry-kettlebell',
+    'koffer-tragen-einarmig',
+    'taschen-tragen',
+    'unterarmstuetz',
+  ],
+  sandbag_lunges: [
+    'sandsack-ausfallschritte',
+    'ausfallschritt-gehen-koerpergewicht',
+    'ausfallschritt-rueckwaerts-kurzhantel',
+    'split-kniebeuge',
+  ],
+  wall_balls: [
+    'wall-balls',
+    'kniebeuge-schulterdruecken-kurzhantel',
+    'goblet-kniebeuge',
+    'kniebeuge-koerpergewicht',
+  ],
+} as const satisfies Record<import('./enums').HyroxStation, readonly string[]>;
+
+/**
+ * Hyrox-Übungen (Etappe H), die NUR über die Stations-Ketten (HYROX_STATION_EXERCISES) oder ihre eigenen Alternativen
+ * in einen Plan kommen – nie über die Bibliotheks-Suche (Tausch Schritt 4/5, „Andere Übung“ Stufe 3, Aufwärm-Routine).
+ * So bleiben alle Pläne ohne Hyrox auch im Testmodus (mit Entwürfen) unverändert (Plan 9: Pläne ohne neue Disziplin
+ * byte-gleich). PRODUKTENTSCHEIDUNG – nach der Fachprüfung je Übung lockern.
+ */
+export const HYROX_ONLY_EXERCISE_IDS: readonly string[] = [
+  'hyrox-skierg',
+  'band-zug-ueber-kopf',
+  'hyrox-schlitten-schieben',
+  'ausfallschritt-gehen-kurzhantel',
+  'hyrox-schlitten-ziehen',
+  'band-zug-rueckwaerts-gehen',
+  'burpee-weitsprung',
+  'burpee-ohne-sprung',
+  'hyrox-rudergeraet',
+  'farmers-carry-kurzhantel',
+  'farmers-carry-kettlebell',
+  'koffer-tragen-einarmig',
+  'taschen-tragen',
+  'sandsack-ausfallschritte',
+  'ausfallschritt-gehen-koerpergewicht',
+  'wall-balls',
+  'kniebeuge-schulterdruecken-kurzhantel',
+];

@@ -6,6 +6,8 @@ import {
   experienceLevelSchema,
   type GeneratePlanResult,
   generateTrainingPlan,
+  gymRowingFromRows,
+  rowingAvailable,
   HEALTH_FLAGS,
   type HealthFlag,
   isBodyweightTemplateId,
@@ -124,6 +126,8 @@ export function planInputsFromRows(
     birthDate: profile.birth_date,
     sex: profile.sex,
     healthScreening: healthScreeningForPlan(rows, versions),
+    // Etappe R: „Im Studio auch rudern“ – nur wenn eingeschaltet (sonst fehlt der Schlüssel, Angaben byte-gleich).
+    ...(gymRowingFromRows(rows.userEquipment) ? { gymRowing: true } : {}),
   };
 }
 
@@ -265,6 +269,14 @@ export function nextBlockFromRows(
       goalType: snapshot.goalType,
       discipline: snapshot.discipline,
       experienceLevel: snapshot.experienceLevel,
+      // Etappe R: Rudergerät zu Hause → wie beim Erstellen jede zweite Ausdauer-Einheit Rudern (ohne Disziplin).
+      // „Im Studio auch rudern“ steht nicht im Schnappschuss – aus den aktuellen Geräten.
+      ...(rowingAvailable({
+        homeEquipment: snapshot.homeEquipment,
+        gymRowing: gymRowingFromRows(rows.userEquipment),
+      })
+        ? { rowing: true }
+        : {}),
     },
     loadWeeksBefore,
     previousStartGroup: startGroupOf(active, rows.profile.birth_date),

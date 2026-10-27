@@ -1,12 +1,20 @@
-import { PAIN_MODE, TEMPLATE_DOSAGE_LIMITS } from '../constants';
+import { ENDURANCE_MODALITY_ROW, PAIN_MODE, TEMPLATE_DOSAGE_LIMITS } from '../constants';
 import type { Exercise } from '../content/schemas';
-import type { CautionTag, PlannedSessionKind } from '../enums';
+import type {
+  BodyRegion,
+  CautionTag,
+  EnduranceModality,
+  PlannedSessionKind,
+  TravelEquipment,
+} from '../enums';
 import { fitSessionToMinutes, type PlannedExerciseDraft } from '../plan/adapt';
 import { type EquipmentProfile, findSubstitute } from '../plan/equipment-profile';
 import { type ExercisePair, replaceShownExercise, type SwapRecord } from '../plan/preferences';
 import type { PlanSafetyRules } from '../plan/safety';
 import { isBlockedByPain, isLowerBodyRegion, type PainEffect } from './pain';
 import type { TravelOnDay } from './travel';
+import { hasStationSteps, hyroxComboRunOnly } from '../hyrox/combo';
+import type { WorkoutStep } from '../plan/intensity';
 
 /**
  * Anzeige-Schichten der Trainings-Modi (docs/PLAN-TRAINING-MODI.md 6). Sie laufen in prepareSessionForDisplay():
@@ -40,6 +48,12 @@ export const MODE_NOTICES = [
   'pain_medical_advice',
   'pain_endurance_easier',
   'pain_endurance_check',
+  // Sportarten Stufe 1 · Etappe R (Indoor-Rudern): nur Hinweise mit Ersatz-Vorschlag, die Einheit bleibt.
+  'pain_row_alternative',
+  'travel_row_hotel_gym',
+  'travel_row_alternative',
+  /** Sportarten Stufe 1 (Hyrox): Kombi im Schon-Modus → nur der Lauf-Teil (Stationen entfallen heute). */
+  'pain_combo_run_only',
 ] as const;
 export type ModeNotice = (typeof MODE_NOTICES)[number];
 
@@ -237,6 +251,36 @@ export interface EnduranceModeFields {
   readonly estimated_minutes: number;
   readonly effort_target: number | null;
   readonly workout_steps?: readonly unknown[] | null;
+  /** Etappe R: Art der Ausdauer-Einheit (Rudern → Ersatz-Hinweise). Fehlt → wie bisher. */
+  readonly endurance_modality?: EnduranceModality | null;
+}
+
+/**
+ * Rudern an Modus-Tagen (Sportarten Stufe 1 · Etappe R, ENDURANCE_MODALITY_ROW): Beschwerden in unterem Rücken, Knie
+ * oder Handgelenk ab „mittel“ → Hinweis „statt Rudern Rad-Ergometer oder Gehen“; Reise-Modus → mit Hotel-Gym „nur,
+ * wenn dort ein Rudergerät steht“, sonst „Ersatz Gehen oder Laufen“. Nur Hinweise – die Person entscheidet.
+ */
+export function rowModeNotices(modes: DisplayModes): ModeNotice[] {
+  const R = ENDURANCE_MODALITY_ROW;
+  const notices: ModeNotice[] = [];
+  const order = ['mild', 'moderate', 'severe'];
+  const regions: readonly BodyRegion[] = R.pain.regions;
+  if (
+    modes.pain?.regions.some(
+      (r) =>
+        regions.includes(r.region) &&
+        order.indexOf(r.intensity) >= order.indexOf(R.pain.fromIntensity),
+    )
+  ) {
+    notices.push('pain_row_alternative');
+  }
+  if (modes.travel) {
+    const gym: readonly TravelEquipment[] = R.travelEquipment;
+    notices.push(
+      gym.includes(modes.travel.equipment) ? 'travel_row_hotel_gym' : 'travel_row_alternative',
+    );
+  }
+  return notices;
 }
 
 /**
@@ -249,6 +293,17 @@ export function applyModesToEndurance<T extends EnduranceModeFields>(
   modes: DisplayModes,
 ): { readonly session: T; readonly notices: readonly ModeNotice[] } {
   if (session.kind !== 'endurance') return { session, notices: [] };
+  // Sportarten Stufe 1 (Hyrox, Plan 2.1): Kombi bzw. Technik-Kombi im Schon-Modus (jede Region, jede Stärke) → nur der
+  // Lauf-Teil; Stationen entfallen heute (nur Anzeige, nichts wird gespeichert).
+  const rawSteps = session.workout_steps as readonly WorkoutStep[] | null | undefined;
+  if (modes.pain && hasStationSteps(rawSteps)) {
+    const steps = hyroxComboRunOnly(rawSteps ?? []);
+    const minutes = Math.max(1, Math.round(steps.reduce((sum, st) => sum + st.seconds, 0) / 60));
+    return {
+      session: { ...session, workout_steps: steps, estimated_minutes: minutes },
+      notices: ['pain_combo_run_only'],
+    };
+  }
   const notices: ModeNotice[] = [];
   const fixed = Array.isArray(session.workout_steps) && session.workout_steps.length > 0;
   let minutes = session.estimated_minutes;
@@ -278,6 +333,7 @@ export function applyModesToEndurance<T extends EnduranceModeFields>(
       }
     }
   }
+  if (session.endurance_modality === 'row') notices.push(...rowModeNotices(modes));
   if (minutes === session.estimated_minutes && effort === session.effort_target) {
     return { session, notices };
   }

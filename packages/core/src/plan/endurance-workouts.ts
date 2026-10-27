@@ -3,6 +3,8 @@ import {
   COMPETITION_INTENSITY,
   COMPETITION_TRIATHLON,
   COMPETITION_WORKOUTS,
+  HYROX_PLAN,
+  ROW_WORKOUTS,
 } from '../constants';
 import { isoWeekday } from '../dates';
 import type { ExperienceLevel } from '../enums';
@@ -13,13 +15,14 @@ import {
   distanceHint,
   type HardWorkoutLimits,
   hardSeconds,
+  isHardWorkoutType,
   type PaceProfile,
   paceTargets,
   weeklyHardBudgetSeconds,
   type WorkoutStep,
   type WorkoutType,
 } from './intensity';
-import { brickSplit, MULTISPORT_TEXTS_DE, type Sport, sportOfVariant } from './multisport';
+import { brickSplit, MULTISPORT_TEXTS_DE, sportOfVariant, type WorkoutSport } from './multisport';
 
 /**
  * Einheiten-Bausteine des Wettkampfplans (docs/PLAN-PHASE-10.md Abschnitte 3.4/3.5 und 6, Etappe WP2; W-G8): feste
@@ -97,8 +100,10 @@ export interface WorkoutOptions {
   readonly discipline: CompetitionDiscipline;
   /** 80/20-Budget, das diese Einheit noch nutzen darf (Sekunden, nach der Zählweise von `limits.countWorkOnly`). */
   readonly hardBudgetS: number;
-  /** WP5: Sportart (Standard Laufen). */
-  readonly sport?: Sport;
+  /** WP5: Sportart (Standard Laufen); Sportarten Stufe 1 · Etappe R: auch Rudern. */
+  readonly sport?: WorkoutSport;
+  /** Etappe R: Phase der Woche – wählt beim Rudern die Intervall-Form (Aufbau 500 m, Spitze 1000 m, Tapering 30/30). */
+  readonly phase?: CompetitionPhase;
 }
 
 const W = COMPETITION_WORKOUTS;
@@ -129,9 +134,21 @@ export function easyWorkout(
   type: 'easy' | 'recovery' | 'long',
   minutes: number,
   easyEffort: number,
-  sport: Sport = 'run',
+  sport: WorkoutSport = 'run',
 ): EnduranceWorkout {
   const effort = type === 'recovery' ? Math.min(I.effort.recovery, easyEffort) : easyEffort;
+  if (sport === 'row') {
+    const R = MULTISPORT_TEXTS_DE.row;
+    return {
+      type,
+      name_de: R.names[type],
+      warmup_de: R.warmupEasy,
+      main_de: R.main[type],
+      cooldown_de: R.cooldownEasy,
+      steps: easySteps(minutes, effort),
+      effort_target: effort,
+    };
+  }
   if (sport === 'bike') {
     const B = MULTISPORT_TEXTS_DE.bike;
     return {
@@ -221,6 +238,41 @@ export function techniqueWorkout(minutes: number, easyEffort: number): Endurance
 const ENDURANCE_DRILL_EFFORT = 3;
 
 /**
+ * Rudertechnik (Sportarten Stufe 1 · Etappe R, ROW_WORKOUTS.technique): wie eine lockere Einheit, Hauptteil zur Hälfte
+ * Technikübungen (`work`, locker-unten) und lockeres Rudern. Art `easy` – die Art `technique` gibt es nur beim
+ * Schwimmen (CHECK planned_sessions_multisport). Unter `minMinutes` null → locker.
+ */
+export function rowTechniqueWorkout(minutes: number, easyEffort: number): EnduranceWorkout | null {
+  const T = ROW_WORKOUTS.technique;
+  if (minutes < T.minMinutes) return null;
+  const base = easySteps(minutes, easyEffort);
+  const main = base.find((st) => st.part === 'main');
+  if (!main) return null;
+  const drillS = Math.floor((main.seconds * T.drillShare) / 60) * 60;
+  if (drillS < 60 || main.seconds - drillS < 60) return null;
+  const drillEffort = Math.min(T.effort, easyEffort);
+  const steps: WorkoutStep[] = [];
+  for (const st of base) {
+    if (st.part !== 'main') {
+      steps.push(st);
+      continue;
+    }
+    steps.push(step('main', 'work', drillS, drillEffort));
+    steps.push(step('main', 'easy', st.seconds - drillS, easyEffort));
+  }
+  const R = MULTISPORT_TEXTS_DE.row;
+  return {
+    type: 'easy',
+    name_de: R.names.technique,
+    warmup_de: R.warmupEasy,
+    main_de: R.main.technique,
+    cooldown_de: R.cooldownEasy,
+    steps,
+    effort_target: easyEffort,
+  };
+}
+
+/**
  * Koppeltraining Rad → Lauf (WP5, `brick`, locker) als EINE Einheit mit zwei Teilen (brickSplit): Rad mit 5 min
  * Einrollen, direkt danach Laufen (ab 15 min mit 5 min Auslaufen). Unter `brick.minMinutes` null → locker.
  */
@@ -265,6 +317,7 @@ export function structuredWorkout(
   if (!limits.allowed || limits.effortCap < I.hardEffortMin) return null;
   if (minutes < W.hardMinMinutes) return null;
   if (options.sport === 'bike') return bikeStructured(type, minutes, options);
+  if (options.sport === 'row') return rowStructured(type, minutes, options);
   const workOnly = limits.countWorkOnly;
   const budget = Math.max(0, options.hardBudgetS);
   const capped = (e: number) => Math.min(e, limits.effortCap);
@@ -453,6 +506,89 @@ function bikeStructured(
   };
 }
 
+/** Intervall-Form beim Rudern je Phase (ROW_WORKOUTS.intervals): Aufbau 500 m, Spitze 1000 m, Tapering 30/30. */
+export function rowIntervalKind(phase: CompetitionPhase | undefined): 'm500' | 'm1000' | 's30' {
+  if (phase === 'peak') return 'm1000';
+  if (phase === 'taper') return 's30';
+  return 'm500';
+}
+
+/**
+ * Harte Ruder-Einheit (Sportarten Stufe 1 · Etappe R, ROW_WORKOUTS): Fahrtspiel, Tempo (2 gleiche Abschnitte mit 3 min
+ * locker) und Intervalle (4–8 × 500 m, 3–5 × 1000 m bzw. 30/30 je Phase). Steigerungen und Renntempo gibt es beim
+ * Rudern nicht (null). Aufbau, 80/20-Budget und Deckel wie beim Laufen.
+ */
+function rowStructured(
+  type: 'strides' | 'fartlek' | 'tempo' | 'intervals' | 'race_pace',
+  minutes: number,
+  options: WorkoutOptions,
+): EnduranceWorkout | null {
+  if (type === 'strides' || type === 'race_pace') return null;
+  const { limits, easyEffort } = options;
+  const workOnly = limits.countWorkOnly;
+  const budget = Math.max(0, options.hardBudgetS);
+  const capped = (e: number) => Math.min(e, limits.effortCap);
+  const warmS = W.hardWarmupMinutes * 60;
+  const coolS = W.hardCooldownMinutes * 60;
+  const mainS = minutes * 60 - warmS - coolS;
+  const RW = ROW_WORKOUTS;
+  const texts = MULTISPORT_TEXTS_DE.row;
+  const block: WorkoutStep[] = [];
+  let mainText: string;
+  if (type === 'tempo') {
+    const T = RW.tempo;
+    let work = Math.min(T.maxMinutes[options.level] * 60, mainS - T.restS);
+    work = Math.min(work, workOnly ? budget : budget - T.restS);
+    work = Math.floor(work / 120) * 120;
+    if (work < T.minMinutes * 60) return null;
+    const effort = capped(T.effort);
+    if (effort < I.hardEffortMin) return null;
+    block.push(
+      step('main', 'work', work / 2, effort),
+      step('main', 'rest', T.restS, easyEffort),
+      step('main', 'work', work / 2, effort),
+    );
+    mainText = texts.main.tempo(work / 60);
+  } else {
+    const kind = type === 'intervals' ? rowIntervalKind(options.phase) : null;
+    const spec = kind === null ? RW.fartlek : RW.intervals[kind];
+    const reps = fitReps(mainS, spec.workS, spec.restS, budget, workOnly, spec.maxReps);
+    if (reps < spec.minReps) return null;
+    const effort = capped(spec.effort);
+    if (effort < I.hardEffortMin) return null;
+    for (let k = 0; k < reps; k += 1) {
+      if (k > 0) block.push(step('main', 'rest', spec.restS, easyEffort));
+      block.push(step('main', 'work', spec.workS, effort));
+    }
+    mainText =
+      kind === null
+        ? texts.main.fartlek(reps)
+        : kind === 'm500'
+          ? texts.main.intervals500(reps)
+          : kind === 'm1000'
+            ? texts.main.intervals1000(reps)
+            : texts.main.intervals30(reps);
+  }
+  const used = block.reduce((sum, st) => sum + st.seconds, 0);
+  const filler = mainS - used;
+  if (filler < 0) return null;
+  const steps: WorkoutStep[] = [
+    step('warmup', 'easy', warmS, easyEffort),
+    ...(filler >= 10 ? [step('main', 'easy', filler, easyEffort)] : []),
+    ...block,
+    step('cooldown', 'easy', coolS + (filler > 0 && filler < 10 ? filler : 0), easyEffort),
+  ];
+  return {
+    type,
+    name_de: texts.names[type],
+    warmup_de: texts.warmupHard,
+    main_de: mainText,
+    cooldown_de: texts.cooldownHard,
+    steps,
+    effort_target: Math.max(...block.filter((st) => st.kind === 'work').map((st) => st.effort)),
+  };
+}
+
 // ---------------------------------------------------------------------------------------------------------
 // Wochenbau (Plan 3.5)
 // ---------------------------------------------------------------------------------------------------------
@@ -482,6 +618,11 @@ export interface WeekWorkoutInput {
   /** Tage, an denen keine harte Einheit liegen darf (neben Kraft mit Beinen, neben harten/langen Einheiten davor). */
   readonly blockedDates: ReadonlySet<string>;
   readonly pace: PaceProfile | null;
+  /**
+   * Sportarten Stufe 1 (Hyrox): schon vergebene Einheiten je Datum (Kombi bzw. Technik-Kombi). Harte zählen ins
+   * 80/20-Budget, in den Wochen-Deckel und gegen harte Nachbartage. Fehlt → wie bisher.
+   */
+  readonly fixed?: ReadonlyMap<string, EnduranceWorkout>;
 }
 
 export interface PlannedWorkout extends EnduranceWorkout {
@@ -498,9 +639,23 @@ export interface PlannedWorkout extends EnduranceWorkout {
 export function hardTypesFor(
   phase: CompetitionPhase,
   level: ExperienceLevel,
-  sport: Sport = 'run',
+  sport: WorkoutSport = 'run',
+  discipline?: CompetitionDiscipline,
 ): readonly ('fartlek' | 'tempo' | 'intervals' | 'race_pace')[] {
   const beginner = level === 'beginner';
+  // Sportarten Stufe 1 (Hyrox): Lauf ohne Renntempo (das übernimmt die Kombi), HYROX_PLAN.runHardTypes.
+  if (discipline === 'hyrox' && sport === 'run') {
+    if (phase !== 'build' && phase !== 'peak' && phase !== 'taper') return [];
+    return HYROX_PLAN.runHardTypes[phase][beginner ? 'beginner' : 'other'];
+  }
+  // Etappe R – Rudern wie Rad (harte erst ab Aufbau): Aufbau Einsteiger Fahrtspiel, sonst Tempo + Intervalle; Spitze
+  // Einsteiger Tempo, sonst Intervalle + Tempo; Tapering Einsteiger Fahrtspiel, sonst Intervalle (30/30).
+  if (sport === 'row') {
+    if (phase === 'build') return beginner ? ['fartlek'] : ['tempo', 'intervals'];
+    if (phase === 'peak') return beginner ? ['tempo'] : ['intervals', 'tempo'];
+    if (phase === 'taper') return beginner ? ['fartlek'] : ['intervals'];
+    return [];
+  }
   if (sport === 'bike') {
     if (phase === 'build') return beginner ? ['fartlek'] : ['tempo'];
     if (phase === 'peak') return beginner ? ['tempo'] : ['tempo', 'race_pace'];
@@ -557,27 +712,43 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
   let budget = weeklyHardBudgetSeconds(total);
   const longDate = effectiveLongDate(days, phase, input.longRunDate);
   const types = new Map<string, EnduranceWorkout>();
-  const options = (budgetS: number, sport: Sport = 'run'): WorkoutOptions => ({
+  const options = (budgetS: number, sport: WorkoutSport = 'run'): WorkoutOptions => ({
     easyEffort: input.easyEffort,
     limits,
     level: input.level,
     discipline: input.discipline,
     hardBudgetS: budgetS,
     ...(sport === 'run' ? {} : { sport }),
+    ...(sport === 'row' ? { phase } : {}),
   });
   const runnable = (d: WeekEnduranceDay) => d.variant === 'easy_run';
   // WP5: harte Einheiten auch auf dem Rad (nicht Ergometer bei „nur Gehen“ – dort sind harte ohnehin gesperrt), nie
   // im Koppeltraining und nie beim Schwimmen.
   const hardCapable = (d: WeekEnduranceDay) =>
-    (d.variant === 'easy_run' || d.variant === 'easy_bike') && d.brick !== true;
+    (d.variant === 'easy_run' || d.variant === 'easy_bike' || d.variant === 'easy_row') &&
+    d.brick !== true;
   // Erholungswoche und Woche 0: nichts mit Anstrengung ≥ 6 (Plan 3.5; Wächter M1).
   const easyOnly = input.recoveryWeek || input.weekZero === true;
-  const typesFor = (sport: Sport) => (easyOnly ? [] : hardTypesFor(phase, input.level, sport));
-  // Laufen wie bisher (WP2); mit Rad-Tagen zusätzlich die Rad-Arten (Rad: nur diese, Triathlon: beide).
+  const typesFor = (sport: WorkoutSport) =>
+    easyOnly ? [] : hardTypesFor(phase, input.level, sport, input.discipline);
+  // Hyrox: vorab vergebene Einheiten (Kombi) – harte zählen ins Budget und in den Deckel (Plan 2.1).
+  const fixed = input.fixed ?? new Map<string, EnduranceWorkout>();
+  const fixedHard = [...fixed.entries()].filter(([, w]) => isHardWorkoutType(w.type));
+  for (const [date, workout] of fixed) {
+    types.set(date, workout);
+    if (isHardWorkoutType(workout.type)) budget -= hardSeconds(workout.steps, limits.countWorkOnly);
+  }
+  // Laufen wie bisher (WP2); mit Rad-Tagen zusätzlich die Rad-Arten (Rad: nur diese, Triathlon: beide); Etappe R: mit
+  // Ruder-Tagen zusätzlich die Ruder-Arten.
   const sports = new Set(days.filter(hardCapable).map((d) => sportOfVariant(d.variant)));
-  const hardTypes = sports.has('bike')
-    ? [...(sports.has('run') ? typesFor('run') : []), ...typesFor('bike')]
-    : typesFor('run');
+  const hardTypes =
+    sports.has('bike') || sports.has('row')
+      ? [
+          ...(sports.has('run') ? typesFor('run') : []),
+          ...(sports.has('bike') ? typesFor('bike') : []),
+          ...(sports.has('row') ? typesFor('row') : []),
+        ]
+      : typesFor('run');
   const n = days.length;
   const minSessions = input.level === 'beginner' ? I.beginnerMinEnduranceSessions : 2;
   let hardCount = 0;
@@ -588,8 +759,11 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
       n - (longDate ? 1 : 0) - (n >= 3 ? 1 : 0),
     );
   }
-  const chosen: string[] = [];
-  const perSport: Record<Sport, number> = { run: 0, bike: 0, swim: 0 };
+  // Hyrox: die Kombi ist schon eine harte Einheit dieser Woche.
+  hardCount = Math.max(0, Math.min(hardCount, limits.perWeek - fixedHard.length));
+  const chosen: string[] = fixedHard.map(([date]) => date);
+  const fixedCount = chosen.length;
+  const perSport: Record<WorkoutSport, number> = { run: 0, bike: 0, swim: 0, row: 0 };
   if (hardCount > 0) {
     const candidates = days
       .filter(
@@ -602,7 +776,8 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
       )
       .sort((a, b) => b.minutes - a.minutes || (a.date < b.date ? -1 : 1));
     for (const d of candidates) {
-      if (chosen.length >= hardCount) break;
+      if (chosen.length - fixedCount >= hardCount) break;
+      if (types.has(d.date)) continue;
       if (chosen.some((c) => weekdayNeighbours(c, d.date))) continue;
       const sport = sportOfVariant(d.variant);
       const sportTypes = typesFor(sport);
@@ -641,6 +816,16 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
       .sort((a, b) => (a.date < b.date ? -1 : 1))[0];
     const technique = swimDay ? techniqueWorkout(swimDay.minutes, input.easyEffort) : null;
     if (swimDay && technique) types.set(swimDay.date, technique);
+  }
+  // Etappe R: Rudertechnik am ersten freien Ruder-Tag der Woche in der Basis (locker, Art `easy`).
+  if (phase === 'base' && !easyOnly) {
+    const rowDay = [...days]
+      .filter(
+        (d) => sportOfVariant(d.variant) === 'row' && !types.has(d.date) && d.date !== longDate,
+      )
+      .sort((a, b) => (a.date < b.date ? -1 : 1))[0];
+    const technique = rowDay ? rowTechniqueWorkout(rowDay.minutes, input.easyEffort) : null;
+    if (rowDay && technique) types.set(rowDay.date, technique);
   }
   return days.map((d) => {
     const workout =

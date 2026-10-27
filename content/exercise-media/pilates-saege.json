@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pilates-saege",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pilates-saege-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – im Grätschsitz aufrecht sitzen, Beine gestreckt und gespreizt, Arme waagerecht zur Seite.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

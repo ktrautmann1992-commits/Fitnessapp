@@ -1,0 +1,20 @@
+{
+  "exercise_id": "hyrox-schlitten-ziehen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "hyrox-schlitten-ziehen-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, das Seil des Schlittens vor dir mit beiden Händen gegriffen, Arme nach vorn gestreckt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

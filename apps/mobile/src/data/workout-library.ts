@@ -3,6 +3,7 @@ import {
   validateContent,
   type Workout,
   type WorkoutContentFile,
+  WORKOUT_LIST_DRAFT_CATEGORIES,
   workoutSchema,
 } from '@fitnessapp/core';
 
@@ -17,7 +18,9 @@ import type { UserRows } from './types';
  * Testmodus: Workouts aus dem Bündel, geprüft mit denselben Regeln wie content:validate (gegen die gebündelten
  * Übungen). Nur freigegebene ohne blockierenden Befund – wie der Seed, der nur so etwas einspielt. Ausnahme: Entwürfe
  * der Kategorie „Lauf-Kraft“ (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) – sie hängen am Laufplan und sollen im Testmodus
- * prüfbar sein; die App kennzeichnet sie als „Testinhalt“ (wie Übungs-Entwürfe). Im Supabase-Modus nie (RLS).
+ * prüfbar sein; die App kennzeichnet sie als „Testinhalt“ (wie Übungs-Entwürfe). Ebenso Entwürfe aus
+ * WORKOUT_LIST_DRAFT_CATEGORIES (Etappe R: Rudern) – sie stehen dann auch in der Liste – sowie Yoga-/Pilates-/
+ * Mobility-Routinen im Format `flow` (Sportarten Stufe 1 · Etappe Y). Im Supabase-Modus nie (RLS).
  */
 export function workoutsFromBundle(
   files: readonly ContentFile[],
@@ -30,7 +33,11 @@ export function workoutsFromBundle(
   );
   return result.workouts.filter(
     (w) =>
-      (w.status === 'published' || (w.status === 'draft' && w.category === 'run_strength')) &&
+      (w.status === 'published' ||
+        (w.status === 'draft' &&
+          (w.category === 'run_strength' ||
+            w.format === 'flow' ||
+            WORKOUT_LIST_DRAFT_CATEGORIES.includes(w.category)))) &&
       !blocked.has(w.id),
   );
 }

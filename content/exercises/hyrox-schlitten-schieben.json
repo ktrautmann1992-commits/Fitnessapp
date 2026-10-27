@@ -1,0 +1,47 @@
+{
+  "id": "hyrox-schlitten-schieben",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Schlitten schieben",
+  "name_en": "Sled Push",
+  "aliases_de": [],
+  "movement_pattern": "conditioning",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["calves", "front_delts", "triceps"],
+  "equipment_ids": ["other"],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Einen beladenen Schlitten mit kurzen, kräftigen Schritten über die Bahn schieben – eine Hyrox-Station über 50 m.",
+  "steps_de": [
+    "Hände an die Griffe, Arme gestreckt oder leicht gebeugt, Körper schräg nach vorn.",
+    "Mit kurzen, schnellen Schritten über den Vorfuß abdrücken.",
+    "Rücken gerade halten, Blick schräg nach unten.",
+    "Am Bahnende umsetzen und zurückschieben."
+  ],
+  "tips_de": [
+    "Lieber gleichmäßig schieben als anhalten und neu anschieben.",
+    "Hüfte tief, Kraft aus den Beinen."
+  ],
+  "common_mistakes_de": ["Zu große Schritte, die Füße rutschen weg.", "Rücken sackt durch."],
+  "safety_note_de": "Gewicht so wählen, dass der Schlitten ohne Ruckeln läuft. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "hyrox-rudergeraet",
+      "reason": "other_equipment",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
+  }
+}

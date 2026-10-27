@@ -246,6 +246,9 @@ ohnehin alles offen (`premium_open`).
 4. **Mindestvorlauf Hyrox:** 8 Wochen, Einsteiger 12; darunter Ampel „Zu kurz“ mit Vorschlag – Empfehlung.
 5. **Ohne Schlitten/SkiErg:** Stationen ersetzen mit klarem Hinweis statt Plan verweigern – Empfehlung.
 6. **Rudern:** neue Ausdauer-Art `row` (planbar, 10-%-Regel) statt nur Sportart-Eintrag – Empfehlung.
+   **Ergänzung (Gründer-Entscheidung 27.10.2026): „Rudern kann man zuhause und im Studio.“** Geplant wird Rudern mit
+   Rudergerät zu Hause oder mit der ausdrücklichen Angabe **„Im Studio auch rudern (Rudergerät)“** (Standard aus, nie
+   automatisch für alle Studio-Personen); gespeichert als `user_equipment`-Zeile `rowing_machine` mit Ort `gym`.
 7. **Concept2-Logbuch / Bluetooth (FTMS):** nicht in v1, später eigene Etappe – Empfehlung.
 8. **kcal-Feinheiten:** v1 nur MET nach Anstrengung (Uhr-Wert vorrangig); Höhenmeter-Zuschlag Wandern und Watt-Formel
    Rudern erst nach Fachprüfung – Empfehlung.
@@ -283,5 +286,50 @@ Enums mehr anzufassen.
 - **Core/Zod/Inhalte:** Listen und Schemas in `packages/core` (u. a. `WALK_KINDS`, `HYROX_DIVISIONS`, `HYROX_STATIONS`,
   `HYROX_SPLIT_SEGMENTS`, `FLOW_RULES`, `HYROX_RESULT_LIMITS`), Workout-Schema mit Format `flow` und Item-Feld `side`;
   Hyrox-Werte in den Wettkampf-Tabellen sind VORLÄUFIG (Etappe H). In der App sind die neuen Werte bis zu ihrer Etappe
-  nicht wählbar (`apps/mobile/src/lib/sportarten-stufe1.ts`).
+  nicht wählbar (`apps/mobile/src/lib/sportarten-stufe1.ts`; nach dem Zusammenführen von W, R, Y und H war die Sperrliste
+  leer und wurde samt Verwendungen entfernt – alle Werte sind wählbar).
 - **Tests:** `db-sync.test.ts` (Block „Sportarten Stufe 1“), `sportarten-stufe1.test.ts`, pgTAP 93–95.
+
+**W – Wandern/Bergwandern: erledigt (27.10.2026, Branch `claude/sportarten-w`, ohne neue Migration).** Core
+`packages/core/src/hiking/` (walk_kind, Abstieg/höchster Punkt aus der Spur, Gehzeit `HIKING_TIME`, Hinweise
+`HIKING_SAFETY`/`HIKING_SAFETY_DE`, `EMERGENCY_NUMBERS`), kcal `TRAINING_MET.hike`/`mountainHike` (Uhr vorrangig, kein
+Höhenmeter-Zuschlag), Bein-Hinweis ab 120 min oder 600 Hm Abstieg, Health Connect 37 → Wanderung, 63 → Bergwanderung.
+App: Auswahl „Gehen | Wandern | Bergwandern“ + SAC beim Start/Speichern/Bearbeiten, Hinweis-Karten vor dem Start und in
+der Auswertung, Abstieg/höchster Punkt/Gehzeit in der Auswertung und bei „Meine Strecke“; Beispiel-Uhr mit Wanderung.
+Ratgeber-Entwürfe `sicher-bergwandern`, `hoehe-hoehenkrankheit` (draft). Offen: GPX-Import gibt es noch nicht (Gehzeit
+nur für gespeicherte Strecken), Wander-Art beim Nachtragen ohne GPS, Bezeichnung „Wanderung“ in der Aktivitätenliste.
+
+**R – Indoor-Rudern: erledigt (27.10.2026, Branch `claude/sportarten-r`).** Ausdauer-Art `row` in der Engine
+(`easy_row`, ersetzt das Provisorium „wie Rad“): im Plan ohne Wettkampf und ohne Disziplin mit Rudergerät zu Hause jede
+zweite Ausdauer-Einheit „Lockeres Rudern“ (10 %, Deload, Start-Deckel unverändert; nie bei Schwangerschaft, „nur
+Gehen“, ohne Gesundheits-Check); seit der Gründer-Entscheidung 27.10.2026 auch mit der Angabe „Im Studio auch
+rudern“ (Schritt Trainingstage, sichtbar mit Studio-Tagen; Einstellungen → Training → „Im Studio auch rudern“ öffnet diesen Schritt; gespeichert als
+`user_equipment` `rowing_machine`/`gym` über das vorhandene `replace_user_equipment`, keine DB-Änderung; Plan-Angabe
+`gymRowing`, nicht im Schnappschuss); Wochenbau `weekWorkouts` kennt Rudern (locker/Erholung/lang, Technik in der Basis,
+Fahrtspiel/Tempo/Intervalle 500 m · 1000 m · 30/30 ab Aufbau, 80/20). `ENDURANCE_MODALITY_ROW`, `ROW_WORKOUTS`;
+`packages/core/src/rowing` (Split, Watt nur Anzeige, Plausibilität, Eingabe, MET nach Anstrengung); Schon-/Reise-Modus
+als Hinweise; Health Connect 54 → Rudern (Watt/Schlagzahl, sobald die App sie liest). App: Rudern wählbar, Eintragen mit
+Split/Watt/Schlagzahl/Intervall-Ergebnis, Technik-Hinweis, Workout-Kategorie „Rudern“. Entwürfe: Übungen `rudergeraet`,
+`rudergeraet-locker` (mit Bild), 10 Workouts `rudern-*`. Keine DB-Änderung. Offen: Watt/Schlagzahl aus Health Connect lesen (neue Leseberechtigung), strukturierte Ruder-Einheiten im
+Plan erst mit einem Plan mit Phasen (DB: Art/Schritte nur im Wettkampfplan).
+
+**Y – Yoga/Pilates/Mobility: erledigt (27.10.2026, Branch `claude/sportarten-y`, ohne neue Migration).** Core:
+`workouts/flow.ts` (Flow-Ablauf mit Seitenwechsel, Sicherheitsfilter `prepareFlowWorkout`: Tausch gegen Stuhl-/Wand-Variante,
+ausblenden unter 80 %, Halteposen ab 65 ≤ 30 s), `workouts/recovery-routine.ts` (`RECOVERY_ROUTINE`), `inversion` in den
+Ausschlüssen Schwangerschaft (+ `trunk_rotation`), vorsichtig, Schon-Modus konservativ, Fit im Alter (`FLOW_SAFETY`; die
+Server-Prüfung für geplante Übungen bleibt unverändert), Posen (`FLOW_POSE_ID_PREFIXES`) nie in der Plan-Engine – Pläne
+und Aufwärmen & Dehnen byte-gleich. Uhr: Health Connect 83 → `yoga`, 48 → `pilates` (71 „Dehnen“ bleibt „Sonstige“).
+Inhalte (Entwürfe): 29 Yoga-Posen, 13 Pilates-, 8 Mobility-Übungen mit eigenen Bildern, 15 Routinen (6 Yoga, 4 Pilates,
+5 Mobility). App: Flow-Player, Kategorien Yoga/Pilates wählbar, Heute-Karte „Erholungstag: Mobility“, Schalter in den
+Einstellungen (`recovery_routine` über `save_app_layout`). Offen: restlicher Startbestand (~11 Yoga-Posen, ~12 Pilates,
+~7 Mobility, 6 Yoga- und 4 Pilates-Routinen), Geräte „Matte“/„Block“ (nicht im Katalog), Fachprüfung (Entscheidung 12).
+
+**H – Hyrox: erledigt (27.10.2026, Branch `claude/sportarten-h`, ohne neue Migration).** `HYROX_FORMAT` (Rulebook 25/26,
+Gewichte „unbestätigt“ bis zum Abgleich mit dem Original 26/27), `HYROX_PLAN`, `HYROX_SAFETY`, `HYROX_STATION_EXERCISES`,
+`HYROX_ONLY_EXERCISE_IDS` in `constants.ts`; Logik in `packages/core/src/hyrox/` (Stations-Einheit, Kombi, Simulation,
+Technik-Kombi, Ergebnis) und im Wochenbau (`schedule.ts`: erster Kraft-Tag = Stations-Einheit, Kombi ab Aufbau bzw. für
+Fortgeschrittene ab Basis, Minuten aus lockeren Tagen derselben Woche, Simulation einmal am Tag des langen Laufs der
+letzten Spitzen-Woche ≥ 10 Tage vor dem Rennen mit Anstrengung 5). Vorläufige Hyrox-Werte aus S ersetzt (Spitzenumfang
+100 min/Woche, langer Lauf 50 min; Tapering 7 Tage). App: Hyrox im Onboarding und in „Mein Wettkampf“ (Division, Bestätigung
+ab 65, Lauf-Referenz), Stations-Hinweis, Timer-Ansage der Station, Ergebnis mit Teilzeiten. 17 Übungen als Entwürfe mit
+Piktogramm. Tests: `packages/core/src/hyrox/hyrox-plan.test.ts`, `apps/mobile/src/data/hyrox-result.test.ts`.

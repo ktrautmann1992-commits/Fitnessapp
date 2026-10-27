@@ -1,0 +1,49 @@
+{
+  "id": "hoehe-hoehenkrankheit",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Höhe und Höhenkrankheit",
+  "intro_de": "Ab etwa 2.500 m Höhe kann der Körper auf den geringeren Sauerstoff reagieren – unabhängig davon, wie fit du bist. Wer die Warnzeichen kennt und langsam aufsteigt, ist gut vorbereitet. Diese Hinweise ersetzen keine ärztliche Beratung.",
+  "sections": [
+    {
+      "heading_de": "Was in der Höhe passiert",
+      "body_de": [
+        "Mit zunehmender Höhe sinkt der Luftdruck und damit der Sauerstoff, den du mit jedem Atemzug aufnimmst. Der Körper gewöhnt sich daran, braucht aber Zeit.",
+        "Bei zu schnellem Aufstieg kann es zur akuten Höhenkrankheit kommen. Sie tritt meist erst ab etwa 2.500 m auf, vor allem, wenn man dort übernachtet."
+      ]
+    },
+    {
+      "heading_de": "Warnzeichen kennen",
+      "body_de": [
+        "Kopfschmerzen, dazu Übelkeit, Appetitlosigkeit, Schwindel, ungewöhnliche Erschöpfung oder schlechter Schlaf können Zeichen der Höhenkrankheit sein.",
+        "Werden die Beschwerden stärker, kommen Atemnot in Ruhe, Verwirrtheit oder Gangunsicherheit hinzu, ist das ein Notfall: sofort absteigen und Hilfe holen."
+      ],
+      "notice_de": "Bei Warnzeichen nicht weiter aufsteigen. Bessern sie sich nicht, absteigen. Im Notfall die Notrufnummer des Landes wählen."
+    },
+    {
+      "heading_de": "Langsam aufsteigen",
+      "body_de": [
+        "Als Faustregel gilt: Oberhalb von etwa 2.500 m die Schlafhöhe um höchstens 300–500 m pro Tag steigern und etwa alle drei bis vier Tage einen Ruhetag ohne weiteren Höhengewinn einlegen.",
+        "Tagsüber höher gehen und tiefer schlafen hilft beim Gewöhnen.",
+        "Genug trinken, auf Alkohol verzichten und das Tempo so wählen, dass du dich noch unterhalten kannst."
+      ]
+    },
+    {
+      "heading_de": "Vorher ärztlich besprechen",
+      "body_de": [
+        "Hat dein Gesundheits-Check einen Arzt-Hinweis ergeben, bist du schwanger oder hast du Vorerkrankungen von Herz, Lunge oder Blut, besprich Bergtouren über 2.500 m vorher mit deiner Ärztin oder deinem Arzt.",
+        "Das gilt auch für Medikamente rund um Höhe – sie gehören in ärztliche Hand."
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "ENTWURF Sportarten Stufe 1 (Etappe W) – vor Freigabe ärztlich prüfen. Quelle: Luks AM et al. (2019), WMS Clinical Practice Guidelines Acute Altitude Illness, Wilderness Environ Med 30(4S):S3–S18."
+  }
+}

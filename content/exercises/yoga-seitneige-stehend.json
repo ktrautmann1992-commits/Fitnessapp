@@ -1,0 +1,44 @@
+{
+  "id": "yoga-seitneige-stehend",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Seitneige im Stehen",
+  "name_en": "Standing Side Bend",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["obliques", "lats"],
+  "secondary_muscles": [],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": ["overhead"],
+  "description_de": "Aufrecht stehen, einen Arm über den Kopf strecken und den Oberkörper zur Seite neigen. Dehnt die Flanke.",
+  "steps_de": [
+    "Füße hüftbreit, Knie locker.",
+    "Einen Arm gestreckt über den Kopf heben, die andere Hand an die Hüfte.",
+    "Lang werden und den Oberkörper zur Seite der unteren Hand neigen.",
+    "Halten und danach die Seite wechseln."
+  ],
+  "tips_de": ["Erst nach oben lang werden, dann zur Seite neigen."],
+  "common_mistakes_de": ["Nach vorn oder hinten kippen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-seitneige-stuhl",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

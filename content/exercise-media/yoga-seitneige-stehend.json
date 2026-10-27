@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-seitneige-stehend",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-seitneige-stehend-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – aufrecht stehen, ein Arm über dem Kopf gestreckt, der Oberkörper neigt sich zur Seite, die andere Hand an der Hüfte.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

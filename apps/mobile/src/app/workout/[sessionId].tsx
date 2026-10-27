@@ -10,7 +10,10 @@ import {
   codePointLength,
   findGlossaryExercise,
   freeSessionDates,
+  type CardioInputError,
+  type CardioInputField,
   ENDURANCE_MODALITIES,
+  type RowInputError,
   type EnduranceModality,
   isPlausibleTargetWeight,
   isValidSetWeight,
@@ -31,6 +34,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { IntervalTimer } from '@/components/competition';
 import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
+import { RowEntryFields, RowTechniqueNotice } from '@/components/rowing';
 import { AreaProgress, HeroCard, IconChip, Tile, useAreaColors } from '@/components/design';
 import { RestEndNotificationOffer } from '@/components/notifications';
 import { MuscleMapThumbnail, StartPositionImage } from '@/components/muscle-map';
@@ -108,7 +112,6 @@ import { berlinTodayIso, formatDecimal, formatKg, parseDecimal, todayIso } from 
 import { useKeepAwakeSetting, useScreenAwake } from '@/lib/keep-awake';
 import { dayLabel } from '@/lib/plan-format';
 import { isoDateParam } from '@/lib/route-param';
-import { PENDING_ENDURANCE_MODALITIES, selectable } from '@/lib/sportarten-stufe1';
 import { useRestTimer } from '@/lib/use-rest-timer';
 import {
   cardioSpeedTexts,
@@ -811,6 +814,10 @@ export default function WorkoutScreen() {
           <Body>{MULTISPORT_TEXTS_DE.openWater}</Body>
         </Notice>
       ) : null}
+      {/* Etappe R: Technik-Hinweis beim Rudern (Beine – Rumpf – Arme, Dämpfer 3–5). */}
+      {isEndurance && current.cardio?.modality === 'row' ? (
+        <RowTechniqueNotice testID="workout-row-technique" />
+      ) : null}
       {isEndurance && current.cardio ? (
         <EnduranceCard
           cardio={current.cardio}
@@ -1428,6 +1435,35 @@ function ExerciseCard({
   );
 }
 
+/** Fehlertext eines Ausdauer-Felds (Etappe R: Ruder-Fehler aus t.rowing.errors). */
+function cardioErrorText(error: CardioInputError | undefined): string | undefined {
+  if (error === undefined) return undefined;
+  const base: Readonly<Record<string, string>> = t.workout.cardio.errors;
+  const row: Readonly<Record<string, string>> = t.rowing.errors;
+  return base[error] ?? row[error];
+}
+
+/** Nur die Ruder-Fehler (Watt, Schlagzahl, Intervalle) für RowEntryFields. */
+function rowErrorsOf(
+  errors: Partial<Record<CardioInputField, CardioInputError>>,
+): Partial<Record<'power' | 'strokeRate' | 'intervals', RowInputError>> {
+  const pick = (e: CardioInputError | undefined) =>
+    e === 'power_invalid' ||
+    e === 'stroke_rate_invalid' ||
+    e === 'intervals_invalid' ||
+    e === 'intervals_too_many'
+      ? e
+      : undefined;
+  const power = pick(errors.power);
+  const strokeRate = pick(errors.strokeRate);
+  const intervals = pick(errors.intervals);
+  return {
+    ...(power ? { power } : {}),
+    ...(strokeRate ? { strokeRate } : {}),
+    ...(intervals ? { intervals } : {}),
+  };
+}
+
 /**
  * Ausdauer-Eintrag (6.1 Punkt 3): tatsächliche Art, Dauer (Std/Min, Pflicht), Distanz in km mit Komma, Höhenmeter;
  * Pace bzw. km/h erscheint live (packages/core cardioSpeed), zu schnell → nur „Bitte prüfen“.
@@ -1440,9 +1476,7 @@ function EnduranceCard({
 }: {
   cardio: DraftCardio;
   plannedMinutes: number | null;
-  errors: Partial<
-    Record<'duration' | 'distance' | 'elevation', keyof typeof t.workout.cardio.errors>
-  >;
+  errors: Partial<Record<CardioInputField, CardioInputError>>;
   onChange: (patch: Partial<DraftCardio>) => void;
 }) {
   const input = cardioInputOf(cardio);
@@ -1452,7 +1486,7 @@ function EnduranceCard({
       ? Math.round(input.distanceKm * 1000)
       : null;
   const speed = errors.duration ? null : cardioSpeed(cardio.modality, durationS, distanceM);
-  const durationError = errors.duration ? t.workout.cardio.errors[errors.duration] : undefined;
+  const durationError = cardioErrorText(errors.duration);
   // E-Bike (23.10.2026): neuer Rad-Eintrag ohne Wahl → zuletzt genutzte Wahl dieses Geräts (sonst Fahrrad).
   const app = useApp();
   const bikeChoice = useBikeChoice(app.session?.userId ?? null);
@@ -1472,7 +1506,7 @@ function EnduranceCard({
         ) : null}
         <ChoiceList<EnduranceModality>
           label={t.workout.cardio.modality}
-          options={selectable(ENDURANCE_MODALITIES, PENDING_ENDURANCE_MODALITIES).map((value) => ({
+          options={ENDURANCE_MODALITIES.map((value) => ({
             value,
             label: t.workout.cardio.modalities[value],
           }))}
@@ -1525,7 +1559,7 @@ function EnduranceCard({
           onChangeText={(distanceKm) => onChange({ distanceKm })}
           keyboardType="decimal-pad"
           maxLength={7}
-          error={errors.distance ? t.workout.cardio.errors[errors.distance] : undefined}
+          error={cardioErrorText(errors.distance)}
           testID="workout-cardio-distance"
         />
         <View accessibilityLiveRegion="polite" aria-live="polite" testID="workout-cardio-speed">
@@ -1539,10 +1573,19 @@ function EnduranceCard({
             <Body muted>{t.workout.cardio.noDistance}</Body>
           )}
         </View>
-        {speed?.check ? (
+        {speed?.check && cardio.modality !== 'row' ? (
           <Notice tone="warning" testID="workout-cardio-check">
             {t.workout.cardio.checkSpeed}
           </Notice>
+        ) : null}
+        {cardio.modality === 'row' ? (
+          <RowEntryFields
+            cardio={cardio}
+            durationS={errors.duration ? null : durationS}
+            distanceM={distanceM}
+            errors={rowErrorsOf(errors)}
+            onChange={onChange}
+          />
         ) : null}
         <TextField
           label={t.workout.cardio.elevation}
@@ -1550,7 +1593,7 @@ function EnduranceCard({
           onChangeText={(elevationM) => onChange({ elevationM })}
           keyboardType="number-pad"
           maxLength={5}
-          error={errors.elevation ? t.workout.cardio.errors[errors.elevation] : undefined}
+          error={cardioErrorText(errors.elevation)}
           testID="workout-cardio-elevation"
         />
       </View>

@@ -21,6 +21,10 @@ import {
   TRACKED_ROUTE_LIMITS,
   type TrackedRouteRow,
   usesSpeed,
+  elevationFromProfile,
+  hikingTimeEstimate,
+  isHikeKind,
+  type WalkKind,
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
@@ -29,6 +33,12 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { LiveRegion } from '@/components/calendar';
 import { BikeTypeChoice, EBikeBadge, useBikeChoice } from '@/components/e-bike';
+import {
+  HikingSafetyCard,
+  SacGradeChoice,
+  type SacPick,
+  WalkKindChoice,
+} from '@/components/hiking';
 import { ShoeChip } from '@/components/shoes';
 import { SectionLabel, StatValue } from '@/components/design';
 import {
@@ -74,6 +84,7 @@ const E = t.endurance;
 const D = E.detail;
 const WR = t.wearables.route;
 const RN = t.runner;
+const HK = t.endurance.hiking;
 const NO_POINTS: { lat: number; lng: number }[] = [];
 
 /**
@@ -163,6 +174,28 @@ export default function RouteDetailScreen() {
   const eBike =
     info.sport === 'bike' &&
     (linkedCardio ? linkedCardio.e_bike === true : (saved?.e_bike ?? info.e_bike) === true);
+  // Wandern (Etappe W): wie E-Bike – der verknüpfte Eintrag ist führend, sonst die Angabe der Strecke.
+  const walkKind: WalkKind | null =
+    info.sport === 'walk'
+      ? ((linkedCardio
+          ? linkedCardio.walk_kind
+          : (saved?.walk_kind ?? pending?.payload.walk_kind)) ?? 'walk')
+      : null;
+  const sacGrade = saved?.sac_grade ?? pending?.payload.sac_grade ?? null;
+  // Abstieg/höchster Punkt: gespeichert (Aufzeichnung ab Etappe W) bzw. aus dem Höhenprofil (ältere Strecken).
+  const fromProfile = elevationFromProfile(profile);
+  const lossM =
+    saved?.elevation_loss_m ?? pending?.payload.elevation_loss_m ?? fromProfile?.lossM ?? null;
+  const maxAltM =
+    saved?.max_altitude_m ?? pending?.payload.max_altitude_m ?? fromProfile?.maxM ?? null;
+  const walkTime =
+    info.sport === 'walk' && saved
+      ? hikingTimeEstimate({
+          distanceM: info.distance_m,
+          gainM: info.elevation_gain_m ?? fromProfile?.gainM ?? null,
+          lossM,
+        })
+      : null;
   // Puls der Uhr (Lauf der Uhr oder mit einer Uhr-Einheit zusammengeführte Aufzeichnung) – nur mit Einwilligung
   // vorhanden, nie auf dem Story-Bild.
   const heart = logId
@@ -244,7 +277,9 @@ export default function RouteDetailScreen() {
     <Screen area="ausdauer" icon="run" title={info.name} footer={back} testID="route-detail">
       <LiveRegion text={live.text} version={live.version} />
       <RunHero
-        meta={`${eBike ? E.eBike.sport : E.sports[info.sport]} · ${formatDateDe(day)}${watch ? ` · ${WR.heroSource}` : ''}${
+        meta={`${eBike ? E.eBike.sport : walkKind ? HK.kinds[walkKind] : E.sports[info.sport]}${
+          sacGrade !== null && isHikeKind(walkKind) ? ` · ${HK.sacValue(sacGrade)}` : ''
+        } · ${formatDateDe(day)}${watch ? ` · ${WR.heroSource}` : ''}${
           info.is_favorite ? ` · ★ ${D.favorite}` : ''
         }${difficulty ? ` · ${E.save.difficulties[difficulty]}` : ''}`}
         distance={distanceText(info.distance_m)}
@@ -268,6 +303,17 @@ export default function RouteDetailScreen() {
         ) : null}
       </RunHero>
       {eBike ? <EBikeBadge testID="route-e-bike" /> : null}
+      {/* Wandern/Bergwandern (Etappe W): Hinweise zur Tour (Höhe, Abstieg, Schon-Modus) – nie blockierend. */}
+      {walkKind ? (
+        <HikingSafetyCard
+          phase="after"
+          walkKind={walkKind}
+          maxAltitudeM={maxAltM}
+          elevationLossM={lossM}
+          sacGrade={sacGrade}
+          testID="route-hiking-safety"
+        />
+      ) : null}
       {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 22): „Schuh: … (… km)“, Tippen ändert. */}
       <ShoeChip routeId={info.id} />
       {pending ? (
@@ -344,9 +390,40 @@ export default function RouteDetailScreen() {
               effortTarget: null,
               durationS: info.moving_s,
               eBike,
+              walkKind,
             }}
             logId={info.session_log_id}
           />
+          {walkKind && lossM !== null ? (
+            <View style={styles.statCell}>
+              <StatValue
+                size="lg"
+                label={HK.descent}
+                value={HK.approx(lossM)}
+                valueTestID="route-descent"
+              />
+            </View>
+          ) : null}
+          {walkKind && maxAltM !== null ? (
+            <View style={styles.statCell}>
+              <StatValue
+                size="lg"
+                label={HK.highest}
+                value={HK.approx(maxAltM)}
+                valueTestID="route-highest"
+              />
+            </View>
+          ) : null}
+          {walkTime ? (
+            <View style={styles.statCell}>
+              <StatValue
+                size="lg"
+                label={HK.timeLabel}
+                value={HK.timeValue(walkTime.minutes)}
+                valueTestID="route-walk-time"
+              />
+            </View>
+          ) : null}
           {gap ? (
             <View style={styles.statCell}>
               <StatValue
@@ -369,6 +446,11 @@ export default function RouteDetailScreen() {
           ) : null}
         </View>
         {gap ? <Body muted>{RN.gap.explain}</Body> : null}
+        {walkTime ? (
+          <Body muted testID="route-walk-time-note">
+            {walkTime.withoutElevation ? `${HK.timeNote} ${HK.timeNoElevation}` : HK.timeNote}
+          </Body>
+        ) : null}
         {cadence !== null && cadenceSport ? (
           <Body muted testID="route-cadence-hint">
             {cadenceHintKey
@@ -432,6 +514,7 @@ export default function RouteDetailScreen() {
         <EditRoute
           route={saved}
           eBike={eBike}
+          walkKind={walkKind}
           onDone={async (text) => {
             setEditing(false);
             forgetTrackedRoutes();
@@ -468,8 +551,8 @@ export default function RouteDetailScreen() {
             onPress={() =>
               router.push(
                 `/ausdauer/aufzeichnen?sport=${saved.sport}&base=${saved.id}${
-                  Platform.OS === 'web' ? '&demo=1' : ''
-                }` as Href,
+                  isHikeKind(saved.walk_kind) ? `&walk=${saved.walk_kind}` : ''
+                }${Platform.OS === 'web' ? '&demo=1' : ''}` as Href,
               )
             }
             testID="route-again"
@@ -520,16 +603,22 @@ function compareFor(route: TrackedRouteRow, routes: readonly TrackedRouteRow[]):
 function EditRoute({
   route,
   eBike: initialEBike,
+  walkKind: initialWalkKind,
   onDone,
 }: {
   route: TrackedRouteRow;
   /** Aktuelle E-Bike-Angabe (verknüpfter Eintrag bzw. Strecke). */
   eBike: boolean;
+  /** Aktuelle Art der Geh-Einheit (nur beim Gehen; verknüpfter Eintrag bzw. Strecke). */
+  walkKind: WalkKind | null;
   onDone: (message: string | null) => Promise<void>;
 }) {
   const app = useApp();
   const bikeChoice = useBikeChoice(app.session?.userId ?? null);
   const [eBike, setEBike] = useState(initialEBike);
+  const [walkKind, setWalkKind] = useState<WalkKind>(initialWalkKind ?? 'walk');
+  const initialSac = (route.sac_grade ?? null) as SacPick;
+  const [sacPick, setSacPick] = useState<SacPick>(initialSac);
   const [name, setName] = useState(route.name);
   const [favorite, setFavorite] = useState(route.is_favorite);
   const [difficulty, setDifficulty] = useState<RouteDifficulty | 'none'>(
@@ -551,9 +640,19 @@ function EditRoute({
         note: note.trim() === '' ? null : note.trim(),
         // Nur beim Rad senden (sonst fehlt das Feld = unverändert).
         ...(route.sport === 'bike' ? { e_bike: eBike } : {}),
+        // Wandern (Etappe W): Art und SAC-Stufe nur beim Gehen; Gehen → null, T4+ wird nicht gespeichert.
+        ...(route.sport === 'walk'
+          ? {
+              walk_kind: isHikeKind(walkKind) ? walkKind : null,
+              sac_grade: isHikeKind(walkKind) && sacPick !== null && sacPick <= 3 ? sacPick : null,
+            }
+          : {}),
       });
-      if (route.sport === 'bike' && eBike !== initialEBike) {
-        bikeChoice.remember(eBike);
+      if (
+        (route.sport === 'bike' && eBike !== initialEBike) ||
+        (route.sport === 'walk' && walkKind !== (initialWalkKind ?? 'walk'))
+      ) {
+        if (route.sport === 'bike') bikeChoice.remember(eBike);
         // Der verknüpfte Eintrag folgt (Revision + 1) → Tagebuch neu laden.
         await app.reload().catch(() => undefined);
       }
@@ -578,6 +677,14 @@ function EditRoute({
         />
         {route.sport === 'bike' ? (
           <BikeTypeChoice eBike={eBike} onChange={setEBike} testID="route-edit-bike-type" />
+        ) : null}
+        {route.sport === 'walk' ? (
+          <View style={styles.actions} testID="route-edit-walk-kind">
+            <WalkKindChoice walkKind={walkKind} onChange={setWalkKind} />
+            {isHikeKind(walkKind) ? (
+              <SacGradeChoice value={sacPick} onChange={setSacPick} testID="route-edit-sac" />
+            ) : null}
+          </View>
         ) : null}
         <Checkbox label={E.save.favorite} checked={favorite} onChange={setFavorite} />
         <ChoiceList<RouteDifficulty | 'none'>

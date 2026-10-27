@@ -1,8 +1,10 @@
 import {
   EMPTY_WORKOUT_FILTER,
   filterWorkouts,
+  visibleWorkouts,
   WORKOUT_CATEGORIES,
   WORKOUT_DURATION_FILTERS,
+  WORKOUT_LIST_DRAFT_CATEGORIES,
   type WorkoutCategory,
   type WorkoutDurationFilter,
   type WorkoutFilter,
@@ -30,9 +32,9 @@ import { TrainingSwitch } from '@/components/training-switch';
 import { WorkoutCard } from '@/components/workouts';
 import { t } from '@/i18n';
 import { berlinTodayIso } from '@/lib/format';
-import { PENDING_WORKOUT_CATEGORIES, selectable } from '@/lib/sportarten-stufe1';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { useExerciseLookup, useFlowSafety } from '@/state/use-flow-safety';
 import { useWorkoutLibrary } from '@/state/use-workouts';
 
 const STARS = [1, 2, 3, 4, 5] as const;
@@ -52,10 +54,21 @@ export default function WorkoutsScreen() {
   const today = berlinTodayIso();
 
   const workouts = library.kind === 'ready' ? library.workouts : null;
-  const shown = useMemo(
-    () => (workouts ? filterWorkouts(workouts, filter) : []),
-    [workouts, filter],
-  );
+  const flowSafety = useFlowSafety();
+  const lookup = useExerciseLookup();
+  // Sportarten Stufe 1 (Yoga/Pilates/Mobility): Entwürfe nur, wenn die Quelle sie zulässt (Testmodus-Bündel; Supabase
+  // liefert nur freigegebene). Flow-Routinen mit zu wenigen passenden Posen blendet der Sicherheitsfilter aus.
+  const shown = useMemo(() => {
+    if (!workouts) return [];
+    // Lauf-Kraft-Entwürfe hängen weiter nur am Laufplan (nicht in der Liste).
+    const listed = filterWorkouts(workouts, filter, { includeDrafts: true }).filter(
+      (w) =>
+        w.status === 'published' ||
+        w.format === 'flow' ||
+        WORKOUT_LIST_DRAFT_CATEGORIES.includes(w.category),
+    );
+    return lookup ? visibleWorkouts(listed, flowSafety, lookup) : listed;
+  }, [workouts, filter, flowSafety, lookup]);
   const done = useMemo(
     () => workoutsDoneOn(workouts ?? [], app.rows?.sessionLogs ?? [], today),
     [app.rows?.sessionLogs, today, workouts],
@@ -192,7 +205,7 @@ export default function WorkoutsScreen() {
                       label: t.workouts.filters.all,
                       testID: 'workouts-filter-category-all',
                     },
-                    ...selectable(WORKOUT_CATEGORIES, PENDING_WORKOUT_CATEGORIES).map((value) => ({
+                    ...WORKOUT_CATEGORIES.map((value) => ({
                       value,
                       label: t.workouts.categories[value],
                       testID: `workouts-filter-category-${value}`,

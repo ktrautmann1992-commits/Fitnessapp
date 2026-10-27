@@ -1,6 +1,10 @@
 import type { Exercise } from '../content/schemas';
 import type { EquipmentLocation, TrainingLocation } from '../enums';
-import { BARBELL_DEFAULT_BAR_KG, BODYWEIGHT_PROFILE_RULES } from '../constants';
+import {
+  BARBELL_DEFAULT_BAR_KG,
+  BODYWEIGHT_PROFILE_RULES,
+  HYROX_ONLY_EXERCISE_IDS,
+} from '../constants';
 import {
   BARBELL_ID,
   barbellLoadSteps,
@@ -284,7 +288,12 @@ export function findSubstitute(original: Exercise, ctx: SubstituteContext): Subs
     b.difficulty - a.difficulty ||
     Number(b.load_type === original.load_type) - Number(a.load_type === original.load_type) ||
     compareIds(a, b);
-  const pool = [...ctx.library.values()].filter(ok).filter((c) => sharesPrimaryMuscle(c, original));
+  // Sportarten Stufe 1: Hyrox-Übungen nur innerhalb von Hyrox (HYROX_ONLY_EXERCISE_IDS).
+  const hyroxOnly = (c: Exercise) =>
+    HYROX_ONLY_EXERCISE_IDS.includes(c.id) && !HYROX_ONLY_EXERCISE_IDS.includes(original.id);
+  const pool = [...ctx.library.values()]
+    .filter(ok)
+    .filter((c) => !hyroxOnly(c) && sharesPrimaryMuscle(c, original));
   const samePattern = pool
     .filter((c) => c.movement_pattern === original.movement_pattern)
     .sort(rank);

@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { EBikeBadge } from '@/components/e-bike';
+import { RowLogInfo } from '@/components/rowing';
 import { ShoeChip } from '@/components/shoes';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import {
@@ -213,6 +214,8 @@ export default function LogEntryScreen() {
                   </Body>
                 ))
               : null}
+            {/* Etappe R: Watt (berechnet bzw. eingetragen), Schlagzahl, Intervall-Ergebnis. */}
+            {detail.cardio.modality === 'row' ? <RowLogInfo cardio={detail.cardio} /> : null}
           </View>
         </Card>
       ) : null}

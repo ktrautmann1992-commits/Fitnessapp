@@ -1,0 +1,94 @@
+{
+  "id": "pilates-sanft-ohne-rumpfbeugen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Pilates sanft – ohne Rumpfbeugen",
+  "summary_de": "Ruhiges Pilates ohne Aufrollen, Rumpfbeugen und Drehen bis zum Anschlag – Rumpf und Hüfte stärken mit neutralem Rücken.",
+  "category": "pilates",
+  "difficulty": 1,
+  "minutes": 12,
+  "format": "flow",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": [],
+  "warmup_de": "Aufrecht auf einen Stuhl setzen und ein paar Mal tief in die Flanken atmen.",
+  "cooldown_de": "In Rückenlage oder im Sitzen nachspüren.",
+  "exercises": [
+    {
+      "exercise_id": "pilates-rumpf-atmung-sitzend",
+      "reps": null,
+      "duration_s": 85,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "pilates-beckenkippen",
+      "reps": null,
+      "duration_s": 85,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "pilates-tischbein-wechsel",
+      "reps": null,
+      "duration_s": 85,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "pilates-muschel",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "pilates-seitliegend-beinheben",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "bird-dog",
+      "reps": null,
+      "duration_s": 85,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "pilates-schwan-sanft",
+      "reps": null,
+      "duration_s": 55,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-entspannung-rueckenlage",
+      "reps": null,
+      "duration_s": 85,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

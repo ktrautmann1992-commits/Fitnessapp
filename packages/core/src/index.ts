@@ -66,3 +66,9 @@ export * from './supplements/profile-inputs';
 export * from './supplements/overview';
 // Gewichtstrend, Monatsrückblick, Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md).
 export * from './review';
+// Sportarten Stufe 1 · Etappe W: Wandern/Bergwandern (docs/PLAN-SPORTARTEN-STUFE-1.md 2.2).
+export * from './hiking';
+// Sportarten Stufe 1 · Etappe R: Indoor-Rudern (Split, Watt-Anzeige, Plausibilität, Intervall-Ergebnis).
+export * from './rowing';
+// Sportarten Stufe 1 · Hyrox (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1, Etappe H).
+export * from './hyrox';

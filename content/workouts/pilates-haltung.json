@@ -1,0 +1,110 @@
+{
+  "id": "pilates-haltung",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Pilates für die Haltung",
+  "summary_de": "Kräftigt Rücken, Schultern und Rumpf und mobilisiert die Wirbelsäule – für eine aufrechte Haltung im Alltag.",
+  "category": "pilates",
+  "difficulty": 2,
+  "minutes": 15,
+  "format": "flow",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": [],
+  "warmup_de": "Zwei Minuten auf der Stelle gehen und die Schultern locker kreisen.",
+  "cooldown_de": "Im Stand Wirbel für Wirbel aufrollen und einen Moment aufrecht stehen.",
+  "exercises": [
+    {
+      "exercise_id": "pilates-abrollen-stehend",
+      "reps": null,
+      "duration_s": 95,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "mobility-wandengel",
+      "reps": null,
+      "duration_s": 95,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "pilates-schwan-sanft",
+      "reps": null,
+      "duration_s": 70,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "pilates-schwimmen",
+      "reps": null,
+      "duration_s": 65,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-kindhaltung",
+      "reps": null,
+      "duration_s": 70,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bird-dog",
+      "reps": null,
+      "duration_s": 95,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "pilates-wirbelsaeule-dehnen-sitzend",
+      "reps": null,
+      "duration_s": 95,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "pilates-saege",
+      "reps": null,
+      "duration_s": 65,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "seitstuetz-knie",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "pilates-beckenkippen",
+      "reps": null,
+      "duration_s": 95,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

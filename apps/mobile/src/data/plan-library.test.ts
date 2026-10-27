@@ -62,9 +62,10 @@ function dbRows(publish: boolean, archived: readonly string[] = []) {
 }
 
 describe('Bibliothek aus der Datenbank', () => {
-  it('Zeilen → Inhalte im Format von packages/core (alle 170 Übungen, 49 Vorlagen)', () => {
+  it('Zeilen → Inhalte im Format von packages/core (alle 239 Übungen, 49 Vorlagen)', () => {
     const content = contentFromDbRows(dbRows(true));
-    expect(content.exercises).toHaveLength(170);
+    // 172 (inkl. 2 Rudern) + 17 Hyrox + 50 Posen der Etappe Y (Sportarten Stufe 1).
+    expect(content.exercises).toHaveLength(239);
     expect(content.templates).toHaveLength(49);
     expect(content.templates[0]?.sessions[0]?.exercises.length).toBeGreaterThan(0);
   });
@@ -79,7 +80,11 @@ describe('Bibliothek aus der Datenbank', () => {
   it('Zwischenspeicher: nur Übungen, wieder mit Zod geprüft', () => {
     const library = libraryFromDbRows(dbRows(true));
     const cached = libraryFromCache(JSON.parse(JSON.stringify(libraryToCache(library))));
-    expect(cached?.exercises.size).toBe(170);
+    // Posen (isFlowPoseId) nur zur Anzeige – die Plan-Engine sieht 189 Übungen (inkl. 2 Rudern, 17 Hyrox).
+    expect(cached?.exercises.size).toBe(189);
+    expect(cached?.displayExercises?.size).toBe(239);
+    expect(library.exercises.size).toBe(189);
+    expect(library.displayExercises?.size).toBe(239);
     expect(cached?.templates).toEqual([]);
     expect(libraryFromCache(null)).toBeNull();
   });

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-schmetterling",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-schmetterling-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – aufrecht am Boden sitzen, Fußsohlen aneinander, Knie fallen zur Seite, Hände umfassen die Füße.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

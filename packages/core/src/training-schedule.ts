@@ -5,6 +5,7 @@ import {
   ENDURANCE_GOAL_SUGGESTION,
   ENDURANCE_SECONDARY_SUGGESTION,
   ENDURANCE_START_RULES,
+  HYROX_PLAN,
   MAX_STRENGTH_SESSIONS_PER_WEEK,
   SCHEDULE_HINT_LIMITS,
   SECONDARY_GOAL_HINT_LIMITS,
@@ -309,6 +310,10 @@ export function suggestedTrainingSlots(input: {
     endurance += extra[group] ?? 0;
     strength = strengthOverride[group] ?? strength;
   }
+  // Sportarten Stufe 1 (Hyrox, HYROX_PLAN.weekPattern): genau ein Kraft-Tag = Stations-Einheit, die Ausdauer-Tage sind
+  // Lauf und Kombi (z. B. 4 Tage = 2 Lauf + 1 Station + 1 Kombi).
+  if (input.discipline === 'hyrox')
+    strength = Math.min(strength, HYROX_PLAN.weekPattern[4].station);
   endurance = Math.min(endurance, ENDURANCE_START_RULES.maxSessionsPerWeek[group]);
   const cap = Math.min(weeklySessionCap(input) ?? MAX_SLOTS, MAX_SLOTS);
   const minEndurance = SCHEDULE_HINT_LIMITS.recommendedMinEnduranceDays;

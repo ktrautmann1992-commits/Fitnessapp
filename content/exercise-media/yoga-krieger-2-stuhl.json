@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-krieger-2-stuhl",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-krieger-2-stuhl-start.svg",
+      "alt_de": "Ausgangsposition: seitlich auf der Kante eines Stuhls sitzen, vorderes Bein gebeugt, hinteres Bein nach hinten gestreckt, Arme waagerecht nach vorn und hinten.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

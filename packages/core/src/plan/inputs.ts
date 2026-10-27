@@ -89,6 +89,13 @@ export const planInputsSchema = z
     sex: sexSchema.nullable().default(null),
     healthScreening: planHealthScreeningSchema,
     agingScreening: planAgingScreeningSchema.optional(),
+    /**
+     * Sportarten Stufe 1 · Etappe R (Gründer-Entscheidung 27.10.2026 „Rudern kann man zuhause und im Studio“):
+     * ausdrückliche Angabe „Im Studio auch rudern (Rudergerät)“ = Zeile `rowing_machine` mit Ort `gym` in
+     * user_equipment. Optional (fehlt = aus): Angaben und Schnappschuss ohne diese Angabe bleiben byte-gleich. Nicht im
+     * Schnappschuss (user_plans.inputs, private.assert_plan_inputs) – der Folgeblock liest sie aus den aktuellen Geräten.
+     */
+    gymRowing: z.boolean().optional(),
   })
   .refine((value) => isAllowedGoalPair(value.goalType, value.secondaryGoalType), {
     path: ['secondaryGoalType'],

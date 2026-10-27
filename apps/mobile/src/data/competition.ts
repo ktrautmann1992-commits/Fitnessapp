@@ -4,6 +4,7 @@ import {
   type CompetitionGoal,
   type CompetitionInput,
   type CompetitionOwnStart,
+  type HyroxDivision,
   type CompetitionRequest,
   type CompetitionStartReference,
   competitionFeasibility,
@@ -121,6 +122,10 @@ export interface CompetitionDraft {
   competition: CompetitionInput;
   longRunWeekday: number | null;
   ownStart: CompetitionOwnStart | null;
+  /** Sportarten Stufe 1 (Etappe H): Division nur bei Hyrox (fehlt = Open). */
+  hyroxDivision?: HyroxDivision | null;
+  /** Hyrox ab 65: ausdrücklich bestätigt (HYROX_SAFETY) – nur beim Erstellen, nicht gespeichert. */
+  hyroxSeniorConfirmed?: boolean;
 }
 
 /** Warum kein Wettkampfplan möglich ist, auch wenn der Wettkampf selbst gespeichert werden kann. */
@@ -159,6 +164,7 @@ export function competitionRequestFor(
     ownStart: draft.ownStart,
     startReference,
     longRunWeekday: draft.longRunWeekday,
+    ...(draft.hyroxSeniorConfirmed ? { hyroxSeniorConfirmed: true } : {}),
   };
 }
 
@@ -217,6 +223,7 @@ export function buildCompetitionPlan(
       longRunWeekday: draft.longRunWeekday,
       plan:
         effectiveGoal === null ? null : { effectiveGoal, ownStart: draft.ownStart, startReference },
+      hyroxDivision: draft.hyroxDivision ?? null,
     });
     return {
       competition,
@@ -239,6 +246,7 @@ export function countdownPayload(
       competition: draft.competition,
       longRunWeekday: draft.longRunWeekday,
       plan: null,
+      hyroxDivision: draft.hyroxDivision ?? null,
     });
   } catch {
     return null;
@@ -266,6 +274,7 @@ export function resavePayload(
               ownStart: stored.ownStart,
               startReference: stored.startReference,
             },
+      hyroxDivision: draft.hyroxDivision ?? null,
     });
   } catch {
     return null;
@@ -278,6 +287,7 @@ export function draftFromStored(stored: StoredCompetition): CompetitionDraft {
     competition: { ...stored.competition },
     longRunWeekday: stored.longRunWeekday,
     ownStart: stored.ownStart,
+    ...(stored.hyroxDivision ? { hyroxDivision: stored.hyroxDivision } : {}),
   };
 }
 
@@ -467,7 +477,9 @@ export function planBasisChanged(stored: StoredCompetition, draft: CompetitionDr
     (x.targetTimeS ?? null) === (y.targetTimeS ?? null) &&
     JSON.stringify(x.reference ?? null) === JSON.stringify(y.reference ?? null) &&
     (stored.ownStart?.weeklyMinutes ?? null) === (draft.ownStart?.weeklyMinutes ?? null) &&
-    (stored.longRunWeekday ?? null) === (draft.longRunWeekday ?? null)
+    (stored.longRunWeekday ?? null) === (draft.longRunWeekday ?? null) &&
+    // Hyrox: Division (Doubles/Staffel gleicher Plan, Open/Pro andere Gewichte) – gespeichert mit dem Plan-Bezug.
+    (stored.hyroxDivision ?? null) === (draft.hyroxDivision ?? null)
   );
 }
 

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-drehsitz",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-drehsitz-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht am Boden sitzen, ein Bein gestreckt, das andere aufgestellt, Oberkörper zum aufgestellten Knie gedreht, eine Hand hinter dem Becken.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -46,6 +46,7 @@ import {
 } from './intensity';
 import type { PlanLibrary } from './content-pool';
 import { loadWeeksBeforeDeload } from './deload';
+import { rowingAvailable } from '../rowing/metrics';
 import { equipmentProfile, isBodyweightOnly } from './equipment-profile';
 import {
   type PlanInputs,
@@ -497,6 +498,24 @@ function generatePlan(
     notes.add(enduranceDays.length > 0 ? 'endurance_basic_only' : 'goal_endurance_not_yet');
   }
   const loadWeeks = loadWeeksBeforeDeload(inputs.experienceLevel, cautiousProgression(rules));
+  // Sportarten Stufe 1 (Hyrox, docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): Stations-Einheit aus der Bibliothek mit den Geräten
+  // des Orts – nur im Hyrox-Wettkampfplan (sonst fehlt der Schlüssel, Pläne byte-gleich).
+  const hyroxProfileOptions = {
+    suspensionReady: suspensionTrainerReady(library.exercises, rules),
+  };
+  const hyrox =
+    competition && inputs.discipline === 'hyrox'
+      ? {
+          hyrox: {
+            library: library.exercises,
+            profiles: new Map<EquipmentLocation, ReturnType<typeof equipmentProfile>>([
+              ['home', equipmentProfile('home', inputs.homeEquipment, hyroxProfileOptions)],
+              ['gym', equipmentProfile('gym', inputs.homeEquipment, hyroxProfileOptions)],
+            ]),
+            excludedCautionTags: rules.excludedCautionTags,
+          },
+        }
+      : {};
   const block = buildPlanBlock({
     days,
     today,
@@ -508,9 +527,13 @@ function generatePlan(
         discipline: inputs.discipline,
         experienceLevel: inputs.experienceLevel,
         rules,
+        // Sportarten Stufe 1 · Etappe R: Rudergerät zu Hause oder ausdrücklich „im Studio auch rudern“ → im Plan ohne
+        // Wettkampf und ohne Disziplin jede zweite Ausdauer-Einheit Rudern.
+        ...(competition === null && rowingAvailable(inputs) ? { rowing: true } : {}),
       },
       rules,
       enduranceWishWeekly: enduranceDays.reduce((sum, d) => sum + d.minutes, 0),
+      ...hyrox,
       ...(competition
         ? {
             enduranceReference: competition.reference,
@@ -535,6 +558,8 @@ function generatePlan(
     const sets = (s: GeneratedSession) => s.exercises.reduce((sum, e) => sum + e.sets, 0);
     for (const s of sessions) {
       if (s.kind !== 'strength' || s.is_deload || s.template_day_index === null) continue;
+      // Hyrox-Stations-Einheit: keine Vorlagen-Einheit (zählt nicht für „Umfang reduziert“).
+      if (s.focus === 'hyrox_stations') continue;
       const current = shortest.get(s.template_day_index);
       if (!current || sets(s) < sets(current)) shortest.set(s.template_day_index, s);
     }
@@ -546,7 +571,10 @@ function generatePlan(
       cooldown_de: s.cooldown_de,
       exercises: s.exercises,
     }));
-    if (isVolumeReduced(templateForVolume, picked, library.exercises)) notes.add('volume_reduced');
+    const onlyStations = picked.length === 0 && sessions.some((x) => x.focus === 'hyrox_stations');
+    if (!onlyStations && isVolumeReduced(templateForVolume, picked, library.exercises)) {
+      notes.add('volume_reduced');
+    }
   }
   const usesDrafts =
     templateMeta?.status === 'draft' ||

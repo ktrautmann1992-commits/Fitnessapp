@@ -1,0 +1,52 @@
+{
+  "id": "taschen-tragen",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Tragen mit zwei Taschen",
+  "name_en": "Bag Carry",
+  "aliases_de": ["Einkaufstaschen-Tragen"],
+  "movement_pattern": "carry",
+  "primary_muscles": ["forearms", "upper_back"],
+  "secondary_muscles": ["abs", "obliques", "glutes"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Zwei gefüllte Taschen oder Wasserflaschen seitlich tragen und aufrecht gehen. Ersatz für den Farmer's Carry, wenn keine Hanteln da sind.",
+  "steps_de": [
+    "Zwei Taschen mit etwa gleichem Gewicht füllen, z. B. mit Wasserflaschen.",
+    "Aus der Hocke mit geradem Rücken aufnehmen.",
+    "Aufrecht und zügig gehen, Schultern tief.",
+    "Zum Absetzen in die Knie gehen."
+  ],
+  "tips_de": ["Griffe fest umfassen, Handgelenke gerade.", "Bauch fest, nicht zur Seite kippen."],
+  "common_mistakes_de": [
+    "Taschen unterschiedlich schwer – der Körper kippt.",
+    "Schultern ziehen nach oben."
+  ],
+  "safety_note_de": "Nur so viel einpacken, dass Griffe und Taschen sicher halten, und auf freien Weg achten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "farmers-carry-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "koffer-tragen-einarmig",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
+  }
+}

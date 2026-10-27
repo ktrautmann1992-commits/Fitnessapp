@@ -119,8 +119,10 @@ import {
   applyTrackedRouteUpdate,
   detachRouteLogs,
   logEBikeToRoutes,
+  logWalkKindToRoutes,
   type RouteCounter,
   routeEBikeToLog,
+  routeWalkKindToLog,
 } from './tracked-route-rows';
 import {
   applySessionLog,
@@ -1189,8 +1191,10 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         today,
         rows: await overlaid(rows),
         exercises: library.displayExercises ?? library.exercises,
-        // Freie Einheit (A1b): nur freigegebene Übungen (wie der Server).
-        publishedExercises: library.exercises,
+        // Freie Einheit (A1b): nur freigegebene Übungen (wie der Server). Posen der Yoga-/Pilates-/Mobility-Routinen
+        // (Sportarten Stufe 1) sind auf dem Server normale freigegebene Übungen – nur die Plan-Engine kennt sie nicht,
+        // deshalb stehen sie lokal nur in displayExercises.
+        publishedExercises: library.displayExercises ?? library.exercises,
         healthConsentValid: healthConsentStatus(rows, LOCAL_VERSIONS) === 'valid',
         createdToday: db.logCounter?.day === today ? db.logCounter.created : 0,
       });
@@ -1216,7 +1220,9 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
             exercises: payload.exercises.map((e) => {
               const withId = otherExercises.has(e.id) ? { ...e, id: options.newId() } : e;
               // Freie Einheit: Name aus der Bibliothek übernehmen (wie der Server, Wächter S1).
-              const name = library.exercises.get(e.exercise_id)?.name_de;
+              const name = (library.displayExercises ?? library.exercises).get(
+                e.exercise_id,
+              )?.name_de;
               return payload.is_free === true && name
                 ? { ...withId, exercise_name_de: name }
                 : withId;
@@ -1242,10 +1248,12 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
               }
             : (db.logCounter ?? null);
           // E-Bike: verknüpfte Rad-Strecke folgt dem Eintrag (wie save_session_log).
+          // Wandern (Stufe 1): ebenso die Art der Geh-Einheit.
+          const linkedCardio = {
+            cardioLogs: next.cardioLogs.filter((c) => c.session_log_id === id),
+          };
           const trackedRoutes = db.trackedRoutes
-            ? logEBikeToRoutes(db.trackedRoutes, {
-                cardioLogs: next.cardioLogs.filter((c) => c.session_log_id === id),
-              })
+            ? logWalkKindToRoutes(logEBikeToRoutes(db.trackedRoutes, linkedCardio), linkedCardio)
             : db.trackedRoutes;
           await save({ ...db, rows: next, logCounter, trackedRoutes });
           await drafts.remove(draft.key);
@@ -1700,8 +1708,13 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
       if (next === 'invalid' || next === 'not_found') throw new BackendError('route_rejected');
       // E-Bike angegeben: verknüpfter Rad-Eintrag folgt (wie update_tracked_route, Revision + 1).
       const route = next.find((r) => r.id === payload.id);
-      const nextRows =
+      const eBikeRows =
         payload.e_bike !== undefined && route ? routeEBikeToLog(rows, route, now) : rows;
+      // Wandern (Stufe 1): Art angegeben → verknüpfter Geh-Eintrag folgt (wie update_tracked_route).
+      const nextRows =
+        payload.walk_kind !== undefined && route
+          ? routeWalkKindToLog(eBikeRows, route, now)
+          : eBikeRows;
       await save({ ...db, rows: nextRows, trackedRoutes: next });
     },
     setRouteMatch: async (routeId, favoriteId, state) => {

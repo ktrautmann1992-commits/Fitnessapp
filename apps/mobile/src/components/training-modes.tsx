@@ -100,10 +100,14 @@ const NOTICE_ORDER: readonly ModeNotice[] = [
   'pain_removed',
   'pain_endurance_easier',
   'pain_endurance_check',
+  'pain_row_alternative',
+  'pain_combo_run_only',
   'travel_active',
   'travel_swapped',
   'travel_removed',
   'travel_shortened',
+  'travel_row_hotel_gym',
+  'travel_row_alternative',
 ];
 
 /** Hinweise der Modi an einer angezeigten Einheit (nur wenn ein Modus an diesem Tag wirkt). */

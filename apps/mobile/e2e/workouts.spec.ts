@@ -54,7 +54,10 @@ const card = (page: Page, id: string) => page.getByTestId(`workout-card-${id}`);
 
 test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({ page }) => {
   await setup(page);
-  await expect(count(page)).toHaveText('27 Workouts');
+  // 27 freigegebene + 10 Rudern-Entwürfe (Etappe R) + 14 Yoga-/Pilates-/Mobility-Entwürfe (Etappe Y), im Testmodus als
+  // „Testinhalt“ in der Liste; ohne Gesundheits-Check ist
+  // „Sanft in den Morgen“ ausgeblendet (zu viele Umkehrhaltungen für den vorsichtigen Plan).
+  await expect(count(page)).toHaveText('51 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
@@ -64,7 +67,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   // Filter sind zugeklappt („Filter“ antippen).
   await page.getByTestId('workouts-filter-toggle').click();
   await page.getByTestId('workouts-filter-stars-5').click();
-  await expect(count(page)).toHaveText('2 Workouts');
+  await expect(count(page)).toHaveText('3 Workouts');
   await expect(card(page, 'koerpergewicht-extrem')).toBeVisible();
   await expect(card(page, 'bauch-blitz')).toHaveCount(0);
 
@@ -84,7 +87,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-1').click();
   await expect(page.getByTestId('workouts-no-match')).toBeVisible();
   await page.getByTestId('workouts-filter-reset').click();
-  await expect(count(page)).toHaveText('27 Workouts');
+  await expect(count(page)).toHaveText('51 Workouts');
 
   // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();
@@ -198,4 +201,70 @@ test('Sätze × Wdh.: Satz abhaken, Satzpause, nächster Satz', async ({ page })
   await expect(page.getByTestId('workout-timer-progress')).toHaveText(
     'Satz 2 von 3 · 1 von 14 erledigt',
   );
+});
+
+test('Yoga (Flow): Stuhl-Yoga mit Seitenwechsel, Pose überspringen; Kategorie Yoga; Heute-Karte und Schalter', async ({
+  page,
+}) => {
+  await setup(page);
+  // Kategorie „Yoga“ ist wählbar (Sportarten Stufe 1 · Etappe Y).
+  await page.getByTestId('workouts-filter-toggle').click();
+  await page.getByTestId('workouts-filter-category-yoga').click();
+  await expect(count(page)).toHaveText('5 Workouts');
+  await expect(card(page, 'yoga-sanft-in-den-morgen')).toHaveCount(0);
+  await card(page, 'yoga-stuhl').click();
+  await heading(page, 'Stuhl-Yoga');
+  await expect(page.getByTestId('workout-test-content')).toBeVisible();
+  await expect(page.getByTestId('workout-exercises')).toContainText('je Seite (rechts / links)');
+
+  await page.getByTestId('workout-start').click();
+  await expect(page.getByTestId('flow-player')).toBeVisible();
+  await expect(page.getByTestId('flow-name')).toHaveText('Entspannung im Sitzen');
+  await page.clock.fastForward(6000);
+  await expect(page.getByTestId('flow-progress')).toHaveText('Pose 1 von 19');
+  await expect(page.getByTestId('flow-remaining')).toHaveText(/^[01]:\d\d$/);
+  await expect(page.getByTestId('flow-next')).toHaveText('Rumpfspannung im Sitzen');
+  // Pose läuft ab → nächste Pose ohne Pausen-Bildschirm.
+  await page.clock.fastForward(61_000);
+  await expect(page.getByTestId('flow-name')).toHaveText('Rumpfspannung im Sitzen');
+  await page.getByRole('button', { name: 'Pose überspringen' }).click();
+  await expect(page.getByTestId('flow-name')).toHaveText('Seitneige im Sitzen');
+  await expect(page.getByTestId('flow-side')).toHaveText('Rechte Seite');
+  await expect(page.getByTestId('flow-next')).toHaveText('Seitneige im Sitzen · Linke Seite');
+  await page.getByRole('button', { name: 'Pose überspringen' }).click();
+  await expect(page.getByTestId('flow-side')).toHaveText('Linke Seite');
+  await page.getByTestId('workout-timer-pause').click();
+  await expect(page.getByTestId('flow-paused')).toBeVisible();
+  await page.getByTestId('workout-timer-resume').click();
+
+  await page.getByTestId('workout-timer-end').click();
+  await page.getByTestId('workout-end-dialog').getByRole('button', { name: 'Beenden' }).click();
+  await heading(page, 'Workout beendet');
+  await page.getByTestId('workout-save').click();
+  await expect(page.getByTestId('workout-saved')).toContainText('Gespeichert');
+  const logs = await storedLogs(page);
+  expect(logs[0]?.notes).toMatch(/^Workout „Stuhl-Yoga“ \(★☆☆☆☆\) · 1\/19 Posen · /);
+
+  // Heute (Montag, trainingsfrei): nach dem Workout kein Vorschlag mehr …
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-training')).toBeVisible();
+  await expect(page.getByTestId('overview-recovery-routine')).toHaveCount(0);
+});
+
+test('Heute: „Erholungstag: Mobility 15 min?“ an freien Tagen, abschaltbar in den Einstellungen', async ({
+  page,
+}) => {
+  await setup(page);
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-recovery-routine')).toContainText(
+    'Erholungstag: Mobility 15 min?',
+  );
+  await page.getByTestId('overview-recovery-routine-open').click();
+  await heading(page, 'Erholungstag 15 Minuten');
+
+  await page.goto('/settings?thema=training');
+  await page.getByTestId('settings-recovery-routine').click();
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-training')).toBeVisible();
+  await expect(page.getByTestId('overview-recovery-routine')).toHaveCount(0);
 });

@@ -1,0 +1,79 @@
+{
+  "id": "sicher-bergwandern",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Sicher Bergwandern",
+  "intro_de": "Bergwandern ist Ausdauertraining mit Aussicht. Mit guter Planung, passender Ausrüstung und ehrlicher Selbsteinschätzung bleibt es ein gutes Erlebnis. Diese Hinweise ersetzen keine Ausbildung und keinen Notruf.",
+  "sections": [
+    {
+      "heading_de": "Tour passend wählen",
+      "body_de": [
+        "Wähle eine Tour, die zu deiner Kondition, Erfahrung und zum Wetter passt. Länge, Höhenmeter und Schwierigkeit zusammen bestimmen, wie anstrengend sie wird.",
+        "Die SAC-Wanderskala hilft bei der Einschätzung: T1 sind gut gebahnte Wanderwege, T2 Bergwege mit Steigungen, für die Trittsicherheit nötig ist, T3 anspruchsvolle Bergwege, teils weglos, mit Stellen, an denen die Hände zum Halten gebraucht werden.",
+        "Ab T4 beginnt alpines Gelände. Das liegt außerhalb dessen, was die App begleitet – dafür braucht es Erfahrung, passende Ausrüstung oder eine Bergführerin bzw. einen Bergführer."
+      ]
+    },
+    {
+      "heading_de": "Gehzeit einschätzen",
+      "body_de": [
+        "Als Faustregel nach DIN 33466 und Alpenverein gelten etwa 4 km pro Stunde in der Ebene, 300 Höhenmeter pro Stunde bergauf und 500 Höhenmeter pro Stunde bergab. Der größere der beiden Werte (Strecke oder Höhe) plus die Hälfte des kleineren ergibt die reine Gehzeit.",
+        "Pausen kommen hinzu. Plane lieber großzügig und starte früh."
+      ]
+    },
+    {
+      "heading_de": "Wetter und Gewitter",
+      "body_de": [
+        "Prüfe den Wetterbericht für die Berge am Abend vorher und am Morgen der Tour. Im Sommer entstehen Gewitter oft am Nachmittag.",
+        "Bei Gewittergefahr früh starten, Grate und Gipfel meiden oder die Tour verschieben. Wird es unterwegs schlechter, ist Umkehren keine Niederlage."
+      ]
+    },
+    {
+      "heading_de": "Umkehrzeit festlegen",
+      "body_de": [
+        "Lege vor dem Start fest, bis wann du spätestens umdrehst – auch wenn der Gipfel schon zu sehen ist. So bleibt genug Zeit und Kraft für den Abstieg bei Tageslicht."
+      ]
+    },
+    {
+      "heading_de": "Bergab schonend gehen",
+      "body_de": [
+        "Der Abstieg belastet Knie und Oberschenkel stärker als der Aufstieg. Kurze Schritte, ein ruhiges Tempo und Wanderstöcke entlasten.",
+        "Nach langen Abstiegen sind die Beine oft am Folgetag noch müde. Plane dann eher eine lockere Einheit ein."
+      ],
+      "notice_de": "Bei Beschwerden an Knie oder Sprunggelenk eine Tour mit wenig Abstieg wählen und bei Schmerzen abbrechen."
+    },
+    {
+      "heading_de": "Ausrüstung, Trinken, Akku",
+      "body_de": [
+        "Feste Schuhe mit gutem Profil, Regen- und Wärmeschutz, Sonnenschutz, eine kleine Erste-Hilfe-Ausrüstung und eine Karte gehören in den Rucksack.",
+        "Nimm genug Wasser und etwas zu essen mit – auf vielen Wegen gibt es unterwegs nichts.",
+        "GPS-Aufzeichnung braucht Strom. Starte mit vollem Akku und nimm eine Powerbank mit."
+      ]
+    },
+    {
+      "heading_de": "Nicht allein im Ungewissen",
+      "body_de": [
+        "Sag jemandem, wohin du gehst und wann du zurück sein willst. Mit der Live-Begleitung der App kannst du deinen Standort während der Tour mit einer Vertrauensperson teilen – nur auf deinen Tipp und jederzeit beendbar."
+      ]
+    },
+    {
+      "heading_de": "Notruf",
+      "body_de": [
+        "Deutschland: 112.",
+        "Österreich: 140 (Alpinnotruf) oder 112.",
+        "Schweiz: 1414 (Rega), 144 (Rettungsdienst) oder 112.",
+        "Italien: 118 (Rettungsdienst) oder 112.",
+        "Wähle die Nummer des Landes, in dem du gerade bist. Die App ersetzt keinen Notruf."
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "ENTWURF Sportarten Stufe 1 (Etappe W) – vor Freigabe fachlich prüfen (Bergführer:in), Notrufnummern gegen offizielle Angaben prüfen."
+  }
+}

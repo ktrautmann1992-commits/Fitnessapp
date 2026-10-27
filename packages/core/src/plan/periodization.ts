@@ -1,4 +1,4 @@
-import { COMPETITION_PERIODIZATION } from '../constants';
+import { COMPETITION_PERIODIZATION, HYROX_PLAN } from '../constants';
 import { addDays, daysBetween, isoWeekday, startOfIsoWeek } from '../dates';
 import type { ExperienceLevel } from '../enums';
 import type { CompetitionDiscipline, CompetitionPhase } from './competition-schema';
@@ -7,7 +7,10 @@ import type { EnduranceStartGroup } from './safety';
 import type { BlockWeekSpec, CompetitionWeekWorkouts } from './schedule';
 
 /** Wochenbau-Angaben ohne Phase (je Woche aus dem Makrozyklus ergänzt). */
-export type CompetitionWorkoutBase = Omit<CompetitionWeekWorkouts, 'phase' | 'recoveryWeek'>;
+export type CompetitionWorkoutBase = Omit<
+  CompetitionWeekWorkouts,
+  'phase' | 'recoveryWeek' | 'hyrox'
+>;
 
 /**
  * Periodisierung rückwärts vom Renntag (docs/PLAN-PHASE-10.md Abschnitte 3.1 und 5, Etappe WP1). Reine Funktionen,
@@ -250,13 +253,35 @@ export function competitionBlocks(
     }
   }
   if (current.length > 0) groups.push(current);
+  // Sportarten Stufe 1 (Hyrox, HYROX_PLAN.simulation): höchstens eine Simulation – in der letzten Belastungswoche der
+  // Spitze, die ganz vor den letzten 10 Tagen vor dem Renntag liegt (der Tag wird im Wochenbau nochmals geprüft).
+  const simulationLatest = addDays(cycle.raceDate, -HYROX_PLAN.simulation.notWithinDays);
+  const simulationMonday =
+    cycle.discipline === 'hyrox'
+      ? cycle.weeks
+          .filter(
+            (w) => w.phase === 'peak' && isLoadWeek(w) && addDays(w.monday, 6) <= simulationLatest,
+          )
+          .at(-1)?.monday
+      : undefined;
+  const hyroxOf = (week: MacroWeek) =>
+    cycle.discipline === 'hyrox'
+      ? { hyrox: { raceDate: cycle.raceDate, simulationWeek: week.monday === simulationMonday } }
+      : {};
   return groups.map((weeks, blockIndex) => {
     const hasWeekZero = !followUp && blockIndex === 0 && weeks[0]?.partial === true;
     const specs = weeks.map((week, k): BlockWeekSpec => {
       const weekNo = hasWeekZero ? k : k + 1;
       const first = !followUp && blockIndex === 0 && k === 0;
       const build = workouts
-        ? { workouts: { ...workouts, phase: week.phase, recoveryWeek: week.deload } }
+        ? {
+            workouts: {
+              ...workouts,
+              phase: week.phase,
+              recoveryWeek: week.deload,
+              ...hyroxOf(week),
+            },
+          }
         : {};
       if (week.deload || week.volumeFactor !== null) {
         return {

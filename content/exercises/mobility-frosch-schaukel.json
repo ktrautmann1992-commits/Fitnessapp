@@ -1,0 +1,44 @@
+{
+  "id": "mobility-frosch-schaukel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Frosch-Schaukel",
+  "name_en": "Frog Rock",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["adductors"],
+  "secondary_muscles": ["glutes"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["floor_transfer", "deep_hip_flexion"],
+  "description_de": "Im Vierfüßlerstand mit weit geöffneten Knien das Gesäß langsam nach hinten und wieder nach vorn schaukeln. Dehnt die Innenseite der Oberschenkel.",
+  "steps_de": [
+    "In den Vierfüßlerstand gehen, Knie weiter als hüftbreit, gern auf einem Kissen.",
+    "Unterarme oder Hände auf den Boden.",
+    "Das Gesäß langsam Richtung Fersen schieben.",
+    "Wieder nach vorn kommen und ruhig wiederholen."
+  ],
+  "tips_de": ["Die Knie nur so weit öffnen, wie es angenehm ist."],
+  "common_mistakes_de": ["Ins Hohlkreuz fallen."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, nur im angenehmen Bewegungsumfang. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "adduktoren-dehnen-stehend",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

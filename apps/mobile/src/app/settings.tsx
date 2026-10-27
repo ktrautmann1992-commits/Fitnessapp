@@ -19,6 +19,7 @@ import { WeatherSettings } from '@/components/route-weather';
 import { VoiceCueSettingsCard } from '@/components/voice-cues';
 import { type IconName, ListGroup, ListRow, SectionLabel } from '@/components/design';
 import { Body, Button, Card, Checkbox, LoadingState, Notice, TextField } from '@/components/ui';
+import { RecoveryRoutineSetting } from '@/components/recovery-routine-card';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { deModes } from '@/i18n/de-training-modes';
@@ -341,6 +342,18 @@ export default function SettingsScreen() {
             ) : null}
           </ListGroup>
 
+          {/* Etappe R (Gründer-Entscheidung 27.10.2026): „Im Studio auch rudern“ – im Schritt Trainingstage. */}
+          <ListGroup>
+            <ListRow
+              icon="dumbbell"
+              label={t.rowing.gymOption}
+              description={t.rowing.gymSettingsText}
+              onPress={() => router.push('/onboarding/time_budget?edit=1')}
+              testID="settings-gym-rowing"
+              last
+            />
+          </ListGroup>
+
           {/* Trainings-Modi (docs/PLAN-TRAINING-MODI.md): Schon-Modus, Reise-Modus, Aufwärmen & Dehnen. */}
           <SectionLabel>{deModes.settings.section}</SectionLabel>
           <ListGroup>
@@ -369,6 +382,8 @@ export default function SettingsScreen() {
             />
             <Body muted>{deModes.settings.warmupHint}</Body>
           </Card>
+          {/* Sportarten Stufe 1 (Etappe Y): Vorschlag „Erholungstag: Mobility“ auf „Heute“. */}
+          <RecoveryRoutineSetting />
 
           <SectionLabel>{t.settings.screen}</SectionLabel>
           <Card>

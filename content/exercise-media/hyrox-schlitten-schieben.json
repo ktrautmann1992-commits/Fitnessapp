@@ -1,0 +1,20 @@
+{
+  "exercise_id": "hyrox-schlitten-schieben",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "hyrox-schlitten-schieben-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht hinter dem Schlitten stehen, Arme nach vorn zu den Griffen gestreckt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

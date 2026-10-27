@@ -8,6 +8,8 @@ import {
   type CompetitionPlanOutline,
   type CompetitionPlanWeek,
   type FeasibilitySuggestion,
+  hyroxFractionForSeconds,
+  hyroxStationAmountText,
   intervalBlocks,
   isRunCompetitionDiscipline,
   type SessionPaceInfo,
@@ -81,8 +83,17 @@ export function kmText(meters: number): string {
   return Number.isInteger(km) ? String(km) : String(km).replace('.', ',');
 }
 
-/** Wort zum Schritt („zügig“, „locker“, „locker traben“). */
+/**
+ * Wort zum Schritt („zügig“, „locker“, „locker traben“). Sportarten Stufe 1 (Hyrox-Kombi): Station mit Menge, z. B.
+ * „Station 25 Wall Balls“ (Menge aus der Dauer des Schritts, packages/core).
+ */
 export function stepKindText(step: WorkoutStep): string {
+  if (step.kind === 'station' && step.station) {
+    return `${C.stepKinds.station} ${hyroxStationAmountText(
+      step.station,
+      hyroxFractionForSeconds(step.station, step.seconds),
+    )}`;
+  }
   return C.stepKinds[step.kind];
 }
 

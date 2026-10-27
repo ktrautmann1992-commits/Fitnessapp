@@ -1,6 +1,7 @@
 import {
   ACTIVE_AGING_RULES,
   COMPETITION_LONG_RUN,
+  HYROX_PLAN,
   COMPETITION_STRENGTH,
   DEFAULT_TRAINING_DAYS,
   ENDURANCE_SESSION_LIMITS,
@@ -12,6 +13,7 @@ import {
 import type { Exercise } from '../content/schemas';
 import { addDays, isoWeekday, startOfIsoWeek } from '../dates';
 import type {
+  CautionTag,
   EnduranceModality,
   EquipmentLocation,
   PlannedSessionKind,
@@ -20,6 +22,9 @@ import type {
   SessionFocus,
   TrainingSlotKind,
 } from '../enums';
+import { hasStationSteps, hyroxComboWorkout, hyroxTechniqueCombo } from '../hyrox/combo';
+import { hyroxStationSession } from '../hyrox/stations';
+import { HYROX_TEXTS_DE } from '../hyrox/texts';
 import type { TrainingSchedule } from '../training-schedule';
 import { withBalancePrelude } from './active-aging';
 import {
@@ -49,12 +54,13 @@ import {
   enduranceWeekVolumes,
   maxEnduranceSessions,
 } from './endurance';
-import { effectiveLongDate, weekWorkouts } from './endurance-workouts';
+import { type EnduranceWorkout, effectiveLongDate, weekWorkouts } from './endurance-workouts';
 import type { EquipmentProfile } from './equipment-profile';
 import {
   type HardWorkoutLimits,
   isHardWorkoutType,
   type PaceProfile,
+  weeklyHardBudgetSeconds,
   type WorkoutStep,
   type WorkoutType,
 } from './intensity';
@@ -416,6 +422,19 @@ export interface BlockContext {
   readonly enduranceStartMinutes?: number;
   /** Nur Wettkampfplan, Folgeblock: harte/lange Einheiten und Kraft-Tage mit Beinen des bisherigen Plans (48-h-Regel). */
   readonly competitionNeighbours?: CompetitionNeighbours;
+  /** Nur Hyrox-Wettkampfplan (Sportarten Stufe 1): Bibliothek, Geräte je Ort und Ausschlüsse für Stationen. */
+  readonly hyrox?: HyroxBlockContext;
+}
+
+/**
+ * Hyrox im Wettkampfplan (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): woraus die Stations-Einheit entsteht (Bibliothek, Geräte
+ * je Ort, ausgeschlossene Merkmale) und ob die Simulation in einem früheren Block schon stattfand (höchstens 1×).
+ */
+export interface HyroxBlockContext {
+  readonly library: ReadonlyMap<string, Exercise>;
+  readonly profiles: ReadonlyMap<EquipmentLocation, Pick<EquipmentProfile, 'available'>>;
+  readonly excludedCautionTags: readonly CautionTag[];
+  readonly simulationDone?: boolean;
 }
 
 /** Bisherige Einheiten an der Blockgrenze (Datum) – harte Ausdauer, langer Lauf, Kraft mit Beinen. */
@@ -439,6 +458,11 @@ export interface CompetitionWeekWorkouts {
   /** Wunsch-Tag des langen Laufs (ISO-Wochentag) oder null = automatisch (längster Wunsch, bei Gleichstand später). */
   readonly longRunWeekday: number | null;
   readonly pace: PaceProfile | null;
+  /**
+   * Sportarten Stufe 1 (Hyrox, docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): nur bei Disziplin hyrox – Renntag und ob diese
+   * Woche die (einzige) Simulations-Woche ist. Fehlt bei allen anderen Disziplinen (Pläne byte-gleich).
+   */
+  readonly hyrox?: { readonly raceDate: string; readonly simulationWeek: boolean };
 }
 
 /** Phasen mit langem Lauf (Plan 3.5): nicht in der Rennwoche und nicht in der Erholung nach dem Rennen. */
@@ -480,8 +504,11 @@ export function competitionLongRun(
   return { index: chooseLongRunIndex(endurance, workouts.longRunWeekday), maxMinutes };
 }
 
-const LEG_FOCUSES: readonly (SessionFocus | null)[] = ['full_body', 'lower'];
-/** Kraft-Einheit mit Beinen (48-h-Regel erweitert, Plan 3.5): Ganzkörper oder Unterkörper. */
+const LEG_FOCUSES: readonly (SessionFocus | null)[] = ['full_body', 'lower', 'hyrox_stations'];
+/**
+ * Kraft-Einheit mit Beinen (48-h-Regel erweitert, Plan 3.5): Ganzkörper oder Unterkörper; Sportarten Stufe 1: die Hyrox-
+ * Stations-Einheit (Schlitten, Ausfallschritte, Wall Balls) ebenso.
+ */
 export const isLegStrength = (s: Pick<GeneratedSession, 'kind' | 'focus'>) =>
   s.kind === 'strength' && LEG_FOCUSES.includes(s.focus);
 
@@ -613,6 +640,8 @@ function placeWeeks(
     if (week.weekNo >= 1 && week.kind !== 'deload') loadWeek += 1;
     const easyWeek = week.weekNo === 0 || week.kind !== 'load';
     let enduranceSlot = 0;
+    // Hyrox (Sportarten Stufe 1): der erste Kraft-Tag der Woche wird die Stations-Einheit (HYROX_PLAN.stationSessions).
+    let stationPending = week.workouts?.discipline === 'hyrox' && ctx.hyrox !== undefined;
     for (const day of week.days) {
       const date = addDays(week.monday, day.weekday - 1);
       const common = {
@@ -637,6 +666,7 @@ function placeWeeks(
             // WP5 Triathlon: Lauf-Variante dieser Woche (Geh-Lauf-Wechsel der Einsteiger, „nur Gehen“) für die Tage, die
             // der Wochenbau dem Laufen zuteilt.
             runVariant: enduranceVariant({ ...ctx.endurance, discipline: null }, loadWeek, 0),
+            loadWeek,
           });
         }
         sessions.push({
@@ -657,6 +687,42 @@ function placeWeeks(
           exercises: [],
         });
         continue;
+      }
+      if (stationPending && ctx.hyrox && week.workouts) {
+        stationPending = false;
+        const profile = ctx.hyrox.profiles.get(locationOfKind(day.kind));
+        const station = hyroxStationSession({
+          library: ctx.hyrox.library,
+          available: profile?.available ?? new Set<string>(),
+          excludedCautionTags: ctx.hyrox.excludedCautionTags,
+          level: week.workouts.level,
+          // Erholungswoche: Baustein der Woche davor (Erholungs-Dosierung bezieht sich auf die Belastungswochen).
+          phase:
+            week.kind === 'deload' && w > 0 && weeks[w - 1]?.workouts
+              ? (weeks[w - 1]?.workouts?.phase ?? week.workouts.phase)
+              : week.workouts.phase,
+          cautious: rules.enduranceStartGroup === 'cautious',
+          rpeMax: rules.rpeMax,
+          minutes: day.minutes,
+        });
+        if (station.exercises.length > 0) {
+          if (station.shortened) notes.add('minutes_shortened');
+          const exercises = station.exercises.map((e) => dosageForWeek(e, week.kind, rules));
+          sessions.push({
+            ...common,
+            kind: 'strength',
+            template_day_index: HYROX_PLAN.stationTemplateDayIndex,
+            name_de: station.name_de,
+            focus: 'hyrox_stations',
+            endurance_modality: null,
+            effort_target: null,
+            estimated_minutes: adaptedSessionMinutes({ exercises }),
+            warmup_de: station.warmup_de,
+            cooldown_de: station.cooldown_de,
+            exercises,
+          });
+          continue;
+        }
       }
       if (!ctx.strength || primary.length === 0) continue;
       const primaryBase = primary[rotation % primary.length] as AdaptedSession;
@@ -711,6 +777,8 @@ interface CompetitionDayItem {
   readonly index: number;
   readonly variant: EnduranceVariant;
   readonly runVariant: EnduranceVariant;
+  /** Belastungswochen seit Planbeginn bis zu dieser Woche (Hyrox: Stations-Menge der Kombi). */
+  readonly loadWeek: number;
 }
 
 /**
@@ -724,7 +792,12 @@ function triathlonVariant(sport: DaySport, runVariant: EnduranceVariant, walkOnl
 }
 
 /** Texte der Einheit kommen vom Wochenbau (Art, Sportart) statt aus ENDURANCE_TEXTS_DE (Laufen; WP5 Rad, Schwimmen). */
-const WORKOUT_TEXT_VARIANTS: readonly EnduranceVariant[] = ['easy_run', 'easy_bike', 'easy_swim'];
+const WORKOUT_TEXT_VARIANTS: readonly EnduranceVariant[] = [
+  'easy_run',
+  'easy_bike',
+  'easy_swim',
+  'easy_row',
+];
 
 function competitionWeekBuild(
   weeks: readonly WeekPlan[],
@@ -746,9 +819,13 @@ function competitionWeekBuild(
     const monday = startOfIsoWeek(s.scheduled_on);
     if (!limited.has(monday)) return;
     const current = keep.get(monday);
+    const station = (x: GeneratedSession) => x.focus === 'hyrox_stations';
+    const cur = current === undefined ? undefined : (placed[current] as GeneratedSession);
+    // Hyrox: die Stations-Einheit bleibt vor jeder anderen Kraft-Einheit (sonst wie bisher: ohne Beine bevorzugt).
     const better =
-      current === undefined ||
-      (isLegStrength(placed[current] as GeneratedSession) && !isLegStrength(s));
+      cur === undefined ||
+      (station(s) && !station(cur)) ||
+      (!station(cur) && isLegStrength(cur) && !isLegStrength(s));
     if (better) keep.set(monday, i);
   });
   const legMuscles: readonly string[] = S.legMuscles;
@@ -759,7 +836,8 @@ function competitionWeekBuild(
     if (!limited.has(monday)) return s;
     // COMPETITION_STRENGTH.maxStrengthSessionsPerWeek = 1: nur die gewählte Einheit bleibt.
     if (keep.get(monday) !== i) return null;
-    if (s.is_deload) return s;
+    // Hyrox: Stations-Einheit in der Spitze voll (Tapering/Rennwoche sind Erholungswochen, dort ohnehin leichter).
+    if (s.is_deload || s.focus === 'hyrox_stations') return s;
     const exercises = s.exercises.map((e) => {
       const exercise = library?.get(e.exercise_id);
       const legs = exercise?.primary_muscles.some((m) => legMuscles.includes(m)) ?? false;
@@ -789,6 +867,7 @@ function competitionWeekBuild(
       .sort()
       .at(-1) ?? '';
   const easyWeekOf = (week: WeekPlan) => week.weekNo === 0 || week.kind !== 'load';
+  let simulationPlaced = ctx.hyrox?.simulationDone === true;
   weeks.forEach((week, w) => {
     const spec = week.workouts;
     if (!spec) return;
@@ -817,7 +896,7 @@ function competitionWeekBuild(
     // (index −1 = keine lange Einheit in dieser Woche)
     const longWeekday = longIndex >= 0 ? (endurance[longIndex] as PlannedDay).weekday : null;
     const longRunDate = longWeekday === null ? null : addDays(week.monday, longWeekday - 1);
-    const weekDays = items.map((item) => ({
+    let weekDays = items.map((item) => ({
       date: (out[item.at] as GeneratedSession).scheduled_on,
       minutes: (out[item.at] as GeneratedSession).estimated_minutes,
     }));
@@ -835,7 +914,32 @@ function competitionWeekBuild(
       const sport = sports[k] ?? null;
       return sport === null ? item.variant : triathlonVariant(sport, item.runVariant, walkOnly);
     });
+    const combo = hyroxCombo({
+      spec,
+      week,
+      items,
+      weekDays,
+      longRunDate,
+      blocked,
+      variants,
+      ctx,
+      simulationPlaced,
+    });
+    const fixed = combo.fixed;
+    if ([...fixed.values()].some((x) => x.name_de === HYROX_TEXTS_DE.combo.simulationName)) {
+      simulationPlaced = true;
+    }
+    // Hyrox: Minuten zur Kombi verschoben (Wochensumme gleich) – Einheiten und Wochentage nachziehen.
+    if (combo.minutes.size > 0) {
+      for (const item of items) {
+        const session = out[item.at] as GeneratedSession;
+        const m = combo.minutes.get(session.scheduled_on);
+        if (m !== undefined) out[item.at] = { ...session, estimated_minutes: m };
+      }
+      weekDays = weekDays.map((d) => ({ ...d, minutes: combo.minutes.get(d.date) ?? d.minutes }));
+    }
     const planned = weekWorkouts({
+      ...(fixed.size > 0 ? { fixed } : {}),
       phase: spec.phase,
       recoveryWeek: spec.recoveryWeek,
       weekZero: week.weekNo === 0,
@@ -859,7 +963,8 @@ function competitionWeekBuild(
       const session = out[item.at] as GeneratedSession;
       // Texte vom Wochenbau für Laufen, Rad und Schwimmen; Gehen, Geh-Lauf-Wechsel und Ergometer behalten die Texte der
       // Variante (wie WP2), lange Einheit mit „(lang)“.
-      const own = WORKOUT_TEXT_VARIANTS.includes(variant);
+      // Sportarten Stufe 1: Hyrox-(Technik-)Kombi bringt eigene Texte mit (auch beim Gehen).
+      const own = WORKOUT_TEXT_VARIANTS.includes(variant) || hasStationSteps(workout.steps);
       const retyped = variant !== item.variant;
       out[item.at] = {
         ...session,
@@ -899,6 +1004,144 @@ function competitionWeekBuild(
     });
   });
   return out;
+}
+
+/**
+ * Hyrox-Kombi einer Woche (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1, HYROX_PLAN.combo): höchstens eine je Woche, auf einem
+ * Lauf-Tag ohne langen Lauf, nicht neben dem langen Lauf, nicht neben Kraft mit Beinen bzw. der Stations-Einheit oder
+ * harten Einheiten (`blocked`). Ab Aufbau; in der Basis nur Fortgeschrittene/Leistungssport außerhalb der vorsichtigen
+ * Startgruppe; nie in Woche 0, einer Erholungswoche, der Rennwoche oder der Erholung nach dem Rennen. Harte Kombi (bzw.
+ * einmal die Simulation); bei Arzt-Hinweis bzw. „nur Gehen“ die lockere Technik-Kombi (auch beim Gehen, ohne Abstands-
+ * regel). Ist der Kombi-Tag kürzer als `combo.minMinutes`, bekommt er Minuten von anderen lockeren Tagen derselben Woche
+ * (nie vom langen Lauf, Spender nie unter ENDURANCE_SESSION_LIMITS.minSessionMinutes, Kombi nie länger als die längste
+ * Einheit der Woche) – die Wochensumme und damit die 10-%-Kette bleiben gleich.
+ * Ergebnis: Einheit je Datum für weekWorkouts (`fixed`) und geänderte Minuten je Datum; leer bei allen anderen
+ * Disziplinen.
+ */
+function hyroxCombo(input: {
+  readonly spec: CompetitionWeekWorkouts;
+  readonly week: WeekPlan;
+  readonly items: readonly CompetitionDayItem[];
+  readonly weekDays: readonly { readonly date: string; readonly minutes: number }[];
+  readonly longRunDate: string | null;
+  readonly blocked: ReadonlySet<string>;
+  readonly variants: readonly EnduranceVariant[];
+  readonly ctx: BlockContext;
+  readonly simulationPlaced: boolean;
+}): {
+  readonly fixed: Map<string, EnduranceWorkout>;
+  readonly minutes: Map<string, number>;
+} {
+  const { spec, week, weekDays, ctx } = input;
+  const fixed = new Map<string, EnduranceWorkout>();
+  const minutes = new Map<string, number>();
+  const none = { fixed, minutes };
+  if (spec.discipline !== 'hyrox' || !spec.hyrox) return none;
+  const C = HYROX_PLAN.combo;
+  const cautious = ctx.rules.enduranceStartGroup === 'cautious';
+  const phaseOk =
+    (C.phases as readonly string[]).includes(spec.phase) &&
+    (spec.phase !== 'base' ||
+      ((C.basePhaseLevels as readonly string[]).includes(spec.level) && !cautious));
+  if (!phaseOk || spec.recoveryWeek || week.weekNo === 0) return none;
+  const hard = spec.limits.allowed;
+  const longDate = effectiveLongDate(weekDays, spec.phase, input.longRunDate);
+  const near = (a: string, b: string) => {
+    const d = Math.abs(isoWeekday(a) - isoWeekday(b));
+    return d === 1 || d === 6;
+  };
+  const days = weekDays.map((d, k) => ({ ...d, variant: input.variants[k] }));
+  const candidates = days
+    .filter(
+      (d) =>
+        // Harte Kombi nur auf Lauf-Tagen; die lockere Technik-Kombi (Arzt-Hinweis, ab 65) auch beim Gehen.
+        (d.variant === 'easy_run' ||
+          (!hard && (d.variant === 'brisk_walk' || d.variant === 'walk_run'))) &&
+        d.date !== longDate &&
+        // Abstand (48-h-Regel) nur für die harte Kombi; die Technik-Kombi ist locker.
+        (!hard || (!input.blocked.has(d.date) && !(longDate !== null && near(d.date, longDate)))),
+    )
+    .sort((a, b) => b.minutes - a.minutes || (a.date < b.date ? -1 : 1));
+  const total = weekDays.reduce((sum, d) => sum + d.minutes, 0);
+  const longest = Math.max(0, ...weekDays.map((d) => d.minutes));
+  const minSession = ENDURANCE_SESSION_LIMITS.minSessionMinutes;
+  const excluded = ctx.hyrox?.excludedCautionTags ?? [];
+  const easyEffort = enduranceEffort(ctx.rules, week.weekNo === 0 || week.kind !== 'load');
+  const loadWeek = Math.max(1, input.items[0]?.loadWeek ?? 1);
+  // Simulation (einmal, letzte Belastungswoche der Spitze, ≥ 10 Tage vor dem Rennen) am Tag des langen Laufs.
+  if (
+    hard &&
+    !input.simulationPlaced &&
+    spec.hyrox.simulationWeek &&
+    spec.phase === HYROX_PLAN.simulation.phase &&
+    longDate !== null &&
+    !input.blocked.has(longDate) &&
+    longDate <= addDays(spec.hyrox.raceDate, -HYROX_PLAN.simulation.notWithinDays)
+  ) {
+    const day = days.find((d) => d.date === longDate);
+    const simulation = day
+      ? hyroxComboWorkout({
+          minutes: day.minutes,
+          level: spec.level,
+          limits: spec.limits,
+          easyEffort,
+          hardBudgetS: weeklyHardBudgetSeconds(total),
+          loadWeek,
+          stationOffset: 0,
+          excludedCautionTags: excluded,
+          simulation: true,
+        })
+      : null;
+    if (simulation && simulation.name_de === HYROX_TEXTS_DE.combo.simulationName) {
+      fixed.set(longDate, simulation);
+      return { fixed, minutes };
+    }
+  }
+  for (const d of candidates) {
+    // Zu kurz → Minuten von anderen lockeren Tagen (nicht vom langen Lauf), Wochensumme bleibt gleich.
+    const target = Math.max(d.minutes, Math.min(C.minMinutes, longest));
+    const transfers = new Map<string, number>();
+    let need = target - d.minutes;
+    if (need > 0) {
+      const donors = days
+        .filter((x) => x.date !== d.date && x.date !== longDate && x.minutes > minSession)
+        .sort((a, b) => b.minutes - a.minutes || (a.date < b.date ? -1 : 1));
+      for (const x of donors) {
+        if (need <= 0) break;
+        const give = Math.min(need, x.minutes - minSession);
+        transfers.set(x.date, x.minutes - give);
+        need -= give;
+      }
+      if (need > 0) continue;
+    }
+    const workout = hard
+      ? hyroxComboWorkout({
+          minutes: target,
+          level: spec.level,
+          limits: spec.limits,
+          easyEffort,
+          hardBudgetS: weeklyHardBudgetSeconds(total),
+          loadWeek,
+          stationOffset: loadWeek * 3,
+          excludedCautionTags: excluded,
+        })
+      : hyroxTechniqueCombo({
+          minutes: target,
+          level: spec.level,
+          easyEffort,
+          stationOffset: loadWeek * 3,
+          excludedCautionTags: excluded,
+          walk: d.variant === 'brisk_walk',
+        });
+    if (!workout) continue;
+    fixed.set(d.date, workout);
+    if (target !== d.minutes) {
+      minutes.set(d.date, target);
+      for (const [date, m] of transfers) minutes.set(date, m);
+    }
+    break;
+  }
+  return { fixed, minutes };
 }
 
 export interface BuildPlanBlockOptions {
@@ -1035,7 +1278,14 @@ export function baseSessionsFromBlock(previous: readonly GeneratedSession[]): Ad
   const pick = new Map<number, GeneratedSession>();
   const sets = (s: GeneratedSession) => s.exercises.reduce((sum, e) => sum + e.sets, 0);
   const ordered = [...previous]
-    .filter((s) => s.kind === 'strength' && s.template_day_index !== null && !s.is_deload)
+    // Sportarten Stufe 1: die Hyrox-Stations-Einheit ist keine Vorlagen-Einheit (entsteht je Woche neu).
+    .filter(
+      (s) =>
+        s.kind === 'strength' &&
+        s.template_day_index !== null &&
+        !s.is_deload &&
+        s.focus !== 'hyrox_stations',
+    )
     .sort((a, b) => (a.scheduled_on < b.scheduled_on ? -1 : 1));
   for (const kind of ['intro', 'load'] as const) {
     for (const s of ordered) {
@@ -1080,7 +1330,10 @@ export interface NextPlanBlockOptions {
   readonly library: ReadonlyMap<string, Exercise>;
   /** Geräte-Profile je Ort (für den Tausch in der Fassung des Tages). */
   readonly profiles: ReadonlyMap<EquipmentLocation, Pick<EquipmentProfile, 'available'>>;
-  readonly endurance: Pick<EnduranceContext, 'goalType' | 'discipline' | 'experienceLevel'>;
+  readonly endurance: Pick<
+    EnduranceContext,
+    'goalType' | 'discipline' | 'experienceLevel' | 'rowing'
+  >;
   /** Belastungswochen aller bisherigen Blöcke (Geh-Lauf-Wechsel der Einsteiger). */
   readonly loadWeeksBefore?: number;
   /**
@@ -1239,7 +1492,7 @@ export function nextPlanBlock(
   }
   // Rotation ab der Vorlagen-Einheit NACH der letzten geplanten Kraft-Einheit weiterzählen.
   const lastStrength = [...previous]
-    .filter((s) => s.kind === 'strength')
+    .filter((s) => s.kind === 'strength' && s.focus !== 'hyrox_stations')
     .sort((a, b) => (a.scheduled_on < b.scheduled_on ? -1 : 1))
     .at(-1);
   const lastIndex = primarySessions.findIndex(
@@ -1266,6 +1519,18 @@ export function nextPlanBlock(
       enduranceReference: enduranceReferenceFromBlock(previous, options.loggedEnduranceMinutes),
       enduranceStricterGroup: isStricterGroup(group, options.previousStartGroup),
       loadWeeksBefore: options.loadWeeksBefore ?? 0,
+      ...(options.competitionWeeks?.some((spec) => spec.workouts?.discipline === 'hyrox')
+        ? {
+            hyrox: {
+              library: options.library,
+              profiles: options.profiles,
+              excludedCautionTags: options.rules.excludedCautionTags,
+              simulationDone: previous.some(
+                (s) => s.name_de === HYROX_TEXTS_DE.combo.simulationName,
+              ),
+            },
+          }
+        : {}),
       ...(options.competitionWeeks
         ? {
             competitionNeighbours: {

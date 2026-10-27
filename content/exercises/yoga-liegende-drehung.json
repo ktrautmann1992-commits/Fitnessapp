@@ -1,0 +1,44 @@
+{
+  "id": "yoga-liegende-drehung",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Liegende Drehung",
+  "name_en": "Supine Twist",
+  "aliases_de": ["Supta Matsyendrasana"],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["obliques"],
+  "secondary_muscles": ["lower_back", "chest"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": ["long_supine", "floor_transfer", "trunk_rotation"],
+  "description_de": "In Rückenlage die angewinkelten Knie zur Seite sinken lassen, Schultern bleiben am Boden. Eine ruhige Drehung zum Abschluss.",
+  "steps_de": [
+    "Auf den Rücken legen, Knie anwinkeln, Arme seitlich auf Schulterhöhe ablegen.",
+    "Ausatmen und beide Knie langsam zu einer Seite sinken lassen.",
+    "Ein Kissen unter die Knie legen, wenn sie den Boden nicht erreichen.",
+    "Halten, dann zur Mitte und zur anderen Seite."
+  ],
+  "tips_de": ["Die gegenüberliegende Schulter bleibt am Boden."],
+  "common_mistakes_de": ["Die Knie mit Schwung fallen lassen."],
+  "safety_note_de": "Sanft drehen, nie ruckartig und nicht bis zum Anschlag. Die Bewegung kommt aus dem Brustkorb, der untere Rücken bleibt ruhig. Bei Schmerzen die Drehung lösen.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-drehsitz-stuhl",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

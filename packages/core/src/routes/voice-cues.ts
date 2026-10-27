@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { VOICE_CUES } from '../constants';
 import type { TrackedRouteSport } from '../enums';
+import { hyroxStationCue } from '../hyrox/format';
 import type { WorkoutStep } from '../plan/intensity';
 
 /**
@@ -116,7 +117,7 @@ function paceText(sport: TrackedRouteSport, distanceM: number, movingS: number):
 
 const STEP_TEXT: Record<WorkoutStep['part'], Record<WorkoutStep['kind'], string>> = {
   warmup: { work: 'Einlaufen', easy: 'Einlaufen', rest: 'Einlaufen', station: 'Einlaufen' },
-  // Stufe 1 (Hyrox-Kombi): Stations-Schritt – Name der Station folgt mit Etappe H.
+  // Sportarten Stufe 1 (Hyrox-Kombi): Stations-Schritt – Name und Menge der Station sagt intervalCue (hyroxStationCue).
   main: { work: 'Belastung', easy: 'Locker', rest: 'Pause', station: 'Station' },
   cooldown: { work: 'Auslaufen', easy: 'Auslaufen', rest: 'Auslaufen', station: 'Auslaufen' },
 };
@@ -142,6 +143,9 @@ export function intervalCue(
   if (current >= steps.length)
     return { text: 'Einheit geschafft. Locker ausgehen.', stepIndex: current };
   const s = steps[current] as WorkoutStep;
+  if (s.kind === 'station' && s.station) {
+    return { text: `${hyroxStationCue(s.station, s.seconds)}.`, stepIndex: current };
+  }
   return {
     text: `${STEP_TEXT[s.part][s.kind]}: ${spokenDuration(s.seconds)}.`,
     stepIndex: current,

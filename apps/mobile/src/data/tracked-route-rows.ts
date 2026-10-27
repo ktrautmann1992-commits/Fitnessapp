@@ -13,6 +13,8 @@ import {
   trackedRouteSchema,
   type UpdateTrackedRoutePayload,
   updateTrackedRouteSchema,
+  isHikeKind,
+  walkKindName,
 } from '@fitnessapp/core';
 
 import type { UserRows } from './types';
@@ -95,12 +97,19 @@ export function applyTrackedRouteSave(
       cardioLogs: rows.cardioLogs.map((c) =>
         c.session_log_id === r.session_log_id && c.modality === 'bike'
           ? { ...c, e_bike: r.e_bike === true }
-          : c,
+          : // Wandern (Stufe 1): ebenso die Art der Geh-Einheit.
+            c.session_log_id === r.session_log_id && c.modality === 'walk'
+            ? { ...c, walk_kind: r.walk_kind ?? null }
+            : c,
       ),
       sessionLogs: rows.sessionLogs.map((l) =>
         l.id === r.session_log_id
           ? {
               ...l,
+              // Eine freie Geh-Einheit heißt danach wie ihre Art (wie save_tracked_route).
+              ...(r.sport === 'walk' && l.is_free && l.hyrox_splits == null
+                ? { name_de: walkKindName(r.walk_kind) }
+                : {}),
               source: r.source === 'recorded' ? 'gps' : 'gpx_import',
               revision: l.revision + 1,
               updated_at: context.now,
@@ -175,6 +184,17 @@ export function applyTrackedRouteUpdate(
   const own = routes.find((x) => x.id === u.id && x.user_id === context.userId);
   if (!own) return 'not_found';
   if (u.e_bike === true && own.sport !== 'bike') return 'invalid';
+  // Wandern (Stufe 1, wie update_tracked_route): walk_kind nur beim Gehen; fehlt = unverändert. Wechselt die Art weg
+  // von Wandern/Bergwandern ohne Angabe zur SAC-Stufe, fällt diese weg; SAC nur bei Wandern/Bergwandern.
+  if (u.walk_kind != null && own.sport !== 'walk') return 'invalid';
+  const walkKind = u.walk_kind !== undefined ? u.walk_kind : (own.walk_kind ?? null);
+  const sacGrade =
+    u.sac_grade !== undefined
+      ? u.sac_grade
+      : u.walk_kind !== undefined && !isHikeKind(u.walk_kind)
+        ? null
+        : (own.sac_grade ?? null);
+  if (sacGrade !== null && !isHikeKind(walkKind)) return 'invalid';
   return routes.map((x) =>
     x.id === u.id
       ? {
@@ -184,10 +204,70 @@ export function applyTrackedRouteUpdate(
           is_favorite: u.is_favorite,
           note: u.note,
           e_bike: u.e_bike ?? x.e_bike === true,
+          walk_kind: walkKind,
+          sac_grade: sacGrade,
           updated_at: context.now,
         }
       : x,
   );
+}
+
+/**
+ * Art der Geh-Einheit der Strecke → verknüpfter EIGENER Geh-Eintrag (wie update_tracked_route: nur bei Änderung,
+ * Revision + 1; ein freier Eintrag heißt danach wie seine Art).
+ */
+export function routeWalkKindToLog(
+  rows: UserRows,
+  route: Pick<TrackedRouteRow, 'session_log_id' | 'walk_kind' | 'sport'>,
+  now: string,
+): UserRows {
+  const logId = route.session_log_id;
+  const kind = route.walk_kind ?? null;
+  const cardio = logId ? rows.cardioLogs.find((c) => c.session_log_id === logId) : undefined;
+  if (
+    !logId ||
+    !cardio ||
+    route.sport !== 'walk' ||
+    cardio.modality !== 'walk' ||
+    (cardio.walk_kind ?? null) === kind
+  ) {
+    return rows;
+  }
+  return {
+    ...rows,
+    cardioLogs: rows.cardioLogs.map((c) => (c === cardio ? { ...c, walk_kind: kind } : c)),
+    sessionLogs: rows.sessionLogs.map((l) =>
+      l.id === logId
+        ? {
+            ...l,
+            revision: l.revision + 1,
+            updated_at: now,
+            ...(l.is_free && l.hyrox_splits == null ? { name_de: walkKindName(kind) } : {}),
+          }
+        : l,
+    ),
+  };
+}
+
+/**
+ * Eintrag gespeichert → verknüpfte Geh-Strecken übernehmen dessen Art (wie save_session_log); die SAC-Stufe bleibt nur
+ * bei Wandern/Bergwandern.
+ */
+export function logWalkKindToRoutes(
+  routes: readonly TrackedRouteRow[],
+  rows: Pick<UserRows, 'cardioLogs'>,
+): TrackedRouteRow[] {
+  const byLog = new Map(
+    rows.cardioLogs
+      .filter((c) => c.modality === 'walk')
+      .map((c) => [c.session_log_id, c.walk_kind ?? null] as const),
+  );
+  return routes.map((r) => {
+    if (r.sport !== 'walk' || r.session_log_id === null || !byLog.has(r.session_log_id)) return r;
+    const kind = byLog.get(r.session_log_id) ?? null;
+    if ((r.walk_kind ?? null) === kind) return r;
+    return { ...r, walk_kind: kind, sac_grade: isHikeKind(kind) ? (r.sac_grade ?? null) : null };
+  });
 }
 
 /**

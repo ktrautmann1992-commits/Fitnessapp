@@ -1,0 +1,121 @@
+{
+  "id": "erholungstag-20",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Erholungstag 20 Minuten",
+  "summary_de": "Zwanzig Minuten Beweglichkeit von Kopf bis Fuß für trainingsfreie Tage – ruhig und ohne Anstrengung.",
+  "category": "mobility",
+  "difficulty": 2,
+  "minutes": 20,
+  "format": "flow",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": ["resistance_bands"],
+  "warmup_de": "Zwei Minuten locker gehen, Arme und Schultern kreisen.",
+  "cooldown_de": "In Rückenlage nachspüren und langsam über die Seite aufstehen.",
+  "exercises": [
+    {
+      "exercise_id": "marschieren-auf-der-stelle",
+      "reps": null,
+      "duration_s": 90,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "mobility-nacken-seitneige",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "mobility-wandengel",
+      "reps": null,
+      "duration_s": 90,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "katze-kuh",
+      "reps": null,
+      "duration_s": 90,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "mobility-weltbeste-dehnung",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "mobility-frosch-schaukel",
+      "reps": null,
+      "duration_s": 90,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "mobility-hueft-90-90",
+      "reps": null,
+      "duration_s": 90,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "mobility-knie-zur-wand",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "mobility-beinrueckseite-band-liegend",
+      "reps": null,
+      "duration_s": 70,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-liegende-drehung",
+      "reps": null,
+      "duration_s": 70,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-entspannung-rueckenlage",
+      "reps": null,
+      "duration_s": 180,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

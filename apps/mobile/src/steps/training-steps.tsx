@@ -43,6 +43,7 @@ import {
   Body,
   Button,
   Card,
+  Checkbox,
   ChoiceList,
   FieldError,
   Heading,
@@ -52,7 +53,6 @@ import {
 } from '@/components/ui';
 import { t } from '@/i18n';
 import { datePartsFromIso, formatKg, isoFromDateParts, parseDecimal } from '@/lib/format';
-import { PENDING_DISCIPLINES, selectable } from '@/lib/sportarten-stufe1';
 import { scheduleSummaryText, slotKindLabel } from '@/lib/summary';
 import { useThemeColors } from '@/lib/theme';
 import { fieldErrorsFromIssues, type FieldErrors } from '@/lib/validation-errors';
@@ -192,7 +192,7 @@ export function GoalStep({ ctl }: { ctl: StepController }) {
           <ChoiceList
             label={g.discipline}
             horizontal
-            options={selectable(ENDURANCE_DISCIPLINES, PENDING_DISCIPLINES).map((value) => ({
+            options={ENDURANCE_DISCIPLINES.map((value) => ({
               value,
               label: g.disciplines[value],
             }))}
@@ -406,6 +406,12 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
         }),
   );
   const initial = saved ?? suggestion;
+  // Sportarten Stufe 1 · Etappe R (Gründer-Entscheidung 27.10.2026): „Im Studio auch rudern“ – ausdrückliche Angabe,
+  // gespeichert als Gerät `rowing_machine` mit Ort Studio. Standard aus; gesendet wird nur eine Änderung.
+  const storedGymRowing = (answers.equipment ?? []).some(
+    (item) => item.location === 'gym' && item.equipmentId === 'rowing_machine',
+  );
+  const [gymRowing, setGymRowing] = useState(storedGymRowing);
 
   const [mode, setMode] = useState<TrainingScheduleMode>(initial?.mode ?? 'fixed');
   const [days, setDays] = useState<number[]>(() =>
@@ -553,7 +559,11 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
       return;
     }
     setErrors({});
-    void ctl.submit({ step: 'time_budget', schedule: parsed.data });
+    void ctl.submit({
+      step: 'time_budget',
+      schedule: parsed.data,
+      ...(gymRowing !== storedGymRowing ? { gymRowing } : {}),
+    });
   }
 
   return (
@@ -684,6 +694,19 @@ export function TrainingScheduleStep({ ctl }: { ctl: StepController }) {
         </>
       )}
       <FieldError message={errors.form} />
+
+      {/* Etappe R: nur mit Studio-Tagen (oder schon eingeschaltet, damit man es wieder ausschalten kann). */}
+      {input.slots.some((slot) => slot.kind === 'strength_gym') || gymRowing ? (
+        <Card>
+          <Checkbox
+            label={t.rowing.gymOption}
+            checked={gymRowing}
+            onChange={setGymRowing}
+            testID="schedule-gym-rowing"
+          />
+          <Body muted>{t.rowing.gymOptionHint}</Body>
+        </Card>
+      ) : null}
 
       <Notice tone="success" title={ts.summaryTitle} testID="schedule-summary">
         {scheduleSummaryText(validSlots, discipline)}

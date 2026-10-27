@@ -1747,7 +1747,7 @@ steht ein Hinweis.
 2. **Mehr → Einstellungen** → bis **Smartwatch** wischen → **Smartwatch verbinden**. Ihr seht „Was übernommen wird“
    und „Was nicht passiert“.
 3. **Zustimmen und verbinden** (eigene Einwilligung „Smartwatch-Daten“, Text über **Einwilligungstext lesen**) →
-   **Beispiel-Uhr verbinden (Testmodus)** → Meldung „Abgleich fertig – 5 neu“. Darunter: verbunden seit, letzter
+   **Beispiel-Uhr verbinden (Testmodus)** → Meldung „Abgleich fertig – 6 neu“ (seit Etappe W mit einer Wanderung). Darunter: verbunden seit, letzter
    Abgleich, freigegebene Daten (✓), Tageswerte der letzten 7 Tage (Schritte, Schlaf, Ruhepuls).
 4. **Jetzt abgleichen** → „keine neuen Einheiten“ (nichts doppelt).
 5. **Verlauf** (Training → Verlauf): Einträge mit **⌚ Smartwatch**. Einen **Lauf** öffnen → „⌚ aus Samsung Health ·
@@ -1973,6 +1973,98 @@ Steht in einem älteren Teil „Heute → …“, meint er den Reiter **Training
 11. **Eigene Menüleiste bleibt:** Wer schon „Workouts“ oder „Wettkampf“ selbst als Knopf gewählt hatte, behält seine
     Leiste. Wer nie etwas geändert hat, bekommt die neue Leiste automatisch. **Mehr → Menüleiste anpassen** → „Workouts“
     wieder aufnehmen geht weiterhin (bis 6 Knöpfe).
+
+## Teil 9w – So testest du Wandern/Bergwandern (Sportarten Stufe 1, Etappe W, 27.10.2026, Testmodus)
+
+1. Vorschau-Link aus dem Pull Request öffnen → **Ohne Konto testen** → Onboarding bis **Geschafft!**.
+2. **Mehr → Ausdauer** → bei „Was zeichnest du auf?“ **Gehen** antippen → darunter **Gehen | Wandern | Bergwandern**.
+3. **Bergwandern** antippen → **Schwierigkeit (SAC-Skala, optional)** erscheint, darunter die Karte **„Bevor du
+   losgehst“** (Wetter, Umkehrzeit, Höhe, Abstieg, Live-Begleitung, Notrufnummern DE/AT/CH/IT, Akku, Trinken).
+   **„T4 oder schwerer“** wählen → Hinweis „außerhalb dessen, was die App begleitet“ (keine Sperre).
+4. **Demo-Aufzeichnung starten** → kurz laufen lassen → Stopp → Speichern: oben steht „Bergwandern“, Art und SAC-Stufe
+   sind noch änderbar → **Speichern**.
+5. Auswertung: Kopfzeile „Bergwandern · SAC T2 …“, unter **Details** **Abstieg** und **Höchster Punkt** (ca.),
+   **Gehzeit (Schätzung)** nach DIN/DAV, Höhenprofil. **Bearbeiten** → Art auf „Gehen“ stellen → Eintrag im Tagebuch
+   heißt danach „Spaziergang“.
+6. **Mehr → Einstellungen → Smartwatch & Apps → Beispiel-Uhr verbinden (Testmodus)** → Meldung „Abgleich fertig – 6
+   neu“ (vorher 5): vorgestern erscheint eine
+   **Wanderung** (2,5 h, ca. 650 Hm auf und ab) mit Route; in der Auswertung die Karte „Gut zu wissen nach deiner Tour“
+   (Abstieg). Liegt am Tag danach ein Bein-Krafttag im Plan, zeigt **Training → Tag antippen** „Nach deiner Wanderung …
+   sind deine Beine vermutlich noch müde“.
+7. **Schmerz-/Verletzungsmodus** (Einstellungen, siehe Teil 9t) für Knie oder Sprunggelenk eintragen → die Wander-Karten zeigen zusätzlich den
+   Schon-Hinweis.
+
+## Teil 9w-R – Indoor-Rudern testen (27.10.2026, Testmodus)
+
+Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Rudergerät-Übungen und Rudern-Workouts sind Entwürfe („Testinhalt“).
+
+1. Onboarding: Ziel z. B. **„Fitness & Gesundheit“** (ohne Disziplin), Einsteiger, Trainingstage **Mo Kraft zu Hause, Di/Do/Sa
+   Ausdauer**, Equipment zu Hause u. a. **Rudergerät** → **Training → Woche**: jede zweite Ausdauer-Einheit heißt
+   **„Lockeres Rudern“** (gleiche Minuten wie ohne Rudergerät). Ohne Rudergerät gibt es kein Rudern im Plan.
+   **Studio:** Testdaten löschen, neu mit **Mo Kraft im Studio, Di/Do/Sa Ausdauer** → im Schritt „Trainingstage“ unten
+   **„Im Studio auch rudern (Rudergerät)“** ankreuzen (Standard aus) → gleiche Woche mit Rudern. Ohne Haken: kein
+   Rudern. Später ändern: **Mehr → Einstellungen → Training → „Im Studio auch rudern“** → Trainingstage → Haken → danach
+   „Plan neu erstellen“.
+2. Ruder-Einheit öffnen: Hinweis **„Technik am Rudergerät“** (Beine – Rumpf – Arme, Dämpfer 3–5). **Training
+   starten** → Art **Rudern**, 20 min, Distanz **4,8** → Zeile **„Split 2:05 /500 m“** und „≈ … Watt (aus dem Split
+   berechnet)“. Optional Ø Watt und Schlagzahl; **„Wiederholung hinzufügen“** → 500 m / 1:58 → Split je Wiederholung.
+   Speichern → im Verlauf stehen Split, Watt, Schlagzahl und das Intervall-Ergebnis.
+3. Prüfen: Schlagzahl **70** → Fehler am Feld; Distanz **10** km in 20 min → „Bitte prüfen: Der Split ist schneller als
+   1:10 /500 m“ (nur Hinweis).
+4. **Training → Workouts** → Filter **Rudern**: 10 Workouts (z. B. „4 × 500 m“, „30/30“) mit Timer.
+5. **Schon-Modus** einschalten (wie Teil 9t) mit **Knie „mittel“** → an der Ruder-Einheit: „Heute lieber
+   Rad-Ergometer oder zügiges Gehen“. **Reise-Modus „Nur Körpergewicht“** → „Unterwegs ohne Rudergerät …“.
+6. **Nachtragen** → Art **Rudern** ist wählbar (freie Einheit „Rudern“).
+
+Smartwatch: Health Connect „Rudergerät“ (54) kommt als **Rudern** mit Dauer und Distanz ins Tagebuch; „Rudern“ im Boot
+(53) bleibt „Sonstige Sportart“.
+
+Rückmeldung an Claude z. B. „Rudern: 1–6 ok, Split-Zeile zu klein“.
+
+## Teil 9y – Yoga, Pilates, Mobility testen (Sportarten Stufe 1 · Etappe Y, 27.10.2026, Testmodus)
+
+Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle Posen und Routinen sind Entwürfe („Testinhalt“).
+
+1. **Ohne Konto testen** → Onboarding (Einsteiger, 2 Tage Kraft, z. B. Dienstag und Freitag) → **Zum Plan**.
+2. **Training → Workouts → Filter → Ziel „Yoga“** → 5 Routinen (ohne Gesundheits-Check fehlt „Sanft in den Morgen“ –
+   zu viele Umkehrhaltungen). **„Stuhl-Yoga“** antippen → bei den Posen steht „je Seite (rechts / links)“.
+3. **Workout starten** → Flow-Ansicht: großes Bild, Name, Ring mit Restzeit, Atem-Hinweis, „Als Nächstes“. Ohne
+   Pausen-Bildschirm geht es zur nächsten Pose; bei Posen mit Seitenwechsel steht **„Rechte Seite“**, danach
+   **„Linke Seite“**. **Pause/Weiter** und **„Pose überspringen“** ausprobieren; der Bildschirm bleibt an.
+4. **Beenden → Für heute speichern** → im Tagebuch steht „Workout „Stuhl-Yoga“ … Posen“.
+5. Einstellungen → Testdaten löschen, neu ohne Workout: an einem **trainingsfreien Tag** zeigt **Heute** die Karte
+   **„Erholungstag: Mobility 15 min?“** → **Routine ansehen**. Zählt nicht für den Plan.
+6. **Mehr → Einstellungen → Training → „Erholungs-Routine vorschlagen“** ausschalten → die Karte verschwindet.
+7. Mit Gesundheits-Check **„schwanger“** (Testdaten löschen, Onboarding mit Einwilligung): Yoga zeigt nur noch
+   „Stuhl-Yoga“; andere Routinen zeigen oben „Für dich angepasst“ (Variante am Stuhl/an der Wand) oder fehlen.
+8. **Sportart eintragen** (dort, wo ihr bisher z. B. Tennis eingetragen habt): unter „Yoga & Pilates“ stehen **Yoga**
+   und **Pilates** (eigenes Symbol); die Uhr ordnet „Yoga“ und „Pilates“ jetzt dieser Sportart zu.
+
+Rückmeldung an Claude z. B. „Yoga: 1–8 ok, Bild beim Dreieck unklar“.
+
+## Teil 9h – Hyrox testen (Sportarten Stufe 1, Etappe H, 27.10.2026, Testmodus)
+
+So testest du es am Handy (Vorschau-Link aus dem Pull Request, Testmodus – alle Hyrox-Übungen sind Entwürfe und erscheinen
+nur dort):
+
+1. **Einstellungen → Testdaten löschen**, dann „Testmodus starten“.
+2. Onboarding: Ziel **Ausdauer** → Disziplin **Hyrox-Wettkampf**. Der Vorschlag „Deine Trainingstage“ hat genau einen
+   Kraft-Tag (= Stations-Einheit), z. B. 3 Ausdauer-Tage + 1 Kraft-Tag. Gesundheits-Check ohne Auffälligkeit.
+3. Kachel **„Mein Wettkampf“** → **„Wettkampf planen“**: Distanz **Hyrox**, Division wählen (Open, Pro, Doubles, Staffel),
+   Renntag mindestens 8 Wochen (Einsteiger 12 Wochen) in der Zukunft. Ampel prüfen: 1 Tag zu früh → „Zu kurz“ mit
+   Vorschlag „späteres Datum“. Optional eine Lauf-Referenzzeit (5 oder 10 km) – dann zeigen die Läufe einen Tempo-Richtwert.
+4. **Plan erstellen** → Woche ansehen: Lauf-Einheiten, am Kraft-Tag **„Hyrox-Stationen“** (Übungen je Station, Hinweis
+   „Ohne Schlitten – wir ersetzen die Station“), ab dem Aufbau (Fortgeschrittene schon in der Basis) eine
+   **„Hyrox-Kombi“** (Runden aus ca. 1 km zügig + Station). In der Erholungswoche keine Kombi.
+5. Kombi öffnen → **Intervall-Timer**: der Stations-Schritt zeigt Station und Menge (z. B. „Station 25 Wall Balls“),
+   mit Sprachansage.
+6. **Schon-Modus** (Einstellungen → „Schmerz-/Verletzungsmodus“, z. B. Handgelenk leicht) → die Kombi zeigt nur noch den Lauf-Teil mit Hinweis.
+7. Nach dem Renntag: **Mein Wettkampf → Ergebnis eintragen** → Gesamtzeit, optional **Teilzeiten eintragen** (8 Läufe,
+   8 Stationen, Wechselzone). Teilzeiten über der Gesamtzeit → Fehlermeldung. Der Eintrag heißt im Tagebuch
+   „Hyrox-Rennen“ – privat, ohne Ranglisten.
+8. Sonderfälle: Geburtsjahr unter 18 → nur Division Open wählbar; ab 65 → Hyrox-Plan nur mit Bestätigungs-Haken, ohne
+   Burpee-Weitsprünge; Gesundheits-Check mit Hinweis → „Technik-Kombi (locker)“ statt harter Kombi; Schwangerschaft →
+   kein Hyrox-Plan.
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
