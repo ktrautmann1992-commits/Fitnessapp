@@ -7,7 +7,10 @@ export function P({ children }: { children: ReactNode }) {
   return <mark className={styles.platzhalter}>[PLATZHALTER: {children}]</mark>;
 }
 
-/** Rahmen einer Rechtsseite mit Hinweis-Kasten „PLATZHALTER – vor Livegang ausfüllen“. */
+/**
+ * Rahmen einer Rechtsseite. Der Hinweis-Kasten „vor Livegang ausfüllen“ ist entfernt (privater Nutzerkreis,
+ * Gründer-Entscheidung 27.10.2026) – vor einer öffentlichen Veröffentlichung: docs/VOR-VEROEFFENTLICHUNG.md.
+ */
 export function RechtsSeite({
   titel,
   stand,
@@ -21,10 +24,6 @@ export function RechtsSeite({
     <section className={styles.abschnitt}>
       <div className={`${styles.huelle} ${styles.text}`}>
         <h1 className={styles.titel}>{titel}</h1>
-        <p className={styles['platzhalter-hinweis']} role="note">
-          PLATZHALTER – vor Livegang ausfüllen. Diese Seite ist ein Entwurf mit markierten Lücken
-          und muss vor dem Start rechtlich geprüft werden (Anwalt/Datenschutzberatung).
-        </p>
         {children}
         <p className={styles.stand}>Stand: {stand}</p>
       </div>

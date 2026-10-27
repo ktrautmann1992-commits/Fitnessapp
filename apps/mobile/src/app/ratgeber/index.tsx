@@ -1,4 +1,4 @@
-import { guideForDisplay, isPublishedWithoutExpertReview } from '@fitnessapp/core';
+import { guideForDisplay } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
 import type { ReactNode } from 'react';
@@ -18,7 +18,7 @@ import { Text } from '@/components/text';
 /**
  * Ratgeber-Übersicht (KONZEPT 6.8, docs/PLAN-PHASE-5.md 19.6, Etappe N5c): gratis, offline aus dem gebündelten
  * Bestand, nur freigegebene Ratgeber ohne roten Befund (Testmodus: auch Entwürfe, gekennzeichnet). Freigegeben ohne
- * Fachprüfung (Testphase) → Kennzeichen „Testphase – noch nicht fachlich geprüft“.
+ * Fachprüfung: kein Kennzeichen (privater Nutzerkreis, Gründer-Entscheidung 27.10.2026).
  */
 export default function GuideListScreen() {
   const router = useRouter();
@@ -91,14 +91,6 @@ export default function GuideListScreen() {
                 <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
                 {guide.status === 'draft' ? (
                   <Text style={[styles.detail, { color: theme.textMuted }]}>{texts.draft}</Text>
-                ) : isPublishedWithoutExpertReview(guide) ? (
-                  // Testphase (Gründer-Entscheidung 19.10.2026, Wächter N1): freigegeben ohne Fachprüfung.
-                  <Text
-                    style={[styles.detail, { color: theme.textMuted }]}
-                    testID={`guide-testphase-${guide.id}`}
-                  >
-                    {texts.testphase}
-                  </Text>
                 ) : null}
               </Pressable>
             );

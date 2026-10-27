@@ -42,7 +42,8 @@ import {
   type RecipeExclusion,
   weekStartSchema,
 } from './schemas';
-import { type MealSlot, mealSlotsForDay } from './timing';
+import { type MealSlot, mealSlotsForDay, type TrainingWindow, trainingWindows } from './timing';
+import { type SlotMacroTarget, slotMacroTargets } from './training-meal-targets';
 
 /**
  * Wochenziele der Ernährung (docs/PLAN-PHASE-5.md 4.10). Rechnet je Tag (Mo–So) neu – die Engine speichert nichts.
@@ -59,6 +60,19 @@ export interface NutritionDaySession {
   readonly kind: 'strength' | 'endurance';
   readonly enduranceModality: EnduranceModality | null;
   readonly minutes: number;
+  /** Eigene Uhrzeit (Minuten nach Mitternacht, Nährstoff-Timing T1) – fehlt ohne eigene Uhrzeit. */
+  readonly startMinutes?: number;
+}
+
+/**
+ * Nährstoff-Timing 2 (docs/PLAN-NAEHRSTOFF-TIMING.md, T1): nur an Tagen, an denen eine Einheit eine EIGENE Uhrzeit hat
+ * (sonst fehlt das Feld – Altbestand rechnet genau wie bisher). Zeitfenster der Einheiten und – nur mit Zielen,
+ * Körpergewicht und ab 18 – die Makro-Anteile je Mahlzeit (Summe = Tageswerte, Energie unverändert).
+ */
+export interface NutritionDayTrainingTiming {
+  readonly windows: readonly TrainingWindow[];
+  /** null: ohne Ziele (`no_targets`), ohne Körpergewicht oder unter 18 – dann keine Gramm je Mahlzeit. */
+  readonly mealTargets: readonly SlotMacroTarget[] | null;
 }
 
 /**
@@ -139,6 +153,8 @@ export interface NutritionDayTargets {
   readonly weightGoalKey?: string;
   /** Wettkampf-Bezug (Etappe W1); fehlt an Tagen ohne Wettkampf-Bezug. */
   readonly competition?: NutritionCompetitionDay;
+  /** Nährstoff-Timing (T1): nur an Tagen mit eigener Uhrzeit einer Einheit. */
+  readonly trainingTiming?: NutritionDayTrainingTiming;
 }
 
 export interface NutritionWeekTargets {
@@ -246,7 +262,16 @@ export function nutritionTargetsForWeek(
       kind: s.kind,
       enduranceModality: s.enduranceModality,
       minutes: s.minutes,
+      ...(s.startMinutes !== null && s.startMinutes !== undefined
+        ? { startMinutes: s.startMinutes }
+        : {}),
     }));
+    // Nährstoff-Timing (T1): Zeitfenster nur, wenn eine Einheit eine eigene Uhrzeit hat (sonst wie bisher).
+    const explicitWindows = counted.some(
+      (s) => s.startMinutes !== null && s.startMinutes !== undefined,
+    )
+      ? trainingWindows(counted, inputs.trainingTime)
+      : null;
     // Wettkampf (Etappe W1): Art des Tages; ohne Wettkämpfe gar nicht gerechnet (Ausgabe wie vorher).
     const competitionDay =
       inputs.competitions.length === 0
@@ -299,6 +324,9 @@ export function nutritionTargetsForWeek(
         weightGoalStatus: noTargetsStatus,
         weightGoalPaceCapped: false,
         ...(noTargetsStatus !== null && goalKey !== null ? { weightGoalKey: goalKey } : {}),
+        ...(explicitWindows === null
+          ? {}
+          : { trainingTiming: { windows: explicitWindows, mealTargets: null } }),
         // `no_targets`: nur die Art des Tages (allgemeine Hinweise), keine Verschiebung, keine Zahlen.
         ...(competition === null
           ? {}
@@ -440,6 +468,28 @@ export function nutritionTargetsForWeek(
       weightGoalStatus: goalDay?.status ?? null,
       weightGoalPaceCapped: paceCapped,
       ...(goalDay !== null && goalKey !== null ? { weightGoalKey: goalKey } : {}),
+      ...(explicitWindows === null
+        ? {}
+        : {
+            trainingTiming: {
+              windows: explicitWindows,
+              // Gramm je Mahlzeit nur ab 18 (Plan 8) – darunter nur Zeitfenster und Gerichte.
+              mealTargets:
+                ageYears < MINOR_BELOW_AGE
+                  ? null
+                  : slotMacroTargets({
+                      slots: timing.slots,
+                      targetKcal: clamped.targetKcal,
+                      proteinG: macros.proteinG,
+                      carbsG: macros.carbsG,
+                      fatG: macros.fatG,
+                      referenceWeightKg: macros.referenceWeightKg,
+                      weightKg: bodyForDay.weightKg,
+                      ageYears,
+                      windows: explicitWindows,
+                    }),
+            },
+          }),
       ...(competition === null
         ? {}
         : {

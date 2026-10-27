@@ -61,6 +61,7 @@ function plannedSession(
     target_distance_m: null,
     workout_steps: null,
     adjustment_id: null,
+    start_time: null,
     ...overrides,
   };
 }

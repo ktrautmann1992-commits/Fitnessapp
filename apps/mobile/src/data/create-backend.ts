@@ -18,6 +18,13 @@ import { createLocalBackend } from './local-backend';
 import { readWebUrl } from './food-photo-remote';
 import { attachShoes, createLocalShoes, createRemoteShoes } from './shoes';
 import { attachHydration, createLocalHydration, createRemoteHydration } from './hydration';
+import {
+  attachLive,
+  createDemoLive,
+  createRemoteLive,
+  DEFAULT_LIVE_WEB_URL,
+} from './live-companion';
+import { createLiveStore } from './live-store';
 import { createSupabaseBackend } from './supabase-backend';
 import {
   attachTrainingModes,
@@ -110,6 +117,13 @@ export function createBackend(): Backend {
         now,
       }),
     );
+    // Live-Begleitung (docs/PLAN-PHASE-10.md 21): Datenbank-Funktionen; Kontakte nur verschlüsselt auf dem Gerät.
+    attachLive(backend, {
+      live: createRemoteLive({ client }),
+      contactsStore: createLiveStore('contacts'),
+      sessionStore: createLiveStore('session'),
+      webUrl: readWebUrl(process.env.EXPO_PUBLIC_WEB_URL) ?? DEFAULT_LIVE_WEB_URL,
+    });
     // Trainings-Modi (docs/PLAN-TRAINING-MODI.md 7): Tabellen pain_episodes/travel_modes, eigener geschützter Speicher.
     return attachTrainingModes(
       attachCycle(backend, createRemoteCycle({ client, stores: cycleStores })),
@@ -138,6 +152,13 @@ export function createBackend(): Backend {
       today: () => todayIso(),
     }),
   );
+  // Live-Begleitung im Testmodus: Demo ohne Server (Link zur Demo-Begleit-Seite).
+  attachLive(local, {
+    live: createDemoLive({ newId, now: () => Date.now() }),
+    contactsStore: createLiveStore('contacts'),
+    sessionStore: createLiveStore('session'),
+    webUrl: readWebUrl(process.env.EXPO_PUBLIC_WEB_URL) ?? DEFAULT_LIVE_WEB_URL,
+  });
   return attachTrainingModes(
     attachCycle(local, createLocalCycle(cycleStores)),
     createLocalTrainingModes({ store: createTrainingModesStore(), now, newId }),

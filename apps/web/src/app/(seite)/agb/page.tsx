@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: 'AGB' };
 
 export default function Agb() {
   return (
-    <RechtsSeite titel="Allgemeine Geschäftsbedingungen" stand={'Entwurf – Oktober 2026'}>
+    <RechtsSeite titel="Allgemeine Geschäftsbedingungen" stand={'Oktober 2026'}>
       <p>
         <P>
           Gliederung als Vorlage. Die Nutzungsbedingungen der App (Einwilligung in der App, Version

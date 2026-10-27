@@ -42,6 +42,8 @@ describe('Erlaubnis-Abfrage nie beim App-Start oder im Onboarding', () => {
     expect(filesMatching(/\.requestPermission\(/)).toEqual([
       'lib/cook-alerts.ts',
       'lib/device-calendar.ts',
+      // Live-Begleitung: „Kein Lebenszeichen“-Erinnerung, Abfrage nur nach dem Tipp „Starten“ (askReminderPermission).
+      'lib/live-companion.ts',
       'lib/notifications.ts',
     ]);
   });

@@ -2,7 +2,6 @@ import {
   BODY_REGIONS,
   type BodyRegion,
   type DisplaySession,
-  type Exercise,
   type ModeNotice,
   type ModesBanner as ModesBannerData,
   muscleNameDe,
@@ -22,7 +21,7 @@ import { MUSCLE_MAP_BODY, MUSCLE_MAP_HEIGHT, MUSCLE_MAP_WIDTH } from '@/lib/musc
 import { appFont } from '@/lib/fonts';
 import { useThemeColors } from '@/lib/theme';
 
-import { Badge, Body, Button, Card, Heading, Notice } from './ui';
+import { Body, Button, Card, Heading, Notice } from './ui';
 
 /**
  * Bausteine der Trainings-Modi (docs/PLAN-TRAINING-MODI.md): Banner auf „Heute“, Hinweise an einer Einheit,
@@ -321,7 +320,6 @@ export function RoutineBlock({
   skipped,
   onSkip,
   onShow,
-  library,
 }: {
   part: 'warmup' | 'cooldown';
   routine: SessionRoutine;
@@ -330,7 +328,6 @@ export function RoutineBlock({
   skipped: boolean;
   onSkip: () => void;
   onShow: () => void;
-  library: ReadonlyMap<string, Exercise> | null;
 }) {
   const theme = useThemeColors();
   const warmup = part === 'warmup';
@@ -369,7 +366,6 @@ export function RoutineBlock({
         </View>
       ) : null}
       {items.map((item) => {
-        const draft = library?.get(item.exerciseId)?.status === 'draft';
         return (
           <View
             key={`${item.kind}-${item.exerciseId}`}
@@ -380,7 +376,6 @@ export function RoutineBlock({
               <Text style={[styles.routineName, appFont('semibold'), { color: theme.text }]}>
                 {item.nameDe}
               </Text>
-              {draft ? <Badge label={M.warmup.draft} testID={`${testID}-draft`} /> : null}
             </View>
             <Body muted>{itemLine(item)}</Body>
           </View>

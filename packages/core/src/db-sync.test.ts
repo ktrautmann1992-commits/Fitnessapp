@@ -125,6 +125,7 @@ import {
   WEARABLE_SYNC,
   FLOW_RULES,
   HYROX_RESULT_LIMITS,
+  SESSION_START_TIME,
 } from './constants';
 import {
   WEARABLE_DATA_TYPES,
@@ -156,6 +157,7 @@ import {
 } from './content/food-schema';
 import { INGREDIENT_ROLES, MEAL_TYPES, RECIPE_CATEGORY_IDS } from './content/recipe-schema';
 import { EXTRA_SLOTS } from './nutrition/meal-plan';
+import { minutesToStartTime, SESSION_START_TIME_PATTERN } from './plan/session-time';
 import {
   MEAL_PLAN_SLOT_KEYS,
   mealPlanItemPayloadSchema,
@@ -630,8 +632,9 @@ describe('Eingabe der Plan-Funktionen (save_training_plan / append_plan_block)',
   // Jeweils die NEUESTE Fassung der Funktion (create or replace in einer späteren Migration).
   const rpcSql = readMigration('_training_plan_rpcs.sql');
   const kindsSql = readMigration('_plan_session_kinds.sql');
-  // Neueste Fassung von private.insert_plan_sessions (Phase 10 WP3: Felder des Wettkampfplans).
-  const sessionsSql = readMigration('_competition_rpcs.sql');
+  // Neueste Fassung von private.insert_plan_sessions (Nährstoff-Timing T0: optionales Feld start_time; davor
+  // Sportarten Stufe 1, WP5, WP3 mit den Feldern des Wettkampfplans).
+  const sessionsSql = readMigration('_naehrstoff_timing_rpcs.sql');
   // Letzte Fassung von private.assert_plan_inputs (Ziele, Etappe Z1: optionales Nebenziel).
   const goalsSql = readMigration('_plan_inputs_secondary_goal.sql');
   const keysOf = (sql: string, name: string) =>
@@ -919,7 +922,12 @@ describe('Ernährung in der Datenbank (Phase 5, Etappe N7)', () => {
     ['pair_keys', mealPlanItemPayloadSchema.shape.substitutions.element.shape],
     ['omit_keys', mealPlanItemPayloadSchema.shape.omitted_optional.element.shape],
   ] as const)('save_meal_plan: %s = Felder des strikten Zod-Schemas', (name, shape) => {
-    expect(keysOf(fn(rpcs, 'public.save_meal_plan'), name)).toEqual(Object.keys(shape).sort());
+    // Erste Fassung (N7): ohne das spätere, optionale Feld user_chosen (Nährstoff-Timing T0, eigener Test).
+    expect(keysOf(fn(rpcs, 'public.save_meal_plan'), name)).toEqual(
+      Object.keys(shape)
+        .filter((key) => key !== 'user_chosen')
+        .sort(),
+    );
   });
 
   it('save_meal_plan: Tausch-Einträge haben dieselben Felder wie Ersatz-Einträge', () => {
@@ -1232,10 +1240,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_export_my_data_integration.sql (Rezept-Favoriten + Vorratsschrank + Schuhe + Trainings-Modi + Trinken 25.10.2026, davor Phase 6 SU3, Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_live_export_my_data.sql (Live-Begleitung 27.10.2026; davor *_export_my_data_integration.sql: Rezept-Favoriten + Vorratsschrank + Schuhe + Trainings-Modi + Trinken 25.10.2026, Phase 6 SU3, Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_export_my_data_integration\.sql$/,
+      /_live_export_my_data\.sql$/,
     );
   });
 
@@ -1919,13 +1927,18 @@ describe('Rad und Triathlon in der Datenbank (Phase 10 WP5)', () => {
   const C = COMPETITION_CYCLING;
   const column = COMPETITION_RECORD_LIMITS.leadWeeksServerColumn;
 
-  it('Fassung von save_competition und insert_plan_sessions in *_wp5_rad_triathlon.sql, neueste seit Sportarten Stufe 1', () => {
-    for (const name of ['public.save_competition', 'private.insert_plan_sessions']) {
+  it('Fassung von save_competition und insert_plan_sessions in *_wp5_rad_triathlon.sql, danach Sportarten Stufe 1 (insert_plan_sessions neueste seit Nährstoff-Timing)', () => {
+    const filesOf = (name: string) => {
       const marker = `create or replace function ${name}(`;
-      const files = migrationFiles.filter((n) => readMigration(n).includes(marker));
-      expect(files.at(-2)).toMatch(/_wp5_rad_triathlon\.sql$/);
-      expect(files.at(-1)).toMatch(/_sportarten_stufe1_rpcs\.sql$/);
-    }
+      return migrationFiles.filter((n) => readMigration(n).includes(marker));
+    };
+    const competition = filesOf('public.save_competition');
+    expect(competition.at(-2)).toMatch(/_wp5_rad_triathlon\.sql$/);
+    expect(competition.at(-1)).toMatch(/_sportarten_stufe1_rpcs\.sql$/);
+    const sessions = filesOf('private.insert_plan_sessions');
+    expect(sessions.at(-3)).toMatch(/_wp5_rad_triathlon\.sql$/);
+    expect(sessions.at(-2)).toMatch(/_sportarten_stufe1_rpcs\.sql$/);
+    expect(sessions.at(-1)).toMatch(/_naehrstoff_timing_rpcs\.sql$/);
   });
 
   it('competition_keys = alle Felder (distance_km optional), required_keys = Pflichtfelder', () => {
@@ -2039,13 +2052,16 @@ describe('Essensplan in der Datenbank – N7 Teil 2 (Löschfrist G-N7-2, Tageska
     return Number(match[1]);
   };
 
-  it('neueste Fassung von save_meal_plan/replace_shopping_list steht in *_n7_teil2_retention_kcal_check.sql', () => {
-    for (const name of ['public.save_meal_plan', 'public.replace_shopping_list']) {
+  it('neueste Fassung von replace_shopping_list steht in *_n7_teil2_retention_kcal_check.sql, save_meal_plan seit Nährstoff-Timing in *_naehrstoff_timing_rpcs.sql (davor N7 Teil 2)', () => {
+    const filesOf = (name: string) => {
       const marker = `create or replace function ${name}(`;
-      expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-        /_n7_teil2_retention_kcal_check\.sql$/,
-      );
-    }
+      return migrationFiles.filter((n) => readMigration(n).includes(marker));
+    };
+    expect(filesOf('public.replace_shopping_list').at(-1)).toMatch(
+      /_n7_teil2_retention_kcal_check\.sql$/,
+    );
+    expect(filesOf('public.save_meal_plan').at(-2)).toMatch(/_n7_teil2_retention_kcal_check\.sql$/);
+    expect(filesOf('public.save_meal_plan').at(-1)).toMatch(/_naehrstoff_timing_rpcs\.sql$/);
     expect(teil2).toContain('create or replace function public.save_meal_plan(');
   });
 
@@ -3079,8 +3095,8 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
     for (const [marker, newestFile] of [
       [revokeMarker, /_training_modes_revoke_export\.sql$/],
-      // Export seit der Integration 25.10.2026 in *_export_my_data_integration.sql.
-      [exportMarker, /_export_my_data_integration\.sql$/],
+      // Export seit der Live-Begleitung 27.10.2026 in *_live_export_my_data.sql (davor Integration 25.10.2026).
+      [exportMarker, /_live_export_my_data\.sql$/],
     ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
       // Widerruf und Export seit Phase 6 SU3 in *_supplement_user_data.sql (davor Phase 8, Einkaufen E1, E2, 4b Etappe B,
@@ -4792,5 +4808,103 @@ describe('Sportarten Stufe 1 in der Datenbank (docs/PLAN-SPORTARTEN-STUFE-1.md 3
     expect(FLOW_RULES.minutes.max).toBeLessThanOrEqual(WORKOUT_LIMITS.minutes.max);
     expect(FLOW_RULES.poseS.min).toBeGreaterThanOrEqual(WORKOUT_LIMITS.workS.min);
     expect(FLOW_RULES.seniorHoldMaxS).toBe(ACTIVE_AGING_RULES.strengthHoldMaxS);
+  });
+});
+
+describe('Nährstoff-Timing 2 in der Datenbank (docs/PLAN-NAEHRSTOFF-TIMING.md, Etappe T0)', () => {
+  const tables = readMigration('_naehrstoff_timing.sql');
+  const rpcs = readMigration('_naehrstoff_timing_rpcs.sql');
+  const body = (sql: string, name: string) => {
+    const start = sql.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return sql.slice(start, sql.indexOf('$$;', sql.indexOf('as $$', start)));
+  };
+  /** Zeilen der älteren Fassung, die in der neueren fehlen (Reihenfolge bleibt; „,“ am Zeilenende erlaubt). */
+  const missingLines = (older: string, newer: string) => {
+    const next = newer.split('\n');
+    let at = 0;
+    const missing: string[] = [];
+    for (const line of older.split('\n')) {
+      const found = next.findIndex((n, i) => i >= at && (n === line || n === `${line},`));
+      if (found < 0) missing.push(line);
+      else at = found + 1;
+    }
+    return missing;
+  };
+
+  it('planned_sessions.start_time: CHECK = SESSION_START_TIME (ganze Minuten 00:00–23:59), Recht nur zum Ändern', () => {
+    expect(tables).toContain('add column start_time time;');
+    expect(minutesToStartTime(SESSION_START_TIME.maxMinutes)).toBe('23:59');
+    expect(minutesToStartTime(SESSION_START_TIME.minMinutes)).toBe('00:00');
+    expect(tables).toContain(
+      "check (start_time is null or (start_time <= time '23:59' and extract(second from start_time) = 0))",
+    );
+    expect(tables).toContain(
+      'grant update (start_time) on table public.planned_sessions to authenticated;',
+    );
+    // RLS unverändert: keine neuen Richtlinien, keine Tabellen-Rechte.
+    expect(tables).not.toMatch(
+      /create policy|enable row level security|grant (select|insert|delete|all)/,
+    );
+  });
+
+  it('meal_plan_items.user_chosen: Boolean, Standard false, kein direktes Update', () => {
+    expect(tables).toContain('add column user_chosen boolean not null default false;');
+    expect(tables).not.toMatch(/grant update \([^)]*user_chosen/);
+    expect(mealPlanItemPayloadSchema.shape.user_chosen.safeParse(undefined).success).toBe(true);
+  });
+
+  it('insert_plan_sessions: Fassung aus Sportarten Stufe 1 Zeile für Zeile + start_time (Form = SESSION_START_TIME_PATTERN)', () => {
+    const older = body(
+      readMigration('_sportarten_stufe1_rpcs.sql'),
+      'private.insert_plan_sessions',
+    );
+    const newer = body(rpcs, 'private.insert_plan_sessions');
+    expect(missingLines(older, newer)).toEqual([
+      "    'workout_type', 'training_phase', 'workout_steps', 'target_distance_m'",
+      '        workout_type, training_phase, workout_steps, target_distance_m',
+    ]);
+    expect(newer).toContain(`!~ '${SESSION_START_TIME_PATTERN.source}'`);
+    expect(newer).toContain("(s ->> 'start_time')::time");
+    expect(quotedListAfter(newer, 'session_keys constant text[] := array[').sort()).toEqual(
+      Object.keys(savePlanSessionSchema.shape).sort(),
+    );
+    expect(rpcs).toContain(
+      'revoke all on function private.insert_plan_sessions(uuid, uuid, jsonb, integer, date, date) from public;',
+    );
+  });
+
+  it('start_time im Plan: gleiche Grenzen wie der Server', () => {
+    const schema = savePlanSessionSchema.shape.start_time;
+    for (const ok of ['00:00', '06:45', '18:30', '23:59', null, undefined]) {
+      expect(schema.safeParse(ok).success, String(ok)).toBe(true);
+    }
+    for (const bad of ['24:00', '7:05', '18:30:15', '18.30', 1830, '']) {
+      expect(schema.safeParse(bad).success, String(bad)).toBe(false);
+    }
+  });
+
+  it('save_meal_plan: Fassung aus N7 Teil 2 Zeile für Zeile + user_chosen (fehlt = false), Rechte unverändert', () => {
+    const older = body(
+      readMigration('_n7_teil2_retention_kcal_check.sql'),
+      'public.save_meal_plan',
+    );
+    const newer = body(rpcs, 'public.save_meal_plan');
+    expect(missingLines(older, newer)).toEqual([
+      "    'storage', 'meal_prep_plan_id', 'day_status'",
+      "         or jsonb_typeof(item -> 'day_status') is distinct from 'string' then",
+      '      meal_prep_plan_id, day_status',
+      "      x.v ->> 'day_status'",
+    ]);
+    expect(newer).toContain("coalesce((x.v ->> 'user_chosen')::boolean, false)");
+    expect(quotedListAfter(newer, 'item_keys constant text[] := array[').sort()).toEqual(
+      Object.keys(mealPlanItemPayloadSchema.shape).sort(),
+    );
+    expect(rpcs).toContain(
+      'revoke all on function public.save_meal_plan(jsonb, boolean, boolean) from public, anon;',
+    );
+    expect(rpcs).toContain(
+      'grant execute on function public.save_meal_plan(jsonb, boolean, boolean) to authenticated;',
+    );
   });
 });

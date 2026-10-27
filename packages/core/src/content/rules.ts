@@ -174,6 +174,12 @@ export const CONTENT_RULES = {
     title:
       'Kategorie plausibel: „schnell“ ⇔ Gesamtzeit ≤ 10 Min., Pre-/Post-Workout ⇔ Trainings-Angabe, „meal-prep“ ⇔ Meal-Prep-geeignet',
   },
+  // Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 3, T3)
+  R22T: {
+    severity: 'warning',
+    title:
+      'Trainings-Markierung passt zu den Nährwerten je Portion: „vor dem Training“ ohne zu viel Fett/Ballaststoffe, „nach dem Training“ mit Eiweiß',
+  },
   // Zutaten-Austausch (docs/PLAN-PHASE-5.md 19.7 N9)
   R23: {
     severity: 'error',

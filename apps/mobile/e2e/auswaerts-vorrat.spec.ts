@@ -56,8 +56,8 @@ test('Unterwegs: Kategorie, Portion, Eintragen als Schätzwert, Zuletzt, Suche, 
   await page.getByRole('radio', { name: 'Unterwegs' }).click();
   const out = page.getByTestId('eating-out');
   await expect(out).toBeVisible();
-  // Testmodus: Entwürfe sichtbar, immer mit „Schätzwert“.
-  await expect(page.getByTestId('eating-out-draft-note')).toBeVisible();
+  // Testmodus: Entwürfe sichtbar, immer mit „Schätzwert“ – ohne Entwurfs-Hinweis (Gründer-Entscheidung 27.10.2026).
+  await expect(page.getByTestId('eating-out-draft-note')).toHaveCount(0);
   await shot(page, '01-unterwegs-start', 'eating-out');
 
   // Kantine → Tagesgericht mit Fleisch → groß → Eintragen.

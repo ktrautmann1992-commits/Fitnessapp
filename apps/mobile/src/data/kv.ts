@@ -165,6 +165,11 @@ export const STORAGE_KEYS = {
    */
   shoppingPrefs: 'fitnessapp.shopping-prefs.v1',
   /**
+   * Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 7, Entscheidung 8): „Erinnerung vor dem Training“ (true/false,
+   * Standard aus) – nur dieses Gerät, keine Nutzerdaten (lib/training-meal-prefs.ts).
+   */
+  trainingMealPrefs: 'fitnessapp.training-meal-prefs.v1',
+  /**
    * Reiter „Unterwegs“ (Auswärts essen, 25.10.2026): Favoriten und „Zuletzt“ – nur Gericht-IDs und Portion, ohne Datum
    * oder Werte, je Konto (lib/eating-out-picks.ts).
    */

@@ -1,0 +1,55 @@
+{
+  "id": "glas-milch",
+  "version": 1,
+  "status": "published",
+  "title_de": "Ein Glas Milch",
+  "description_de": "Ein Glas Milch (1,5 % Fett) – eine einfache Ergänzung mit Eiweiß und Kohlenhydraten.",
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "milch-1-5",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Glas (250 ml)",
+      "scales": true,
+      "role": "protein"
+    }
+  ],
+  "steps_de": ["Milch kalt oder leicht erwärmt trinken."],
+  "tags_de": ["Unter 10 Minuten", "Snack-Liste rund ums Training"],
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
+  "total_minutes": 2,
+  "prep_minutes": 2,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 110,
+    "protein_g": 8.7,
+    "carbs_g": 9.7,
+    "fat_g": 3.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft. Vorher: Snack-Liste Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 7) – Entwurf, Freigabe offen."
+  }
+}

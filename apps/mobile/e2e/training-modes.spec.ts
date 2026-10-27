@@ -267,8 +267,8 @@ test('Aufwärmen & Dehnen: Block vor und nach dem Training, Überspringen, Schal
   const warmup = page.getByTestId('workout-warmup');
   await expect(warmup).toContainText('Aufwärmen');
   await expect(page.getByTestId('workout-warmup-item').first()).toBeVisible();
-  // Entwürfe (Testmodus) sind gekennzeichnet.
-  await expect(page.getByTestId('workout-warmup-draft').first()).toHaveText('Testinhalt');
+  // Kein „Testinhalt“-Kennzeichen mehr (Gründer-Entscheidung 27.10.2026).
+  await expect(page.getByTestId('workout-warmup-draft')).toHaveCount(0);
   await expect(page.getByTestId('workout-cooldown')).toContainText('Dehnen danach');
   if (shots) await shot(page, 'workout-warmup', 'aufwaermen-training');
   await page.getByTestId('workout-warmup-skip').click();

@@ -50,19 +50,18 @@ const safety = (inputs: Partial<SafetyInputs>, holdCap = false) => ({
   holdCap,
 });
 
-describe('Startbestand Yoga/Pilates/Mobility (Entwürfe)', () => {
-  it('mindestens 25 Yoga-Posen, 12 Pilates-, 8 Mobility-Übungen; 6 + 4 + 4 Routinen; alles Entwurf', () => {
+describe('Startbestand Yoga/Pilates/Mobility', () => {
+  it('mindestens 25 Yoga-Posen, 12 Pilates-, 8 Mobility-Übungen; 6 + 4 + 4 Routinen; freigegeben (27.10.2026), nicht fachlich geprüft', () => {
     const poses = result.exercises.filter((e) => isFlowPoseId(e.id));
     expect(poses.filter((e) => e.id.startsWith('yoga-')).length).toBeGreaterThanOrEqual(25);
     expect(poses.filter((e) => e.id.startsWith('pilates-')).length).toBeGreaterThanOrEqual(12);
     expect(poses.filter((e) => e.id.startsWith('mobility-')).length).toBeGreaterThanOrEqual(8);
-    // Restpunkte A (27.10.2026): neue Posen direkt freigegeben (private Nutzung), ältere ggf. noch Entwurf.
-    expect(poses.every((e) => e.status === 'draft' || e.status === 'published')).toBe(true);
+    expect(poses.every((e) => e.status === 'published' && !e.meta.expert_reviewed)).toBe(true);
     const count = (category: string) => flows.filter((w) => w.category === category).length;
     expect(count('yoga')).toBeGreaterThanOrEqual(6);
     expect(count('pilates')).toBeGreaterThanOrEqual(4);
     expect(count('mobility')).toBeGreaterThanOrEqual(4);
-    expect(flows.every((w) => w.status === 'draft' || w.status === 'published')).toBe(true);
+    expect(flows.every((w) => w.status === 'published' && !w.meta.expert_reviewed)).toBe(true);
   });
 
   it('keine roten Fehler an Posen und Routinen', () => {

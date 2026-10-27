@@ -22,6 +22,7 @@ import { BARBELL_ID, equipmentIdSchema } from '../equipment';
 import { isAllowedGoalPair } from '../goals/profile';
 import { COMPETITION_PHASES } from './competition-schema';
 import { workoutModalityFits } from './multisport';
+import { sessionStartTimeTextSchema } from './session-time';
 import { ENDURANCE_EFFORT_LIMITS } from './generate';
 import {
   isHardSession,
@@ -90,6 +91,11 @@ export interface SavePlanSession {
   readonly training_phase?: string | null;
   readonly workout_steps?: readonly WorkoutStep[] | null;
   readonly target_distance_m?: number | null;
+  /**
+   * Nährstoff-Timing (T0): übernommene Uhrzeit „HH:MM“ (`carryOverSessionStartTimes`). Fehlt ohne Vorbild – die
+   * Eingabe bleibt dann byte-gleich zu vorher.
+   */
+  readonly start_time?: string | null;
 }
 
 export interface SavePlanPayload {
@@ -310,6 +316,8 @@ export const savePlanSessionSchema = z
       .max(COMPETITION_PACE.distanceM.max)
       .nullable()
       .optional(),
+    // Nährstoff-Timing (T0): Uhrzeit „HH:MM“, optional (fehlt/null = Standard aus „Trainingszeit“).
+    start_time: sessionStartTimeTextSchema.nullable().optional(),
   })
   .refine(
     (s) =>

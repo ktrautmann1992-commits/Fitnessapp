@@ -108,11 +108,6 @@ export default function SupplementsScreen() {
   return (
     <Screen area="ernaehrung" icon="pill" title={SUPP.title} footer={back} testID="supplements">
       {header}
-      {library.drafts ? (
-        <Notice tone="warning" testID="supplements-drafts">
-          {SUPP.drafts}
-        </Notice>
-      ) : null}
       {library.cached ? <Notice testID="supplements-cached">{SUPP.cached}</Notice> : null}
 
       {/* Einwilligung (Plan 8.1, 11.1) */}
@@ -269,7 +264,6 @@ export default function SupplementsScreen() {
                           ? SUPP.declined
                           : null,
                     ]}
-                    testPhase={!card.expertReviewed}
                     onPress={() => open(card.id)}
                     last={index === all.length - 1}
                     testID={`supplement-${card.id}`}
@@ -293,7 +287,6 @@ export default function SupplementsScreen() {
                 tone: overview.caffeine.status === 'safety_info_excluded' ? 'warn' : 'neutral',
               }}
               lines={[]}
-              testPhase={!overview.caffeine.expertReviewed}
               onPress={() => open('caffeine')}
               last
               testID="supplement-caffeine"
@@ -320,7 +313,6 @@ export default function SupplementsScreen() {
                   key={card.id}
                   title={card.nameDe}
                   lines={[SUPP.evidence.c]}
-                  testPhase={!card.expertReviewed}
                   onPress={() => open(card.id)}
                   last={index === all.length - 1}
                   testID={`supplement-${card.id}`}

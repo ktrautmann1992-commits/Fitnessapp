@@ -1,7 +1,7 @@
 /**
  * Testphase (Gründer-Entscheidung 19.10.2026, docs/PLAN-PHASE-5.md „Nachtrag Testphase“): freigegebene Ernährungs-
- * Inhalte ohne Fachprüfung sind in der App nutzbar und gekennzeichnet „Testphase – noch nicht fachlich geprüft“
- * (Rezeptansicht, Ratgeber, Suche). Wie im Supabase-Modus: nur freigegebene Inhalte (allowDrafts: false). Entwürfe und
+ * Inhalte ohne Fachprüfung sind in der App nutzbar; seit 27.10.2026 (privater Nutzerkreis) ohne sichtbares Kennzeichen
+ * – die Daten (isTestphase, contentReviewMark) bleiben. Wie im Supabase-Modus: nur freigegebene Inhalte (allowDrafts: false). Entwürfe und
  * fachlich Geprüftes bekommen dieses Kennzeichen nie; Filter (Unverträglichkeiten) gelten unverändert.
  */
 import {
@@ -83,23 +83,15 @@ function search(library: NutritionLibrary, data: UserRows, allowDrafts: boolean)
   return { result, week };
 }
 
-describe('Testphase: freigegeben ohne Fachprüfung – nutzbar und gekennzeichnet', () => {
-  it('Texte: dezenter Hinweis in Rezeptansicht und Ratgeber, kurzes Kennzeichen in den Suchen', () => {
-    expect(t.nutrition.recipe.testphase).toBe('Testphase – noch nicht fachlich geprüft');
-    expect(t.nutrition.guides.testphase).toBe('Testphase – noch nicht fachlich geprüft');
-    // Kleines Kennzeichen „Testphase“ an den Karten (24.10.2026), ausgeschrieben für Bildschirmleser.
-    expect(t.nutrition.search.testphase).toBe('Testphase');
-    expect(t.nutrition.fridge.testphase).toBe('Testphase');
-    expect(t.nutrition.search.testphaseA11y).toBe('Testphase – nicht fachlich geprüft');
-    expect(t.nutrition.fridge.testphaseA11y).toBe('Testphase – nicht fachlich geprüft');
-    // Wächter M2 (sichere Variante): Allergen-Warnung auch in der Testphase.
-    expect(t.nutrition.fridge.testphaseAllergenWarning).toContain(
-      'Allergene noch nicht fachlich geprüft',
-    );
-    // PDF: eigener Allergen-Hinweis für Testphase-Rezepte.
-    expect(t.nutrition.print.testphaseAllergens).toBe(
-      'Testphase: Allergene noch nicht fachlich geprüft – bei Allergien bitte nicht verwenden.',
-    );
+describe('Testphase: freigegeben ohne Fachprüfung – nutzbar, ohne sichtbares Kennzeichen', () => {
+  it('Texte: kein Testphase-Kennzeichen mehr (privater Nutzerkreis, Gründer-Entscheidung 27.10.2026)', () => {
+    // Die Daten tragen weiter isTestphase (Admin, spätere Veröffentlichung) – die App zeigt es nicht mehr an.
+    expect(t.nutrition.recipe).not.toHaveProperty('testphase');
+    expect(t.nutrition.guides).not.toHaveProperty('testphase');
+    expect(t.nutrition.search).not.toHaveProperty('testphase');
+    expect(t.nutrition.fridge).not.toHaveProperty('testphaseAllergenWarning');
+    expect(t.nutrition.print).not.toHaveProperty('testphaseAllergens');
+    expect(JSON.stringify(t.nutrition)).not.toContain('fachlich geprüft');
   });
 
   it('Bestand wie aus der Datenbank (nur freigegeben): Rezepte im Essensplan und in der Suche, alle gekennzeichnet', async () => {

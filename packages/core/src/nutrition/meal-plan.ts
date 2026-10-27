@@ -7,6 +7,7 @@ import {
   MEAL_PLAN_REPEAT_LIMITS,
   MEAL_PLAN_SCORING,
   NO_TARGETS_MIN_DAY_KCAL,
+  NUTRIENT_TIMING,
   PORTION_SCALE_LIMITS,
 } from '../constants';
 import type { FoodLookup } from '../content/food-schema';
@@ -77,6 +78,7 @@ import { stableHashKey, stableUnit } from './stable-hash';
 import { resolveIngredientSwaps, swapKey } from './swap-resolve';
 import type { NutritionDayTargets, NutritionWeekTargets } from './targets';
 import type { MealRole, MealSlotId } from './timing';
+import { preWorkoutExcess, type SlotMacroTarget } from './training-meal-targets';
 
 /**
  * Wochen-Essensplan (docs/PLAN-PHASE-5.md 6.2–6.4, B1) – deterministisch, ohne Zufall und ohne Echtzeit-KI.
@@ -134,6 +136,12 @@ export interface PlannedMeal {
    * Plan kennt das Feld nicht → neu planen, sichere Richtung).
    */
   readonly shared?: true;
+  /**
+   * Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 6): Gericht selbst gewählt („Rezept tauschen“, „Rückgängig“ nach
+   * einer Anpassung ans Training) – wird beim Verschieben des Trainings nie automatisch getauscht. Fehlt sonst
+   * (gespeichert als `meal_plan_items.user_chosen`).
+   */
+  readonly chosen?: true;
 }
 
 export type EmptySlotReason = RecipeExclusionReason | SlotExclusionReason | 'above_ceiling';
@@ -494,6 +502,11 @@ interface ScoreArgs {
   readonly portions: number;
   /** Wettkampftag (W1): Rezepte der Kategorie `wettkampf` bekommen den Bonus wie passende Trainings-Tags. */
   readonly competitionDay: boolean;
+  /**
+   * Nährstoff-Timing (T1): nur an Tagen mit eigener Uhrzeit einer Einheit (`trainingTiming`), sonst null – dann plant
+   * die Engine genau wie bisher. `target` = Makro-Anteil des Platzes (null ohne Gramm, z. B. unter 18).
+   */
+  readonly timing: { readonly target: SlotMacroTarget | null } | null;
 }
 
 /** Geschätzte Gramm je Lebensmittel für die geplanten Portionen (Reste-Score, 19.7 N13). */
@@ -557,6 +570,7 @@ function scoreCandidate(
   }
   // Wettkampf (W1): nur Reihenfolge – ob das Rezept passt, entscheidet der Filter (`slotFitReasons`).
   if (args.competitionDay && categories.includes('wettkampf')) score += W.roleTag;
+  if (args.timing !== null) score += timingScore(c, args, args.timing.target);
   score -= W.repeat * (state.uses.get(c.recipe.id)?.length ?? 0);
   const protein = mainProteinFood(c, foods);
   if (protein !== null && state.mainProteins.get(args.dayIndex - 1)?.has(protein) === true) {
@@ -581,6 +595,39 @@ function scoreCandidate(
   }
   score +=
     W.variantJitter * stableUnit(args.weekStart, args.slotKey, c.recipe.id, String(args.variant));
+  return score;
+}
+
+/**
+ * Nährstoff-Timing (Plan 1–4, T1) – NUR Reihenfolge, nie Filter, Energie oder Grenzen: Abzug für fehlendes Eiweiß am
+ * Richtwert und für Fett/Ballaststoffe über den Grenzen vor dem Training (bei der voraussichtlichen Portion), Bonus
+ * für einen hohen KH-Anteil in Mahlzeiten vor/nach dem Training.
+ */
+function timingScore(c: FilteredRecipe, args: ScoreArgs, target: SlotMacroTarget | null): number {
+  const W = NUTRIENT_TIMING.scoring;
+  const per = c.facts.perServing;
+  const factor =
+    args.targetKcal === null || per.kcal <= 0
+      ? 1
+      : Math.min(
+          Math.max(args.targetKcal / per.kcal, PORTION_SCALE_LIMITS.min),
+          PORTION_SCALE_LIMITS.max,
+        );
+  let score = 0;
+  const guide = target?.proteinGuideG ?? null;
+  if (guide !== null && guide > 0) {
+    score -= (W.proteinShortfall * Math.max(0, guide - per.protein_g * factor)) / guide;
+  }
+  score -=
+    W.preTolerance *
+    preWorkoutExcess(args.role, {
+      kcal: per.kcal * factor,
+      fat_g: per.fat_g * factor,
+      fiber_g: per.fiber_g === null ? null : per.fiber_g * factor,
+    });
+  if ((args.role === 'pre' || args.role === 'pre_snack' || args.role === 'post') && per.kcal > 0) {
+    score += W.carbFocus * Math.min((4 * per.carbs_g) / per.kcal, 1);
+  }
   return score;
 }
 
@@ -628,6 +675,8 @@ export interface SelectedMeal {
   readonly share: number;
   /** Geteilte Mahlzeit (19.7 N13): fertig berechnete Portion der Person, wird nicht ausgeglichen. */
   readonly fixedPortion?: ScaledPortion;
+  /** Selbst gewählt (Nährstoff-Timing, `PlannedMeal.chosen`). */
+  readonly chosen?: true;
 }
 
 export interface DayContext {
@@ -649,7 +698,7 @@ function toPlannedMeal(
   selected: Pick<
     SelectedMeal,
     'role' | 'variant' | 'prepKind' | 'cookDate' | 'storage' | 'mealPrepPlanId'
-  > & { slot: MealPlanSlotKey; fixed: boolean; isFill: boolean; shared?: boolean },
+  > & { slot: MealPlanSlotKey; fixed: boolean; isFill: boolean; shared?: boolean; chosen?: true },
   portion: ScaledPortion,
 ): PlannedMeal {
   const { recipe } = selected.variant;
@@ -685,6 +734,7 @@ function toPlannedMeal(
     fixed: selected.fixed,
     mealPrepPlanId: selected.mealPrepPlanId,
     ...(selected.shared === true ? { shared: true as const } : {}),
+    ...(selected.chosen === true ? { chosen: true as const } : {}),
   };
 }
 
@@ -705,11 +755,13 @@ export function sharedMealPortion(meal: PlannedMeal): ScaledPortion | undefined 
  */
 export function fixedMealSelection(
   meal: PlannedMeal,
-): Pick<SelectedMeal, 'fixedFactor' | 'fixedPortion'> & { readonly pinned?: true } {
+): Pick<SelectedMeal, 'fixedFactor' | 'fixedPortion' | 'chosen'> & { readonly pinned?: true } {
+  // Selbst gewählt bleibt selbst gewählt (Nährstoff-Timing), auch nach einem erneuten Tagesausgleich.
+  const chosen = meal.chosen === true ? { chosen: true as const } : {};
   const portion = sharedMealPortion(meal);
   if (portion !== undefined)
-    return { fixedFactor: portion.factor, fixedPortion: portion, pinned: true };
-  return meal.fixed ? { fixedFactor: meal.factor } : {};
+    return { fixedFactor: portion.factor, fixedPortion: portion, pinned: true, ...chosen };
+  return meal.fixed ? { fixedFactor: meal.factor, ...chosen } : chosen;
 }
 
 function fillCandidates(ctx: DayContext, excludeIds: ReadonlySet<string>): FilteredRecipe[] {
@@ -1064,6 +1116,12 @@ function scoreArgs(
         : { available: tracker.available(ctx.targets.date), packageSizes: tracker.packageSizes },
     portions,
     competitionDay: isCompetitionMealDay(ctx.targets),
+    timing:
+      ctx.targets.trainingTiming === undefined
+        ? null
+        : {
+            target: ctx.targets.trainingTiming.mealTargets?.find((m) => m.slot === slot) ?? null,
+          },
   };
 }
 
@@ -1742,6 +1800,11 @@ export function swapMealRecipe(
   plan: MealPlanWeek,
   target: { readonly date: string; readonly slot: MealSlotId },
   input: Omit<MealPlanInput, 'existingPlan' | 'variant'>,
+  /**
+   * Nährstoff-Timing (Vorschlag „Für vor dem Training wäre X besser – tauschen?“): nur gegen genau dieses Rezept
+   * tauschen (gleiche Regeln wie sonst; passt es nicht, `no_alternative`).
+   */
+  options: { readonly recipeId?: string } = {},
 ): SwapResult {
   const today = isoDateSchema.parse(input.today);
   if (target.date < today) return { ok: false, reason: 'past_day' };
@@ -1810,7 +1873,11 @@ export function swapMealRecipe(
   const share = dayTargets.slots.find((s) => s.slot === target.slot)?.share ?? 0;
   const maxMinutes = isWeekday(target.date) ? pool.profile.maxPrepMinutesWeekday : null;
   const candidates = rankCandidates(
-    slotCandidates(ctx, target.slot, { maxMinutes }).filter((c) => !inWeek.has(c.recipe.id)),
+    slotCandidates(ctx, target.slot, { maxMinutes }).filter((c) =>
+      options.recipeId === undefined
+        ? !inWeek.has(c.recipe.id)
+        : c.recipe.id === options.recipeId && c.recipe.id !== meal.recipeId,
+    ),
     scoreArgs(ctx, target.slot, meal.role, share),
     state,
     input.foods,
@@ -1832,6 +1899,8 @@ export function swapMealRecipe(
         storage: null,
         mealPrepPlanId: null,
         pinned: false,
+        // Nährstoff-Timing: „Rezept tauschen“ = selbst gewählt (nie automatisch zurückgetauscht).
+        chosen: true as const,
       },
     ].sort((a, b) => (slotOrder.get(a.slot) ?? 0) - (slotOrder.get(b.slot) ?? 0));
     // Nichts streichen: ein Tausch darf keine andere Mahlzeit verdrängen (S3).

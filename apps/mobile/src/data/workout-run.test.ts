@@ -53,12 +53,12 @@ function runToEnd(active: ReturnType<typeof startActiveRun>) {
 }
 
 describe('Workout-Bibliothek im Testmodus', () => {
-  it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand 20–30) plus Lauf-Kraft-, Rudern- und Flow-Entwürfe', async () => {
+  it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand, Lauf-Kraft, Rudern, Flows – freigegeben 27.10.2026)', async () => {
     const s = await setup();
     const published = s.workouts.filter((w) => w.status === 'published');
-    expect(published.length).toBeGreaterThanOrEqual(20);
-    // + 10 freigegebene Yoga-/Pilates-Routinen (Restpunkte A, 27.10.2026).
-    expect(published.length).toBeLessThanOrEqual(40);
+    // 56 + 10 Yoga-/Pilates-Routinen der Restpunkte A (27.10.2026).
+    expect(published.length).toBe(66);
+    expect(s.workouts).toHaveLength(66);
     expect(
       s.workouts
         .filter((w) => w.status === 'draft')
@@ -66,7 +66,7 @@ describe('Workout-Bibliothek im Testmodus', () => {
           (w) => w.category === 'run_strength' || w.category === 'rowing' || w.format === 'flow',
         ),
     ).toBe(true);
-    // Etappe R: 10 Rudern-Workouts (Entwürfe, im Testmodus als „Testinhalt“).
+    // Etappe R: 10 Rudern-Workouts.
     expect(s.workouts.filter((w) => w.category === 'rowing')).toHaveLength(10);
     expect(new Set(s.workouts.map((w) => w.difficulty))).toEqual(new Set([1, 2, 3, 4, 5]));
     expect(s.workouts.some((w) => w.equipment_ids.length === 0)).toBe(true);
@@ -96,16 +96,16 @@ describe('Workout-Bibliothek im Testmodus', () => {
     expect(workoutsFromBundle(CONTENT_BUNDLE.files, [first]).map((w) => w.id)).toEqual([
       (first.data as Workout).id,
     ]);
-    // Lauf-Kraft-Entwürfe (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) sind im Testmodus dabei.
+    // Lauf-Kraft-Workouts (docs/PLAN-CALISTHENICS-SCHLINGE.md 4): freigegeben (27.10.2026).
     const runStrength = CONTENT_BUNDLE.workoutFiles.filter(
       (f) => (f.data as Workout).category === 'run_strength',
     );
     expect(runStrength.length).toBe(4);
     expect(workoutsFromBundle(CONTENT_BUNDLE.files, runStrength).map((w) => w.status)).toEqual([
-      'draft',
-      'draft',
-      'draft',
-      'draft',
+      'published',
+      'published',
+      'published',
+      'published',
     ]);
   });
 

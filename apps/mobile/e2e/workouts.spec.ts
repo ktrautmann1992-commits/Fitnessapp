@@ -54,11 +54,10 @@ const card = (page: Page, id: string) => page.getByTestId(`workout-card-${id}`);
 
 test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({ page }) => {
   await setup(page);
-  // 27 freigegebene + 10 Rudern-Entwürfe (Etappe R) + 14 Yoga-/Pilates-/Mobility-Entwürfe (Etappe Y), im Testmodus als
-  // „Testinhalt“ in der Liste; ohne Gesundheits-Check ist
-  // „Sanft in den Morgen“ ausgeblendet (zu viele Umkehrhaltungen für den vorsichtigen Plan). Restpunkte A: + 10 freigegebene
-  // Yoga-/Pilates-Routinen, davon 2 ohne Gesundheits-Check ausgeblendet (gestützte Brücke = Umkehrhaltung).
-  await expect(count(page)).toHaveText('59 Workouts');
+  // 66 freigegebene Workouts (seit 27.10.2026 auch 4 Lauf-Kraft, 10 Rudern, 15 Yoga/Pilates/Mobility, dazu 10
+  // Yoga-/Pilates-Routinen der Restpunkte); ohne Gesundheits-Check sind „Sanft in den Morgen“ (zu viele
+  // Umkehrhaltungen für den vorsichtigen Plan) und 2 Restpunkte-Routinen (gestützte Brücke) ausgeblendet.
+  await expect(count(page)).toHaveText('63 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
@@ -88,7 +87,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-1').click();
   await expect(page.getByTestId('workouts-no-match')).toBeVisible();
   await page.getByTestId('workouts-filter-reset').click();
-  await expect(count(page)).toHaveText('59 Workouts');
+  await expect(count(page)).toHaveText('63 Workouts');
 
   // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();
@@ -107,9 +106,9 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
     'aria-label',
     'Schwierigkeit 2 von 5 Sternen: eher leicht',
   );
-  await expect(page.getByTestId('workout-testphase')).toHaveText(
-    'Testphase – noch nicht fachlich geprüft',
-  );
+  // Kein Testphase-/Testinhalt-Hinweis mehr (privater Nutzerkreis, Gründer-Entscheidung 27.10.2026).
+  await expect(page.getByTestId('workout-testphase')).toHaveCount(0);
+  await expect(page.getByTestId('workout-test-content')).toHaveCount(0);
   await expect(page.getByTestId('workout-safety-warmup')).toBeVisible();
   await expect(page.getByTestId('workout-exercises')).toContainText('1. Dead Bug');
 
@@ -217,7 +216,6 @@ test('Yoga (Flow): Stuhl-Yoga mit Seitenwechsel, Pose überspringen; Kategorie Y
   await expect(card(page, 'yoga-fuer-den-schreibtisch')).toBeVisible();
   await card(page, 'yoga-stuhl').click();
   await heading(page, 'Stuhl-Yoga');
-  await expect(page.getByTestId('workout-test-content')).toBeVisible();
   await expect(page.getByTestId('workout-exercises')).toContainText('je Seite (rechts / links)');
 
   await page.getByTestId('workout-start').click();

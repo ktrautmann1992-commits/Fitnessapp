@@ -262,7 +262,8 @@ describe('validateContent: Lebensmittel und Rezepte (Phase 5, R1/R15)', () => {
     const result = validateContent([...exerciseFiles(), templateFile(), ...nutritionFiles()], {
       nutritionCatalog: catalogFor(),
     });
-    expect(result.issues.filter((i) => i.rule !== 'R16')).toEqual([]);
+    // R22T (Nährstoff-Timing, gelb): Testwerte der Fixtures passen nicht immer zur Trainings-Markierung.
+    expect(result.issues.filter((i) => i.rule !== 'R16' && i.rule !== 'R22T')).toEqual([]);
     expect(result.blocking).toEqual([]);
     expect(result.foods).toHaveLength(FIXTURE_FOODS.length);
     expect(result.recipes).toHaveLength(FIXTURE_RECIPES.length);

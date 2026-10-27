@@ -102,11 +102,6 @@ export function EatingOutTab({
   return (
     <View style={styles.column} testID="eating-out">
       <Body muted>{texts.intro}</Body>
-      {all.some((v) => v.isDraft) ? (
-        <Body muted testID="eating-out-draft-note">
-          {texts.draftNote}
-        </Body>
-      ) : null}
 
       {recent.length > 0 ? (
         <View style={styles.column} testID="eating-out-recent">
@@ -217,7 +212,6 @@ export function EatingOutTab({
               />
               <View style={styles.badges}>
                 <Badge label={texts.estimateBadge} testID={`eating-out-estimate-${view.dish.id}`} />
-                {view.isDraft ? <Badge label={texts.draftBadge} /> : null}
                 <Body muted>
                   {[
                     EATING_OUT_CATEGORY_LABELS_DE[view.dish.category],

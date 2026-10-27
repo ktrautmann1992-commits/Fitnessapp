@@ -364,7 +364,6 @@ function RecipeCard({
     card.favorite ? t.nutrition.favorites.favoriteMark : null,
     numbers ? `${numbers.a11y}, ${texts.perServingA11y}` : null,
     card.isDraft ? texts.draft : null,
-    card.isTestphase ? texts.testphaseA11y : null,
   ]
     .filter((part): part is string => part !== null)
     .join('. ');
@@ -390,16 +389,9 @@ function RecipeCard({
           <View style={styles.cardText}>
             <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
             <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
-            {card.isDraft || card.isTestphase ? (
+            {card.isDraft ? (
               <View style={styles.flags}>
-                {card.isDraft ? <RecipeFlagChip label={texts.draft} a11y={texts.draft} /> : null}
-                {card.isTestphase ? (
-                  <RecipeFlagChip
-                    label={texts.testphase}
-                    a11y={texts.testphaseA11y}
-                    testID={`recipe-search-hit-${card.id}-testphase`}
-                  />
-                ) : null}
+                <RecipeFlagChip label={texts.draft} a11y={texts.draft} />
               </View>
             ) : null}
             {card.outsideProfileDiet ? (

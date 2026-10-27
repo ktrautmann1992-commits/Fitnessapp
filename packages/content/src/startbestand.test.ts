@@ -22,7 +22,7 @@ const contentDir = join(import.meta.dirname, '..', '..', '..', 'content');
 const { files, strayFiles } = loadContentFiles(contentDir);
 const result = validateContent(files);
 const bodyweight = result.templates.filter((t) => isBodyweightTemplate(t));
-/** Entwürfe aus docs/PLAN-CALISTHENICS-SCHLINGE.md: Calisthenics- und „nur Schlingentrainer“-Vorlagen (eigene Prüfung). */
+/** Aus docs/PLAN-CALISTHENICS-SCHLINGE.md: Calisthenics- und „nur Schlingentrainer“-Vorlagen (freigegeben 27.10.2026). */
 const extra = result.templates.filter((t) => isCalisthenicsTemplate(t) || isSuspensionTemplate(t));
 const standard = result.templates.filter((t) => !isBodyweightTemplate(t) && !extra.includes(t));
 /** Ziele der Matrix (Calisthenics hat eigene Vorlagen außerhalb der Matrix). */
@@ -46,7 +46,8 @@ describe('Startbestand (content/)', () => {
       'fitness-fortgeschritten-3t-schlingentrainer',
       'muskelaufbau-einsteiger-3t-schlingentrainer',
     ]);
-    for (const t of extra) expect(t.status, t.id).toBe('draft');
+    // Freigegeben für den privaten Nutzerkreis (Gründer-Entscheidung 27.10.2026), nicht fachlich geprüft.
+    for (const t of extra) expect(t.status, t.id).toBe('published');
     expect(result.exercises.length + result.templates.length).toBe(files.length);
   });
 

@@ -35,6 +35,8 @@ export const NOTIFICATION_IDS = {
   measurement: 'alpha5-mess-erinnerung',
   measurementTest: 'alpha5-mess-erinnerung-test',
   restEnd: 'alpha5-pausenende',
+  /** Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 7): „In 1 Stunde: Snack vor dem Training“ (Standard aus). */
+  trainingMeal: 'alpha5-snack-vor-training',
 } as const;
 
 /** Antippen der Mess-Erinnerung öffnet die Messung (Schritt „Körperumfänge“, danach zurück zu „Heute“). */
@@ -104,6 +106,13 @@ export interface Notifications {
   enableRestEnd(): Promise<EnableResult>;
   disableRestEnd(): Promise<void>;
   declineRestEndOffer(): Promise<void>;
+  /**
+   * Nährstoff-Timing: Erinnerung vor dem Training eingeschaltet (Tipp der Person) – fragt ggf. nach der Erlaubnis.
+   * Die Einstellung selbst (Standard aus) liegt in lib/training-meal-prefs.ts.
+   */
+  allowTrainingMeal(): Promise<EnableResult>;
+  /** Erinnerung planen (Zeitpunkt in ms) bzw. stornieren (null). Fester Text ohne Werte, nur bei Erlaubnis. */
+  syncTrainingMeal(atMs: number | null): Promise<void>;
   /** Abmelden, Konto löschen, Testdaten löschen. */
   reset(): Promise<void>;
   /** Versteckter Test-Knopf (nur Testmodus): Mess-Erinnerung in 2 Minuten. */
@@ -247,6 +256,25 @@ export function createNotifications(
     declineRestEndOffer: async () => {
       await savePrefs({ restEndAsked: true });
     },
+    allowTrainingMeal: async () => {
+      if (!driver.supported) return 'unsupported';
+      // Nur hier fragt das System nach – nach dem Tipp auf „Erinnerung vor dem Training“.
+      const current = await driver.permission();
+      return current === 'granted' ? current : driver.requestPermission();
+    },
+    syncTrainingMeal: (atMs) =>
+      queue(async () => {
+        if (!driver.supported) return;
+        if (atMs === null || (await driver.permission()) !== 'granted') {
+          await driver.cancel(NOTIFICATION_IDS.trainingMeal);
+          return;
+        }
+        await driver.schedule(
+          NOTIFICATION_IDS.trainingMeal,
+          { title: t.trainingMeals.reminder.notificationTitle, body: null, route: null },
+          atMs,
+        );
+      }),
     reset: () =>
       queue(async () => {
         if (driver.supported) await driver.cancelAll();
