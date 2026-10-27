@@ -44,6 +44,7 @@ function session(
     target_distance_m: null,
     workout_steps: null,
     adjustment_id: null,
+    start_time: null,
     ...overrides,
   };
 }
@@ -99,6 +100,8 @@ describe('storedSessionFromRows', () => {
     delete expected.plan_id;
     // Kennzeichen der Live-Anpassung (4b B) gehört nicht in die Engine-Eingabe (Anzeige über plan_adjustments).
     delete expected.adjustment_id;
+    // Uhrzeit (Nährstoff-Timing T0) gehört zur Ernährung, nicht in die Eingabe der Plan-Engine.
+    delete expected.start_time;
     // Ohne Wettkampf (Art/Phase null) keine Felder des Wettkampfplans – Einheit byte-gleich zu vorher (WP3).
     for (const key of ['workout_type', 'training_phase', 'target_distance_m', 'workout_steps']) {
       delete expected[key];

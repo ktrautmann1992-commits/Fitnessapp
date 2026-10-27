@@ -134,6 +134,12 @@ export interface PlannedMeal {
    * Plan kennt das Feld nicht → neu planen, sichere Richtung).
    */
   readonly shared?: true;
+  /**
+   * Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 6): Gericht selbst gewählt („Rezept tauschen“, „Rückgängig“ nach
+   * einer Anpassung ans Training) – wird beim Verschieben des Trainings nie automatisch getauscht. Fehlt sonst
+   * (gespeichert als `meal_plan_items.user_chosen`).
+   */
+  readonly chosen?: true;
 }
 
 export type EmptySlotReason = RecipeExclusionReason | SlotExclusionReason | 'above_ceiling';
@@ -628,6 +634,8 @@ export interface SelectedMeal {
   readonly share: number;
   /** Geteilte Mahlzeit (19.7 N13): fertig berechnete Portion der Person, wird nicht ausgeglichen. */
   readonly fixedPortion?: ScaledPortion;
+  /** Selbst gewählt (Nährstoff-Timing, `PlannedMeal.chosen`). */
+  readonly chosen?: true;
 }
 
 export interface DayContext {
@@ -649,7 +657,7 @@ function toPlannedMeal(
   selected: Pick<
     SelectedMeal,
     'role' | 'variant' | 'prepKind' | 'cookDate' | 'storage' | 'mealPrepPlanId'
-  > & { slot: MealPlanSlotKey; fixed: boolean; isFill: boolean; shared?: boolean },
+  > & { slot: MealPlanSlotKey; fixed: boolean; isFill: boolean; shared?: boolean; chosen?: true },
   portion: ScaledPortion,
 ): PlannedMeal {
   const { recipe } = selected.variant;
@@ -685,6 +693,7 @@ function toPlannedMeal(
     fixed: selected.fixed,
     mealPrepPlanId: selected.mealPrepPlanId,
     ...(selected.shared === true ? { shared: true as const } : {}),
+    ...(selected.chosen === true ? { chosen: true as const } : {}),
   };
 }
 
@@ -705,11 +714,13 @@ export function sharedMealPortion(meal: PlannedMeal): ScaledPortion | undefined 
  */
 export function fixedMealSelection(
   meal: PlannedMeal,
-): Pick<SelectedMeal, 'fixedFactor' | 'fixedPortion'> & { readonly pinned?: true } {
+): Pick<SelectedMeal, 'fixedFactor' | 'fixedPortion' | 'chosen'> & { readonly pinned?: true } {
+  // Selbst gewählt bleibt selbst gewählt (Nährstoff-Timing), auch nach einem erneuten Tagesausgleich.
+  const chosen = meal.chosen === true ? { chosen: true as const } : {};
   const portion = sharedMealPortion(meal);
   if (portion !== undefined)
-    return { fixedFactor: portion.factor, fixedPortion: portion, pinned: true };
-  return meal.fixed ? { fixedFactor: meal.factor } : {};
+    return { fixedFactor: portion.factor, fixedPortion: portion, pinned: true, ...chosen };
+  return meal.fixed ? { fixedFactor: meal.factor, ...chosen } : chosen;
 }
 
 function fillCandidates(ctx: DayContext, excludeIds: ReadonlySet<string>): FilteredRecipe[] {
@@ -1832,6 +1843,8 @@ export function swapMealRecipe(
         storage: null,
         mealPrepPlanId: null,
         pinned: false,
+        // Nährstoff-Timing: „Rezept tauschen“ = selbst gewählt (nie automatisch zurückgetauscht).
+        chosen: true as const,
       },
     ].sort((a, b) => (slotOrder.get(a.slot) ?? 0) - (slotOrder.get(b.slot) ?? 0));
     // Nichts streichen: ein Tausch darf keine andere Mahlzeit verdrängen (S3).

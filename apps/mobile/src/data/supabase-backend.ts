@@ -878,7 +878,7 @@ function userProductRejectCode(reason: NutritionRejectReason): BackendErrorCode 
 const MEAL_PLAN_ITEM_COLUMNS =
   'plan_id, date, slot, role, recipe_id, recipe_version, title_de, factor, kcal, protein_g, carbs_g, fat_g, ' +
   'substitutions, omitted_optional, ingredient_swaps, is_fill, prep_kind, cook_date, storage, meal_prep_plan_id, ' +
-  'day_status';
+  'day_status, user_chosen';
 
 /** Leerer Bestand (Tabellen fehlen noch bzw. offline ohne Zwischenspeicher). */
 const EMPTY_NUTRITION_CONTENT: DbNutritionContent = {

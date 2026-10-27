@@ -570,6 +570,8 @@ function insertSessions(
       target_distance_m: s.target_distance_m ?? null,
       // Live-Anpassung (4b Etappe B): neue Einheiten ohne Kennzeichen, wie insert_plan_sessions.
       adjustment_id: null,
+      // Nährstoff-Timing (T0): übernommene Uhrzeit, sonst null (wie insert_plan_sessions).
+      start_time: s.start_time ?? null,
     });
     for (const e of s.exercises) {
       newExercises.push({

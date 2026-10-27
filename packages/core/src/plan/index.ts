@@ -38,3 +38,5 @@ export * from './week-status';
 export * from './race-pace';
 // Lauf-Kraft & Lauf-ABC (docs/PLAN-CALISTHENICS-SCHLINGE.md 4).
 export * from './run-strength';
+// Nährstoff-Timing 2 (docs/PLAN-NAEHRSTOFF-TIMING.md): Uhrzeit an der geplanten Einheit.
+export * from './session-time';

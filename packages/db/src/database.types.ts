@@ -1407,6 +1407,7 @@ export type Database = {
           storage: string | null;
           substitutions: Json;
           title_de: string;
+          user_chosen: boolean;
           user_id: string;
         };
         Insert: {
@@ -1431,6 +1432,7 @@ export type Database = {
           storage?: string | null;
           substitutions?: Json;
           title_de: string;
+          user_chosen?: boolean;
           user_id: string;
         };
         Update: {
@@ -1455,6 +1457,7 @@ export type Database = {
           storage?: string | null;
           substitutions?: Json;
           title_de?: string;
+          user_chosen?: boolean;
           user_id?: string;
         };
         Relationships: [
@@ -1956,6 +1959,7 @@ export type Database = {
           original_date: string | null;
           plan_id: string;
           scheduled_on: string;
+          start_time: string | null;
           status: Database['public']['Enums']['planned_session_status'];
           target_distance_m: number | null;
           template_day_index: number | null;
@@ -1984,6 +1988,7 @@ export type Database = {
           original_date?: string | null;
           plan_id: string;
           scheduled_on: string;
+          start_time?: string | null;
           status?: Database['public']['Enums']['planned_session_status'];
           target_distance_m?: number | null;
           template_day_index?: number | null;
@@ -2012,6 +2017,7 @@ export type Database = {
           original_date?: string | null;
           plan_id?: string;
           scheduled_on?: string;
+          start_time?: string | null;
           status?: Database['public']['Enums']['planned_session_status'];
           target_distance_m?: number | null;
           template_day_index?: number | null;

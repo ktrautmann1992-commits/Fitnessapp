@@ -189,6 +189,7 @@ function mealFromItem(
       // Schon gekochte Reste haben eine feste Portion (wie `fixedFactor` beim erneuten Ausgleich).
       fixed: item.prep_kind === 'leftover' && item.cook_date < today,
       mealPrepPlanId: item.meal_prep_plan_id,
+      ...(item.user_chosen === true ? { chosen: true as const } : {}),
     };
   } catch {
     return null;
