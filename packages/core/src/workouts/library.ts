@@ -52,13 +52,26 @@ export const EMPTY_WORKOUT_FILTER: WorkoutFilter = {
   noEquipment: false,
 };
 
-/** Nur freigegebene Workouts, gefiltert und sortiert: Sterne, Dauer, Titel. */
+/**
+ * Entwürfe dieser Kategorien erscheinen in der Liste (als „Testinhalt“) – nur im Testmodus, denn im Supabase-Modus
+ * liefert die Datenbank (RLS) ausschließlich freigegebene Workouts. Sportarten Stufe 1 · Etappe R: Rudern-Workouts,
+ * damit sie vor der Freigabe im Vorschau-Link prüfbar sind (docs/PLAN-SPORTARTEN-STUFE-1.md 4).
+ */
+export const WORKOUT_LIST_DRAFT_CATEGORIES: readonly WorkoutCategory[] = ['rowing'];
+
+/**
+ * Freigegebene Workouts (und Entwürfe aus WORKOUT_LIST_DRAFT_CATEGORIES), gefiltert und sortiert: Sterne, Dauer, Titel.
+ */
 export function filterWorkouts<W extends Workout>(
   workouts: readonly W[],
   filter: WorkoutFilter,
 ): W[] {
   return workouts
-    .filter((w) => w.status === 'published')
+    .filter(
+      (w) =>
+        w.status === 'published' ||
+        (w.status === 'draft' && WORKOUT_LIST_DRAFT_CATEGORIES.includes(w.category)),
+    )
     .filter((w) => filter.stars.length === 0 || filter.stars.includes(w.difficulty))
     .filter((w) => filter.duration === null || workoutDurationBucket(w.minutes) === filter.duration)
     .filter((w) => filter.category === null || w.category === filter.category)

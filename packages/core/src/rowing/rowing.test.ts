@@ -35,6 +35,8 @@ import { FULL_HOME, MONDAY, person, repoLibrary } from '../plan/test-library';
 import { mapExerciseType, sportForExerciseType } from '../wearables/exercise-types';
 import { wearableSessionImportSchema } from '../wearables/schema';
 import { sessionFromHc } from '../wearables/sessions';
+import { EMPTY_WORKOUT_FILTER, filterWorkouts } from '../workouts/library';
+import { makeWorkout } from '../workouts/test-fixtures';
 import { parseRowClock, rowValuesFromInput } from './input';
 import {
   formatRowSplit,
@@ -648,5 +650,28 @@ describe('Uhr: Health Connect 54 Rudergerät', () => {
       { hfMax: null },
     );
     expect(run.kind === 'ok' && 'avg_power_w' in run.session).toBe(false);
+  });
+});
+
+describe('Rudern-Workouts in der Liste (Testmodus)', () => {
+  it('Entwürfe der Kategorie Rudern erscheinen, andere Entwürfe nicht', () => {
+    const list = [
+      makeWorkout({ id: 'r-rudern', title_de: 'Rudern', status: 'draft', category: 'rowing' }),
+      makeWorkout({
+        id: 'l-lauf',
+        title_de: 'Lauf-Kraft',
+        status: 'draft',
+        category: 'run_strength',
+      }),
+      makeWorkout({ id: 'f-frei', title_de: 'Frei', status: 'published' }),
+    ];
+    expect(
+      filterWorkouts(list, EMPTY_WORKOUT_FILTER)
+        .map((w) => w.id)
+        .sort(),
+    ).toEqual(['f-frei', 'r-rudern']);
+    expect(
+      filterWorkouts(list, { ...EMPTY_WORKOUT_FILTER, category: 'rowing' }).map((w) => w.id),
+    ).toEqual(['r-rudern']);
   });
 });

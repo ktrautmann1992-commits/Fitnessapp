@@ -48,14 +48,18 @@ function runToEnd(active: ReturnType<typeof startActiveRun>) {
 }
 
 describe('Workout-Bibliothek im Testmodus', () => {
-  it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand 20–30) plus Lauf-Kraft-Entwürfe', async () => {
+  it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand 20–30) plus Lauf-Kraft- und Rudern-Entwürfe', async () => {
     const s = await setup();
     const published = s.workouts.filter((w) => w.status === 'published');
     expect(published.length).toBeGreaterThanOrEqual(20);
     expect(published.length).toBeLessThanOrEqual(30);
     expect(
-      s.workouts.filter((w) => w.status === 'draft').every((w) => w.category === 'run_strength'),
+      s.workouts
+        .filter((w) => w.status === 'draft')
+        .every((w) => w.category === 'run_strength' || w.category === 'rowing'),
     ).toBe(true);
+    // Etappe R: 10 Rudern-Workouts (Entwürfe, im Testmodus als „Testinhalt“).
+    expect(s.workouts.filter((w) => w.category === 'rowing')).toHaveLength(10);
     expect(new Set(s.workouts.map((w) => w.difficulty))).toEqual(new Set([1, 2, 3, 4, 5]));
     expect(s.workouts.some((w) => w.equipment_ids.length === 0)).toBe(true);
     for (const w of s.workouts) {
