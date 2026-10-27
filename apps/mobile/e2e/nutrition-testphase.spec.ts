@@ -17,7 +17,7 @@ test('Testphase: Suche gekennzeichnet, Rezeptansicht und Ratgeber mit Hinweis', 
   test.setTimeout(180_000);
   await onboardNutrition(page, { testphase: true });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 
   // Suche: kleines Kennzeichen an den Treffern.
@@ -90,7 +90,7 @@ test('Gegenprobe: normaler Testmodus (Entwürfe) zeigt keinen Testphase-Hinweis'
   test.setTimeout(180_000);
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
   await page.goto('/rezept/overnight-oats');
   await expect(page.getByTestId('recipe')).toBeVisible();

@@ -35,7 +35,7 @@ async function recordRequests(page: Page) {
 async function openProduct(page: Page) {
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
   await page.getByTestId('food-log').getByTestId('food-log-add').click();
   await expect(page.getByTestId('food-log-entry')).toBeVisible();

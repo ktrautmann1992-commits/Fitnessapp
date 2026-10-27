@@ -33,7 +33,12 @@ export function useAppLayout(): {
       normalizeLayout(
         stored === null
           ? null
-          : { dashboard_tiles: stored.dashboard_tiles, tab_bar: stored.tab_bar },
+          : {
+              dashboard_tiles: stored.dashboard_tiles,
+              tab_bar: stored.tab_bar,
+              // Fassung (26.10.2026): ohne → alter Standard wird umgestellt (normalizeLayout).
+              layout_version: stored.layout_version ?? null,
+            },
         AVAILABLE_AREAS,
       ),
     [stored],

@@ -191,6 +191,16 @@ const ICONS = {
     { d: 'M2 8c2.5-2 4.5-2 7 0s4.5 2 7 0 4.5-2 6 0M2 14c2.5-2 4.5-2 7 0s4.5 2 7 0 4.5-2 6 0' },
   ],
   music: [{ cx: 7, cy: 18, r: 3 }, { cx: 17, cy: 16, r: 3 }, { d: 'M10 18V5l10-2v13' }],
+  // „App verschlanken“ (26.10.2026): Reiter „Heute“, Teilen, Drucken, Zurück-Pfeil, Filter.
+  home: [{ d: 'M3 11 12 4l9 7M5 10v10h5v-6h4v6h5V10' }],
+  share: [{ d: 'M12 3v12M8 7l4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6' }],
+  print: [
+    {
+      d: 'M6 9V3h12v6M6 17H4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M6 14h12v7H6Z',
+    },
+  ],
+  'chevron-left': [{ d: 'm15 6-6 6 6 6' }],
+  filter: [{ d: 'M3 5h18l-7 8v6l-4 2v-8Z' }],
   bike: [
     { cx: 6, cy: 16, r: 4 },
     { cx: 18, cy: 16, r: 4 },

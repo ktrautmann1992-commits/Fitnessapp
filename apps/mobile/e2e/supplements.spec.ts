@@ -38,7 +38,7 @@ async function setup(page: Page, consent: boolean) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function openFromMore(page: Page) {

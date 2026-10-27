@@ -43,8 +43,11 @@ export function Screen({
   scrollEnabled = true,
   area,
   icon,
+  headerAction,
 }: {
   title?: string;
+  /** Knopf rechts neben dem Titel (⚙, ⋯, Kalender – „App verschlanken“ 26.10.2026). */
+  headerAction?: ReactNode;
   /** Bereich (Design 20.10.2026): Seitenkopf mit Icon-Chip in der Bereichsfarbe neben dem Titel. */
   area?: AreaId;
   icon?: IconName;
@@ -83,6 +86,14 @@ export function Screen({
                 <View style={styles.titleText}>
                   <Heading>{title}</Heading>
                 </View>
+                {headerAction}
+              </View>
+            ) : title && headerAction ? (
+              <View style={styles.titleRow}>
+                <View style={styles.titleText}>
+                  <Heading>{title}</Heading>
+                </View>
+                {headerAction}
               </View>
             ) : title ? (
               <Heading>{title}</Heading>

@@ -24,7 +24,7 @@ async function hitIds(page: Page): Promise<string[]> {
 async function start(page: Page, person: Parameters<typeof onboardNutrition>[1] = {}) {
   await onboardNutrition(page, person);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 const option = (page: Page, name: string) =>

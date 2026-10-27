@@ -637,20 +637,29 @@ export async function executeWriteOp(
       check(await client.from('measurement_reminders').upsert(op.row, { onConflict: 'user_id' }));
       return;
     // Etappe E2: Anordnung über save_app_layout (prüft Form und Regeln erneut).
-    case 'save_app_layout':
-      check(
-        await client.rpc('save_app_layout', {
-          // Schrittziel nur, wenn gesetzt – so klappt das Speichern der Anordnung auch vor `db-migrate`.
-          p_layout: toJson({
-            dashboard_tiles: op.row.dashboard_tiles,
-            tab_bar: op.row.tab_bar,
-            ...(op.row.step_goal === undefined || op.row.step_goal === null
-              ? {}
-              : { step_goal: op.row.step_goal }),
-          }),
-        }),
-      );
+    case 'save_app_layout': {
+      // Schrittziel nur, wenn gesetzt – so klappt das Speichern der Anordnung auch vor `db-migrate`.
+      const base = {
+        dashboard_tiles: op.row.dashboard_tiles,
+        tab_bar: op.row.tab_bar,
+        ...(op.row.step_goal === undefined || op.row.step_goal === null
+          ? {}
+          : { step_goal: op.row.step_goal }),
+      };
+      const withVersion =
+        op.row.layout_version === undefined || op.row.layout_version === null
+          ? base
+          : { ...base, layout_version: op.row.layout_version };
+      const result = await client.rpc('save_app_layout', { p_layout: toJson(withVersion) });
+      // Vor `db-migrate` (20261026150000_app_layout_version.sql) kennt die Funktion das Feld noch nicht → ohne Fassung
+      // speichern (die Anordnung gilt dann als ältere Fassung, nichts geht verloren).
+      if (result.error && withVersion !== base && result.error.code === '22023') {
+        check(await client.rpc('save_app_layout', { p_layout: toJson(base) }));
+        return;
+      }
+      check(result);
       return;
+    }
     // Pläne nur über die geprüften Datenbank-Funktionen (security definer, PLAN-PHASE-3 8.1).
     case 'save_training_plan':
       check(await client.rpc('save_training_plan', { p_plan: toJson(op.payload) }));

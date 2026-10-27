@@ -246,3 +246,68 @@ Gründer-Freigabe des Entwurfs „Übersicht neu“ / „Mehr neu“. Farben, Sc
   (Ratgeber, Menüleiste anpassen, Einstellungen, Lizenzen). Kein Bereich steht doppelt (Leiste und Mehr).
 - **Tests:** Baustein-Tests (Vitest „components“), E2E prüfen Rollen und Namen statt Schreibweise
   (Großbuchstaben nur per Stil).
+
+## 11. App verschlanken (Gründer-Freigabe 26.10.2026) – Umsetzungsstand
+
+Freigegeben: Vorschlag „schlank“ (5 Reiter, weniger pro Seite, klarer) mit den Entwürfen 1-heute … 8-navigation.
+Nichts fällt weg – jede Funktion hat genau einen festen Platz, alle Adressen (`/today`, `/workouts`, `/fortschritt`,
+`/wettkampf`, `/settings`, …) bleiben. Anpassbarkeit (Kacheln, Menüleiste) bleibt vollständig.
+
+### 11.1 Menüleiste und Standard
+
+- **Standard** (`packages/core/src/layout.ts` `DEFAULT_TAB_BAR`): **Heute · Training · Ernährung · Einkaufen · Mehr**
+  (IDs unverändert: `uebersicht` = Reiter „Heute“, `today` = Reiter „Training“). „Workouts“, „Wettkampf“ und
+  „Fortschritt“ bleiben wählbar (bis 6 Knöpfe, Regeln wie in 8).
+- **Standard-Kacheln** (`DEFAULT_TILES`): Training heute, Deine Woche, Ernährung heute, Ausdauer, Schritte, Erholung,
+  Mein Wettkampf sichtbar; Workouts, Körperdaten (jetzt Mehr → Fortschritt) und „Schnell zu“ ausgeblendet. Fehlende
+  Kacheln kommen mit ihrer Standard-Sichtbarkeit an ihre Standardstelle.
+- **Umstellung gespeicherter Anordnungen:** neue Spalte `app_layout_settings.layout_version` (Migration
+  `20261026150000_app_layout_version.sql`, rein additiv; `save_app_layout` nimmt das Feld optional an, pgTAP 92).
+  `normalizeLayout` stellt NUR Anordnungen ohne Fassung (bzw. Fassung 1) um, und nur das, was noch genau dem alten
+  Standard entspricht: die Leiste mit „Workouts“ an 3. Stelle → neue Leiste; nie veränderte Kacheln (alle sichtbar,
+  alte Reihenfolge) → neue Kacheln. Selbst Zusammengestelltes bleibt. Gespeichert wird immer Fassung 2 – eine bewusst
+  gewählte Leiste mit „Workouts“ wird also nie wieder umgestellt. Vor `db-migrate` speichert die App ohne Fassung
+  (Fehler 22023 → zweiter Versuch ohne Feld).
+- **Markierter Knopf** (`highlightedTab`): Workouts → „Training“, Wettkampf/Fortschritt → „Mehr“, wenn sie keinen
+  eigenen Knopf haben. Antippen des markierten Knopfs führt zurück in den Reiter.
+
+### 11.2 Seiten
+
+| Seite                            | Inhalt jetzt                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Heute** (`/uebersicht`)        | Gruß + Stift, Hinweis-Zeile, Training heute, **Deine Woche** (Wochenstreifen, Tag → Training), **Ernährung heute** („Als Nächstes“, Gegessen, Essen eintragen, Ring nur mit Zahlen), Ausdauer + Schritte, Erholung, Wettkampf, „Kacheln anpassen“                                                                                                                                                                                                                                                       |
+| **Training** (`/today`)          | Umschalter **Mein Plan · Workouts · Übungen**, Hinweis-Zeile, Wochenstreifen, Block-Woche als eine Zeile, Arzt-Hinweis (nie zugeklappt), Hero „Training starten“, Übungsliste (Entwurf B), Werkzeuge **Kalender · Verlauf · Tauschen · Als PDF**, Zeile „Dein Plan: …“ zum Aufklappen (Vorlage, Qualität, Hinweise, Plan neu erstellen → Einstellungen). Entfallen: „Essen heute“, Trinken (beides in Ernährung/Heute), „Woche ansehen“/„Dein Tag“ (Wochenstreifen, Fortschritt), Knopf „Einstellungen“ |
+| **Workouts** (`/workouts`)       | Umschalter (Workouts gewählt), Filter zugeklappt hinter „Filter“, Liste                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Ernährung** (`/ernaehrung`)    | Umschalter **Tag · Woche · Rezepte**, ‹ Tag ›, ⚙ = Ernährung ändern, Hinweis-Zeile, Wettkampf-Ernährung, Ring, Mahlzeiten (⋯ = Rezept tauschen, Lieblingsgericht, Nie wieder), Gegessen/Eintragen, eigene Gerichte, Werkzeug-Kacheln (Einkaufsliste, Meal-Prep, Was habe ich da?, Vorrat, Supplemente, Ratgeber), Trinken, Hilfe-Zeile „Wenn Essen oder Gewicht dich belasten“                                                                                                                          |
+| **Einkaufen** (`/einkaufsliste`) | ⋯-Menü (Weitergeben, PDF, Zeitraum, Erledigte ausblenden, Alle Häkchen entfernen), Woche, Fortschritt, Schnell-Zeile „Etwas hinzufügen“, Liste, „Hast du wahrscheinlich da“ und „Aus diesen Rezepten“ zugeklappt, Knopf **Scannen**                                                                                                                                                                                                                                                                     |
+| **Mehr** (`/mehr`)               | Mein Konto, Kacheln **Dein Fortschritt** (Fortschritt, Kalender), **Sport** (Wettkampf, Ausdauer, Skill-Pfade; Training/Workouts nur ohne Knopf), **Essen & Wissen** (Rezepte, Supplemente, Ratgeber, Zyklus), Zeilen Einstellungen · Menüleiste anpassen · Lizenzen                                                                                                                                                                                                                                    |
+| **Fortschritt** (`/fortschritt`) | Diese Woche (3 Zahlen, Wochenauswertung), **Körperdaten** mit Eintragen, Kacheln Verlauf · Kalender · Dein Tag · Trainingswoche, Monatsrückblick, Gewichtstrend, Kraft-Entwicklung                                                                                                                                                                                                                                                                                                                      |
+| **Einstellungen** (`/settings`)  | 7 Themen (`?thema=profil                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | training | ernaehrung | geraete | anzeige | erinnerungen | konto`), je Thema nur dessen Inhalte (nur verschoben) |
+
+### 11.3 Hinweis-Zeile
+
+Vorrang zentral in `packages/core/src/notice-queue.ts` (`noticeQueue`): **sperrend** (Einwilligung neu, Plan
+abgelaufen/strengere Regeln, Plan neu nötig, fremde Daten, Ernährung: Schwangerschaft/Untergewicht/ärztliche Abklärung)
+→ **handeln** (Entwurf, Konflikt, Sitzung, offline, Testwerte-Banner, Wettkampf passt nicht) → **info** (Testinhalte,
+Messen, Einladungen, Plan-Hinweise, Eiweiß/Allergene) → **erfolg**. Sperrende stehen immer vollständig oben; sonst
+steht genau ein Hinweis vollständig da, der Rest hinter **„+N weitere Hinweise“** (klappt darunter auf, Baustein
+`NoticeStack` in `components/slim.tsx`). Der Arzt-Hinweis steht zusätzlich immer vor der Einheit. Karten, die selbst
+entscheiden, ob sie erscheinen (Tages-Check, Weniger Tage?, Modus-Banner, Abnehmziel-Karte, Mess-Angebot), stehen
+weiter einzeln.
+
+### 11.4 Abweichungen von den Entwürfen
+
+- **Hinweis-Blatt** als Aufklappen unter dem Hinweis statt Blatt von unten (Knöpfe der Hinweise bleiben direkt
+  bedienbar, Bildschirmleser lesen in Reihenfolge).
+- **Übungsliste** bleibt wie Entwurf B (#192, gleiche Woche freigegeben, neuer als die Entwürfe) – kein zusätzliches
+  „+3 weitere Übungen“.
+- **Kacheln auf Heute** bleiben dunkel mit Farbschein (Gründer-Wunsch 23.10.2026) statt Pastell wie im Entwurf.
+- **Scannen** steht als runder Knopf unter der Liste statt schwebend (keine Überdeckung von Einträgen beim Scrollen).
+- **Abhaken** einer Mahlzeit: weiter der Knopf „Gegessen“ (mit Portion) statt Kreis.
+
+### 11.5 Tests
+
+Core `layout.test.ts` (neuer Standard, Umstellung nur Unverändertes und nur alte Fassung, bewusst gewählte Leiste
+bleibt, `highlightedTab`), `notice-queue.test.ts`, `db-sync.test.ts` (neueste `save_app_layout`), pgTAP
+`92_app_layout_version.test.sql`; Mobile `slim.test.tsx`, `app-layout.test.ts`; alle Playwright-Specs angepasst
+(Reiter-Namen, Umschalter, ⋯-Menüs, aufklappbare Zeilen).

@@ -269,6 +269,8 @@ export interface AppLayoutRow {
   tab_bar: StoredAppLayout['tab_bar'];
   /** Eigenes Schrittziel (22.10.2026); fehlt/null = Standard 8.000. Einstellung, kein Gesundheitsdatum. */
   step_goal?: StoredAppLayout['step_goal'];
+  /** Fassung der Anordnung (26.10.2026, „App verschlanken“); fehlt/null = ältere Fassung (normalizeLayout stellt um). */
+  layout_version?: StoredAppLayout['layout_version'];
 }
 
 /** Zutat eines eigenen Gerichts – Spalten wie `custom_meal_items`. */

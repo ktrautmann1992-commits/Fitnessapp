@@ -42,7 +42,7 @@ async function setup(page: Page, requests: string[]) {
     days: [['Montag', 'Kraft im Studio', 60]],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await seedDemoRoutes(page);
 }
 
@@ -87,7 +87,7 @@ test('Wetter: Hinweis, Abruf mit gerundeter Position, Anzeige, Einstellungen', a
   }
 
   // Einstellungen: abschalten.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   const toggle = page.getByTestId('settings-weather');
   await expect(toggle).toHaveAttribute('aria-checked', 'true');
   await toggle.click();

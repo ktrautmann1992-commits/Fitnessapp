@@ -24,7 +24,7 @@ import {
   shoppingRecipeOutsideProfileDiet,
   startOfIsoWeek,
 } from '@fitnessapp/core';
-import { areaColors, fontSize, spacing } from '@fitnessapp/ui';
+import { areaColors, fontSize, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -33,11 +33,11 @@ import { AreaProgress, HeroSurface, Icon, type IconName, useAreaColors } from '@
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { ShoppingScanPanel } from '@/components/shopping-scan';
+import { CollapsibleRow, type MenuItem, MoreMenu, SegmentedSwitch } from '@/components/slim';
 import {
   Body,
   Button,
   Card,
-  Checkbox,
   ChoiceList,
   ErrorState,
   Heading,
@@ -135,7 +135,9 @@ export default function ShoppingTabScreen() {
   // „x erledigt – anzeigen“ je Abteilung (nur diese Sitzung).
   const [showDoneIn, setShowDoneIn] = useState<ReadonlySet<ShoppingCategory>>(() => new Set());
   const theme = useThemeColors();
-  const [showPantry, setShowPantry] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [scanOpen, setScanOpen] = useState(false);
+  const [rangeVisible, setRangeVisible] = useState(false);
   const [showInPantry, setShowInPantry] = useState(false);
   const [rangeOpen, setRangeOpen] = useState(false);
   const [draftFrom, setDraftFrom] = useState<string | null>(null);
@@ -167,8 +169,14 @@ export default function ShoppingTabScreen() {
   }
   const texts = t.nutrition.shopping;
   // Reiter: keine „Zurück“-Leiste (die Menüleiste führt weiter).
-  const shell = (children: ReactNode) => (
-    <Screen area="einkaufen" icon="cart" title={texts.tabTitle} testID="shopping-list">
+  const shell = (children: ReactNode, action?: ReactNode) => (
+    <Screen
+      area="einkaufen"
+      icon="cart"
+      title={texts.tabTitle}
+      testID="shopping-list"
+      headerAction={action}
+    >
       {children}
     </Screen>
   );
@@ -196,34 +204,6 @@ export default function ShoppingTabScreen() {
   const demo = view.library.kind === 'ready' && view.library.result.demo;
   const resolved = !noPlan && view.week?.kind === 'ready' ? view.week : null;
   const shopping = resolved?.shopping ?? null;
-  const weekSwitch = (
-    <View style={styles.row}>
-      <View style={styles.flex}>
-        <Button
-          label={t.nutrition.week.thisWeek}
-          variant={weekStart === currentWeek ? 'primary' : 'secondary'}
-          onPress={() => {
-            setMessage(null);
-            setRangeOpen(false);
-            setWeekChoice(currentWeek);
-          }}
-          testID="shopping-week-current"
-        />
-      </View>
-      <View style={styles.flex}>
-        <Button
-          label={t.nutrition.week.nextWeek}
-          variant={weekStart !== currentWeek ? 'primary' : 'secondary'}
-          onPress={() => {
-            setMessage(null);
-            setRangeOpen(false);
-            setWeekChoice(addDays(currentWeek, 7));
-          }}
-          testID="shopping-week-next"
-        />
-      </View>
-    </View>
-  );
   const shownList = shopping?.list ?? planlessList;
   if (shownList === null) {
     return shell(<LoadingState label={t.nutrition.loading} />);
@@ -438,10 +418,89 @@ export default function ShoppingTabScreen() {
     />
   );
 
+  // ⋯-Menü oben rechts (Entwurf 4-einkaufen): Weitergeben, PDF, Zeitraum, Erledigte ausblenden, Häkchen entfernen.
+  const menuItems: MenuItem[] = [
+    {
+      // Etappe N12: als Text weitergeben (System-Teilen-Dialog bzw. Kopieren), Hinweis vorher wie K4.
+      key: 'share',
+      label: t.nutrition.share.open,
+      icon: 'share',
+      onPress: () => router.push(`/einkaufsliste/weitergeben?woche=${list.weekStart}` as Href),
+      testID: 'shopping-share',
+    },
+    {
+      // PDF P5 (11, Etappe N6): Druckansicht mit Kästchen; Hinweis-Dialog bei Gesundheitsbezug.
+      key: 'print',
+      label: t.nutrition.printView.button,
+      icon: 'print',
+      onPress: () => router.push(`/einkaufsliste/drucken?woche=${list.weekStart}` as Href),
+      testID: 'shopping-print',
+    },
+    ...(rangeControls
+      ? [
+          {
+            key: 'range',
+            label: texts.rangeMenu,
+            icon: 'calendar' as const,
+            checked: rangeVisible,
+            onPress: () => setRangeVisible((v) => !v),
+            testID: 'shopping-menu-range',
+          },
+        ]
+      : []),
+    {
+      key: 'hide-checked',
+      label: texts.hideChecked,
+      icon: 'eye',
+      checked: hideChecked,
+      onPress: () => updateShoppingPrefs(() => ({ hideChecked: !hideChecked })),
+      testID: 'shopping-hide-checked',
+    },
+    ...(actions && anyChecked
+      ? [
+          {
+            key: 'uncheck',
+            label: texts.uncheckAll,
+            icon: 'swap' as const,
+            tone: 'danger' as const,
+            onPress: () => setConfirmReset(true),
+            testID: 'shopping-uncheck-all',
+          },
+        ]
+      : []),
+  ];
+  const pantryCount = pantry.length + pantryView.inPantry.length;
+
   return shell(
     <>
       {demo ? <DemoBanner /> : null}
-      {weekSwitch}
+      <SegmentedSwitch
+        accessibilityLabel={texts.weekSwitchLabel}
+        selected={weekStart === currentWeek ? 'current' : 'next'}
+        testID="shopping-week-switch"
+        items={[
+          {
+            key: 'current',
+            label: t.nutrition.week.thisWeek,
+            onPress: () => {
+              setMessage(null);
+              setRangeOpen(false);
+              setWeekChoice(currentWeek);
+            },
+            testID: 'shopping-week-current',
+          },
+          {
+            key: 'next',
+            label: t.nutrition.week.nextWeek,
+            onPress: () => {
+              setMessage(null);
+              setRangeOpen(false);
+              setWeekChoice(addDays(currentWeek, 7));
+            },
+            testID: 'shopping-week-next',
+          },
+        ]}
+      />
       {/* Design 23.10.2026: Kopf als dunkle Hero-Karte in Einkaufs-Türkis mit Fortschritt der Liste. */}
       <HeroSurface area="einkaufen" testID="shopping-hero">
         <View style={styles.heroEyebrow}>
@@ -469,49 +528,47 @@ export default function ShoppingTabScreen() {
           </>
         ) : null}
       </HeroSurface>
-      {rangeControls ? (
-        <ChoiceList
-          label={texts.rangeModeLabel}
-          options={[
-            {
-              value: 'days' as const,
-              label: texts.rangeDays,
-              accessibilityLabel: texts.rangeDaysA11y,
-              testID: 'shopping-range-days',
-            },
-            {
-              value: 'week' as const,
-              label: texts.rangeWeek,
-              accessibilityLabel: texts.rangeWeekA11y,
-              testID: 'shopping-range-week',
-            },
-          ]}
-          value={customRange ? null : prefs.mode}
-          onChange={(mode) => void chooseMode(mode)}
-          horizontal
-        />
-      ) : null}
-      {rangeControls ? (
-        <View style={styles.list}>
-          {/* „Eigener Zeitraum“ als schlichter Link – die Wahl „3 Tage | Ganze Woche“ steht oben. */}
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ expanded: rangeOpen }}
-            aria-expanded={rangeOpen}
-            onPress={() => {
-              setDraftFrom(list.from);
-              setDraftTo(list.to);
-              setRangeOpen((open) => !open);
-            }}
-            style={styles.doneLink}
-            testID="shopping-range-toggle"
-          >
-            <Text style={[styles.rangeLinkText, { color: theme.text }]}>
-              {customRange ? texts.rangeCustomActive : texts.rangeCustom}
-            </Text>
-          </Pressable>
-          {rangeOpen ? (
-            <Card>
+      {rangeControls && rangeVisible ? (
+        <Card>
+          <View style={styles.list} testID="shopping-range-controls">
+            <ChoiceList
+              label={texts.rangeModeLabel}
+              options={[
+                {
+                  value: 'days' as const,
+                  label: texts.rangeDays,
+                  accessibilityLabel: texts.rangeDaysA11y,
+                  testID: 'shopping-range-days',
+                },
+                {
+                  value: 'week' as const,
+                  label: texts.rangeWeek,
+                  accessibilityLabel: texts.rangeWeekA11y,
+                  testID: 'shopping-range-week',
+                },
+              ]}
+              value={customRange ? null : prefs.mode}
+              onChange={(mode) => void chooseMode(mode)}
+              horizontal
+            />
+            {/* „Eigener Zeitraum“ als schlichter Link – die Wahl „3 Tage | Ganze Woche“ steht oben. */}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ expanded: rangeOpen }}
+              aria-expanded={rangeOpen}
+              onPress={() => {
+                setDraftFrom(list.from);
+                setDraftTo(list.to);
+                setRangeOpen((open) => !open);
+              }}
+              style={styles.doneLink}
+              testID="shopping-range-toggle"
+            >
+              <Text style={[styles.rangeLinkText, { color: theme.text }]}>
+                {customRange ? texts.rangeCustomActive : texts.rangeCustom}
+              </Text>
+            </Pressable>
+            {rangeOpen ? (
               <View style={styles.list} testID="shopping-range-picker">
                 <ChoiceList
                   label={texts.rangeFrom}
@@ -535,9 +592,9 @@ export default function ShoppingTabScreen() {
                   testID="shopping-range-apply"
                 />
               </View>
-            </Card>
-          ) : null}
-        </View>
+            ) : null}
+          </View>
+        </Card>
       ) : null}
       {shopping === null ? (
         <Notice tone="info" testID="shopping-planless">
@@ -572,12 +629,78 @@ export default function ShoppingTabScreen() {
         </Notice>
       ) : null}
 
-      <Checkbox
-        label={texts.hideChecked}
-        checked={hideChecked}
-        onChange={(value) => updateShoppingPrefs(() => ({ hideChecked: value }))}
-        testID="shopping-hide-checked"
-      />
+      {/* Schnell-Zeile „Etwas hinzufügen“ (Entwurf): Menge und Abteilung erst nach dem Antippen. */}
+      {actions ? (
+        addOpen ? (
+          <Card>
+            <Heading level={2}>{texts.addTitle}</Heading>
+            <TextField
+              label={texts.addLabel}
+              value={label}
+              onChangeText={setLabel}
+              error={labelError}
+              hint={texts.addHint}
+              maxLength={80}
+              testID="shopping-add-label"
+              onSubmitEditing={() => void addManual()}
+            />
+            <TextField
+              label={texts.quantityLabel}
+              value={quantity}
+              onChangeText={setQuantity}
+              error={quantityError}
+              hint={texts.quantityHint}
+              maxLength={30}
+              testID="shopping-add-quantity"
+              onSubmitEditing={() => void addManual()}
+            />
+            <ChoiceList
+              label={texts.addCategory}
+              options={SHOPPING_CATEGORIES.map((c) => ({
+                value: c,
+                label: shoppingCategoryLabel(c),
+              }))}
+              value={category}
+              onChange={setCategory}
+              horizontal
+            />
+            <Button
+              label={texts.add}
+              loading={busy === 'add'}
+              onPress={() => void addManual()}
+              testID="shopping-add"
+            />
+            <Button
+              label={t.common.close}
+              variant="link"
+              onPress={() => setAddOpen(false)}
+              testID="shopping-add-close"
+            />
+          </Card>
+        ) : (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t.slim.shopping.quickAddA11y}
+            accessibilityState={{ expanded: false }}
+            aria-expanded={false}
+            onPress={() => setAddOpen(true)}
+            testID="shopping-add-open"
+            style={({ pressed }) => [
+              styles.quickAdd,
+              {
+                backgroundColor: theme.surface,
+                borderColor: theme.border,
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}
+          >
+            <Icon name="plus" size={20} color={theme.textMuted} />
+            <Text style={[styles.quickAddText, appFont('regular'), { color: theme.textMuted }]}>
+              {t.slim.shopping.quickAdd}
+            </Text>
+          </Pressable>
+        )
+      ) : null}
 
       {nothingToBuy ? (
         <Body muted testID="shopping-empty">
@@ -625,125 +748,64 @@ export default function ShoppingTabScreen() {
         })}
       </View>
 
-      {/* Scanner unter der Liste: zuerst kommt, was zu kaufen ist (23.10.2026). */}
-      {actions ? (
-        <ShoppingScanPanel
-          actions={actions}
-          foods={foods}
-          foodsDemo={view.library.kind === 'ready' && view.library.result.demo}
-          disabled={busy !== null}
-        />
-      ) : null}
-
-      {pantry.length > 0 ? (
-        <View style={styles.list}>
-          <Heading level={2}>{texts.pantry}</Heading>
-          <Button
-            label={showPantry ? texts.pantryHide : texts.pantryShow(pantry.length)}
-            variant="secondary"
-            onPress={() => setShowPantry((v) => !v)}
-            testID="shopping-pantry-toggle"
-          />
-          {showPantry ? (
-            <View testID="shopping-pantry">
-              <RowGroup>{pantry.filter(visible).map(itemRow)}</RowGroup>
+      {/* Vorrat und Rezepte als zugeklappte Zeilen am Ende (Entwurf 4-einkaufen). */}
+      {pantryCount > 0 ? (
+        <CollapsibleRow icon="box" title={texts.pantryRow(pantry.length)} testID="shopping-pantry">
+          {pantry.length > 0 ? <RowGroup>{pantry.filter(visible).map(itemRow)}</RowGroup> : null}
+          {/* Vorratsschrank (25.10.2026): was laut Vorrat reicht – eingeklappt, nur Anzeige. */}
+          {pantryView.inPantry.length > 0 ? (
+            <View style={styles.list} testID="shopping-in-pantry">
+              <Heading level={2}>{t.pantry.shopping.inPantryTitle}</Heading>
+              <Button
+                label={
+                  showInPantry
+                    ? t.pantry.shopping.inPantryHide
+                    : t.pantry.shopping.inPantryShow(pantryView.inPantry.length)
+                }
+                variant="secondary"
+                onPress={() => setShowInPantry((v) => !v)}
+                testID="shopping-in-pantry-toggle"
+              />
+              {showInPantry ? (
+                <View style={styles.list} testID="shopping-in-pantry-items">
+                  <Body muted>{t.pantry.shopping.inPantryHint}</Body>
+                  {pantryView.inPantry.map((line) => (
+                    <Body
+                      key={line.item.itemKey}
+                      testID={`shopping-in-pantry-${line.item.itemKey}`}
+                    >
+                      {`${shoppingItemText(line.item)} – ${
+                        line.status === 'covered'
+                          ? t.pantry.shopping.covered
+                          : t.pantry.shopping.checkAmount
+                      }`}
+                    </Body>
+                  ))}
+                </View>
+              ) : null}
             </View>
           ) : null}
-        </View>
-      ) : null}
-
-      {/* Vorratsschrank (25.10.2026): was laut Vorrat reicht – eingeklappt, nur Anzeige. */}
-      {pantryView.inPantry.length > 0 ? (
-        <View style={styles.list} testID="shopping-in-pantry">
-          <Heading level={2}>{t.pantry.shopping.inPantryTitle}</Heading>
           <Button
-            label={
-              showInPantry
-                ? t.pantry.shopping.inPantryHide
-                : t.pantry.shopping.inPantryShow(pantryView.inPantry.length)
-            }
+            label={t.pantry.shopping.link}
             variant="secondary"
-            onPress={() => setShowInPantry((v) => !v)}
-            testID="shopping-in-pantry-toggle"
+            onPress={() => router.push('/ernaehrung/vorrat' as Href)}
+            testID="shopping-pantry-link"
           />
-          {showInPantry ? (
-            <View style={styles.list} testID="shopping-in-pantry-items">
-              <Body muted>{t.pantry.shopping.inPantryHint}</Body>
-              {pantryView.inPantry.map((line) => (
-                <Body key={line.item.itemKey} testID={`shopping-in-pantry-${line.item.itemKey}`}>
-                  {`${shoppingItemText(line.item)} – ${
-                    line.status === 'covered'
-                      ? t.pantry.shopping.covered
-                      : t.pantry.shopping.checkAmount
-                  }`}
-                </Body>
-              ))}
-            </View>
-          ) : null}
-        </View>
-      ) : null}
-      {consentOk && anyChecked && foods !== null ? (
-        <Card>
-          <Body muted>{t.pantry.shopping.updateHint}</Body>
-          <Button
-            label={t.pantry.shopping.update}
-            variant="secondary"
-            loading={busy === 'pantry'}
-            disabled={busy !== null}
-            onPress={() => void updatePantryAfterShopping()}
-            testID="shopping-pantry-update"
-          />
-        </Card>
-      ) : null}
-      <Button
-        label={t.pantry.shopping.link}
-        variant="secondary"
-        onPress={() => router.push('/ernaehrung/vorrat' as Href)}
-        testID="shopping-pantry-link"
-      />
-
-      {actions && anyChecked ? (
+        </CollapsibleRow>
+      ) : (
         <Button
-          label={texts.uncheckAll}
-          variant="secondary"
-          onPress={() => setConfirmReset(true)}
-          testID="shopping-uncheck-all"
+          label={t.pantry.shopping.link}
+          variant="link"
+          onPress={() => router.push('/ernaehrung/vorrat' as Href)}
+          testID="shopping-pantry-link"
         />
-      ) : null}
-      <ConfirmDialog
-        visible={confirmReset}
-        title={texts.uncheckAllTitle}
-        message={texts.uncheckAllText}
-        confirmLabel={texts.uncheckAllConfirm}
-        confirmVariant="primary"
-        loading={busy === 'reset'}
-        onConfirm={() => void uncheckAll()}
-        onCancel={() => setConfirmReset(false)}
-        testID="shopping-uncheck-all-dialog"
-      />
-      {/* Etappe N12: als Text weitergeben (System-Teilen-Dialog bzw. Kopieren), Hinweis vorher wie K4. Drucken und
-          Weitergeben zeigen denselben Zeitraum wie die Liste (dieselbe aufgelöste Liste der Woche). */}
-      <Button
-        label={t.nutrition.share.open}
-        accessibilityHint={t.nutrition.share.openHint}
-        onPress={() => router.push(`/einkaufsliste/weitergeben?woche=${list.weekStart}` as Href)}
-        testID="shopping-share"
-      />
-      {/* PDF P5 (11, Etappe N6): Druckansicht mit Kästchen; Hinweis-Dialog bei Gesundheitsbezug. */}
-      <Button
-        label={t.nutrition.printView.button}
-        variant="secondary"
-        accessibilityHint={t.nutrition.printView.listHint}
-        onPress={() => router.push(`/einkaufsliste/drucken?woche=${list.weekStart}` as Href)}
-        testID="shopping-print"
-      />
-      <Body muted testID="shopping-offline">
-        {texts.offline}
-      </Body>
-
+      )}
       {list.recipes.length > 0 ? (
-        <Card>
-          <Heading level={2}>{texts.recipesTitle}</Heading>
+        <CollapsibleRow
+          icon="recipe"
+          title={texts.recipesRow(list.recipes.length)}
+          testID="shopping-recipes-row"
+        >
           <View style={styles.list} testID="shopping-recipes">
             {list.recipes.map((entry) => (
               <View key={entry.recipeId} style={styles.list}>
@@ -771,52 +833,75 @@ export default function ShoppingTabScreen() {
               </View>
             ))}
           </View>
+        </CollapsibleRow>
+      ) : null}
+      {consentOk && anyChecked && foods !== null ? (
+        <Card>
+          <Body muted>{t.pantry.shopping.updateHint}</Body>
+          <Button
+            label={t.pantry.shopping.update}
+            variant="secondary"
+            loading={busy === 'pantry'}
+            disabled={busy !== null}
+            onPress={() => void updatePantryAfterShopping()}
+            testID="shopping-pantry-update"
+          />
         </Card>
       ) : null}
 
+      <Body muted testID="shopping-offline">
+        {texts.offline}
+      </Body>
+
+      {/* „Scannen“ als runder Knopf (Entwurf): Erklärung und Scanner erst nach dem Antippen. */}
       {actions ? (
-        <Card>
-          <Heading level={2}>{texts.addTitle}</Heading>
-          <TextField
-            label={texts.addLabel}
-            value={label}
-            onChangeText={setLabel}
-            error={labelError}
-            hint={texts.addHint}
-            maxLength={80}
-            testID="shopping-add-label"
-            onSubmitEditing={() => void addManual()}
-          />
-          <TextField
-            label={texts.quantityLabel}
-            value={quantity}
-            onChangeText={setQuantity}
-            error={quantityError}
-            hint={texts.quantityHint}
-            maxLength={30}
-            testID="shopping-add-quantity"
-            onSubmitEditing={() => void addManual()}
-          />
-          <ChoiceList
-            label={texts.addCategory}
-            options={SHOPPING_CATEGORIES.map((c) => ({
-              value: c,
-              label: shoppingCategoryLabel(c),
-            }))}
-            value={category}
-            onChange={setCategory}
-            horizontal
-          />
-          <Button
-            label={texts.add}
-            loading={busy === 'add'}
-            onPress={() => void addManual()}
-            testID="shopping-add"
-          />
-        </Card>
+        <View style={styles.scanRow}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t.slim.shopping.scanA11y}
+            accessibilityState={{ expanded: scanOpen }}
+            aria-expanded={scanOpen}
+            onPress={() => setScanOpen((v) => !v)}
+            testID="shopping-scan-open"
+            style={({ pressed }) => [
+              styles.scanButton,
+              { backgroundColor: theme.primary, opacity: pressed ? 0.85 : 1 },
+            ]}
+          >
+            <Icon name="scan" size={22} color={theme.primaryText} />
+            <Text style={[styles.scanText, appFont('bold'), { color: theme.primaryText }]}>
+              {t.slim.shopping.scan}
+            </Text>
+          </Pressable>
+        </View>
       ) : null}
+      {actions && scanOpen ? (
+        <ShoppingScanPanel
+          actions={actions}
+          foods={foods}
+          foodsDemo={view.library.kind === 'ready' && view.library.result.demo}
+          disabled={busy !== null}
+        />
+      ) : null}
+
+      <ConfirmDialog
+        visible={confirmReset}
+        title={texts.uncheckAllTitle}
+        message={texts.uncheckAllText}
+        confirmLabel={texts.uncheckAllConfirm}
+        confirmVariant="primary"
+        loading={busy === 'reset'}
+        onConfirm={() => void uncheckAll()}
+        onCancel={() => setConfirmReset(false)}
+        testID="shopping-uncheck-all-dialog"
+      />
       <Body muted>{texts.healthNote}</Body>
     </>,
+    <MoreMenu
+      items={menuItems}
+      accessibilityLabel={t.slim.shopping.menuA11y}
+      testID="shopping-menu"
+    />,
   );
 }
 
@@ -1030,6 +1115,26 @@ function ShoppingItemRow({
 }
 
 const styles = StyleSheet.create({
+  quickAdd: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    minHeight: 52,
+    borderWidth: 1,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.md,
+  },
+  quickAddText: { flex: 1, fontSize: fontSize.md },
+  scanRow: { flexDirection: 'row', justifyContent: 'flex-end' },
+  scanButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minHeight: 52,
+    paddingHorizontal: 22,
+    borderRadius: radius.pill,
+  },
+  scanText: { fontSize: 17 },
   heroEyebrow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   heroEyebrowText: { fontSize: fontSize.xs, letterSpacing: 0.6, textTransform: 'uppercase' },
   row: { flexDirection: 'row', gap: spacing.sm },

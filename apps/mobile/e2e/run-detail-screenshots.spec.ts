@@ -26,7 +26,7 @@ test('Auswertung je Lauf – Bildschirmfotos', async ({ page }) => {
     days: [['Montag', 'Kraft im Studio', 60]],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await page.goto('/ausdauer');
   await heading(page, 'Ausdauer');
   await page.getByTestId('endurance-demo').click();

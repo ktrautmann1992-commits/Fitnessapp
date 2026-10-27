@@ -54,7 +54,7 @@ test('„Nutzt deinen Rest“: ohne Mengen, deterministisch, nicht gespeichert; 
   test.setTimeout(150_000);
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 
   const first = await collectHints(page);

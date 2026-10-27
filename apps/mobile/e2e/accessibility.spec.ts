@@ -69,14 +69,14 @@ test('Große Ansicht: größere Schrift und Knöpfe, „Heute“ zeigt weniger, 
 }) => {
   await onboard(page, HOME_3_DAYS);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('today-calendar')).toBeVisible();
   await expect(page.getByTestId('today-more')).toHaveCount(0);
   const normalSize = await page
     .getByTestId('today-calendar')
     .evaluate((el) => parseFloat(getComputedStyle(el.querySelector('div[dir]') ?? el).fontSize));
 
-  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.goto('/settings?thema=anzeige');
   const large = page.getByTestId('settings-large-view');
   await expect(large).toHaveAttribute('aria-checked', 'false');
   // Geburtsjahr 1990 → kein Vorschlag (erst ab 60).
@@ -94,8 +94,8 @@ test('Große Ansicht: größere Schrift und Knöpfe, „Heute“ zeigt weniger, 
   await page.reload();
   await expect(page.getByTestId('settings-large-view')).toHaveAttribute('aria-checked', 'true');
 
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).click();
-  await heading(page, 'Heute');
+  await page.goto('/today');
+  await heading(page, 'Training');
   // Weniger Elemente: Kalender, Woche, Verlauf, Übungen erst nach „Mehr anzeigen“.
   await expect(page.getByTestId('today-calendar')).toHaveCount(0);
   const more = page.getByTestId('today-more');

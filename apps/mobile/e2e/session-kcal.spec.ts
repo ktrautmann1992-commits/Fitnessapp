@@ -30,7 +30,7 @@ async function onboardPerson(page: Page, consent: boolean) {
     ],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 /** Workout „Bauch-Blitz“ starten, gut 2,5 Minuten laufen lassen, vorzeitig beenden. */

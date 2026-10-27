@@ -20,7 +20,7 @@ import {
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
   CapsExplanation,
@@ -31,7 +31,7 @@ import {
   MealPlanStateNotices,
   UnavailableMealRows,
   MealRow,
-  NutritionNotices,
+  nutritionNoticeItems,
 } from '@/components/nutrition';
 import { CompetitionNutritionCard } from '@/components/competition-nutrition';
 import { CustomMealDaySection } from '@/components/custom-meals';
@@ -41,6 +41,16 @@ import { FoodLogDaySection, PlanMealEaten } from '@/components/food-log';
 import { useReadableGuides } from '@/components/guides';
 import { MealPreferenceMenu } from '@/components/recipe-preference';
 import { Screen } from '@/components/screen';
+import {
+  CollapsibleRow,
+  type GridTile,
+  HeaderIconButton,
+  NoticeStack,
+  SegmentedSwitch,
+  type StackNotice,
+  TileGrid,
+} from '@/components/slim';
+import { useThemeColors } from '@/lib/theme';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
 import { showEnergyNumbers } from '@/data/nutrition-plan';
 import { preferenceForRecipe } from '@/data/recipe-preference-rows';
@@ -122,6 +132,7 @@ export default function NutritionDayScreen() {
   const foodLog = useFoodLogDay(shownDate, view.showNumbers);
   const foodLogActions = useFoodLogActions();
   const online = useOnline();
+  const dangerColor = useThemeColors().danger;
   const [eatenMessage, setEatenMessage] = useState<{
     text: string;
     tone: 'success' | 'danger';
@@ -173,13 +184,31 @@ export default function NutritionDayScreen() {
       title={t.nutrition.title}
       testID="nutrition-day"
       footer={footer}
+      headerAction={
+        <HeaderIconButton
+          icon="settings"
+          accessibilityLabel={t.slim.nutrition.settingsA11y}
+          onPress={() => router.push('/settings?thema=ernaehrung' as Href)}
+          testID="nutrition-settings"
+        />
+      }
     >
       {children}
     </Screen>
   );
 
+  // Trinken (25.10.2026) gibt es auch ohne fertigen Essensplan – nur am heutigen Tag.
+  const hydration =
+    picked === null || picked === today ? (
+      <HydrationCard today={today} testID="nutrition-hydration" />
+    ) : null;
   if (view.library.kind === 'unsupported') {
-    return shell(<Notice tone="info">{t.nutrition.unsupported}</Notice>);
+    return shell(
+      <>
+        <Notice tone="info">{t.nutrition.unsupported}</Notice>
+        {hydration}
+      </>,
+    );
   }
   if (view.library.kind === 'error') {
     return shell(
@@ -191,24 +220,37 @@ export default function NutritionDayScreen() {
   }
   if (view.setupMissing) {
     return shell(
-      <Card>
-        <Body>{t.nutrition.setupNeeded}</Body>
-        <Button
-          label={t.nutrition.setupButton}
-          onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
-          testID="nutrition-setup"
-        />
-      </Card>,
+      <>
+        <Card>
+          <Body>{t.nutrition.setupNeeded}</Body>
+          <Button
+            label={t.nutrition.setupButton}
+            onPress={() => router.push('/onboarding/nutrition_setup?edit=1' as Href)}
+            testID="nutrition-setup"
+          />
+        </Card>
+        {hydration}
+      </>,
     );
   }
   if (view.library.kind !== 'ready' || view.week === null) {
     return shell(<LoadingState label={t.nutrition.loading} />);
   }
   if (view.week.kind === 'incomplete') {
-    return shell(<Notice tone="info">{t.nutrition.incomplete}</Notice>);
+    return shell(
+      <>
+        <Notice tone="info">{t.nutrition.incomplete}</Notice>
+        {hydration}
+      </>,
+    );
   }
   if (view.week.kind === 'blocked') {
-    return shell(<ConsentBlockedNotice reason={view.week.reason} />);
+    return shell(
+      <>
+        <ConsentBlockedNotice reason={view.week.reason} />
+        {hydration}
+      </>,
+    );
   }
   if (view.week.kind === 'error') {
     return shell(<Notice tone="danger">{t.nutrition.computeFailed}</Notice>);
@@ -279,43 +321,205 @@ export default function NutritionDayScreen() {
     }
   }
 
+  const thaw = plan !== null && dayDate >= today ? thawHints(plan, dayDate) : [];
+  const actionsVisible = noticeActionsVisible(notices, consent === 'valid');
+  // Hinweis-Zeile („App verschlanken“, 26.10.2026): Testwerte oben, Sicherheit nie zugeklappt, Rest hinter „+N“.
+  const noticeItems: (StackNotice | null)[] = [
+    demo
+      ? {
+          id: 'demo',
+          // Testwerte-Hinweis immer oben (Entwurf 3-ernaehrung: „höchste Stufe“, ungeprüfte Allergene).
+          level: 'blocking',
+          node: <DemoBanner onDisable={() => void app.setNutritionDemo(false)} />,
+        }
+      : null,
+    !online
+      ? {
+          id: 'offline',
+          level: 'action',
+          node: (
+            <Notice tone="info" testID="nutrition-offline">
+              {t.nutritionDay.offline}
+            </Notice>
+          ),
+        }
+      : null,
+    ...nutritionNoticeItems(
+      notices,
+      [...(day?.notices ?? []), ...(plan?.notices ?? [])],
+      view.showNumbers,
+    ),
+    actionsVisible
+      ? {
+          id: 'notice-actions',
+          level: 'action',
+          node: <NoticeActions notices={notices} consentValid={consent === 'valid'} />,
+        }
+      : null,
+    thaw.length > 0
+      ? {
+          id: 'thaw',
+          level: 'info',
+          node: (
+            <Notice tone="info" testID="nutrition-thaw">
+              <Body>{t.nutrition.thaw.title}</Body>
+              {thaw.map((hint) => (
+                <Body key={`${hint.forDate}-${hint.slot}`}>
+                  {t.nutrition.thaw.line(hint.titleDe, dayLabel(hint.forDate))}
+                </Body>
+              ))}
+            </Notice>
+          ),
+        }
+      : null,
+  ];
+  const recipesAvailable = view.library.result.library.recipes.length > 0;
+  const tools: GridTile[] = [
+    ...(plan !== null && planState?.editable === true
+      ? [
+          {
+            key: 'shopping',
+            title: t.slim.nutrition.toolShopping,
+            subtitle: t.slim.nutrition.toolShoppingDetail,
+            area: 'einkaufen' as const,
+            icon: 'cart' as const,
+            accessibilityLabel: t.nutrition.shopping.open,
+            onPress: () => router.navigate(`/einkaufsliste?woche=${targets.weekStart}` as Href),
+            testID: 'nutrition-shopping',
+          },
+        ]
+      : []),
+    ...(plan !== null && view.library.result.library.mealPrepPlans.length > 0
+      ? [
+          {
+            key: 'meal-prep',
+            title: t.slim.nutrition.toolMealPrep,
+            subtitle: t.slim.nutrition.toolMealPrepDetail,
+            area: 'ernaehrung' as const,
+            icon: 'box' as const,
+            accessibilityLabel: t.nutrition.mealPrep.open,
+            onPress: () => router.push('/meal-prep' as Href),
+            testID: 'nutrition-meal-prep',
+          },
+        ]
+      : []),
+    ...(recipesAvailable
+      ? [
+          {
+            key: 'fridge',
+            title: t.slim.nutrition.toolFridge,
+            subtitle: t.slim.nutrition.toolFridgeDetail,
+            area: 'ernaehrung' as const,
+            icon: 'snowflake' as const,
+            accessibilityLabel: t.nutrition.fridge.open,
+            onPress: () => router.push('/rezepte/kuehlschrank' as Href),
+            testID: 'nutrition-fridge-search',
+          },
+        ]
+      : []),
+    {
+      // Vorratsschrank (25.10.2026).
+      key: 'pantry',
+      title: t.slim.nutrition.toolPantry,
+      subtitle: t.slim.nutrition.toolPantryDetail,
+      area: 'ernaehrung',
+      icon: 'can',
+      accessibilityLabel: `${t.pantry.open}, ${t.pantry.openHint}`,
+      onPress: () => router.push('/ernaehrung/vorrat' as Href),
+      testID: 'nutrition-pantry',
+    },
+    {
+      key: 'supplements',
+      title: t.slim.nutrition.toolSupplements,
+      subtitle: t.slim.nutrition.toolSupplementsDetail,
+      area: 'ernaehrung',
+      icon: 'pill',
+      accessibilityLabel: t.supplements.open,
+      onPress: () => router.push('/supplemente' as Href),
+      testID: 'nutrition-supplements',
+    },
+    ...((readable?.length ?? 0) > 0
+      ? [
+          {
+            key: 'guides',
+            title: t.slim.nutrition.toolGuides,
+            subtitle: t.slim.nutrition.toolGuidesDetail,
+            area: 'training' as const,
+            icon: 'book' as const,
+            accessibilityLabel: t.nutrition.guides.open,
+            onPress: () => router.push('/ratgeber' as Href),
+            testID: 'nutrition-guides',
+          },
+        ]
+      : []),
+  ];
+
   return shell(
     <>
-      {demo ? <DemoBanner onDisable={() => void app.setNutritionDemo(false)} /> : null}
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        <View style={{ flex: 1 }}>
-          <Button
-            label={t.nutrition.previousDay}
-            variant="secondary"
-            disabled={dayTargets.date <= first}
-            onPress={() => setSelected(addDays(dayTargets.date, -1))}
-            testID="nutrition-prev"
-          />
+      {/* Umschalter Tag · Woche · Rezepte (Entwurf 3-ernaehrung): Woche und Rezepte behalten ihre Adressen. */}
+      <SegmentedSwitch
+        accessibilityLabel={t.slim.nutrition.switchLabel}
+        selected="day"
+        testID="nutrition-switch"
+        items={[
+          {
+            key: 'day',
+            label: t.slim.nutrition.day,
+            onPress: showToday,
+            testID: 'nutrition-switch-day',
+          },
+          ...(plan !== null
+            ? [
+                {
+                  key: 'week',
+                  label: t.slim.nutrition.week,
+                  accessibilityLabel: t.nutrition.plan.weekView,
+                  onPress: () =>
+                    router.push(`/ernaehrung/woche?woche=${targets.weekStart}` as Href),
+                  testID: 'nutrition-week-view',
+                },
+              ]
+            : []),
+          ...(recipesAvailable
+            ? [
+                {
+                  key: 'recipes',
+                  label: t.slim.nutrition.recipes,
+                  accessibilityLabel: t.nutrition.search.open,
+                  onPress: () => router.push('/rezepte' as Href),
+                  testID: 'nutrition-recipe-search',
+                },
+              ]
+            : []),
+        ]}
+      />
+      {/* Tag wechseln: ‹ Heute › (statt zwei großer Knöpfe). */}
+      <View style={styles.dayRow}>
+        <HeaderIconButton
+          icon="chevron-left"
+          accessibilityLabel={t.slim.nutrition.previousA11y}
+          disabled={dayTargets.date <= first}
+          onPress={() => setSelected(addDays(dayTargets.date, -1))}
+          testID="nutrition-prev"
+        />
+        <View style={styles.dayHeader} testID="nutrition-day-header">
+          <Heading level={2}>{isToday ? t.nutritionDay.today : dayLabel(dayDate)}</Heading>
+          <Body muted testID="nutrition-day-date">
+            {isToday
+              ? t.nutritionDay.dateLine(dayLabel(dayDate), isoWeekNumber(dayDate))
+              : t.nutritionDay.weekLine(isoWeekNumber(dayDate))}
+          </Body>
+          {status ? <Body muted>{t.nutrition.dayStatus[status]}</Body> : null}
         </View>
-        <View style={{ flex: 1 }}>
-          <Button
-            label={t.nutrition.nextDay}
-            variant="secondary"
-            disabled={dayTargets.date >= last}
-            onPress={() => setSelected(addDays(dayTargets.date, 1))}
-            testID="nutrition-next"
-          />
-        </View>
+        <HeaderIconButton
+          icon="chevron"
+          accessibilityLabel={t.slim.nutrition.nextA11y}
+          disabled={dayTargets.date >= last}
+          onPress={() => setSelected(addDays(dayTargets.date, 1))}
+          testID="nutrition-next"
+        />
       </View>
-      <View style={{ gap: 4 }} testID="nutrition-day-header">
-        <Heading level={2}>{isToday ? t.nutritionDay.today : dayLabel(dayDate)}</Heading>
-        <Body muted testID="nutrition-day-date">
-          {isToday
-            ? t.nutritionDay.dateLine(dayLabel(dayDate), isoWeekNumber(dayDate))
-            : t.nutritionDay.weekLine(isoWeekNumber(dayDate))}
-        </Body>
-        {status ? <Body muted>{t.nutrition.dayStatus[status]}</Body> : null}
-      </View>
-      {!online ? (
-        <Notice tone="info" testID="nutrition-offline">
-          {t.nutritionDay.offline}
-        </Notice>
-      ) : null}
+      <NoticeStack items={noticeItems} testID="nutrition-notice-line" />
       {/* Etappe W1: Wettkampf-Ernährung (Carb-Loading, Vorabend, Renntag mit Zeitleiste, Nach dem Rennen). */}
       <CompetitionNutritionCard
         day={dayTargets}
@@ -355,18 +559,6 @@ export default function NutritionDayScreen() {
           {t.nutrition.numbersHidden}
         </Body>
       ) : null}
-
-      {/* Trinken (25.10.2026): nur am heutigen Tag. */}
-      {picked === null || picked === today ? (
-        <HydrationCard today={today} testID="nutrition-hydration" />
-      ) : null}
-
-      <NutritionNotices
-        notices={notices}
-        planNotices={[...(day?.notices ?? []), ...(plan?.notices ?? [])]}
-        showNumbers={view.showNumbers}
-      />
-      <NoticeActions notices={notices} consentValid={consent === 'valid'} />
       {view.showNumbers ? <CapsExplanation caps={dayTargets.appliedCaps} /> : null}
 
       <Heading level={2}>{t.nutritionDay.mealsTitle}</Heading>
@@ -425,11 +617,29 @@ export default function NutritionDayScreen() {
               {day !== null
                 ? meals.map((meal) => (
                     <View key={meal.slot} style={{ gap: 4 }}>
-                      {/* Rezept-Favoriten (25.10.2026): „⋯“ oben rechts – Lieblingsgericht oder Nie wieder. */}
+                      {/* Rezept-Favoriten (25.10.2026): „⋯“ oben rechts – Rezept tauschen, Lieblingsgericht,
+                          Nie wieder (seit 26.10.2026 liegt „Rezept tauschen“ mit im Menü). */}
                       <MealPreferenceMenu
                         recipeId={meal.recipeId}
                         title={meal.titleDe}
                         testID={`meal-${meal.slot}-pref`}
+                        extraActions={
+                          canSwap(meal) ? (
+                            <Button
+                              label={t.nutrition.plan.swap}
+                              icon="swap"
+                              accessibilityLabel={t.nutrition.plan.swapA11y(
+                                slotLabel(meal.slot),
+                                meal.titleDe,
+                              )}
+                              variant="secondary"
+                              loading={swapping === meal.slot}
+                              disabled={swapping !== null && swapping !== meal.slot}
+                              onPress={() => void swap(meal)}
+                              testID={`swap-${meal.slot}`}
+                            />
+                          ) : null
+                        }
                       >
                         <MealRow
                           meal={meal}
@@ -457,20 +667,6 @@ export default function NutritionDayScreen() {
                           onMessage={setEatenMessage}
                         />
                       ) : null}
-                      {canSwap(meal) ? (
-                        <Button
-                          label={t.nutrition.plan.swap}
-                          accessibilityLabel={t.nutrition.plan.swapA11y(
-                            slotLabel(meal.slot),
-                            meal.titleDe,
-                          )}
-                          variant="secondary"
-                          loading={swapping === meal.slot}
-                          disabled={swapping !== null && swapping !== meal.slot}
-                          onPress={() => void swap(meal)}
-                          testID={`swap-${meal.slot}`}
-                        />
-                      ) : null}
                     </View>
                   ))
                 : null}
@@ -484,6 +680,11 @@ export default function NutritionDayScreen() {
           <UnavailableMealRows meals={view.week.unavailableMeals} date={day.date} />
         ) : null}
       </View>
+      {swapMessage ? (
+        <Notice tone={swapMessage.tone} testID="nutrition-swap-message">
+          {swapMessage.text}
+        </Notice>
+      ) : null}
       {plan !== null && day !== null && !eatenAllowed && foodLog.supported ? (
         <Body muted testID="nutrition-plan-not-stored">
           {t.foodLog.planNotStored}
@@ -494,6 +695,12 @@ export default function NutritionDayScreen() {
           {eatenMessage.text}
         </Notice>
       ) : null}
+      {day !== null && leftoverHints.some((h) => h.date === day.date) ? (
+        <Body muted testID="nutrition-leftover-explain">
+          {t.nutrition.leftovers.explain}
+        </Body>
+      ) : null}
+      {/* „Gegessen“ mit „Etwas anderes eintragen“ (Ernährungstagebuch). */}
       <FoodLogDaySection
         date={dayDate}
         dayText={dayTargets.date === today ? t.nutrition.today : dayLabel(dayDate)}
@@ -508,100 +715,43 @@ export default function NutritionDayScreen() {
         actions={foodLogActions}
         showNumbers={view.showNumbers}
       />
-      {day !== null && leftoverHints.some((h) => h.date === day.date) ? (
-        <Body muted testID="nutrition-leftover-explain">
-          {t.nutrition.leftovers.explain}
-        </Body>
-      ) : null}
-      {swapMessage ? (
-        <Notice tone={swapMessage.tone} testID="nutrition-swap-message">
-          {swapMessage.text}
-        </Notice>
-      ) : null}
-      {plan !== null && dayDate >= today && thawHints(plan, dayDate).length > 0 ? (
-        <Notice tone="info" testID="nutrition-thaw">
-          <Body>{t.nutrition.thaw.title}</Body>
-          {thawHints(plan, dayDate).map((hint) => (
-            <Body key={`${hint.forDate}-${hint.slot}`}>
-              {t.nutrition.thaw.line(hint.titleDe, dayLabel(hint.forDate))}
-            </Body>
-          ))}
-        </Notice>
-      ) : null}
-      {plan !== null ? (
-        <Button
-          label={t.nutrition.plan.weekView}
-          variant="secondary"
-          onPress={() => router.push(`/ernaehrung/woche?woche=${targets.weekStart}` as Href)}
-          testID="nutrition-week-view"
-        />
-      ) : null}
-      {plan !== null && planState?.editable === true ? (
-        <Button
-          label={t.nutrition.shopping.open}
-          variant="secondary"
-          onPress={() => router.navigate(`/einkaufsliste?woche=${targets.weekStart}` as Href)}
-          testID="nutrition-shopping"
-        />
-      ) : null}
-      {plan !== null && view.library.result.library.mealPrepPlans.length > 0 ? (
-        <Button
-          label={t.nutrition.mealPrep.open}
-          variant="secondary"
-          onPress={() => router.push('/meal-prep' as Href)}
-          testID="nutrition-meal-prep"
-        />
-      ) : null}
-      {view.library.result.library.recipes.length > 0 ? (
-        <Button
-          label={t.nutrition.search.open}
-          variant="secondary"
-          onPress={() => router.push('/rezepte' as Href)}
-          testID="nutrition-recipe-search"
-        />
-      ) : null}
-      {view.library.result.library.recipes.length > 0 ? (
-        <Button
-          label={t.nutrition.fridge.open}
-          variant="secondary"
-          onPress={() => router.push('/rezepte/kuehlschrank' as Href)}
-          testID="nutrition-fridge-search"
-        />
-      ) : null}
-      {/* Vorratsschrank (25.10.2026). */}
-      <Button
-        label={t.pantry.open}
-        accessibilityHint={t.pantry.openHint}
-        variant="secondary"
-        onPress={() => router.push('/ernaehrung/vorrat' as Href)}
-        testID="nutrition-pantry"
-      />
-      {(readable?.length ?? 0) > 0 ? (
-        <Button
-          label={t.nutrition.guides.open}
-          variant="secondary"
-          onPress={() => router.push('/ratgeber' as Href)}
-          testID="nutrition-guides"
-        />
-      ) : null}
 
-      <Button
-        label={t.supplements.open}
-        variant="secondary"
-        onPress={() => router.push('/supplemente' as Href)}
-        testID="nutrition-supplements"
-      />
+      {/* Werkzeuge als bunte Kacheln statt Knopf-Stapel (Entwurf 3-ernaehrung). */}
+      <TileGrid tiles={tools} testID="nutrition-tools" />
 
-      <EatingHelpNotice />
+      {/* Trinken (25.10.2026): nur am heutigen Tag. */}
+      {hydration}
+
+      {/* Feste Hilfe-Zeile (nicht ausblendbar, nur zum Aufklappen). */}
+      <CollapsibleRow
+        icon="heart"
+        iconColor={dangerColor}
+        title={t.slim.nutrition.helpTitle}
+        subtitle={t.slim.nutrition.helpHint}
+        testID="nutrition-help-row"
+      >
+        <EatingHelpNotice />
+      </CollapsibleRow>
       <Body muted>{t.nutrition.hfiCoeliac}</Body>
       <Body muted>{t.nutrition.disclaimer}</Body>
-      <Button
-        label={t.nutrition.changeSettings}
-        variant="secondary"
-        onPress={() => router.push('/settings')}
-        testID="nutrition-settings"
-      />
     </>,
+  );
+}
+
+/** Stehen Knöpfe zu den Hinweisen an? (gleiche Bedingungen wie `NoticeActions`) */
+function noticeActionsVisible(
+  notices: readonly NutritionNoticeCode[],
+  consentValid: boolean,
+): boolean {
+  const has = (code: NutritionNoticeCode) => notices.includes(code);
+  return (
+    has('no_health_data_consent') ||
+    (!consentValid && has('body_data_missing')) ||
+    (consentValid &&
+      (has('health_check_missing') ||
+        has('pregnancy_check_update') ||
+        has('weight_outdated') ||
+        has('body_data_missing')))
   );
 }
 
@@ -653,3 +803,8 @@ function NoticeActions({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  dayRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  dayHeader: { flex: 1, minWidth: 0, alignItems: 'center', gap: 2 },
+});

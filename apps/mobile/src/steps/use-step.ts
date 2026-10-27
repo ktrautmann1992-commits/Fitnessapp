@@ -36,6 +36,8 @@ export const SINGLE_STEP_RETURNS = {
   heute: '/today',
   // Kachel „Körperdaten“ der Übersicht (docs/PLAN-DASHBOARD.md 2.4).
   uebersicht: '/uebersicht',
+  // Körperdaten unter Mehr › Fortschritt („App verschlanken“, 26.10.2026).
+  fortschritt: '/fortschritt',
 } as const;
 export type SingleStepReturn = (typeof SINGLE_STEP_RETURNS)[keyof typeof SINGLE_STEP_RETURNS];
 

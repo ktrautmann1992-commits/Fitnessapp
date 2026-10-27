@@ -44,6 +44,7 @@ import { deSessionKcal } from './de-session-kcal';
 import { deSports } from './de-sports';
 import { deSupplements } from './de-supplements';
 import { deWorkouts } from './de-workouts';
+import { deSlim } from './de-slim';
 import { deCalisthenics } from './de-calisthenics';
 import { deTrainingWeek } from './de-training-week';
 import { deWidget } from './de-widget';
@@ -491,7 +492,8 @@ export const de = {
     mealprepValue: (days: number) => `Meal-Prep an ${days} Tagen pro Woche`,
   },
   today: {
-    title: 'Heute',
+    // Reiter „Training“ (bis 26.10.2026 hieß der Kopf „Heute“ – „Heute“ ist jetzt die Startseite).
+    title: 'Training',
     greeting: 'Schön, dass du da bist!',
     measurementDue: 'Zeit zum Nachmessen: Deine Körperumfänge sind fällig.',
     healthReconsent:
@@ -725,7 +727,7 @@ export const de = {
       'Die Übungen können gerade nicht geprüft werden. Bitte kurz online gehen – dann kannst du starten.',
     alternativesLocked: 'Alternativen gehen erst nach kurzem Online-Gehen.',
     editing: 'Du änderst ein gespeichertes Training. Übungen lassen sich dabei nicht tauschen.',
-    back: 'Zurück zu Heute',
+    back: 'Zurück zum Training',
     // Übung
     target: (sets: number, reps: string, weight: string | null) =>
       weight
@@ -948,7 +950,7 @@ export const de = {
     enduranceA11y: (minutes: number, km: string) => `Ausdauer: ${minutes} Minuten, ${km} Kilometer`,
     olderHint: 'Ältere Wochen findest du im Verlauf.',
     empty: 'In dieser Woche ist nichts geplant und nichts eingetragen.',
-    back: 'Zurück zu Heute',
+    back: 'Zurück zum Training',
   },
   /** Trainingskalender mit Drag-and-drop (docs/PLAN-AUSWERTUNG.md 3, Etappe A1a). */
   calendar: {
@@ -1277,7 +1279,7 @@ export const de = {
     clearText:
       'Alle Angaben auf diesem Gerät werden gelöscht. Danach startest du wieder ganz von vorn.',
     clearConfirm: 'Alles löschen',
-    back: 'Zurück zu Heute',
+    back: 'Zurück',
     training: 'Training',
     trainingText: 'Ändere deine Angaben oder erstelle deinen Plan neu.',
     editInputs: 'Angaben ändern',
@@ -1688,6 +1690,8 @@ export const de = {
   weekEval: deWeekEval,
   /** Menüleiste, Übersicht, Fortschritt, Mehr, Mein Konto (docs/PLAN-DASHBOARD.md). */
   tabs: deTabs,
+  /** „App verschlanken“ (26.10.2026): Umschalter, Hinweis-Zeile, ⋯-Menüs, Einstellungs-Themen. */
+  slim: deSlim,
   dashboard: deDashboard,
   progressHub: deProgressHub,
   weightTrend: deWeightTrend,

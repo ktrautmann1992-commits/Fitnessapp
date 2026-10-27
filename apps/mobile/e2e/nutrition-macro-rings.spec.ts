@@ -24,7 +24,7 @@ test('Makro-Ringe: normal in Makro-Farbe, Eiweiß über dem Ziel dunkelrot mit W
   test.setTimeout(180_000);
   await onboardNutrition(page);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await openNutrition(page);
 
   // Ausgangslage: Hero-Karte, drei Ringe bei 0 %, nichts „über dem Ziel“.

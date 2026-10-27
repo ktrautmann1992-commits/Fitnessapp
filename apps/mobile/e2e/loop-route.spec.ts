@@ -26,7 +26,7 @@ async function setup(page: Page) {
     days: [['Montag', 'Kraft im Studio', 60]],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function openLoop(page: Page) {

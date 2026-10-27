@@ -26,7 +26,7 @@ async function hitIds(page: Page): Promise<string[]> {
 async function start(page: Page, person: Parameters<typeof onboardNutrition>[1] = {}) {
   await onboardNutrition(page, person);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 async function numbersOff(page: Page) {
@@ -101,6 +101,7 @@ test('Rezeptsuche: vorbelegte Ernährungsform, erweitern gekennzeichnet, Portion
   await expect(page.getByTestId('recipe-shopping-message')).toContainText('3 Portionen');
   await page.getByTestId('recipe-shopping-open').click();
   await expect(page.getByTestId('shopping-list')).toBeVisible();
+  await page.getByTestId('shopping-recipes-row-toggle').click();
   await expect(page.getByTestId('shopping-recipe-outside-haehnchen-reis')).toBeVisible();
   await expect(page.getByTestId('shopping-item-haehnchenbrust|g')).toContainText(
     'passt nicht zu deiner Ernährungsform',

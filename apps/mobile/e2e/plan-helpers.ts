@@ -168,3 +168,27 @@ export function repoContentStatus(folder: 'exercises' | 'plan-templates'): Map<s
   }
   return status;
 }
+
+/** Training: Zeile „Dein Plan: …“ aufklappen (Vorlage, Hinweise – seit „App verschlanken“ 26.10.2026 zugeklappt). */
+export async function openPlanInfo(page: Page) {
+  const toggle = page.getByTestId('plan-info-toggle');
+  await expect(toggle).toBeVisible();
+  if ((await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+}
+
+/**
+ * Hinweis-Zeile („App verschlanken“, 26.10.2026): weitere Hinweise hinter „+N weitere Hinweise“ aufklappen
+ * (`today-notices`, `nutrition-notice-line`, `overview-notices`). Ohne Zähler passiert nichts.
+ */
+export async function expandNotices(page: Page, id: string) {
+  const more = page.getByTestId(`${id}-more`);
+  // Seite noch im Aufbau? Kurz auf die Hinweis-Zeile warten (gibt es keine Hinweise, fehlt sie ganz).
+  await page
+    .getByTestId(id)
+    .and(page.locator(':visible'))
+    .waitFor({ timeout: 5000 })
+    .catch(() => undefined);
+  if (!(await more.isVisible())) return;
+  if ((await more.getAttribute('aria-expanded')) !== 'true') await more.click();
+}

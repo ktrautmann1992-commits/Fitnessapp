@@ -46,7 +46,7 @@ async function start(page: Page, time: string, consent: boolean) {
     days: [['Montag', 'Kraft im Studio', 60]],
   });
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 /**
@@ -162,7 +162,7 @@ test('Beispiel-Uhr: Pulszonen mit Bereichen, Kadenz, Pulszonen-Einstellung', asy
       JSON.stringify({ [userId]: { hfMaxOverride: 190, useRestingHr: true } }),
     );
   }, LOCAL_DB);
-  await page.goto('/settings');
+  await page.goto('/settings?thema=geraete');
   await page.getByTestId('settings-smartwatch').click();
   await page.getByTestId('smartwatch-consent-accept').click();
   await page.getByTestId('smartwatch-connect').click();

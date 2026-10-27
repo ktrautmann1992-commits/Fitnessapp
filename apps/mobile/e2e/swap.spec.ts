@@ -49,7 +49,7 @@ async function storedDb(page: Page): Promise<StoredDb> {
 
 async function toToday(page: Page) {
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 }
 
 const exerciseName = (page: Page, index: number) =>
@@ -160,12 +160,12 @@ test('„Nur heute“: Tausch mit Kennzeichen, Rückgängig, Training übernimmt
     SQUAT_CHAIR,
   );
   await page.getByTestId('workout-save').click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const db = await storedDb(page);
   expect(db.rows.exerciseLogs[0]).toMatchObject({ status: 'alternative' });
   // Erledigt → der Day-Swap ist aufgeräumt.
   await page.reload();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   expect(
     JSON.parse((await page.evaluate((key) => window.localStorage.getItem(key), DAY_SWAPS)) ?? '[]'),
   ).toHaveLength(0);
@@ -236,7 +236,7 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
   await heading(page, 'Plan als PDF');
   await expect(page.getByTestId('print-preview')).toContainText('getauscht (deine Wahl)');
   await page.goBack();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 
   // Glossar zeigt den Ausschluss mit Weg zu den Einstellungen.
   await page.getByTestId('today-glossary').click();
@@ -259,8 +259,8 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
   await expect(row).toContainText(`Ersatz: ${PUSHUP}`);
 
   // Export enthält die Präferenzen (Testmodus).
-  await page.goto('/settings');
-  await heading(page, 'Einstellungen');
+  await page.goto('/settings?thema=training');
+  await heading(page, 'Training');
   await expect(page.getByTestId('settings-exclusions')).toBeVisible();
   await page.goto('/konto');
   await heading(page, 'Mein Konto');
@@ -274,7 +274,7 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
   expect(file.data.exercise_preferences?.[0]?.kind).toBe('dislike');
 
   // Wieder zulassen (mit Bestätigung) → Liste leer, Übung sofort zurück.
-  await page.goto('/settings');
+  await page.goto('/settings?thema=training');
   await page.getByTestId('settings-exclusions').click();
   await heading(page, 'Ausgeschlossene Übungen');
   await page.getByRole('button', { name: `${PUSHUP_RAISED} zu Hause wieder zulassen` }).click();
@@ -292,7 +292,7 @@ test('„Ab jetzt immer“: Grund Pflicht, Rückgängig, alle Einheiten, PDF, Ei
     'Du hast keine Übungen ausgeschlossen.',
   );
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(exerciseName(page, 2)).toHaveText(PUSHUP_RAISED);
 });
 
@@ -357,7 +357,7 @@ test('Trainingsmodus: „Tauschen“ statt „Alternative durchgeführt“ – n
 
   // Speichern: Eintrag als Alternative.
   await page.getByTestId('workout-save').click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const db = await storedDb(page);
   expect(db.rows.exerciseLogs[2]).toMatchObject({ status: 'alternative' });
 });
@@ -397,7 +397,7 @@ test('Präferenz-Ausblendung: neutraler Hinweis ohne „Plan neu erstellen“ (B
     window.localStorage.setItem(key, JSON.stringify(db));
   }, LOCAL_DB);
   await page.reload();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   const names = await page.getByTestId('plan-exercise-link').allInnerTexts();
   expect(names.some((n) => n.includes('Türrahmen-Rudern'))).toBe(false);
   await expect(page.getByTestId('plan-hidden-by-preference')).toContainText(

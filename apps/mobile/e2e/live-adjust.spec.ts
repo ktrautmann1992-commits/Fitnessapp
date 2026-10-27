@@ -4,7 +4,7 @@ import { mkdirSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 
 import { type SeedSession, seedTrainingLogs } from './live-adjust-helpers';
-import { heading, onboard } from './plan-helpers';
+import { expandNotices, heading, onboard } from './plan-helpers';
 
 /**
  * Live-Anpassung im TESTMODUS (docs/PLAN-PHASE-4B.md Etappe D, 8.1–8.4) mit festen Daten (Europe/Berlin): Plan ab
@@ -46,8 +46,8 @@ async function goOn(page: Page, date: string, path = '/today') {
 }
 
 async function simulatePremium(page: Page, on: boolean) {
-  await page.goto('/settings');
-  await heading(page, 'Einstellungen');
+  await page.goto('/settings?thema=training');
+  await heading(page, 'Training');
   const box = page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' });
   await expect(box).toBeVisible();
   if ((await box.getAttribute('aria-checked')) !== String(on)) await box.click();
@@ -86,14 +86,14 @@ test.beforeEach(async ({ page }) => {
   });
   await onboard(page, BEN);
   await page.getByRole('button', { name: 'Zum Plan' }).click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
 });
 
 test('Testphase „alles offen“: Schalter steht von Anfang an auf an, mit Kennzeichen', async ({
   page,
 }) => {
-  await page.goto('/settings');
-  await heading(page, 'Einstellungen');
+  await page.goto('/settings?thema=training');
+  await heading(page, 'Training');
   await expect(
     page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' }),
   ).toHaveAttribute('aria-checked', 'true');
@@ -105,12 +105,12 @@ test('Schalter aus → nichts passiert (Gratis-Weg unverändert)', async ({ page
   // Testphase: Standard an – der Gratis-Weg braucht den ausgeschalteten Schalter.
   await simulatePremium(page, false);
   await seed(page, strengthWeek(['2026-10-12', '2026-10-14', '2026-10-16'], 9));
-  await goOn(page, '2026-10-19', '/settings');
+  await goOn(page, '2026-10-19', '/settings?thema=training');
   await expect(
     page.getByRole('checkbox', { name: 'Live-Anpassung einschalten (Testmodus)' }),
   ).toHaveAttribute('aria-checked', 'false');
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(page.getByTestId('plan-exercise').first()).toBeVisible();
   await expect(page.getByTestId('adjusted-notice')).toHaveCount(0);
   await expect(page.getByTestId('fewer-days-card')).toHaveCount(0);
@@ -146,7 +146,7 @@ test('zweimal verfehlt → Gewicht gesenkt mit Erklärung und Rückgängig', asy
   await expect(wade).toContainText('20 kg');
   await simulatePremium(page, true);
   await page.goto('/today');
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
   await expect(wade).toContainText('18 kg');
   const notice = page.getByTestId('adjusted-notice');
   await expect(notice).toContainText('↻ angepasst');
@@ -234,8 +234,8 @@ test('Stillstand → Übung getauscht; heutige Einheit mit offenem Entwurf bleib
   await page.getByTestId('workout-start').click();
   await expect(page.getByTestId('workout')).toBeVisible();
   await page.getByTestId('workout-done-0-0').click();
-  await page.getByRole('button', { name: 'Zurück zu Heute' }).click();
-  await heading(page, 'Heute');
+  await page.getByRole('button', { name: 'Zurück zum Training' }).click();
+  await heading(page, 'Training');
 
   await simulatePremium(page, true);
   await page.goto('/plan/changes');
@@ -247,13 +247,15 @@ test('Stillstand → Übung getauscht; heutige Einheit mit offenem Entwurf bleib
   await page.goto('/today');
   await expect(facePull).toBeVisible();
   await expect(page.getByTestId('adjusted-notice')).toHaveCount(0);
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-draft')).toBeVisible();
   await page.getByTestId('workout-draft-continue').click();
   await expect(page.getByTestId('workout')).toBeVisible();
   await expect(page.getByTestId('workout')).toContainText('Face Pull');
   await page.getByTestId('workout-effort-7').click();
   await page.getByTestId('workout-save').click();
-  await heading(page, 'Heute');
+  await heading(page, 'Training');
+  await expandNotices(page, 'today-notices');
   await expect(page.getByTestId('workout-message')).toContainText('Training gespeichert');
 
   // Künftige Einheit (Mittwoch 11.11.) mit der neuen Übung statt Face Pulls, gekennzeichnet.

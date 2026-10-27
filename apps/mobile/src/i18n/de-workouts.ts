@@ -32,6 +32,8 @@ export const deWorkouts = {
   },
   filters: {
     title: 'Filter',
+    /** Zugeklappter Filter-Knopf, wenn ein Filter gesetzt ist (26.10.2026). */
+    titleActive: 'Filter (aktiv)',
     stars: 'Schwierigkeit',
     duration: 'Dauer',
     category: 'Ziel',
