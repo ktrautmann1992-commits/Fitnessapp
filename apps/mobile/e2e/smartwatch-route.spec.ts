@@ -19,6 +19,7 @@ const dir = process.env.SCREENSHOT_DIR;
 interface StoredRoute {
   id: string;
   source: string;
+  sport: string;
   distance_m: number;
   session_log_id: string | null;
 }
@@ -63,7 +64,7 @@ test('Beispiel-Uhr: Läufe mit Route → Auswertung mit Karte, Puls, kcal; ohne 
   await expect(page.getByText(/Routen deiner Läufe/)).toBeVisible();
   await page.getByTestId('smartwatch-consent-accept').click();
   await page.getByTestId('smartwatch-connect').click();
-  await expect(page.getByTestId('smartwatch-message')).toContainText('Abgleich fertig – 5 neu');
+  await expect(page.getByTestId('smartwatch-message')).toContainText('Abgleich fertig – 6 neu');
   await expect(page.getByTestId('smartwatch-message')).toContainText(
     'Für 1 Lauf fragt Health Connect nach der Route',
   );
@@ -71,7 +72,8 @@ test('Beispiel-Uhr: Läufe mit Route → Auswertung mit Karte, Puls, kcal; ohne 
 
   // Zwei Läufe mit Route als Strecke „watch“; Distanz des Eintrags = Route (nicht die 5,5 bzw. 5,8 km laut HC).
   const db = await stored(page);
-  const routes = (db.trackedRoutes ?? []).filter((r) => r.source === 'watch');
+  // Läufe (die Beispiel-Uhr hat seit Etappe W zusätzlich eine Wanderung mit Route).
+  const routes = (db.trackedRoutes ?? []).filter((r) => r.source === 'watch' && r.sport === 'run');
   expect(routes).toHaveLength(2);
   for (const route of routes) {
     const cardio = db.rows.cardioLogs.find((c) => c.session_log_id === route.session_log_id);
@@ -129,7 +131,9 @@ test('Beispiel-Uhr: Läufe mit Route → Auswertung mit Karte, Puls, kcal; ohne 
   await expect(page.getByTestId('route-detail-meta')).toContainText('laut Uhr');
   await expect(page.getByTestId('route-map-note')).toBeVisible();
   expect(
-    ((await stored(page)).trackedRoutes ?? []).filter((r) => r.source === 'watch'),
+    ((await stored(page)).trackedRoutes ?? []).filter(
+      (r) => r.source === 'watch' && r.sport === 'run',
+    ),
   ).toHaveLength(3);
   // Zurück zum Eintrag: Link „Strecke mit Karte ansehen“ statt Hinweis.
   await page.goto(`/log/${logWithout?.id ?? ''}`);
@@ -147,5 +151,5 @@ test('Beispiel-Uhr: Läufe mit Route → Auswertung mit Karte, Puls, kcal; ohne 
   await expect(page.getByTestId('smartwatch-message')).toContainText('Getrennt.');
   const after = await stored(page);
   expect((after.trackedRoutes ?? []).filter((r) => r.source === 'watch')).toHaveLength(0);
-  expect(after.rows.sessionLogs.filter((l) => l.source === 'health_connect')).toHaveLength(5);
+  expect(after.rows.sessionLogs.filter((l) => l.source === 'health_connect')).toHaveLength(6);
 });

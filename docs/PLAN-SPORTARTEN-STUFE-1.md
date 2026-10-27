@@ -285,3 +285,12 @@ Enums mehr anzufassen.
   Hyrox-Werte in den Wettkampf-Tabellen sind VORLÄUFIG (Etappe H). In der App sind die neuen Werte bis zu ihrer Etappe
   nicht wählbar (`apps/mobile/src/lib/sportarten-stufe1.ts`).
 - **Tests:** `db-sync.test.ts` (Block „Sportarten Stufe 1“), `sportarten-stufe1.test.ts`, pgTAP 93–95.
+
+**W – Wandern/Bergwandern: erledigt (27.10.2026, Branch `claude/sportarten-w`, ohne neue Migration).** Core
+`packages/core/src/hiking/` (walk_kind, Abstieg/höchster Punkt aus der Spur, Gehzeit `HIKING_TIME`, Hinweise
+`HIKING_SAFETY`/`HIKING_SAFETY_DE`, `EMERGENCY_NUMBERS`), kcal `TRAINING_MET.hike`/`mountainHike` (Uhr vorrangig, kein
+Höhenmeter-Zuschlag), Bein-Hinweis ab 120 min oder 600 Hm Abstieg, Health Connect 37 → Wanderung, 63 → Bergwanderung.
+App: Auswahl „Gehen | Wandern | Bergwandern“ + SAC beim Start/Speichern/Bearbeiten, Hinweis-Karten vor dem Start und in
+der Auswertung, Abstieg/höchster Punkt/Gehzeit in der Auswertung und bei „Meine Strecke“; Beispiel-Uhr mit Wanderung.
+Ratgeber-Entwürfe `sicher-bergwandern`, `hoehe-hoehenkrankheit` (draft). Offen: GPX-Import gibt es noch nicht (Gehzeit
+nur für gespeicherte Strecken), Wander-Art beim Nachtragen ohne GPS, Bezeichnung „Wanderung“ in der Aktivitätenliste.

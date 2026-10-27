@@ -11,7 +11,7 @@ import type { HcReadResult, HealthConnectDriver } from './health-connect-driver.
 
 /**
  * Beispiel-Uhr für den TESTMODUS (Phase 8, docs/PLAN-PHASE-8.md 9 „Browser: Testmodus mit Beispieldaten“): liefert
- * ausgedachte Daten der letzten 7 Tage – drei Läufe mit Puls, eine Kraft-Einheit, Yoga und Schritte – sowie Ruhepuls,
+ * ausgedachte Daten der letzten 7 Tage – drei Läufe mit Puls, eine Kraft-Einheit, eine Wanderung, Yoga und Schritte – sowie Ruhepuls,
  * Schlaf und HRV der letzten 21 Tage („Erholung aus der Uhr“, 25.10.2026: genug für die persönliche Basis; HEUTE kurze
  * Nacht, Ruhepuls höher und HRV niedriger als üblich → Erholung „niedrig“). Feste IDs je Tag: ein erneuter Abgleich
  * ändert, legt nie doppelt an. Kein Netz, keine echten Daten.
@@ -80,6 +80,20 @@ export function demoRoute(start: string, minutes: number): HcRouteLocation[] {
     });
   }
   return points;
+}
+
+/**
+ * Sportarten Stufe 1 · Etappe W: Route einer Beispiel-Wanderung (Health Connect 37 „Wandern“) – dieselbe ausgedachte
+ * Runde, langsam (Gehtempo), mit einem großen Anstieg und Abstieg von je ca. 650 Hm (800 → 1.450 m → 800 m), damit
+ * Auswertung (Abstieg, höchster Punkt, Hinweise) und Bein-Hinweis am Folgetag im Testmodus sichtbar sind.
+ */
+export function demoHikeRoute(start: string, minutes: number): HcRouteLocation[] {
+  const points = demoRoute(start, minutes);
+  const last = Math.max(1, points.length - 1);
+  return points.map((p, i) => ({
+    ...p,
+    altitudeM: Math.round((800 + 650 * Math.sin((Math.PI * i) / last)) * 10) / 10,
+  }));
 }
 
 const at = (day: string, hhmm: string) => {
@@ -159,6 +173,24 @@ export function demoRead(today: string, from: string, to: string): HcReadResult 
           route,
           // Lauf-Paket 2: Schritte im Zeitraum → Ø Kadenz ca. 168–172 Schritte/min.
           steps: 5880 + i * 35,
+        },
+      });
+    }
+    // Sportarten Stufe 1 · Etappe W: Wanderung vorgestern (2,5 h, ca. 650 Hm auf und ab) → Gehen mit walk_kind hike.
+    if (i === 4) {
+      const start = at(day, '09:00');
+      sessions.push({
+        record: {
+          id: `demo-hike-${day}`,
+          exerciseType: 37,
+          startTime: start,
+          endTime: at(day, '11:30'),
+          dataOrigin: 'com.sec.android.app.shealth',
+        },
+        extras: {
+          distanceM: 5300,
+          kcal: 820,
+          route: { kind: 'points', points: demoHikeRoute(start, 150) },
         },
       });
     }

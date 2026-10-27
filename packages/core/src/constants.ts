@@ -1321,6 +1321,16 @@ export const TRAINING_MET = {
   unknownEndurance: 7.0,
   /** Rad mit elektrischer Unterstützung (nur mit Sportart Rad, siehe oben). */
   eBike: { low: 4.0, high: 6.0, fallback: 6.0 },
+  /**
+   * Sportarten Stufe 1 (Wandern/Bergwandern, docs/PLAN-SPORTARTEN-STUFE-1.md 2.2/5): nur bei Ausdauer-Art Gehen mit
+   * walk_kind `hike` bzw. `mountain_hike`. Startwerte ~5,3 / ~7,8 aus dem Plan: 17080 „hiking, cross country“ bzw.
+   * 17012 „backpacking, hiking or organized walking with a daypack“ (Ainsworth 2011 Compendium; Wortlaut und Werte
+   * gegen das Original bzw. Compendium 2024 prüfen). v1 ein Wert je Art (freie Einheiten haben keine geplante
+   * Anstrengung), kein Höhenmeter-Zuschlag (Entscheidung 8); die Uhr geht vor. PRODUKTENTSCHEIDUNG, VOR LIVEGANG
+   * FACHLICH PRÜFEN.
+   */
+  hike: { low: 5.3, high: 5.3, fallback: 5.3 },
+  mountainHike: { low: 7.8, high: 7.8, fallback: 7.8 },
   /** `effort_target` bis einschließlich diesem Wert gilt als „sehr locker“. */
   lowEffortMax: 2,
 } as const;
@@ -5825,3 +5835,71 @@ export const RUN_STRENGTH_RULES = {
   minItems: number;
   units: { strength: readonly string[]; drills: string; gentle: string };
 };
+
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 1 · Etappe W: Wandern/Bergwandern (docs/PLAN-SPORTARTEN-STUFE-1.md 2.2 und 5)
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Gehzeit-Schätzung für Wanderungen (nur Anzeige, für gespeicherte Strecken): horizontal `horizontalKmh` km/h,
+ * Aufstieg `ascentMPerH` Hm/h, Abstieg `descentMPerH` Hm/h; Gehzeit = größerer der beiden Werte (horizontal,
+ * vertikal) + halber kleinerer; ohne Pausen. Angezeigt auf `roundToMin` Minuten gerundet („ca.“); unter `minDistanceM`
+ * keine Schätzung. Quelle: DIN 33466 „Wanderwege“; DAV/SAC-Gehzeitberechnung. Rundung und Mindestdistanz:
+ * PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const HIKING_TIME = {
+  horizontalKmh: 4,
+  ascentMPerH: 300,
+  descentMPerH: 500,
+  roundToMin: 5,
+  minDistanceM: 500,
+} as const;
+
+/**
+ * Bergwander-Hinweise (nie blockierend, Texte HIKING_SAFETY_DE in hiking/texts-de.ts):
+ * - `altitudeHintM`: ab dieser Höhe Hinweis Höhenkrankheit (langsam aufsteigen, Warnzeichen, absteigen) und – mit
+ *   Arzt-Hinweis oder in der Schwangerschaft – „vorher ärztlich besprechen“; `sleepGainPerDayM` = Faustregel
+ *   Schlafhöhe +300–500 m je Tag. Quelle: Luks AM et al. (2019), „Wilderness Medical Society Clinical Practice
+ *   Guidelines for the Prevention and Treatment of Acute Altitude Illness: 2019 Update“, Wilderness Environ Med
+ *   30(4S):S3–S18.
+ * - `sac`: SAC-Wanderskala T1–T6; die App begleitet T1–`accompaniedMax` (wählbar), ab T4 nur der Hinweis „Alpines
+ *   Gelände – außerhalb dessen, was die App begleitet“ (nie Sperre, Entscheidung 10). Quelle: SAC-Wanderskala
+ *   (Schweizer Alpen-Club); DAV „Sicher Bergwandern“.
+ * - `descentHintM`: ab so viel Abstieg Hinweis Knie/Stöcke/Tempo in der Auswertung.
+ * - `legLoad`: Wanderung/Bergwanderung zählt für den Bein-Hinweis am Folgetag (LEG_LOAD_HINT) ab `minMinutes`
+ *   Minuten ODER `minDescentM` Höhenmetern Abstieg (Plan 2.2). Gehen (Spaziergang) zählt nicht.
+ * Quelle der Schwellen descentHintM/legLoad: PRODUKTENTSCHEIDUNG. Alles VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const HIKING_SAFETY = {
+  altitudeHintM: 2500,
+  sleepGainPerDayM: { min: 300, max: 500 },
+  sac: { min: 1, accompaniedMax: 3, scaleMax: 6 },
+  descentHintM: 600,
+  legLoad: { minMinutes: 120, minDescentM: 600 },
+} as const;
+
+/**
+ * Notrufnummern je Land für die Bergwander-Hinweise (Reihenfolge = Anzeige; `kind` steuert die Beschriftung):
+ * DE 112; AT 140 (Alpinnotruf) und 112; CH 1414 (Rega, Luftrettung), 144 (Sanität) und 112; IT 118 (Rettungsdienst)
+ * und 112. Quelle: offizielle Angaben der Länder/Rettungsdienste (Bergrettung Österreich, Rega, 112.eu) – VOR
+ * LIVEGANG PRÜFEN.
+ */
+export const EMERGENCY_NUMBERS = {
+  DE: [{ number: '112', kind: 'general' }],
+  AT: [
+    { number: '140', kind: 'alpine' },
+    { number: '112', kind: 'general' },
+  ],
+  CH: [
+    { number: '1414', kind: 'rega' },
+    { number: '144', kind: 'ambulance' },
+    { number: '112', kind: 'general' },
+  ],
+  IT: [
+    { number: '118', kind: 'ambulance' },
+    { number: '112', kind: 'general' },
+  ],
+} as const satisfies Record<
+  string,
+  readonly { number: string; kind: 'general' | 'alpine' | 'rega' | 'ambulance' }[]
+>;

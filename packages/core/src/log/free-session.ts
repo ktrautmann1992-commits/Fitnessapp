@@ -399,7 +399,11 @@ export function freeSessionLogFromInput(input: FreeSessionInput): FreeSessionRes
     status: sessionLogStatus(input.kind, exercises),
     session_rpe: input.sessionRpe,
     notes: notes === '' ? null : notes,
-    name_de: freeSessionName(input.kind, modality),
+    // Sportarten Stufe 1 (Etappe W): Geh-Einheit heißt je Art „Spaziergang“/„Wanderung“/„Bergwanderung“.
+    name_de:
+      cardio?.modality === 'walk'
+        ? FREE_SESSION.names.walkKinds[cardio.walk_kind ?? 'walk']
+        : freeSessionName(input.kind, modality),
     is_intro_week: false,
     is_deload: false,
     source: 'manual',

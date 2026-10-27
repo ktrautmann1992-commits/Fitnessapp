@@ -172,6 +172,8 @@ export function sessionFromHc(
       origin: originFromPackage(record.dataOrigin),
       group: mapped.group,
       name_de: mapped.nameDe,
+      // Sportarten Stufe 1: Wandern/Schneeschuhwandern → walk_kind (nur dann gesendet; Gehen bleibt ohne Feld).
+      ...(mapped.walkKind ? { walk_kind: mapped.walkKind } : {}),
       started_at: startedAt,
       finished_at: finishedAt,
       performed_on: isoDateInTimeZone(startedAt),

@@ -1,4 +1,4 @@
-import { ENDURANCE_EFFORT, LEG_LOAD_HINT, SPORT_CATALOGUE } from '../constants';
+import { ENDURANCE_EFFORT, HIKING_SAFETY, LEG_LOAD_HINT, SPORT_CATALOGUE } from '../constants';
 import { addDays } from '../dates';
 import type {
   EnduranceModality,
@@ -6,7 +6,9 @@ import type {
   PlannedSessionStatus,
   SessionFocus,
   SportId,
+  WalkKind,
 } from '../enums';
+import { type HikeKind, isHikeKind } from '../hiking/walk-kind';
 import { isHardWorkoutType, type WorkoutType } from '../plan/intensity';
 import { effectiveEffort } from './load';
 
@@ -25,7 +27,18 @@ export interface LegLoadSportLog {
   readonly durationS: number | null;
   /** Anstrengung 0–10 (session_rpe); null = übliche der Sportart. */
   readonly effort: number | null;
+  /**
+   * Sportarten Stufe 1 (Etappe W): Art einer Geh-Einheit (cardio_logs.walk_kind; dann `sport` = null). Wanderung/
+   * Bergwanderung zählt ab HIKING_SAFETY.legLoad.minMinutes Minuten ODER minDescentM Abstieg – ohne Anstrengungs-
+   * Schwelle. Fehlt = keine Geh-Einheit.
+   */
+  readonly walkKind?: WalkKind | null;
+  /** Abstieg der verknüpften Strecke in m (tracked_routes.elevation_loss_m); null/fehlt = unbekannt. */
+  readonly elevationLossM?: number | null;
 }
+
+/** Woher die Beinbelastung kommt: Sportart (Stufe 2) oder Wanderung/Bergwanderung (Stufe 1). */
+export type LegLoadSource = SportId | HikeKind;
 
 export interface LegLoadSession {
   readonly id: string;
@@ -47,7 +60,8 @@ export interface LegLoadHint {
   readonly sessionId: string;
   readonly sessionDate: string;
   readonly reason: LegLoadHintReason;
-  readonly sport: SportId;
+  /** Sportart bzw. `hike`/`mountain_hike` (Wanderung/Bergwanderung). */
+  readonly sport: LegLoadSource;
   /** Tag der Sportart (Vortag der Einheit). */
   readonly sportDate: string;
   readonly sportLogId: string;
@@ -70,6 +84,13 @@ export function hardLegSessionReason(session: LegLoadSession): LegLoadHintReason
 
 /** Zählt dieser Sport-Eintrag als hohe Beinbelastung (LEG_LOAD_HINT)? */
 export function isHighLegLoadLog(log: LegLoadSportLog): boolean {
+  if (log.sport === null && isHikeKind(log.walkKind)) {
+    const H = HIKING_SAFETY.legLoad;
+    return (
+      (log.durationS !== null && log.durationS >= H.minMinutes * 60) ||
+      (log.elevationLossM != null && log.elevationLossM >= H.minDescentM)
+    );
+  }
   if (log.sport === null || SPORT_CATALOGUE[log.sport].legLoad !== 'high') return false;
   if (log.durationS === null || log.durationS < LEG_LOAD_HINT.minMinutes * 60) return false;
   return effectiveEffort({ effort: log.effort, sport: log.sport }) >= LEG_LOAD_HINT.minEffort;
@@ -97,13 +118,16 @@ export function legLoadHints(input: {
       const log = heavy
         .filter((l) => l.performed_on === dayBefore)
         .sort((a, b) => (b.durationS ?? 0) - (a.durationS ?? 0) || (a.id < b.id ? -1 : 1))[0];
-      if (!log || log.sport === null) return [];
+      if (!log) return [];
+      const source: LegLoadSource | null =
+        log.sport ?? (isHikeKind(log.walkKind) ? log.walkKind : null);
+      if (source === null) return [];
       return [
         {
           sessionId: session.id,
           sessionDate: session.scheduled_on,
           reason,
-          sport: log.sport,
+          sport: source,
           sportDate: log.performed_on,
           sportLogId: log.id,
         },

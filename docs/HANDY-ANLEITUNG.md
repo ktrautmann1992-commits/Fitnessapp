@@ -1747,7 +1747,7 @@ steht ein Hinweis.
 2. **Mehr → Einstellungen** → bis **Smartwatch** wischen → **Smartwatch verbinden**. Ihr seht „Was übernommen wird“
    und „Was nicht passiert“.
 3. **Zustimmen und verbinden** (eigene Einwilligung „Smartwatch-Daten“, Text über **Einwilligungstext lesen**) →
-   **Beispiel-Uhr verbinden (Testmodus)** → Meldung „Abgleich fertig – 5 neu“. Darunter: verbunden seit, letzter
+   **Beispiel-Uhr verbinden (Testmodus)** → Meldung „Abgleich fertig – 6 neu“ (seit Etappe W mit einer Wanderung). Darunter: verbunden seit, letzter
    Abgleich, freigegebene Daten (✓), Tageswerte der letzten 7 Tage (Schritte, Schlaf, Ruhepuls).
 4. **Jetzt abgleichen** → „keine neuen Einheiten“ (nichts doppelt).
 5. **Verlauf** (Training → Verlauf): Einträge mit **⌚ Smartwatch**. Einen **Lauf** öffnen → „⌚ aus Samsung Health ·
@@ -1973,6 +1973,26 @@ Steht in einem älteren Teil „Heute → …“, meint er den Reiter **Training
 11. **Eigene Menüleiste bleibt:** Wer schon „Workouts“ oder „Wettkampf“ selbst als Knopf gewählt hatte, behält seine
     Leiste. Wer nie etwas geändert hat, bekommt die neue Leiste automatisch. **Mehr → Menüleiste anpassen** → „Workouts“
     wieder aufnehmen geht weiterhin (bis 6 Knöpfe).
+
+## Teil 9w – So testest du Wandern/Bergwandern (Sportarten Stufe 1, Etappe W, 27.10.2026, Testmodus)
+
+1. Vorschau-Link aus dem Pull Request öffnen → **Ohne Konto testen** → Onboarding bis **Geschafft!**.
+2. **Mehr → Ausdauer** → bei „Was zeichnest du auf?“ **Gehen** antippen → darunter **Gehen | Wandern | Bergwandern**.
+3. **Bergwandern** antippen → **Schwierigkeit (SAC-Skala, optional)** erscheint, darunter die Karte **„Bevor du
+   losgehst“** (Wetter, Umkehrzeit, Höhe, Abstieg, Live-Begleitung, Notrufnummern DE/AT/CH/IT, Akku, Trinken).
+   **„T4 oder schwerer“** wählen → Hinweis „außerhalb dessen, was die App begleitet“ (keine Sperre).
+4. **Demo-Aufzeichnung starten** → kurz laufen lassen → Stopp → Speichern: oben steht „Bergwandern“, Art und SAC-Stufe
+   sind noch änderbar → **Speichern**.
+5. Auswertung: Kopfzeile „Bergwandern · SAC T2 …“, unter **Details** **Abstieg** und **Höchster Punkt** (ca.),
+   **Gehzeit (Schätzung)** nach DIN/DAV, Höhenprofil. **Bearbeiten** → Art auf „Gehen“ stellen → Eintrag im Tagebuch
+   heißt danach „Spaziergang“.
+6. **Mehr → Einstellungen → Smartwatch & Apps → Beispiel-Uhr verbinden (Testmodus)** → Meldung „Abgleich fertig – 6
+   neu“ (vorher 5): vorgestern erscheint eine
+   **Wanderung** (2,5 h, ca. 650 Hm auf und ab) mit Route; in der Auswertung die Karte „Gut zu wissen nach deiner Tour“
+   (Abstieg). Liegt am Tag danach ein Bein-Krafttag im Plan, zeigt **Training → Tag antippen** „Nach deiner Wanderung …
+   sind deine Beine vermutlich noch müde“.
+7. **Schmerz-/Verletzungsmodus** (Einstellungen, siehe Teil 9t) für Knie oder Sprunggelenk eintragen → die Wander-Karten zeigen zusätzlich den
+   Schon-Hinweis.
 
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.

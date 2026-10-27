@@ -2,8 +2,10 @@ import {
   boundingBox,
   decodePolyline,
   FREE_SESSION,
+  isHikeKind,
   type TrackedRouteRow,
   type TrackedRouteSport,
+  walkKindName,
   wearableRoutePayloadSchema,
 } from '@fitnessapp/core';
 
@@ -63,7 +65,10 @@ export function applyWearableRouteSave(
   );
   if (!ws) return { kind: 'reject', reason: 'not_found' };
   const logId = ws.session_log_id;
-  const modality = state.rows.cardioLogs.find((c) => c.session_log_id === logId)?.modality;
+  const linkedCardio = state.rows.cardioLogs.find((c) => c.session_log_id === logId);
+  const modality = linkedCardio?.modality;
+  // Wandern (Stufe 1, wie save_wearable_route): Art der Geh-Einheit aus dem Eintrag.
+  const walkKind = modality === 'walk' ? (linkedCardio?.walk_kind ?? null) : null;
   const unchanged = {
     routes: [...state.routes],
     rows: state.rows,
@@ -102,17 +107,24 @@ export function applyWearableRouteSave(
     km_splits: [...r.km_splits],
     elevation_profile: r.elevation_profile ? r.elevation_profile.map((p) => [...p]) : null,
     session_log_id: logId,
+    walk_kind: walkKind,
+    elevation_loss_m: r.elevation_loss_m ?? null,
+    max_altitude_m: r.max_altitude_m ?? null,
     updated_at: ctx.now,
   };
   const routes: TrackedRouteRow[] = existing
-    ? state.routes.map((t) => (t === existing ? { ...t, ...geometry } : t))
+    ? state.routes.map((t) =>
+        t === existing
+          ? { ...t, ...geometry, sac_grade: isHikeKind(walkKind) ? (t.sac_grade ?? null) : null }
+          : t,
+      )
     : [
         ...state.routes,
         {
           ...geometry,
           id: ctx.newId(),
           user_id: ctx.userId,
-          name: NAMES[modality],
+          name: modality === 'walk' ? walkKindName(walkKind) : NAMES[modality],
           difficulty: null,
           is_favorite: false,
           base_route_id: null,
@@ -125,10 +137,7 @@ export function applyWearableRouteSave(
           match_rejected_ids: [],
           auto_match: true,
           weather: null,
-          // Sportarten Stufe 1: Art der Geh-Einheit übernimmt die Fachlogik (Etappe W); Höhenwerte aus der Route.
-          walk_kind: null,
-          elevation_loss_m: r.elevation_loss_m ?? null,
-          max_altitude_m: r.max_altitude_m ?? null,
+          // Sportarten Stufe 1: Art der Geh-Einheit und Höhenwerte stehen schon in `geometry`.
           sac_grade: null,
           created_at: ctx.now,
         },

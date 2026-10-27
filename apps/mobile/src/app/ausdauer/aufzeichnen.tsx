@@ -18,6 +18,8 @@ import {
   TRACKED_ROUTE_SPORTS,
   type TrackedRouteSport,
   usesSpeed,
+  isHikeKind,
+  type WalkKind,
 } from '@fitnessapp/core';
 import {
   areaColors,
@@ -34,6 +36,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AreaButton, Icon } from '@/components/design';
 import { BikeTypeChoice, EBikeBadge, useBikeChoice } from '@/components/e-bike';
+import { parseSacParam, SacGradeChoice, type SacPick, WalkKindChoice } from '@/components/hiking';
 import { RouteSketch } from '@/components/endurance';
 import { DarknessNotice } from '@/components/runner';
 import { LoopGuideCard } from '@/components/loop-guide-card';
@@ -107,6 +110,10 @@ export default function RecordScreen() {
     guide?: string;
     /** Sportart mit GPS (Sportarten Stufe 2, z. B. Skilanglauf); fehlt = Laufen/Rad/Gehen. */
     sportart?: string;
+    /** Sportarten Stufe 1 · Etappe W: Art der Geh-Einheit vom Start („hike“/„mountain_hike“); fehlt = Gehen. */
+    walk?: string;
+    /** SAC-Stufe vom Start (1–3, 4 = „T4 oder schwerer“); fehlt = keine Angabe. */
+    sac?: string;
   }>();
   const router = useRouter();
   const app = useApp();
@@ -128,6 +135,9 @@ export default function RecordScreen() {
     current?.state.sport ?? (isSport(params.sport) ? params.sport : 'run');
   const demo = params.demo === '1';
   const eBikeParam = params.ebike === '1' ? true : params.ebike === '0' ? false : null;
+  const walkParam: WalkKind =
+    params.walk === 'hike' || params.walk === 'mountain_hike' ? params.walk : 'walk';
+  const sacParam = parseSacParam(params.sac);
   // Sportarten Stufe 2: GPS-Sportart dieser Aufzeichnung (gemerkt je Aufzeichnung, components/sport-recording.tsx).
   const gpsSportart = useGpsSportart(params.sportart, current?.state.id ?? null);
   // Laufende (bzw. wiederhergestellte) Aufzeichnung dieses Kontos: direkt Live-Ansicht bzw. Speichern zeigen.
@@ -372,6 +382,8 @@ export default function RecordScreen() {
         onSaved={(id) => router.replace(`/ausdauer/${id}` as Href)}
         onDiscarded={() => router.replace('/ausdauer' as Href)}
         initialEBike={eBikeParam}
+        initialWalkKind={walkParam}
+        initialSac={sacParam}
         loopName={loopGuideFor(params.guide)?.name ?? null}
         onResume={async () => {
           try {
@@ -403,7 +415,9 @@ export default function RecordScreen() {
           ? sportName(gpsSportart)
           : sport === 'bike' && eBikeParam === true
             ? E.eBike.sport
-            : E.sports[sport],
+            : sport === 'walk'
+              ? E.hiking.kinds[walkParam]
+              : E.sports[sport],
       )}
       testID="record-live"
     >
@@ -535,6 +549,8 @@ function SaveView({
   onResume,
   limitNotice,
   initialEBike,
+  initialWalkKind = 'walk',
+  initialSac = null,
   loopName = null,
 }: {
   onSaved: (id: string) => void;
@@ -543,6 +559,9 @@ function SaveView({
   limitNotice: boolean;
   /** Wahl beim Start; null = zuletzt genutzte Wahl dieses Geräts (sonst Fahrrad). */
   initialEBike: boolean | null;
+  /** Sportarten Stufe 1: Art der Geh-Einheit und SAC-Stufe vom Start (hier noch änderbar). */
+  initialWalkKind?: WalkKind;
+  initialSac?: SacPick;
   /** Gelaufene Runde aus dem Rundkurs-Vorschlag: Name vorbelegt, als „Meine Strecke“ (Favorit) vorgeschlagen. */
   loopName?: string | null;
 }) {
@@ -553,8 +572,15 @@ function SaveView({
   const check = summary ? recordingSaveCheck(summary) : 'too_short';
   const startDay = summary?.startedAt ? isoDateInTimeZone(summary.startedAt) : today;
   const sport = current?.state.sport ?? 'run';
+  const [walkKind, setWalkKind] = useState<WalkKind>(initialWalkKind);
+  const [sacPick, setSacPick] = useState<SacPick>(initialSac);
   const [name, setName] = useState(
-    () => loopName ?? E.save.defaultName(E.sportNouns[sport], formatDateDe(startDay)),
+    () =>
+      loopName ??
+      E.save.defaultName(
+        sport === 'walk' ? E.hiking.nouns[initialWalkKind] : E.sportNouns[sport],
+        formatDateDe(startDay),
+      ),
   );
   const [favorite, setFavorite] = useState(loopName !== null);
   const [difficulty, setDifficulty] = useState<RouteDifficulty | 'none'>('none');
@@ -599,6 +625,7 @@ function SaveView({
           now: new Date().toISOString(),
           newId,
           eBike,
+          walkKind: sport === 'walk' ? walkKind : null,
         });
         if (draft) {
           const outcome = await app.submitWorkout(draft);
@@ -622,6 +649,8 @@ function SaveView({
         sessionLogId: logId,
         source: 'recorded',
         eBike,
+        walkKind: sport === 'walk' ? walkKind : null,
+        sacGrade: sport === 'walk' && isHikeKind(walkKind) ? sacPick : null,
       });
       if (!payload) {
         setError(name.trim() === '' ? E.save.nameHint : E.save.invalid);
@@ -689,6 +718,14 @@ function SaveView({
           />
           {sport === 'bike' ? (
             <BikeTypeChoice eBike={eBike} onChange={setEBikePicked} testID="record-bike-type" />
+          ) : null}
+          {sport === 'walk' ? (
+            <View style={styles.walkKind} testID="record-walk-kind">
+              <WalkKindChoice walkKind={walkKind} onChange={setWalkKind} />
+              {isHikeKind(walkKind) ? (
+                <SacGradeChoice value={sacPick} onChange={setSacPick} testID="record-sac" />
+              ) : null}
+            </View>
           ) : null}
           <Checkbox
             label={E.save.favorite}
@@ -798,4 +835,5 @@ const styles = StyleSheet.create({
   },
   summaryRow: { flexDirection: 'row', gap: spacing.md, alignItems: 'center' },
   summaryText: { flex: 1, gap: 2 },
+  walkKind: { gap: spacing.sm },
 });

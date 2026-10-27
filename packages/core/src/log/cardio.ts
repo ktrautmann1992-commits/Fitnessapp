@@ -1,5 +1,5 @@
 import { CARDIO_LOG_LIMITS, CARDIO_PLAUSIBILITY_KMH, TALK_TEST_BANDS } from '../constants';
-import type { EnduranceModality } from '../enums';
+import type { EnduranceModality, WalkKind } from '../enums';
 import type { CardioLogPayload } from './schemas';
 
 /**
@@ -140,6 +140,8 @@ export interface CardioInput {
   readonly elevationM: number | null;
   /** E-Bike (nur bei Rad wirksam); fehlt = normales Rad. */
   readonly eBike?: boolean;
+  /** Sportarten Stufe 1: Art der Geh-Einheit (nur bei Gehen wirksam); fehlt/null/„walk“ = Gehen (Feld fehlt). */
+  readonly walkKind?: WalkKind | null;
 }
 
 export type CardioInputField = 'duration' | 'distance' | 'elevation';
@@ -223,6 +225,11 @@ export function cardioLogFromInput(input: CardioInput): CardioInputResult {
       elevation_m: elevation,
       // Nur gesendet, wenn wahr (fehlt = normales Rad); bei anderen Sportarten nie.
       ...(input.modality === 'bike' && input.eBike === true ? { e_bike: true } : {}),
+      // Wanderung/Bergwanderung nur beim Gehen (Gehen bleibt ohne Feld, wie bisher).
+      ...(input.modality === 'walk' &&
+      (input.walkKind === 'hike' || input.walkKind === 'mountain_hike')
+        ? { walk_kind: input.walkKind }
+        : {}),
     },
   };
 }
