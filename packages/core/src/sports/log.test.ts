@@ -220,7 +220,10 @@ describe('sportForLog', () => {
     expect(sportForLog({ ...watch, name_de: 'Skifahren' })).toBe('alpine_skiing');
     expect(sportForLog({ ...watch, name_de: 'Sonstiges Training' })).toBe('other');
     expect(sportForLog({ ...watch, name_de: OTHER_TITLE })).toBe('other');
-    expect(sportForLog({ ...watch, name_de: 'Yoga' })).toBe('other');
+    // Sportarten Stufe 1 (Etappe Y): Yoga hat seit Stufe 1 eine eigene Sportart.
+    expect(sportForLog({ ...watch, name_de: 'Yoga' })).toBe('yoga');
+    expect(sportForLog({ ...watch, name_de: 'Pilates' })).toBe('pilates');
+    expect(sportForLog({ ...watch, name_de: 'Dehnen' })).toBe('other');
     expect(sportForLog({ ...watch, name_de: FREE_SESSION.names.strength })).toBeNull();
   });
 

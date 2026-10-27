@@ -38,6 +38,7 @@ export const SPORT_ICONS: Readonly<Record<SportIcon, IconName>> = {
   bike: 'bike',
   stopwatch: 'stopwatch',
   dots: 'dots',
+  lotus: 'lotus',
 };
 
 export function sportIcon(sport: SportId): IconName {

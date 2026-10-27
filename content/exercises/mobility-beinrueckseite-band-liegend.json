@@ -1,0 +1,44 @@
+{
+  "id": "mobility-beinrueckseite-band-liegend",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Beinrückseite dehnen mit Band",
+  "name_en": "Supine Hamstring Stretch with Band",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["hamstrings"],
+  "secondary_muscles": ["calves"],
+  "equipment_ids": ["resistance_bands"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": ["long_supine", "floor_transfer"],
+  "description_de": "In Rückenlage ein Band um den Fuß legen und das gestreckte Bein nach oben ziehen. Dehnt die Beinrückseite, der Rücken bleibt entspannt am Boden.",
+  "steps_de": [
+    "Auf den Rücken legen, ein Bein aufgestellt.",
+    "Ein Widerstandsband um den Fußballen des anderen Beins legen.",
+    "Das Bein gestreckt nach oben führen, bis die Rückseite angenehm zieht.",
+    "Halten und danach die Seite wechseln."
+  ],
+  "tips_de": ["Das Knie darf leicht gebeugt bleiben."],
+  "common_mistakes_de": ["Am Band ruckartig ziehen."],
+  "safety_note_de": "Nicht zu lange flach auf dem Rücken bleiben, wenn dir dabei unwohl wird – dann auf die Seite drehen. Bei Schmerzen oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "beinrueckseite-dehnen-sitzend",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

@@ -246,12 +246,18 @@ export function normalizeLayout(
  * fehlt das Feld (die Datenbank behält dann das gespeicherte Ziel). Immer mit der aktuellen Fassung
  * (`layout_version`), damit eine bewusst gewählte Leiste nie mehr umgestellt wird.
  */
-export function toStoredLayout(layout: AppLayout, stepGoal?: number | null): StoredAppLayout {
+export function toStoredLayout(
+  layout: AppLayout,
+  stepGoal?: number | null,
+  // Sportarten Stufe 1: „Erholungs-Routine vorschlagen“ – fehlt = unverändert (save_app_layout behält den Wert).
+  recoveryRoutine?: boolean,
+): StoredAppLayout {
   return storedAppLayoutSchema.parse({
     dashboard_tiles: layout.tiles.map((t) => ({ id: t.id, visible: t.visible })),
     tab_bar: [...layout.tabs],
     ...(stepGoal === undefined || stepGoal === null ? {} : { step_goal: stepGoal }),
     layout_version: APP_LAYOUT.version,
+    ...(recoveryRoutine === undefined ? {} : { recovery_routine: recoveryRoutine }),
   });
 }
 

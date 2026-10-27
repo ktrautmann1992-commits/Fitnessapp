@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-drehsitz-stuhl",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-drehsitz-stuhl-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht auf einem Stuhl sitzen, Oberkörper sanft zur Seite gedreht, eine Hand am Knie, die andere an der Rückenlehne.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pilates-rumpf-atmung-sitzend",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pilates-rumpf-atmung-sitzend-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht auf der vorderen Hälfte eines Stuhls sitzen, Füße hüftbreit, Hände seitlich an den unteren Rippen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

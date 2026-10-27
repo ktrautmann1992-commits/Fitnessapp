@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-vorbeuge-stuhl",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-vorbeuge-stuhl-start.svg",
+      "alt_de": "Ausgangsposition: vor einem Stuhl stehen, Hände auf der Lehne, Oberkörper mit langem Rücken nach vorn geneigt, Knie leicht gebeugt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

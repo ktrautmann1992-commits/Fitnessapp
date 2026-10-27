@@ -394,12 +394,18 @@ function applyOne(rows: UserRows, op: WriteOp, ctx: ApplyContext): UserRows {
     case 'save_app_layout': {
       // Wie save_app_layout: ohne Feld `step_goal` bleibt das gespeicherte Schrittziel.
       const keep = rows.appLayout?.step_goal;
+      // Sportarten Stufe 1: ohne Feld `recovery_routine` bleibt die gespeicherte Einstellung.
+      const keepRoutine = rows.appLayout?.recovery_routine;
+      const withGoal =
+        op.row.step_goal === undefined && keep !== undefined
+          ? { ...op.row, step_goal: keep }
+          : op.row;
       return {
         ...rows,
         appLayout:
-          op.row.step_goal === undefined && keep !== undefined
-            ? { ...op.row, step_goal: keep }
-            : op.row,
+          op.row.recovery_routine === undefined && keepRoutine !== undefined
+            ? { ...withGoal, recovery_routine: keepRoutine }
+            : withGoal,
       };
     }
     case 'save_training_plan':

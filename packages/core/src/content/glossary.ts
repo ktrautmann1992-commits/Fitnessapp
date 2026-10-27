@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { GLOSSARY_LIMITS } from '../constants';
+import { FLOW_POSE_ID_PREFIXES, GLOSSARY_LIMITS } from '../constants';
 import type { MovementPattern } from '../enums';
 import { findEquipment } from '../equipment';
 import type { PlanLibrary } from '../plan/content-pool';
@@ -183,7 +183,7 @@ const byNameDe = (a: Exercise, b: Exercise) =>
  * Bibliothek fehlt (null) → leere Liste.
  */
 export function searchExercises(
-  library: Pick<PlanLibrary, 'exercises'> | null,
+  library: Pick<PlanLibrary, 'exercises' | 'displayExercises'> | null,
   options: GlossarySearchOptions,
   ctx: GlossarySearchContext = {},
 ): GlossaryHit[] {
@@ -192,7 +192,15 @@ export function searchExercises(
   const groups = new Set(options.groups ?? []);
   const difficulty = new Set(options.difficulty ?? []);
   const hits: GlossaryHit[] = [];
-  for (const exercise of library.exercises.values()) {
+  // Sportarten Stufe 1 (Etappe Y): Posen der Yoga-/Pilates-/Mobility-Routinen stehen nur in `displayExercises`
+  // (nie in der Plan-Engine) – im Lexikon sollen sie trotzdem auffindbar sein (nie archivierte).
+  const poses = [...(library.displayExercises?.values() ?? [])].filter(
+    (e) =>
+      e.status !== 'archived' &&
+      !library.exercises.has(e.id) &&
+      FLOW_POSE_ID_PREFIXES.some((prefix) => e.id.startsWith(prefix)),
+  );
+  for (const exercise of [...library.exercises.values(), ...poses]) {
     const group = glossaryGroupOf(exercise.movement_pattern);
     if (groups.size > 0 && !groups.has(group)) continue;
     if (difficulty.size > 0 && !difficulty.has(exercise.difficulty)) continue;

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pilates-schwan-sanft",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pilates-schwan-sanft-start.svg",
+      "alt_de": "Ausgangsposition: Bauchlage, Kopf und Brust ein kleines Stück angehoben, Hände neben den Schultern, Beine lang.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

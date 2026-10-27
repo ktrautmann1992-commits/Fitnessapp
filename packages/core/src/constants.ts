@@ -496,7 +496,9 @@ export const DEFAULT_TRAINING_DAYS: Readonly<Record<number, readonly number[]>> 
 export const CONSERVATIVE_PLAN_RULES = {
   rpeMax: 7,
   beginnerTemplatesOnly: true,
-  excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill'],
+  // Sportarten Stufe 1 (Yoga/Pilates): + Umkehrhaltungen (Kopf unter Herzhöhe; Blutdruck-/Schwindel-Risiko bei
+  // Auffälligkeiten im Gesundheits-Check). PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+  excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill', 'inversion'],
   overheadFlags: ['injury', 'medical_clearance_recommended'],
 } as const satisfies {
   rpeMax: number;
@@ -509,9 +511,15 @@ export const CONSERVATIVE_PLAN_RULES = {
  * Schwangerschaft: zusätzlich keine Übungen in langer Rückenlage.
  * Quelle: ACOG Committee Opinion Nr. 804 (2020), „Physical Activity and Exercise During Pregnancy and the
  * Postpartum Period“, Obstet Gynecol 135(4):e178–e188.
+ * Sportarten Stufe 1 (Yoga/Pilates, docs/PLAN-SPORTARTEN-STUFE-1.md 5): außerdem keine Umkehrhaltungen
+ * (`inversion`) und keine tiefen Drehungen (`trunk_rotation`, Drehen bis zum Anschlag) – gleiche Quelle (ACOG 804:
+ * Yoga-Haltungen, die lange Rückenlage oder Umkehrhaltungen erfordern, meiden; kein „Hot Yoga“). Vor Stufe 1 trug
+ * keine Übung diese Merkmale – Pläne ohne Yoga bleiben unverändert. PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
  */
 export const PREGNANCY_EXCLUDED_CAUTION_TAGS = [
   'long_supine',
+  'trunk_rotation',
+  'inversion',
 ] as const satisfies readonly CautionTag[];
 
 /**
@@ -1373,6 +1381,8 @@ export const SESSION_KCAL = {
 
 /** Icon-Schlüssel einer Sportart (Strich-Icons der App, apps/mobile/src/components/design.tsx). */
 export type SportIcon =
+  // Sportarten Stufe 1: Yoga/Pilates (Sitzhaltung, Strich-Icon in apps/mobile/src/components/design.tsx).
+  | 'lotus'
   | 'mountain'
   | 'ball'
   | 'racket'
@@ -1453,7 +1463,7 @@ export interface SportDefinition {
  * - Yoga 2,5 / 4,0 (Sportarten Stufe 1): 02150 „yoga, Hatha“ / 02170 „yoga, Power“.
  * - Pilates 3,0 / 3,8: 02105 „pilates, general“ / hoch kein Code (2011) – Analogie 02101 „stretching, mild“ nicht
  *   passend, deshalb PRODUKTENTSCHEIDUNG (zügiges Mattenprogramm); gegen das Compendium 2024 prüfen.
- *   Icon vorläufig „stopwatch“ (eigenes Icon mit Etappe Y).
+ *   Icon „lotus“ (Etappe Y).
  * `typicalEffort`, `legLoad`, `impact`, `gps`/`gpsProfile` und die Suchbegriffe: PRODUKTENTSCHEIDUNG (sportpraktische
  * Einschätzung), VOR LIVEGANG FACHLICH PRÜFEN. Schwimmen bleibt Ausdauer-Art (TRAINING_MET.endurance.swim).
  */
@@ -1786,7 +1796,7 @@ export const SPORT_CATALOGUE = {
   yoga: {
     nameDe: 'Yoga',
     category: 'mind_body',
-    icon: 'stopwatch',
+    icon: 'lotus',
     gps: false,
     gpsProfile: null,
     met: { low: 2.5, high: 4.0 },
@@ -1798,7 +1808,7 @@ export const SPORT_CATALOGUE = {
   pilates: {
     nameDe: 'Pilates',
     category: 'mind_body',
-    icon: 'stopwatch',
+    icon: 'lotus',
     gps: false,
     gpsProfile: null,
     met: { low: 3.0, high: 3.8 },
@@ -5274,6 +5284,8 @@ export const PAIN_REGION_LOAD = {
       { muscle: 'front_delts' },
       { muscle: 'side_delts' },
       { muscle: 'rear_delts' },
+      // Sportarten Stufe 1 (Yoga): Umkehrhaltungen stützen meist über Arme und Schultern.
+      { tag: 'inversion' },
     ],
   },
   lower_back: {
@@ -5357,6 +5369,13 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'vertical_pull', loadTypes: ['bodyweight'] },
       { muscle: 'forearms' },
       { exercise: 'kettlebell-swing' },
+      // Sportarten Stufe 1 (Yoga/Pilates): Umkehrhaltungen und Posen mit Stütz auf den Händen.
+      { tag: 'inversion' },
+      { exercise: 'yoga-herabschauender-hund' },
+      { exercise: 'yoga-kobra-sanft' },
+      { exercise: 'pilates-schwimmen' },
+      { exercise: 'mobility-weltbeste-dehnung' },
+      { exercise: 'mobility-brustwirbel-drehung-vierfuessler' },
     ],
   },
   hip: {
@@ -5390,6 +5409,8 @@ export const PAIN_REGION_LOAD = {
       { pattern: 'core_flexion' },
       { tag: 'overhead' },
       { tag: 'spinal_loading' },
+      // Sportarten Stufe 1 (Yoga): Umkehrhaltungen (Kopf unter Herzhöhe, Last auf Nacken/Schultern).
+      { tag: 'inversion' },
     ],
     any: [
       { pattern: 'vertical_pull' },
@@ -5438,7 +5459,8 @@ export const PAIN_MODE = {
   minSets: 1,
   conservative: {
     rpeMax: 6,
-    excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill'],
+    // Sportarten Stufe 1: + Umkehrhaltungen (wie CONSERVATIVE_PLAN_RULES).
+    excludedCautionTags: ['high_impact', 'spinal_loading', 'high_skill', 'inversion'],
   },
   endurance: {
     lowerBodyRegions: ['knee', 'hip', 'ankle', 'lower_back'],
@@ -6004,4 +6026,79 @@ export const ROW_WORKOUTS = {
     }
   >;
   technique: { minMinutes: number; drillShare: number; effort: number };
+};
+
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 1 · Etappe Y – Yoga/Pilates/Mobility (docs/PLAN-SPORTARTEN-STUFE-1.md 2.4, 5; Logik in
+// packages/core/src/workouts/flow.ts und recovery-routine.ts). FLOW_RULES (Pose/Routine) steht bei WORKOUT_LIMITS.
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Sicherheitsfilter für Posen (Format `flow`) über die vorhandenen Regeln (PlanSafetyRules.excludedCautionTags,
+ * Schon-Modus): `inversion` ist ausgeschlossen bei Schwangerschaft (PREGNANCY_EXCLUDED_CAUTION_TAGS), vorsichtigem
+ * Plan (CONSERVATIVE_PLAN_RULES), konservativem Schon-Modus (PAIN_MODE.conservative) und beim Ziel „Fit im Alter“
+ * (`activeAgingExcludedCautionTags`, zusätzlich zu ACTIVE_AGING_RULES – die Server-Prüfung
+ * private.planned_exercise_active_aging_guard bleibt unverändert, weil Posen nie als geplante Übung gespeichert werden).
+ * - `holdCapFromAge`: ab 65 bzw. bei „Fit im Alter“ werden Halteposen (Belastungsart Zeit) auf FLOW_RULES.seniorHoldMaxS
+ *   gekürzt (wie ACTIVE_AGING_RULES.strengthHoldMaxS – Pressatmung vermeiden, Pelliccia A et al. (2021), ESC-Leitlinie
+ *   Sportkardiologie, Eur Heart J 42(1):17–96).
+ * - `swapReasons`: Reihenfolge, in der Alternativen einer gesperrten Pose geprüft werden (leichter zuerst, dann
+ *   „für Zuhause“/anderes Gerät) – Stuhl-/Wand-Varianten sind als `easier` eingetragen.
+ * Quelle: ACOG Committee Opinion No. 804 (2020), Obstet Gynecol 135(4):e178–e188; Rest PRODUKTENTSCHEIDUNG.
+ * VOR LIVEGANG FACHLICH PRÜFEN (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie – Entscheidung 12).
+ */
+/**
+ * Posen der Yoga-/Pilates-/Mobility-Routinen (Übungs-IDs mit diesen Anfängen, Inhalts-Konvention wie
+ * BODYWEIGHT_TEMPLATE_ID_SUFFIX) gehören zur Workout-Bibliothek, NICHT zur Plan-Engine: selectPlanContent nimmt sie
+ * nicht in `exercises` (Erzeugen, Ersatz, Folgeblock, Aufwärmen & Dehnen), sondern nur in `displayExercises` (Anzeige,
+ * Timer, Tagebuch). So bleiben Pläne ohne Yoga byte-gleich (Plan 2.4: Aufwärmen & Dehnen unverändert).
+ * Quelle: PRODUKTENTSCHEIDUNG.
+ */
+export const FLOW_POSE_ID_PREFIXES = ['yoga-', 'pilates-', 'mobility-'] as const;
+
+export const FLOW_SAFETY = {
+  activeAgingExcludedCautionTags: ['inversion'],
+  holdCapFromAge: 65,
+  swapReasons: ['easier', 'home', 'other_equipment'],
+} as const satisfies {
+  activeAgingExcludedCautionTags: readonly CautionTag[];
+  holdCapFromAge: number;
+  swapReasons: readonly ('easier' | 'home' | 'other_equipment' | 'harder')[];
+};
+
+/**
+ * Vorschlag „Erholungstag: Mobility“ auf „Heute“ (Plan 2.4, Entscheidung 13): nur ein Vorschlag aus festen Regeln,
+ * KEINE geplante Einheit – zählt weder für die Planerfüllung noch für die 10-%-Regel; erledigt = freie Einheit (Quelle
+ * „workout“). Abschaltbar (app_layout_settings.recovery_routine, Standard an).
+ * - nur an trainingsfreien Tagen (keine bzw. nur gestrichene Einheit) oder in einer Erholungswoche (`is_deload`) nach
+ *   erledigter Einheit; nicht, wenn heute schon ein Workout eingetragen ist,
+ * - Routinen der Kategorie `mobility` im Format `flow`, `minutes` 10–20 Min. (Ziel `targetMinutes`), höchstens
+ *   `maxStars` Sterne (Anstrengung ≤ `effortMax` von 10), die der Sicherheitsfilter nicht ausblendet (Schon-Modus),
+ * - Auswahl nach den Hauptmuskeln der letzten `lookbackDays` Tage (Kraft: Hauptmuskeln der eingetragenen Übungen,
+ *   Ausdauer: `enduranceMuscles` je Art; höchstens `mainMuscles` Muskeln), danach Nähe zu `targetMinutes`, dann ID.
+ * Quelle: PRODUKTENTSCHEIDUNG (Muskelzuordnung der Ausdauer-Arten nach gängiger Bewegungslehre) – VOR LIVEGANG
+ * FACHLICH PRÜFEN.
+ */
+export const RECOVERY_ROUTINE = {
+  minutes: { min: 10, max: 20 },
+  targetMinutes: 15,
+  maxStars: 2,
+  effortMax: 3,
+  lookbackDays: 2,
+  mainMuscles: 3,
+  enduranceMuscles: {
+    run: ['calves', 'hamstrings', 'quadriceps', 'glutes'],
+    walk: ['calves', 'hamstrings', 'glutes'],
+    bike: ['quadriceps', 'glutes', 'hamstrings'],
+    swim: ['lats', 'upper_back', 'front_delts'],
+    row: ['upper_back', 'lats', 'quadriceps', 'glutes'],
+  },
+} as const satisfies {
+  minutes: { min: number; max: number };
+  targetMinutes: number;
+  maxStars: number;
+  effortMax: number;
+  lookbackDays: number;
+  mainMuscles: number;
+  enduranceMuscles: Record<'run' | 'walk' | 'bike' | 'swim' | 'row', readonly MuscleGroup[]>;
 };

@@ -1,0 +1,44 @@
+{
+  "id": "yoga-kindhaltung",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kindhaltung",
+  "name_en": "Child's Pose",
+  "aliases_de": ["Balasana"],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["lower_back", "lats"],
+  "secondary_muscles": ["glutes"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer", "deep_hip_flexion"],
+  "description_de": "Kniend das Gesäß Richtung Fersen sinken lassen, Oberkörper liegt auf den Oberschenkeln, Arme lang nach vorn. Eine ruhige Pause im Ablauf.",
+  "steps_de": [
+    "Auf die Matte knien, große Zehen berühren sich, Knie hüftbreit oder weiter.",
+    "Gesäß Richtung Fersen sinken lassen.",
+    "Oberkörper nach vorn ablegen, Stirn auf Boden oder Kissen, Arme lang nach vorn.",
+    "Ruhig in den Rücken atmen."
+  ],
+  "tips_de": ["Ein Kissen zwischen Gesäß und Fersen macht die Pose angenehmer."],
+  "common_mistakes_de": ["Die Schultern hochziehen."],
+  "safety_note_de": "Langsam auf den Boden und wieder hoch kommen, bei Bedarf an Stuhl oder Wand abstützen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-kindhaltung-sitzend",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

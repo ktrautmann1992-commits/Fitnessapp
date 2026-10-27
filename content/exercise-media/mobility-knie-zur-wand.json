@@ -1,0 +1,20 @@
+{
+  "exercise_id": "mobility-knie-zur-wand",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "mobility-knie-zur-wand-start.svg",
+      "alt_de": "Ausgangsposition: vor einer Wand stehen, Hände an der Wand, vorderer Fuß eine Handbreit vor der Wand, Knie schiebt Richtung Wand, Ferse am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

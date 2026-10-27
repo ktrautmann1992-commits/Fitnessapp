@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-krieger-2",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-krieger-2-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – breiter Stand, ein Knie über dem Knöchel gebeugt, das andere Bein gestreckt, Arme waagerecht zur Seite gestreckt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

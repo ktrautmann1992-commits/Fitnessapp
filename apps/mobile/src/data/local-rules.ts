@@ -244,11 +244,16 @@ export function isValidOp(
         ...(op.row.layout_version === undefined || op.row.layout_version === null
           ? {}
           : { layout_version: op.row.layout_version }),
+        // Sportarten Stufe 1: „Erholungs-Routine vorschlagen“ (optional, Wahrheitswert).
+        ...(op.row.recovery_routine === undefined
+          ? {}
+          : { recovery_routine: op.row.recovery_routine }),
       };
       return (
         storedAppLayoutSchema.safeParse(stored).success &&
-        JSON.stringify(toStoredLayout(normalizeLayout(stored), stored.step_goal)) ===
-          JSON.stringify(stored)
+        JSON.stringify(
+          toStoredLayout(normalizeLayout(stored), stored.step_goal, stored.recovery_routine),
+        ) === JSON.stringify(stored)
       );
     }
     case 'upsert_measurement_reminder':

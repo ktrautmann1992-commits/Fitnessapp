@@ -1,0 +1,44 @@
+{
+  "id": "yoga-taube",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Taube",
+  "name_en": "Pigeon Pose",
+  "aliases_de": ["Eka Pada Rajakapotasana"],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["glutes"],
+  "secondary_muscles": ["hamstrings", "lower_back"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": ["floor_transfer", "deep_hip_flexion", "hip_cross_midline"],
+  "description_de": "Ein Bein liegt angewinkelt vor dem Körper, das andere lang nach hinten. Dehnt das Gesäß des vorderen Beins kräftig.",
+  "steps_de": [
+    "Aus dem Vierfüßlerstand ein Knie hinter das Handgelenk der gleichen Seite setzen, Unterschenkel schräg vor dem Körper.",
+    "Das andere Bein lang nach hinten strecken.",
+    "Becken gerade ausrichten, ein Kissen unter die Gesäßseite des vorderen Beins legen.",
+    "Mit langem Rücken aufrecht bleiben oder auf die Unterarme sinken, danach die Seite wechseln."
+  ],
+  "tips_de": ["Je näher der vordere Fuß am Körper liegt, desto sanfter wird die Dehnung."],
+  "common_mistakes_de": ["Ins Knie ziehen lassen – die Dehnung gehört ins Gesäß."],
+  "safety_note_de": "Bei Ziehen im Knie den Fuß näher an den Körper holen oder die Variante im Sitzen wählen. Bei Schmerzen die Pose lösen.",
+  "alternatives": [
+    {
+      "alternative_id": "gesaess-dehnen-sitzend",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

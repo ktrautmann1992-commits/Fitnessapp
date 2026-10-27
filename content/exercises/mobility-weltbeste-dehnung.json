@@ -1,0 +1,44 @@
+{
+  "id": "mobility-weltbeste-dehnung",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Ausfallschritt mit Drehung",
+  "name_en": "World's Greatest Stretch",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["hamstrings", "obliques"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": ["floor_transfer", "trunk_rotation"],
+  "description_de": "Aus dem tiefen Ausfallschritt eine Hand neben den Fuß setzen und den anderen Arm nach oben drehen. Bewegt Hüfte, Beinrückseite und Brustkorb.",
+  "steps_de": [
+    "Großer Ausfallschritt nach vorn, hinteres Knie darf am Boden abgelegt werden.",
+    "Beide Hände innen neben den vorderen Fuß setzen.",
+    "Den Arm auf der Seite des vorderen Beins nach oben drehen, Blick folgt der Hand.",
+    "Zurück und nach einigen Wiederholungen die Seite wechseln."
+  ],
+  "tips_de": ["Die Drehung kommt aus dem Brustkorb."],
+  "common_mistakes_de": ["Das vordere Knie fällt nach innen."],
+  "safety_note_de": "Sanft drehen, nie ruckartig und nicht bis zum Anschlag. Die Bewegung kommt aus dem Brustkorb, der untere Rücken bleibt ruhig. Bei Schmerzen die Drehung lösen.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-hueftbeuger-stuhl",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

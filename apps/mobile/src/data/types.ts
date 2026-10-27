@@ -271,6 +271,8 @@ export interface AppLayoutRow {
   step_goal?: StoredAppLayout['step_goal'];
   /** Fassung der Anordnung (26.10.2026, „App verschlanken“); fehlt/null = ältere Fassung (normalizeLayout stellt um). */
   layout_version?: StoredAppLayout['layout_version'];
+  /** „Erholungs-Routine vorschlagen“ (Sportarten Stufe 1, 27.10.2026); fehlt = an. Einstellung, kein Gesundheitsdatum. */
+  recovery_routine?: StoredAppLayout['recovery_routine'];
 }
 
 /** Zutat eines eigenen Gerichts – Spalten wie `custom_meal_items`. */

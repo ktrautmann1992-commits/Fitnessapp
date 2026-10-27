@@ -32,6 +32,11 @@ export interface ActiveWorkoutRun {
   readonly startedAt: string;
   /** Gespeichert (bzw. in der Warteschlange) – dann nie erneut senden. */
   readonly saved: boolean;
+  /**
+   * Ablauf, aus dem `steps` gebaut wurde – bei Flow-Routinen die für die Person angepasste Fassung
+   * (prepareFlowWorkout: Posen getauscht/entfallen, Halteposen gekürzt). Fehlt = das Workout der Bibliothek.
+   */
+  readonly workout?: Workout;
 }
 
 export function startActiveRun(input: {
@@ -49,6 +54,7 @@ export function startActiveRun(input: {
     run: startWorkoutRun(steps, input.nowMs),
     startedAt: new Date(input.nowMs).toISOString(),
     saved: false,
+    ...(input.workout.format === 'flow' ? { workout: input.workout } : {}),
   };
 }
 

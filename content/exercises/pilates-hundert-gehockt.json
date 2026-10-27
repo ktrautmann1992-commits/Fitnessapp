@@ -1,0 +1,38 @@
+{
+  "id": "pilates-hundert-gehockt",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hundert mit gebeugten Beinen",
+  "name_en": "The Hundred, Bent Knees",
+  "aliases_de": [],
+  "movement_pattern": "core_flexion",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["front_delts"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["long_supine", "floor_transfer", "spinal_flexion"],
+  "description_de": "Kopf und Schultern angehoben, Beine angewinkelt, die Arme pumpen klein auf und ab, während du gleichmäßig atmest.",
+  "steps_de": [
+    "Auf den Rücken legen, Beine anheben, Knie über der Hüfte.",
+    "Kopf und Schultern leicht anheben, Blick Richtung Knie.",
+    "Arme lang neben dem Körper knapp über dem Boden, klein auf und ab pumpen.",
+    "Fünf Schläge einatmen, fünf Schläge ausatmen."
+  ],
+  "tips_de": ["Wird der Nacken müde, den Kopf ablegen und weiter pumpen."],
+  "common_mistakes_de": ["Am Nacken ziehen.", "Das Hohlkreuz zulassen."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, gleichmäßig weiteratmen und den Rücken nicht ins Hohlkreuz fallen lassen. Bei Schmerzen oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "mobility-hueft-90-90",
+  "version": 1,
+  "status": "draft",
+  "name_de": "90/90-Hüftwechsel",
+  "name_en": "90/90 Hip Switch",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["glutes"],
+  "secondary_muscles": ["adductors"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["floor_transfer", "hip_cross_midline"],
+  "description_de": "Im Sitzen beide Beine im rechten Winkel ablegen und die Knie langsam von einer Seite zur anderen kippen. Bewegt die Hüfte in beide Drehrichtungen.",
+  "steps_de": [
+    "Auf den Boden setzen, Füße etwas mehr als hüftbreit, Hände hinter dem Körper aufstützen.",
+    "Beide Knie zu einer Seite sinken lassen, bis beide Beine etwa im rechten Winkel liegen.",
+    "Langsam beide Knie zur anderen Seite kippen.",
+    "Ruhig hin und her wechseln."
+  ],
+  "tips_de": ["Die Hände dürfen viel Gewicht tragen."],
+  "common_mistakes_de": ["Mit Schwung kippen."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, nur im angenehmen Bewegungsumfang. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "gesaess-dehnen-sitzend",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

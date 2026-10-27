@@ -19,7 +19,8 @@ import type { UserRows } from './types';
  * Übungen). Nur freigegebene ohne blockierenden Befund – wie der Seed, der nur so etwas einspielt. Ausnahme: Entwürfe
  * der Kategorie „Lauf-Kraft“ (docs/PLAN-CALISTHENICS-SCHLINGE.md 4) – sie hängen am Laufplan und sollen im Testmodus
  * prüfbar sein; die App kennzeichnet sie als „Testinhalt“ (wie Übungs-Entwürfe). Ebenso Entwürfe aus
- * WORKOUT_LIST_DRAFT_CATEGORIES (Etappe R: Rudern) – sie stehen dann auch in der Liste. Im Supabase-Modus nie (RLS).
+ * WORKOUT_LIST_DRAFT_CATEGORIES (Etappe R: Rudern) – sie stehen dann auch in der Liste – sowie Yoga-/Pilates-/
+ * Mobility-Routinen im Format `flow` (Sportarten Stufe 1 · Etappe Y). Im Supabase-Modus nie (RLS).
  */
 export function workoutsFromBundle(
   files: readonly ContentFile[],
@@ -34,7 +35,9 @@ export function workoutsFromBundle(
     (w) =>
       (w.status === 'published' ||
         (w.status === 'draft' &&
-          (w.category === 'run_strength' || WORKOUT_LIST_DRAFT_CATEGORIES.includes(w.category)))) &&
+          (w.category === 'run_strength' ||
+            w.format === 'flow' ||
+            WORKOUT_LIST_DRAFT_CATEGORIES.includes(w.category)))) &&
       !blocked.has(w.id),
   );
 }

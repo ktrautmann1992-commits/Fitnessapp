@@ -306,3 +306,14 @@ Split/Watt/Schlagzahl/Intervall-Ergebnis, Technik-Hinweis, Workout-Kategorie „
 `rudergeraet-locker` (mit Bild), 10 Workouts `rudern-*`. Keine DB-Änderung. Offen: Rudern bei Studio-Training (Gerät
 dort nicht bekannt), Watt/Schlagzahl aus Health Connect lesen (neue Leseberechtigung), strukturierte Ruder-Einheiten im
 Plan erst mit einem Plan mit Phasen (DB: Art/Schritte nur im Wettkampfplan).
+
+**Y – Yoga/Pilates/Mobility: erledigt (27.10.2026, Branch `claude/sportarten-y`, ohne neue Migration).** Core:
+`workouts/flow.ts` (Flow-Ablauf mit Seitenwechsel, Sicherheitsfilter `prepareFlowWorkout`: Tausch gegen Stuhl-/Wand-Variante,
+ausblenden unter 80 %, Halteposen ab 65 ≤ 30 s), `workouts/recovery-routine.ts` (`RECOVERY_ROUTINE`), `inversion` in den
+Ausschlüssen Schwangerschaft (+ `trunk_rotation`), vorsichtig, Schon-Modus konservativ, Fit im Alter (`FLOW_SAFETY`; die
+Server-Prüfung für geplante Übungen bleibt unverändert), Posen (`FLOW_POSE_ID_PREFIXES`) nie in der Plan-Engine – Pläne
+und Aufwärmen & Dehnen byte-gleich. Uhr: Health Connect 83 → `yoga`, 48 → `pilates` (71 „Dehnen“ bleibt „Sonstige“).
+Inhalte (Entwürfe): 29 Yoga-Posen, 13 Pilates-, 8 Mobility-Übungen mit eigenen Bildern, 15 Routinen (6 Yoga, 4 Pilates,
+5 Mobility). App: Flow-Player, Kategorien Yoga/Pilates wählbar, Heute-Karte „Erholungstag: Mobility“, Schalter in den
+Einstellungen (`recovery_routine` über `save_app_layout`). Offen: restlicher Startbestand (~11 Yoga-Posen, ~12 Pilates,
+~7 Mobility, 6 Yoga- und 4 Pilates-Routinen), Geräte „Matte“/„Block“ (nicht im Katalog), Fachprüfung (Entscheidung 12).

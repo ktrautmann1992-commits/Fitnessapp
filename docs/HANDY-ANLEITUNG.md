@@ -2017,6 +2017,27 @@ Smartwatch: Health Connect „Rudergerät“ (54) kommt als **Rudern** mit Dauer
 
 Rückmeldung an Claude z. B. „Rudern: 1–6 ok, Split-Zeile zu klein“.
 
+## Teil 9y – Yoga, Pilates, Mobility testen (Sportarten Stufe 1 · Etappe Y, 27.10.2026, Testmodus)
+
+Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle Posen und Routinen sind Entwürfe („Testinhalt“).
+
+1. **Ohne Konto testen** → Onboarding (Einsteiger, 2 Tage Kraft, z. B. Dienstag und Freitag) → **Zum Plan**.
+2. **Training → Workouts → Filter → Ziel „Yoga“** → 5 Routinen (ohne Gesundheits-Check fehlt „Sanft in den Morgen“ –
+   zu viele Umkehrhaltungen). **„Stuhl-Yoga“** antippen → bei den Posen steht „je Seite (rechts / links)“.
+3. **Workout starten** → Flow-Ansicht: großes Bild, Name, Ring mit Restzeit, Atem-Hinweis, „Als Nächstes“. Ohne
+   Pausen-Bildschirm geht es zur nächsten Pose; bei Posen mit Seitenwechsel steht **„Rechte Seite“**, danach
+   **„Linke Seite“**. **Pause/Weiter** und **„Pose überspringen“** ausprobieren; der Bildschirm bleibt an.
+4. **Beenden → Für heute speichern** → im Tagebuch steht „Workout „Stuhl-Yoga“ … Posen“.
+5. Einstellungen → Testdaten löschen, neu ohne Workout: an einem **trainingsfreien Tag** zeigt **Heute** die Karte
+   **„Erholungstag: Mobility 15 min?“** → **Routine ansehen**. Zählt nicht für den Plan.
+6. **Mehr → Einstellungen → Training → „Erholungs-Routine vorschlagen“** ausschalten → die Karte verschwindet.
+7. Mit Gesundheits-Check **„schwanger“** (Testdaten löschen, Onboarding mit Einwilligung): Yoga zeigt nur noch
+   „Stuhl-Yoga“; andere Routinen zeigen oben „Für dich angepasst“ (Variante am Stuhl/an der Wand) oder fehlen.
+8. **Sportart eintragen** (dort, wo ihr bisher z. B. Tennis eingetragen habt): unter „Yoga & Pilates“ stehen **Yoga**
+   und **Pilates** (eigenes Symbol); die Uhr ordnet „Yoga“ und „Pilates“ jetzt dieser Sportart zu.
+
+Rückmeldung an Claude z. B. „Yoga: 1–8 ok, Bild beim Dreieck unklar“.
+
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
 - Bei Unsicherheit einfach fragen: „Erklär mir in einfachen Worten, was du gerade geändert hast.“

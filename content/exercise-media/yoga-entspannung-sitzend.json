@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-entspannung-sitzend",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-entspannung-sitzend-start.svg",
+      "alt_de": "Ausgangsposition: bequem und aufrecht auf einem Stuhl sitzen, Füße am Boden, Hände locker auf den Oberschenkeln.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

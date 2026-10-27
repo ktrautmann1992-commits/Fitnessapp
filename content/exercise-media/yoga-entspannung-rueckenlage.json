@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-entspannung-rueckenlage",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-entspannung-rueckenlage-start.svg",
+      "alt_de": "Ausgangsposition: flach auf dem Rücken liegen, Beine locker ausgestreckt, Arme etwas vom Körper entfernt abgelegt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

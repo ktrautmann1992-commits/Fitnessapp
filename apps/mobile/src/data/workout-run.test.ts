@@ -29,7 +29,12 @@ async function setup() {
     if (!workout) throw new Error(`Workout ${id} fehlt`);
     return workout;
   };
-  return { ...s, exercises: library.exercises as ReadonlyMap<string, Exercise>, workouts, find };
+  // Inklusive Posen der Flow-Routinen (Sportarten Stufe 1: nur in displayExercises).
+  const exercises = (library.displayExercises ?? library.exercises) as ReadonlyMap<
+    string,
+    Exercise
+  >;
+  return { ...s, exercises, workouts, find };
 }
 
 /** Lauf bis zum Ende: Zeitübungen laufen ab, Übungen nach Wiederholungen werden sofort abgehakt. */
@@ -48,7 +53,7 @@ function runToEnd(active: ReturnType<typeof startActiveRun>) {
 }
 
 describe('Workout-Bibliothek im Testmodus', () => {
-  it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand 20–30) plus Lauf-Kraft- und Rudern-Entwürfe', async () => {
+  it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand 20–30) plus Lauf-Kraft-, Rudern- und Flow-Entwürfe', async () => {
     const s = await setup();
     const published = s.workouts.filter((w) => w.status === 'published');
     expect(published.length).toBeGreaterThanOrEqual(20);
@@ -56,7 +61,9 @@ describe('Workout-Bibliothek im Testmodus', () => {
     expect(
       s.workouts
         .filter((w) => w.status === 'draft')
-        .every((w) => w.category === 'run_strength' || w.category === 'rowing'),
+        .every(
+          (w) => w.category === 'run_strength' || w.category === 'rowing' || w.format === 'flow',
+        ),
     ).toBe(true);
     // Etappe R: 10 Rudern-Workouts (Entwürfe, im Testmodus als „Testinhalt“).
     expect(s.workouts.filter((w) => w.category === 'rowing')).toHaveLength(10);

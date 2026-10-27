@@ -1,0 +1,44 @@
+{
+  "id": "pilates-abrollen-stehend",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Abrollen im Stehen",
+  "name_en": "Standing Roll-down",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["lower_back", "hamstrings"],
+  "secondary_muscles": ["abs"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["spinal_flexion", "inversion"],
+  "description_de": "Im Stand Kinn zur Brust und Wirbel für Wirbel nach vorn abrollen, dann langsam wieder aufrollen.",
+  "steps_de": [
+    "Füße hüftbreit, Knie locker.",
+    "Kinn zur Brust und Wirbel für Wirbel nach vorn abrollen, Arme hängen.",
+    "Unten kurz ausatmen.",
+    "Mit gebeugten Knien Wirbel für Wirbel aufrollen, der Kopf kommt zuletzt."
+  ],
+  "tips_de": ["Nur so weit abrollen, wie es angenehm ist."],
+  "common_mistakes_de": ["Zu schnell aufrichten."],
+  "safety_note_de": "Kopf liegt unter Herzhöhe: langsam in die Pose und langsam wieder aufrichten. Bei Schwindel, Druck im Kopf oder ungewohnten Beschwerden sofort lösen. In der Schwangerschaft und mit Hinweis aus dem Gesundheits-Check zeigt die App eine Variante ohne Umkehrhaltung.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-vorbeuge-stuhl",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

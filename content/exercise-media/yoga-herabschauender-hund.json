@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-herabschauender-hund",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-herabschauender-hund-start.svg",
+      "alt_de": "Ausgangsposition: umgedrehtes V – Hände schulterbreit am Boden, Arme gestreckt, Gesäß hoch, Beine lang, Kopf zwischen den Armen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "yoga-hueftbeuger-stuhl",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hüftbeuger-Dehnung am Stuhl",
+  "name_en": "Chair Hip Flexor Stretch",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["quadriceps"],
+  "secondary_muscles": ["glutes"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Seitlich auf der Stuhlkante sitzen, das äußere Bein nach hinten strecken. Dehnt die Hüftbeuger, ohne zu knien.",
+  "steps_de": [
+    "Seitlich auf die Kante eines stabilen Stuhls setzen, eine Gesäßhälfte auf dem Stuhl.",
+    "Das äußere Bein nach hinten strecken, Fußballen am Boden.",
+    "Oberkörper aufrecht, Becken sanft nach vorn schieben.",
+    "Halten und danach die Seite wechseln."
+  ],
+  "tips_de": ["Mit einer Hand an der Rückenlehne festhalten."],
+  "common_mistakes_de": ["Nach vorn kippen und rund werden."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

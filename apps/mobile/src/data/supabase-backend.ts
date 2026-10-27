@@ -646,13 +646,18 @@ export async function executeWriteOp(
           ? {}
           : { step_goal: op.row.step_goal }),
       };
-      const withVersion =
+      const versioned =
         op.row.layout_version === undefined || op.row.layout_version === null
           ? base
           : { ...base, layout_version: op.row.layout_version };
+      // Sportarten Stufe 1: „Erholungs-Routine vorschlagen“ nur, wenn gesetzt (fehlt = unverändert).
+      const withVersion =
+        op.row.recovery_routine === undefined
+          ? versioned
+          : { ...versioned, recovery_routine: op.row.recovery_routine };
       const result = await client.rpc('save_app_layout', { p_layout: toJson(withVersion) });
-      // Vor `db-migrate` (20261026150000_app_layout_version.sql) kennt die Funktion das Feld noch nicht → ohne Fassung
-      // speichern (die Anordnung gilt dann als ältere Fassung, nichts geht verloren).
+      // Vor `db-migrate` (20261026150000_app_layout_version.sql bzw. 20261027100200) kennt die Funktion die Felder
+      // noch nicht → ohne sie speichern (die Anordnung gilt dann als ältere Fassung, nichts geht verloren).
       if (result.error && withVersion !== base && result.error.code === '22023') {
         check(await client.rpc('save_app_layout', { p_layout: toJson(base) }));
         return;

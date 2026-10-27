@@ -53,6 +53,10 @@ describe('Workout-Timer: Anzeige-Texte', () => {
     expect(stepAnnouncement({ step: work(), remainingS: 40, finished: false }, names)).toBe(
       'Kniebeuge: noch 40 Sekunden',
     );
+    // Flow mit Seitenwechsel (Sportarten Stufe 1): Seite wird mit angesagt.
+    expect(
+      stepAnnouncement({ step: work({ side: 'left' }), remainingS: 30, finished: false }, names),
+    ).toBe('Kniebeuge, linke Seite: noch 30 Sekunden');
     expect(
       stepAnnouncement(
         { step: work({ seconds: null, reps: 10 }), remainingS: null, finished: false },

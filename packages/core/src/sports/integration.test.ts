@@ -140,7 +140,10 @@ describe('Health Connect → Sportart', () => {
     expect(sportForExerciseType(36)).toBe('hiit');
     expect(sportForExerciseType(56)).toBeNull();
     expect(sportForExerciseType(70)).toBeNull();
-    expect(sportForExerciseType(83)).toBe('other');
+    // Sportarten Stufe 1 (Etappe Y): Yoga 83, Pilates 48; Dehnen 71 bleibt „Sonstige“.
+    expect(sportForExerciseType(83)).toBe('yoga');
+    expect(sportForExerciseType(48)).toBe('pilates');
+    expect(sportForExerciseType(71)).toBe('other');
     expect(sportForExerciseType(0)).toBe('other');
     expect(sportForExerciseType(999)).toBe('other');
   });

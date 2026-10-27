@@ -1,0 +1,44 @@
+{
+  "id": "pilates-schwan-sanft",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kleiner Schwan",
+  "name_en": "Swan Prep",
+  "aliases_de": [],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["lower_back", "upper_back"],
+  "secondary_muscles": ["glutes"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "In Bauchlage den Oberkörper nur wenig anheben und wieder ablegen. Kräftigt die Rückenstrecker und richtet auf.",
+  "steps_de": [
+    "Auf den Bauch legen, Hände neben den Schultern, Ellbogen nah am Körper.",
+    "Bauch leicht einziehen, Schambein bleibt am Boden.",
+    "Einatmen und Kopf und Brust ein kleines Stück anheben.",
+    "Ausatmen und langsam ablegen."
+  ],
+  "tips_de": ["Die Kraft kommt aus dem Rücken, die Hände helfen nur."],
+  "common_mistakes_de": ["Mit den Armen hochdrücken."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, gleichmäßig weiteratmen und den Rücken nicht ins Hohlkreuz fallen lassen. Bei Schmerzen oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "pilates-rumpf-atmung-sitzend",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

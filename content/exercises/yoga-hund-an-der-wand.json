@@ -1,0 +1,38 @@
+{
+  "id": "yoga-hund-an-der-wand",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Hund an der Wand",
+  "name_en": "Wall Dog",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["lats", "hamstrings"],
+  "secondary_muscles": ["upper_back", "calves"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Hände an Wand oder Stuhllehne, Hüfte nach hinten schieben, bis Arme und Rücken eine Linie bilden – der Hund im Stehen, ohne Umkehrhaltung.",
+  "steps_de": [
+    "Etwa einen großen Schritt vor einer Wand oder einer festen Stuhllehne stehen.",
+    "Hände schulterbreit auf Hüfthöhe aufsetzen.",
+    "Hüfte nach hinten schieben, bis der Rücken lang und waagerecht ist, Kopf zwischen den Armen.",
+    "Knie leicht gebeugt lassen und ruhig atmen."
+  ],
+  "tips_de": ["Die Füße so weit zurücksetzen, bis die Hüfte über den Fersen ist."],
+  "common_mistakes_de": ["Ins Hohlkreuz durchhängen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

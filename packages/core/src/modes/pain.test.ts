@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { PAIN_MODE, PAIN_REGION_LOAD } from '../constants';
 import { addDays } from '../dates';
 import { BODY_REGIONS, PAIN_INTENSITIES, type BodyRegion, type PainIntensity } from '../enums';
-import { EXERCISES, ex } from '../plan/swap-test-helpers';
+import { DISPLAY_EXERCISES as DISPLAY, EXERCISES, ex } from '../plan/swap-test-helpers';
 import {
   activePainEpisodes,
   adviceForNewEpisode,
@@ -284,7 +284,10 @@ describe('Welche Übung belastet welche Region (echte Bibliothek)', () => {
   it('jeder genannte Übungs-Name existiert in der Bibliothek', () => {
     for (const region of BODY_REGIONS) {
       for (const m of [...PAIN_REGION_LOAD[region].strong, ...PAIN_REGION_LOAD[region].any]) {
-        if ('exercise' in m) expect(EXERCISES.has(m.exercise), m.exercise).toBe(true);
+        // Posen der Etappe Y (Sportarten Stufe 1) stehen nur in displayExercises (isFlowPoseId).
+        if ('exercise' in m) {
+          expect(EXERCISES.has(m.exercise) || DISPLAY.has(m.exercise), m.exercise).toBe(true);
+        }
       }
     }
   });

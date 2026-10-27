@@ -1,0 +1,38 @@
+{
+  "id": "pilates-seitliegend-beinheben",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Beinheben in Seitlage",
+  "name_en": "Side-Lying Leg Lift",
+  "aliases_de": [],
+  "movement_pattern": "core_anti_rotation",
+  "primary_muscles": ["glutes"],
+  "secondary_muscles": ["obliques"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "In Seitlage das obere Bein gestreckt anheben und senken. Kräftigt die seitliche Hüfte.",
+  "steps_de": [
+    "Auf die Seite legen, Kopf auf dem unteren Arm, Beine gestreckt übereinander.",
+    "Bauch leicht einziehen, Becken senkrecht halten.",
+    "Oberes Bein bis auf Hüfthöhe anheben und langsam senken.",
+    "Danach die Seite wechseln."
+  ],
+  "tips_de": ["Die Fußspitze zeigt nach vorn, nicht zur Decke."],
+  "common_mistakes_de": ["Das Becken nach hinten kippen lassen."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, gleichmäßig weiteratmen und den Rücken nicht ins Hohlkreuz fallen lassen. Bei Schmerzen oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+  }
+}

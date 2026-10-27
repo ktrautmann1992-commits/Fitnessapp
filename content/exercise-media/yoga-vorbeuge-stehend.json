@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-vorbeuge-stehend",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-vorbeuge-stehend-start.svg",
+      "alt_de": "Ausgangsposition: stehend den Oberkörper nach vorn hängen lassen, Knie gebeugt, Arme und Kopf hängen locker Richtung Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

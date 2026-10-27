@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-tiefer-ausfallschritt",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-tiefer-ausfallschritt-start.svg",
+      "alt_de": "Ausgangsposition: kniender Ausfallschritt, vorderer Fuß flach am Boden, hinteres Knie auf der Matte, Oberkörper aufrecht, Hände auf dem vorderen Knie.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}
