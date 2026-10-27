@@ -1,7 +1,7 @@
 {
   "id": "yoga-baum",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Baum",
   "name_en": "Tree Pose",
   "aliases_de": ["Vrksasana"],
@@ -37,8 +37,8 @@
     "batch_id": null,
     "created_on": "2026-10-27",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
-    "review_note": "Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft. Vorher: Entwurf Sportarten Stufe 1 · Etappe Y (docs/PLAN-SPORTARTEN-STUFE-1.md 4) – Freigabe durch die Gründer und Fachprüfung (zertifizierte Yoga-/Pilates-Lehrkraft, Physiotherapie) ausstehend."
   }
 }

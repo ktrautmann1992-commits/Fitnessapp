@@ -148,12 +148,12 @@ describe('Sperren nach Person', () => {
   });
 
   it('Übung fehlt in der Bibliothek (Supabase vor der Freigabe) → missing_content', () => {
-    const published = new Map([...library].filter(([, e]) => e.status === 'published'));
+    const withoutArcher = new Map([...library].filter(([id]) => id !== 'archer-klimmzug'));
     const gate = skillStageGate(
       path('klimmzug'),
       indexOf('klimmzug', 'archer-klimmzug'),
       ctx({
-        library: published,
+        library: withoutArcher,
       }),
     );
     expect(gate.reasons[0]).toBe('missing_content');
