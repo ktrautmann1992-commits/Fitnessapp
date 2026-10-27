@@ -133,6 +133,8 @@ const WORKOUT_TYPES: Record<WorkoutType, string> = {
   race_pace: 'Renntempo',
   brick: 'Koppeltraining (Rad → Lauf)',
   technique: 'Schwimmtechnik',
+  // Sportarten Stufe 1 (Hyrox): Texte der Einheiten folgen mit Etappe H.
+  hyrox_combo: 'Hyrox-Kombi (Lauf + Station)',
 };
 
 const ERRORS: Record<CompetitionErrorReason, string> = {
@@ -178,6 +180,7 @@ export const deCompetition = {
     cycling: 'Radrennen',
     triathlon_sprint: 'Triathlon Sprint',
     triathlon_olympic: 'Triathlon olympisch',
+    hyrox: 'Hyrox',
   },
   /** Rad mit Distanz: „Radrennen 120 km“. */
   cyclingWithDistance: (km: number) => `Radrennen ${km} km`,
@@ -391,7 +394,7 @@ export const deCompetition = {
     `${part} (${sport}): ${duration} ${kind} (Anstrengung ${effort})`,
   stepsTitle: 'Ablauf',
   stepParts: { warmup: 'Aufwärmen', main: 'Hauptteil', cooldown: 'Abwärmen' },
-  stepKinds: { work: 'zügig', easy: 'locker', rest: 'locker traben' },
+  stepKinds: { work: 'zügig', easy: 'locker', rest: 'locker traben', station: 'Station' },
   stepLine: (part: string, duration: string, kind: string, effort: number) =>
     `${part}: ${duration} ${kind} (Anstrengung ${effort})`,
   repeatLine: (

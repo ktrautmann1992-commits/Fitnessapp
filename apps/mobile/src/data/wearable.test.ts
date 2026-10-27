@@ -251,6 +251,7 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
       sport: null,
       sport_duration_s: null,
       sport_distance_m: null,
+      hyrox_splits: null,
     });
     rows.cardioLogs.push({
       session_log_id: uuid(100),
@@ -260,6 +261,10 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
       distance_m: 6200,
       elevation_m: 40,
       e_bike: false,
+      avg_power_w: null,
+      stroke_rate: null,
+      intervals: null,
+      walk_kind: null,
     });
     return rows;
   }

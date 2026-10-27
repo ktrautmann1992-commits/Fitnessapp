@@ -102,6 +102,7 @@ async function logStrength(device: Device, from: string, to: string, rpe: number
     sport: null,
     sport_duration_s: null,
     sport_distance_m: null,
+    hyrox_splits: null,
   }));
   const ids = new Set(planned.map((s) => s.id));
   await writeJson(device.store, STORAGE_KEYS.localDb, {

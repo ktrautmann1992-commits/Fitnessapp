@@ -33,6 +33,7 @@ export const deSports = {
       water: 'Wassersport',
       indoor_cardio: 'Fitness & Ausdauer',
       dance: 'Tanzen',
+      mind_body: 'Yoga & Pilates',
       other: 'Sonstiges',
     },
     gpsBadge: 'GPS',

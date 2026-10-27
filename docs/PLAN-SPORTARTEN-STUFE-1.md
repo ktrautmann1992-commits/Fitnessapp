@@ -260,3 +260,28 @@ ohnehin alles offen (`premium_open`).
 13. **Erholungstag-Routine:** nur Vorschlag (abschaltbar), keine geplante Einheit, zählt nicht für Plan/10 % –
     Empfehlung.
 14. **Gratis/Premium:** alles gratis, Live-Anpassung bleibt Premium – Empfehlung.
+
+## 11. Umsetzungsstand
+
+**S – Datenbank-Grundlage: erledigt (27.10.2026, Branch `claude/sportarten-s1-db`).** Alle Enums, Spalten, CHECKs und
+Server-Fassungen aus Abschnitt 3 für alle vier Sportarten; die Etappen Y, W, R und H brauchen keine SQL-Funktionen oder
+Enums mehr anzufassen.
+
+| Migration                                    | Inhalt                                                                                                                                                                                                                                                                                                                                                                                                                |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `20261027100000_sportarten_stufe1_enums.sql` | `endurance_discipline`/`competition_discipline` + `hyrox`, `session_focus` + `hyrox_stations`, `workout_type` + `hyrox_combo`, `endurance_modality` + `row`, `workout_category` + `yoga`/`pilates`/`rowing`, `workout_format` + `flow`, `caution_tag` + `inversion`, `sport_type` + `yoga`/`pilates`; neue Typen `hyrox_division`, `walk_kind`                                                                        |
+| `20261027100100_sportarten_stufe1.sql`       | `competitions.hyrox_division` (genau bei Hyrox), Hyrox 8 km/8 Wochen/unter 18 erlaubt, Lauf-Referenz bei Hyrox; Schritt-Typ `station` (mit Feld `station`), `hyrox_combo` harte Art, Kombi nur Lauf; `session_logs.hyrox_splits`; `cardio_logs.avg_power_w`/`stroke_rate`/`intervals`/`walk_kind`; `tracked_routes.walk_kind`/`elevation_loss_m`/`max_altitude_m`/`sac_grade`; `app_layout_settings.recovery_routine` |
+| `20261027100200_sportarten_stufe1_rpcs.sql`  | neue Fassungen von `insert_plan_sessions`, `save_competition`, `save_session_log`, `save_tracked_route`, `update_tracked_route`, `save_wearable_route`, `import_wearable_batch`, `save_app_layout` (je neueste Fassung + optionale Felder)                                                                                                                                                                            |
+
+- **Ergebnis Hyrox-Rennen:** freie Ausdauer-Einheit `run` mit Name „Hyrox-Rennen“ (`FREE_SESSION.names.hyroxRace`),
+  Gesamtzeit = Dauer; `hyrox_splits` gesetzt (Liste mit 0–17 Teilzeiten `{segment, duration_s}`,
+  `HYROX_SPLIT_SEGMENTS`) genau bei diesem Eintrag, Summe ≤ Gesamtzeit.
+- **Freie Namen:** Rudern „Rudern“; Geh-Einheit je Art „Spaziergang“/„Wanderung“/„Bergwanderung“
+  (`FREE_SESSION.names.walkKinds`) – der verknüpfte Eintrag folgt der Strecke (und umgekehrt) wie beim E-Bike.
+- **Einstellung „Erholungs-Routine vorschlagen“:** je Konto in `app_layout_settings.recovery_routine` (Standard an),
+  Schreiben über `save_app_layout` mit optionalem Feld `recovery_routine` (fehlt = unverändert).
+- **Core/Zod/Inhalte:** Listen und Schemas in `packages/core` (u. a. `WALK_KINDS`, `HYROX_DIVISIONS`, `HYROX_STATIONS`,
+  `HYROX_SPLIT_SEGMENTS`, `FLOW_RULES`, `HYROX_RESULT_LIMITS`), Workout-Schema mit Format `flow` und Item-Feld `side`;
+  Hyrox-Werte in den Wettkampf-Tabellen sind VORLÄUFIG (Etappe H). In der App sind die neuen Werte bis zu ihrer Etappe
+  nicht wählbar (`apps/mobile/src/lib/sportarten-stufe1.ts`).
+- **Tests:** `db-sync.test.ts` (Block „Sportarten Stufe 1“), `sportarten-stufe1.test.ts`, pgTAP 93–95.

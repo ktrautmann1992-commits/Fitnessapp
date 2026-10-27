@@ -30,6 +30,7 @@ import { TrainingSwitch } from '@/components/training-switch';
 import { WorkoutCard } from '@/components/workouts';
 import { t } from '@/i18n';
 import { berlinTodayIso } from '@/lib/format';
+import { PENDING_WORKOUT_CATEGORIES, selectable } from '@/lib/sportarten-stufe1';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useWorkoutLibrary } from '@/state/use-workouts';
@@ -191,7 +192,7 @@ export default function WorkoutsScreen() {
                       label: t.workouts.filters.all,
                       testID: 'workouts-filter-category-all',
                     },
-                    ...WORKOUT_CATEGORIES.map((value) => ({
+                    ...selectable(WORKOUT_CATEGORIES, PENDING_WORKOUT_CATEGORIES).map((value) => ({
                       value,
                       label: t.workouts.categories[value],
                       testID: `workouts-filter-category-${value}`,

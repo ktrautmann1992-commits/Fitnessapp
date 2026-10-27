@@ -108,6 +108,10 @@ function route(
     match_rejected_ids: [],
     auto_match: true,
     weather: o.weather ?? null,
+    walk_kind: null,
+    elevation_loss_m: null,
+    max_altitude_m: null,
+    sac_grade: null,
     created_at: o.startedAt,
     updated_at: o.startedAt,
   };
