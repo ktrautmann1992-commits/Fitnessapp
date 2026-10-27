@@ -38,6 +38,7 @@ export function storyForRoute(
       elevationM: r.elevation_gain_m,
       points: routePoints(r.polyline),
       eBike: r.e_bike === true,
+      walkKind: r.walk_kind ?? null,
     },
     options,
   );
@@ -67,6 +68,7 @@ export function storyForLog(
         elevationM: cardio.elevation_m,
         points: null,
         eBike: cardio.e_bike === true,
+        walkKind: cardio.walk_kind ?? null,
       },
       options,
     );

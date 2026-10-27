@@ -1,0 +1,57 @@
+{
+  "id": "hyrox-roxzone-pacing",
+  "version": 1,
+  "status": "published",
+  "title_de": "Roxzone & Pacing",
+  "intro_de": "Bei einem Hyrox-Wettkampf entscheidet die Einteilung der Kräfte mehr als ein schneller Start. Hier geht es um die Wechselzone (Roxzone) und um ein gleichmäßiges Tempo über alle 8 Runden. Alle Angaben sind Richtwerte – höre auf deinen Körper.",
+  "sections": [
+    {
+      "heading_de": "Was ist die Roxzone?",
+      "body_de": [
+        "Die Roxzone ist der Bereich zwischen Laufstrecke und Stationen. Hier gehst oder läufst du zur Station und danach zurück auf die Strecke.",
+        "Die Zeit in der Roxzone zählt mit. Wer hier lange steht, verliert über 16 Wechsel spürbar Zeit – ganz ohne sich anzustrengen."
+      ]
+    },
+    {
+      "heading_de": "Ruhig, aber zügig wechseln",
+      "body_de": [
+        "Geh die Wege in der Roxzone zügig statt zu stehen. Durchatmen kannst du auch im Gehen.",
+        "Präg dir vorab ein, wo welche Station liegt. So musst du im Rennen nicht suchen.",
+        "Trinke an festen Stellen, zum Beispiel nach jeder zweiten Station, statt bei jedem Wechsel lange anzuhalten."
+      ]
+    },
+    {
+      "heading_de": "Laufen: gleichmäßig statt schnell",
+      "body_de": [
+        "Lauf den ersten Kilometer bewusst etwas langsamer als dein Gefühl dir sagt. Ziel ist, dass die letzten Kilometer ähnlich schnell sind wie die ersten.",
+        "Ein guter Anhaltspunkt: Beim Laufen kannst du noch kurze Sätze sprechen. Erst in der letzten Runde darfst du mehr geben.",
+        "Nach schweren Stationen wie Schlitten oder Ausfallschritten brauchen die Beine ein paar hundert Meter, bis sie wieder rund laufen. Plane das ein."
+      ]
+    },
+    {
+      "heading_de": "Stationen in Blöcke teilen",
+      "body_de": [
+        "Teile große Mengen in kleinere Blöcke, zum Beispiel Wall Balls in Serien mit kurzen Pausen. Kurze, geplante Pausen sind besser als ein langer Stillstand am Ende.",
+        "Beim Rudern und am Ski-Ergometer hilft ein gleichmäßiger Rhythmus mehr als ein schneller Start.",
+        "Beim Farmer's Carry und beim Schlitten zählt eine stabile Haltung: Rumpf fest, kleine Schritte, gleichmäßig atmen."
+      ]
+    },
+    {
+      "heading_de": "Im Training üben",
+      "body_de": [
+        "Die Kombi-Einheiten in deinem Plan üben genau diesen Wechsel: zügig laufen, direkt danach die Station, ohne lange Pause.",
+        "Übe die Wechsel auch mit müden Beinen, aber immer kontrolliert. Eine Simulation mit allen Stationen kommt höchstens einmal kurz vor dem Rennen – nie in den letzten 10 Tagen."
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft."
+  }
+}

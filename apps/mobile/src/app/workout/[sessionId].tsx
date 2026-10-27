@@ -10,6 +10,8 @@ import {
   codePointLength,
   findGlossaryExercise,
   freeSessionDates,
+  hasStationSteps,
+  hyroxTravelStationNames,
   type CardioInputError,
   type CardioInputField,
   ENDURANCE_MODALITIES,
@@ -26,6 +28,7 @@ import {
   restAfterCheckedSet,
   SESSION_LOG_LIMITS,
   talkTestLevel,
+  travelOnDay,
   type SkillStepHint,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
@@ -34,6 +37,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 import { IntervalTimer } from '@/components/competition';
 import { BikeTypeChoice, useBikeChoice } from '@/components/e-bike';
+import { WalkKindChoice } from '@/components/hiking';
 import { RowEntryFields, RowTechniqueNotice } from '@/components/rowing';
 import { AreaProgress, HeroCard, IconChip, Tile, useAreaColors } from '@/components/design';
 import { RestEndNotificationOffer } from '@/components/notifications';
@@ -343,6 +347,19 @@ export default function WorkoutScreen() {
     timerSession && timerSteps && timerSession.workout_type === 'brick'
       ? brickStepSports(timerSteps, timerSession.estimated_minutes)
       : null;
+  // Restpunkte (Hyrox, 27.10.2026): Reise-Modus → Kombi als „Lauf + Körpergewicht-Zirkel“ – je Stations-Schritt eine
+  // Übung mit den Reise-Geräten (packages/core hyroxTravelStationNames). Ohne Bibliothek: „locker weiterlaufen“.
+  const travelToday =
+    timerSteps && hasStationSteps(timerSteps)
+      ? travelOnDay(trainingModes.state?.travel ?? [], today)
+      : null;
+  const timerTravel = travelToday
+    ? hyroxTravelStationNames(timerSteps ?? [], {
+        library: lib?.exercises ?? new Map(),
+        available: travelToday.available,
+        excludedCautionTags: rules?.excludedCautionTags ?? [],
+      })
+    : null;
   // WP5: Sicherheitshinweis zum Freiwasser bei jeder Schwimm-Einheit (auch ohne Wettkampf).
   const openWater =
     session !== null && sessionSafetyNotices(timerSession ?? session).includes('open_water');
@@ -798,6 +815,7 @@ export default function WorkoutScreen() {
         <IntervalTimer
           steps={timerSteps}
           sports={timerSports}
+          travelStations={timerTravel}
           onLog={(minutes) =>
             update(
               setCardioFields(
@@ -1521,6 +1539,15 @@ function EnduranceCard({
             }}
             testID="workout-cardio-bike-type"
           />
+        ) : null}
+        {/* Sportarten Stufe 1 · Wandern: Art der Geh-Einheit auch ohne GPS (Nachtragen/Eintragen). */}
+        {cardio.modality === 'walk' ? (
+          <View testID="workout-cardio-walk-kind">
+            <WalkKindChoice
+              walkKind={cardio.walkKind ?? 'walk'}
+              onChange={(walkKind) => onChange({ walkKind: walkKind === 'walk' ? null : walkKind })}
+            />
+          </View>
         ) : null}
         <Body style={styles.setLabel}>{t.workout.cardio.duration}</Body>
         <View style={styles.steppers}>

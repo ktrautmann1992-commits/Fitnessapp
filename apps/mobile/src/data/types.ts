@@ -493,6 +493,11 @@ export type StepSave =
        * Änderung gesetzt – fehlt = unverändert (ältere Abläufe bleiben gleich).
        */
       gymRowing?: boolean;
+      /**
+       * Sportarten Stufe 1 · Restpunkte: „Hyrox-Geräte im Studio“ (Ski-Ergometer, Schlitten, Sandsack, Wall Ball mit
+       * Ort gym). Nur bei einer Änderung gesetzt – fehlt = unverändert.
+       */
+      gymHyrox?: boolean;
     }
   | { step: 'equipment'; items: EquipmentItemInput[] }
   | { step: 'nutrition'; nutrition: NutritionStep }

@@ -195,7 +195,11 @@ export function ActivityRow({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${E.list.itemA11y(activity.name, day, distance)}${
-        activity.eBike ? `, ${E.eBike.sport}` : ''
+        activity.eBike
+          ? `, ${E.eBike.sport}`
+          : activity.walkKind
+            ? `, ${E.hiking.nouns[activity.walkKind]}`
+            : ''
       }`}
       testID={`endurance-item-${activity.key}`}
       style={({ pressed }) => [
@@ -220,7 +224,13 @@ export function ActivityRow({
           {activity.name}
         </Text>
         <Text style={{ color: theme.textMuted }}>
-          {`${activity.eBike ? E.eBike.sport : E.sports[activity.sport]} · ${day}`}
+          {`${
+            activity.eBike
+              ? E.eBike.sport
+              : activity.walkKind
+                ? E.hiking.nouns[activity.walkKind]
+                : E.sports[activity.sport]
+          } · ${day}`}
         </Text>
         <Text style={{ color: theme.text }}>
           {`${distance} · ${durationText(activity.durationS)}`}

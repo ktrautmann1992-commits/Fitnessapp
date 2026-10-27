@@ -55,6 +55,8 @@ const ALLOWED_ANDROID_PERMISSIONS = [
   'android.permission.health.READ_HEART_RATE_VARIABILITY',
   // Routen der Uhr (Gründer-Entscheidung 23.10.2026).
   'android.permission.health.READ_EXERCISE_ROUTES',
+  // Rudergerät: Ø Watt (Sportarten Stufe 1 · Restpunkte, 27.10.2026).
+  'android.permission.health.READ_POWER',
   // Trainings im Handy-Kalender (opt-in, Gründer-Freigabe 25.10.2026): eigener Kalender „Alpha5 Training“.
   'android.permission.READ_CALENDAR',
   'android.permission.WRITE_CALENDAR',
@@ -207,7 +209,9 @@ describe('app.config.ts', () => {
   });
 
   it('Health Connect (Phase 8): je Datentyp genau eine Leseberechtigung plus Trainingsrouten, Plugin und minSdk 26', () => {
-    expect(HEALTH_CONNECT_READ_PERMISSIONS).toHaveLength(WEARABLE_DATA_TYPES.length + 1);
+    // + Trainingsrouten + Leistung (Rudergerät, Restpunkte 27.10.2026).
+    expect(HEALTH_CONNECT_READ_PERMISSIONS).toHaveLength(WEARABLE_DATA_TYPES.length + 2);
+    expect(HEALTH_CONNECT_READ_PERMISSIONS).toContain('android.permission.health.READ_POWER');
     expect(HEALTH_CONNECT_READ_PERMISSIONS).toContain(
       'android.permission.health.READ_EXERCISE_ROUTES',
     );

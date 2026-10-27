@@ -33,6 +33,7 @@ export function enduranceLogsFromRows(rows: UserRows): EnduranceLogInput[] {
         distance_m: c.distance_m,
         elevation_m: c.elevation_m,
         e_bike: c.e_bike === true,
+        walk_kind: c.walk_kind ?? null,
       },
     ];
   });
@@ -52,6 +53,7 @@ export function routeInputFromPayload(payload: TrackedRoutePayload): EnduranceRo
     session_log_id: payload.session_log_id,
     is_favorite: payload.is_favorite,
     e_bike: payload.e_bike === true,
+    walk_kind: payload.walk_kind ?? null,
   };
 }
 

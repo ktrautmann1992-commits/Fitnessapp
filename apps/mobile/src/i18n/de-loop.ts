@@ -55,13 +55,13 @@ export const deLoop = {
   saveConfirm: 'Merken',
   saveCancel: 'Abbrechen',
   saved: 'Gemerkt. Läufst du die Runde und speicherst sie, ist sie in „Meine Strecken“.',
-  savedTitle: 'Gemerkte Runden',
-  savedEmpty: 'Noch keine Runde gemerkt.',
+  savedTitle: 'Gemerkte Strecken',
+  savedEmpty: 'Noch keine Runde oder Strecke gemerkt.',
   savedDelete: 'Entfernen',
   savedDeleteA11y: (name: string) => `${name} entfernen`,
   savedRun: 'Laufen',
   savedRunA11y: (name: string) => `${name} laufen`,
-  savedDeviceOnly: 'Gemerkte Runden bleiben nur auf diesem Gerät.',
+  savedDeviceOnly: 'Gemerkte Runden und Strecken bleiben nur auf diesem Gerät.',
   // Zustände
   empty:
     'Hier haben wir keine passende Runde gefunden. Probier eine andere Distanz, einen anderen Untergrund oder einen anderen Startpunkt.',
@@ -85,4 +85,59 @@ export const deLoop = {
   guideRemaining: (m: number) => `Noch ca. ${km(m)} bis zum Start`,
   guideDone: 'Runde geschafft – du bist wieder am Start.',
   guideA11y: 'Karte mit der Runde, die du läufst',
+  // Sportarten Stufe 1 · Wandern (27.10.2026): GPX-Datei als gemerkte Strecke
+  gpx: {
+    title: 'GPX-Datei einlesen',
+    intro:
+      'Hast du eine Tour als GPX-Datei (z. B. aus einem Wanderportal oder von deiner Uhr)? Wir lesen sie nur auf diesem Gerät und merken sie dir – mit Höhenmetern und Gehzeit.',
+    open: 'GPX-Datei öffnen',
+    demo: 'Beispiel-Tour laden (Testmodus)',
+    reading: 'Datei wird gelesen …',
+    nameLabel: 'Name der Strecke',
+    sportLabel: 'Wofür ist die Strecke?',
+    sports: {
+      hike: 'Wandern',
+      mountain_hike: 'Bergwandern',
+      walk: 'Gehen',
+      run: 'Laufen',
+      bike: 'Rad',
+    },
+    summary: 'Das steht in der Datei',
+    distance: 'Strecke',
+    ascent: 'Anstieg',
+    descent: 'Abstieg',
+    highest: 'Höchster Punkt',
+    noElevation: 'Die Datei enthält keine Höhen.',
+    skipped: (n: number) =>
+      n === 1
+        ? '1 ungültiger Punkt wurde übersprungen.'
+        : `${n} ungültige Punkte wurden übersprungen.`,
+    save: 'Strecke merken',
+    cancel: 'Abbrechen',
+    saved: 'Gemerkt. Du findest die Strecke unten bei „Gemerkte Strecken“.',
+    privacy:
+      'Die Datei bleibt auf deinem Gerät – sie wird nicht hochgeladen. Zeiten aus der Datei übernehmen wir nicht.',
+    unsupported: 'Dateien öffnen geht auf diesem Gerät nicht.',
+    errors: {
+      cancelled: 'Keine Datei gewählt.',
+      unreadable: 'Die Datei ließ sich nicht lesen.',
+      too_large: 'Die Datei ist zu groß (höchstens 8 MB bzw. 100.000 Punkte).',
+      not_gpx: 'Das ist keine GPX-Datei. Bitte eine Datei mit der Endung .gpx wählen.',
+      no_points: 'In der Datei ist keine Strecke (keine Spur- oder Routenpunkte).',
+      invalid_points: 'Die Strecke in der Datei ist beschädigt (ungültige Punkte).',
+      too_short: 'Die Strecke ist kürzer als 100 m.',
+      too_long: 'Die Strecke ist länger als 300 km.',
+    },
+    badge: 'GPX',
+    descentValue: (m: number) => `↓ ${m} Hm`,
+    timeValue: (text: string) => `Gehzeit ${text}`,
+  },
+  savedRunBy: {
+    run: 'Laufen',
+    bike: 'Fahren',
+    walk: 'Gehen',
+    hike: 'Wandern',
+    mountain_hike: 'Bergwandern',
+  },
+  savedRunByA11y: (name: string, verb: string) => `${name}: ${verb} und aufzeichnen`,
 } as const;

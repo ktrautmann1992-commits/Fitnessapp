@@ -6,6 +6,7 @@ import {
   experienceLevelSchema,
   type GeneratePlanResult,
   generateTrainingPlan,
+  gymHyroxFromRows,
   gymRowingFromRows,
   rowingAvailable,
   HEALTH_FLAGS,
@@ -128,6 +129,8 @@ export function planInputsFromRows(
     healthScreening: healthScreeningForPlan(rows, versions),
     // Etappe R: „Im Studio auch rudern“ – nur wenn eingeschaltet (sonst fehlt der Schlüssel, Angaben byte-gleich).
     ...(gymRowingFromRows(rows.userEquipment) ? { gymRowing: true } : {}),
+    // Restpunkte: „Hyrox-Geräte im Studio“ – nur wenn eingeschaltet (sonst fehlt der Schlüssel).
+    ...(gymHyroxFromRows(rows.userEquipment) ? { gymHyrox: true } : {}),
   };
 }
 

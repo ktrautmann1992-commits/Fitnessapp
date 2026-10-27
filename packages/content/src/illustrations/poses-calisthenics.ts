@@ -308,12 +308,18 @@ export const CALISTHENICS_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustr
     ]),
     alt: 'Ausgangsposition: Stütz an den Ringen, Arme gestreckt, Ringe dicht neben der Hüfte, Beine angewinkelt über dem Boden.',
   },
+  // Restpunkte E (27.10.2026): von vorn gezeichnet – so sind beide Ringe neben der Hüfte und die Gurte sichtbar
+  // (im Profil verdeckte der Körper die Ringe).
   'dips-ringe': {
-    pose: support(86, [
-      ...ring({ j: 'nearHand' }, 14, 164, false),
-      ...ring({ j: 'farHand' }, 12, 164, false),
-    ]),
-    alt: 'Ausgangsposition: ruhiger Stütz an den Ringen, Arme gestreckt, Ringe am Körper, Beine angewinkelt.',
+    pose: {
+      view: 'front',
+      torso: 90,
+      pelvis: [0, 92],
+      near: { arm: [-97, -93, -90], leg: [-93, -90, -90], legScale: [1, 0.55] },
+      far: { arm: [-83, -87, -90], leg: [-87, -90, -90], legScale: [1, 0.55] },
+      props: [...ring({ j: 'nearHand' }, -24, 164), ...ring({ j: 'farHand' }, 24, 164)],
+    },
+    alt: 'Ausgangsposition: von vorn – ruhiger Stütz an den Ringen, Arme gestreckt, Ringe neben der Hüfte, Knie angewinkelt, Füße hinten.',
   },
   // --- Liegestütz -------------------------------------------------------------------------------------------------
   'diamant-liegestuetz': {
@@ -477,11 +483,13 @@ export const CALISTHENICS_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustr
       head: 2,
       pelvis: [-18, 106],
       headOnTop: true,
-      near: { arm: [82, 82, 82], leg: [-8, 185, 185] },
-      far: { arm: [83, 83, 83], leg: [-10, 184, 185] },
+      // Restpunkte E (27.10.2026): Oberschenkel zur Brust (schräg nach oben), Unterschenkel hängen zum Gesäß –
+      // vorher lagen die Beine verdeckt unter dem Rumpf.
+      near: { arm: [82, 82, 82], leg: [58, -100, 180] },
+      far: { arm: [83, 83, 83], leg: [55, -103, 180] },
       props: pullUpBar([26, 157.5]),
     },
-    alt: 'Ausgangsposition: unter der Klimmzugstange, Arme gestreckt, Rücken waagerecht, Knie eng zur Brust gezogen.',
+    alt: 'Ausgangsposition: unter der Klimmzugstange, Arme gestreckt, Rücken waagerecht, Knie eng zur Brust gezogen, Unterschenkel hängen locker.',
   },
   'front-lever-einbeinig': {
     pose: {

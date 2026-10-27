@@ -502,6 +502,8 @@ function generatePlan(
   // des Orts – nur im Hyrox-Wettkampfplan (sonst fehlt der Schlüssel, Pläne byte-gleich).
   const hyroxProfileOptions = {
     suspensionReady: suspensionTrainerReady(library.exercises, rules),
+    // Restpunkte (27.10.2026): Schlitten, Ski-Ergometer, Sandsack, Wall Ball im Studio nur mit ausdrücklicher Angabe.
+    ...(inputs.gymHyrox === true ? { gymHyroxEquipment: true } : {}),
   };
   const hyrox =
     competition && inputs.discipline === 'hyrox'

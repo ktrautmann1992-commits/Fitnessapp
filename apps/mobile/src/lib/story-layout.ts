@@ -39,7 +39,9 @@ export function storyLayout(card: StoryCard): StoryLayout {
     card.kind === 'endurance'
       ? card.eBike
         ? t.endurance.eBike.noun
-        : t.endurance.sportNouns[card.sport]
+        : card.walkKind
+          ? t.endurance.hiking.nouns[card.walkKind]
+          : t.endurance.sportNouns[card.sport]
       : card.title;
   texts.push({ text: title, x: STORY_PAD, y: 420, size: 76, bold: true, muted: false });
   if (card.date) {

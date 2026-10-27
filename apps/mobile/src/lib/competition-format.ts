@@ -8,6 +8,7 @@ import {
   type CompetitionPlanOutline,
   type CompetitionPlanWeek,
   type FeasibilitySuggestion,
+  HYROX_TEXTS_DE,
   hyroxFractionForSeconds,
   hyroxStationAmountText,
   intervalBlocks,
@@ -101,11 +102,20 @@ export function stepKindText(step: WorkoutStep): string {
  * Ein Schritt für den Timer: „Hauptteil: 3 min zügig“; mit Sportart (Koppeltraining, WP5) „Hauptteil (Laufen): 12 min
  * locker“.
  */
-export function stepTitle(step: WorkoutStep, sport: Sport | null = null): string {
+export function stepTitle(
+  step: WorkoutStep,
+  sport: Sport | null = null,
+  travelStation?: string | null,
+): string {
   const part = sport
     ? `${C.stepParts[step.part]} (${C.stepSports[sport]})`
     : C.stepParts[step.part];
-  return `${part}: ${stepDurationText(step.seconds)} ${stepKindText(step)}`;
+  // Reise-Modus (Hyrox-Kombi, Restpunkte 27.10.2026): Stations-Schritt als Zirkel-Übung mit den Reise-Geräten.
+  const kind =
+    step.kind === 'station' && travelStation !== undefined
+      ? HYROX_TEXTS_DE.travel.step(travelStation)
+      : stepKindText(step);
+  return `${part}: ${stepDurationText(step.seconds)} ${kind}`;
 }
 
 /**

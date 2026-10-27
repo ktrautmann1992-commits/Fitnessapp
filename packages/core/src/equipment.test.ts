@@ -33,6 +33,9 @@ describe('Geräte-Katalog', () => {
       'machine_chest_press',
       'leg_curl_machine',
       'leg_extension_machine',
+      // Restpunkte 27.10.2026: Matte und Block – Hilfsmittel, nichts zu wählen.
+      'mat',
+      'yoga_block',
     ]);
     expect(HOME_SELECTABLE_EQUIPMENT.map((item) => item.id)).not.toContain('cable_station');
     expect(HOME_SELECTABLE_EQUIPMENT.map((item) => item.id)).toContain('dumbbells');

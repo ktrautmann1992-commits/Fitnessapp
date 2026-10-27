@@ -1,5 +1,6 @@
 import { SESSION_LOG_LIMITS, WORKOUT_LIMITS } from '../constants';
 import type { CautionTag, LoadType } from '../enums';
+import { requiredEquipmentIds } from '../equipment';
 import { codePointLength } from '../log/schemas';
 import type { LoggedSet } from '../log/types';
 import type { Workout, WorkoutCategory, WorkoutFormat } from './schema';
@@ -79,7 +80,7 @@ export function filterWorkouts<W extends Workout>(
     .filter((w) => filter.stars.length === 0 || filter.stars.includes(w.difficulty))
     .filter((w) => filter.duration === null || workoutDurationBucket(w.minutes) === filter.duration)
     .filter((w) => filter.category === null || w.category === filter.category)
-    .filter((w) => !filter.noEquipment || w.equipment_ids.length === 0)
+    .filter((w) => !filter.noEquipment || requiredEquipmentIds(w.equipment_ids).length === 0)
     .sort(
       (a, b) =>
         a.difficulty - b.difficulty ||
@@ -104,7 +105,8 @@ export function workoutTileSummary(
   const published = workouts.filter((w) => w.status === 'published');
   return {
     total: published.length,
-    withoutEquipment: published.filter((w) => w.equipment_ids.length === 0).length,
+    withoutEquipment: published.filter((w) => requiredEquipmentIds(w.equipment_ids).length === 0)
+      .length,
     doneToday: logs.filter((l) => l.source === 'workout' && l.performed_on === today).length,
   };
 }

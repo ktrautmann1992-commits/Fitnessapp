@@ -1,6 +1,7 @@
 import { ROUTE_PRIVACY_TRIM, STORY_CARD, TRACKED_ROUTE_LIMITS } from '../constants';
 import { isoDateInTimeZone } from '../dates';
-import type { EnduranceModality } from '../enums';
+import type { EnduranceModality, WalkKind } from '../enums';
+import { type HikeKind, isHikeKind } from '../hiking/walk-kind';
 import { formatDuration, paceSecondsPerKm, speedKmh } from '../log/cardio';
 import type { LatLng } from '../routes/polyline';
 import { privacyTrim } from '../routes/privacy-trim';
@@ -20,6 +21,8 @@ export const STORY_CARD_FIELDS = [
   'kind',
   'sport',
   'eBike',
+  // Sportarten Stufe 1 · Wandern (27.10.2026): „Wanderung“/„Bergwanderung“ statt „Gehen“ – kein Gesundheitsdatum.
+  'walkKind',
   'title',
   'date',
   'stats',
@@ -56,6 +59,8 @@ export interface EnduranceStoryCard {
   readonly sport: EnduranceModality;
   /** „E-Bike“ statt „Rad“ (nur beim Rad; kein Gesundheitsdatum). */
   readonly eBike: boolean;
+  /** Nur beim Gehen als Wanderung/Bergwanderung gesetzt (sonst fehlt das Feld). */
+  readonly walkKind?: HikeKind;
   readonly date: string | null;
   readonly stats: readonly StoryStat[];
   readonly line: readonly LatLng[] | null;
@@ -102,6 +107,8 @@ export interface EnduranceStoryInput {
   readonly points: readonly LatLng[] | null;
   /** E-Bike (nur beim Rad wirksam); fehlt = normales Rad. */
   readonly eBike?: boolean;
+  /** Art der Geh-Einheit (nur beim Gehen wirksam); fehlt/null = Gehen. */
+  readonly walkKind?: WalkKind | null;
 }
 
 /** Inhalt des Story-Bilds einer Ausdauer-Einheit (nur Felder der Positivliste). */
@@ -145,6 +152,7 @@ export function enduranceStoryCard(
     kind: 'endurance',
     sport: input.sport,
     eBike: input.sport === 'bike' && input.eBike === true,
+    ...(input.sport === 'walk' && isHikeKind(input.walkKind) ? { walkKind: input.walkKind } : {}),
     date: options.showDate
       ? input.startedAt
         ? isoDateInTimeZone(input.startedAt)

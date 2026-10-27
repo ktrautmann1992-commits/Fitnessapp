@@ -16,6 +16,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { LiveRegion } from '@/components/calendar';
 import { AreaButton } from '@/components/design';
 import { RouteSketch } from '@/components/endurance';
+import { GpxImportCard } from '@/components/gpx-import';
 import { LoopMap } from '@/components/loop-map';
 import { Screen } from '@/components/screen';
 import {
@@ -34,6 +35,7 @@ import { t } from '@/i18n';
 import { currentPosition } from '@/lib/current-position';
 import { setLoopGuide } from '@/lib/loop-guide';
 import { LOOP_COLORS, type LoopMapLine } from '@/lib/loop-map-html';
+import { savedRouteTimeText } from '@/lib/gpx-route';
 import { LOOP_NAME_MAX, loopStore, type SavedLoop, toSavedLoop } from '@/lib/loop-store';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
@@ -202,14 +204,38 @@ export default function LoopScreen() {
     }
   }
 
-  function runLoop(name: string, polyline: string, distanceM: number) {
+  function runLoop(
+    name: string,
+    polyline: string,
+    distanceM: number,
+    sport: SavedLoop['sport'] = 'run',
+    walkKind: SavedLoop['walk_kind'] = null,
+  ) {
     const points = decodePolyline(polyline);
     if (!points) return;
     const id = newId();
     setLoopGuide({ id, name, points, distanceM });
+    // GPX-Strecken (Wandern): Sportart und Art der Geh-Einheit wie beim Start auf „Ausdauer“.
+    const walkParam = sport === 'walk' && walkKind ? `&walk=${walkKind}` : '';
     router.push(
-      `/ausdauer/aufzeichnen?sport=run&guide=${id}${isWeb && testMode ? '&demo=1' : ''}` as Href,
+      `/ausdauer/aufzeichnen?sport=${sport ?? 'run'}${walkParam}&guide=${id}${isWeb && testMode ? '&demo=1' : ''}` as Href,
     );
+  }
+
+  async function saveGpx(route: SavedLoop): Promise<boolean> {
+    if (!userId) return false;
+    try {
+      const next = await loopStore.save(userId, {
+        ...route,
+        id: `gpx-${newId().toLowerCase()}`.slice(0, 60),
+        saved_at: new Date().toISOString(),
+      });
+      setSaved(next);
+      return true;
+    } catch {
+      setMessage(L.failed);
+      return false;
+    }
   }
 
   async function saveLoop(route: LoopRoute, name: string) {
@@ -454,45 +480,73 @@ export default function LoopScreen() {
         </Notice>
       ) : null}
 
+      {/* Sportarten Stufe 1 · Wandern: eigene GPX-Datei als gemerkte Strecke (nur dieses Gerät). */}
+      <GpxImportCard testMode={testMode} onSave={saveGpx} onAnnounce={announce} />
+
       <Heading level={2}>{L.savedTitle}</Heading>
       <Body muted>{L.savedDeviceOnly}</Body>
       {saved.length === 0 ? (
         <Body testID="loop-saved-empty">{L.savedEmpty}</Body>
       ) : (
         <View style={styles.section} testID="loop-saved">
-          {saved.map((loop) => (
-            <Card key={loop.id}>
-              <View style={styles.savedRow}>
-                <RouteSketch points={decodePolyline(loop.polyline) ?? []} width={72} height={52} />
-                <View style={styles.savedText}>
-                  <Body>{loop.name}</Body>
-                  <Body muted>
-                    {[
-                      L.distanceValue(loop.distance_m),
-                      loop.ascent_m !== null ? L.ascent(loop.ascent_m) : null,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
-                  </Body>
-                </View>
-              </View>
-              <View style={styles.row}>
-                {canRun ? (
-                  <Button
-                    label={L.savedRun}
-                    accessibilityLabel={L.savedRunA11y(loop.name)}
-                    onPress={() => runLoop(loop.name, loop.polyline, loop.distance_m)}
+          {saved.map((loop) => {
+            const sport = loop.sport ?? 'run';
+            const verb = L.savedRunBy[sport === 'walk' && loop.walk_kind ? loop.walk_kind : sport];
+            const time = sport === 'walk' ? savedRouteTimeText(loop) : null;
+            return (
+              <Card key={loop.id}>
+                <View style={styles.savedRow}>
+                  <RouteSketch
+                    points={decodePolyline(loop.polyline) ?? []}
+                    width={72}
+                    height={52}
                   />
-                ) : null}
-                <Button
-                  label={L.savedDelete}
-                  variant="secondary"
-                  accessibilityLabel={L.savedDeleteA11y(loop.name)}
-                  onPress={() => void removeSaved(loop.id)}
-                />
-              </View>
-            </Card>
-          ))}
+                  <View style={styles.savedText}>
+                    <Body>
+                      {loop.source === 'gpx' ? `${loop.name} · ${L.gpx.badge}` : loop.name}
+                    </Body>
+                    <Body muted testID={`loop-saved-details-${loop.id}`}>
+                      {[
+                        L.distanceValue(loop.distance_m),
+                        loop.ascent_m !== null ? L.ascent(loop.ascent_m) : null,
+                        loop.descent_m != null ? L.gpx.descentValue(loop.descent_m) : null,
+                        time ? L.gpx.timeValue(time) : null,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </Body>
+                  </View>
+                </View>
+                <View style={styles.row}>
+                  {canRun ? (
+                    <Button
+                      label={loop.source === 'gpx' ? verb : L.savedRun}
+                      accessibilityLabel={
+                        loop.source === 'gpx'
+                          ? L.savedRunByA11y(loop.name, verb)
+                          : L.savedRunA11y(loop.name)
+                      }
+                      onPress={() =>
+                        runLoop(
+                          loop.name,
+                          loop.polyline,
+                          loop.distance_m,
+                          loop.sport ?? 'run',
+                          loop.walk_kind ?? null,
+                        )
+                      }
+                    />
+                  ) : null}
+                  <Button
+                    label={L.savedDelete}
+                    variant="secondary"
+                    accessibilityLabel={L.savedDeleteA11y(loop.name)}
+                    onPress={() => void removeSaved(loop.id)}
+                  />
+                </View>
+              </Card>
+            );
+          })}
         </View>
       )}
     </Screen>

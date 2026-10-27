@@ -1920,7 +1920,7 @@ Rückmeldung an Claude z. B. „Training-Modi: 1–5 ok, Körperkarte zu klein�
 
 ## Teil 9u – Calisthenics, Schlingentrainer, Lauf-Kraft testen (25.10.2026, Testmodus)
 
-Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle neuen Übungen sind Entwürfe und als „Testinhalt“ markiert.
+Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle neuen Übungen sind freigegeben (privater Nutzerkreis, 27.10.2026).
 
 1. Onboarding: Ziel **„Calisthenics / Körperbeherrschung“**, Einsteiger, 3 Tage **Kraft zu Hause**, Equipment
    **Klimmzugstange** und **Barren/Dip-Station** → „Heute“ zeigt Übungen mit Stange/Barren.
@@ -1996,7 +1996,7 @@ Steht in einem älteren Teil „Heute → …“, meint er den Reiter **Training
 
 ## Teil 9w-R – Indoor-Rudern testen (27.10.2026, Testmodus)
 
-Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Rudergerät-Übungen und Rudern-Workouts sind Entwürfe („Testinhalt“).
+Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Rudergerät-Übungen und Rudern-Workouts sind freigegeben (privater Nutzerkreis, 27.10.2026).
 
 1. Onboarding: Ziel z. B. **„Fitness & Gesundheit“** (ohne Disziplin), Einsteiger, Trainingstage **Mo Kraft zu Hause, Di/Do/Sa
    Ausdauer**, Equipment zu Hause u. a. **Rudergerät** → **Training → Woche**: jede zweite Ausdauer-Einheit heißt
@@ -2023,7 +2023,7 @@ Rückmeldung an Claude z. B. „Rudern: 1–6 ok, Split-Zeile zu klein“.
 
 ## Teil 9y – Yoga, Pilates, Mobility testen (Sportarten Stufe 1 · Etappe Y, 27.10.2026, Testmodus)
 
-Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle Posen und Routinen sind Entwürfe („Testinhalt“).
+Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle Posen und Routinen sind freigegeben (privater Nutzerkreis, 27.10.2026).
 
 1. **Ohne Konto testen** → Onboarding (Einsteiger, 2 Tage Kraft, z. B. Dienstag und Freitag) → **Zum Plan**.
 2. **Training → Workouts → Filter → Ziel „Yoga“** → 5 Routinen (ohne Gesundheits-Check fehlt „Sanft in den Morgen“ –
@@ -2042,10 +2042,35 @@ Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle Posen und Routinen sind 
 
 Rückmeldung an Claude z. B. „Yoga: 1–8 ok, Bild beim Dreieck unklar“.
 
+## Teil 9r – Sportarten-Restpunkte testen (27.10.2026, Testmodus)
+
+Chrome am Handy, Vorschau-Link, **Inkognito-Tab**, **Ohne Konto testen**.
+
+1. **GPX-Datei:** **Mehr → Ausdauer → Rundkurs vorschlagen** → Karte **„GPX-Datei einlesen“** → **GPX-Datei öffnen**
+   (eigene .gpx-Datei, z. B. aus einem Wanderportal) oder **Beispiel-Tour laden (Testmodus)** → Strecke, Anstieg,
+   Abstieg, höchster Punkt, **Gehzeit (Schätzung)** → „Wofür?“ **Bergwandern** → **Strecke merken** → unter
+   **Gemerkte Strecken** steht „… · GPX“ mit ↓ Hm und Gehzeit. Eine Textdatei ergibt „Das ist keine GPX-Datei“.
+2. **Wandern ohne GPS:** Ausdauer → **Eintragen ohne GPS** → Ausdauer → **Gehen** → **Einheit starten** → „Wie bist du
+   unterwegs?“ **Bergwandern**, 2 h 30, 9 km → Speichern → in der Liste „Bergwanderung · …“. Teilen-Bild zeigt
+   „Bergwanderung“ (ohne Puls, ohne kcal).
+3. **Rudern nachtragen:** Eintragen ohne GPS → Ausdauer → **Rudern** → Felder Ø Watt, Schlagzahl, Intervalle wie beim
+   Eintragen.
+4. **Hyrox-Geräte:** Onboarding mit Ziel **Hyrox-Wettkampf** und einem Tag **Kraft im Studio** → im Schritt
+   „Trainingstage“ **„Hyrox-Geräte im Studio“** (Standard aus). Ohne Haken: Hinweis „Ohne Schlitten – wir ersetzen die
+   Station“; mit Haken (und den Inhalten aus `claude/sportarten-rest-inhalte`): echte Stationen. Zu Hause sind
+   Ski-Ergometer, Schlitten, Sandsack und Wall Ball unter „Equipment zu Hause“ wählbar.
+5. **Hyrox im Reise-Modus:** Einstellungen → Reise-Modus „Nur Körpergewicht“ für heute → Kombi-Einheit öffnen → Timer
+   zeigt „Lauf + Körpergewicht-Zirkel“ und je Station „Zirkel: …“.
+6. **Ratgeber:** „Hyrox – so läuft der Tag“ und „Roxzone & Pacing“.
+7. **Smartwatch (Android-App, neuer EAS-Build):** Beim Verbinden fragt Health Connect zusätzlich „Leistung“ – Einheiten
+   am Rudergerät bekommen Ø Watt.
+
+Rückmeldung an Claude z. B. „Restpunkte: 1–7 ok, Gehzeit wirkt zu kurz“.
+
 ## Teil 9h – Hyrox testen (Sportarten Stufe 1, Etappe H, 27.10.2026, Testmodus)
 
-So testest du es am Handy (Vorschau-Link aus dem Pull Request, Testmodus – alle Hyrox-Übungen sind Entwürfe und erscheinen
-nur dort):
+So testest du es am Handy (Vorschau-Link aus dem Pull Request, Testmodus – alle Hyrox-Übungen sind freigegeben, privater
+Nutzerkreis 27.10.2026):
 
 1. **Einstellungen → Testdaten löschen**, dann „Testmodus starten“.
 2. Onboarding: Ziel **Ausdauer** → Disziplin **Hyrox-Wettkampf**. Der Vorschlag „Deine Trainingstage“ hat genau einen

@@ -11,12 +11,12 @@ select col_default_is('public', 'equipment', 'home_selectable', 'true', 'Standar
 select results_eq(
   $$ select id from public.equipment where not home_selectable order by sort_order $$,
   array['power_rack', 'cable_station', 'lat_pulldown', 'leg_press', 'machine_chest_press',
-        'leg_curl_machine', 'leg_extension_machine'],
-  'Studio-Geräte sind nicht zu Hause auswählbar (Barren/Dip-Station seit Calisthenics auch zu Hause)'
+        'leg_curl_machine', 'leg_extension_machine', 'mat', 'yoga_block'],
+  'Studio-Geräte sind nicht zu Hause auswählbar (Barren/Dip-Station seit Calisthenics auch zu Hause), Matte/Block gibt es nicht zu wählen'
 );
 select is(
-  (select count(*)::int from public.equipment where home_selectable), 16,
-  'die 11 Geräte aus Phase 1, Schlingentrainer, Barren, Ringe, Parallettes und Calisthenics-Park sind zu Hause auswählbar'
+  (select count(*)::int from public.equipment where home_selectable), 20,
+  'die 11 Geräte aus Phase 1, Schlingentrainer, Barren, Ringe, Parallettes, Calisthenics-Park und 4 Hyrox-Geräte sind zu Hause auswählbar'
 );
 
 set local role authenticated;

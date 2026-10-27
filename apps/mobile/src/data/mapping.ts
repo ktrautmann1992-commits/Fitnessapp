@@ -6,6 +6,9 @@ import {
   deriveTrainingLocation,
   equipmentIdSchema,
   foodGroupSchema,
+  gymHyroxEquipmentIds,
+  gymHyroxFromRows,
+  gymRowingFromRows,
   hasGoal,
   healthScreeningAnswersSchema,
   HEALTH_FLAGS,
@@ -120,12 +123,12 @@ export function applyStepToAnswers(answers: OnboardingAnswers, save: StepSave): 
       return {
         ...answers,
         trainingSchedule: save.schedule,
-        ...(save.gymRowing === undefined
+        ...(save.gymRowing === undefined && save.gymHyrox === undefined
           ? {}
           : {
               equipment: [
                 ...(answers.equipment ?? []).filter((item) => item.location !== 'gym'),
-                ...gymRowingItems(save.gymRowing),
+                ...gymEquipmentItemsFor(save, answers),
               ],
             }),
       };
@@ -253,6 +256,35 @@ export function toFoodPreferenceRows(
 /** Studio-Geräte zur Angabe „Im Studio auch rudern“ (Etappe R): nur das Rudergerät oder nichts. */
 export function gymRowingItems(enabled: boolean): NonNullable<OnboardingAnswers['equipment']> {
   return enabled ? [{ equipmentId: 'rowing_machine', location: 'gym', weightsKg: [] }] : [];
+}
+
+/**
+ * Studio-Geräte zur Angabe „Hyrox-Geräte im Studio“ (Sportarten Stufe 1 · Restpunkte): Ski-Ergometer, Schlitten,
+ * Sandsack, Wall Ball (GYM_OPTIONAL_EQUIPMENT_IDS) oder nichts.
+ */
+export function gymHyroxItems(enabled: boolean): NonNullable<OnboardingAnswers['equipment']> {
+  return gymHyroxEquipmentIds(enabled).flatMap((id) => {
+    const parsed = equipmentIdSchema.safeParse(id);
+    return parsed.success
+      ? [{ equipmentId: parsed.data, location: 'gym' as const, weightsKg: [] }]
+      : [];
+  });
+}
+
+/**
+ * Alle Studio-Geräte nach einer Änderung im Schritt „Trainingstage“: geänderte Angabe aus `save`, die andere bleibt
+ * wie gespeichert (Studio-Zeilen werden immer als Ganzes ersetzt).
+ */
+function gymEquipmentItemsFor(
+  save: { readonly gymRowing?: boolean; readonly gymHyrox?: boolean },
+  answers: OnboardingAnswers,
+): NonNullable<OnboardingAnswers['equipment']> {
+  const gymRows = (answers.equipment ?? [])
+    .filter((item) => item.location === 'gym')
+    .map((item) => ({ equipment_id: item.equipmentId, location: item.location }));
+  const rowing = save.gymRowing ?? gymRowingFromRows(gymRows);
+  const hyrox = save.gymHyrox ?? gymHyroxFromRows(gymRows);
+  return [...gymRowingItems(rowing), ...gymHyroxItems(hyrox)];
 }
 
 export function toUserEquipmentRows(
@@ -399,13 +431,13 @@ export function planStepWrites(save: StepSave, ctx: PlanContext): WriteOp[] {
       return [
         { kind: 'replace_training_slots', rows: toTrainingSlotRows(userId, save.schedule) },
         { kind: 'upsert_goals', row: toGoalsRow(userId, answers) },
-        ...(save.gymRowing === undefined
+        ...(save.gymRowing === undefined && save.gymHyrox === undefined
           ? []
           : [
               {
                 kind: 'replace_user_equipment' as const,
                 location: 'gym' as const,
-                rows: toUserEquipmentRows(userId, gymRowingItems(save.gymRowing)),
+                rows: toUserEquipmentRows(userId, gymEquipmentItemsFor(save, answers)),
               },
             ]),
         progressOp,
