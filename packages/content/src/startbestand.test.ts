@@ -97,7 +97,8 @@ describe('Startbestand (content/)', () => {
   it('jeder Inhalt ist Entwurf (ohne Prüfvermerk) oder freigegeben (mit Prüfer und Datum); KI-Kennzeichnung bleibt', () => {
     for (const item of [...result.exercises, ...result.templates]) {
       expect(['draft', 'published'], item.id).toContain(item.status);
-      expect(item.version, item.id).toBe(1);
+      // Geänderte freigegebene Inhalte bekommen eine höhere Version (Versionsregel des Validators).
+      expect(item.version, item.id).toBeGreaterThanOrEqual(1);
       expect(item.meta, item.id).toMatchObject({
         origin: 'claude_session',
         model: 'claude-opus-5-5',
