@@ -64,7 +64,7 @@ test('verbinden (Beispiel-Uhr) → Abgleich → Tagebuch/Puls → Story-Bild ohn
   await expect(page.getByTestId('smartwatch-consent')).toBeVisible();
   await page.getByTestId('smartwatch-consent-accept').click();
   await page.getByTestId('smartwatch-connect').click();
-  await expect(page.getByTestId('smartwatch-message')).toContainText('Abgleich fertig – 5 neu');
+  await expect(page.getByTestId('smartwatch-message')).toContainText('Abgleich fertig – 6 neu');
   await expect(page.getByTestId('smartwatch-connected')).toContainText('Verbunden seit 22.10.2026');
   await expect(page.getByTestId('smartwatch-last-sync')).toContainText(
     'Letzter Abgleich: 22.10.2026',
@@ -73,13 +73,14 @@ test('verbinden (Beispiel-Uhr) → Abgleich → Tagebuch/Puls → Story-Bild ohn
   await expect(page.getByTestId('wearable-daily-line').first()).toContainText('Schritte');
 
   const db = await stored(page);
-  expect(db.rows.sessionLogs.filter((l) => l.source === 'health_connect')).toHaveLength(5);
+  // 3 Läufe, Kraft, Wanderung (Sportarten Stufe 1 · Etappe W), Yoga.
+  expect(db.rows.sessionLogs.filter((l) => l.source === 'health_connect')).toHaveLength(6);
   expect(db.wearables?.heartRates.length).toBe(4);
 
   // Erneut abgleichen: nichts doppelt.
   await page.getByTestId('smartwatch-sync').click();
   await expect(page.getByTestId('smartwatch-message')).toContainText('keine neuen Einheiten');
-  expect((await stored(page)).rows.sessionLogs).toHaveLength(5);
+  expect((await stored(page)).rows.sessionLogs).toHaveLength(6);
 
   // Verlauf: Uhr-Kennzeichen; Eintrag mit Herkunft und Puls.
   await page.goto('/history');
@@ -140,5 +141,6 @@ test('Widerruf „Smartwatch-Daten“ in den Einwilligungen löscht Puls und Tag
   const db = await stored(page);
   expect(db.wearables?.heartRates ?? []).toHaveLength(0);
   expect(db.wearables?.dailyMetrics ?? []).toHaveLength(0);
-  expect(db.rows.sessionLogs.filter((l) => l.source === 'health_connect')).toHaveLength(5);
+  // 3 Läufe, Kraft, Wanderung (Sportarten Stufe 1 · Etappe W), Yoga.
+  expect(db.rows.sessionLogs.filter((l) => l.source === 'health_connect')).toHaveLength(6);
 });

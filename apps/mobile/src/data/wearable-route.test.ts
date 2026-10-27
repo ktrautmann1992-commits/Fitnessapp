@@ -60,7 +60,12 @@ async function synced() {
   return { backend, driver, sync, first };
 }
 
+/** Lauf-Routen der Uhr (die Beispiel-Uhr hat seit Etappe W zusätzlich eine Wanderung, siehe allWatchRoutes). */
 const watchRoutes = async (backend: Awaited<ReturnType<typeof signedIn>>) =>
+  (await backend.loadTrackedRoutes()).routes.filter(
+    (r) => r.source === 'watch' && r.sport === 'run',
+  );
+const allWatchRoutes = async (backend: Awaited<ReturnType<typeof signedIn>>) =>
   (await backend.loadTrackedRoutes()).routes.filter((r) => r.source === 'watch');
 
 describe('Abgleich mit Routen (Beispiel-Uhr)', () => {
@@ -81,6 +86,9 @@ describe('Abgleich mit Routen (Beispiel-Uhr)', () => {
       expect(route.distance_m).toBeLessThan(5700);
       expect(cardio?.elevation_m).toBe(route.elevation_gain_m);
     }
+    // Sportarten Stufe 1 · Etappe W: Wanderung (Health Connect 37) mit Route als Gehen/Wanderung.
+    const hike = (await allWatchRoutes(backend)).find((r) => r.sport === 'walk');
+    expect(hike).toMatchObject({ walk_kind: 'hike', name: 'Wanderung' });
     // Ältester Lauf ohne Route: Distanz laut Health Connect.
     const oldest = rows.cardioLogs.find((c) => c.distance_m === 5200);
     expect(oldest).toBeDefined();
@@ -158,12 +166,12 @@ describe('Abgleich mit Routen (Beispiel-Uhr)', () => {
     await backend.deleteSessionLog(route.session_log_id, log?.revision ?? 1);
     expect(await watchRoutes(backend)).toHaveLength(1);
     await backend.wearables.disconnect(false);
-    expect(await watchRoutes(backend)).toHaveLength(0);
+    expect(await allWatchRoutes(backend)).toHaveLength(0);
 
     const again = await synced();
     expect(await watchRoutes(again.backend)).toHaveLength(2);
     await again.backend.revokeConsent('wearable_data');
-    expect(await watchRoutes(again.backend)).toHaveLength(0);
+    expect(await allWatchRoutes(again.backend)).toHaveLength(0);
   });
 
   it('ohne Einwilligung: Route speichern abgelehnt', async () => {
@@ -194,7 +202,8 @@ describe('Abgleich mit Routen (Beispiel-Uhr)', () => {
     expect(outcome.kind).toBe('imported');
     const after = (await backend.loadRows()).rows;
     expect(after.sessionLogs.some((l) => l.name_de === 'Freie Kraft-Einheit')).toBe(false);
-    expect(after.sessionLogs.filter((l) => l.source === 'health_connect')).toHaveLength(4);
+    // 3 Läufe + Wanderung (Etappe W) + Yoga.
+    expect(after.sessionLogs.filter((l) => l.source === 'health_connect')).toHaveLength(5);
   });
 
   it('Beispiel-Route: feste Runde (Tempelhofer Feld), ein Punkt je Sekunde, deterministisch', () => {

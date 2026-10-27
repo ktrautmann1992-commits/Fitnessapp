@@ -166,7 +166,7 @@ test('Beispiel-Uhr: Pulszonen mit Bereichen, Kadenz, Pulszonen-Einstellung', asy
   await page.getByTestId('settings-smartwatch').click();
   await page.getByTestId('smartwatch-consent-accept').click();
   await page.getByTestId('smartwatch-connect').click();
-  await expect(page.getByTestId('smartwatch-message')).toContainText('Abgleich fertig – 5 neu');
+  await expect(page.getByTestId('smartwatch-message')).toContainText('Abgleich fertig – 6 neu');
 
   // Einstellung: vorbelegt, ungültige Eingabe → Hinweis, gültige → gespeichert.
   await expect(page.getByTestId('pulse-zone-settings')).toBeVisible();
@@ -183,9 +183,10 @@ test('Beispiel-Uhr: Pulszonen mit Bereichen, Kadenz, Pulszonen-Einstellung', asy
 
   const routes = await page.evaluate((key) => {
     const db = JSON.parse(window.localStorage.getItem(key) ?? '{}') as {
-      trackedRoutes?: { id: string; source: string; distance_m: number }[];
+      trackedRoutes?: { id: string; source: string; sport: string; distance_m: number }[];
     };
-    return (db.trackedRoutes ?? []).filter((r) => r.source === 'watch');
+    // Nur Läufe (die Beispiel-Uhr hat seit Etappe W zusätzlich eine Wanderung mit Route).
+    return (db.trackedRoutes ?? []).filter((r) => r.source === 'watch' && r.sport === 'run');
   }, LOCAL_DB);
   expect(routes.length).toBeGreaterThan(0);
   await page.goto(`/ausdauer/${routes[0]?.id ?? ''}`);
