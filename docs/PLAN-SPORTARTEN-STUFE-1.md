@@ -285,3 +285,15 @@ Enums mehr anzufassen.
   Hyrox-Werte in den Wettkampf-Tabellen sind VORLÄUFIG (Etappe H). In der App sind die neuen Werte bis zu ihrer Etappe
   nicht wählbar (`apps/mobile/src/lib/sportarten-stufe1.ts`).
 - **Tests:** `db-sync.test.ts` (Block „Sportarten Stufe 1“), `sportarten-stufe1.test.ts`, pgTAP 93–95.
+
+**R – Indoor-Rudern: erledigt (27.10.2026, Branch `claude/sportarten-r`).** Ausdauer-Art `row` in der Engine
+(`easy_row`, ersetzt das Provisorium „wie Rad“): im Plan ohne Wettkampf und ohne Disziplin mit Rudergerät zu Hause jede
+zweite Ausdauer-Einheit „Lockeres Rudern“ (10 %, Deload, Start-Deckel unverändert; nie bei Schwangerschaft, „nur
+Gehen“, ohne Gesundheits-Check); Wochenbau `weekWorkouts` kennt Rudern (locker/Erholung/lang, Technik in der Basis,
+Fahrtspiel/Tempo/Intervalle 500 m · 1000 m · 30/30 ab Aufbau, 80/20). `ENDURANCE_MODALITY_ROW`, `ROW_WORKOUTS`;
+`packages/core/src/rowing` (Split, Watt nur Anzeige, Plausibilität, Eingabe, MET nach Anstrengung); Schon-/Reise-Modus
+als Hinweise; Health Connect 54 → Rudern (Watt/Schlagzahl, sobald die App sie liest). App: Rudern wählbar, Eintragen mit
+Split/Watt/Schlagzahl/Intervall-Ergebnis, Technik-Hinweis, Workout-Kategorie „Rudern“. Entwürfe: Übungen `rudergeraet`,
+`rudergeraet-locker` (mit Bild), 10 Workouts `rudern-*`. Keine DB-Änderung. Offen: Rudern bei Studio-Training (Gerät
+dort nicht bekannt), Watt/Schlagzahl aus Health Connect lesen (neue Leseberechtigung), strukturierte Ruder-Einheiten im
+Plan erst mit einem Plan mit Phasen (DB: Art/Schritte nur im Wettkampfplan).
