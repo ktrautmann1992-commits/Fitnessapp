@@ -522,8 +522,9 @@ export function IntervalTimer({
               style={[
                 styles.timerStep,
                 {
-                  borderColor: step.kind === 'work' ? orange.strong : theme.border,
-                  borderWidth: step.kind === 'work' ? 3 : 1,
+                  borderColor:
+                    step.kind === 'work' || step.kind === 'station' ? orange.strong : theme.border,
+                  borderWidth: step.kind === 'work' || step.kind === 'station' ? 3 : 1,
                 },
               ]}
             >

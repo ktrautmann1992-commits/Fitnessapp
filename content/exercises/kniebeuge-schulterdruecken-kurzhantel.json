@@ -1,0 +1,52 @@
+{
+  "id": "kniebeuge-schulterdruecken-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kniebeuge mit Schulterdrücken (Kurzhanteln)",
+  "name_en": "Dumbbell Thruster",
+  "aliases_de": ["Thruster"],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes", "front_delts"],
+  "secondary_muscles": ["triceps", "abs"],
+  "equipment_ids": ["dumbbells"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["overhead"],
+  "description_de": "Kniebeuge mit zwei Kurzhanteln an den Schultern, beim Aufstehen die Hanteln über den Kopf drücken. Ersatz für Wall Balls ohne Ball und Wand.",
+  "steps_de": [
+    "Kurzhanteln auf Schulterhöhe halten, Füße schulterbreit.",
+    "In die Kniebeuge gehen, Oberkörper aufrecht.",
+    "Kräftig aufstehen und den Schwung nutzen, um die Hanteln über den Kopf zu drücken.",
+    "Hanteln kontrolliert zu den Schultern senken und weitermachen."
+  ],
+  "tips_de": [
+    "Rippen unten halten, kein Hohlkreuz über Kopf.",
+    "Leichte Hanteln, sauberer Rhythmus."
+  ],
+  "common_mistakes_de": ["Hanteln nur mit den Armen drücken.", "Knie fallen nach innen."],
+  "safety_note_de": "Mit leichten Hanteln beginnen, über Kopf nur mit stabilem Stand. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "goblet-kniebeuge",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "kniebeuge-koerpergewicht",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "burpee-ohne-sprung",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "burpee-ohne-sprung-start.svg",
+      "alt_de": "Ausgangsposition: hoher Liegestütz von der Seite, Arme gestreckt, Körper gerade – hierhin werden die Beine nacheinander gesetzt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

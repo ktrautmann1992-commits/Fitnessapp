@@ -157,8 +157,8 @@ describe('Einspiel-Paket', () => {
     expect(result.issues.filter((issue) => issue.severity === 'error')).toEqual([]);
     const pkg = buildSeedPackage(result);
     expect(pkg.exercises.map((e) => e.id)).toEqual(result.exercises.map((e) => e.id));
-    // 172 (inkl. 2 Rudern) + 50 Posen der Etappe Y (Sportarten Stufe 1).
-    expect(pkg.exercises).toHaveLength(222);
+    // 172 (inkl. 2 Rudern) + 50 Posen der Etappe Y + 17 Hyrox der Etappe H (Sportarten Stufe 1).
+    expect(pkg.exercises).toHaveLength(239);
     expect(pkg.plan_templates).toHaveLength(49);
   });
 

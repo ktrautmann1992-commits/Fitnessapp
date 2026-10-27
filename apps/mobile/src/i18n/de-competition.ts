@@ -5,6 +5,7 @@ import {
   type FeasibilityNotice,
   type FeasibilityReason,
   type FeasibilityStatus,
+  HYROX_TEXTS_DE,
   MULTISPORT_TEXTS_DE,
   type WorkoutType,
 } from '@fitnessapp/core';
@@ -60,6 +61,7 @@ const REASONS: Record<FeasibilityReason, string> = {
   long_run_not_reachable: 'Der nötige lange Lauf ist bis zum Renntag nicht sicher erreichbar.',
   triathlon_days_too_few:
     'Für einen Triathlon-Plan brauchst du mindestens 3 Ausdauer-Tage pro Woche – je einen für Schwimmen, Rad und Laufen (Einstellungen → Angaben ändern → Trainingstage).',
+  hyrox_senior_confirmation: HYROX_TEXTS_DE.seniorConfirmation,
 };
 
 const NOTICES: Record<FeasibilityNotice, string> = {
@@ -85,6 +87,9 @@ const NOTICES: Record<FeasibilityNotice, string> = {
   open_water_safety: MULTISPORT_TEXTS_DE.openWater,
   beginner_long_event:
     'Diese Distanz ist als Einsteiger ein großes Ziel. Höre gut auf deinen Körper und nimm Erholungswochen ernst.',
+  hyrox_no_station_day: HYROX_TEXTS_DE.noStationDay,
+  hyrox_technique_combo: HYROX_TEXTS_DE.medicalHint,
+  hyrox_no_jumps: 'Ohne Burpee-Weitsprünge – Sprünge lassen wir in deinem Plan weg.',
 };
 
 const PHASES: Record<CompetitionPhase, string> = {
@@ -484,4 +489,25 @@ export const deCompetition = {
   createdWithoutCompetition:
     'Plan erstellt – ohne Wettkampfplan, weil die Ampel gerade nicht passt. Details unter Einstellungen → Mein Wettkampf.',
   errors: ERRORS,
+  // Sportarten Stufe 1 · Hyrox (Etappe H): Division, Bestätigung ab 65, Teilzeiten. „Hyrox“ nur beschreibend.
+  hyrox: {
+    division: 'Division',
+    divisionNames: HYROX_TEXTS_DE.divisions,
+    divisionHint: HYROX_TEXTS_DE.divisionHint,
+    minorDivisionHint: HYROX_TEXTS_DE.minorDivisionHint,
+    seniorConfirm:
+      'Ich fühle mich fit genug und habe das Vorhaben mit meiner Ärztin oder meinem Arzt besprochen.',
+    seniorText: HYROX_TEXTS_DE.seniorConfirmation,
+    referenceText:
+      'Optional: eine Lauf-Zeit der letzten 6 Monate (z. B. 5 oder 10 km). Dann zeigen wir zu den Lauf-Einheiten einen Tempo-Richtwert. Ziel bleibt „Ankommen“.',
+    splitsTitle: HYROX_TEXTS_DE.result.splitsOptional,
+    splitsHint:
+      'Teilzeiten aus der Ergebnisliste, z. B. „4:35“. Leer lassen, was du nicht weißt. Die Summe darf nicht über der Gesamtzeit liegen.',
+    splitsToggle: 'Teilzeiten eintragen',
+    splitsHide: 'Teilzeiten ausblenden',
+    splitInvalid: (segment: string) => `${segment}: Bitte eine Zeit wie 4:35 eingeben.`,
+    splitsExceed: 'Die Teilzeiten zusammen sind länger als die Gesamtzeit.',
+    segments: HYROX_TEXTS_DE.segments,
+    private: HYROX_TEXTS_DE.result.private,
+  },
 };

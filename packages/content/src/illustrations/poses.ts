@@ -19,6 +19,7 @@ import {
   wall,
 } from './equipment';
 import { CALISTHENICS_ILLUSTRATIONS } from './poses-calisthenics';
+import { HYROX_ILLUSTRATIONS } from './poses-hyrox';
 import { ROWING_ILLUSTRATIONS } from './poses-rowing';
 import { YOGA_ILLUSTRATIONS } from './poses-yoga';
 import type { Limb, PoseSpec, Prop, SidePose } from './rig';
@@ -1313,4 +1314,6 @@ export const EXERCISE_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustratio
   ...ROWING_ILLUSTRATIONS,
   // --- Yoga, Pilates, Mobility (Entwürfe, Sportarten Stufe 1 · Etappe Y) ------------------------------------------
   ...YOGA_ILLUSTRATIONS,
+  // --- Hyrox-Stationen (Entwürfe, Sportarten Stufe 1 · Etappe H) --------------------------------------------------
+  ...HYROX_ILLUSTRATIONS,
 };

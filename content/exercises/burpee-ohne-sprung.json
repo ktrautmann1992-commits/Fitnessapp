@@ -1,0 +1,50 @@
+{
+  "id": "burpee-ohne-sprung",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Burpee ohne Sprung",
+  "name_en": "No-Jump Burpee",
+  "aliases_de": ["Step-Burpee"],
+  "movement_pattern": "conditioning",
+  "primary_muscles": ["quadriceps", "chest"],
+  "secondary_muscles": ["glutes", "triceps", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "Leichtere Burpee-Variante ohne Sprung: die Beine werden nacheinander nach hinten und vorn gesetzt. Ersatz für die Burpee-Weitsprünge.",
+  "steps_de": [
+    "Aus dem Stand in die Hocke gehen und die Hände auf den Boden setzen.",
+    "Erst ein Bein, dann das andere nach hinten in den Liegestütz setzen.",
+    "Beine nacheinander wieder zu den Händen setzen.",
+    "Aufrichten und ohne Sprung weitermachen."
+  ],
+  "tips_de": [
+    "Rücken bleibt in der Liegestütz-Position gerade.",
+    "Ruhig atmen, gleichmäßiger Rhythmus."
+  ],
+  "common_mistakes_de": [
+    "Hüfte hängt in der Liegestütz-Position durch.",
+    "Zu schnelles Aufstehen mit Schwindel."
+  ],
+  "safety_note_de": "Langsam aufrichten, wenn dir beim Aufstehen schwindelig wird. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "hampelmann",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
+  }
+}

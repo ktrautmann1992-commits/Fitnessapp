@@ -1,0 +1,60 @@
+{
+  "id": "ausfallschritt-gehen-kurzhantel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Ausfallschritt-Gehen mit Kurzhanteln",
+  "name_en": "Dumbbell Walking Lunge",
+  "aliases_de": [],
+  "movement_pattern": "lunge",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["hamstrings", "adductors", "forearms"],
+  "equipment_ids": ["dumbbells"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Ausfallschritte im Gehen mit Kurzhanteln in den Händen. Ersatz für das Schlitten-Schieben und die Sandsack-Ausfallschritte ohne Spezialgerät.",
+  "steps_de": [
+    "Aufrecht stehen, je eine Kurzhantel seitlich in den Händen.",
+    "Einen großen Schritt nach vorn machen und das hintere Knie Richtung Boden senken.",
+    "Über die Ferse des vorderen Fußes hochdrücken und mit dem hinteren Bein nach vorn durchsteigen.",
+    "Abwechselnd weitergehen, jede Seite zählt als eine Wiederholung."
+  ],
+  "tips_de": [
+    "Oberkörper aufrecht, Blick nach vorn.",
+    "Vorderes Knie zeigt in Richtung der Zehen."
+  ],
+  "common_mistakes_de": [
+    "Zu kurze Schritte, das Knie schiebt weit über die Zehen.",
+    "Oberkörper kippt nach vorn."
+  ],
+  "safety_note_de": "Genug freien Platz lassen und mit leichten Hanteln beginnen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "ausfallschritt-gehen-koerpergewicht",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "ausfallschritt-rueckwaerts-kurzhantel",
+      "reason": "easier",
+      "priority": 2
+    },
+    {
+      "alternative_id": "split-kniebeuge",
+      "reason": "home",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
+  }
+}

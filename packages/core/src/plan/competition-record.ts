@@ -292,7 +292,7 @@ export function toSaveCompetitionPayload(params: {
   readonly competition: CompetitionInput;
   readonly longRunWeekday?: number | null;
   readonly plan: CompetitionPlanBasis | null;
-  /** Sportarten Stufe 1: nur bei Hyrox; fehlt = Open (Fachlogik der Auswahl folgt in Etappe H). */
+  /** Sportarten Stufe 1: nur bei Hyrox; fehlt = Open. Unter 18 nur Open (hyroxDivisionAllowed, save_competition). */
   readonly hyroxDivision?: HyroxDivision | null;
 }): SaveCompetitionPayload {
   const c: Competition = competitionInputSchema.parse(params.competition);
@@ -332,6 +332,8 @@ export interface StoredCompetition {
   /** null = ohne Wettkampfplan gespeichert (oder Plan-Bezug nach dem Widerruf geleert). */
   readonly effectiveGoal: CompetitionGoal | null;
   readonly resultSessionLogId: string | null;
+  /** Sportarten Stufe 1: Hyrox-Division (nur bei Hyrox; fehlt/null bei allen anderen Disziplinen). */
+  readonly hyroxDivision?: HyroxDivision | null;
 }
 
 /**
@@ -396,6 +398,7 @@ export function storedCompetitionFromRow(
     longRunWeekday: p.long_run_weekday,
     effectiveGoal: p.effective_goal,
     resultSessionLogId: row.result_session_log_id,
+    ...(p.hyrox_division ? { hyroxDivision: p.hyrox_division } : {}),
   };
 }
 

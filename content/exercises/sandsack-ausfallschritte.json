@@ -1,0 +1,52 @@
+{
+  "id": "sandsack-ausfallschritte",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Sandsack-Ausfallschritte",
+  "name_en": "Sandbag Lunges",
+  "aliases_de": [],
+  "movement_pattern": "lunge",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["hamstrings", "adductors", "upper_back"],
+  "equipment_ids": ["other"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Ausfallschritte im Gehen mit einem Sandsack auf den Schultern – eine Hyrox-Station über 100 m. Das hintere Knie berührt den Boden kurz und leicht.",
+  "steps_de": [
+    "Sandsack auf die Schultern hinter dem Kopf legen und festhalten.",
+    "Großen Schritt nach vorn machen, hinteres Knie zum Boden senken.",
+    "Über das vordere Bein hochdrücken und mit dem anderen Bein weitergehen.",
+    "Abwechselnd weiter, Oberkörper aufrecht."
+  ],
+  "tips_de": [
+    "Ruhiger Rhythmus, gleich lange Schritte.",
+    "Knie leise aufsetzen, nicht fallen lassen."
+  ],
+  "common_mistakes_de": ["Oberkörper kippt nach vorn.", "Hinteres Knie prallt auf den Boden."],
+  "safety_note_de": "Auf einer weichen Unterlage üben und mit leichtem Sandsack beginnen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "ausfallschritt-gehen-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "ausfallschritt-gehen-koerpergewicht",
+      "reason": "easier",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
+  }
+}

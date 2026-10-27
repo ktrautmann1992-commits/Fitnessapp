@@ -179,6 +179,8 @@ export const deModes = {
       'Rudern geht, wenn im Hotel-Gym ein Rudergerät steht – sonst Laufband, Rad-Ergometer oder zügiges Gehen.',
     travel_row_alternative:
       'Unterwegs ohne Rudergerät: Mach die Einheit als zügiges Gehen oder lockeren Lauf mit derselben Dauer.',
+    pain_combo_run_only:
+      'Schon-Modus: Heute nur den Lauf-Teil der Kombi – die Stationen lässt du weg. Locker bleiben, wenn es zwickt.',
   } satisfies Record<ModeNotice, string>,
   marks: {
     travel: 'für die Reise getauscht',

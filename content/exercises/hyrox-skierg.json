@@ -1,0 +1,52 @@
+{
+  "id": "hyrox-skierg",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Ski-Ergometer",
+  "name_en": "Ski Ergometer",
+  "aliases_de": ["SkiErg"],
+  "movement_pattern": "conditioning",
+  "primary_muscles": ["lats", "triceps"],
+  "secondary_muscles": ["abs", "glutes", "upper_back"],
+  "equipment_ids": ["other"],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Zugbewegung am Ski-Ergometer wie beim Doppelstockschub im Langlauf. Die Kraft kommt aus Rumpf, Hüfte und Armen – eine Hyrox-Station über 1.000 m.",
+  "steps_de": [
+    "Hüftbreit vor das Gerät stellen, beide Griffe über Kopfhöhe greifen.",
+    "Arme fast gestreckt nach unten ziehen und dabei die Hüfte leicht beugen.",
+    "Unten kurz an den Oberschenkeln vorbeiziehen, dann kontrolliert aufrichten.",
+    "Arme wieder nach oben führen und gleichmäßig weiterziehen."
+  ],
+  "tips_de": [
+    "Der Zug beginnt mit dem Rumpf, die Arme folgen.",
+    "Gleichmäßiges Tempo statt kurzer Spurts."
+  ],
+  "common_mistakes_de": ["Nur aus den Armen ziehen.", "Rücken rundet sich stark beim Beugen."],
+  "safety_note_de": "Widerstand niedrig beginnen und den Rücken lang halten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "hampelmann",
+      "reason": "home",
+      "priority": 1
+    },
+    {
+      "alternative_id": "burpee-ohne-sprung",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": "Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
+  }
+}

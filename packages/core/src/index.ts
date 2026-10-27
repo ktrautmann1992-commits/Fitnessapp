@@ -70,3 +70,5 @@ export * from './review';
 export * from './hiking';
 // Sportarten Stufe 1 · Etappe R: Indoor-Rudern (Split, Watt-Anzeige, Plausibilität, Intervall-Ergebnis).
 export * from './rowing';
+// Sportarten Stufe 1 · Hyrox (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1, Etappe H).
+export * from './hyrox';

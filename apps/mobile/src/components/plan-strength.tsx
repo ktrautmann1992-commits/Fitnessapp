@@ -5,6 +5,8 @@ import {
   type ExerciseMuscleTile,
   exerciseMark,
   exerciseMuscleTiles,
+  HYROX_TEXTS_DE,
+  hyroxStationNotices,
   type SessionRoutine,
   sessionMuscleTiles,
   type StoredSession,
@@ -110,6 +112,14 @@ export function StrengthSession({
       />
       {session.status === 'skipped' ? <Notice tone="info">{t.plan.skipped}</Notice> : null}
       <ModeNoticesBlock shown={shown} swapPaused={swapPaused} />
+      {/* Sportarten Stufe 1 (Hyrox): Station ohne Spezialgerät ersetzt (Plan 2.1, Entscheidung 5). */}
+      {hyroxStationNotices(session).map((notice) => (
+        <Notice key={notice} tone="info" testID={`plan-hyrox-${notice}`}>
+          {notice === 'sled_replaced'
+            ? HYROX_TEXTS_DE.replacedNotice.sled
+            : HYROX_TEXTS_DE.replacedNotice.other}
+        </Notice>
+      ))}
       {needsWeight ? <StartWeightHint /> : null}
       <SectionLabel>{L.sequence}</SectionLabel>
       {warmupText.trim() ? (

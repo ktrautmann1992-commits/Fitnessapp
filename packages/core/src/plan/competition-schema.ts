@@ -35,7 +35,7 @@ export const COMPETITION_DISCIPLINES = [
   'cycling',
   ...TRIATHLON_COMPETITION_DISCIPLINES,
   // Sportarten Stufe 1 (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1, per `add value` in 20261027100000): 8 × (1 km + Station),
-  // Division in competitions.hyrox_division. Stufe 1: Fachlogik (Wochenbau, Ampel) folgt in Etappe H.
+  // Division in competitions.hyrox_division; Wochenbau, Ampel und Regeln in Etappe H (HYROX_PLAN, packages/core/src/hyrox).
   'hyrox',
 ] as const;
 export type CompetitionDiscipline = (typeof COMPETITION_DISCIPLINES)[number];
@@ -168,10 +168,14 @@ export const competitionInputSchema = z
   })
   .refine(
     (c) =>
-      isRunCompetitionDiscipline(c.discipline) || (c.goal === 'finish' && c.reference === null),
+      isRunCompetitionDiscipline(c.discipline) ||
+      // Sportarten Stufe 1 (Hyrox): nur „Ankommen“, eine Lauf-Referenzzeit ist erlaubt (Pace der Lauf-Einheiten, wie
+      // CHECK competitions_multisport).
+      (c.goal === 'finish' && (c.reference === null || c.discipline === 'hyrox')),
     {
       path: ['goal'],
-      message: 'Bei Rad und Triathlon gibt es nur das Ziel „Ankommen“, ohne Referenzzeit.',
+      message:
+        'Bei Rad, Triathlon und Hyrox gibt es nur das Ziel „Ankommen“ (Referenzzeit nur bei Hyrox).',
     },
   )
   .refine((c) => (c.goal === 'time') === (c.targetTimeS !== null), {

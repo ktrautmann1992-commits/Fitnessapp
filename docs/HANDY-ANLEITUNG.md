@@ -2042,6 +2042,30 @@ Chrome am Handy, Vorschau-Link, **Inkognito-Tab**. Alle Posen und Routinen sind 
 
 Rückmeldung an Claude z. B. „Yoga: 1–8 ok, Bild beim Dreieck unklar“.
 
+## Teil 9h – Hyrox testen (Sportarten Stufe 1, Etappe H, 27.10.2026, Testmodus)
+
+So testest du es am Handy (Vorschau-Link aus dem Pull Request, Testmodus – alle Hyrox-Übungen sind Entwürfe und erscheinen
+nur dort):
+
+1. **Einstellungen → Testdaten löschen**, dann „Testmodus starten“.
+2. Onboarding: Ziel **Ausdauer** → Disziplin **Hyrox-Wettkampf**. Der Vorschlag „Deine Trainingstage“ hat genau einen
+   Kraft-Tag (= Stations-Einheit), z. B. 3 Ausdauer-Tage + 1 Kraft-Tag. Gesundheits-Check ohne Auffälligkeit.
+3. Kachel **„Mein Wettkampf“** → **„Wettkampf planen“**: Distanz **Hyrox**, Division wählen (Open, Pro, Doubles, Staffel),
+   Renntag mindestens 8 Wochen (Einsteiger 12 Wochen) in der Zukunft. Ampel prüfen: 1 Tag zu früh → „Zu kurz“ mit
+   Vorschlag „späteres Datum“. Optional eine Lauf-Referenzzeit (5 oder 10 km) – dann zeigen die Läufe einen Tempo-Richtwert.
+4. **Plan erstellen** → Woche ansehen: Lauf-Einheiten, am Kraft-Tag **„Hyrox-Stationen“** (Übungen je Station, Hinweis
+   „Ohne Schlitten – wir ersetzen die Station“), ab dem Aufbau (Fortgeschrittene schon in der Basis) eine
+   **„Hyrox-Kombi“** (Runden aus ca. 1 km zügig + Station). In der Erholungswoche keine Kombi.
+5. Kombi öffnen → **Intervall-Timer**: der Stations-Schritt zeigt Station und Menge (z. B. „Station 25 Wall Balls“),
+   mit Sprachansage.
+6. **Schon-Modus** (Einstellungen → „Schmerz-/Verletzungsmodus“, z. B. Handgelenk leicht) → die Kombi zeigt nur noch den Lauf-Teil mit Hinweis.
+7. Nach dem Renntag: **Mein Wettkampf → Ergebnis eintragen** → Gesamtzeit, optional **Teilzeiten eintragen** (8 Läufe,
+   8 Stationen, Wechselzone). Teilzeiten über der Gesamtzeit → Fehlermeldung. Der Eintrag heißt im Tagebuch
+   „Hyrox-Rennen“ – privat, ohne Ranglisten.
+8. Sonderfälle: Geburtsjahr unter 18 → nur Division Open wählbar; ab 65 → Hyrox-Plan nur mit Bestätigungs-Haken, ohne
+   Burpee-Weitsprünge; Gesundheits-Check mit Hinweis → „Technik-Kombi (locker)“ statt harter Kombi; Schwangerschaft →
+   kein Hyrox-Plan.
+
 ## Tipps
 - Eine Sitzung = eine Aufgabe. Lieber mehrere kurze Sitzungen als eine endlose.
 - Bei Unsicherheit einfach fragen: „Erklär mir in einfachen Worten, was du gerade geändert hast.“

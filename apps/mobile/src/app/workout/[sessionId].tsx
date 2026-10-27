@@ -112,7 +112,6 @@ import { berlinTodayIso, formatDecimal, formatKg, parseDecimal, todayIso } from 
 import { useKeepAwakeSetting, useScreenAwake } from '@/lib/keep-awake';
 import { dayLabel } from '@/lib/plan-format';
 import { isoDateParam } from '@/lib/route-param';
-import { PENDING_ENDURANCE_MODALITIES, selectable } from '@/lib/sportarten-stufe1';
 import { useRestTimer } from '@/lib/use-rest-timer';
 import {
   cardioSpeedTexts,
@@ -1507,7 +1506,7 @@ function EnduranceCard({
         ) : null}
         <ChoiceList<EnduranceModality>
           label={t.workout.cardio.modality}
-          options={selectable(ENDURANCE_MODALITIES, PENDING_ENDURANCE_MODALITIES).map((value) => ({
+          options={ENDURANCE_MODALITIES.map((value) => ({
             value,
             label: t.workout.cardio.modalities[value],
           }))}

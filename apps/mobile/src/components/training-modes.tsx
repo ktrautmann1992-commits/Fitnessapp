@@ -101,6 +101,7 @@ const NOTICE_ORDER: readonly ModeNotice[] = [
   'pain_endurance_easier',
   'pain_endurance_check',
   'pain_row_alternative',
+  'pain_combo_run_only',
   'travel_active',
   'travel_swapped',
   'travel_removed',

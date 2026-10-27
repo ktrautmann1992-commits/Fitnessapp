@@ -13,6 +13,8 @@ import { type ExercisePair, replaceShownExercise, type SwapRecord } from '../pla
 import type { PlanSafetyRules } from '../plan/safety';
 import { isBlockedByPain, isLowerBodyRegion, type PainEffect } from './pain';
 import type { TravelOnDay } from './travel';
+import { hasStationSteps, hyroxComboRunOnly } from '../hyrox/combo';
+import type { WorkoutStep } from '../plan/intensity';
 
 /**
  * Anzeige-Schichten der Trainings-Modi (docs/PLAN-TRAINING-MODI.md 6). Sie laufen in prepareSessionForDisplay():
@@ -50,6 +52,8 @@ export const MODE_NOTICES = [
   'pain_row_alternative',
   'travel_row_hotel_gym',
   'travel_row_alternative',
+  /** Sportarten Stufe 1 (Hyrox): Kombi im Schon-Modus → nur der Lauf-Teil (Stationen entfallen heute). */
+  'pain_combo_run_only',
 ] as const;
 export type ModeNotice = (typeof MODE_NOTICES)[number];
 
@@ -289,6 +293,17 @@ export function applyModesToEndurance<T extends EnduranceModeFields>(
   modes: DisplayModes,
 ): { readonly session: T; readonly notices: readonly ModeNotice[] } {
   if (session.kind !== 'endurance') return { session, notices: [] };
+  // Sportarten Stufe 1 (Hyrox, Plan 2.1): Kombi bzw. Technik-Kombi im Schon-Modus (jede Region, jede Stärke) → nur der
+  // Lauf-Teil; Stationen entfallen heute (nur Anzeige, nichts wird gespeichert).
+  const rawSteps = session.workout_steps as readonly WorkoutStep[] | null | undefined;
+  if (modes.pain && hasStationSteps(rawSteps)) {
+    const steps = hyroxComboRunOnly(rawSteps ?? []);
+    const minutes = Math.max(1, Math.round(steps.reduce((sum, st) => sum + st.seconds, 0) / 60));
+    return {
+      session: { ...session, workout_steps: steps, estimated_minutes: minutes },
+      notices: ['pain_combo_run_only'],
+    };
+  }
   const notices: ModeNotice[] = [];
   const fixed = Array.isArray(session.workout_steps) && session.workout_steps.length > 0;
   let minutes = session.estimated_minutes;

@@ -3,6 +3,7 @@ import {
   COMPETITION_INTENSITY,
   COMPETITION_TRIATHLON,
   COMPETITION_WORKOUTS,
+  HYROX_PLAN,
   ROW_WORKOUTS,
 } from '../constants';
 import { isoWeekday } from '../dates';
@@ -14,6 +15,7 @@ import {
   distanceHint,
   type HardWorkoutLimits,
   hardSeconds,
+  isHardWorkoutType,
   type PaceProfile,
   paceTargets,
   weeklyHardBudgetSeconds,
@@ -616,6 +618,11 @@ export interface WeekWorkoutInput {
   /** Tage, an denen keine harte Einheit liegen darf (neben Kraft mit Beinen, neben harten/langen Einheiten davor). */
   readonly blockedDates: ReadonlySet<string>;
   readonly pace: PaceProfile | null;
+  /**
+   * Sportarten Stufe 1 (Hyrox): schon vergebene Einheiten je Datum (Kombi bzw. Technik-Kombi). Harte zählen ins
+   * 80/20-Budget, in den Wochen-Deckel und gegen harte Nachbartage. Fehlt → wie bisher.
+   */
+  readonly fixed?: ReadonlyMap<string, EnduranceWorkout>;
 }
 
 export interface PlannedWorkout extends EnduranceWorkout {
@@ -633,8 +640,14 @@ export function hardTypesFor(
   phase: CompetitionPhase,
   level: ExperienceLevel,
   sport: WorkoutSport = 'run',
+  discipline?: CompetitionDiscipline,
 ): readonly ('fartlek' | 'tempo' | 'intervals' | 'race_pace')[] {
   const beginner = level === 'beginner';
+  // Sportarten Stufe 1 (Hyrox): Lauf ohne Renntempo (das übernimmt die Kombi), HYROX_PLAN.runHardTypes.
+  if (discipline === 'hyrox' && sport === 'run') {
+    if (phase !== 'build' && phase !== 'peak' && phase !== 'taper') return [];
+    return HYROX_PLAN.runHardTypes[phase][beginner ? 'beginner' : 'other'];
+  }
   // Etappe R – Rudern wie Rad (harte erst ab Aufbau): Aufbau Einsteiger Fahrtspiel, sonst Tempo + Intervalle; Spitze
   // Einsteiger Tempo, sonst Intervalle + Tempo; Tapering Einsteiger Fahrtspiel, sonst Intervalle (30/30).
   if (sport === 'row') {
@@ -717,7 +730,14 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
   // Erholungswoche und Woche 0: nichts mit Anstrengung ≥ 6 (Plan 3.5; Wächter M1).
   const easyOnly = input.recoveryWeek || input.weekZero === true;
   const typesFor = (sport: WorkoutSport) =>
-    easyOnly ? [] : hardTypesFor(phase, input.level, sport);
+    easyOnly ? [] : hardTypesFor(phase, input.level, sport, input.discipline);
+  // Hyrox: vorab vergebene Einheiten (Kombi) – harte zählen ins Budget und in den Deckel (Plan 2.1).
+  const fixed = input.fixed ?? new Map<string, EnduranceWorkout>();
+  const fixedHard = [...fixed.entries()].filter(([, w]) => isHardWorkoutType(w.type));
+  for (const [date, workout] of fixed) {
+    types.set(date, workout);
+    if (isHardWorkoutType(workout.type)) budget -= hardSeconds(workout.steps, limits.countWorkOnly);
+  }
   // Laufen wie bisher (WP2); mit Rad-Tagen zusätzlich die Rad-Arten (Rad: nur diese, Triathlon: beide); Etappe R: mit
   // Ruder-Tagen zusätzlich die Ruder-Arten.
   const sports = new Set(days.filter(hardCapable).map((d) => sportOfVariant(d.variant)));
@@ -739,7 +759,10 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
       n - (longDate ? 1 : 0) - (n >= 3 ? 1 : 0),
     );
   }
-  const chosen: string[] = [];
+  // Hyrox: die Kombi ist schon eine harte Einheit dieser Woche.
+  hardCount = Math.max(0, Math.min(hardCount, limits.perWeek - fixedHard.length));
+  const chosen: string[] = fixedHard.map(([date]) => date);
+  const fixedCount = chosen.length;
   const perSport: Record<WorkoutSport, number> = { run: 0, bike: 0, swim: 0, row: 0 };
   if (hardCount > 0) {
     const candidates = days
@@ -753,7 +776,8 @@ export function weekWorkouts(input: WeekWorkoutInput): PlannedWorkout[] {
       )
       .sort((a, b) => b.minutes - a.minutes || (a.date < b.date ? -1 : 1));
     for (const d of candidates) {
-      if (chosen.length >= hardCount) break;
+      if (chosen.length - fixedCount >= hardCount) break;
+      if (types.has(d.date)) continue;
       if (chosen.some((c) => weekdayNeighbours(c, d.date))) continue;
       const sport = sportOfVariant(d.variant);
       const sportTypes = typesFor(sport);

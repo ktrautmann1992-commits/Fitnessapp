@@ -286,7 +286,8 @@ Enums mehr anzufassen.
 - **Core/Zod/Inhalte:** Listen und Schemas in `packages/core` (u. a. `WALK_KINDS`, `HYROX_DIVISIONS`, `HYROX_STATIONS`,
   `HYROX_SPLIT_SEGMENTS`, `FLOW_RULES`, `HYROX_RESULT_LIMITS`), Workout-Schema mit Format `flow` und Item-Feld `side`;
   Hyrox-Werte in den Wettkampf-Tabellen sind VORLÄUFIG (Etappe H). In der App sind die neuen Werte bis zu ihrer Etappe
-  nicht wählbar (`apps/mobile/src/lib/sportarten-stufe1.ts`).
+  nicht wählbar (`apps/mobile/src/lib/sportarten-stufe1.ts`; nach dem Zusammenführen von W, R, Y und H war die Sperrliste
+  leer und wurde samt Verwendungen entfernt – alle Werte sind wählbar).
 - **Tests:** `db-sync.test.ts` (Block „Sportarten Stufe 1“), `sportarten-stufe1.test.ts`, pgTAP 93–95.
 
 **W – Wandern/Bergwandern: erledigt (27.10.2026, Branch `claude/sportarten-w`, ohne neue Migration).** Core
@@ -322,3 +323,13 @@ Inhalte (Entwürfe): 29 Yoga-Posen, 13 Pilates-, 8 Mobility-Übungen mit eigenen
 5 Mobility). App: Flow-Player, Kategorien Yoga/Pilates wählbar, Heute-Karte „Erholungstag: Mobility“, Schalter in den
 Einstellungen (`recovery_routine` über `save_app_layout`). Offen: restlicher Startbestand (~11 Yoga-Posen, ~12 Pilates,
 ~7 Mobility, 6 Yoga- und 4 Pilates-Routinen), Geräte „Matte“/„Block“ (nicht im Katalog), Fachprüfung (Entscheidung 12).
+
+**H – Hyrox: erledigt (27.10.2026, Branch `claude/sportarten-h`, ohne neue Migration).** `HYROX_FORMAT` (Rulebook 25/26,
+Gewichte „unbestätigt“ bis zum Abgleich mit dem Original 26/27), `HYROX_PLAN`, `HYROX_SAFETY`, `HYROX_STATION_EXERCISES`,
+`HYROX_ONLY_EXERCISE_IDS` in `constants.ts`; Logik in `packages/core/src/hyrox/` (Stations-Einheit, Kombi, Simulation,
+Technik-Kombi, Ergebnis) und im Wochenbau (`schedule.ts`: erster Kraft-Tag = Stations-Einheit, Kombi ab Aufbau bzw. für
+Fortgeschrittene ab Basis, Minuten aus lockeren Tagen derselben Woche, Simulation einmal am Tag des langen Laufs der
+letzten Spitzen-Woche ≥ 10 Tage vor dem Rennen mit Anstrengung 5). Vorläufige Hyrox-Werte aus S ersetzt (Spitzenumfang
+100 min/Woche, langer Lauf 50 min; Tapering 7 Tage). App: Hyrox im Onboarding und in „Mein Wettkampf“ (Division, Bestätigung
+ab 65, Lauf-Referenz), Stations-Hinweis, Timer-Ansage der Station, Ergebnis mit Teilzeiten. 17 Übungen als Entwürfe mit
+Piktogramm. Tests: `packages/core/src/hyrox/hyrox-plan.test.ts`, `apps/mobile/src/data/hyrox-result.test.ts`.
