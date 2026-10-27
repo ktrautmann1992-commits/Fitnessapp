@@ -30,6 +30,12 @@ export const REPLAN_REASONS = [
   'weight_goal_changed',
   /** Wettkampftage neu, verschoben oder abgesagt (Etappe W1, docs/PLAN-PHASE-10.md Abschnitt 10). */
   'competition_changed',
+  /**
+   * Mahlzeiten ans Training angepasst (Nährstoff-Timing, docs/PLAN-NAEHRSTOFF-TIMING.md 6): Einheit verschoben bzw.
+   * Uhrzeit geändert – nur die betroffenen Tage, gegessene und selbst gewählte Gerichte bleiben
+   * (`resolveMealPlanWeekWithTraining`). `needsAutomaticReplan` meldet diesen Grund nie.
+   */
+  'training_changed',
 ] as const;
 export type ReplanReason = (typeof REPLAN_REASONS)[number];
 

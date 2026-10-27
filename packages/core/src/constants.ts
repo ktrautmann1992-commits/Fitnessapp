@@ -5857,7 +5857,8 @@ export const SESSION_START_TIME = { minMinutes: 0, maxMinutes: 1439, stepMinutes
  * 3. Vor dem Training: Mahlzeit 2–4 h vorher (`MEAL_TIMING_RULES.preMealMinutes`) kohlenhydratreich, Richtwert
  *    `preMealCarbsGPerKgPerHour` (0,5 g/kg je Stunde Abstand), begrenzt auf `preMealCarbsGPerKg` 1–2 g/kg; Snack
  *    30–60 min vorher (`MEAL_TIMING_RULES.preSnackMinutes`) klein mit `preSnackCarbsG` 15–30 g KH. Verträglichkeit je
- *    Portion: Mahlzeit vorher höchstens `preMealMaxFatG` Fett und `preMealMaxFiberG` Ballaststoffe, Snack höchstens
+ *    Portion: Mahlzeit vorher höchstens `preMealMaxFatEnergyShare` (30 %) der Energie aus Fett und `preMealMaxFiberGPer1000Kcal` (15 g
+ *    je 1000 kcal, mindestens `preMealMinFiberLimitG` 8 g) Ballaststoffe, Snack höchstens
  *    `preSnackMaxFatG`/`preSnackMaxFiberG`/`preSnackMaxKcal` – darüber rückt ein Rezept nach hinten, verboten ist es
  *    nicht (PRODUKTENTSCHEIDUNG). Quelle: Thomas et al. (2016): 1–4 g/kg KH 1–4 h vorher, fett-/ballaststoffarm.
  *    Frühes Training: Start vor `earlyBeforeMinutes` (8:00) → „kleiner Snack vorher oder Frühstück direkt danach“.
@@ -5892,8 +5893,9 @@ export const NUTRIENT_TIMING = {
   preMealCarbsGPerKg: { min: 1, max: 2 },
   preSnackMinutes: MEAL_TIMING_RULES.preSnackMinutes,
   preSnackCarbsG: { min: 15, max: 30 },
-  preMealMaxFatG: 20,
-  preMealMaxFiberG: 10,
+  preMealMaxFatEnergyShare: 0.3,
+  preMealMaxFiberGPer1000Kcal: 15,
+  preMealMinFiberLimitG: 8,
   preSnackMaxFatG: 5,
   preSnackMaxFiberG: 3,
   preSnackMaxKcal: 250,

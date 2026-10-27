@@ -7,6 +7,7 @@ import {
   MEAL_PLAN_REPEAT_LIMITS,
   MEAL_PLAN_SCORING,
   NO_TARGETS_MIN_DAY_KCAL,
+  NUTRIENT_TIMING,
   PORTION_SCALE_LIMITS,
 } from '../constants';
 import type { FoodLookup } from '../content/food-schema';
@@ -77,6 +78,7 @@ import { stableHashKey, stableUnit } from './stable-hash';
 import { resolveIngredientSwaps, swapKey } from './swap-resolve';
 import type { NutritionDayTargets, NutritionWeekTargets } from './targets';
 import type { MealRole, MealSlotId } from './timing';
+import { preWorkoutExcess, type SlotMacroTarget } from './training-meal-targets';
 
 /**
  * Wochen-Essensplan (docs/PLAN-PHASE-5.md 6.2–6.4, B1) – deterministisch, ohne Zufall und ohne Echtzeit-KI.
@@ -500,6 +502,11 @@ interface ScoreArgs {
   readonly portions: number;
   /** Wettkampftag (W1): Rezepte der Kategorie `wettkampf` bekommen den Bonus wie passende Trainings-Tags. */
   readonly competitionDay: boolean;
+  /**
+   * Nährstoff-Timing (T1): nur an Tagen mit eigener Uhrzeit einer Einheit (`trainingTiming`), sonst null – dann plant
+   * die Engine genau wie bisher. `target` = Makro-Anteil des Platzes (null ohne Gramm, z. B. unter 18).
+   */
+  readonly timing: { readonly target: SlotMacroTarget | null } | null;
 }
 
 /** Geschätzte Gramm je Lebensmittel für die geplanten Portionen (Reste-Score, 19.7 N13). */
@@ -563,6 +570,7 @@ function scoreCandidate(
   }
   // Wettkampf (W1): nur Reihenfolge – ob das Rezept passt, entscheidet der Filter (`slotFitReasons`).
   if (args.competitionDay && categories.includes('wettkampf')) score += W.roleTag;
+  if (args.timing !== null) score += timingScore(c, args, args.timing.target);
   score -= W.repeat * (state.uses.get(c.recipe.id)?.length ?? 0);
   const protein = mainProteinFood(c, foods);
   if (protein !== null && state.mainProteins.get(args.dayIndex - 1)?.has(protein) === true) {
@@ -587,6 +595,39 @@ function scoreCandidate(
   }
   score +=
     W.variantJitter * stableUnit(args.weekStart, args.slotKey, c.recipe.id, String(args.variant));
+  return score;
+}
+
+/**
+ * Nährstoff-Timing (Plan 1–4, T1) – NUR Reihenfolge, nie Filter, Energie oder Grenzen: Abzug für fehlendes Eiweiß am
+ * Richtwert und für Fett/Ballaststoffe über den Grenzen vor dem Training (bei der voraussichtlichen Portion), Bonus
+ * für einen hohen KH-Anteil in Mahlzeiten vor/nach dem Training.
+ */
+function timingScore(c: FilteredRecipe, args: ScoreArgs, target: SlotMacroTarget | null): number {
+  const W = NUTRIENT_TIMING.scoring;
+  const per = c.facts.perServing;
+  const factor =
+    args.targetKcal === null || per.kcal <= 0
+      ? 1
+      : Math.min(
+          Math.max(args.targetKcal / per.kcal, PORTION_SCALE_LIMITS.min),
+          PORTION_SCALE_LIMITS.max,
+        );
+  let score = 0;
+  const guide = target?.proteinGuideG ?? null;
+  if (guide !== null && guide > 0) {
+    score -= (W.proteinShortfall * Math.max(0, guide - per.protein_g * factor)) / guide;
+  }
+  score -=
+    W.preTolerance *
+    preWorkoutExcess(args.role, {
+      kcal: per.kcal * factor,
+      fat_g: per.fat_g * factor,
+      fiber_g: per.fiber_g === null ? null : per.fiber_g * factor,
+    });
+  if ((args.role === 'pre' || args.role === 'pre_snack' || args.role === 'post') && per.kcal > 0) {
+    score += W.carbFocus * Math.min((4 * per.carbs_g) / per.kcal, 1);
+  }
   return score;
 }
 
@@ -1075,6 +1116,12 @@ function scoreArgs(
         : { available: tracker.available(ctx.targets.date), packageSizes: tracker.packageSizes },
     portions,
     competitionDay: isCompetitionMealDay(ctx.targets),
+    timing:
+      ctx.targets.trainingTiming === undefined
+        ? null
+        : {
+            target: ctx.targets.trainingTiming.mealTargets?.find((m) => m.slot === slot) ?? null,
+          },
   };
 }
 
