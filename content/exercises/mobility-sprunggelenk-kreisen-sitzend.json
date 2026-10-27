@@ -1,0 +1,38 @@
+{
+  "id": "mobility-sprunggelenk-kreisen-sitzend",
+  "version": 1,
+  "status": "published",
+  "name_de": "Fußkreisen im Sitzen",
+  "name_en": "Seated Ankle Circles",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["calves"],
+  "secondary_muscles": [],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Auf einem Stuhl sitzen, einen Fuß anheben und das Sprunggelenk in ruhigen Kreisen bewegen.",
+  "steps_de": [
+    "Aufrecht auf einem Stuhl sitzen.",
+    "Ein Bein leicht anheben, Hände halten den Oberschenkel.",
+    "Den Fuß langsam in beide Richtungen kreisen.",
+    "Danach den anderen Fuß."
+  ],
+  "tips_de": ["Die Zehen dürfen dabei mal anziehen und mal strecken."],
+  "common_mistakes_de": ["Das ganze Bein statt nur den Fuß bewegen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

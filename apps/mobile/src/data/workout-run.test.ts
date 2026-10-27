@@ -57,7 +57,8 @@ describe('Workout-Bibliothek im Testmodus', () => {
     const s = await setup();
     const published = s.workouts.filter((w) => w.status === 'published');
     expect(published.length).toBeGreaterThanOrEqual(20);
-    expect(published.length).toBeLessThanOrEqual(30);
+    // + 10 freigegebene Yoga-/Pilates-Routinen (Restpunkte A, 27.10.2026).
+    expect(published.length).toBeLessThanOrEqual(40);
     expect(
       s.workouts
         .filter((w) => w.status === 'draft')

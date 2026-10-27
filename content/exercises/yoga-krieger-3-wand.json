@@ -1,0 +1,38 @@
+{
+  "id": "yoga-krieger-3-wand",
+  "version": 1,
+  "status": "published",
+  "name_de": "Krieger 3 an der Wand",
+  "name_en": "Warrior III at the Wall",
+  "aliases_de": [],
+  "movement_pattern": "balance",
+  "primary_muscles": ["glutes", "hamstrings"],
+  "secondary_muscles": ["abs", "lower_back"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Hände an der Wand, Oberkörper und ein Bein bilden eine waagerechte Linie. Übt Gleichgewicht mit sicherem Halt.",
+  "steps_de": [
+    "Eine Armlänge vor einer Wand stehen, Hände auf Hüfthöhe an die Wand.",
+    "Oberkörper nach vorn neigen, bis Arme und Rücken eine Linie bilden.",
+    "Ein Bein gestreckt nach hinten anheben, Hüfte bleibt gerade.",
+    "Halten, dann die Seite wechseln."
+  ],
+  "tips_de": ["Das Standbein darf leicht gebeugt bleiben."],
+  "common_mistakes_de": ["Die Hüfte des gehobenen Beins nach oben aufdrehen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

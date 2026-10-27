@@ -1,0 +1,44 @@
+{
+  "id": "yoga-dreieck-block",
+  "version": 1,
+  "status": "published",
+  "name_de": "Dreieck mit Block",
+  "name_en": "Triangle with Block",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["obliques"],
+  "secondary_muscles": ["hamstrings", "adductors"],
+  "equipment_ids": ["yoga_block"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Breiter Stand, Oberkörper zur Seite geneigt, die untere Hand ruht auf einem Block. Leichtere Form des Dreiecks.",
+  "steps_de": [
+    "Breit stehen, vorderer Fuß zeigt nach vorn, hinterer leicht nach innen.",
+    "Einen Block hochkant an die Innenseite des vorderen Fußes stellen.",
+    "Oberkörper über das vordere Bein zur Seite neigen, untere Hand auf den Block.",
+    "Obere Hand zur Hüfte oder nach oben, halten, dann die Seite wechseln."
+  ],
+  "tips_de": ["Lieber den Block höher stellen als den Rücken zu krümmen."],
+  "common_mistakes_de": ["Den Oberkörper nach vorn kippen statt zur Seite."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [
+    {
+      "alternative_id": "yoga-dreieck",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

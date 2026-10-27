@@ -1,0 +1,38 @@
+{
+  "id": "yoga-sitzende-vorbeuge-block",
+  "version": 1,
+  "status": "published",
+  "name_de": "Sitzende Vorbeuge mit Block",
+  "name_en": "Seated Forward Fold with Block",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["hamstrings"],
+  "secondary_muscles": ["lower_back", "calves"],
+  "equipment_ids": ["mat", "yoga_block"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer", "spinal_flexion"],
+  "description_de": "Am Boden sitzen, Beine nach vorn, mit langem Rücken sanft nach vorn neigen. Ein Block unter dem Gesäß erleichtert die Haltung.",
+  "steps_de": [
+    "Auf die Kante eines Blocks setzen, Beine nach vorn, Knie leicht gebeugt.",
+    "Aufrichten, dann aus der Hüfte nach vorn neigen.",
+    "Hände neben den Beinen oder an den Schienbeinen ablegen.",
+    "Ruhig atmen und halten."
+  ],
+  "tips_de": ["Die Knie dürfen so weit gebeugt sein, dass der Rücken lang bleibt."],
+  "common_mistakes_de": ["Mit Schwung nach vorn ziehen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pilates-einbein-strecken",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pilates-einbein-strecken-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, ein Knie zur Brust gezogen, das andere Bein schräg nach vorn oben gestreckt, Kopf bleibt am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

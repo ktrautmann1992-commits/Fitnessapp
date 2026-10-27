@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-halbe-vorbeuge-block",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-halbe-vorbeuge-block-start.svg",
+      "alt_de": "Ausgangsposition: aus der Hüfte nach vorn geneigt, Rücken lang und fast waagerecht, Hände auf einem Block, Knie leicht gebeugt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

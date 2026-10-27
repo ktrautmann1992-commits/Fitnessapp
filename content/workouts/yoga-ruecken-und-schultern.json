@@ -1,0 +1,86 @@
+{
+  "id": "yoga-ruecken-und-schultern",
+  "version": 1,
+  "status": "published",
+  "title_de": "Rücken und Schultern",
+  "summary_de": "Sanfte Bewegung für Wirbelsäule und Schultern: Katze-Kuh, Sphinx, Seitstreckung und Buch öffnen.",
+  "category": "yoga",
+  "difficulty": 1,
+  "minutes": 10,
+  "format": "flow",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": ["mat", "yoga_block"],
+  "warmup_de": "Im Stand die Schultern kreisen und den Kopf locker hängen lassen.",
+  "cooldown_de": "Auf dem Rücken liegen, Knie aufgestellt, und ruhig atmen.",
+  "exercises": [
+    {
+      "exercise_id": "mobility-schulterkreisen",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-katze-kuh",
+      "reps": null,
+      "duration_s": 110,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-sphinx",
+      "reps": null,
+      "duration_s": 70,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "yoga-seitstreckung-kniend",
+      "reps": null,
+      "duration_s": 50,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "mobility-buch-oeffnen-seitlage",
+      "reps": null,
+      "duration_s": 70,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-sitzende-vorbeuge-block",
+      "reps": null,
+      "duration_s": 90,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "pilates-ruecken-strecken-bauchlage",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

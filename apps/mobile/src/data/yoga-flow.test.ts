@@ -51,7 +51,8 @@ describe('Testmodus: Flow-Routinen und Posen', () => {
     const { library, workouts } = await load();
     const flows = workouts.filter((w) => w.format === 'flow');
     expect(flows.length).toBeGreaterThanOrEqual(14);
-    expect(flows.every((w) => w.status === 'draft')).toBe(true);
+    // Restpunkte A (27.10.2026): neue Routinen direkt freigegeben, ältere ggf. noch Entwurf.
+    expect(flows.every((w) => w.status === 'draft' || w.status === 'published')).toBe(true);
     expect(library.exercises.has('yoga-baum')).toBe(false);
     expect(library.displayExercises?.has('yoga-baum')).toBe(true);
     // Vorhandene Dehnungen bleiben normale Übungen.

@@ -1,0 +1,38 @@
+{
+  "id": "yoga-adlerarme-sitzend",
+  "version": 1,
+  "status": "published",
+  "name_de": "Adlerarme im Sitzen",
+  "name_en": "Eagle Arms Seated",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["upper_back"],
+  "secondary_muscles": ["rear_delts"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Auf dem Stuhl sitzen und die Arme vor der Brust überkreuzen. Dehnt den oberen Rücken und die Schultern.",
+  "steps_de": [
+    "Aufrecht auf einem Stuhl sitzen, Füße am Boden.",
+    "Arme nach vorn strecken, einen Arm über den anderen legen.",
+    "Ellbogen beugen und die Unterarme umeinander legen oder die Hände an die Schultern legen.",
+    "Ellbogen sanft anheben, halten, dann die Seite wechseln."
+  ],
+  "tips_de": ["Wer die Handflächen nicht zusammenbringt, umarmt einfach die Schultern."],
+  "common_mistakes_de": ["Die Schultern hochziehen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

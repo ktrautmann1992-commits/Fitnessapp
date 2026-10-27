@@ -56,12 +56,13 @@ describe('Startbestand Yoga/Pilates/Mobility (Entwürfe)', () => {
     expect(poses.filter((e) => e.id.startsWith('yoga-')).length).toBeGreaterThanOrEqual(25);
     expect(poses.filter((e) => e.id.startsWith('pilates-')).length).toBeGreaterThanOrEqual(12);
     expect(poses.filter((e) => e.id.startsWith('mobility-')).length).toBeGreaterThanOrEqual(8);
-    expect(poses.every((e) => e.status === 'draft')).toBe(true);
+    // Restpunkte A (27.10.2026): neue Posen direkt freigegeben (private Nutzung), ältere ggf. noch Entwurf.
+    expect(poses.every((e) => e.status === 'draft' || e.status === 'published')).toBe(true);
     const count = (category: string) => flows.filter((w) => w.category === category).length;
     expect(count('yoga')).toBeGreaterThanOrEqual(6);
     expect(count('pilates')).toBeGreaterThanOrEqual(4);
     expect(count('mobility')).toBeGreaterThanOrEqual(4);
-    expect(flows.every((w) => w.status === 'draft')).toBe(true);
+    expect(flows.every((w) => w.status === 'draft' || w.status === 'published')).toBe(true);
   });
 
   it('keine roten Fehler an Posen und Routinen', () => {
@@ -79,6 +80,7 @@ describe('Startbestand Yoga/Pilates/Mobility (Entwürfe)', () => {
       'yoga-beine-an-der-wand',
       'yoga-herabschauender-hund',
       'yoga-schulterbruecke',
+      'yoga-schulterbruecke-block',
       'yoga-vorbeuge-stehend',
     ]);
     for (const e of inversion) expect(e.safety_note_de.length).toBeGreaterThan(20);

@@ -2329,6 +2329,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="55" y="167" width="130" height="3" rx="1.5" fill="{equipSoft}"/><line x1="115" y1="130.5" x2="113.8" y2="164.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="113.8" y1="164.5" x2="81.8" y2="164.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="81.8" y1="164.5" x2="70.8" y2="164.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="150.6" y1="120.3" x2="129.8" y2="108.3" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="129.8" y1="108.3" x2="148.8" y2="119.3" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="148.8" y1="119.3" x2="153.2" y2="121.8" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="149.3,112.3 153.7,127.7 117.1,137.7 112.9,123.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="166.9" cy="115.6" r="9" fill="{figure}"/><line x1="115" y1="130.5" x2="115" y2="164.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="115" y1="164.5" x2="83" y2="164.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="83" y1="164.5" x2="72" y2="164.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="115" y1="130.5" x2="115" y2="164.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="115" y1="164.5" x2="83" y2="164.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="83" y1="164.5" x2="72" y2="164.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="150.6" y1="120.3" x2="150.6" y2="144.3" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="150.6" y1="144.3" x2="150.6" y2="166.3" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="150.6" y1="166.3" x2="155.6" y2="166.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="150.6" y1="120.3" x2="150.6" y2="144.3" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="150.6" y1="144.3" x2="150.6" y2="166.3" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="150.6" y1="166.3" x2="155.6" y2="166.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'mobility-buch-oeffnen-seitlage': {
+    media: {
+      exercise_id: 'mobility-buch-oeffnen-seitlage',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'mobility-buch-oeffnen-seitlage-start.svg',
+          alt_de:
+            'Ausgangsposition: von vorn – in Seitlage, Knie gebeugt, der obere Arm öffnet sich nach oben zur anderen Seite.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="29.6" y="167" width="160" height="3" rx="1.5" fill="{equipSoft}"/><polygon points="157.6,134.9 157.6,158.9 119.6,154.9 119.6,138.9" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="173.6" cy="146.9" r="9" fill="{figure}"/><line x1="119.6" y1="140.9" x2="86.1" y2="146.8" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="86.1" y1="146.8" x2="58.4" y2="130.8" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="58.4" y1="130.8" x2="54.1" y2="128.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="119.6" y1="140.9" x2="86.1" y2="146.8" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="86.1" y1="146.8" x2="58.4" y2="130.8" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="58.4" y1="130.8" x2="54.1" y2="128.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="119.6" y1="152.9" x2="87.7" y2="164.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="87.7" y1="164.5" x2="57.6" y2="153.6" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="57.6" y1="153.6" x2="53" y2="151.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="119.6" y1="152.9" x2="87.7" y2="164.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="87.7" y1="164.5" x2="57.6" y2="153.6" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="57.6" y1="153.6" x2="53" y2="151.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="156.6" y1="134.9" x2="155.8" y2="110.9" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="155.8" y1="110.9" x2="155.8" y2="88.9" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="155.8" y1="88.9" x2="155.8" y2="83.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="156.6" y1="134.9" x2="155.8" y2="110.9" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="155.8" y1="110.9" x2="155.8" y2="88.9" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="155.8" y1="88.9" x2="155.8" y2="83.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="156.6" y1="158.9" x2="180.6" y2="158.9" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="180.6" y1="158.9" x2="202.6" y2="158.9" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="202.6" y1="158.9" x2="207.6" y2="158.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="156.6" y1="158.9" x2="180.6" y2="158.9" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="180.6" y1="158.9" x2="202.6" y2="158.9" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="202.6" y1="158.9" x2="207.6" y2="158.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'mobility-frosch-schaukel': {
     media: {
       exercise_id: 'mobility-frosch-schaukel',
@@ -2350,6 +2371,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="55" y="167" width="130" height="3" rx="1.5" fill="{equipSoft}"/><line x1="115" y1="130.5" x2="113.8" y2="164.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="113.8" y1="164.5" x2="81.8" y2="164.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="81.8" y1="164.5" x2="70.8" y2="164.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="151.4" y1="124.1" x2="152.3" y2="148.1" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="152.3" y1="148.1" x2="174.3" y2="147.3" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="174.3" y1="147.3" x2="179.3" y2="147.3" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="151,116 153.8,131.8 116.3,137.9 113.7,123.1" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="168.2" cy="121.1" r="9" fill="{figure}"/><line x1="115" y1="130.5" x2="115" y2="164.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="115" y1="164.5" x2="83" y2="164.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="83" y1="164.5" x2="72" y2="164.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="115" y1="130.5" x2="115" y2="164.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="115" y1="164.5" x2="83" y2="164.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="83" y1="164.5" x2="72" y2="164.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="151.4" y1="124.1" x2="151.4" y2="148.1" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="151.4" y1="148.1" x2="173.4" y2="148.1" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="173.4" y1="148.1" x2="178.4" y2="148.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="151.4" y1="124.1" x2="151.4" y2="148.1" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="151.4" y1="148.1" x2="173.4" y2="148.1" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="173.4" y1="148.1" x2="178.4" y2="148.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'mobility-handgelenke-kreisen': {
+    media: {
+      exercise_id: 'mobility-handgelenke-kreisen',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'mobility-handgelenke-kreisen-start.svg',
+          alt_de:
+            'Ausgangsposition: aufrecht stehen, Ellbogen gebeugt, Unterarme vor dem Körper, Hände locker verschränkt.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><line x1="105.2" y1="99.5" x2="104" y2="133.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="104" y1="133.5" x2="104.6" y2="165.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="104.6" y1="165.5" x2="115.6" y2="165.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="105.2" y1="62.5" x2="116.5" y2="83.7" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="116.5" y1="83.7" x2="137.4" y2="76.9" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="137.4" y1="76.9" x2="142.1" y2="75.4" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="97.2,61.5 113.2,61.5 112.7,99.5 97.7,99.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="105.2" cy="45.5" r="9" fill="{figure}"/><line x1="105.2" y1="99.5" x2="106.4" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="106.4" y1="133.5" x2="105.8" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="105.8" y1="165.5" x2="116.8" y2="165.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="105.2" y1="99.5" x2="106.4" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="106.4" y1="133.5" x2="105.8" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="105.8" y1="165.5" x2="116.8" y2="165.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="105.2" y1="62.5" x2="117.2" y2="83.3" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="117.2" y1="83.3" x2="137.9" y2="75.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="137.9" y1="75.8" x2="142.6" y2="74.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="105.2" y1="62.5" x2="117.2" y2="83.3" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="117.2" y1="83.3" x2="137.9" y2="75.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="137.9" y1="75.8" x2="142.6" y2="74.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'mobility-hueft-90-90': {
     media: {
       exercise_id: 'mobility-hueft-90-90',
@@ -2369,6 +2411,68 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
     templates: {
       start_position:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="40" y="167" width="160" height="3" rx="1.5" fill="{equipSoft}"/><polygon points="104.7,84.5 128.6,82.4 128,120.7 112,122" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="115.3" cy="67.6" r="9" fill="{figure}"/><line x1="114" y1="121.9" x2="82.1" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="82.1" y1="133.5" x2="82.1" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="82.1" y1="165.5" x2="77.4" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="114" y1="121.9" x2="82.1" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="82.1" y1="133.5" x2="82.1" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="82.1" y1="165.5" x2="77.4" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="126" y1="120.8" x2="157.9" y2="132.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="157.9" y1="132.5" x2="157.9" y2="164.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="157.9" y1="164.5" x2="162.6" y2="166.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="126" y1="120.8" x2="157.9" y2="132.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="157.9" y1="132.5" x2="157.9" y2="164.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="157.9" y1="164.5" x2="162.6" y2="166.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="104.8" y1="85.5" x2="92.8" y2="106.3" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="92.8" y1="106.3" x2="89" y2="128" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="89" y1="128" x2="89" y2="133" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="104.8" y1="85.5" x2="92.8" y2="106.3" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="92.8" y1="106.3" x2="89" y2="128" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="89" y1="128" x2="89" y2="133" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="128.7" y1="83.4" x2="140.7" y2="104.2" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="140.7" y1="104.2" x2="144.5" y2="125.9" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="144.5" y1="125.9" x2="144.5" y2="130.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="128.7" y1="83.4" x2="140.7" y2="104.2" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="140.7" y1="104.2" x2="144.5" y2="125.9" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="144.5" y1="125.9" x2="144.5" y2="130.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'mobility-hueftbeuger-kniend': {
+    media: {
+      exercise_id: 'mobility-hueftbeuger-kniend',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'mobility-hueftbeuger-kniend-start.svg',
+          alt_de:
+            'Ausgangsposition: kniender Ausfallschritt, hinteres Knie auf der Matte, Oberkörper aufrecht, Hände an der Hüfte, Becken sanft nach vorn.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="52.5" y="167" width="135" height="3" rx="1.5" fill="{equipSoft}"/><line x1="127.5" y1="130" x2="121.5" y2="163.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="121.5" y1="163.5" x2="89.5" y2="164" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="89.5" y1="164" x2="78.5" y2="164" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="126.2" y1="93" x2="117.2" y2="115.3" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="117.2" y1="115.3" x2="135.9" y2="126.9" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="135.9" y1="126.9" x2="140.2" y2="129.4" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="118.2,92.3 134.2,91.7 135,129.7 120,130.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="125.6" cy="76" r="9" fill="{figure}"/><line x1="127.5" y1="130" x2="161.2" y2="134.7" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="161.2" y1="134.7" x2="157.5" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="157.5" y1="166.5" x2="168.5" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="127.5" y1="130" x2="161.2" y2="134.7" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="161.2" y1="134.7" x2="157.5" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="157.5" y1="166.5" x2="168.5" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="126.2" y1="93" x2="118" y2="115.6" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="118" y1="115.6" x2="137.1" y2="126.6" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="137.1" y1="126.6" x2="141.4" y2="129.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="126.2" y1="93" x2="118" y2="115.6" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="118" y1="115.6" x2="137.1" y2="126.6" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="137.1" y1="126.6" x2="141.4" y2="129.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'mobility-hueftkreisen': {
+    media: {
+      exercise_id: 'mobility-hueftkreisen',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'mobility-hueftkreisen-start.svg',
+          alt_de: 'Ausgangsposition: von vorn – hüftbreit stehen, Knie locker, Hände an der Hüfte.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><polygon points="108,61.6 132,61.6 128,99.6 112,99.6" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="120" cy="45.6" r="9" fill="{figure}"/><line x1="114" y1="99.6" x2="111" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="111" y1="133.5" x2="109.9" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="109.9" y1="165.5" x2="105.3" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="114" y1="99.6" x2="111" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="111" y1="133.5" x2="109.9" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="109.9" y1="165.5" x2="105.3" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="126" y1="99.6" x2="129" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="129" y1="133.5" x2="130.1" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="130.1" y1="165.5" x2="134.7" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="126" y1="99.6" x2="129" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="129" y1="133.5" x2="130.1" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="130.1" y1="165.5" x2="134.7" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="108" y1="62.6" x2="89.6" y2="78.1" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="89.6" y1="78.1" x2="110.3" y2="85.6" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="110.3" y1="85.6" x2="115" y2="87.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="108" y1="62.6" x2="89.6" y2="78.1" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="89.6" y1="78.1" x2="110.3" y2="85.6" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="110.3" y1="85.6" x2="115" y2="87.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="132" y1="62.6" x2="150.4" y2="78.1" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="150.4" y1="78.1" x2="129.7" y2="85.6" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="129.7" y1="85.6" x2="125" y2="87.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="132" y1="62.6" x2="150.4" y2="78.1" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="150.4" y1="78.1" x2="129.7" y2="85.6" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="129.7" y1="85.6" x2="125" y2="87.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'mobility-katze-kuh-stuhl': {
+    media: {
+      exercise_id: 'mobility-katze-kuh-stuhl',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'mobility-katze-kuh-stuhl-start.svg',
+          alt_de:
+            'Ausgangsposition: auf der vorderen Hälfte eines Stuhls sitzen, Hände auf den Knien, Rücken sanft rund, Kinn Richtung Brust.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><line x1="87.9" y1="170" x2="87.9" y2="103" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="115.9" y1="170" x2="115.9" y2="137" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="87.9" y1="137" x2="115.9" y2="137" stroke="{furnitureLine}" stroke-width="5" stroke-linecap="round"/><line x1="109.9" y1="129" x2="143.4" y2="134.8" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="143.4" y1="134.8" x2="138.9" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="138.9" y1="166.5" x2="149.9" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="103.5" y1="92.6" x2="118.2" y2="111.5" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="118.2" y1="111.5" x2="132.5" y2="128.3" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="132.5" y1="128.3" x2="137.5" y2="128.3" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="95.4,93 111.2,90.2 117.3,127.7 102.5,130.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="108.8" cy="76.9" r="9" fill="{figure}"/><line x1="109.9" y1="129" x2="143.4" y2="134.6" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="143.4" y1="134.6" x2="140.9" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="140.9" y1="166.5" x2="151.9" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="109.9" y1="129" x2="143.4" y2="134.6" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="143.4" y1="134.6" x2="140.9" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="140.9" y1="166.5" x2="151.9" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="103.5" y1="92.6" x2="118.8" y2="111" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="118.8" y1="111" x2="133.6" y2="127.3" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="133.6" y1="127.3" x2="138.6" y2="127.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="103.5" y1="92.6" x2="118.8" y2="111" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="118.8" y1="111" x2="133.6" y2="127.3" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="133.6" y1="127.3" x2="138.6" y2="127.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
   'mobility-knie-zur-wand': {
@@ -2411,6 +2515,69 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
     templates: {
       start_position:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><line x1="87.9" y1="170" x2="87.9" y2="103" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="115.9" y1="170" x2="115.9" y2="137" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="87.9" y1="137" x2="115.9" y2="137" stroke="{furnitureLine}" stroke-width="5" stroke-linecap="round"/><line x1="109.9" y1="129" x2="143.4" y2="134.8" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="143.4" y1="134.8" x2="138.9" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="138.9" y1="166.5" x2="149.9" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="108.6" y1="92" x2="116.2" y2="114.8" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="116.2" y1="114.8" x2="129.9" y2="132" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="129.9" y1="132" x2="134.9" y2="132" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="100.6,91.3 116.5,90.7 117.4,128.7 102.4,129.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="112.1" cy="75.5" r="9" fill="{figure}"/><line x1="109.9" y1="129" x2="143.4" y2="134.6" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="143.4" y1="134.6" x2="140.9" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="140.9" y1="166.5" x2="151.9" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="109.9" y1="129" x2="143.4" y2="134.6" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="143.4" y1="134.6" x2="140.9" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="140.9" y1="166.5" x2="151.9" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="108.6" y1="92" x2="120.2" y2="113" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="120.2" y1="113" x2="131.7" y2="131.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="131.7" y1="131.8" x2="136.7" y2="131.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="108.6" y1="92" x2="120.2" y2="113" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="120.2" y1="113" x2="131.7" y2="131.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="131.7" y1="131.8" x2="136.7" y2="131.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'mobility-schulterkreisen': {
+    media: {
+      exercise_id: 'mobility-schulterkreisen',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'mobility-schulterkreisen-start.svg',
+          alt_de:
+            'Ausgangsposition: von vorn – aufrecht stehen, Arme locker hängen, die Schultern kreisen langsam nach hinten.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><polygon points="108,61.5 132,61.5 128,99.5 112,99.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="119.5" cy="45.5" r="9" fill="{figure}"/><line x1="114" y1="99.5" x2="115.2" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="115.2" y1="133.5" x2="115.2" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="115.2" y1="165.5" x2="110.5" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="114" y1="99.5" x2="115.2" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="115.2" y1="133.5" x2="115.2" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="115.2" y1="165.5" x2="110.5" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="126" y1="99.5" x2="124.8" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="124.8" y1="133.5" x2="124.8" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="124.8" y1="165.5" x2="129.5" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="126" y1="99.5" x2="124.8" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="124.8" y1="133.5" x2="124.8" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="124.8" y1="165.5" x2="129.5" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="108" y1="62.5" x2="103.8" y2="86.2" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="103.8" y1="86.2" x2="101.9" y2="108.1" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="101.9" y1="108.1" x2="101.5" y2="113.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="108" y1="62.5" x2="103.8" y2="86.2" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="103.8" y1="86.2" x2="101.9" y2="108.1" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="101.9" y1="108.1" x2="101.5" y2="113.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="132" y1="62.5" x2="136.2" y2="86.2" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="136.2" y1="86.2" x2="138.1" y2="108.1" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="138.1" y1="108.1" x2="138.5" y2="113.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="132" y1="62.5" x2="136.2" y2="86.2" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="136.2" y1="86.2" x2="138.1" y2="108.1" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="138.1" y1="108.1" x2="138.5" y2="113.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'mobility-sprunggelenk-kreisen-sitzend': {
+    media: {
+      exercise_id: 'mobility-sprunggelenk-kreisen-sitzend',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'mobility-sprunggelenk-kreisen-sitzend-start.svg',
+          alt_de:
+            'Ausgangsposition: aufrecht auf einem Stuhl sitzen, ein Fuß leicht angehoben und locker, der andere Fuß am Boden.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><line x1="75.6" y1="170" x2="75.6" y2="103" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="103.6" y1="170" x2="103.6" y2="137" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="75.6" y1="137" x2="103.6" y2="137" stroke="{furnitureLine}" stroke-width="5" stroke-linecap="round"/><line x1="97.6" y1="129" x2="131.1" y2="134.8" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="131.1" y1="134.8" x2="126.6" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="126.6" y1="166.5" x2="137.6" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="96.3" y1="92" x2="103.8" y2="114.8" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="103.8" y1="114.8" x2="117.6" y2="132" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="117.6" y1="132" x2="122.6" y2="132" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="88.2,91.3 104.2,90.7 105.1,128.7 90.1,129.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="95.7" cy="75" r="9" fill="{figure}"/><line x1="97.6" y1="129" x2="131.2" y2="124.3" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="131.2" y1="124.3" x2="153.9" y2="146.9" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="153.9" y1="146.9" x2="164.2" y2="150.7" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="97.6" y1="129" x2="131.2" y2="124.3" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="131.2" y1="124.3" x2="153.9" y2="146.9" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="153.9" y1="146.9" x2="164.2" y2="150.7" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="96.3" y1="92" x2="107.9" y2="113" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="107.9" y1="113" x2="119.4" y2="131.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="119.4" y1="131.8" x2="124.4" y2="131.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="96.3" y1="92" x2="107.9" y2="113" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="107.9" y1="113" x2="119.4" y2="131.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="119.4" y1="131.8" x2="124.4" y2="131.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'mobility-wade-wand': {
+    media: {
+      exercise_id: 'mobility-wade-wand',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'mobility-wade-wand-start.svg',
+          alt_de:
+            'Ausgangsposition: Hände an der Wand, vorderes Knie gebeugt, hinteres Bein gestreckt mit der Ferse am Boden.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="160.2" y="20" width="7" height="150" fill="{furniture}"/><line x1="108.2" y1="103.2" x2="92.3" y2="133.2" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="92.3" y1="133.2" x2="77.3" y2="161.4" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="77.3" y1="161.4" x2="87.6" y2="165.2" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="117.8" y1="67.4" x2="140.6" y2="60" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="140.6" y1="60" x2="161.6" y2="53.2" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="161.6" y1="53.2" x2="161.6" y2="48.2" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="110.4,64.4 125.8,68.5 115.5,105.1 101,101.2" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="121.5" cy="50.8" r="9" fill="{figure}"/><line x1="108.2" y1="103.2" x2="122.6" y2="134" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="122.6" y1="134" x2="117.1" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="117.1" y1="165.5" x2="128.1" y2="165.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="108.2" y1="103.2" x2="122.6" y2="134" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="122.6" y1="134" x2="117.1" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="117.1" y1="165.5" x2="128.1" y2="165.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="117.8" y1="67.4" x2="140.4" y2="59.2" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="140.4" y1="59.2" x2="161" y2="51.7" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="161" y1="51.7" x2="161" y2="46.7" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="117.8" y1="67.4" x2="140.4" y2="59.2" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="140.4" y1="59.2" x2="161" y2="51.7" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="161" y1="51.7" x2="161" y2="46.7" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
   'mobility-wandengel': {
@@ -2623,6 +2790,69 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="50" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="120" y1="160" x2="96.3" y2="135.6" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="96.3" y1="135.6" x2="88" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="88" y1="166.5" x2="77" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.4" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="133" y1="160.4" x2="111" y2="160.4" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="111" y1="160.4" x2="106" y2="160.4" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="158,152 158,168 120,167.5 120,152.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="174" cy="159.5" r="9" fill="{figure}"/><line x1="120" y1="160" x2="96.7" y2="135.2" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="96.7" y1="135.2" x2="90" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="90" y1="166.5" x2="79" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="160" x2="96.7" y2="135.2" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="96.7" y1="135.2" x2="90" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="90" y1="166.5" x2="79" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="133" y1="160.8" x2="111" y2="160.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="111" y1="160.8" x2="106" y2="160.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="133" y1="160.8" x2="111" y2="160.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="111" y1="160.8" x2="106" y2="160.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'pilates-beinkreise-seitlage': {
+    media: {
+      exercise_id: 'pilates-beinkreise-seitlage',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-beinkreise-seitlage-start.svg',
+          alt_de:
+            'Ausgangsposition: von vorn – in Seitlage, Kopf auf dem unteren Arm, das obere Bein auf Hüfthöhe angehoben.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="29.6" y="167" width="160" height="3" rx="1.5" fill="{equipSoft}"/><polygon points="157.6,142 157.6,166 119.6,162 119.6,146" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="173.6" cy="154" r="9" fill="{figure}"/><line x1="119.6" y1="148" x2="86.4" y2="140.9" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="86.4" y1="140.9" x2="54.7" y2="136.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="54.7" y1="136.5" x2="49.8" y2="135.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="119.6" y1="148" x2="86.4" y2="140.9" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="86.4" y1="140.9" x2="54.7" y2="136.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="54.7" y1="136.5" x2="49.8" y2="135.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="119.6" y1="160" x2="85.6" y2="160" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="85.6" y1="160" x2="53.6" y2="160" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="53.6" y1="160" x2="48.7" y2="160" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="119.6" y1="160" x2="85.6" y2="160" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="85.6" y1="160" x2="53.6" y2="160" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="53.6" y1="160" x2="48.7" y2="160" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="156.6" y1="142" x2="133.1" y2="147" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="133.1" y1="147" x2="111.5" y2="150.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="111.5" y1="150.8" x2="106.6" y2="151.7" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="156.6" y1="142" x2="133.1" y2="147" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="133.1" y1="147" x2="111.5" y2="150.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="111.5" y1="150.8" x2="106.6" y2="151.7" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="156.6" y1="166" x2="180.6" y2="166" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="180.6" y1="166" x2="202.6" y2="166" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="202.6" y1="166" x2="207.6" y2="166" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="156.6" y1="166" x2="180.6" y2="166" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="180.6" y1="166" x2="202.6" y2="166" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="202.6" y1="166" x2="207.6" y2="166" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'pilates-brustkorb-heben': {
+    media: {
+      exercise_id: 'pilates-brustkorb-heben',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-brustkorb-heben-start.svg',
+          alt_de:
+            'Ausgangsposition: Rückenlage, Füße aufgestellt, Hände am Hinterkopf, Kopf und Schultern ein Stück angehoben.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="50" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="120" y1="160" x2="96.3" y2="135.6" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="96.3" y1="135.6" x2="88" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="88" y1="166.5" x2="77" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="155.9" y1="151" x2="167.2" y2="129.9" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="167.2" y1="129.9" x2="146.8" y2="138.1" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="146.8" y1="138.1" x2="142.1" y2="139.8" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="154.9,143 158.8,158.6 121.8,167.3 118.2,152.7" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="170.9" cy="143.3" r="9" fill="{figure}"/><line x1="120" y1="160" x2="96.7" y2="135.2" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="96.7" y1="135.2" x2="90" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="90" y1="166.5" x2="79" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="160" x2="96.7" y2="135.2" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="96.7" y1="135.2" x2="90" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="90" y1="166.5" x2="79" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="155.9" y1="151" x2="167.9" y2="130.3" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="167.9" y1="130.3" x2="147.2" y2="137.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="147.2" y1="137.8" x2="142.5" y2="139.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="155.9" y1="151" x2="167.9" y2="130.3" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="167.9" y1="130.3" x2="147.2" y2="137.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="147.2" y1="137.8" x2="142.5" y2="139.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'pilates-einbein-strecken': {
+    media: {
+      exercise_id: 'pilates-einbein-strecken',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-einbein-strecken-start.svg',
+          alt_de:
+            'Ausgangsposition: Rückenlage, ein Knie zur Brust gezogen, das andere Bein schräg nach vorn oben gestreckt, Kopf bleibt am Boden.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="40" y="167" width="160" height="3" rx="1.5" fill="{equipSoft}"/><line x1="130" y1="159.5" x2="144.4" y2="128.7" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="144.4" y1="128.7" x2="114.3" y2="139.6" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="114.3" y1="139.6" x2="112.4" y2="150.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="167" y1="159.5" x2="162" y2="136" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="162" y1="136" x2="142.6" y2="125.7" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="142.6" y1="125.7" x2="138.3" y2="123.2" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="168,151.5 168,167.5 130,167 130,152" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="184" cy="159" r="9" fill="{figure}"/><line x1="130" y1="159.5" x2="99.2" y2="145.1" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="99.2" y1="145.1" x2="70.2" y2="131.6" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="70.2" y1="131.6" x2="60.7" y2="126.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="130" y1="159.5" x2="99.2" y2="145.1" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="99.2" y1="145.1" x2="70.2" y2="131.6" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="70.2" y1="131.6" x2="60.7" y2="126.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="167" y1="159.5" x2="162.8" y2="135.9" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="162.8" y1="135.9" x2="143.8" y2="124.9" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="143.8" y1="124.9" x2="139.4" y2="122.4" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="167" y1="159.5" x2="162.8" y2="135.9" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="162.8" y1="135.9" x2="143.8" y2="124.9" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="143.8" y1="124.9" x2="139.4" y2="122.4" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'pilates-einbeinkreisen': {
     media: {
       exercise_id: 'pilates-einbeinkreisen',
@@ -2642,6 +2872,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
     templates: {
       start_position:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="50" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="120" y1="160" x2="96.3" y2="135.6" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="96.3" y1="135.6" x2="88" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="88" y1="166.5" x2="77" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.4" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="133" y1="160.4" x2="111" y2="160.4" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="111" y1="160.4" x2="106" y2="160.4" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="158,152 158,168 120,167.5 120,152.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="174" cy="159.5" r="9" fill="{figure}"/><line x1="120" y1="160" x2="117" y2="126.1" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="117" y1="126.1" x2="114.2" y2="94.3" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="114.2" y1="94.3" x2="112.3" y2="83.4" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="160" x2="117" y2="126.1" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="117" y1="126.1" x2="114.2" y2="94.3" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="114.2" y1="94.3" x2="112.3" y2="83.4" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="133" y1="160.8" x2="111" y2="160.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="111" y1="160.8" x2="106" y2="160.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="133" y1="160.8" x2="111" y2="160.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="111" y1="160.8" x2="106" y2="160.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'pilates-fersen-tippen': {
+    media: {
+      exercise_id: 'pilates-fersen-tippen',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-fersen-tippen-start.svg',
+          alt_de:
+            'Ausgangsposition: Rückenlage, ein Bein im rechten Winkel angehoben, die andere Ferse tippt auf die Matte, Arme neben dem Körper.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="50" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="120" y1="160" x2="120" y2="126" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="120" y1="126" x2="88" y2="126" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="88" y1="126" x2="77" y2="126" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.4" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="133" y1="160.4" x2="111" y2="160.4" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="111" y1="160.4" x2="106" y2="160.4" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="158,152 158,168 120,167.5 120,152.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="174" cy="159.5" r="9" fill="{figure}"/><line x1="120" y1="160" x2="96.7" y2="135.2" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="96.7" y1="135.2" x2="90" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="90" y1="166.5" x2="79" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="160" x2="96.7" y2="135.2" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="96.7" y1="135.2" x2="90" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="90" y1="166.5" x2="79" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="133" y1="160.8" x2="111" y2="160.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="111" y1="160.8" x2="106" y2="160.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="133" y1="160.8" x2="111" y2="160.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="111" y1="160.8" x2="106" y2="160.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
   'pilates-hundert-gehockt': {
@@ -2665,6 +2916,48 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="50" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="120" y1="160.3" x2="112.9" y2="127" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="112.9" y1="127" x2="81" y2="124.8" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="81" y1="124.8" x2="70.1" y2="123.8" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="155.7" y1="150.7" x2="132" y2="154" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="132" y1="154" x2="110" y2="154.4" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="110" y1="154.4" x2="105" y2="154.4" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="154.6,142.7 158.8,158.1 121.9,167.5 118.1,153" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="171.3" cy="144" r="9" fill="{figure}"/><line x1="120" y1="160.3" x2="114.1" y2="126.8" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="114.1" y1="126.8" x2="82.2" y2="124" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="82.2" y1="124" x2="71.3" y2="123" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="160.3" x2="114.1" y2="126.8" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="114.1" y1="126.8" x2="82.2" y2="124" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="82.2" y1="124" x2="71.3" y2="123" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="155.7" y1="150.7" x2="132.1" y2="154.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="132.1" y1="154.8" x2="110.1" y2="155.6" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="110.1" y1="155.6" x2="105.1" y2="155.6" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="155.7" y1="150.7" x2="132.1" y2="154.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="132.1" y1="154.8" x2="110.1" y2="155.6" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="110.1" y1="155.6" x2="105.1" y2="155.6" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'pilates-knie-falten': {
+    media: {
+      exercise_id: 'pilates-knie-falten',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-knie-falten-start.svg',
+          alt_de:
+            'Ausgangsposition: Rückenlage, ein Fuß aufgestellt, das andere Bein im rechten Winkel angehoben, Arme neben dem Körper.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="50" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="120" y1="160" x2="96.3" y2="135.6" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="96.3" y1="135.6" x2="88" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="88" y1="166.5" x2="77" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.4" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="133" y1="160.4" x2="111" y2="160.4" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="111" y1="160.4" x2="106" y2="160.4" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="158,152 158,168 120,167.5 120,152.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="174" cy="159.5" r="9" fill="{figure}"/><line x1="120" y1="160" x2="120" y2="126" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="120" y1="126" x2="88" y2="126" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="88" y1="126" x2="77" y2="126" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="160" x2="120" y2="126" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="120" y1="126" x2="88" y2="126" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="88" y1="126" x2="77" y2="126" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="133" y1="160.8" x2="111" y2="160.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="111" y1="160.8" x2="106" y2="160.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="133" y1="160.8" x2="111" y2="160.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="111" y1="160.8" x2="106" y2="160.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'pilates-meerjungfrau': {
+    media: {
+      exercise_id: 'pilates-meerjungfrau',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-meerjungfrau-start.svg',
+          alt_de:
+            'Ausgangsposition: von vorn – seitlich sitzen, Knie zu einer Seite gebeugt, eine Hand am Boden, der andere Arm über dem Kopf zur Seite gestreckt.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="40" y="167" width="160" height="3" rx="1.5" fill="{equipSoft}"/><polygon points="98.6,100.5 121.8,94.2 127.7,132 112.3,136.1" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="107.2" cy="81.6" r="9" fill="{figure}"/><line x1="114.2" y1="135.6" x2="81.4" y2="144.4" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="81.4" y1="144.4" x2="111.4" y2="155.4" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="111.4" y1="155.4" x2="106.8" y2="157" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="114.2" y1="135.6" x2="81.4" y2="144.4" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="81.4" y1="144.4" x2="111.4" y2="155.4" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="111.4" y1="155.4" x2="106.8" y2="157" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="125.8" y1="132.5" x2="96.4" y2="149.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="96.4" y1="149.5" x2="124.1" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="124.1" y1="165.5" x2="128.7" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="125.8" y1="132.5" x2="96.4" y2="149.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="96.4" y1="149.5" x2="124.1" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="124.1" y1="165.5" x2="128.7" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="98.8" y1="101.4" x2="105" y2="78.2" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="105" y1="78.2" x2="121.9" y2="64.1" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="121.9" y1="64.1" x2="125.7" y2="60.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="98.8" y1="101.4" x2="105" y2="78.2" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="105" y1="78.2" x2="121.9" y2="64.1" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="121.9" y1="64.1" x2="125.7" y2="60.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="122" y1="95.2" x2="135.8" y2="114.9" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="135.8" y1="114.9" x2="143.3" y2="135.5" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="143.3" y1="135.5" x2="145" y2="140.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="122" y1="95.2" x2="135.8" y2="114.9" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="135.8" y1="114.9" x2="143.3" y2="135.5" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="143.3" y1="135.5" x2="145" y2="140.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'pilates-muschel': {
     media: {
       exercise_id: 'pilates-muschel',
@@ -2684,6 +2977,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
     templates: {
       start_position:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="29.6" y="167" width="160" height="3" rx="1.5" fill="{equipSoft}"/><polygon points="157.6,134.9 157.6,158.9 119.6,154.9 119.6,138.9" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="173.6" cy="146.9" r="9" fill="{figure}"/><line x1="119.6" y1="140.9" x2="86.1" y2="146.8" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="86.1" y1="146.8" x2="58.4" y2="130.8" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="58.4" y1="130.8" x2="54.1" y2="128.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="119.6" y1="140.9" x2="86.1" y2="146.8" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="86.1" y1="146.8" x2="58.4" y2="130.8" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="58.4" y1="130.8" x2="54.1" y2="128.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="119.6" y1="152.9" x2="87.7" y2="164.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="87.7" y1="164.5" x2="57.6" y2="153.6" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="57.6" y1="153.6" x2="53" y2="151.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="119.6" y1="152.9" x2="87.7" y2="164.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="87.7" y1="164.5" x2="57.6" y2="153.6" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="57.6" y1="153.6" x2="53" y2="151.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="156.6" y1="134.9" x2="133.1" y2="139.9" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="133.1" y1="139.9" x2="111.5" y2="143.7" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="111.5" y1="143.7" x2="106.6" y2="144.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="156.6" y1="134.9" x2="133.1" y2="139.9" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="133.1" y1="139.9" x2="111.5" y2="143.7" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="111.5" y1="143.7" x2="106.6" y2="144.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="156.6" y1="158.9" x2="180.6" y2="158.9" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="180.6" y1="158.9" x2="202.6" y2="158.9" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="202.6" y1="158.9" x2="207.6" y2="158.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="156.6" y1="158.9" x2="180.6" y2="158.9" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="180.6" y1="158.9" x2="202.6" y2="158.9" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="202.6" y1="158.9" x2="207.6" y2="158.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'pilates-ruecken-strecken-bauchlage': {
+    media: {
+      exercise_id: 'pilates-ruecken-strecken-bauchlage',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-ruecken-strecken-bauchlage-start.svg',
+          alt_de:
+            'Ausgangsposition: Bauchlage, Arme lang neben dem Körper, Brust und Kopf ein kleines Stück angehoben, Blick zum Boden.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="49.4" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="129.4" y1="160.3" x2="95.4" y2="160.9" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="95.4" y1="160.9" x2="63.4" y2="160.9" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="63.4" y1="160.9" x2="52.4" y2="160.9" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="165" y1="150.1" x2="141.2" y2="153.4" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="141.2" y1="153.4" x2="119.2" y2="153.8" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="119.2" y1="153.8" x2="114.2" y2="153.9" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="163.7,142.1 168.1,157.5 131.5,167.5 127.3,153.1" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="181.6" cy="146.6" r="9" fill="{figure}"/><line x1="129.4" y1="160.3" x2="95.4" y2="160.3" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="95.4" y1="160.3" x2="63.4" y2="160.3" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="63.4" y1="160.3" x2="52.4" y2="160.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="129.4" y1="160.3" x2="95.4" y2="160.3" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="95.4" y1="160.3" x2="63.4" y2="160.3" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="63.4" y1="160.3" x2="52.4" y2="160.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="165" y1="150.1" x2="141.3" y2="154.3" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="141.3" y1="154.3" x2="119.3" y2="155" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="119.3" y1="155" x2="114.4" y2="155.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="165" y1="150.1" x2="141.3" y2="154.3" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="141.3" y1="154.3" x2="119.3" y2="155" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="119.3" y1="155" x2="114.4" y2="155.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
   'pilates-rumpf-atmung-sitzend': {
@@ -2749,6 +3063,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="50" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="120" y1="160" x2="96.3" y2="135.6" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="96.3" y1="135.6" x2="88" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="88" y1="166.5" x2="77" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.4" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="133" y1="160.4" x2="111" y2="160.4" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="111" y1="160.4" x2="106" y2="160.4" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="158,152 158,168 120,167.5 120,152.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="174" cy="159.5" r="9" fill="{figure}"/><line x1="120" y1="160" x2="96.7" y2="135.2" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="96.7" y1="135.2" x2="90" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="90" y1="166.5" x2="79" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="160" x2="96.7" y2="135.2" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="96.7" y1="135.2" x2="90" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="90" y1="166.5" x2="79" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="133" y1="160.8" x2="111" y2="160.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="111" y1="160.8" x2="106" y2="160.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="157" y1="160" x2="133" y2="160.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="133" y1="160.8" x2="111" y2="160.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="111" y1="160.8" x2="106" y2="160.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'pilates-schulterbruecke-marsch': {
+    media: {
+      exercise_id: 'pilates-schulterbruecke-marsch',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-schulterbruecke-marsch-start.svg',
+          alt_de:
+            'Ausgangsposition: Brücke – Becken angehoben, ein Fuß am Boden, der andere Fuß knapp über der Matte, Arme neben dem Körper.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="60" y="167" width="120" height="3" rx="1.5" fill="{equipSoft}"/><line x1="120" y1="142" x2="153.3" y2="134.9" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="153.3" y1="134.9" x2="148" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="148" y1="166.5" x2="159" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="86.5" y1="157.6" x2="109.9" y2="162.6" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="109.9" y1="162.6" x2="131.9" y2="162.6" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="131.9" y1="162.6" x2="136.9" y2="162.6" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="88.9,165.3 82.2,150.8 116.8,135.2 123.2,148.8" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="70" cy="161.3" r="9" fill="{figure}"/><line x1="120" y1="142" x2="139.5" y2="114.1" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="139.5" y1="114.1" x2="164" y2="134.7" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="164" y1="134.7" x2="175" y2="134.7" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="142" x2="139.5" y2="114.1" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="139.5" y1="114.1" x2="164" y2="134.7" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="164" y1="134.7" x2="175" y2="134.7" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="86.5" y1="157.6" x2="110.1" y2="161.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="110.1" y1="161.8" x2="132.1" y2="161.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="132.1" y1="161.8" x2="137.1" y2="161.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="86.5" y1="157.6" x2="110.1" y2="161.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="110.1" y1="161.8" x2="132.1" y2="161.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="132.1" y1="161.8" x2="137.1" y2="161.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'pilates-schwan-sanft': {
     media: {
       exercise_id: 'pilates-schwan-sanft',
@@ -2812,6 +3147,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="29.6" y="167" width="160" height="3" rx="1.5" fill="{equipSoft}"/><polygon points="157.6,142 157.6,166 119.6,162 119.6,146" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="173.6" cy="154" r="9" fill="{figure}"/><line x1="119.6" y1="148" x2="85.8" y2="144.4" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="85.8" y1="144.4" x2="53.8" y2="144.4" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="53.8" y1="144.4" x2="48.9" y2="144.4" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="119.6" y1="148" x2="85.8" y2="144.4" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="85.8" y1="144.4" x2="53.8" y2="144.4" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="53.8" y1="144.4" x2="48.9" y2="144.4" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="119.6" y1="160" x2="85.6" y2="160" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="85.6" y1="160" x2="53.6" y2="160" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="53.6" y1="160" x2="48.7" y2="160" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="119.6" y1="160" x2="85.6" y2="160" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="85.6" y1="160" x2="53.6" y2="160" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="53.6" y1="160" x2="48.7" y2="160" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="156.6" y1="142" x2="133.1" y2="147" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="133.1" y1="147" x2="111.5" y2="150.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="111.5" y1="150.8" x2="106.6" y2="151.7" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="156.6" y1="142" x2="133.1" y2="147" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="133.1" y1="147" x2="111.5" y2="150.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="111.5" y1="150.8" x2="106.6" y2="151.7" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="156.6" y1="166" x2="180.6" y2="166" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="180.6" y1="166" x2="202.6" y2="166" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="202.6" y1="166" x2="207.6" y2="166" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="156.6" y1="166" x2="180.6" y2="166" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="180.6" y1="166" x2="202.6" y2="166" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="202.6" y1="166" x2="207.6" y2="166" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'pilates-stehend-beinkreisen': {
+    media: {
+      exercise_id: 'pilates-stehend-beinkreisen',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-stehend-beinkreisen-start.svg',
+          alt_de:
+            'Ausgangsposition: von vorn – seitlich an einer Wand stehen, eine Hand stützt, ein Bein gestreckt knapp über dem Boden.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="73.5" y="20" width="7" height="150" fill="{furniture}"/><polygon points="119.5,61.5 143.5,61.5 139.5,99.5 123.5,99.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="131.5" cy="45.5" r="9" fill="{figure}"/><line x1="125.5" y1="99.5" x2="125.5" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="125.5" y1="133.5" x2="125.5" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="125.5" y1="165.5" x2="120.9" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="125.5" y1="99.5" x2="125.5" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="125.5" y1="133.5" x2="125.5" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="125.5" y1="165.5" x2="120.9" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="137.5" y1="99.5" x2="149.2" y2="131.4" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="149.2" y1="131.4" x2="159.1" y2="161.9" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="159.1" y1="161.9" x2="163.7" y2="163.6" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="137.5" y1="99.5" x2="149.2" y2="131.4" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="149.2" y1="131.4" x2="159.1" y2="161.9" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="159.1" y1="161.9" x2="163.7" y2="163.6" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="119.5" y1="62.5" x2="95.5" y2="62.5" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="95.5" y1="62.5" x2="95.5" y2="84.5" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="95.5" y1="84.5" x2="95.5" y2="89.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="119.5" y1="62.5" x2="95.5" y2="62.5" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="95.5" y1="62.5" x2="95.5" y2="84.5" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="95.5" y1="84.5" x2="95.5" y2="89.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="143.5" y1="62.5" x2="146" y2="86.4" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="146" y1="86.4" x2="147.2" y2="108.3" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="147.2" y1="108.3" x2="147.5" y2="113.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="143.5" y1="62.5" x2="146" y2="86.4" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="146" y1="86.4" x2="147.2" y2="108.3" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="147.2" y1="108.3" x2="147.5" y2="113.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'pilates-tischbein-wechsel': {
     media: {
       exercise_id: 'pilates-tischbein-wechsel',
@@ -2833,6 +3189,69 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="40" y="167" width="160" height="3" rx="1.5" fill="{equipSoft}"/><line x1="130" y1="159.5" x2="128.8" y2="125.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="128.8" y1="125.5" x2="96.8" y2="126.1" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="96.8" y1="126.1" x2="85.8" y2="126.1" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="167" y1="159.5" x2="143" y2="159.9" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="143" y1="159.9" x2="121" y2="159.9" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="121" y1="159.9" x2="116" y2="159.9" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="168,151.5 168,167.5 130,167 130,152" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="184" cy="159" r="9" fill="{figure}"/><line x1="130" y1="159.5" x2="130" y2="125.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="130" y1="125.5" x2="98" y2="125.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="98" y1="125.5" x2="87" y2="125.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="130" y1="159.5" x2="130" y2="125.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="130" y1="125.5" x2="98" y2="125.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="98" y1="125.5" x2="87" y2="125.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="167" y1="159.5" x2="143" y2="160.3" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="143" y1="160.3" x2="121" y2="160.3" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="121" y1="160.3" x2="116" y2="160.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="167" y1="159.5" x2="143" y2="160.3" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="143" y1="160.3" x2="121" y2="160.3" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="121" y1="160.3" x2="116" y2="160.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'pilates-unterarmstuetz-knie': {
+    media: {
+      exercise_id: 'pilates-unterarmstuetz-knie',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-unterarmstuetz-knie-start.svg',
+          alt_de:
+            'Ausgangsposition: Unterarme und Knie auf der Matte, Ellbogen unter den Schultern, Körper von Kopf bis Knie in einer Linie.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="58.3" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="118.3" y1="149.6" x2="87.7" y2="164.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="87.7" y1="164.5" x2="55.7" y2="164.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="55.7" y1="164.5" x2="44.7" y2="164.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="154.2" y1="140.6" x2="155" y2="164.6" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="155" y1="164.6" x2="177" y2="163.9" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="177" y1="163.9" x2="182" y2="163.9" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="153.2,132.6 157.1,148.2 120.1,156.9 116.5,142.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="170.7" cy="136.5" r="9" fill="{figure}"/><line x1="118.3" y1="149.6" x2="87.5" y2="164" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="87.5" y1="164" x2="55.5" y2="164" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="55.5" y1="164" x2="44.5" y2="164" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="118.3" y1="149.6" x2="87.5" y2="164" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="87.5" y1="164" x2="55.5" y2="164" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="55.5" y1="164" x2="44.5" y2="164" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="154.2" y1="140.6" x2="154.2" y2="164.6" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="154.2" y1="164.6" x2="176.2" y2="164.6" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="176.2" y1="164.6" x2="181.2" y2="164.6" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="154.2" y1="140.6" x2="154.2" y2="164.6" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="154.2" y1="164.6" x2="176.2" y2="164.6" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="176.2" y1="164.6" x2="181.2" y2="164.6" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'pilates-vierfuessler-arm-bein': {
+    media: {
+      exercise_id: 'pilates-vierfuessler-arm-bein',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-vierfuessler-arm-bein-start.svg',
+          alt_de:
+            'Ausgangsposition: Vierfüßlerstand, ein Arm lang nach vorn und das gegenüberliegende Bein lang nach hinten gestreckt.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="55.6" y="167" width="130" height="3" rx="1.5" fill="{equipSoft}"/><line x1="115.6" y1="130.5" x2="81.6" y2="130.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="81.6" y1="130.5" x2="49.6" y2="130.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="49.6" y1="130.5" x2="38.6" y2="130.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="151.2" y1="120.3" x2="152" y2="144.3" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="152" y1="144.3" x2="151.2" y2="166.3" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="151.2" y1="166.3" x2="156.2" y2="166.3" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="149.9,112.3 154.3,127.7 117.7,137.7 113.5,123.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="167.5" cy="115.6" r="9" fill="{figure}"/><line x1="115.6" y1="130.5" x2="115.6" y2="164.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="115.6" y1="164.5" x2="83.6" y2="164.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="83.6" y1="164.5" x2="72.6" y2="164.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="115.6" y1="130.5" x2="115.6" y2="164.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="115.6" y1="164.5" x2="83.6" y2="164.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="83.6" y1="164.5" x2="72.6" y2="164.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="151.2" y1="120.3" x2="174.8" y2="116.1" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="174.8" y1="116.1" x2="196.5" y2="112.3" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="196.5" y1="112.3" x2="201.4" y2="111.4" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="151.2" y1="120.3" x2="174.8" y2="116.1" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="174.8" y1="116.1" x2="196.5" y2="112.3" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="196.5" y1="112.3" x2="201.4" y2="111.4" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'pilates-wandstuetz': {
+    media: {
+      exercise_id: 'pilates-wandstuetz',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-wandstuetz-start.svg',
+          alt_de:
+            'Ausgangsposition: Unterarme auf Schulterhöhe an der Wand, Füße einen großen Schritt zurück, Körper in einer schrägen Linie.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="164.1" y="20" width="7" height="150" fill="{furniture}"/><line x1="114.1" y1="112" x2="94.1" y2="139.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="94.1" y1="139.5" x2="75.3" y2="165.4" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="75.3" y1="165.4" x2="86.3" y2="165.4" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="136.8" y1="82.8" x2="160.8" y2="82" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="160.8" y1="82" x2="161.6" y2="60" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="161.6" y1="60" x2="161.8" y2="55" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="131.2,77.1 143.8,87 120,116.6 108.2,107.4" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="147.3" cy="69.4" r="9" fill="{figure}"/><line x1="114.1" y1="112" x2="93.1" y2="138.8" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="93.1" y1="138.8" x2="73.4" y2="164" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="73.4" y1="164" x2="84.4" y2="164" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="114.1" y1="112" x2="93.1" y2="138.8" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="93.1" y1="138.8" x2="73.4" y2="164" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="73.4" y1="164" x2="84.4" y2="164" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="136.8" y1="82.8" x2="160.8" y2="82.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="160.8" y1="82.8" x2="160.8" y2="60.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="160.8" y1="60.8" x2="160.8" y2="55.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="136.8" y1="82.8" x2="160.8" y2="82.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="160.8" y1="82.8" x2="160.8" y2="60.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="160.8" y1="60.8" x2="160.8" y2="55.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'pilates-wirbelsaeule-dehnen-sitzend': {
     media: {
       exercise_id: 'pilates-wirbelsaeule-dehnen-sitzend',
@@ -2852,6 +3271,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
     templates: {
       start_position:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="50" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="100" y1="164.5" x2="134" y2="163.3" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="134" y1="163.3" x2="166" y2="163.3" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="166" y1="163.3" x2="166" y2="152.3" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="109.6" y1="128.8" x2="133.3" y2="125.4" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="133.3" y1="125.4" x2="155.1" y2="122.4" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="155.1" y1="122.4" x2="160.1" y2="121.7" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="102.1,125.7 117.6,129.9 107.2,166.4 92.8,162.6" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="114" cy="112.3" r="9" fill="{figure}"/><line x1="100" y1="164.5" x2="134" y2="164.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="134" y1="164.5" x2="166" y2="164.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="166" y1="164.5" x2="166" y2="153.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="100" y1="164.5" x2="134" y2="164.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="134" y1="164.5" x2="166" y2="164.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="166" y1="164.5" x2="166" y2="153.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="109.6" y1="128.8" x2="133.2" y2="124.6" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="133.2" y1="124.6" x2="154.9" y2="120.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="154.9" y1="120.8" x2="159.8" y2="119.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="109.6" y1="128.8" x2="133.2" y2="124.6" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="133.2" y1="124.6" x2="154.9" y2="120.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="154.9" y1="120.8" x2="159.8" y2="119.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'pilates-wirbelsaeule-drehen-sitzend': {
+    media: {
+      exercise_id: 'pilates-wirbelsaeule-drehen-sitzend',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'pilates-wirbelsaeule-drehen-sitzend-start.svg',
+          alt_de:
+            'Ausgangsposition: aufrecht am Boden sitzen, Beine nach vorn, Arme waagerecht zur Seite gestreckt, Oberkörper leicht gedreht.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="51.9" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="101.9" y1="164.5" x2="135.8" y2="163.3" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="135.8" y1="163.3" x2="167.8" y2="163.3" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="167.8" y1="163.3" x2="167.8" y2="152.3" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="101.9" y1="127.5" x2="77.9" y2="126.7" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="77.9" y1="126.7" x2="55.9" y2="125.9" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="55.9" y1="125.9" x2="50.9" y2="125.7" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="93.9,126.5 109.9,126.5 109.4,164.5 94.4,164.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="101.9" cy="110.5" r="9" fill="{figure}"/><line x1="101.9" y1="164.5" x2="135.9" y2="164.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="135.9" y1="164.5" x2="167.9" y2="164.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="167.9" y1="164.5" x2="167.9" y2="153.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="101.9" y1="164.5" x2="135.9" y2="164.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="135.9" y1="164.5" x2="167.9" y2="164.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="167.9" y1="164.5" x2="167.9" y2="153.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="101.9" y1="127.5" x2="125.8" y2="126.7" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="125.8" y1="126.7" x2="147.8" y2="125.9" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="147.8" y1="125.9" x2="152.8" y2="125.7" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="101.9" y1="127.5" x2="125.8" y2="126.7" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="125.8" y1="126.7" x2="147.8" y2="125.9" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="147.8" y1="125.9" x2="152.8" y2="125.7" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
   'pistol-kniebeuge': {
@@ -4450,6 +4890,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><line x1="95.6" y1="101.5" x2="106.6" y2="133.7" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="106.6" y1="133.7" x2="103.3" y2="165.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="103.3" y1="165.5" x2="114.3" y2="165.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="127.6" y1="83" x2="125.1" y2="106.9" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="125.1" y1="106.9" x2="125.9" y2="128.9" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="125.9" y1="128.9" x2="126" y2="133.9" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="124.5,75.6 132.5,89.5 99.3,108 91.8,95" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="141.7" cy="73.5" r="9" fill="{figure}"/><line x1="95.6" y1="101.5" x2="108.3" y2="133.1" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="108.3" y1="133.1" x2="103.9" y2="164.7" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="103.9" y1="164.7" x2="114.9" y2="164.7" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="95.6" y1="101.5" x2="108.3" y2="133.1" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="108.3" y1="133.1" x2="103.9" y2="164.7" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="103.9" y1="164.7" x2="114.9" y2="164.7" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="127.6" y1="83" x2="125.9" y2="107" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="125.9" y1="107" x2="127.5" y2="128.9" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="127.5" y1="128.9" x2="127.6" y2="133.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="127.6" y1="83" x2="125.9" y2="107" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="125.9" y1="107" x2="127.5" y2="128.9" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="127.5" y1="128.9" x2="127.6" y2="133.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'yoga-adlerarme-sitzend': {
+    media: {
+      exercise_id: 'yoga-adlerarme-sitzend',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-adlerarme-sitzend-start.svg',
+          alt_de:
+            'Ausgangsposition: aufrecht auf einem Stuhl sitzen, Arme vor der Brust überkreuzt, Ellbogen auf Schulterhöhe, Unterarme nach oben.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><line x1="87.9" y1="170" x2="87.9" y2="103" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="115.9" y1="170" x2="115.9" y2="137" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="87.9" y1="137" x2="115.9" y2="137" stroke="{furnitureLine}" stroke-width="5" stroke-linecap="round"/><line x1="109.9" y1="129" x2="143.4" y2="134.8" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="143.4" y1="134.8" x2="138.9" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="138.9" y1="166.5" x2="149.9" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="108.6" y1="92" x2="130.3" y2="81.9" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="130.3" y1="81.9" x2="126.5" y2="60.2" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="126.5" y1="60.2" x2="125.6" y2="55.3" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="100.6,91.3 116.5,90.7 117.4,128.7 102.4,129.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="108" cy="75" r="9" fill="{figure}"/><line x1="109.9" y1="129" x2="143.4" y2="134.6" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="143.4" y1="134.6" x2="140.9" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="140.9" y1="166.5" x2="151.9" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="109.9" y1="129" x2="143.4" y2="134.6" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="143.4" y1="134.6" x2="140.9" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="140.9" y1="166.5" x2="151.9" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="108.6" y1="92" x2="131.8" y2="85.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="131.8" y1="85.8" x2="129.8" y2="63.9" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="129.8" y1="63.9" x2="129.4" y2="58.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="108.6" y1="92" x2="131.8" y2="85.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="131.8" y1="85.8" x2="129.8" y2="63.9" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="129.8" y1="63.9" x2="129.4" y2="58.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'yoga-baum': {
     media: {
       exercise_id: 'yoga-baum',
@@ -4618,6 +5079,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><polygon points="92,111 94.1,87.1 131.6,94.4 130.2,110.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="77.1" cy="97.7" r="9" fill="{figure}"/><line x1="130.4" y1="108.3" x2="113.4" y2="137.8" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="113.4" y1="137.8" x2="97.4" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="97.4" y1="165.5" x2="92.8" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="130.4" y1="108.3" x2="113.4" y2="137.8" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="113.4" y1="137.8" x2="97.4" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="97.4" y1="165.5" x2="92.8" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="131.5" y1="96.4" x2="148.5" y2="125.8" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="148.5" y1="125.8" x2="164.5" y2="153.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="164.5" y1="153.5" x2="169.1" y2="155.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="131.5" y1="96.4" x2="148.5" y2="125.8" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="148.5" y1="125.8" x2="164.5" y2="153.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="164.5" y1="153.5" x2="169.1" y2="155.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="93" y1="111.1" x2="93" y2="135.1" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="93" y1="135.1" x2="93" y2="157.1" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="93" y1="157.1" x2="93" y2="162.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="93" y1="111.1" x2="93" y2="135.1" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="93" y1="135.1" x2="93" y2="157.1" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="93" y1="157.1" x2="93" y2="162.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="95.1" y1="87.2" x2="95.1" y2="63.2" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="95.1" y1="63.2" x2="95.1" y2="41.2" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="95.1" y1="41.2" x2="95.1" y2="36.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="95.1" y1="87.2" x2="95.1" y2="63.2" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="95.1" y1="63.2" x2="95.1" y2="41.2" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="95.1" y1="41.2" x2="95.1" y2="36.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'yoga-dreieck-block': {
+    media: {
+      exercise_id: 'yoga-dreieck-block',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-dreieck-block-start.svg',
+          alt_de:
+            'Ausgangsposition: von vorn – breiter Stand, Oberkörper zur Seite geneigt, untere Hand auf einem Block, obere Hand zeigt nach oben.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="82.8" y="154.3" width="14" height="16" rx="1.5" fill="{equip}"/><polygon points="88.8,101 97,78.4 131.4,95.2 125.9,110.2" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="77.9" cy="84.2" r="9" fill="{figure}"/><line x1="126.6" y1="108.3" x2="109.6" y2="137.8" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="109.6" y1="137.8" x2="93.6" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="93.6" y1="165.5" x2="88.9" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="126.6" y1="108.3" x2="109.6" y2="137.8" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="109.6" y1="137.8" x2="93.6" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="93.6" y1="165.5" x2="88.9" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="130.7" y1="97.1" x2="147.7" y2="126.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="147.7" y1="126.5" x2="163.7" y2="154.2" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="163.7" y1="154.2" x2="168.3" y2="155.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="130.7" y1="97.1" x2="147.7" y2="126.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="147.7" y1="126.5" x2="163.7" y2="154.2" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="163.7" y1="154.2" x2="168.3" y2="155.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="89.8" y1="101.3" x2="89.8" y2="125.3" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="89.8" y1="125.3" x2="89.8" y2="147.3" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="89.8" y1="147.3" x2="89.8" y2="152.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="89.8" y1="101.3" x2="89.8" y2="125.3" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="89.8" y1="125.3" x2="89.8" y2="147.3" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="89.8" y1="147.3" x2="89.8" y2="152.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="98" y1="78.8" x2="98" y2="54.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="98" y1="54.8" x2="98" y2="32.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="98" y1="32.8" x2="98" y2="27.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="98" y1="78.8" x2="98" y2="54.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="98" y1="54.8" x2="98" y2="32.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="98" y1="32.8" x2="98" y2="27.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'yoga-entspannung-rueckenlage': {
     media: {
       exercise_id: 'yoga-entspannung-rueckenlage',
@@ -4658,6 +5140,69 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
     templates: {
       start_position:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><line x1="87.9" y1="170" x2="87.9" y2="103" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="115.9" y1="170" x2="115.9" y2="137" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="87.9" y1="137" x2="115.9" y2="137" stroke="{furnitureLine}" stroke-width="5" stroke-linecap="round"/><line x1="109.9" y1="129" x2="143.4" y2="134.8" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="143.4" y1="134.8" x2="138.9" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="138.9" y1="166.5" x2="149.9" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="108.6" y1="92" x2="116.2" y2="114.8" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="116.2" y1="114.8" x2="129.9" y2="132" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="129.9" y1="132" x2="134.9" y2="132" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="100.6,91.3 116.5,90.7 117.4,128.7 102.4,129.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="108" cy="75" r="9" fill="{figure}"/><line x1="109.9" y1="129" x2="143.4" y2="134.6" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="143.4" y1="134.6" x2="140.9" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="140.9" y1="166.5" x2="151.9" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="109.9" y1="129" x2="143.4" y2="134.6" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="143.4" y1="134.6" x2="140.9" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="140.9" y1="166.5" x2="151.9" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="108.6" y1="92" x2="120.2" y2="113" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="120.2" y1="113" x2="131.7" y2="131.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="131.7" y1="131.8" x2="136.7" y2="131.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="108.6" y1="92" x2="120.2" y2="113" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="120.2" y1="113" x2="131.7" y2="131.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="131.7" y1="131.8" x2="136.7" y2="131.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'yoga-girlande-block': {
+    media: {
+      exercise_id: 'yoga-girlande-block',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-girlande-block-start.svg',
+          alt_de:
+            'Ausgangsposition: tiefe Hocke, Gesäß auf einem Block, Fersen am Boden, Hände vor der Brust, Ellbogen innen an den Knien.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="94.6" y="156" width="20" height="14" rx="1.5" fill="{equip}"/><line x1="106.6" y1="148" x2="139.9" y2="140.9" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="139.9" y1="140.9" x2="120.6" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="120.6" y1="166.5" x2="131.6" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="113" y1="111.6" x2="132.7" y2="125.3" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="132.7" y1="125.3" x2="128.9" y2="103.7" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="128.9" y1="103.7" x2="128" y2="98.7" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="105.3,109.2 121.1,112 114,149.3 99.2,146.7" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="115.5" cy="94.7" r="9" fill="{figure}"/><line x1="106.6" y1="148" x2="139.5" y2="139.3" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="139.5" y1="139.3" x2="122.6" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="122.6" y1="166.5" x2="133.6" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="106.6" y1="148" x2="139.5" y2="139.3" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="139.5" y1="139.3" x2="122.6" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="122.6" y1="166.5" x2="133.6" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="113" y1="111.6" x2="131.4" y2="127" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="131.4" y1="127" x2="129.5" y2="105.1" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="129.5" y1="105.1" x2="129.1" y2="100.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="113" y1="111.6" x2="131.4" y2="127" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="131.4" y1="127" x2="129.5" y2="105.1" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="129.5" y1="105.1" x2="129.1" y2="100.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'yoga-halbe-vorbeuge-block': {
+    media: {
+      exercise_id: 'yoga-halbe-vorbeuge-block',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-halbe-vorbeuge-block-start.svg',
+          alt_de:
+            'Ausgangsposition: aus der Hüfte nach vorn geneigt, Rücken lang und fast waagerecht, Hände auf einem Block, Knie leicht gebeugt.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="123.4" y="148" width="14" height="22" rx="1.5" fill="{equip}"/><line x1="91.4" y1="99.5" x2="92.6" y2="133.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="92.6" y1="133.5" x2="91.5" y2="165.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="91.5" y1="165.5" x2="102.5" y2="165.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="128.1" y1="94.4" x2="131" y2="118.2" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="131" y1="118.2" x2="132.2" y2="140.2" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="132.2" y1="140.2" x2="132.2" y2="145.2" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="128,86.3 130.2,102.2 92.5,107 90.4,92.1" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="145.1" cy="94" r="9" fill="{figure}"/><line x1="91.4" y1="99.5" x2="93.8" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="93.8" y1="133.5" x2="91.6" y2="165.4" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="91.6" y1="165.4" x2="102.6" y2="165.4" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="91.4" y1="99.5" x2="93.8" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="93.8" y1="133.5" x2="91.6" y2="165.4" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="91.6" y1="165.4" x2="102.6" y2="165.4" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="128.1" y1="94.4" x2="130.2" y2="118.3" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="130.2" y1="118.3" x2="130.9" y2="140.3" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="130.9" y1="140.3" x2="130.9" y2="145.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="128.1" y1="94.4" x2="130.2" y2="118.3" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="130.2" y1="118.3" x2="130.9" y2="140.3" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="130.9" y1="140.3" x2="130.9" y2="145.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'yoga-heldensitz-block': {
+    media: {
+      exercise_id: 'yoga-heldensitz-block',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-heldensitz-block-start.svg',
+          alt_de:
+            'Ausgangsposition: kniend auf einem Block zwischen den Fersen sitzen, Oberkörper aufrecht, Hände auf den Oberschenkeln.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="60" y="167" width="120" height="3" rx="1.5" fill="{equipSoft}"/><rect x="110" y="157" width="20" height="13" rx="1.5" fill="{equip}"/><line x1="120" y1="146" x2="147.9" y2="165.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="147.9" y1="165.5" x2="115.9" y2="165.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="115.9" y1="165.5" x2="104.9" y2="165.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="120" y1="109" x2="122.2" y2="132.9" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="122.2" y1="132.9" x2="136" y2="150" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="136" y1="150" x2="141" y2="150" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="112,108 128,108 127.5,146 112.5,146" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="120" cy="92" r="9" fill="{figure}"/><line x1="120" y1="146" x2="148.5" y2="164.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="148.5" y1="164.5" x2="116.5" y2="164.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="116.5" y1="164.5" x2="105.5" y2="164.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="146" x2="148.5" y2="164.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="148.5" y1="164.5" x2="116.5" y2="164.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="116.5" y1="164.5" x2="105.5" y2="164.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="120" y1="109" x2="124.6" y2="132.6" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="124.6" y1="132.6" x2="138" y2="150" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="138" y1="150" x2="143" y2="150" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="109" x2="124.6" y2="132.6" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="124.6" y1="132.6" x2="138" y2="150" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="138" y1="150" x2="143" y2="150" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
   'yoga-herabschauender-hund': {
@@ -4721,6 +5266,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
     templates: {
       start_position:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="136.1" y="20" width="8" height="150" fill="{furniture}"/><line x1="78.1" y1="99.5" x2="76.9" y2="133.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="76.9" y1="133.5" x2="77.5" y2="165.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="77.5" y1="165.5" x2="88.5" y2="165.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="114.9" y1="96.3" x2="138.9" y2="95" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="138.9" y1="95" x2="160.9" y2="93.5" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="160.9" y1="93.5" x2="165.9" y2="93.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="115.2,88.2 116.6,104.2 78.7,107 77.4,92.1" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="131.9" cy="95.3" r="9" fill="{figure}"/><line x1="78.1" y1="99.5" x2="79.3" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="79.3" y1="133.5" x2="78.7" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="78.7" y1="165.5" x2="89.7" y2="165.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="78.1" y1="99.5" x2="79.3" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="79.3" y1="133.5" x2="78.7" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="78.7" y1="165.5" x2="89.7" y2="165.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="114.9" y1="96.3" x2="138.8" y2="94.2" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="138.8" y1="94.2" x2="160.8" y2="92.3" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="160.8" y1="92.3" x2="165.8" y2="92.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="114.9" y1="96.3" x2="138.8" y2="94.2" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="138.8" y1="94.2" x2="160.8" y2="92.3" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="160.8" y1="92.3" x2="165.8" y2="92.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'yoga-katze-kuh': {
+    media: {
+      exercise_id: 'yoga-katze-kuh',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-katze-kuh-start.svg',
+          alt_de:
+            'Ausgangsposition: Vierfüßlerstand, Hände unter den Schultern, Knie unter der Hüfte, Rücken sanft rund, Kopf hängt locker.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="55" y="167" width="130" height="3" rx="1.5" fill="{equipSoft}"/><line x1="115" y1="130.5" x2="113.8" y2="164.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="113.8" y1="164.5" x2="81.8" y2="164.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="81.8" y1="164.5" x2="70.8" y2="164.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="150.2" y1="119.1" x2="151" y2="143.1" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="151" y1="143.1" x2="150.3" y2="165" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="150.3" y1="165" x2="155.3" y2="165" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="148.7,111.1 153.6,126.4 117.3,137.6 112.7,123.4" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="165.7" cy="124.1" r="9" fill="{figure}"/><line x1="115" y1="130.5" x2="115" y2="164.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="115" y1="164.5" x2="83" y2="164.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="83" y1="164.5" x2="72" y2="164.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="115" y1="130.5" x2="115" y2="164.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="115" y1="164.5" x2="83" y2="164.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="83" y1="164.5" x2="72" y2="164.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="150.2" y1="119.1" x2="150.2" y2="143.1" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="150.2" y1="143.1" x2="150.2" y2="165.1" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="150.2" y1="165.1" x2="155.2" y2="165.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="150.2" y1="119.1" x2="150.2" y2="143.1" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="150.2" y1="143.1" x2="150.2" y2="165.1" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="150.2" y1="165.1" x2="155.2" y2="165.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
   'yoga-kindhaltung': {
@@ -4870,6 +5436,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><line x1="100.1" y1="170" x2="100.1" y2="103" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="128.1" y1="170" x2="128.1" y2="137" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="100.1" y1="137" x2="128.1" y2="137" stroke="{furnitureLine}" stroke-width="5" stroke-linecap="round"/><line x1="122.1" y1="129" x2="100.4" y2="155.2" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="100.4" y1="155.2" x2="70.1" y2="165.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="70.1" y1="165.5" x2="81.1" y2="165.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="120.8" y1="92" x2="96.9" y2="89.9" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="96.9" y1="89.9" x2="75" y2="88" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="75" y1="88" x2="70" y2="87.6" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="112.8,91.3 128.8,90.7 129.6,128.7 114.6,129.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="120.2" cy="75" r="9" fill="{figure}"/><line x1="122.1" y1="129" x2="155.7" y2="134.6" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="155.7" y1="134.6" x2="153.1" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="153.1" y1="166.5" x2="164.1" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="122.1" y1="129" x2="155.7" y2="134.6" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="155.7" y1="134.6" x2="153.1" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="153.1" y1="166.5" x2="164.1" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="120.8" y1="92" x2="144.7" y2="89.9" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="144.7" y1="89.9" x2="166.7" y2="88" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="166.7" y1="88" x2="171.6" y2="87.6" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120.8" y1="92" x2="144.7" y2="89.9" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="144.7" y1="89.9" x2="166.7" y2="88" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="166.7" y1="88" x2="171.6" y2="87.6" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'yoga-krieger-3-wand': {
+    media: {
+      exercise_id: 'yoga-krieger-3-wand',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-krieger-3-wand-start.svg',
+          alt_de:
+            'Ausgangsposition: Hände auf Hüfthöhe an der Wand, Oberkörper und ein Bein waagerecht in einer Linie, Standbein gerade.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="197.7" y="20" width="7" height="150" fill="{furniture}"/><line x1="105.7" y1="102" x2="71.8" y2="103.2" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="71.8" y1="103.2" x2="39.8" y2="104.3" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="39.8" y1="104.3" x2="39.8" y2="93.3" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="142.7" y1="100.7" x2="166.7" y2="100.7" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="166.7" y1="100.7" x2="188.7" y2="100.7" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="188.7" y1="100.7" x2="193.7" y2="100.7" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="143.4,92.7 144,108.7 106,109.5 105.5,94.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="159.7" cy="99.6" r="9" fill="{figure}"/><line x1="105.7" y1="102" x2="105.7" y2="136" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="105.7" y1="136" x2="105.7" y2="168" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="105.7" y1="168" x2="116.7" y2="168" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="105.7" y1="102" x2="105.7" y2="136" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="105.7" y1="136" x2="105.7" y2="168" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="105.7" y1="168" x2="116.7" y2="168" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="142.7" y1="100.7" x2="166.7" y2="99.9" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="166.7" y1="99.9" x2="188.7" y2="99.1" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="188.7" y1="99.1" x2="193.7" y2="99.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="142.7" y1="100.7" x2="166.7" y2="99.9" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="166.7" y1="99.9" x2="188.7" y2="99.1" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="188.7" y1="99.1" x2="193.7" y2="99.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'yoga-liegende-drehung': {
     media: {
       exercise_id: 'yoga-liegende-drehung',
@@ -4889,6 +5476,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
     templates: {
       start_position:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="40" y="167" width="160" height="3" rx="1.5" fill="{equipSoft}"/><line x1="130" y1="148.9" x2="106.8" y2="124.1" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="106.8" y1="124.1" x2="100.2" y2="155.4" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="100.2" y1="155.4" x2="98.2" y2="166.2" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="167" y1="148.9" x2="143" y2="148.1" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="143" y1="148.1" x2="121" y2="148.1" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="121" y1="148.1" x2="116" y2="148.1" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="168,140.9 168,156.9 130,156.4 130,141.4" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="184" cy="148.5" r="9" fill="{figure}"/><line x1="130" y1="148.9" x2="106" y2="124.9" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="106" y1="124.9" x2="100.4" y2="156.4" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="100.4" y1="156.4" x2="98.5" y2="167.3" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="130" y1="148.9" x2="106" y2="124.9" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="106" y1="124.9" x2="100.4" y2="156.4" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="100.4" y1="156.4" x2="98.5" y2="167.3" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="167" y1="148.9" x2="143" y2="149.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="143" y1="149.8" x2="121" y2="149.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="121" y1="149.8" x2="116" y2="149.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="167" y1="148.9" x2="143" y2="149.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="143" y1="149.8" x2="121" y2="149.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="121" y1="149.8" x2="116" y2="149.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'yoga-palme': {
+    media: {
+      exercise_id: 'yoga-palme',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-palme-start.svg',
+          alt_de:
+            'Ausgangsposition: von vorn – hüftbreit stehen, beide Arme lang über den Kopf gestreckt, Handflächen zueinander.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><polygon points="108,61.5 132,61.5 128,99.5 112,99.5" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><line x1="114" y1="99.5" x2="115.2" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="115.2" y1="133.5" x2="115.2" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="115.2" y1="165.5" x2="110.5" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="114" y1="99.5" x2="115.2" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="115.2" y1="133.5" x2="115.2" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="115.2" y1="165.5" x2="110.5" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="126" y1="99.5" x2="124.8" y2="133.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="124.8" y1="133.5" x2="124.8" y2="165.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="124.8" y1="165.5" x2="129.5" y2="167.2" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="126" y1="99.5" x2="124.8" y2="133.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="124.8" y1="133.5" x2="124.8" y2="165.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="124.8" y1="165.5" x2="129.5" y2="167.2" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="108" y1="62.5" x2="105.1" y2="38.7" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="105.1" y1="38.7" x2="103.9" y2="16.7" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="103.9" y1="16.7" x2="103.7" y2="11.7" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="108" y1="62.5" x2="105.1" y2="38.7" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="105.1" y1="38.7" x2="103.9" y2="16.7" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="103.9" y1="16.7" x2="103.7" y2="11.7" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="132" y1="62.5" x2="134.9" y2="38.7" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="134.9" y1="38.7" x2="136.1" y2="16.7" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="136.1" y1="16.7" x2="136.3" y2="11.7" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="132" y1="62.5" x2="134.9" y2="38.7" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="134.9" y1="38.7" x2="136.1" y2="16.7" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="136.1" y1="16.7" x2="136.3" y2="11.7" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><circle cx="120" cy="45.5" r="10.6" fill="{gap}"/><circle cx="120" cy="45.5" r="9" fill="{figure}"/></svg>',
     },
   },
   'yoga-schmetterling': {
@@ -4933,6 +5541,27 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="60" y="167" width="120" height="3" rx="1.5" fill="{equipSoft}"/><line x1="120" y1="142" x2="153.3" y2="134.9" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="153.3" y1="134.9" x2="148" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="148" y1="166.5" x2="159" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="86.5" y1="157.6" x2="109.9" y2="162.6" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="109.9" y1="162.6" x2="131.9" y2="162.6" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="131.9" y1="162.6" x2="136.9" y2="162.6" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="88.9,165.3 82.2,150.8 116.8,135.2 123.2,148.8" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="70" cy="161.3" r="9" fill="{figure}"/><line x1="120" y1="142" x2="153.2" y2="134.7" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="153.2" y1="134.7" x2="150" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="150" y1="166.5" x2="161" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120" y1="142" x2="153.2" y2="134.7" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="153.2" y1="134.7" x2="150" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="150" y1="166.5" x2="161" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="86.5" y1="157.6" x2="110.1" y2="161.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="110.1" y1="161.8" x2="132.1" y2="161.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="132.1" y1="161.8" x2="137.1" y2="161.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="86.5" y1="157.6" x2="110.1" y2="161.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="110.1" y1="161.8" x2="132.1" y2="161.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="132.1" y1="161.8" x2="137.1" y2="161.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
+  'yoga-schulterbruecke-block': {
+    media: {
+      exercise_id: 'yoga-schulterbruecke-block',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-schulterbruecke-block-start.svg',
+          alt_de:
+            'Ausgangsposition: Rückenlage, Füße aufgestellt, Becken liegt auf einem flachen Block unter dem Kreuzbein, Arme neben dem Körper.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="60.3" y="167" width="120" height="3" rx="1.5" fill="{equipSoft}"/><rect x="111.3" y="161" width="18" height="9" rx="1.5" fill="{equip}"/><line x1="120.3" y1="143" x2="153.3" y2="134.9" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="153.3" y1="134.9" x2="148.3" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="148.3" y1="166.5" x2="159.3" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="85.5" y1="155.7" x2="109" y2="160.6" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="109" y1="160.6" x2="131" y2="160.6" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="131" y1="160.6" x2="136" y2="160.6" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="87.3,163.5 81.8,148.5 117.7,136 122.8,150" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="68.7" cy="157.9" r="9" fill="{figure}"/><line x1="120.3" y1="143" x2="153.2" y2="134.6" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="153.2" y1="134.6" x2="150.3" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="150.3" y1="166.5" x2="161.3" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="120.3" y1="143" x2="153.2" y2="134.6" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="153.2" y1="134.6" x2="150.3" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="150.3" y1="166.5" x2="161.3" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="85.5" y1="155.7" x2="109.1" y2="159.8" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="109.1" y1="159.8" x2="131.1" y2="159.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="131.1" y1="159.8" x2="136.1" y2="159.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="85.5" y1="155.7" x2="109.1" y2="159.8" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="109.1" y1="159.8" x2="131.1" y2="159.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="131.1" y1="159.8" x2="136.1" y2="159.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
   'yoga-seitneige-stehend': {
     media: {
       exercise_id: 'yoga-seitneige-stehend',
@@ -4973,6 +5602,90 @@ export const GENERATED_ILLUSTRATIONS: Readonly<Record<string, GeneratedIllustrat
     templates: {
       start_position:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><line x1="87.9" y1="170" x2="87.9" y2="103" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="115.9" y1="170" x2="115.9" y2="137" stroke="{furnitureLine}" stroke-width="4" stroke-linecap="round"/><line x1="87.9" y1="137" x2="115.9" y2="137" stroke="{furnitureLine}" stroke-width="5" stroke-linecap="round"/><line x1="109.9" y1="129" x2="143.4" y2="134.8" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="143.4" y1="134.8" x2="138.9" y2="166.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="138.9" y1="166.5" x2="149.9" y2="166.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="108.6" y1="92" x2="94.8" y2="111.7" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="94.8" y1="111.7" x2="115.9" y2="118" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="115.9" y1="118" x2="115.9" y2="123" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="100.6,91.3 116.5,90.7 117.4,128.7 102.4,129.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="107.3" cy="75.1" r="9" fill="{figure}"/><line x1="109.9" y1="129" x2="143.4" y2="134.6" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="143.4" y1="134.6" x2="140.9" y2="166.5" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="140.9" y1="166.5" x2="151.9" y2="166.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="109.9" y1="129" x2="143.4" y2="134.6" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="143.4" y1="134.6" x2="140.9" y2="166.5" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="140.9" y1="166.5" x2="151.9" y2="166.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="108.6" y1="92" x2="106.5" y2="115.9" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="106.5" y1="115.9" x2="104.6" y2="137.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="104.6" y1="137.8" x2="104.1" y2="142.8" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="108.6" y1="92" x2="106.5" y2="115.9" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="106.5" y1="115.9" x2="104.6" y2="137.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="104.6" y1="137.8" x2="104.1" y2="142.8" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'yoga-seitstreckung-kniend': {
+    media: {
+      exercise_id: 'yoga-seitstreckung-kniend',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-seitstreckung-kniend-start.svg',
+          alt_de:
+            'Ausgangsposition: von vorn – auf einem Knie, das andere Bein seitlich ausgestreckt, Oberkörper zur Seite geneigt, ein Arm über dem Kopf.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="40" y="167" width="160" height="3" rx="1.5" fill="{equipSoft}"/><polygon points="121.7,87.2 144.3,95.4 127.5,129.7 112.5,124.3" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="140.7" cy="77.3" r="9" fill="{figure}"/><line x1="114.4" y1="124.9" x2="113.2" y2="158.9" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="113.2" y1="158.9" x2="113.2" y2="162.8" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="113.2" y1="162.8" x2="108.5" y2="164.5" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="114.4" y1="124.9" x2="113.2" y2="158.9" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="113.2" y1="158.9" x2="113.2" y2="162.8" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="113.2" y1="162.8" x2="108.5" y2="164.5" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="125.6" y1="129.1" x2="153.5" y2="148.6" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="153.5" y1="148.6" x2="179.7" y2="166.9" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="179.7" y1="166.9" x2="184.4" y2="168.6" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="125.6" y1="129.1" x2="153.5" y2="148.6" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="153.5" y1="148.6" x2="179.7" y2="166.9" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="179.7" y1="166.9" x2="184.4" y2="168.6" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="121.4" y1="88.1" x2="129.6" y2="65.6" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="129.6" y1="65.6" x2="148.6" y2="54.6" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="148.6" y1="54.6" x2="153" y2="52.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="121.4" y1="88.1" x2="129.6" y2="65.6" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="129.6" y1="65.6" x2="148.6" y2="54.6" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="148.6" y1="54.6" x2="153" y2="52.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="143.9" y1="96.3" x2="159.4" y2="114.7" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="159.4" y1="114.7" x2="170.4" y2="133.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="170.4" y1="133.8" x2="172.9" y2="138.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="143.9" y1="96.3" x2="159.4" y2="114.7" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="159.4" y1="114.7" x2="170.4" y2="133.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="170.4" y1="133.8" x2="172.9" y2="138.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'yoga-sitzende-vorbeuge-block': {
+    media: {
+      exercise_id: 'yoga-sitzende-vorbeuge-block',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-sitzende-vorbeuge-block-start.svg',
+          alt_de:
+            'Ausgangsposition: auf einem Block am Boden sitzen, Beine nach vorn mit leicht gebeugten Knien, Oberkörper mit langem Rücken nach vorn geneigt.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="50" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><rect x="86" y="162" width="22" height="8" rx="1.5" fill="{equip}"/><line x1="100" y1="154.2" x2="133.8" y2="150.6" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="133.8" y1="150.6" x2="165.6" y2="154" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="165.6" y1="154" x2="165.6" y2="143" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="126.2" y1="128" x2="149.9" y2="131.4" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="149.9" y1="131.4" x2="171.2" y2="137.1" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="171.2" y1="137.1" x2="176" y2="138.4" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="121.2,121.7 132.5,133 105.3,159.5 94.7,148.9" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="138.2" cy="116" r="9" fill="{figure}"/><line x1="100" y1="154.2" x2="133.7" y2="149.5" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="133.7" y1="149.5" x2="165.4" y2="153.9" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="165.4" y1="153.9" x2="165.4" y2="142.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="100" y1="154.2" x2="133.7" y2="149.5" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="133.7" y1="149.5" x2="165.4" y2="153.9" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="165.4" y1="153.9" x2="165.4" y2="142.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="126.2" y1="128" x2="150.1" y2="130.1" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="150.1" y1="130.1" x2="171.3" y2="135.8" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="171.3" y1="135.8" x2="176.2" y2="137.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="126.2" y1="128" x2="150.1" y2="130.1" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="150.1" y1="130.1" x2="171.3" y2="135.8" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="171.3" y1="135.8" x2="176.2" y2="137.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'yoga-sphinx': {
+    media: {
+      exercise_id: 'yoga-sphinx',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-sphinx-start.svg',
+          alt_de:
+            'Ausgangsposition: Bauchlage, Ellbogen unter den Schultern, Unterarme parallel nach vorn, Brust sanft angehoben.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><rect x="47.6" y="167" width="140" height="3" rx="1.5" fill="{equipSoft}"/><line x1="127.6" y1="155.9" x2="93.6" y2="156.5" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="93.6" y1="156.5" x2="61.6" y2="156.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="61.6" y1="156.5" x2="50.6" y2="156.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="161.9" y1="142" x2="162.7" y2="166" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="162.7" y1="166" x2="184.7" y2="165.2" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="184.7" y1="165.2" x2="189.7" y2="165.2" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="159.8,134.2 165.8,149 130.4,162.8 124.8,148.9" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="178" cy="136.8" r="9" fill="{figure}"/><line x1="127.6" y1="155.9" x2="93.6" y2="155.9" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="93.6" y1="155.9" x2="61.6" y2="155.9" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="61.6" y1="155.9" x2="50.6" y2="155.9" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="127.6" y1="155.9" x2="93.6" y2="155.9" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="93.6" y1="155.9" x2="61.6" y2="155.9" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="61.6" y1="155.9" x2="50.6" y2="155.9" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="161.9" y1="142" x2="161.9" y2="166" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="161.9" y1="166" x2="183.9" y2="166" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="183.9" y1="166" x2="188.9" y2="166" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="161.9" y1="142" x2="161.9" y2="166" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="161.9" y1="166" x2="183.9" y2="166" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="183.9" y1="166" x2="188.9" y2="166" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
+    },
+  },
+  'yoga-stuhlhaltung': {
+    media: {
+      exercise_id: 'yoga-stuhlhaltung',
+      images: [
+        {
+          kind: 'start_position',
+          file: 'yoga-stuhlhaltung-start.svg',
+          alt_de:
+            'Ausgangsposition: Knie gebeugt, Gesäß nach hinten wie beim Hinsetzen, Oberkörper leicht nach vorn, Arme nach vorn oben gestreckt.',
+          origin: 'own_work',
+          license: { name: 'eigene Illustration Alpha5', attribution_de: null },
+          source: { creator: 'Alpha5', obtained_on: '2026-10-21' },
+          reviewed_by: null,
+        },
+      ],
+    },
+    templates: {
+      start_position:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180"><line x1="8" y1="171" x2="232" y2="171" stroke="{ground}" stroke-width="2" stroke-linecap="round"/><line x1="102.7" y1="119.3" x2="133" y2="134.7" stroke="{figureFar}" stroke-width="11" stroke-linecap="round"/><line x1="133" y1="134.7" x2="124.2" y2="165.5" stroke="{figureFar}" stroke-width="9" stroke-linecap="round"/><line x1="124.2" y1="165.5" x2="135.2" y2="165.5" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><line x1="118.3" y1="85.8" x2="130.3" y2="65" stroke="{figureFar}" stroke-width="8" stroke-linecap="round"/><line x1="130.3" y1="65" x2="141.3" y2="45.9" stroke="{figureFar}" stroke-width="7" stroke-linecap="round"/><line x1="141.3" y1="45.9" x2="143.8" y2="41.6" stroke="{figureFar}" stroke-width="5.5" stroke-linecap="round"/><polygon points="111.5,81.5 126,88.2 109.5,122.5 95.9,116.1" fill="{figure}" stroke="{figure}" stroke-width="5" stroke-linejoin="round"/><circle cx="124.4" cy="69.9" r="9" fill="{figure}"/><line x1="102.7" y1="119.3" x2="133.5" y2="133.7" stroke="{gap}" stroke-width="14.2" stroke-linecap="round"/><line x1="133.5" y1="133.7" x2="123.6" y2="164.1" stroke="{gap}" stroke-width="12.2" stroke-linecap="round"/><line x1="123.6" y1="164.1" x2="134.6" y2="164.1" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="102.7" y1="119.3" x2="133.5" y2="133.7" stroke="{figure}" stroke-width="11" stroke-linecap="round"/><line x1="133.5" y1="133.7" x2="123.6" y2="164.1" stroke="{figure}" stroke-width="9" stroke-linecap="round"/><line x1="123.6" y1="164.1" x2="134.6" y2="164.1" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/><line x1="118.3" y1="85.8" x2="129.6" y2="64.6" stroke="{gap}" stroke-width="11.2" stroke-linecap="round"/><line x1="129.6" y1="64.6" x2="139.9" y2="45.2" stroke="{gap}" stroke-width="10.2" stroke-linecap="round"/><line x1="139.9" y1="45.2" x2="142.3" y2="40.7" stroke="{gap}" stroke-width="8.7" stroke-linecap="round"/><line x1="118.3" y1="85.8" x2="129.6" y2="64.6" stroke="{figure}" stroke-width="8" stroke-linecap="round"/><line x1="129.6" y1="64.6" x2="139.9" y2="45.2" stroke="{figure}" stroke-width="7" stroke-linecap="round"/><line x1="139.9" y1="45.2" x2="142.3" y2="40.7" stroke="{figure}" stroke-width="5.5" stroke-linecap="round"/></svg>',
     },
   },
   'yoga-taube': {

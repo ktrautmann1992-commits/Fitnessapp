@@ -1,0 +1,38 @@
+{
+  "id": "mobility-hueftkreisen",
+  "version": 1,
+  "status": "published",
+  "name_de": "Hüftkreisen",
+  "name_en": "Hip Circles",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["glutes"],
+  "secondary_muscles": ["obliques", "lower_back"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Im Stand die Hände an die Hüfte legen und das Becken in ruhigen Kreisen bewegen.",
+  "steps_de": [
+    "Hüftbreit stehen, Knie locker, Hände an der Hüfte.",
+    "Das Becken langsam im Kreis bewegen.",
+    "Der Oberkörper bleibt ruhig.",
+    "Nach einigen Kreisen die Richtung wechseln."
+  ],
+  "tips_de": ["Die Kreise mit der Zeit etwas größer werden lassen."],
+  "common_mistakes_de": ["Den ganzen Oberkörper mitkreisen lassen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

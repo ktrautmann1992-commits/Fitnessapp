@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-seitstreckung-kniend",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-seitstreckung-kniend-start.svg",
+      "alt_de": "Ausgangsposition: von vorn – auf einem Knie, das andere Bein seitlich ausgestreckt, Oberkörper zur Seite geneigt, ein Arm über dem Kopf.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "yoga-palme",
+  "version": 1,
+  "status": "published",
+  "name_de": "Palme",
+  "name_en": "Upward Salute",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["upper_back"],
+  "secondary_muscles": ["side_delts", "abs"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["overhead"],
+  "description_de": "Aufrecht stehen und die Arme lang über den Kopf strecken. Streckt die ganze Körperseite und richtet auf.",
+  "steps_de": [
+    "Hüftbreit stehen, Gewicht gleichmäßig auf beiden Füßen.",
+    "Einatmen und die Arme seitlich über den Kopf heben.",
+    "Handflächen zueinander, Schultern bleiben locker.",
+    "Ruhig atmen und lang werden."
+  ],
+  "tips_de": ["Die Arme schulterbreit lassen, wenn die Schultern eng sind."],
+  "common_mistakes_de": ["Ins Hohlkreuz fallen, statt den Bauch leicht anzuspannen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

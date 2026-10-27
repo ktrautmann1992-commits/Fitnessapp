@@ -1,0 +1,44 @@
+{
+  "id": "pilates-fersen-tippen",
+  "version": 1,
+  "status": "published",
+  "name_de": "Fersen tippen",
+  "name_en": "Toe Taps",
+  "aliases_de": [],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques"],
+  "equipment_ids": ["mat"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": ["long_supine", "floor_transfer"],
+  "description_de": "Beide Beine im rechten Winkel angehoben, im Wechsel tippt eine Ferse sanft zum Boden.",
+  "steps_de": [
+    "Rückenlage, beide Beine anheben, Knie über der Hüfte, Unterschenkel waagerecht.",
+    "Ausatmen und eine Ferse langsam zum Boden tippen.",
+    "Einatmen und das Bein zurück in den rechten Winkel führen.",
+    "Seite wechseln, der untere Rücken bleibt ruhig am Boden."
+  ],
+  "tips_de": ["Den Weg klein halten, wenn sich der untere Rücken abhebt."],
+  "common_mistakes_de": ["Die Ferse fallen lassen statt sie zu führen."],
+  "safety_note_de": "Langsam und kontrolliert bewegen, ruhig weiteratmen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "pilates-knie-falten",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

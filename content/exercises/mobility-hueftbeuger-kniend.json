@@ -1,0 +1,38 @@
+{
+  "id": "mobility-hueftbeuger-kniend",
+  "version": 1,
+  "status": "published",
+  "name_de": "Hüftbeuger-Dehnung im Knien",
+  "name_en": "Kneeling Hip Flexor Stretch",
+  "aliases_de": [],
+  "movement_pattern": "mobility",
+  "primary_muscles": ["quadriceps"],
+  "secondary_muscles": ["glutes", "abs"],
+  "equipment_ids": ["mat"],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": true,
+  "difficulty": 1,
+  "caution_tags": ["floor_transfer"],
+  "description_de": "Kniender Ausfallschritt, Becken schiebt sanft nach vorn. Dehnt die Vorderseite der Hüfte.",
+  "steps_de": [
+    "Ein Knie auf die Matte setzen, der andere Fuß steht vorn.",
+    "Oberkörper aufrecht, Hände auf dem vorderen Knie.",
+    "Das Gesäß leicht anspannen und das Becken sanft nach vorn schieben.",
+    "Halten, dann die Seite wechseln."
+  ],
+  "tips_de": ["Ein gefaltetes Handtuch unter dem Knie schont die Kniescheibe."],
+  "common_mistakes_de": ["Ins Hohlkreuz fallen."],
+  "safety_note_de": "Nur so weit gehen, wie es angenehm zieht, und ruhig weiteratmen. Bei Schmerzen, Schwindel, Kribbeln oder ungewohnten Beschwerden die Pose langsam lösen.",
+  "alternatives": [],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": null
+  }
+}

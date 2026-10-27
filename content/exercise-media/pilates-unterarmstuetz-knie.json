@@ -1,0 +1,20 @@
+{
+  "exercise_id": "pilates-unterarmstuetz-knie",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "pilates-unterarmstuetz-knie-start.svg",
+      "alt_de": "Ausgangsposition: Unterarme und Knie auf der Matte, Ellbogen unter den Schultern, Körper von Kopf bis Knie in einer Linie.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

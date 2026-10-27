@@ -1,0 +1,20 @@
+{
+  "exercise_id": "yoga-sitzende-vorbeuge-block",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "yoga-sitzende-vorbeuge-block-start.svg",
+      "alt_de": "Ausgangsposition: auf einem Block am Boden sitzen, Beine nach vorn mit leicht gebeugten Knien, Oberkörper mit langem Rücken nach vorn geneigt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}
