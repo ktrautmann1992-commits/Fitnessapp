@@ -1,4 +1,5 @@
 import { WORKOUT_LIMITS } from '../constants';
+import { buildFlowTimerSteps, type FlowSide } from './flow';
 import type { Workout } from './schema';
 
 /**
@@ -26,6 +27,8 @@ export type WorkoutTimerStep =
       /** Sekunden (nach Zeit) oder null (nach Wiederholungen – wartet auf „Erledigt“). */
       readonly seconds: number | null;
       readonly reps: number | null;
+      /** Nur im Format `flow` mit Seitenwechsel (Sportarten Stufe 1): diese Seite – sonst fehlt das Feld. */
+      readonly side?: FlowSide;
     }
   | {
       readonly kind: 'rest';
@@ -45,6 +48,8 @@ export function buildWorkoutTimerPlan(
     if (seconds > 0) steps.push({ kind: 'rest', seconds, after });
   };
   const items = workout.exercises;
+  // Flow (Sportarten Stufe 1, Yoga/Pilates/Mobility): Pose für Pose ohne Pausen, Seitenwechsel (flow.ts).
+  if (workout.format === 'flow') return buildFlowTimerSteps(workout);
   if (workout.format === 'sets_reps') {
     items.forEach((item, itemIndex) => {
       const sets = item.sets ?? 1;

@@ -10,6 +10,7 @@ import {
   AGE_PLAN_RULES,
   CONSERVATIVE_PLAN_RULES,
   ENDURANCE_EFFORT,
+  FLOW_SAFETY,
   PREGNANCY_EXCLUDED_CAUTION_TAGS,
   TEMPLATE_DOSAGE_LIMITS,
 } from '../constants';
@@ -133,6 +134,8 @@ export function planSafetyRules(inputs: SafetyInputs, onDate: string): PlanSafet
   if (activeAging) {
     rpeMax = Math.min(rpeMax, ACTIVE_AGING_RULES.rpeMax);
     ACTIVE_AGING_RULES.excludedCautionTags.forEach((tag) => excluded.add(tag));
+    // Sportarten Stufe 1 (Yoga): keine Umkehrhaltungen (nur Posen tragen das Merkmal, FLOW_SAFETY).
+    FLOW_SAFETY.activeAgingExcludedCautionTags.forEach((tag) => excluded.add(tag));
   }
   // Gezielte Ausschlüsse (künstliche Hüfte, Osteoporose) bei jedem Ziel (Plan 8.2, N2).
   aging?.excludedCautionTags.forEach((tag) => excluded.add(tag));

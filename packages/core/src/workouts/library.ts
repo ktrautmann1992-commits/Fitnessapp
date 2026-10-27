@@ -52,13 +52,19 @@ export const EMPTY_WORKOUT_FILTER: WorkoutFilter = {
   noEquipment: false,
 };
 
-/** Nur freigegebene Workouts, gefiltert und sortiert: Sterne, Dauer, Titel. */
+/**
+ * Nur freigegebene Workouts, gefiltert und sortiert: Sterne, Dauer, Titel. `includeDrafts` (Sportarten Stufe 1): auch
+ * Entwürfe – nur für Listen, deren Quelle Entwürfe schon bewusst zulässt (Testmodus-Bündel, workoutsFromBundle).
+ */
 export function filterWorkouts<W extends Workout>(
   workouts: readonly W[],
   filter: WorkoutFilter,
+  options: { readonly includeDrafts?: boolean } = {},
 ): W[] {
   return workouts
-    .filter((w) => w.status === 'published')
+    .filter(
+      (w) => w.status === 'published' || (options.includeDrafts === true && w.status === 'draft'),
+    )
     .filter((w) => filter.stars.length === 0 || filter.stars.includes(w.difficulty))
     .filter((w) => filter.duration === null || workoutDurationBucket(w.minutes) === filter.duration)
     .filter((w) => filter.category === null || w.category === filter.category)
@@ -240,7 +246,9 @@ export function workoutLogNote(input: {
   const progress =
     input.format === 'sets_reps'
       ? `${summary.workDone}/${summary.workTotal} Sätze`
-      : `${summary.roundsCompleted}/${summary.rounds} Runden`;
+      : input.format === 'flow'
+        ? `${summary.workDone}/${summary.workTotal} Posen`
+        : `${summary.roundsCompleted}/${summary.rounds} Runden`;
   const minutes = Math.max(1, Math.round(summary.activeS / 60));
   const head = [
     `${WORKOUT_NOTE_PREFIX}„${input.title}“ (${workoutStars(input.difficulty)})`,

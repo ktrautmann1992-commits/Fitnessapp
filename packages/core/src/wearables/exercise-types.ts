@@ -123,6 +123,10 @@ export const WEARABLE_SPORT_TYPES: Readonly<Record<number, SportId>> = {
   75: 'table_tennis',
   76: 'tennis',
   78: 'volleyball',
+  // Sportarten Stufe 1 (Etappe Y, docs/PLAN-SPORTARTEN-STUFE-1.md 2.4): Pilates 48, Yoga 83. „Dehnen“ 71 bleibt wie
+  // bisher „Sonstige Sportart“ mit Titel „Dehnen“ (kein Studio-Kurs; die Sportart Yoga wäre zu viel gesagt).
+  48: 'pilates',
+  83: 'yoga',
 };
 
 /** Sportart einer Health-Connect-Art: Ausdauer/Kraft → null; Katalog-Art → Sportart; sonst `other`. */

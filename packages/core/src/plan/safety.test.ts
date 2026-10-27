@@ -77,6 +77,10 @@ describe('planSafetyRules', () => {
       'overhead',
       'long_supine',
       'high_skill',
+      // Sportarten Stufe 1 (Yoga): Schwangerschaft schließt tiefe Drehungen und Umkehrhaltungen aus, vorsichtig
+      // ebenfalls Umkehrhaltungen.
+      'trunk_rotation',
+      'inversion',
     ]);
     expect(rules.rpeMax).toBe(7);
   });
