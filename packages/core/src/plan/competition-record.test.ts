@@ -46,6 +46,7 @@ function row(payload: ReturnType<typeof toSaveCompetitionPayload>): CompetitionR
     status: 'planned',
     result_session_log_id: null,
     uses_health_data: payload.effective_goal !== null,
+    hyrox_division: payload.hyrox_division ?? null,
     created_at: '2026-10-07T10:00:00Z',
     updated_at: '2026-10-07T10:00:00Z',
   };

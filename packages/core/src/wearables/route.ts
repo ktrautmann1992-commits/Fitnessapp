@@ -257,6 +257,12 @@ export const wearableRoutePayloadSchema = z
     polyline: z.string().min(1).max(L.polylineMaxChars).regex(POLYLINE_PATTERN),
     km_splits: z.array(int(1, L.durationS.max)),
     elevation_profile: elevationProfileSchema.nullable(),
+    /**
+     * Sportarten Stufe 1 (Wandern/Bergwandern): Abstieg und höchster Punkt (TRACKED_ROUTE_LIMITS). Optional – fehlt =
+     * null (ältere App-Fassungen). Die Art der Geh-Einheit übernimmt der Server aus dem Eintrag.
+     */
+    elevation_loss_m: int(L.elevationLossM.min, L.elevationLossM.max).nullable().optional(),
+    max_altitude_m: int(L.maxAltitudeM.min, L.maxAltitudeM.max).nullable().optional(),
   })
   .superRefine((r, ctx) => {
     if (r.km_splits.length !== Math.floor(r.distance_m / 1000)) {

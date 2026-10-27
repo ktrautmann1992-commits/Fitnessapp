@@ -115,9 +115,10 @@ function paceText(sport: TrackedRouteSport, distanceM: number, movingS: number):
 }
 
 const STEP_TEXT: Record<WorkoutStep['part'], Record<WorkoutStep['kind'], string>> = {
-  warmup: { work: 'Einlaufen', easy: 'Einlaufen', rest: 'Einlaufen' },
-  main: { work: 'Belastung', easy: 'Locker', rest: 'Pause' },
-  cooldown: { work: 'Auslaufen', easy: 'Auslaufen', rest: 'Auslaufen' },
+  warmup: { work: 'Einlaufen', easy: 'Einlaufen', rest: 'Einlaufen', station: 'Einlaufen' },
+  // Stufe 1 (Hyrox-Kombi): Stations-Schritt – Name der Station folgt mit Etappe H.
+  main: { work: 'Belastung', easy: 'Locker', rest: 'Pause', station: 'Station' },
+  cooldown: { work: 'Auslaufen', easy: 'Auslaufen', rest: 'Auslaufen', station: 'Auslaufen' },
 };
 
 /** Intervall-Ansage beim Wechsel in einen neuen Schritt (oder „Einheit geschafft“ nach dem letzten). */

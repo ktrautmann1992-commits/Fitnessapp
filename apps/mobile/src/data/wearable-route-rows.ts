@@ -125,6 +125,11 @@ export function applyWearableRouteSave(
           match_rejected_ids: [],
           auto_match: true,
           weather: null,
+          // Sportarten Stufe 1: Art der Geh-Einheit übernimmt die Fachlogik (Etappe W); Höhenwerte aus der Route.
+          walk_kind: null,
+          elevation_loss_m: r.elevation_loss_m ?? null,
+          max_altitude_m: r.max_altitude_m ?? null,
+          sac_grade: null,
           created_at: ctx.now,
         },
       ];
@@ -212,7 +217,11 @@ export function normalizeRouteRow(row: TrackedRouteRow): TrackedRouteRow {
     row.route_match !== undefined &&
     Array.isArray(row.match_rejected_ids) &&
     typeof row.auto_match === 'boolean' &&
-    row.weather !== undefined
+    row.weather !== undefined &&
+    row.walk_kind !== undefined &&
+    row.elevation_loss_m !== undefined &&
+    row.max_altitude_m !== undefined &&
+    row.sac_grade !== undefined
   ) {
     return row;
   }
@@ -224,5 +233,9 @@ export function normalizeRouteRow(row: TrackedRouteRow): TrackedRouteRow {
     match_rejected_ids: Array.isArray(row.match_rejected_ids) ? row.match_rejected_ids : [],
     auto_match: row.auto_match !== false,
     weather: row.weather ?? null,
+    walk_kind: row.walk_kind ?? null,
+    elevation_loss_m: row.elevation_loss_m ?? null,
+    max_altitude_m: row.max_altitude_m ?? null,
+    sac_grade: row.sac_grade ?? null,
   };
 }

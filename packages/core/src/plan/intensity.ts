@@ -8,7 +8,7 @@ import {
   COMPETITION_PACE,
   ENDURANCE_OVERLOAD_RULE,
 } from '../constants';
-import type { ExperienceLevel } from '../enums';
+import { type ExperienceLevel, HYROX_STATIONS, type HyroxStation } from '../enums';
 import {
   type CompetitionDiscipline,
   type CompetitionReference,
@@ -25,7 +25,9 @@ import type { PlanSafetyRules } from './safety';
 
 /**
  * Einheiten-Arten (Plan 3.4). WP5: `brick` = Koppeltraining Rad → Lauf als EINE Einheit mit zwei Teilen,
- * `technique` = Schwimmtechnik – beide locker (keine harten Arten). Reihenfolge = Postgres-Enum `workout_type`.
+ * `technique` = Schwimmtechnik – beide locker (keine harten Arten). Sportarten Stufe 1 (Hyrox,
+ * docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): `hyrox_combo` = Kombi-Einheit „1 km + Station“ (Ausdauer-Art `run`, Schritte
+ * mit Typ `station`) – gilt als HARTE Art. Reihenfolge = Postgres-Enum `workout_type`.
  */
 export const WORKOUT_TYPES = [
   'easy',
@@ -38,11 +40,22 @@ export const WORKOUT_TYPES = [
   'race_pace',
   'brick',
   'technique',
+  'hyrox_combo',
 ] as const;
 export type WorkoutType = (typeof WORKOUT_TYPES)[number];
 
-/** Harte Arten (zählen für 48-h-Regel, Wochen-Deckel, „Erholungswoche ohne harte Einheit“). */
-export const HARD_WORKOUT_TYPES = ['fartlek', 'tempo', 'intervals', 'race_pace'] as const;
+/**
+ * Harte Arten (zählen für 48-h-Regel, Wochen-Deckel, „Erholungswoche ohne harte Einheit“). `hyrox_combo` (Sportarten
+ * Stufe 1): die Hyrox-Kombi gilt immer als hart (80/20, hard_endurance_48h); die lockere „Technik-Kombi“ (Arzt-Hinweis)
+ * ist eine Einheit der Art `easy` mit Stations-Schritten.
+ */
+export const HARD_WORKOUT_TYPES = [
+  'fartlek',
+  'tempo',
+  'intervals',
+  'race_pace',
+  'hyrox_combo',
+] as const;
 
 export function isHardWorkoutType(type: WorkoutType | null | undefined): boolean {
   return (
@@ -50,13 +63,21 @@ export function isHardWorkoutType(type: WorkoutType | null | undefined): boolean
   );
 }
 
-/** Schritt einer Einheit (Timer in WP4): Teil, Art, Dauer in Sekunden, Anstrengung 0–10. */
+/**
+ * Schritt einer Einheit (Timer in WP4): Teil, Art, Dauer in Sekunden, Anstrengung 0–10. Sportarten Stufe 1 (Hyrox):
+ * Art `station` = eine Hyrox-Station; dann (und nur dann) nennt `station` welche (HYROX_STATIONS). Stations-Schritte
+ * gibt es nur in den Arten `hyrox_combo` und `easy` (Technik-Kombi) – wie private.workout_steps_fit_type.
+ */
 export interface WorkoutStep {
   readonly part: 'warmup' | 'main' | 'cooldown';
-  readonly kind: 'work' | 'easy' | 'rest';
+  readonly kind: 'work' | 'easy' | 'rest' | 'station';
   readonly seconds: number;
   readonly effort: number;
+  readonly station?: HyroxStation;
 }
+
+/** Arten, in denen Stations-Schritte erlaubt sind (= private.workout_steps_fit_type). */
+export const STATION_STEP_WORKOUT_TYPES = ['hyrox_combo', 'easy'] as const;
 
 /**
  * Grenzen der Schritte (Vorlage für `workout_steps jsonb` in WP3): höchstens 40 Schritte, je 10 s bis 4 h,
@@ -64,16 +85,23 @@ export interface WorkoutStep {
  */
 export const WORKOUT_STEP_LIMITS = { maxSteps: 40, seconds: { min: 10, max: 4 * 3600 } } as const;
 
-export const workoutStepSchema = z.strictObject({
-  part: z.enum(['warmup', 'main', 'cooldown']),
-  kind: z.enum(['work', 'easy', 'rest']),
-  seconds: z
-    .number()
-    .int()
-    .min(WORKOUT_STEP_LIMITS.seconds.min)
-    .max(WORKOUT_STEP_LIMITS.seconds.max),
-  effort: z.number().int().min(0).max(10),
-});
+export const workoutStepSchema = z
+  .strictObject({
+    part: z.enum(['warmup', 'main', 'cooldown']),
+    kind: z.enum(['work', 'easy', 'rest', 'station']),
+    seconds: z
+      .number()
+      .int()
+      .min(WORKOUT_STEP_LIMITS.seconds.min)
+      .max(WORKOUT_STEP_LIMITS.seconds.max),
+    effort: z.number().int().min(0).max(10),
+    /** Nur bei `kind = 'station'` (dort Pflicht): welche Hyrox-Station. */
+    station: z.enum(HYROX_STATIONS).optional(),
+  })
+  .refine((step) => (step.kind === 'station') === (step.station !== undefined), {
+    message: 'Station genau bei Schritt-Typ „station“.',
+    path: ['station'],
+  });
 export const workoutStepsSchema = z
   .array(workoutStepSchema)
   .min(1)
@@ -86,6 +114,12 @@ export const workoutStepsSchema = z
  * harte Arten frei (Deckel je Person prüft der Server mit dem Plan).
  */
 export function stepsFitWorkoutType(type: WorkoutType, steps: readonly WorkoutStep[]): boolean {
+  if (
+    steps.some((st) => st.kind === 'station') &&
+    !(STATION_STEP_WORKOUT_TYPES as readonly string[]).includes(type)
+  ) {
+    return false;
+  }
   if (isHardWorkoutType(type)) return true;
   const easyMax = ENDURANCE_EFFORT.easyMax;
   const above = steps.filter((st) => st.effort > easyMax);

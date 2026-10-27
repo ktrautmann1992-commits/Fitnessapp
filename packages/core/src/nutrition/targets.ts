@@ -1,6 +1,6 @@
 import { ageInYears, meetsMinimumAge } from '../age';
 import { NUTRITION_AGE_RULES, WEIGHT_OUTDATED_AFTER_DAYS } from '../constants';
-import type { ExperienceLevel } from '../enums';
+import type { EnduranceModality, ExperienceLevel } from '../enums';
 import { addDays, daysBetween } from '../dates';
 import { goalEnergyDirection, hasGoal } from '../goals/profile';
 import {
@@ -57,7 +57,7 @@ const WEEK_START_MAX_DISTANCE_DAYS = 366;
 export interface NutritionDaySession {
   readonly sessionId: string;
   readonly kind: 'strength' | 'endurance';
-  readonly enduranceModality: 'run' | 'walk' | 'bike' | 'swim' | null;
+  readonly enduranceModality: EnduranceModality | null;
   readonly minutes: number;
 }
 

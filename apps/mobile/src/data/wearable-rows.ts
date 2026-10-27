@@ -281,6 +281,7 @@ export function applyWearableImport(
         sport: null,
         sport_duration_s: null,
         sport_distance_m: null,
+        hyrox_splits: null,
       };
       sessionLogs.push(log);
       if (modality !== null) {
@@ -293,6 +294,11 @@ export function applyWearableImport(
           elevation_m: null,
           // Health Connect kennt kein E-Bike (nur BIKING/BIKING_STATIONARY) → normales Rad, umstellbar im Eintrag.
           e_bike: false,
+          // Sportarten Stufe 1: Art der Geh-Einheit bzw. Leistung/Schlagzahl von der Uhr (wie import_wearable_batch).
+          walk_kind: modality === 'walk' ? (s.walk_kind ?? null) : null,
+          avg_power_w: modality === 'row' ? (s.avg_power_w ?? null) : null,
+          stroke_rate: modality === 'row' ? (s.stroke_rate ?? null) : null,
+          intervals: null,
         };
         cardioLogs.push(cardio);
       }

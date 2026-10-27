@@ -74,6 +74,7 @@ export function applySaveCompetition(
     start_reference_start_group: payload.start_reference_start_group,
     effective_goal: payload.effective_goal,
     uses_health_data: payload.effective_goal !== null,
+    hyrox_division: payload.hyrox_division ?? null,
     created_at: existing?.created_at ?? ctx.now,
     updated_at: ctx.now,
   };

@@ -52,6 +52,7 @@ import {
 } from '@/components/ui';
 import { t } from '@/i18n';
 import { datePartsFromIso, formatKg, isoFromDateParts, parseDecimal } from '@/lib/format';
+import { PENDING_DISCIPLINES, selectable } from '@/lib/sportarten-stufe1';
 import { scheduleSummaryText, slotKindLabel } from '@/lib/summary';
 import { useThemeColors } from '@/lib/theme';
 import { fieldErrorsFromIssues, type FieldErrors } from '@/lib/validation-errors';
@@ -191,7 +192,7 @@ export function GoalStep({ ctl }: { ctl: StepController }) {
           <ChoiceList
             label={g.discipline}
             horizontal
-            options={ENDURANCE_DISCIPLINES.map((value) => ({
+            options={selectable(ENDURANCE_DISCIPLINES, PENDING_DISCIPLINES).map((value) => ({
               value,
               label: g.disciplines[value],
             }))}

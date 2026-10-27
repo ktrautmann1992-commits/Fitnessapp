@@ -32,8 +32,14 @@ export const deEndurance = {
         .join(', ')}`,
   },
   moreEntry: 'Ausdauer: Laufen, Rad, Gehen aufzeichnen',
-  sports: { run: 'Laufen', bike: 'Rad', walk: 'Gehen', swim: 'Schwimmen' },
-  sportNouns: { run: 'Lauf', bike: 'Radfahrt', walk: 'Spaziergang', swim: 'Schwimmen' },
+  sports: { run: 'Laufen', bike: 'Rad', walk: 'Gehen', swim: 'Schwimmen', row: 'Rudern' },
+  sportNouns: {
+    run: 'Lauf',
+    bike: 'Radfahrt',
+    walk: 'Spaziergang',
+    swim: 'Schwimmen',
+    row: 'Rudern',
+  },
   /** E-Bike (23.10.2026): Sportart bleibt „Rad“, Auswahl „Fahrrad | E-Bike“. */
   eBike: {
     label: 'Womit fährst du?',
@@ -449,7 +455,13 @@ export const deEndurance = {
   progress: {
     title: 'Dein Fortschritt',
     subtitle: (sport: string) => `Vergleich mit deinen ${sport} ähnlicher Länge (±20 %)`,
-    sportPlural: { run: 'Läufen', bike: 'Fahrten', walk: 'Spaziergängen', swim: 'Einheiten' },
+    sportPlural: {
+      run: 'Läufen',
+      bike: 'Fahrten',
+      walk: 'Spaziergängen',
+      swim: 'Einheiten',
+      row: 'Einheiten',
+    },
     latest: (day: string, distance: string) => `Letzte Einheit: ${day} · ${distance}`,
     value: (v: string) => `Ø ${v}`,
     vsAverage: (diff: string, word: string, avg: string, n: number) =>

@@ -55,6 +55,7 @@ function log(id: string, sessionId: string | null, date: string): SessionLogRow 
     sport: null,
     sport_duration_s: null,
     sport_distance_m: null,
+    hyrox_splits: null,
   };
 }
 

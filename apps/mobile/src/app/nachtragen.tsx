@@ -32,6 +32,7 @@ import { t } from '@/i18n';
 import { berlinTodayIso } from '@/lib/format';
 import { dayLabel } from '@/lib/plan-format';
 import { isoDateParam } from '@/lib/route-param';
+import { PENDING_ENDURANCE_MODALITIES, selectable } from '@/lib/sportarten-stufe1';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
@@ -232,10 +233,12 @@ export default function BackfillScreen() {
               {kind === 'endurance' ? (
                 <ChoiceList<EnduranceModality>
                   label={t.backfill.modalityLabel}
-                  options={ENDURANCE_MODALITIES.map((value) => ({
-                    value,
-                    label: t.workout.cardio.modalities[value],
-                  }))}
+                  options={selectable(ENDURANCE_MODALITIES, PENDING_ENDURANCE_MODALITIES).map(
+                    (value) => ({
+                      value,
+                      label: t.workout.cardio.modalities[value],
+                    }),
+                  )}
                   value={modality}
                   onChange={setModality}
                   horizontal

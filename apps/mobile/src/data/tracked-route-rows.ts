@@ -144,6 +144,11 @@ export function applyTrackedRouteSave(
     match_rejected_ids: [],
     auto_match: true,
     weather: null,
+    // Sportarten Stufe 1 (Wandern/Bergwandern): optional, fehlt = null (CHECKs wie die Datenbank im Schema).
+    walk_kind: r.sport === 'walk' ? (r.walk_kind ?? null) : null,
+    elevation_loss_m: r.elevation_loss_m ?? null,
+    max_altitude_m: r.max_altitude_m ?? null,
+    sac_grade: r.sac_grade ?? null,
     created_at: context.now,
     updated_at: context.now,
   };

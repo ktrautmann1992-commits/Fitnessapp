@@ -139,6 +139,7 @@ export const deTrainingWeek = {
       walk: { title: 'Spaziergang', ask: 'dieser Spaziergang' },
       bike: { title: 'Radfahrt', ask: 'diese Radfahrt' },
       swim: { title: 'Schwimmen', ask: 'diese Schwimm-Einheit' },
+      row: { title: 'Rudern', ask: 'diese Ruder-Einheit' },
       endurance: { title: 'Ausdauer-Einheit', ask: 'diese Einheit' },
       strength: { title: 'Kraft-Einheit', ask: 'diese Einheit' },
     },

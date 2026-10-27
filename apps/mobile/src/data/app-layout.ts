@@ -16,6 +16,10 @@ export function appLayoutRowFromDb(row: unknown): AppLayoutRow | null {
     ...(typeof value.step_goal === 'number' ? { step_goal: value.step_goal } : {}),
     // Spalte seit 26.10.2026 (vor `db-migrate` fehlt sie → ältere Fassung).
     ...(typeof value.layout_version === 'number' ? { layout_version: value.layout_version } : {}),
+    // Spalte seit 27.10.2026 (Sportarten Stufe 1; vor `db-migrate` fehlt sie → Standard an).
+    ...(typeof value.recovery_routine === 'boolean'
+      ? { recovery_routine: value.recovery_routine }
+      : {}),
   });
   if (!parsed.success || typeof value.user_id !== 'string') return null;
   return { user_id: value.user_id, ...parsed.data };

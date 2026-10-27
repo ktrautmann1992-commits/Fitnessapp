@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import {
   CARDIO_LOG_LIMITS,
+  HYROX_RESULT_LIMITS,
   PLANNED_LOAD_LIMITS,
   SESSION_LOG_LIMITS,
   SESSION_RPE_LIMITS,
@@ -13,11 +14,13 @@ import {
 import {
   ENDURANCE_MODALITIES,
   EXERCISE_LOG_STATUSES,
+  HYROX_SPLIT_SEGMENTS,
   LOAD_TYPES,
   LOG_SOURCES,
   PLANNED_SESSION_KINDS,
   SESSION_LOG_STATUSES,
   SPORT_IDS,
+  WALK_KINDS,
 } from '../enums';
 
 /**
@@ -162,6 +165,19 @@ export const exerciseLogSchema = z
     path: ['reps_max'],
   });
 
+const intIn = (limits: { readonly min: number; readonly max: number }) =>
+  z.number().int().min(limits.min).max(limits.max);
+
+/**
+ * Eine Wiederholung des Intervall-Ergebnisses beim Rudern (Sportarten Stufe 1): Distanz und Zeit; den Split je 500 m
+ * rechnet die App daraus (= private.cardio_intervals_valid).
+ */
+export const cardioIntervalSchema = z.strictObject({
+  distance_m: intIn(CARDIO_LOG_LIMITS.intervalDistanceM),
+  duration_s: intIn(CARDIO_LOG_LIMITS.intervalDurationS),
+});
+export type CardioInterval = z.infer<typeof cardioIntervalSchema>;
+
 export const cardioLogSchema = z
   .strictObject({
     modality: z.enum(ENDURANCE_MODALITIES),
@@ -187,10 +203,52 @@ export const cardioLogSchema = z
      * bleiben (fehlt = false, wie in save_session_log und cardio_logs.e_bike).
      */
     e_bike: z.boolean().optional(),
+    /**
+     * Sportarten Stufe 1 – Indoor-Rudern (nur Ausdauer-Art `row`): Durchschnittsleistung in Watt, Schlagzahl je Minute
+     * und Intervall-Ergebnis (höchstens CARDIO_LOG_LIMITS.intervalsMax Wiederholungen). Optional (fehlt = null).
+     */
+    avg_power_w: intIn(CARDIO_LOG_LIMITS.avgPowerW).nullable().optional(),
+    stroke_rate: intIn(CARDIO_LOG_LIMITS.strokeRate).nullable().optional(),
+    intervals: z
+      .array(cardioIntervalSchema)
+      .min(1)
+      .max(CARDIO_LOG_LIMITS.intervalsMax)
+      .nullable()
+      .optional(),
+    /** Sportarten Stufe 1 – Wandern (nur Ausdauer-Art `walk`): Gehen/Wandern/Bergwandern; fehlt/null = Gehen. */
+    walk_kind: z.enum(WALK_KINDS).nullable().optional(),
   })
   .refine((c) => c.e_bike !== true || c.modality === 'bike', {
     message: 'E-Bike nur beim Rad.',
     path: ['e_bike'],
+  })
+  .refine(
+    (c) =>
+      c.modality === 'row' ||
+      (c.avg_power_w == null && c.stroke_rate == null && c.intervals == null),
+    { message: 'Watt, Schlagzahl und Intervalle nur beim Rudern.', path: ['avg_power_w'] },
+  )
+  .refine((c) => c.walk_kind == null || c.modality === 'walk', {
+    message: 'Wandern/Bergwandern nur beim Gehen.',
+    path: ['walk_kind'],
+  });
+
+/**
+ * Teilzeit eines Hyrox-Rennens (Sportarten Stufe 1): Abschnitt (HYROX_SPLIT_SEGMENTS) und Sekunden
+ * (HYROX_RESULT_LIMITS.splitS) – = private.hyrox_splits_valid.
+ */
+export const hyroxSplitSchema = z.strictObject({
+  segment: z.enum(HYROX_SPLIT_SEGMENTS),
+  duration_s: intIn(HYROX_RESULT_LIMITS.splitS),
+});
+export type HyroxSplit = z.infer<typeof hyroxSplitSchema>;
+
+/** Teilzeiten eines Hyrox-Rennens: 0–17, jeder Abschnitt höchstens einmal (leer = Rennen ohne Teilzeiten). */
+export const hyroxSplitsSchema = z
+  .array(hyroxSplitSchema)
+  .max(HYROX_RESULT_LIMITS.maxSplits)
+  .refine((splits) => new Set(splits.map((s) => s.segment)).size === splits.length, {
+    message: 'Abschnitt doppelt.',
   });
 
 /**
@@ -263,6 +321,12 @@ export const sessionLogPayloadSchema = z
      * noch wartende Fassungen gültig bleiben.
      */
     sport: sportLogSchema.nullable().optional(),
+    /**
+     * Ergebnis eines Hyrox-Rennens (Sportarten Stufe 1): gesetzt (Liste, auch leer) genau beim Eintrag
+     * „Hyrox-Rennen“ – freie Ausdauer-Einheit `run`, Gesamtzeit = Dauer, Summe der Teilzeiten höchstens die
+     * Gesamtzeit. Optional (fehlt/null = kein Hyrox-Rennen), damit ältere, noch wartende Fassungen gültig bleiben.
+     */
+    hyrox_splits: hyroxSplitsSchema.nullable().optional(),
   })
   .refine(
     (s) =>
@@ -281,6 +345,19 @@ export const sessionLogPayloadSchema = z
     (s) =>
       s.sport == null || (s.is_free === true && s.status === 'completed' && s.source === 'manual'),
     { message: 'Sportart nur als freie, erledigte Einheit.', path: ['sport'] },
+  )
+  .refine(
+    (s) =>
+      s.hyrox_splits == null ||
+      (s.is_free === true &&
+        s.sport == null &&
+        s.kind === 'endurance' &&
+        s.cardio?.modality === 'run' &&
+        s.hyrox_splits.reduce((sum, split) => sum + split.duration_s, 0) <= s.cardio.duration_s),
+    {
+      message: 'Hyrox-Rennen nur als freie Lauf-Einheit, Teilzeiten höchstens die Gesamtzeit.',
+      path: ['hyrox_splits'],
+    },
   )
   .refine((s) => new Set(s.exercises.map((e) => e.order_no)).size === s.exercises.length, {
     message: 'Reihenfolge doppelt.',

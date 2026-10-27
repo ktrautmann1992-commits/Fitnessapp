@@ -90,6 +90,7 @@ function padelRow(): SessionLogRow {
     sport: 'padel',
     sport_duration_s: 3600,
     sport_distance_m: null,
+    hyrox_splits: null,
   };
 }
 
@@ -271,6 +272,7 @@ describe('Plan-Hinweis nach Sport mit hoher Beinbelastung', () => {
       sport: 'football',
       sport_duration_s: 5400,
       sport_distance_m: null,
+      hyrox_splits: null,
     };
     const rows = { ...s.rows, sessionLogs: [...s.rows.sessionLogs, football] };
     const today = dayBefore < MONDAY ? MONDAY : dayBefore;

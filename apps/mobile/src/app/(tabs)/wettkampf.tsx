@@ -79,6 +79,7 @@ import {
   todayIso,
 } from '@/lib/format';
 import { dayLabel } from '@/lib/plan-format';
+import { PENDING_DISCIPLINES, selectable } from '@/lib/sportarten-stufe1';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 
@@ -742,7 +743,7 @@ export default function CompetitionScreen() {
           <ChoiceList<CompetitionDiscipline>
             label={C.discipline}
             horizontal
-            options={COMPETITION_DISCIPLINES.map((value) => ({
+            options={selectable(COMPETITION_DISCIPLINES, PENDING_DISCIPLINES).map((value) => ({
               value,
               label: C.disciplines[value],
             }))}

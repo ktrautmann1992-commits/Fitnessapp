@@ -143,14 +143,19 @@ export function freeSessionPayloadIssue(
   // Nur abgehakte Sätze, Einheit daher „completed“ (wie freeSessionLogFromInput und der Server, Wächter H1).
   if (payload.is_intro_week || payload.is_deload || payload.status !== 'completed')
     return 'invalid';
-  // Sportart (Sportarten Stufe 2): Name der Sportart aus dem Katalog.
+  // Sportart (Sportarten Stufe 2): Name der Sportart aus dem Katalog. Sportarten Stufe 1 (wie save_session_log):
+  // Hyrox-Rennen (hyrox_splits gesetzt) bzw. Geh-Einheit je Art (walk_kind, fehlt = Gehen).
   const expectedName = payload.sport
     ? SPORT_CATALOGUE[payload.sport.sport].nameDe
-    : payload.kind === 'strength'
-      ? FREE_SESSION.names.strength
-      : payload.cardio
-        ? FREE_SESSION.names.endurance[payload.cardio.modality]
-        : null;
+    : payload.hyrox_splits != null
+      ? FREE_SESSION.names.hyroxRace
+      : payload.kind === 'strength'
+        ? FREE_SESSION.names.strength
+        : payload.cardio?.modality === 'walk'
+          ? FREE_SESSION.names.walkKinds[payload.cardio.walk_kind ?? 'walk']
+          : payload.cardio
+            ? FREE_SESSION.names.endurance[payload.cardio.modality]
+            : null;
   if (expectedName === null || payload.name_de !== expectedName) return 'invalid';
   for (const e of payload.exercises) {
     if (e.planned_exercise_id !== null || e.status !== 'done' || e.is_return) return 'invalid';

@@ -123,6 +123,8 @@ import {
   DAILY_METRIC_LIMITS,
   HEART_RATE_LIMITS,
   WEARABLE_SYNC,
+  FLOW_RULES,
+  HYROX_RESULT_LIMITS,
 } from './constants';
 import {
   WEARABLE_DATA_TYPES,
@@ -137,7 +139,13 @@ import {
 import { routeWeatherSchema } from './routes/weather';
 import { hydrationEntrySchema } from './nutrition/hydration';
 import { wearableRoutePayloadSchema } from './wearables/route';
-import { DASHBOARD_TILES, FIXED_FIRST_TAB, FIXED_LAST_TAB, NAV_AREAS } from './layout';
+import {
+  DASHBOARD_TILES,
+  FIXED_FIRST_TAB,
+  FIXED_LAST_TAB,
+  NAV_AREAS,
+  storedAppLayoutSchema,
+} from './layout';
 import { serverDayKcalFloor } from './nutrition/plausibility';
 import { AI_USAGE_STATUSES } from './nutrition/food-photo';
 import {
@@ -223,8 +231,10 @@ import {
 import { HEALTH_FLAGS, HEALTH_SCREENING_QUESTIONS } from './health-screening';
 import { ONBOARDING_STEPS } from './onboarding';
 import {
+  cardioIntervalSchema,
   cardioLogSchema,
   exerciseLogSchema,
+  hyroxSplitSchema,
   exerciseStartWeightSchema,
   sessionLogPayloadSchema,
   setLogSchema,
@@ -246,6 +256,8 @@ import {
 import {
   enduranceOverloadThreshold,
   HARD_WORKOUT_TYPES,
+  STATION_STEP_WORKOUT_TYPES,
+  stepsFitWorkoutType,
   WORKOUT_STEP_LIMITS,
   WORKOUT_TYPES,
   workoutStepSchema,
@@ -754,11 +766,13 @@ describe('Trainingstagebuch (Phase 4 Etappe B)', () => {
     }
   });
 
-  it('neueste save_session_log-Fassung steht in *_sportarten.sql (Sportarten, davor E-Bike, 4b B, S1, A1b)', () => {
-    expect(saveFile).toMatch(/_sportarten\.sql$/);
+  it('neueste save_session_log-Fassung steht in *_sportarten_stufe1_rpcs.sql (Stufe 1, davor Sportarten, E-Bike, 4b B, S1, A1b)', () => {
+    expect(saveFile).toMatch(/_sportarten_stufe1_rpcs\.sql$/);
     expect(fieldsOf('log_fields').is_free).toBe('boolean|missing');
     expect(fieldsOf('cardio_fields').e_bike).toBe('boolean|missing');
     expect(fieldsOf('log_fields').sport).toBe('object|null|missing');
+    expect(fieldsOf('log_fields').hyrox_splits).toBe('array|null|missing');
+    expect(fieldsOf('cardio_fields').walk_kind).toBe('string|null|missing');
   });
 
   it('freie Einheit: Namen in save_session_log = FREE_SESSION.names', () => {
@@ -1309,10 +1323,11 @@ describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.m
     expect(recovery).toContain("array['dashboard_tiles', 'step_goal', 'tab_bar']");
   });
 
-  it('neueste Fassung von save_app_layout in *_app_layout_version.sql („App verschlanken“, 26.10.2026)', () => {
-    expect(migrationFiles.filter((n) => readMigration(n).includes(saveMarker)).at(-1)).toMatch(
-      /_app_layout_version\.sql$/,
-    );
+  it('Fassung von save_app_layout in *_app_layout_version.sql („App verschlanken“, 26.10.2026), neueste seit Sportarten Stufe 1', () => {
+    const files = migrationFiles.filter((n) => readMigration(n).includes(saveMarker));
+    expect(files.at(-2)).toMatch(/_app_layout_version\.sql$/);
+    // Sportarten Stufe 1: nur das optionale Feld recovery_routine (eigener Test unten).
+    expect(files.at(-1)).toMatch(/_sportarten_stufe1_rpcs\.sql$/);
     const migration = readMigration('_app_layout_version.sql');
     expect(NAV_AREAS).toContain('wettkampf');
     // Kachel- und Bereichs-Listen unverändert gegenüber der Erholungs-Fassung.
@@ -1342,10 +1357,12 @@ describe('Übersicht und Menüleiste anpassen E2 (docs/PLAN-EINKAUFEN-AUSDAUER.m
       expect(recovery).toContain(check);
       expect(save).toContain(check);
     }
-    // Erlaubte Felder: Pflicht dashboard_tiles + tab_bar, optional step_goal und layout_version.
+    // Erlaubte Felder: Pflicht dashboard_tiles + tab_bar, optional step_goal, layout_version und (Stufe 1)
+    // recovery_routine.
     expect(list('allowed_keys')).toEqual([
       'dashboard_tiles',
       'layout_version',
+      'recovery_routine',
       'step_goal',
       'tab_bar',
     ]);
@@ -1657,13 +1674,19 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
   const constant = (name: string, value: number) => `${name} constant integer := ${value};`;
   const save = fn(rpcs, 'public.save_competition');
   const insertSessions = fn(rpcs, 'private.insert_plan_sessions');
-  const steps = fn(tables, 'private.workout_steps_valid');
+  /** NEUESTE Fassung einer Funktion (Sportarten Stufe 1 erweitert Schritte und harte Arten). */
+  const latest = (name: string) => {
+    const start = allSql.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return allSql.slice(start, allSql.indexOf('$$;', allSql.indexOf('as $$', start)));
+  };
+  const steps = latest('private.workout_steps_valid');
   const R = COMPETITION_START_REFERENCE;
 
-  it('competition_keys = Felder von saveCompetitionPayloadSchema (alle Pflicht; WP5 ergänzt distance_km)', () => {
+  it('competition_keys = Felder von saveCompetitionPayloadSchema (alle Pflicht; WP5 ergänzt distance_km, Stufe 1 hyrox_division)', () => {
     expect(quotedListAfter(save, 'competition_keys constant text[] := array[').sort()).toEqual(
       Object.keys(saveCompetitionPayloadSchema.shape)
-        .filter((k) => k !== 'distance_km')
+        .filter((k) => k !== 'distance_km' && k !== 'hyrox_division')
         .sort(),
     );
     expect(save).toContain('if not (c ?& competition_keys)');
@@ -1707,13 +1730,22 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
     expect(tables).toContain(expected);
   });
 
-  it('harte Arten im CHECK und in insert_plan_sessions = HARD_WORKOUT_TYPES', () => {
-    const check = tables.slice(tables.indexOf('add constraint planned_sessions_workout_fields'));
+  it('harte Arten im CHECK und in insert_plan_sessions = HARD_WORKOUT_TYPES (neueste Fassungen, Stufe 1 + hyrox_combo)', () => {
+    const marker = 'add constraint planned_sessions_workout_fields';
+    const check = allSql.slice(allSql.lastIndexOf(marker));
     expect(quotedListAfter(check, 'workout_type in (')).toEqual([...HARD_WORKOUT_TYPES]);
-    expect(lastQuotedListAfter(check, 'workout_type not in (')).toEqual([...HARD_WORKOUT_TYPES]);
+    expect(quotedListAfter(check, 'workout_type not in (')).toEqual([...HARD_WORKOUT_TYPES]);
     expect(
-      quotedListAfter(insertSessions, 'hard_types constant public.workout_type[] := array['),
+      quotedListAfter(
+        latest('private.insert_plan_sessions'),
+        'hard_types constant public.workout_type[] :=\n    array[',
+      ),
     ).toEqual([...HARD_WORKOUT_TYPES]);
+    // Die WP3-Fassung kannte die vier Lauf-Arten (ohne hyrox_combo).
+    const wp3 = tables.slice(tables.indexOf(marker));
+    expect(quotedListAfter(wp3, 'workout_type in (')).toEqual(
+      HARD_WORKOUT_TYPES.filter((t) => t !== 'hyrox_combo'),
+    );
   });
 
   it('CHECK effort_target: letzte Fassung 1–8 (Phase 3: 1–4 wurde gelockert, nicht umgeschrieben)', () => {
@@ -1724,7 +1756,7 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
     expect(tables).toContain('drop constraint planned_sessions_effort_target_check');
   });
 
-  it('Schritte (private.workout_steps_valid) = workoutStepSchema / WORKOUT_STEP_LIMITS', () => {
+  it('Schritte (private.workout_steps_valid, neueste Fassung) = workoutStepSchema / WORKOUT_STEP_LIMITS', () => {
     const shape = workoutStepSchema.shape;
     expect(steps).toContain(
       `jsonb_array_length(p_steps) not between 1 and ${WORKOUT_STEP_LIMITS.maxSteps}`,
@@ -1732,10 +1764,16 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
     expect(steps).toContain(
       `octet_length(p_steps::text) > ${COMPETITION_RECORD_LIMITS.workoutStepsMaxBytes}`,
     );
+    // Sportarten Stufe 1: `station` (optional in Zod) genau beim Schritt-Typ station.
+    const required = Object.keys(shape).filter((k) => k !== 'station');
     expect(steps).toContain(
-      `(select count(*) from jsonb_object_keys(step)) <> ${Object.keys(shape).length}`,
+      `(select count(*) from jsonb_object_keys(step))\n         <> (case when (step ->> 'kind') = 'station' then ${required.length + 1} else ${required.length} end)`,
     );
-    expect(quotedListAfter(steps, 'step ?& array[').sort()).toEqual(Object.keys(shape).sort());
+    expect(quotedListAfter(steps, 'step ?& array[').sort()).toEqual(required.sort());
+    expect(quotedListAfter(steps, "(step ->> 'station') not in (")).toEqual([
+      ...enums.HYROX_STATIONS,
+    ]);
+    expect(shape.station.safeParse(undefined).success).toBe(true);
     expect(quotedListAfter(steps, "(step ->> 'part') not in (")).toEqual([...shape.part.options]);
     expect(quotedListAfter(steps, "(step ->> 'kind') not in (")).toEqual([...shape.kind.options]);
     const { min, max } = WORKOUT_STEP_LIMITS.seconds;
@@ -1797,8 +1835,9 @@ describe('Wettkampf in der Datenbank (Phase 10 WP3)', () => {
   });
 
   it('Wächter WP3 H1: Schritte passen zur Art, „hart“ über die Schritte = ENDURANCE_EFFORT / COMPETITION_WORKOUTS', () => {
-    const fit = fn(tables, 'private.workout_steps_fit_type');
-    const hard = fn(tables, 'private.workout_is_hard');
+    // Neueste Fassungen (Sportarten Stufe 1: + hyrox_combo, Stations-Schritte).
+    const fit = latest('private.workout_steps_fit_type');
+    const hard = latest('private.workout_is_hard');
     const S = COMPETITION_WORKOUTS.strides;
     expect(quotedListAfter(fit, 'if p_type in (')).toEqual([...HARD_WORKOUT_TYPES]);
     expect(quotedListAfter(hard, 'if p_type in (')).toEqual([...HARD_WORKOUT_TYPES]);
@@ -1878,17 +1917,20 @@ describe('Rad und Triathlon in der Datenbank (Phase 10 WP5)', () => {
   const C = COMPETITION_CYCLING;
   const column = COMPETITION_RECORD_LIMITS.leadWeeksServerColumn;
 
-  it('neueste Fassung von save_competition und insert_plan_sessions steht in *_wp5_rad_triathlon.sql', () => {
+  it('Fassung von save_competition und insert_plan_sessions in *_wp5_rad_triathlon.sql, neueste seit Sportarten Stufe 1', () => {
     for (const name of ['public.save_competition', 'private.insert_plan_sessions']) {
       const marker = `create or replace function ${name}(`;
-      expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-        /_wp5_rad_triathlon\.sql$/,
-      );
+      const files = migrationFiles.filter((n) => readMigration(n).includes(marker));
+      expect(files.at(-2)).toMatch(/_wp5_rad_triathlon\.sql$/);
+      expect(files.at(-1)).toMatch(/_sportarten_stufe1_rpcs\.sql$/);
     }
   });
 
   it('competition_keys = alle Felder (distance_km optional), required_keys = Pflichtfelder', () => {
-    const keys = Object.keys(saveCompetitionPayloadSchema.shape).sort();
+    // hyrox_division kam mit Sportarten Stufe 1 (eigener Test).
+    const keys = Object.keys(saveCompetitionPayloadSchema.shape)
+      .filter((k) => k !== 'hyrox_division')
+      .sort();
     expect(quotedListAfter(save, 'competition_keys constant text[] := array[').sort()).toEqual(
       keys,
     );
@@ -1904,6 +1946,7 @@ describe('Rad und Triathlon in der Datenbank (Phase 10 WP5)', () => {
   it('Distanz: Triathlon aus der Disziplin (COMPETITION_DISTANCE_M), Rad 20–300 km in ganzen km', () => {
     const body = fn(wp5, 'private.competition_distance_m');
     for (const d of COMPETITION_DISCIPLINES) {
+      if (d === 'hyrox') continue; // Sportarten Stufe 1 (eigener Test)
       if (d === 'cycling') {
         expect(body).not.toContain(`when '${d}'`);
         continue;
@@ -1918,7 +1961,7 @@ describe('Rad und Triathlon in der Datenbank (Phase 10 WP5)', () => {
   it('Server-Mindestvorlauf (lockerste Spalte) = COMPETITION_LEAD_WEEKS bzw. COMPETITION_CYCLING.classes', () => {
     const body = fn(wp5, 'private.competition_server_lead_weeks');
     for (const d of COMPETITION_DISCIPLINES) {
-      if (d === 'cycling') continue;
+      if (d === 'cycling' || d === 'hyrox') continue;
       expect(body).toContain(`when '${d}' then ${COMPETITION_LEAD_WEEKS.minimum[d][column]}`);
       expect(COMPETITION_LEAD_WEEKS.minimum[d][column]).toBe(
         Math.min(...Object.values(COMPETITION_LEAD_WEEKS.minimum[d])),
@@ -1953,10 +1996,10 @@ describe('Rad und Triathlon in der Datenbank (Phase 10 WP5)', () => {
     }
   });
 
-  it('Distanz-Deckel je Disziplin = COMPETITION_LONG_RUN.maxMinutes (alle Disziplinen)', () => {
-    const caps = COMPETITION_DISCIPLINES.map(
-      (d) => `when '${d}' then ${COMPETITION_LONG_RUN.maxMinutes[d]}`,
-    ).join(' ');
+  it('Distanz-Deckel je Disziplin = COMPETITION_LONG_RUN.maxMinutes (alle Disziplinen bis WP5)', () => {
+    const caps = COMPETITION_DISCIPLINES.filter((d) => d !== 'hyrox')
+      .map((d) => `when '${d}' then ${COMPETITION_LONG_RUN.maxMinutes[d]}`)
+      .join(' ');
     expect(insertSessions).toContain(`case competition_row.discipline\n          ${caps} end`);
   });
 
@@ -2383,10 +2426,11 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
   const elevation = readMigration('_tracked_route_elevation_profile.sql');
   const saveS1 = fn(rpcs, 'public.save_tracked_route');
   const saveE4 = fn(elevation, 'public.save_tracked_route');
-  // Neueste Fassungen (E-Bike, 23.10.2026): save_tracked_route und update_tracked_route + optionales Feld e_bike.
-  const eBike = readMigration('_e_bike.sql');
-  const save = fn(eBike, 'public.save_tracked_route');
-  const update = fn(eBike, 'public.update_tracked_route');
+  // Neueste Fassungen (Sportarten Stufe 1, davor E-Bike 23.10.2026): save_tracked_route und update_tracked_route
+  // mit optionalen Feldern.
+  const stufe1 = readMigration('_sportarten_stufe1_rpcs.sql');
+  const save = fn(stufe1, 'public.save_tracked_route');
+  const update = fn(stufe1, 'public.update_tracked_route');
   /** Zeilen der älteren Fassung, die in der neueren (in Reihenfolge, ggf. mit Komma am Ende) fehlen. */
   const missingLines = (older: string, newer: string) => {
     const next = newer.split('\n');
@@ -2409,8 +2453,9 @@ describe('Strecken in der Datenbank (Phase 10 S1)', () => {
     const newest = migrationFiles.filter((n) =>
       readMigration(n).includes('create or replace function public.save_tracked_route('),
     );
-    expect(newest.at(-2)).toMatch(/_tracked_route_elevation_profile\.sql$/);
-    expect(newest.at(-1)).toMatch(/_e_bike\.sql$/);
+    expect(newest.at(-3)).toMatch(/_tracked_route_elevation_profile\.sql$/);
+    expect(newest.at(-2)).toMatch(/_e_bike\.sql$/);
+    expect(newest.at(-1)).toMatch(/_sportarten_stufe1_rpcs\.sql$/);
     expect(elevation).toContain(
       'alter table public.tracked_routes add column elevation_profile jsonb;',
     );
@@ -3375,13 +3420,17 @@ describe('Live-Anpassung in der Datenbank (Phase 4b Etappe B, docs/PLAN-PHASE-4B
       const newest = migrationFiles.filter((n) =>
         readMigration(n).includes(`create or replace function ${name}(`),
       );
-      // save_session_log: danach nur noch die E-Bike- und die Sportarten-Fassung (Obermengen, eigene Tests).
+      // save_session_log: danach nur noch die E-Bike-, die Sportarten- und die Stufe-1-Fassung (Obermengen, eigene
+      // Tests).
       expect(newest.at(-1), name).toMatch(
-        name === 'public.save_session_log' ? /_sportarten\.sql$/ : /_live_adjust_outbox\.sql$/,
+        name === 'public.save_session_log'
+          ? /_sportarten_stufe1_rpcs\.sql$/
+          : /_live_adjust_outbox\.sql$/,
       );
       if (name === 'public.save_session_log') {
-        expect(newest.at(-2), name).toMatch(/_e_bike\.sql$/);
-        expect(newest.at(-3), name).toMatch(/_live_adjust_outbox\.sql$/);
+        expect(newest.at(-2), name).toMatch(/_sportarten\.sql$/);
+        expect(newest.at(-3), name).toMatch(/_e_bike\.sql$/);
+        expect(newest.at(-4), name).toMatch(/_live_adjust_outbox\.sql$/);
       }
     }
     for (const [name, trigger] of [
@@ -3577,7 +3626,14 @@ describe('Smartwatch über Health Connect (Phase 8 Etappe H2, docs/PLAN-PHASE-8.
 
   it('Feldlisten = Zod-Schemas (Batch, Einheit, Puls, Tag)', () => {
     expect(keysOf('batch_keys')).toEqual(Object.keys(wearableImportBatchSchema.shape));
-    expect(keysOf('session_keys')).toEqual(Object.keys(wearableSessionImportSchema.shape));
+    // Einheit: Pflichtfelder seit Fassung 1; die optionalen Felder der Stufe 1 prüft der Stufe-1-Block.
+    const sessionShape = wearableSessionImportSchema.shape as Record<
+      string,
+      { safeParse: (v: unknown) => { success: boolean } }
+    >;
+    expect(keysOf('session_keys')).toEqual(
+      Object.keys(sessionShape).filter((k) => !sessionShape[k]?.safeParse(undefined).success),
+    );
     expect(keysOf('heart_rate_keys')).toEqual(Object.keys(heartRateSummarySchema.shape));
     // Tag: neueste Fassung (HRV, 25.10.2026); hrv_rmssd_ms darf fehlen (ältere App-Fassungen).
     const latestDayKeys = /day_keys constant text\[\] := array\[([^\]]*)\]/.exec(
@@ -3620,12 +3676,19 @@ describe('Smartwatch über Health Connect (Phase 8 Etappe H2, docs/PLAN-PHASE-8.
     const origins = WEARABLE_ORIGINS.map((o) => `'${o}'`).join(', ');
     expect(sql).toContain(`check (origin in (${origins}))`);
     expect(importFn).toContain(`origins constant text[] := array[${origins}];`);
-    expect(importFn).toContain(
+    // Gruppen und feste Namen: neueste Fassung (Sportarten Stufe 1: + row).
+    const newestImport = (() => {
+      const marker = 'create or replace function public.import_wearable_batch(';
+      const start = allSql.lastIndexOf(marker);
+      return allSql.slice(start, allSql.indexOf('$$;', start));
+    })();
+    expect(newestImport).toContain(
       `not in (${WEARABLE_SESSION_GROUPS.map((g) => `'${g}'`).join(', ')})`,
     );
     expect(importFn).toContain(`name_pattern constant text := '${WEARABLE_NAME_PATTERN}';`);
+    expect(newestImport).toContain(`name_pattern constant text := '${WEARABLE_NAME_PATTERN}';`);
     const names = JSON.parse(
-      /group_names constant jsonb := '([^']*)'/.exec(importFn)?.[1] ?? '{}',
+      /group_names constant jsonb := '([^']*)'/.exec(newestImport)?.[1] ?? '{}',
     ) as Record<string, string>;
     expect(names).toEqual({
       ...FREE_SESSION.names.endurance,
@@ -3777,8 +3840,13 @@ describe('Routen der Uhr (Gründer-Entscheidung 23.10.2026, docs/PLAN-PHASE-8.md
 
   it('Feldliste = wearableRoutePayloadSchema, feste Namen = FREE_SESSION, Grenzen = TRACKED_ROUTE_LIMITS', () => {
     const keys = /route_keys constant text\[\] := array\[([^\]]*)\]/.exec(saveFn)?.[1] ?? '';
+    // Pflichtfelder seit Fassung 1; optionale Felder (Sportarten Stufe 1) prüft der Stufe-1-Block.
+    const routeShape = wearableRoutePayloadSchema.shape as Record<
+      string,
+      { safeParse: (v: unknown) => { success: boolean } }
+    >;
     expect([...keys.matchAll(/'([^']+)'/g)].map((m) => m[1])).toEqual(
-      Object.keys(wearableRoutePayloadSchema.shape),
+      Object.keys(routeShape).filter((k) => !routeShape[k]?.safeParse(undefined).success),
     );
     const names = JSON.parse(
       /route_names constant jsonb := '([^']*)'/.exec(saveFn)?.[1] ?? '{}',
@@ -3814,7 +3882,11 @@ describe('Routen der Uhr (Gründer-Entscheidung 23.10.2026, docs/PLAN-PHASE-8.md
         /'watch'/.test(readMigration(n)) &&
         /insert into public\.tracked_routes/.test(readMigration(n)),
     );
-    expect(writers).toEqual([migrationFiles.find((n) => n.endsWith('_wearable_routes.sql'))]);
+    // Sportarten Stufe 1: neue Fassung von save_wearable_route (einziger Schreiber mit 'watch' dort).
+    expect(writers).toEqual([
+      migrationFiles.find((n) => n.endsWith('_wearable_routes.sql')),
+      migrationFiles.find((n) => n.endsWith('_sportarten_stufe1_rpcs.sql')),
+    ]);
   });
 
   it('Einwilligungstext Fassung 2 nennt die Routen (seit 25.10.2026 gilt Fassung 3, siehe „Erholung“)', () => {
@@ -4226,8 +4298,14 @@ describe('Sportarten in der Datenbank (20261025160100_sportarten.sql)', () => {
   });
 
   it('Namen und GPS-Sportarten in save_session_log und CHECK = SPORT_CATALOGUE', () => {
+    // Stufe 2 kannte die Sportarten bis „Sonstige“; yoga/pilates kamen mit Stufe 1 (neueste Fassung, eigener Test).
     expect(constOf('sport_names')).toEqual(
-      Object.fromEntries(enums.SPORT_IDS.map((id) => [id, SPORT_CATALOGUE[id].nameDe])),
+      Object.fromEntries(
+        enums.SPORT_IDS.filter((id) => id !== 'yoga' && id !== 'pilates').map((id) => [
+          id,
+          SPORT_CATALOGUE[id].nameDe,
+        ]),
+      ),
     );
     const gps = enums.SPORT_IDS.filter((id) => SPORT_CATALOGUE[id].gps);
     const list = gps.map((id) => `'${id}'`).join(', ');
@@ -4254,5 +4332,463 @@ describe('Sportarten in der Datenbank (20261025160100_sportarten.sql)', () => {
     expect(sql).toContain(
       'grant execute on function public.save_session_log(jsonb) to authenticated;',
     );
+  });
+});
+
+describe('Sportarten Stufe 1 in der Datenbank (docs/PLAN-SPORTARTEN-STUFE-1.md 3, Etappe S)', () => {
+  const enumsSql = readMigration('_sportarten_stufe1_enums.sql');
+  const tables = readMigration('_sportarten_stufe1.sql');
+  const rpcs = readMigration('_sportarten_stufe1_rpcs.sql');
+  const fnOf = (text: string, name: string) => {
+    const start = text.lastIndexOf(`create or replace function ${name}(`);
+    if (start < 0) throw new Error(`${name} nicht gefunden`);
+    return text.slice(start, text.indexOf('$$;', text.indexOf('as $$', start)));
+  };
+  /** Zeilen der älteren Fassung, die in der neueren (in Reihenfolge, ggf. mit Komma am Ende) fehlen. */
+  const missingLines = (older: string, newer: string) => {
+    const next = newer.split('\n');
+    let at = 0;
+    const missing: string[] = [];
+    for (const line of older.split('\n')) {
+      const found = next.findIndex((n, i) => i >= at && (n === line || n === `${line},`));
+      if (found < 0) missing.push(line);
+      else at = found + 1;
+    }
+    return missing;
+  };
+  const jsonConst = (body: string, name: string) => {
+    const match = new RegExp(`${name} constant jsonb := '([^']*)'`).exec(body);
+    if (!match) throw new Error(`${name} nicht gefunden`);
+    return JSON.parse(match[1] as string) as Record<string, string>;
+  };
+  const listOf = (body: string, name: string) =>
+    quotedListAfter(body, `${name} constant text[] := array[`);
+  const optionalKeys = (
+    shape: Record<string, { safeParse: (v: unknown) => { success: boolean } }>,
+  ) => Object.keys(shape).filter((k) => shape[k]?.safeParse(undefined).success);
+  const between = (column: string, limits: { min: number; max: number }) =>
+    `${column} between ${limits.min} and ${limits.max}`;
+  const save = fnOf(rpcs, 'public.save_session_log');
+  const L = TRACKED_ROUTE_LIMITS;
+  const C = CARDIO_LOG_LIMITS;
+
+  it('Enum-Werte in eigener Datei direkt VOR Tabellen und Funktionen; Enum-Datei ohne Funktionen/Tabellen', () => {
+    const at = migrationFiles.findIndex((n) => n.endsWith('_sportarten_stufe1_enums.sql'));
+    expect(at).toBeGreaterThan(-1);
+    expect(migrationFiles[at + 1]).toMatch(/_sportarten_stufe1\.sql$/);
+    expect(migrationFiles[at + 2]).toMatch(/_sportarten_stufe1_rpcs\.sql$/);
+    expect(enumsSql).not.toMatch(/create (or replace )?(function|trigger|table)|alter table/);
+    // Kein neuer Wert wird vor seiner Datei benutzt.
+    const before = migrationFiles
+      .slice(0, at)
+      .map((n) => readMigration(n))
+      .join('\n');
+    for (const value of ['hyrox_combo', 'hyrox_stations', 'mountain_hike', 'inversion', "'flow'"]) {
+      expect(before, value).not.toContain(value);
+    }
+  });
+
+  it('Enums walk_kind und hyrox_division = WALK_KINDS / HYROX_DIVISIONS', () => {
+    expect(enumValues('walk_kind')).toEqual([...enums.WALK_KINDS]);
+    expect(enumValues('hyrox_division')).toEqual([...enums.HYROX_DIVISIONS]);
+  });
+
+  it('nur additiv: keine Tabelle/Spalte gelöscht, RLS und Rechte der Tabellen unverändert', () => {
+    for (const sql of [tables, rpcs]) {
+      expect(sql).not.toMatch(
+        /drop (table|column|function)|alter column|rename |create policy|disable row/i,
+      );
+      expect(sql).not.toMatch(/grant (select|insert|update|delete|all) on table/i);
+    }
+    // Ersetzt werden nur zwei CHECKs (gleiche Bedingungen + Hyrox), beide sofort neu angelegt.
+    expect([...tables.matchAll(/drop constraint ([a-z_]+)/g)].map((m) => m[1])).toEqual([
+      'competitions_multisport',
+      'planned_sessions_workout_fields',
+    ]);
+    expect(tables).toContain('add constraint competitions_multisport check (');
+    expect(tables).toContain('add constraint planned_sessions_workout_fields check (');
+  });
+
+  it('Hyrox · Wettkampf: Distanz, Server-Mindestvorlauf, unter 18 = COMPETITION_DISTANCE_M / COMPETITION_LEAD_WEEKS', () => {
+    const distance = fnOf(tables, 'private.competition_distance_m');
+    const lead = fnOf(tables, 'private.competition_server_lead_weeks');
+    const column = COMPETITION_RECORD_LIMITS.leadWeeksServerColumn;
+    for (const d of COMPETITION_DISCIPLINES) {
+      if (d === 'cycling') continue;
+      expect(distance).toContain(`when '${d}' then ${COMPETITION_DISTANCE_M[d]}`);
+      expect(lead).toContain(`when '${d}' then ${COMPETITION_LEAD_WEEKS.minimum[d][column]}`);
+    }
+    expect(COMPETITION_LEAD_WEEKS.minimum.hyrox[column]).toBe(
+      Math.min(...Object.values(COMPETITION_LEAD_WEEKS.minimum.hyrox)),
+    );
+    expect(fnOf(tables, 'private.competition_minor_allowed')).toContain(
+      "when p_discipline = 'hyrox' then true",
+    );
+    // Gegenüber WP5 nur die Hyrox-Zeile neu.
+    const wp5 = readMigration('_wp5_rad_triathlon.sql');
+    for (const name of [
+      'private.competition_distance_m',
+      'private.competition_server_lead_weeks',
+      'private.competition_minor_allowed',
+    ]) {
+      expect(missingLines(fnOf(wp5, name), fnOf(tables, name)), name).toEqual([]);
+    }
+    for (const name of [
+      'private.competition_distance_m',
+      'private.competition_server_lead_weeks',
+      'private.competition_minor_allowed',
+    ]) {
+      const latest = migrationFiles.filter((n) =>
+        readMigration(n).includes(`create or replace function ${name}(`),
+      );
+      expect(latest.at(-1), name).toMatch(/_sportarten_stufe1\.sql$/);
+    }
+  });
+
+  it('Hyrox · competitions: Division genau bei Hyrox; nur „Ankommen“, Lauf-Referenz erlaubt', () => {
+    expect(tables).toContain('add column hyrox_division public.hyrox_division,');
+    expect(tables).toContain("check ((discipline = 'hyrox') = (hyrox_division is not null))");
+    const multisport = tables.slice(tables.indexOf('add constraint competitions_multisport'));
+    expect(quotedListAfter(multisport, '(discipline in (')).toEqual([
+      ...RUN_COMPETITION_DISCIPLINES,
+    ]);
+    expect(quotedListAfter(multisport, 'reference_discipline in (')).toEqual([
+      ...RUN_COMPETITION_DISCIPLINES,
+    ]);
+    expect(multisport).toContain("(reference_discipline is null or discipline = 'hyrox')");
+  });
+
+  it('Hyrox · save_competition: WP5-Fassung + optionales Feld hyrox_division, unter 18 nur Open', () => {
+    const body = fnOf(rpcs, 'public.save_competition');
+    const wp5 = fnOf(readMigration('_wp5_rad_triathlon.sql'), 'public.save_competition');
+    const keys = Object.keys(saveCompetitionPayloadSchema.shape).sort();
+    expect(listOf(body, 'competition_keys').sort()).toEqual(keys);
+    expect(listOf(body, 'required_keys').sort()).toEqual(
+      keys.filter((k) => k !== 'distance_km' && k !== 'hyrox_division'),
+    );
+    expect(listOf(body, 'required_keys')).toEqual(listOf(wp5, 'required_keys'));
+    expect(saveCompetitionPayloadSchema.shape.hyrox_division.safeParse(undefined).success).toBe(
+      true,
+    );
+    // Zeile für Zeile übernommen; „fehlend“ sind nur erweiterte Zeilen (und die unveränderte required_keys-Liste,
+    // weil die erweiterte competition_keys-Liste dieselbe letzte Zeile trägt).
+    expect(missingLines(wp5, body)).toEqual([
+      '  required_keys constant text[] := array[',
+      "    'id', 'name', 'discipline', 'race_date', 'goal_kind', 'target_time_s', 'reference_discipline',",
+      "    'reference_time_s', 'reference_date', 'long_run_weekday', 'own_start_weekly_minutes', 'start_reference_volume',",
+      "    'start_reference_session_cap', 'start_reference_start_group', 'effective_goal'",
+      '  ];',
+      "     or jsonb_typeof(c -> 'effective_goal') not in ('string', 'null') then",
+      '        start_reference_session_cap, start_reference_start_group, effective_goal, uses_health_data',
+      '        v_effective_goal is not null',
+    ]);
+    expect(body).toContain(
+      "if v_discipline = 'hyrox' and age_years < minor_below_age and v_hyrox_division <> 'open' then",
+    );
+    expect(body).toContain('hyrox_division = v_hyrox_division');
+    expect(rpcs).toContain(
+      'revoke all on function public.save_competition(jsonb) from public, anon;',
+    );
+    expect(rpcs).toContain(
+      'grant execute on function public.save_competition(jsonb) to authenticated;',
+    );
+  });
+
+  it('Hyrox · insert_plan_sessions: WP5-Fassung + hyrox_combo und Deckel = COMPETITION_LONG_RUN (alle Disziplinen)', () => {
+    const body = fnOf(rpcs, 'private.insert_plan_sessions');
+    const wp5 = fnOf(readMigration('_wp5_rad_triathlon.sql'), 'private.insert_plan_sessions');
+    expect(missingLines(wp5, body)).toEqual([
+      "  hard_types constant public.workout_type[] := array['fartlek', 'tempo', 'intervals', 'race_pace']::public.workout_type[];",
+      "          when '5k' then 75 when '10k' then 90 when 'half_marathon' then 120 when 'marathon' then 180 when 'cycling' then 300 when 'triathlon_sprint' then 120 when 'triathlon_olympic' then 180 end",
+    ]);
+    const caps = COMPETITION_DISCIPLINES.map(
+      (d) => `when '${d}' then ${COMPETITION_LONG_RUN.maxMinutes[d]}`,
+    ).join(' ');
+    expect(body).toContain(`case competition_row.discipline\n          ${caps} end`);
+    expect(rpcs).toContain(
+      'revoke all on function private.insert_plan_sessions(uuid, uuid, jsonb, integer, date, date) from public;',
+    );
+  });
+
+  it('Hyrox · Schritte und Arten: Station nur in STATION_STEP_WORKOUT_TYPES, Kombi nur Lauf, Stationen-Fokus nur Kraft', () => {
+    const valid = fnOf(tables, 'private.workout_steps_valid');
+    const fit = fnOf(tables, 'private.workout_steps_fit_type');
+    const hard = fnOf(tables, 'private.workout_is_hard');
+    const competitions = readMigration('_competitions.sql');
+    expect(missingLines(fnOf(competitions, 'private.workout_steps_valid'), valid)).toEqual([
+      '       or (select count(*) from jsonb_object_keys(step)) <> 4',
+      "       or (step ->> 'kind') not in ('work', 'easy', 'rest')",
+    ]);
+    expect(missingLines(fnOf(competitions, 'private.workout_steps_fit_type'), fit)).toEqual([
+      "  if p_type in ('fartlek', 'tempo', 'intervals', 'race_pace') then",
+    ]);
+    expect(missingLines(fnOf(competitions, 'private.workout_is_hard'), hard)).toEqual([
+      "  if p_type in ('fartlek', 'tempo', 'intervals', 'race_pace') then",
+    ]);
+    expect(quotedListAfter(fit, 'if p_type not in (')).toEqual([...STATION_STEP_WORKOUT_TYPES]);
+    expect(HARD_WORKOUT_TYPES as readonly string[]).toContain('hyrox_combo');
+    expect(tables).toContain(
+      "(workout_type is distinct from 'hyrox_combo' or endurance_modality is not distinct from 'run')",
+    );
+    expect(tables).toContain("(focus is distinct from 'hyrox_stations' or kind = 'strength')");
+    // Core-Spiegel: Stations-Schritte nur in hyrox_combo/easy, Station genau beim Schritt-Typ station.
+    const station = {
+      part: 'main',
+      kind: 'station',
+      seconds: 120,
+      effort: 4,
+      station: 'wall_balls',
+    } as const;
+    expect(stepsFitWorkoutType('easy', [station])).toBe(true);
+    expect(stepsFitWorkoutType('hyrox_combo', [station])).toBe(true);
+    expect(stepsFitWorkoutType('long', [station])).toBe(false);
+    expect(workoutStepSchema.safeParse(station).success).toBe(true);
+    expect(workoutStepSchema.safeParse({ ...station, station: undefined }).success).toBe(false);
+    expect(
+      workoutStepSchema.safeParse({
+        part: 'main',
+        kind: 'work',
+        seconds: 60,
+        effort: 5,
+        station: 'rowing',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('Hyrox · Ergebnis: hyrox_splits = hyroxSplitSchema / HYROX_RESULT_LIMITS / HYROX_SPLIT_SEGMENTS', () => {
+    const valid = fnOf(tables, 'private.hyrox_splits_valid');
+    const H = HYROX_RESULT_LIMITS;
+    expect(valid).toContain(`jsonb_array_length(p_splits) > ${H.maxSplits}`);
+    expect(H.maxSplits).toBe(enums.HYROX_SPLIT_SEGMENTS.length);
+    expect(quotedListAfter(valid, "(split ->> 'segment') not in (")).toEqual([
+      ...enums.HYROX_SPLIT_SEGMENTS,
+    ]);
+    expect(quotedListAfter(valid, 'split ?& array[').sort()).toEqual(
+      Object.keys(hyroxSplitSchema.shape).sort(),
+    );
+    expect(valid).toContain(
+      `(select count(*) from jsonb_object_keys(split)) <> ${Object.keys(hyroxSplitSchema.shape).length}`,
+    );
+    expect(valid).toContain(
+      `(split -> 'duration_s')::numeric not between ${H.splitS.min} and ${H.splitS.max}`,
+    );
+    expect(tables).toContain('alter table public.session_logs add column hyrox_splits jsonb;');
+    expect(tables).toContain(
+      "or (private.hyrox_splits_valid(hyrox_splits) and is_free and kind = 'endurance' and planned_session_id is null",
+    );
+    // Stationen der Teilzeiten = Stationen der Schritte (gleiche Namen).
+    for (const s of enums.HYROX_STATIONS) expect(enums.HYROX_SPLIT_SEGMENTS).toContain(s);
+  });
+
+  it('save_session_log: Sportarten-Fassung + Hyrox-Rennen, Rudern, Wandern, Yoga/Pilates (feste Namen = FREE_SESSION/SPORT_CATALOGUE)', () => {
+    const before = fnOf(readMigration('_sportarten.sql'), 'public.save_session_log');
+    expect(missingLines(before, save)).toEqual([
+      '    "sport": "object|null|missing"',
+      '    "e_bike": "boolean|missing"',
+      '    "dancing": "Tanzen", "other": "Sonstige Sportart"',
+    ]);
+    expect(jsonConst(save, 'sport_names')).toEqual(
+      Object.fromEntries(enums.SPORT_IDS.map((id) => [id, SPORT_CATALOGUE[id].nameDe])),
+    );
+    expect(jsonConst(save, 'walk_kind_names')).toEqual(FREE_SESSION.names.walkKinds);
+    expect(Object.keys(FREE_SESSION.names.walkKinds)).toEqual([...enums.WALK_KINDS]);
+    expect(save).toContain(`hyrox_race_name constant text := '${FREE_SESSION.names.hyroxRace}';`);
+    expect(save).toContain("or (p_log -> 'cardio' ->> 'modality') is distinct from 'run'");
+    expect(save).toContain("or not private.hyrox_splits_valid(p_log -> 'hyrox_splits') then");
+    expect(save).toContain(
+      "update public.tracked_routes t\n      set walk_kind = (p_log -> 'cardio' ->> 'walk_kind')::public.walk_kind,",
+    );
+    expect(rpcs).toContain(
+      'revoke all on function public.save_session_log(jsonb) from public, anon;',
+    );
+    expect(rpcs).toContain(
+      'grant execute on function public.save_session_log(jsonb) to authenticated;',
+    );
+  });
+
+  it('Rudern · cardio_logs: Grenzen = CARDIO_LOG_LIMITS, nur bei row; Intervalle = cardioIntervalSchema', () => {
+    expect(tables).toContain(
+      `add column avg_power_w smallint check (${between('avg_power_w', C.avgPowerW)}),`,
+    );
+    expect(tables).toContain(
+      `add column stroke_rate smallint check (${between('stroke_rate', C.strokeRate)}),`,
+    );
+    expect(tables).toContain(
+      "(avg_power_w is null and stroke_rate is null and intervals is null) or modality = 'row'",
+    );
+    const valid = fnOf(tables, 'private.cardio_intervals_valid');
+    expect(valid).toContain(`jsonb_array_length(p_intervals) not between 1 and ${C.intervalsMax}`);
+    expect(valid).toContain(
+      `(rep -> 'distance_m')::numeric not between ${C.intervalDistanceM.min} and ${C.intervalDistanceM.max}`,
+    );
+    expect(valid).toContain(
+      `(rep -> 'duration_s')::numeric not between ${C.intervalDurationS.min} and ${C.intervalDurationS.max}`,
+    );
+    expect(quotedListAfter(valid, 'rep ?& array[').sort()).toEqual(
+      Object.keys(cardioIntervalSchema.shape).sort(),
+    );
+    expect(tables).toContain("check (walk_kind is null or modality = 'walk')");
+    expect(CARDIO_PLAUSIBILITY_KMH.row).toBeGreaterThan(0);
+  });
+
+  it('Wandern · tracked_routes: Grenzen = TRACKED_ROUTE_LIMITS; SAC nur Wandern/Bergwandern', () => {
+    expect(tables).toContain(`check (${between('elevation_loss_m', L.elevationLossM)})`);
+    expect(tables).toContain(`check (${between('max_altitude_m', L.maxAltitudeM)})`);
+    expect(tables).toContain(`check (${between('sac_grade', L.sacGrade)})`);
+    expect(tables).toContain("check (walk_kind is null or sport = 'walk')");
+    expect(tables).toContain(
+      "sac_grade is null or coalesce(walk_kind in ('hike', 'mountain_hike'), false)",
+    );
+  });
+
+  it('save_tracked_route / update_tracked_route: E-Bike-Fassung + optionale Felder (Schlüssel = Zod)', () => {
+    const ebike = readMigration('_e_bike.sql');
+    const saveRoute = fnOf(rpcs, 'public.save_tracked_route');
+    const update = fnOf(rpcs, 'public.update_tracked_route');
+    expect(missingLines(fnOf(ebike, 'public.save_tracked_route'), saveRoute)).toEqual([
+      "  optional_keys constant text[] := array['elevation_profile', 'e_bike'];",
+      "    perform (r ->> 'difficulty')::public.route_difficulty;",
+    ]);
+    expect(missingLines(fnOf(ebike, 'public.update_tracked_route'), update)).toEqual([
+      "  update_optional_keys constant text[] := array['e_bike'];",
+      "     or (r ? 'e_bike' and jsonb_typeof(r -> 'e_bike') <> 'boolean') then",
+      '    returning t.session_log_id, t.e_bike into v_log_id, v_e_bike;',
+    ]);
+    expect(listOf(saveRoute, 'optional_keys')).toEqual([...TRACKED_ROUTE_OPTIONAL_KEYS]);
+    expect(listOf(update, 'update_optional_keys')).toEqual([...UPDATE_TRACKED_ROUTE_OPTIONAL_KEYS]);
+    for (const [key, limits] of [
+      ['elevation_loss_m', L.elevationLossM],
+      ['max_altitude_m', L.maxAltitudeM],
+      ['sac_grade', L.sacGrade],
+    ] as const) {
+      expect(saveRoute, key).toContain(
+        `private.jsonb_number_between(r -> '${key}', ${limits.min}, ${limits.max}, 0)`,
+      );
+    }
+    expect(update).toContain(
+      `private.jsonb_number_between(r -> 'sac_grade', ${L.sacGrade.min}, ${L.sacGrade.max}, 0)`,
+    );
+    for (const body of [saveRoute, update]) {
+      expect(jsonConst(body, 'walk_kind_names')).toEqual(FREE_SESSION.names.walkKinds);
+    }
+    for (const name of ['save_tracked_route', 'update_tracked_route']) {
+      expect(rpcs).toContain(`revoke all on function public.${name}(jsonb) from public, anon;`);
+      expect(rpcs).toContain(`grant execute on function public.${name}(jsonb) to authenticated;`);
+    }
+  });
+
+  it('save_wearable_route: Fassung der Uhr-Routen + optional Abstieg/höchster Punkt, Art aus dem Eintrag', () => {
+    const body = fnOf(rpcs, 'public.save_wearable_route');
+    const before = fnOf(readMigration('_wearable_routes.sql'), 'public.save_wearable_route');
+    expect(missingLines(before, body)).toEqual([
+      "  perform private.assert_json_keys(r, route_keys, 'Strecke');",
+      "     or jsonb_typeof(r -> 'elevation_profile') not in ('array', 'null') then",
+      '  select ws.session_log_id, ws.merged, ws.started_at, ws.finished_at, cl.modality into ws_row',
+      '        current_user_id, route_names ->> ws_row.modality::text, ws_row.modality, ws_row.started_at, v_duration,',
+    ]);
+    const shape = wearableRoutePayloadSchema.shape as Record<
+      string,
+      { safeParse: (v: unknown) => { success: boolean } }
+    >;
+    expect(listOf(body, 'optional_keys')).toEqual(optionalKeys(shape));
+    expect(jsonConst(body, 'walk_kind_names')).toEqual(FREE_SESSION.names.walkKinds);
+    expect(body.indexOf('wearable_consents_locked')).toBeLessThan(
+      body.indexOf('pg_advisory_xact_lock'),
+    );
+    expect(rpcs).toContain(
+      'revoke all on function public.save_wearable_route(jsonb, boolean) from public, anon;',
+    );
+    expect(rpcs).toContain(
+      'grant execute on function public.save_wearable_route(jsonb, boolean) to authenticated;',
+    );
+  });
+
+  it('import_wearable_batch: HRV-Fassung + Gruppe row, optionale Felder = wearableSessionImportSchema', () => {
+    const body = fnOf(rpcs, 'public.import_wearable_batch');
+    const before = fnOf(readMigration('_recovery_hrv.sql'), 'public.import_wearable_batch');
+    expect(missingLines(before, body)).toEqual([
+      '    "run": "Lauf", "walk": "Spaziergang", "bike": "Radfahrt", "swim": "Schwimmen", "strength": "Freie Kraft-Einheit"',
+      '       or exists (select 1 from jsonb_object_keys(s) k where not k = any (session_keys))',
+      "       or (s ->> 'group') not in ('run', 'walk', 'bike', 'swim', 'strength', 'other')",
+      "       or ((s ->> 'group') <> 'other' and (s ->> 'name_de') is distinct from (group_names ->> (s ->> 'group')))",
+      "         or ((s ->> 'group') in ('run', 'walk', 'bike', 'swim')",
+      "    v_modality := case when v_group in ('run', 'walk', 'bike', 'swim') then v_group::public.endurance_modality end;",
+      '          and (cl.duration_s, cl.distance_m) is distinct from (v_duration, coalesce(v_distance, cl.distance_m));',
+      '        insert into public.cardio_logs (session_log_id, user_id, modality, duration_s, distance_m, elevation_m)',
+      '        values (v_log_id, current_user_id, v_modality, v_duration, v_distance, null);',
+    ]);
+    const shape = wearableSessionImportSchema.shape as Record<
+      string,
+      { safeParse: (v: unknown) => { success: boolean } }
+    >;
+    expect(listOf(body, 'session_optional_keys')).toEqual(optionalKeys(shape));
+    expect([...listOf(body, 'session_keys'), ...listOf(body, 'session_optional_keys')]).toEqual(
+      Object.keys(shape),
+    );
+    expect(jsonConst(body, 'walk_kind_names')).toEqual(FREE_SESSION.names.walkKinds);
+    const endurance = enums.ENDURANCE_MODALITIES.map((m) => `'${m}'`).join(', ');
+    expect(body).toContain(`v_modality := case when v_group in (${endurance}) then`);
+    expect(body).toContain(
+      `private.jsonb_number_between(s -> 'avg_power_w', ${C.avgPowerW.min}, ${C.avgPowerW.max}, 0)`,
+    );
+    expect(body).toContain(
+      `private.jsonb_number_between(s -> 'stroke_rate', ${C.strokeRate.min}, ${C.strokeRate.max}, 0)`,
+    );
+    expect(body).toContain(
+      `(s ->> 'walk_kind') in (${enums.WALK_KINDS.map((k) => `'${k}'`).join(', ')})`,
+    );
+    expect(body.indexOf('wearable_consents_locked')).toBeLessThan(
+      body.indexOf('pg_advisory_xact_lock'),
+    );
+    expect(rpcs).toContain(
+      'revoke all on function public.import_wearable_batch(jsonb) from public, anon;',
+    );
+    expect(rpcs).toContain(
+      'grant execute on function public.import_wearable_batch(jsonb) to authenticated;',
+    );
+  });
+
+  it('Einstellung „Erholungs-Routine vorschlagen“: Spalte mit Standard true, save_app_layout + optionales Feld', () => {
+    expect(tables).toContain(
+      'alter table public.app_layout_settings add column recovery_routine boolean not null default true;',
+    );
+    const body = fnOf(rpcs, 'public.save_app_layout');
+    const before = fnOf(readMigration('_app_layout_version.sql'), 'public.save_app_layout');
+    expect(missingLines(before, body)).toEqual([
+      "  allowed_keys constant text[] := array['dashboard_tiles', 'layout_version', 'step_goal', 'tab_bar'];",
+      '  -- Pflicht: dashboard_tiles, tab_bar; optional: step_goal, layout_version (seit 26.10.2026). Sonst nichts.',
+      '    (user_id, dashboard_tiles, tab_bar, step_goal, layout_version, updated_at)',
+      '  values (current_user_id, tiles, tabs, new_goal, new_version, now())',
+    ]);
+    expect(body).toContain(
+      'recovery_routine = case when has_recovery then excluded.recovery_routine else s.recovery_routine end',
+    );
+    expect(storedAppLayoutSchema.shape.recovery_routine.safeParse(undefined).success).toBe(true);
+    expect(tables).not.toContain('consents_after_revoke');
+  });
+
+  it('Export: neue Spalten stehen über to_jsonb der ganzen Zeilen im Export (keine neue Fassung nötig)', () => {
+    const marker = 'create or replace function public.export_my_data()';
+    const start = allSql.lastIndexOf(marker);
+    const body = allSql.slice(start, allSql.indexOf('$$;', start));
+    for (const table of [
+      'competitions',
+      'session_logs',
+      'cardio_logs',
+      'tracked_routes',
+      'app_layout_settings',
+    ]) {
+      expect(body, table).toContain(`'${table}', (select coalesce(jsonb_agg(to_jsonb(t)`);
+      expect(DATA_EXPORT_TABLES).toContain(table);
+    }
+    expect(rpcs).not.toContain(marker);
+    expect(tables).not.toContain(marker);
+  });
+
+  it('Workout-Format flow: FLOW_RULES liegt in WORKOUT_LIMITS (Dauer), Pose ab der kürzesten Belastung', () => {
+    expect(FLOW_RULES.minutes.min).toBeGreaterThanOrEqual(WORKOUT_LIMITS.minutes.min);
+    expect(FLOW_RULES.minutes.max).toBeLessThanOrEqual(WORKOUT_LIMITS.minutes.max);
+    expect(FLOW_RULES.poseS.min).toBeGreaterThanOrEqual(WORKOUT_LIMITS.workS.min);
+    expect(FLOW_RULES.seniorHoldMaxS).toBe(ACTIVE_AGING_RULES.strengthHoldMaxS);
   });
 });

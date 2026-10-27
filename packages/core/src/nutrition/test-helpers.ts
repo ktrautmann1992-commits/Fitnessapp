@@ -20,6 +20,8 @@ export const PLAN = {
     walk: [3.5, 4.3],
     bike: [5.5, 6.8],
     swim: [5.0, 5.8],
+    // Sportarten Stufe 1 (Rudern, TRAINING_MET.endurance.row).
+    row: [4.8, 8.5],
     unknown: 7.0,
   },
   trainingMax: 3000,
@@ -43,7 +45,7 @@ export function janmahasatian(kg: number, cm: number, sex: string | null): numbe
 
 export function sessionMet(s: {
   kind: 'strength' | 'endurance';
-  enduranceModality?: 'run' | 'walk' | 'bike' | 'swim' | null;
+  enduranceModality?: 'run' | 'walk' | 'bike' | 'swim' | 'row' | null;
   effortTarget?: number | null;
 }): number {
   if (s.kind === 'strength') return PLAN.met.strength;

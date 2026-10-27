@@ -46,6 +46,8 @@ const LONG_MAX = {
   cycling: 300,
   triathlon_sprint: 120,
   triathlon_olympic: 180,
+  // Sportarten Stufe 1 (Hyrox): langer Lauf bis 90 min.
+  hyrox: 90,
 } as const;
 const HARD = ['fartlek', 'tempo', 'intervals', 'race_pace'];
 const REQUIRED_LONG_FINISH = { '5k': 40, '10k': 50, half_marathon: 70, marathon: 120 } as const;

@@ -786,11 +786,23 @@ export const SESSION_LOG_LIMITS = {
  * `strengthMinutesPerSet`: geschätzte Minuten je abgehaktem Kraft-Satz samt Pause – nur für die Trainingsenergie
  * fürs Tagesziel (A-G7), höchstens `strengthMinutesMax`. Quelle: PRODUKTENTSCHEIDUNG (grobe Schätzung; die
  * Trainingsenergie hat zusätzlich den Deckel TRAINING_KCAL_DAY_MAX) – VOR LIVEGANG FACHLICH PRÜFEN.
+ * Sportarten Stufe 1 (docs/PLAN-SPORTARTEN-STUFE-1.md 3): `endurance.row` = Indoor-Rudern; `walkKinds` = Name einer
+ * Geh-Einheit je walk_kind (null bzw. `walk` = „Spaziergang“ wie bisher); `hyroxRace` = Ergebnis eines Hyrox-Rennens
+ * (freie Ausdauer-Einheit „run“ mit Gesamtzeit und optionalen Teilzeiten `hyrox_splits`). Gleich in save_session_log,
+ * import_wearable_batch, save_wearable_route und update_tracked_route (db-sync.test.ts).
  */
 export const FREE_SESSION = {
   names: {
     strength: 'Freie Kraft-Einheit',
-    endurance: { run: 'Lauf', walk: 'Spaziergang', bike: 'Radfahrt', swim: 'Schwimmen' },
+    endurance: {
+      run: 'Lauf',
+      walk: 'Spaziergang',
+      bike: 'Radfahrt',
+      swim: 'Schwimmen',
+      row: 'Rudern',
+    },
+    walkKinds: { walk: 'Spaziergang', hike: 'Wanderung', mountain_hike: 'Bergwanderung' },
+    hyroxRace: 'Hyrox-Rennen',
   },
   strengthMinutesPerSet: 3,
   strengthMinutesMax: 180,
@@ -837,6 +849,21 @@ export const WORKOUT_LIMITS = {
 } as const;
 
 /**
+ * Yoga-/Pilates-/Mobility-Routinen im Workout-Format `flow` (Sportarten Stufe 1, docs/PLAN-SPORTARTEN-STUFE-1.md 2.4
+ * und 5): Pose 15–180 s (`poseS`), Routine 5–45 min (`minutes`, innerhalb von WORKOUT_LIMITS.minutes); Halteposen ab
+ * 65 höchstens `seniorHoldMaxS` (= ACTIVE_AGING_RULES.strengthHoldMaxS); eine Routine wird nur gezeigt, wenn
+ * mindestens `minAllowedShare` ihrer Posen erlaubt sind (Rest getauscht oder entfallen). Schema-Grenzen (poseS,
+ * minutes) prüft workoutSchema; die übrigen Werte nutzt die Fachlogik (Etappe Y).
+ * Quelle: PRODUKTENTSCHEIDUNG, bestehende Fit-im-Alter-Regeln – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const FLOW_RULES = {
+  poseS: { min: 15, max: 180 },
+  minutes: { min: 5, max: 45 },
+  seniorHoldMaxS: 30,
+  minAllowedShare: 0.8,
+} as const;
+
+/**
  * RPE je Satz 5–10 in 0,5er-Schritten, eingegeben als „Wiederholungen in Reserve“ (0 / 1 / 2 / 3 / 4 / 5+).
  * Quelle: Zourdos MC et al. (2016), „Novel resistance training-specific rating of perceived exertion scale
  * measuring repetitions in reserve“, J Strength Cond Res 30(1):267–275.
@@ -850,11 +877,24 @@ export const SET_RPE_LIMITS = { min: 5, max: 10, step: 0.5 } as const;
  */
 export const SESSION_RPE_LIMITS = { min: 0, max: 10 } as const;
 
-/** Ausdauer-Eintrag: Dauer 1 min–12 h, Distanz 0–500 km, Höhenmeter 0–10 000 m. Quelle: PRODUKTENTSCHEIDUNG. */
+/**
+ * Ausdauer-Eintrag: Dauer 1 min–12 h, Distanz 0–500 km, Höhenmeter 0–10 000 m. Quelle: PRODUKTENTSCHEIDUNG.
+ * Sportarten Stufe 1 (Indoor-Rudern, docs/PLAN-SPORTARTEN-STUFE-1.md 2.3/5, nur Ausdauer-Art `row`):
+ * - `avgPowerW` 1–1000 W (Durchschnitt; Weltklasse über 2.000 m ca. 500–600 W), `strokeRate` 10–60 Schläge/min
+ *   (ENDURANCE_MODALITY_ROW: Schlagzahl 10–60) – Quelle: Concept2 „Pace/Watt calculator“ und Technik-Leitfaden,
+ * - `intervals`: Intervall-Ergebnis höchstens 30 Wiederholungen, je Distanz 1–10 000 m und Zeit 1 s–1 h
+ *   (`intervalDistanceM`, `intervalDurationS`) – Split je 500 m rechnet die App daraus. PRODUKTENTSCHEIDUNG.
+ * Gleiche CHECKs an cardio_logs (db-sync.test.ts). VOR LIVEGANG FACHLICH PRÜFEN.
+ */
 export const CARDIO_LOG_LIMITS = {
   durationS: { min: 60, max: 12 * 60 * 60 },
   distanceM: { min: 0, max: 500_000 },
   elevationM: { min: 0, max: 10_000 },
+  avgPowerW: { min: 1, max: 1000 },
+  strokeRate: { min: 10, max: 60 },
+  intervalsMax: 30,
+  intervalDistanceM: { min: 1, max: 10_000 },
+  intervalDurationS: { min: 1, max: 3600 },
 } as const;
 
 /**
@@ -862,8 +902,10 @@ export const CARDIO_LOG_LIMITS = {
  * Quelle: PRODUKTENTSCHEIDUNG, orientiert an Weltrekord-Durchschnitten: Laufen 25 (Marathon-Weltrekord ≈ 21 km/h),
  * Rad 70 (Stunden-Weltrekord ≈ 56 km/h, bergab mehr), Schwimmen 8 (Langstrecken-Weltrekorde ≈ 6–7 km/h);
  * Gehen 10 (zügiges Freizeit-Gehen ≈ 5–7 km/h – schneller ist meist schon Laufen).
+ * Rudern 25 (Sportarten Stufe 1, ENDURANCE_MODALITY_ROW: Split ab 1:10 /500 m ≈ 25,7 km/h; Concept2-Weltrekorde über
+ * 2.000 m ≈ 21 km/h).
  */
-export const CARDIO_PLAUSIBILITY_KMH = { walk: 10, run: 25, bike: 70, swim: 8 } as const;
+export const CARDIO_PLAUSIBILITY_KMH = { walk: 10, run: 25, bike: 70, swim: 8, row: 25 } as const;
 
 /**
  * Gesprächstest zur Anstrengung 0–10 eines Ausdauer-Eintrags (Erklärung beim Eintragen): bis `fullSentencesMax`
@@ -1263,6 +1305,9 @@ export const ACTIVITY_FACTORS = {
  *   entspricht dem normalen Rad und wird nicht genutzt. Nur für eigene Einträge/Aufzeichnungen mit Sportart Rad –
  *   Pläne bleiben normales Rad. Werte aus der Suche nach dem Compendium (pacompendium.com), Wortlaut der Codes NICHT
  *   gegen das Original geprüft – VOR LIVEGANG FACHLICH PRÜFEN.
+ * - Rudern 4,8 / 8,5 (Sportarten Stufe 1, Plan 5 „Startwerte“): 02071 „rowing, stationary, general, moderate effort“ /
+ *   02073 „rowing, stationary, 150 watts, vigorous effort“ – gegen das Original bzw. Compendium 2024 prüfen; die
+ *   Zuordnung zur Anstrengung folgt mit Etappe R (Entscheidung 8: v1 nur MET nach Anstrengung).
  */
 export const TRAINING_MET = {
   strength: 3.5,
@@ -1271,6 +1316,7 @@ export const TRAINING_MET = {
     walk: { low: 3.5, high: 4.3, fallback: 4.3 },
     bike: { low: 5.5, high: 6.8, fallback: 6.8 },
     swim: { low: 5.0, high: 5.8, fallback: 5.8 },
+    row: { low: 4.8, high: 8.5, fallback: 8.5 },
   },
   unknownEndurance: 7.0,
   /** Rad mit elektrischer Unterstützung (nur mit Sportart Rad, siehe oben). */
@@ -1392,6 +1438,10 @@ export interface SportDefinition {
  *   dancing (e.g., disco, folk, Irish step dancing, line dancing, polka, contra, country)“.
  * - Sonstige Sportart 4,0 / 6,0: kein Code – PRODUKTENTSCHEIDUNG (Bereich „moderat“ 3–6 MET nach ACSM; Garber CE et
  *   al. (2011), Med Sci Sports Exerc 43(7):1334–1359).
+ * - Yoga 2,5 / 4,0 (Sportarten Stufe 1): 02150 „yoga, Hatha“ / 02170 „yoga, Power“.
+ * - Pilates 3,0 / 3,8: 02105 „pilates, general“ / hoch kein Code (2011) – Analogie 02101 „stretching, mild“ nicht
+ *   passend, deshalb PRODUKTENTSCHEIDUNG (zügiges Mattenprogramm); gegen das Compendium 2024 prüfen.
+ *   Icon vorläufig „stopwatch“ (eigenes Icon mit Etappe Y).
  * `typicalEffort`, `legLoad`, `impact`, `gps`/`gpsProfile` und die Suchbegriffe: PRODUKTENTSCHEIDUNG (sportpraktische
  * Einschätzung), VOR LIVEGANG FACHLICH PRÜFEN. Schwimmen bleibt Ausdauer-Art (TRAINING_MET.endurance.swim).
  */
@@ -1720,6 +1770,31 @@ export const SPORT_CATALOGUE = {
     impact: false,
     searchTerms: ['andere', 'sonstiges'],
   },
+  // Sportarten Stufe 1 (docs/PLAN-SPORTARTEN-STUFE-1.md 2.4): Studio-Kurs eintragen, Uhr-Arten „Yoga“/„Pilates“.
+  yoga: {
+    nameDe: 'Yoga',
+    category: 'mind_body',
+    icon: 'stopwatch',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 2.5, high: 4.0 },
+    typicalEffort: 3,
+    legLoad: 'low',
+    impact: false,
+    searchTerms: ['hatha', 'vinyasa', 'yin', 'power yoga', 'dehnen', 'stretching'],
+  },
+  pilates: {
+    nameDe: 'Pilates',
+    category: 'mind_body',
+    icon: 'stopwatch',
+    gps: false,
+    gpsProfile: null,
+    met: { low: 3.0, high: 3.8 },
+    typicalEffort: 4,
+    legLoad: 'low',
+    impact: false,
+    searchTerms: ['mattenpilates', 'reformer', 'rumpf'],
+  },
 } as const satisfies Readonly<Record<SportId, SportDefinition>>;
 
 /**
@@ -1758,6 +1833,18 @@ export const LEG_LOAD_HINT = {
 export const SPORT_LOG_LIMITS = {
   durationS: { min: 60, max: 12 * 60 * 60 },
   distanceM: { min: 0, max: 500_000 },
+} as const;
+
+/**
+ * Ergebnis eines Hyrox-Rennens (Sportarten Stufe 1, docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/3): freie Ausdauer-Einheit
+ * „run“ (Name FREE_SESSION.names.hyroxRace, Gesamtzeit = Dauer) mit optional höchstens `maxSplits` Teilzeiten (8 Lauf,
+ * 8 Stationen, Roxzone – HYROX_SPLIT_SEGMENTS, jeder Abschnitt höchstens einmal), je `splitS` Sekunden; die Summe der
+ * Teilzeiten ist höchstens die Gesamtzeit. Privat, nur eigener Verlauf (kein Vergleich). Gleich in
+ * private.hyrox_splits_valid und save_session_log (db-sync.test.ts). Quelle: PRODUKTENTSCHEIDUNG (technische Grenzen).
+ */
+export const HYROX_RESULT_LIMITS = {
+  maxSplits: 17,
+  splitS: { min: 1, max: 7200 },
 } as const;
 
 /**
@@ -2017,6 +2104,8 @@ export const COMPETITION_NUTRITION = {
     // COMPETITION_CYCLING.estimatedSpeedKmh.
     triathlon_sprint: { beginner: 110, advanced: 85, competitive: 70 },
     triathlon_olympic: { beginner: 210, advanced: 165, competitive: 140 },
+    // Sportarten Stufe 1 (Hyrox, docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): VORLÄUFIG – Fachlogik und Werte folgen in Etappe H.
+    hyrox: { beginner: 120, advanced: 90, competitive: 70 },
   },
 } as const;
 
@@ -3442,6 +3531,8 @@ export const COMPETITION_DISTANCE_M = {
   // Standard bzw. Olympisch 1,5 km/40 km/10 km). Rad hat eine freie Distanz (COMPETITION_CYCLING.distanceKm).
   triathlon_sprint: 25750,
   triathlon_olympic: 51500,
+  // Sportarten Stufe 1 (Hyrox): Lauf-Anteil 8 × 1 km (Stationen ohne Distanz) – = private.competition_distance_m.
+  hyrox: 8000,
 } as const;
 
 /**
@@ -3461,6 +3552,8 @@ export const COMPETITION_LEAD_WEEKS = {
     // Leistungssport mit 2 Wochen Reserve über der Kette. Rad: je Distanzklasse in COMPETITION_CYCLING.classes.
     triathlon_sprint: { beginner: 19, advanced: 11, competitive: 7 },
     triathlon_olympic: { beginner: 26, advanced: 18, competitive: 16 },
+    // Sportarten Stufe 1 (Hyrox, HYROX_PLAN, Entscheidung 4): mindestens 8 Wochen, Einsteiger 12 – Server prüft 8.
+    hyrox: { beginner: 12, advanced: 8, competitive: 8 },
   },
   maxLeadWeeks: 52,
 } as const;
@@ -3487,6 +3580,8 @@ export const COMPETITION_REQUIRED_PEAK = {
     // keine Zielzeit bei Rad und Triathlon). Rad: je Distanzklasse in COMPETITION_CYCLING.classes.
     triathlon_sprint: { weeklyMinutes: 180, longRunMinutes: 75 },
     triathlon_olympic: { weeklyMinutes: 300, longRunMinutes: 120 },
+    // Sportarten Stufe 1 (Hyrox, docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): VORLÄUFIG – Fachlogik und Werte folgen in Etappe H.
+    hyrox: { weeklyMinutes: 120, longRunMinutes: 60 },
   },
   // Zielzeit nur beim Laufen (WP5: Rad und Triathlon nur „Ankommen“).
   time: {
@@ -3532,6 +3627,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 10,
     triathlon_sprint: 7,
     triathlon_olympic: 10,
+    hyrox: 7, // Stufe 1 (Hyrox): vorläufig, Etappe H
   },
   taperFactors: { 1: [0.7], 2: [0.75, 0.6] },
   raceWeekFactor: 0.4,
@@ -3543,6 +3639,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 3,
     triathlon_sprint: 2,
     triathlon_olympic: 3,
+    hyrox: 2, // Stufe 1 (Hyrox): vorläufig, Etappe H
   },
   buildWeeks: {
     '5k': 2,
@@ -3552,6 +3649,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 4,
     triathlon_sprint: 3,
     triathlon_olympic: 4,
+    hyrox: 3, // Stufe 1 (Hyrox): vorläufig, Etappe H
   },
   recoveryWeeks: {
     '5k': 1,
@@ -3561,6 +3659,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 1,
     triathlon_sprint: 1,
     triathlon_olympic: 1,
+    hyrox: 1, // Stufe 1 (Hyrox): vorläufig, Etappe H
   },
   recoveryFactors: [0.5, 0.6],
   restDaysBeforeRace: 1,
@@ -3678,6 +3777,8 @@ export const COMPETITION_LONG_RUN = {
     cycling: 300,
     triathlon_sprint: 120,
     triathlon_olympic: 180,
+    // Sportarten Stufe 1 (Hyrox, Plan 2.1): langer Lauf höchstens 90 min – = Deckel in private.insert_plan_sessions.
+    hyrox: 90,
   },
 } as const;
 
@@ -3717,6 +3818,7 @@ export const COMPETITION_INTENSITY = {
       cycling: 6,
       triathlon_sprint: 7,
       triathlon_olympic: 6,
+      hyrox: 7, // Stufe 1 (Hyrox): vorläufig wie 10 km, Etappe H
     },
   },
   hardEffortCap: { general: 8, minor: 7, senior: 6 },
@@ -3761,6 +3863,7 @@ export const COMPETITION_WORKOUTS = {
       cycling: 600,
       triathlon_sprint: 180,
       triathlon_olympic: 300,
+      hyrox: 300, // Stufe 1 (Hyrox): vorläufig wie 10 km, Etappe H
     },
     restS: 120,
     minReps: 2,
@@ -4163,6 +4266,12 @@ export const TRACKED_ROUTE_LIMITS = {
   startedAtMin: '2020-01-01T00:00:00Z',
   sessionLogDayTolerance: 1,
   maxSavesPerDay: 20,
+  // Sportarten Stufe 1 (Wandern/Bergwandern, docs/PLAN-SPORTARTEN-STUFE-1.md 2.2): Abstieg wie Höhenmeter; höchster
+  // Punkt −500 m (Totes Meer ca. −430 m) bis 9.000 m (Mount Everest 8.849 m); SAC-Wanderskala T1–T3 (T4+ begleitet die
+  // App nicht, Entscheidung 10). Gleiche CHECKs an tracked_routes (db-sync.test.ts).
+  elevationLossM: CARDIO_LOG_LIMITS.elevationM,
+  maxAltitudeM: { min: -500, max: 9000 },
+  sacGrade: { min: 1, max: 3 },
 } as const;
 
 /**

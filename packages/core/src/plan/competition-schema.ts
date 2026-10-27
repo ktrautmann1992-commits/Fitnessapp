@@ -34,6 +34,9 @@ export const COMPETITION_DISCIPLINES = [
   ...RUN_COMPETITION_DISCIPLINES,
   'cycling',
   ...TRIATHLON_COMPETITION_DISCIPLINES,
+  // Sportarten Stufe 1 (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1, per `add value` in 20261027100000): 8 × (1 km + Station),
+  // Division in competitions.hyrox_division. Stufe 1: Fachlogik (Wochenbau, Ampel) folgt in Etappe H.
+  'hyrox',
 ] as const;
 export type CompetitionDiscipline = (typeof COMPETITION_DISCIPLINES)[number];
 

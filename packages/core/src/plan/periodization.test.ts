@@ -26,6 +26,7 @@ const TAPER_MIN_DAYS = {
   cycling: 10,
   triathlon_sprint: 7,
   triathlon_olympic: 10,
+  hyrox: 7,
 } as const;
 const RECOVERY_WEEKS = {
   '5k': 1,
@@ -35,6 +36,7 @@ const RECOVERY_WEEKS = {
   cycling: 1,
   triathlon_sprint: 1,
   triathlon_olympic: 1,
+  hyrox: 1,
 } as const;
 const PHASE_ORDER = ['base', 'build', 'peak', 'taper', 'race_week', 'recovery'];
 const MONDAY = '2026-10-05';

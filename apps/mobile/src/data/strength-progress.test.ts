@@ -35,6 +35,7 @@ function log(id: string, date: string, extra: Partial<SessionLogRow> = {}): Sess
     sport: null,
     sport_duration_s: null,
     sport_distance_m: null,
+    hyrox_splits: null,
     client_updated_at: `${date}T18:00:00Z`,
     created_at: `${date}T18:00:00Z`,
     updated_at: `${date}T18:00:00Z`,

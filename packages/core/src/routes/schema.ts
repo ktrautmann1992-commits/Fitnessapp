@@ -15,6 +15,8 @@ import {
   type RouteMatchState,
   type TrackedRouteSource,
   type TrackedRouteSport,
+  WALK_KINDS,
+  type WalkKind,
 } from '../enums';
 import { COMPETITION_NAME_TRIM_CLASS } from '../plan/competition-record';
 import {
@@ -110,10 +112,37 @@ export const trackedRouteSchema = z
      * erlaubt (CHECK tracked_routes_e_bike_only_bike).
      */
     e_bike: z.boolean().optional(),
+    /**
+     * Sportarten Stufe 1 (Wandern/Bergwandern, additiv): OPTIONAL wie e_bike – fehlt = null. Art der Geh-Einheit nur
+     * bei `walk` (null = Gehen); Abstieg und höchster Punkt (TRACKED_ROUTE_LIMITS); SAC-Stufe 1–3 nur bei Wandern/
+     * Bergwandern (CHECKs tracked_routes_walk_kind_only_walk, tracked_routes_sac_grade_hike).
+     */
+    walk_kind: z.enum(WALK_KINDS).nullable().optional(),
+    elevation_loss_m: int(
+      TRACKED_ROUTE_LIMITS.elevationLossM.min,
+      TRACKED_ROUTE_LIMITS.elevationLossM.max,
+    )
+      .nullable()
+      .optional(),
+    max_altitude_m: int(
+      TRACKED_ROUTE_LIMITS.maxAltitudeM.min,
+      TRACKED_ROUTE_LIMITS.maxAltitudeM.max,
+    )
+      .nullable()
+      .optional(),
+    sac_grade: int(TRACKED_ROUTE_LIMITS.sacGrade.min, TRACKED_ROUTE_LIMITS.sacGrade.max)
+      .nullable()
+      .optional(),
   })
   .superRefine((r, ctx) => {
     if (r.e_bike === true && r.sport !== 'bike') {
       ctx.addIssue({ code: 'custom', path: ['e_bike'], message: 'e_bike_only_bike' });
+    }
+    if (r.walk_kind != null && r.sport !== 'walk') {
+      ctx.addIssue({ code: 'custom', path: ['walk_kind'], message: 'walk_kind_only_walk' });
+    }
+    if (r.sac_grade != null && r.walk_kind !== 'hike' && r.walk_kind !== 'mountain_hike') {
+      ctx.addIssue({ code: 'custom', path: ['sac_grade'], message: 'sac_grade_only_hike' });
     }
     if (r.moving_s > r.duration_s) {
       ctx.addIssue({ code: 'custom', path: ['moving_s'], message: 'moving_after_duration' });
@@ -191,15 +220,31 @@ export interface TrackedRouteRow {
   auto_match: boolean;
   /** Wetter zum Start (Open-Meteo, 25.10.2026); null = (noch) keins. Ältere Zeilen im Testmodus: beim Lesen ergänzt. */
   weather: RouteWeather | null;
+  /**
+   * Sportarten Stufe 1 (Wandern/Bergwandern): Art der Geh-Einheit (nur bei walk; null = Gehen), Abstieg und höchster
+   * Punkt in Metern (null = unbekannt), SAC-Stufe 1–3 (nur Wandern/Bergwandern). Ältere Zeilen im Testmodus: beim
+   * Lesen mit null ergänzt.
+   */
+  walk_kind: WalkKind | null;
+  elevation_loss_m: number | null;
+  max_altitude_m: number | null;
+  sac_grade: number | null;
   created_at: string;
   updated_at: string;
 }
 
-/** Felder von save_tracked_route, die fehlen dürfen (additiv nach S1 Teil 1). */
-export const TRACKED_ROUTE_OPTIONAL_KEYS = ['elevation_profile', 'e_bike'] as const;
+/** Felder von save_tracked_route, die fehlen dürfen (additiv nach S1 Teil 1; Sportarten Stufe 1: Wandern). */
+export const TRACKED_ROUTE_OPTIONAL_KEYS = [
+  'elevation_profile',
+  'e_bike',
+  'walk_kind',
+  'elevation_loss_m',
+  'max_altitude_m',
+  'sac_grade',
+] as const;
 
-/** Felder von update_tracked_route, die fehlen dürfen (E-Bike, additiv 23.10.2026). */
-export const UPDATE_TRACKED_ROUTE_OPTIONAL_KEYS = ['e_bike'] as const;
+/** Felder von update_tracked_route, die fehlen dürfen (E-Bike, additiv 23.10.2026; Sportarten Stufe 1: Wandern). */
+export const UPDATE_TRACKED_ROUTE_OPTIONAL_KEYS = ['e_bike', 'walk_kind', 'sac_grade'] as const;
 
 /**
  * Eingabe von update_tracked_route: Name, Schwierigkeit, Favorit, Notiz und (optional) E-Bike sind änderbar. E-Bike
@@ -213,6 +258,13 @@ export const updateTrackedRouteSchema = z.strictObject({
   is_favorite: z.boolean(),
   note: trackedRouteSchema.shape.note,
   e_bike: z.boolean().optional(),
+  /**
+   * Sportarten Stufe 1: Art der Geh-Einheit und SAC-Stufe ändern (fehlt = unverändert). Der verknüpfte Geh-Eintrag folgt
+   * (cardio_logs.walk_kind; ein freier Eintrag heißt dann wie seine Art). Wechselt die Art weg von Wandern/Bergwandern
+   * ohne Angabe zur SAC-Stufe, entfernt der Server die Stufe.
+   */
+  walk_kind: trackedRouteSchema.shape.walk_kind,
+  sac_grade: trackedRouteSchema.shape.sac_grade,
 });
 
 export type UpdateTrackedRoutePayload = z.infer<typeof updateTrackedRouteSchema>;

@@ -185,6 +185,7 @@ describe('nutritionCompetitionsFromRows', () => {
     user_id: 'u1',
     name: 'Stadtlauf',
     discipline: 'half_marathon',
+    hyrox_division: null,
     distance_m: 21097.5,
     race_date: SUNDAY,
     goal_kind: 'finish',

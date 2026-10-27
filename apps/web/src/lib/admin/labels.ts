@@ -103,6 +103,7 @@ export const CAUTION_TAG_LABELS: Record<CautionTag, string> = {
   trunk_rotation: 'Drehen bis zum Anschlag',
   deep_hip_flexion: 'Tiefe Hüftbeugung (über 90°)',
   hip_cross_midline: 'Bein über die Körpermitte',
+  inversion: 'Kopf unter Herzhöhe (Umkehrhaltung)',
 };
 
 export const ALTERNATIVE_REASON_LABELS: Record<AlternativeReason, string> = {
@@ -117,6 +118,7 @@ export const FOCUS_LABELS: Record<SessionFocus, string> = {
   upper: 'Oberkörper',
   lower: 'Unterkörper',
   balance: 'Gleichgewicht',
+  hyrox_stations: 'Hyrox-Stationen',
 };
 
 export const ORIGIN_LABELS: Record<ContentOrigin, string> = {

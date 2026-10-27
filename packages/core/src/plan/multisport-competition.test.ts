@@ -599,6 +599,7 @@ describe('Speichern, Regeln des Servers, Ernährung', () => {
       status: 'planned',
       distance_m: 150_000,
       result_session_log_id: null,
+      hyrox_division: null,
     });
     expect(stored?.competition).toMatchObject({ discipline: 'cycling', distanceKm: 150 });
     expect(competitionPaceProfile({ discipline: 'cycling', reference: null })).toBeNull();
@@ -609,6 +610,7 @@ describe('Speichern, Regeln des Servers, Ernährung', () => {
         status: 'planned',
         distance_m: 150_500,
         result_session_log_id: null,
+        hyrox_division: null,
       }),
     ).toBeNull();
   });

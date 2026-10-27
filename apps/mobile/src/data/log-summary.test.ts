@@ -47,6 +47,7 @@ function log(id: string, date: string, extra: Partial<SessionLogRow> = {}): Sess
     sport: null,
     sport_duration_s: null,
     sport_distance_m: null,
+    hyrox_splits: null,
     ...extra,
   };
 }
@@ -106,6 +107,10 @@ const cardio: CardioLogRow = {
   distance_m: 5000,
   elevation_m: null,
   e_bike: false,
+  avg_power_w: null,
+  stroke_rate: null,
+  intervals: null,
+  walk_kind: null,
 };
 
 function rows(): LogRows {

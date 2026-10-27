@@ -13,18 +13,21 @@ export type Database = {
       app_layout_settings: {
         Row: {
           dashboard_tiles: Json;
+          recovery_routine: boolean;
           tab_bar: Json;
           updated_at: string;
           user_id: string;
         };
         Insert: {
           dashboard_tiles: Json;
+          recovery_routine?: boolean;
           tab_bar: Json;
           updated_at?: string;
           user_id: string;
         };
         Update: {
           dashboard_tiles?: Json;
+          recovery_routine?: boolean;
           tab_bar?: Json;
           updated_at?: string;
           user_id?: string;
@@ -183,31 +186,43 @@ export type Database = {
       };
       cardio_logs: {
         Row: {
+          avg_power_w: number | null;
           distance_m: number | null;
           duration_s: number;
           e_bike: boolean;
           elevation_m: number | null;
+          intervals: Json | null;
           modality: Database['public']['Enums']['endurance_modality'];
           session_log_id: string;
+          stroke_rate: number | null;
           user_id: string;
+          walk_kind: Database['public']['Enums']['walk_kind'] | null;
         };
         Insert: {
+          avg_power_w?: number | null;
           distance_m?: number | null;
           duration_s: number;
           e_bike?: boolean;
           elevation_m?: number | null;
+          intervals?: Json | null;
           modality: Database['public']['Enums']['endurance_modality'];
           session_log_id: string;
+          stroke_rate?: number | null;
           user_id: string;
+          walk_kind?: Database['public']['Enums']['walk_kind'] | null;
         };
         Update: {
+          avg_power_w?: number | null;
           distance_m?: number | null;
           duration_s?: number;
           e_bike?: boolean;
           elevation_m?: number | null;
+          intervals?: Json | null;
           modality?: Database['public']['Enums']['endurance_modality'];
           session_log_id?: string;
+          stroke_rate?: number | null;
           user_id?: string;
+          walk_kind?: Database['public']['Enums']['walk_kind'] | null;
         };
         Relationships: [
           {
@@ -226,6 +241,7 @@ export type Database = {
           distance_m: number;
           effective_goal: Database['public']['Enums']['competition_goal'] | null;
           goal_kind: Database['public']['Enums']['competition_goal'];
+          hyrox_division: Database['public']['Enums']['hyrox_division'] | null;
           id: string;
           long_run_weekday: number | null;
           name: string;
@@ -250,6 +266,7 @@ export type Database = {
           distance_m: number;
           effective_goal?: Database['public']['Enums']['competition_goal'] | null;
           goal_kind?: Database['public']['Enums']['competition_goal'];
+          hyrox_division?: Database['public']['Enums']['hyrox_division'] | null;
           id?: string;
           long_run_weekday?: number | null;
           name: string;
@@ -274,6 +291,7 @@ export type Database = {
           distance_m?: number;
           effective_goal?: Database['public']['Enums']['competition_goal'] | null;
           goal_kind?: Database['public']['Enums']['competition_goal'];
+          hyrox_division?: Database['public']['Enums']['hyrox_division'] | null;
           id?: string;
           long_run_weekday?: number | null;
           name?: string;
@@ -2230,6 +2248,7 @@ export type Database = {
           created_at: string;
           finished_at: string | null;
           from_health_plan: boolean;
+          hyrox_splits: Json | null;
           id: string;
           is_deload: boolean;
           is_free: boolean;
@@ -2256,6 +2275,7 @@ export type Database = {
           created_at?: string;
           finished_at?: string | null;
           from_health_plan?: boolean;
+          hyrox_splits?: Json | null;
           id?: string;
           is_deload?: boolean;
           is_free?: boolean;
@@ -2282,6 +2302,7 @@ export type Database = {
           created_at?: string;
           finished_at?: string | null;
           from_health_plan?: boolean;
+          hyrox_splits?: Json | null;
           id?: string;
           is_deload?: boolean;
           is_free?: boolean;
@@ -2745,6 +2766,7 @@ export type Database = {
       };
       tracked_routes: {
         Row: {
+          auto_match: boolean;
           base_route_id: string | null;
           bbox: number[];
           created_at: string;
@@ -2753,28 +2775,32 @@ export type Database = {
           duration_s: number;
           e_bike: boolean;
           elevation_gain_m: number | null;
+          elevation_loss_m: number | null;
           elevation_profile: Json | null;
           id: string;
           is_favorite: boolean;
-          auto_match: boolean;
           km_splits: Json;
           match_rejected_ids: string[];
+          max_altitude_m: number | null;
           moving_s: number;
           name: string;
           note: string | null;
           point_count: number;
           polyline: string;
           route_match: string | null;
+          sac_grade: number | null;
           session_log_id: string | null;
           source: Database['public']['Enums']['tracked_route_source'];
           sport: Database['public']['Enums']['endurance_modality'];
           started_at: string;
           updated_at: string;
           user_id: string;
+          walk_kind: Database['public']['Enums']['walk_kind'] | null;
           wearable_session_log_id: string | null;
           weather: Json | null;
         };
         Insert: {
+          auto_match?: boolean;
           base_route_id?: string | null;
           bbox: number[];
           created_at?: string;
@@ -2783,28 +2809,32 @@ export type Database = {
           duration_s: number;
           e_bike?: boolean;
           elevation_gain_m?: number | null;
+          elevation_loss_m?: number | null;
           elevation_profile?: Json | null;
           id?: string;
           is_favorite?: boolean;
-          auto_match?: boolean;
           km_splits?: Json;
           match_rejected_ids?: string[];
+          max_altitude_m?: number | null;
           moving_s: number;
           name: string;
           note?: string | null;
           point_count: number;
           polyline: string;
           route_match?: string | null;
+          sac_grade?: number | null;
           session_log_id?: string | null;
           source: Database['public']['Enums']['tracked_route_source'];
           sport: Database['public']['Enums']['endurance_modality'];
           started_at: string;
           updated_at?: string;
           user_id?: string;
+          walk_kind?: Database['public']['Enums']['walk_kind'] | null;
           wearable_session_log_id?: string | null;
           weather?: Json | null;
         };
         Update: {
+          auto_match?: boolean;
           base_route_id?: string | null;
           bbox?: number[];
           created_at?: string;
@@ -2813,24 +2843,27 @@ export type Database = {
           duration_s?: number;
           e_bike?: boolean;
           elevation_gain_m?: number | null;
+          elevation_loss_m?: number | null;
           elevation_profile?: Json | null;
           id?: string;
           is_favorite?: boolean;
-          auto_match?: boolean;
           km_splits?: Json;
           match_rejected_ids?: string[];
+          max_altitude_m?: number | null;
           moving_s?: number;
           name?: string;
           note?: string | null;
           point_count?: number;
           polyline?: string;
           route_match?: string | null;
+          sac_grade?: number | null;
           session_log_id?: string | null;
           source?: Database['public']['Enums']['tracked_route_source'];
           sport?: Database['public']['Enums']['endurance_modality'];
           started_at?: string;
           updated_at?: string;
           user_id?: string;
+          walk_kind?: Database['public']['Enums']['walk_kind'] | null;
           wearable_session_log_id?: string | null;
           weather?: Json | null;
         };
@@ -3733,7 +3766,8 @@ export type Database = {
         | 'loaded_flexion'
         | 'trunk_rotation'
         | 'deep_hip_flexion'
-        | 'hip_cross_midline';
+        | 'hip_cross_midline'
+        | 'inversion';
       competition_discipline:
         | '5k'
         | '10k'
@@ -3741,7 +3775,8 @@ export type Database = {
         | 'marathon'
         | 'cycling'
         | 'triathlon_sprint'
-        | 'triathlon_olympic';
+        | 'triathlon_olympic'
+        | 'hyrox';
       competition_goal: 'finish' | 'time';
       competition_status: 'planned' | 'done' | 'cancelled';
       consent_platform: 'ios' | 'android' | 'web';
@@ -3760,8 +3795,9 @@ export type Database = {
         | 'triathlon_middle'
         | 'triathlon_long'
         | 'cycling'
-        | 'swimming';
-      endurance_modality: 'run' | 'walk' | 'bike' | 'swim';
+        | 'swimming'
+        | 'hyrox';
+      endurance_modality: 'run' | 'walk' | 'bike' | 'swim' | 'row';
       endurance_start_group: 'cautious' | 'beginner' | 'advanced' | 'competitive';
       equipment_category:
         'free_weights' | 'bench' | 'bodyweight' | 'bands' | 'cardio' | 'other' | 'machines';
@@ -3845,7 +3881,7 @@ export type Database = {
       planned_session_kind: 'strength' | 'endurance';
       planned_session_status: 'planned' | 'skipped' | 'completed';
       route_difficulty: 'easy' | 'medium' | 'hard';
-      session_focus: 'full_body' | 'upper' | 'lower' | 'balance';
+      session_focus: 'full_body' | 'upper' | 'lower' | 'balance' | 'hyrox_stations';
       session_log_status: 'completed' | 'partial';
       sport_type:
         | 'bouldering'
@@ -3874,7 +3910,9 @@ export type Database = {
         | 'sup'
         | 'kayaking'
         | 'dancing'
-        | 'other';
+        | 'other'
+        | 'yoga'
+        | 'pilates';
       sex: 'male' | 'female' | 'diverse' | 'unspecified';
       supplement_category: 'sport' | 'food' | 'diet_season' | 'safety_info';
       supplement_evidence: 'a' | 'b' | 'c';
@@ -3896,7 +3934,8 @@ export type Database = {
         | 'intervals'
         | 'race_pace'
         | 'brick'
-        | 'technique';
+        | 'technique'
+        | 'hyrox_combo';
       workout_category:
         | 'full_body'
         | 'core'
@@ -3905,7 +3944,10 @@ export type Database = {
         | 'hiit_cardio'
         | 'mobility'
         | 'back_fit'
-        | 'run_strength';
+        | 'run_strength'
+        | 'yoga'
+        | 'pilates'
+        | 'rowing';
       wearable_connection_status: 'connected' | 'permission_missing';
       wearable_provider: 'health_connect';
       body_region:
@@ -3919,7 +3961,9 @@ export type Database = {
         | 'suspension_trainer'
         | 'rings'
         | 'outdoor_park';
-      workout_format: 'circuit' | 'interval' | 'sets_reps';
+      workout_format: 'circuit' | 'interval' | 'sets_reps' | 'flow';
+      hyrox_division: 'open' | 'pro' | 'doubles' | 'relay';
+      walk_kind: 'walk' | 'hike' | 'mountain_hike';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -4073,6 +4117,7 @@ export const Constants = {
         'trunk_rotation',
         'deep_hip_flexion',
         'hip_cross_midline',
+        'inversion',
       ],
       competition_discipline: [
         '5k',
@@ -4082,6 +4127,7 @@ export const Constants = {
         'cycling',
         'triathlon_sprint',
         'triathlon_olympic',
+        'hyrox',
       ],
       competition_goal: ['finish', 'time'],
       competition_status: ['planned', 'done', 'cancelled'],
@@ -4108,8 +4154,9 @@ export const Constants = {
         'triathlon_long',
         'cycling',
         'swimming',
+        'hyrox',
       ],
-      endurance_modality: ['run', 'walk', 'bike', 'swim'],
+      endurance_modality: ['run', 'walk', 'bike', 'swim', 'row'],
       endurance_start_group: ['cautious', 'beginner', 'advanced', 'competitive'],
       equipment_category: [
         'free_weights',
@@ -4203,7 +4250,7 @@ export const Constants = {
       plan_status: ['active', 'replaced'],
       planned_session_kind: ['strength', 'endurance'],
       planned_session_status: ['planned', 'skipped', 'completed'],
-      session_focus: ['full_body', 'upper', 'lower', 'balance'],
+      session_focus: ['full_body', 'upper', 'lower', 'balance', 'hyrox_stations'],
       route_difficulty: ['easy', 'medium', 'hard'],
       session_log_status: ['completed', 'partial'],
       sport_type: [
@@ -4234,6 +4281,8 @@ export const Constants = {
         'kayaking',
         'dancing',
         'other',
+        'yoga',
+        'pilates',
       ],
       sex: ['male', 'female', 'diverse', 'unspecified'],
       supplement_category: ['sport', 'food', 'diet_season', 'safety_info'],
@@ -4257,6 +4306,7 @@ export const Constants = {
         'race_pace',
         'brick',
         'technique',
+        'hyrox_combo',
       ],
       workout_category: [
         'full_body',
@@ -4267,6 +4317,9 @@ export const Constants = {
         'mobility',
         'back_fit',
         'run_strength',
+        'yoga',
+        'pilates',
+        'rowing',
       ],
       wearable_connection_status: ['connected', 'permission_missing'],
       wearable_provider: ['health_connect'],
@@ -4281,7 +4334,9 @@ export const Constants = {
         'rings',
         'outdoor_park',
       ],
-      workout_format: ['circuit', 'interval', 'sets_reps'],
+      workout_format: ['circuit', 'interval', 'sets_reps', 'flow'],
+      hyrox_division: ['open', 'pro', 'doubles', 'relay'],
+      walk_kind: ['walk', 'hike', 'mountain_hike'],
     },
   },
 } as const;

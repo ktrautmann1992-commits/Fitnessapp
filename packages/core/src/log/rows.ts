@@ -7,8 +7,9 @@ import type {
   PlannedSessionKind,
   SessionLogStatus,
   SportId,
+  WalkKind,
 } from '../enums';
-import type { PlannedSessionRow, PlanRowRef } from '../plan/rows';
+import type { JsonValue, PlannedSessionRow, PlanRowRef } from '../plan/rows';
 import type { SessionLogPayload } from './schemas';
 import type { ExerciseLogEntry, ExerciseProgress, LoggedSet } from './types';
 import { neutralSessionName } from './workout';
@@ -56,6 +57,11 @@ export interface SessionLogRow {
   sport: SportId | null;
   sport_duration_s: number | null;
   sport_distance_m: number | null;
+  /**
+   * Sportarten Stufe 1 (Spalte seit 20261027100100): Teilzeiten eines Hyrox-Rennens (hyroxSplitsSchema; Liste, auch
+   * leer) genau beim Eintrag „Hyrox-Rennen“; sonst null. Ältere lokale Zeilen ohne Feld gelten als null.
+   */
+  hyrox_splits: JsonValue | null;
 }
 
 /** Zeile aus exercise_logs. */
@@ -107,6 +113,14 @@ export interface CardioLogRow {
   elevation_m: number | null;
   /** E-Bike (nur beim Rad; Spalte seit 20261023140000). Ältere lokale Zeilen ohne Feld gelten als false. */
   e_bike: boolean;
+  /**
+   * Sportarten Stufe 1 (Spalten seit 20261027100100): Rudern – Watt, Schlagzahl, Intervall-Ergebnis (nur row);
+   * Wandern – Art der Geh-Einheit (nur walk, null = Gehen). Ältere lokale Zeilen ohne Feld gelten als null.
+   */
+  avg_power_w: number | null;
+  stroke_rate: number | null;
+  intervals: JsonValue | null;
+  walk_kind: WalkKind | null;
 }
 
 /** Zeile aus exercise_start_weights. */
@@ -184,6 +198,7 @@ export function applySessionLog<T extends LogAndSessionRows>(
     sport: payload.sport?.sport ?? null,
     sport_duration_s: payload.sport?.duration_s ?? null,
     sport_distance_m: payload.sport?.distance_m ?? null,
+    hyrox_splits: payload.hyrox_splits ?? null,
   };
   const exerciseLogs: ExerciseLogRow[] = [];
   const setLogs: SetLogRow[] = [];
@@ -236,6 +251,10 @@ export function applySessionLog<T extends LogAndSessionRows>(
           distance_m: payload.cardio.distance_m,
           elevation_m: payload.cardio.elevation_m,
           e_bike: payload.cardio.modality === 'bike' && payload.cardio.e_bike === true,
+          avg_power_w: payload.cardio.avg_power_w ?? null,
+          stroke_rate: payload.cardio.stroke_rate ?? null,
+          intervals: payload.cardio.intervals ?? null,
+          walk_kind: payload.cardio.walk_kind ?? null,
         },
       ]
     : [];

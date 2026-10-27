@@ -43,6 +43,7 @@ function log(id: string, extra: Partial<SessionLogRow> = {}): SessionLogRow {
     sport: null,
     sport_duration_s: null,
     sport_distance_m: null,
+    hyrox_splits: null,
     ...extra,
   };
 }
