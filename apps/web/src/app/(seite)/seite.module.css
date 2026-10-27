@@ -681,14 +681,6 @@
   padding: 0.05rem 0.35rem;
   border-radius: 4px;
 }
-.platzhalter-hinweis {
-  border: 3px dashed var(--signal);
-  background: #fff6e0;
-  border-radius: var(--rund-klein);
-  padding: var(--raum-s) var(--raum-m);
-  margin: var(--raum-m) 0 0;
-  font-weight: 700;
-}
 .stand {
   font-size: var(--text-s);
   color: var(--grau);

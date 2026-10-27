@@ -122,6 +122,8 @@ const mealSchema = z.strictObject({
   isFill: z.boolean(),
   fixed: z.boolean(),
   mealPrepPlanId: contentIdSchema.nullable(),
+  /** Nährstoff-Timing: selbst gewählt (fehlt sonst). */
+  chosen: z.literal(true).optional(),
 });
 
 const bandSchema = z.strictObject({ min: amount, max: amount }).nullable();

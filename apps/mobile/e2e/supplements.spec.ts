@@ -5,7 +5,7 @@ import { heading, onboard } from './plan-helpers';
 /**
  * Supplemente (docs/PLAN-PHASE-6.md 8, Etappe SU4) im TESTMODUS, Web-Export, Handy-Ansicht: Übersicht über „Mehr“,
  * Supplement-Check, „Passt zu dir“ mit Menge, Koffein nie „passt“ (Abend-Training), Detail mit Angabe UND
- * Pflichthinweis, Pflichtsätze, Testphase-Kennzeichen, „Nehme ich“, Re-Consent alte Fassung → Fassung 2 ohne
+ * Pflichthinweis, Pflichtsätze, kein Testphase-Kennzeichen (27.10.2026), „Nehme ich“, Re-Consent alte Fassung → Fassung 2 ohne
  * Datenverlust, Sperre bei Medikamenten, unter 18, ohne Einwilligung nur allgemeine Infos. Keine Shop-Links.
  */
 
@@ -79,7 +79,11 @@ test('Check → Kreatin passt mit Menge, Koffein nie „passt“, Detail mit Ang
   await expect(recommended).toBeVisible();
   await expect(page.getByTestId('supplement-creatine')).toHaveAttribute(
     'aria-label',
-    /Kreatin-Monohydrat, Passt zu dir, Gute Studienlage, Menge: 3 g am Tag, Täglich zu einer Mahlzeit, Testphase – noch nicht fachlich geprüft/,
+    /^Kreatin-Monohydrat, Passt zu dir, Gute Studienlage, Menge: 3 g am Tag, Täglich zu einer Mahlzeit/,
+  );
+  await expect(page.getByTestId('supplement-creatine')).not.toHaveAttribute(
+    'aria-label',
+    /Testphase/,
   );
   // Proteinpulver passt nur wegen „Eher nicht“ (Eiweiß-Selbsteinschätzung).
   await expect(recommended.getByTestId('supplement-protein_powder')).toBeVisible();
@@ -110,9 +114,8 @@ test('Check → Kreatin passt mit Menge, Koffein nie „passt“, Detail mit Ang
   // Kreatin-Detail: Angabe + Pflichthinweis zusammen, Wasser-Hinweis, Pflichtsätze, Quellen eingeklappt.
   await page.getByTestId('supplement-creatine').click();
   await heading(page, 'Kreatin-Monohydrat');
-  await expect(page.getByTestId('supplement-testphase')).toHaveText(
-    'Testphase – noch nicht fachlich geprüft',
-  );
+  // Kein Testphase-Hinweis mehr (privater Nutzerkreis, Gründer-Entscheidung 27.10.2026).
+  await expect(page.getByTestId('supplement-testphase')).toHaveCount(0);
   const claim = page.getByTestId('supplement-claim-creatine_performance');
   await expect(claim).toContainText(
     'Kreatin erhöht die körperliche Leistung bei Schnellkrafttraining',
@@ -179,7 +182,11 @@ test('Sperren: Medikamente → „Nicht für dich“ ohne Menge; unter 18 → �
   await expect(excluded).toContainText('Nicht für dich – bitte ärztlich abklären');
   await expect(excluded.getByTestId('supplement-creatine')).toHaveAttribute(
     'aria-label',
-    /^Kreatin-Monohydrat, Nicht für dich, Gute Studienlage, Testphase/,
+    /^Kreatin-Monohydrat, Nicht für dich, Gute Studienlage/,
+  );
+  await expect(excluded.getByTestId('supplement-creatine')).not.toHaveAttribute(
+    'aria-label',
+    /Testphase/,
   );
   await page.getByTestId('supplement-creatine').click();
   await expect(page.getByTestId('supplement-detail-no-dose')).toBeVisible();

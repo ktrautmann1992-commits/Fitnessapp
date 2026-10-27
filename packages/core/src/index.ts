@@ -27,6 +27,8 @@ export * from './routes';
 export * from './running';
 // Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md Abschnitt 22).
 export * from './shoes';
+// Live-Begleitung / Notfallkontakt (docs/PLAN-PHASE-10.md 21).
+export * from './live';
 export * from './share';
 export * from './dashboard';
 // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md).

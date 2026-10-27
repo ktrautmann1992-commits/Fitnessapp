@@ -1699,6 +1699,8 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'travel_modes',
       // Trinken (25.10.2026)
       'hydration_logs',
+      // Live-Begleitung (27.10.2026)
+      'live_sessions',
     ];
     const exported = {
       format_version: 1,

@@ -8,6 +8,7 @@ import {
   NUTRITION_MAX_AGE_YEARS,
   NUTRITION_LIMITS,
   RECIPE_RATING_RULES,
+  SESSION_START_TIME,
   SURPLUS_CAP,
 } from '../constants';
 import { contentIdSchema } from '../content/schemas';
@@ -105,6 +106,18 @@ export const nutritionSessionSchema = z.strictObject({
     .max(24 * 60),
   isDeload: z.boolean().default(false),
   status: z.enum(PLANNED_SESSION_STATUSES),
+  /**
+   * Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 6, T1): eigene Uhrzeit der Einheit in Minuten nach Mitternacht
+   * (`planned_sessions.start_time`). Optional – fehlt sie (Altbestand) bzw. null, rechnet die Engine genau wie bisher
+   * mit der Angabe „Trainingszeit“.
+   */
+  startMinutes: z
+    .number()
+    .int()
+    .min(SESSION_START_TIME.minMinutes)
+    .max(SESSION_START_TIME.maxMinutes)
+    .nullable()
+    .optional(),
 });
 export type NutritionSession = z.infer<typeof nutritionSessionSchema>;
 export type NutritionSessionInput = z.input<typeof nutritionSessionSchema>;

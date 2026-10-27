@@ -835,7 +835,6 @@ export default function WorkoutScreen() {
           skipped={routineSkipped.warmup}
           onSkip={() => setRoutineSkipped((s) => ({ ...s, warmup: true }))}
           onShow={() => setRoutineSkipped((s) => ({ ...s, warmup: false }))}
-          library={lib?.exercises ?? null}
         />
       ) : null}
       {view?.shown.modeNotices && view.shown.modeNotices.length > 0 && !current.editing ? (
@@ -910,7 +909,6 @@ export default function WorkoutScreen() {
           skipped={routineSkipped.cooldown}
           onSkip={() => setRoutineSkipped((s) => ({ ...s, cooldown: true }))}
           onShow={() => setRoutineSkipped((s) => ({ ...s, cooldown: false }))}
-          library={lib?.exercises ?? null}
         />
       ) : null}
 

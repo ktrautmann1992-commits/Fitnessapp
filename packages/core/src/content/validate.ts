@@ -15,9 +15,11 @@ import { type PackageSize, packageSizeSchema } from './package-size-schema';
 import {
   checkFood,
   checkRecipe,
+  checkRecipeTrainingTags,
   checkRecipeCoverage,
   type NutritionCatalogContext,
 } from './recipe-checks';
+import { computeRecipeFacts } from '../nutrition/recipe-nutrients';
 import { type Recipe, recipeSchema } from './recipe-schema';
 import { type ContentIssue, isBlockingIssue, makeIssue } from './rules';
 import { type Exercise, exerciseSchema, type PlanTemplate, planTemplateSchema } from './schemas';
@@ -371,6 +373,8 @@ export function validateContent(
   issues.push(...catalogFileIssues(catalog, foodLookup));
   for (const recipe of recipes) {
     issues.push(...checkRecipe(recipe, foodLookup));
+    // Nährstoff-Timing T3 (R22T, gelb): Trainings-Markierung passt zu den Nährwerten je Portion.
+    issues.push(...checkRecipeTrainingTags(recipe, computeRecipeFacts(recipe, foodLookup)));
   }
   issues.push(...checkRecipeCoverage(recipes, foodLookup));
   const recipeLookup = new Map(recipes.map((recipe) => [recipe.id, recipe]));

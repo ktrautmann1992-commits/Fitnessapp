@@ -17,6 +17,11 @@ import {
   type PlannedMeal,
   type PlannedMealDay,
   thawHints,
+  timingSnackCandidates,
+  trainingDayTimeline,
+  type TrainingDayTimeline,
+  type TrainingTimingNotice,
+  trainingTimingNotice,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useNavigation, useRouter, type Href } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -52,7 +57,10 @@ import {
 } from '@/components/slim';
 import { useThemeColors } from '@/lib/theme';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
-import { showEnergyNumbers } from '@/data/nutrition-plan';
+import { showEnergyNumbers, trainingTimelineOptionsFromRows } from '@/data/nutrition-plan';
+import { TrainingAdjustmentNotice, TrainingTimelineCard } from '@/components/training-timeline';
+import { clearTrainingAdjustment, useTrainingAdjustment } from '@/lib/training-meal-adjustment';
+import { timingNoticeText } from '@/lib/training-timeline-format';
 import { preferenceForRecipe } from '@/data/recipe-preference-rows';
 import { t } from '@/i18n';
 import { mealCardPreview, mealCardTitle } from '@/lib/nutrition-day-format';
@@ -68,7 +76,11 @@ import { dayLabel } from '@/lib/plan-format';
 import { useApp } from '@/state/app-state';
 import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useFoodLogActions, useFoodLogDay } from '@/state/use-food-log';
-import { useMealPlanActions, useNutritionWeek } from '@/state/use-nutrition';
+import {
+  useMealPlanActions,
+  useNutritionWeek,
+  useShoppingListActions,
+} from '@/state/use-nutrition';
 
 /**
  * Ernährung – Tag (docs/PLAN-PHASE-5.md 8.2 Nr. 2, Etappe N4): Ziel + Makro-Balken (ausblendbar), Mahlzeiten mit
@@ -114,6 +126,15 @@ export default function NutritionDayScreen() {
   };
   const view = useNutritionWeek(selected);
   const actions = useMealPlanActions(view.week);
+  const shoppingActions = useShoppingListActions(view.week);
+  // Nährstoff-Timing: Rückmeldung „Mahlzeiten an dein Training angepasst“ (nur Arbeitsspeicher, je Woche).
+  const adjustment = useTrainingAdjustment(
+    view.week?.kind === 'ready' ? view.week.targets.weekStart : null,
+  );
+  const [adjustMessage, setAdjustMessage] = useState<{
+    text: string;
+    tone: 'success' | 'warning';
+  } | null>(null);
   // Knopf „Ratgeber“ nur, wenn es anzeigbare Ratgeber gibt (Wächter N5c K6).
   const readable = useReadableGuides(view);
   const [swapping, setSwapping] = useState<string | null>(null);
@@ -322,6 +343,31 @@ export default function NutritionDayScreen() {
   }
 
   const thaw = plan !== null && dayDate >= today ? thawHints(plan, dayDate) : [];
+  // Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 7): Zeitleiste und höchstens EIN Timing-Hinweis je Tag – alles
+  // aus packages/core; ein Fehler darin sperrt nie die Ernährungsansicht (dann keine Zeitleiste).
+  const timing = ((): {
+    timeline: TrainingDayTimeline | null;
+    notice: TrainingTimingNotice | null;
+  } => {
+    try {
+      const options = trainingTimelineOptionsFromRows(
+        rows,
+        app.versions,
+        today,
+        targets.weekStart,
+        view.showNumbers,
+      );
+      if (options === null) return { timeline: null, notice: null };
+      const snacks = planState ? timingSnackCandidates(planState.input, dayTargets) : [];
+      const timeline = trainingDayTimeline(dayTargets, day, options, snacks);
+      return {
+        timeline,
+        notice: trainingTimingNotice(dayTargets, day, timeline, options, snacks),
+      };
+    } catch {
+      return { timeline: null, notice: null };
+    }
+  })();
   const actionsVisible = noticeActionsVisible(notices, consent === 'valid');
   // Hinweis-Zeile („App verschlanken“, 26.10.2026): Testwerte oben, Sicherheit nie zugeklappt, Rest hinter „+N“.
   const noticeItems: (StackNotice | null)[] = [
@@ -354,6 +400,50 @@ export default function NutritionDayScreen() {
           id: 'notice-actions',
           level: 'action',
           node: <NoticeActions notices={notices} consentValid={consent === 'valid'} />,
+        }
+      : null,
+    adjustment !== null
+      ? {
+          id: 'training-adjusted',
+          level: 'success',
+          node: (
+            <TrainingAdjustmentNotice
+              entry={adjustment}
+              onDismiss={() => clearTrainingAdjustment(adjustment.weekStart)}
+              onUndo={async () => {
+                const result = actions ? await actions.undoTraining(adjustment) : 'failed';
+                setAdjustMessage(
+                  result === 'undone'
+                    ? { text: t.trainingMeals.adjusted.undone, tone: 'success' }
+                    : { text: t.trainingMeals.adjusted.undoFailed, tone: 'warning' },
+                );
+              }}
+              onSwapSuggestion={async (s) => {
+                const result = actions
+                  ? await actions.swapToRecipe(s.date, s.slot, s.betterRecipeId).catch(() => null)
+                  : null;
+                setAdjustMessage(
+                  result?.kind === 'swapped'
+                    ? {
+                        text: t.trainingMeals.adjusted.suggestionDone(result.title),
+                        tone: 'success',
+                      }
+                    : { text: t.trainingMeals.adjusted.suggestionFailed, tone: 'warning' },
+                );
+              }}
+            />
+          ),
+        }
+      : null,
+    timing.notice !== null
+      ? {
+          id: 'training-timing',
+          level: 'info',
+          node: (
+            <Notice tone="info" testID="training-timing-notice">
+              {timingNoticeText(timing.notice, view.showNumbers)}
+            </Notice>
+          ),
         }
       : null,
     thaw.length > 0
@@ -530,6 +620,23 @@ export default function NutritionDayScreen() {
             : () => router.push(`/ratgeber/${encodeURIComponent(competitionGuide)}` as Href)
         }
       />
+      {adjustMessage ? (
+        <Notice tone={adjustMessage.tone} testID="training-adjusted-message">
+          {adjustMessage.text}
+        </Notice>
+      ) : null}
+      {/* Nährstoff-Timing: Zeitplan „Essen rund ums Training“ (nur an Trainingstagen). */}
+      {timing.timeline !== null ? (
+        <TrainingTimelineCard
+          timeline={timing.timeline}
+          isToday={isToday}
+          onAddExtra={
+            shoppingActions === null || shoppingActions.planless
+              ? null
+              : async (extra) => (await shoppingActions.addRecipe(extra.recipeId, 1)).kind === 'ok'
+          }
+        />
+      ) : null}
       <MealPlanStateNotices
         state={planState}
         actions={actions}

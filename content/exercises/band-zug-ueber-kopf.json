@@ -1,7 +1,7 @@
 {
   "id": "band-zug-ueber-kopf",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "name_de": "Band-Zug über Kopf",
   "name_en": "Banded Straight-Arm Pulldown",
   "aliases_de": ["Ski-Zug mit Band"],
@@ -48,8 +48,8 @@
     "batch_id": null,
     "created_on": "2026-10-27",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
-    "review_note": "Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-27",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 27.10.2026 – nicht fachlich geprüft. Vorher: Entwurf Hyrox-Stationen (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1/4, Etappe H) – Fachprüfung durch Hyrox-Trainer:in ausstehend."
   }
 }

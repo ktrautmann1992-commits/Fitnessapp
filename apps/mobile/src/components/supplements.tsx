@@ -85,7 +85,6 @@ export function SupplementRow({
   title,
   lines,
   status,
-  testPhase,
   onPress,
   last = false,
   testID,
@@ -93,7 +92,6 @@ export function SupplementRow({
   title: string;
   lines: readonly (string | null)[];
   status?: { label: string; icon: string; tone: 'good' | 'neutral' | 'warn' } | undefined;
-  testPhase: boolean;
   onPress: () => void;
   last?: boolean;
   testID?: string;
@@ -101,9 +99,7 @@ export function SupplementRow({
   const theme = useThemeColors();
   const card = cardColors[useColorSchemeName()];
   const shown = lines.filter((line): line is string => line !== null && line !== '');
-  const label = [title, status?.label, ...shown, testPhase ? SUPP.testPhase : null]
-    .filter(Boolean)
-    .join(', ');
+  const label = [title, status?.label, ...shown].filter(Boolean).join(', ');
   return (
     <Pressable
       testID={testID}
@@ -124,11 +120,6 @@ export function SupplementRow({
             {line}
           </Text>
         ))}
-        {testPhase ? (
-          <Text style={[styles.rowLine, appFont('semibold'), { color: theme.textMuted }]}>
-            {SUPP.testPhase}
-          </Text>
-        ) : null}
       </View>
       <Icon name="chevron" size={18} color={theme.textMuted} />
     </Pressable>

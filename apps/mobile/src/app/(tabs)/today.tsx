@@ -487,18 +487,6 @@ export default function TodayScreen() {
             ),
           }
         : null,
-    // Testinhalte (im Testmodus immer da) als letzter Info-Hinweis – Wichtigeres steht davor.
-    app.backend.mode === 'local' || lib?.containsDrafts
-      ? {
-          id: 'test-content',
-          level: 'info',
-          node: (
-            <Notice tone="info" testID="plan-test-content">
-              {t.plan.testContent}
-            </Notice>
-          ),
-        }
-      : null,
   ];
 
   // Gründer-Rückmeldung 20.10.2026: Wettkampfplan deutlich oben im Training, wenn ein Wettkampf existiert (Entwurf

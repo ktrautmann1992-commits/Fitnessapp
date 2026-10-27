@@ -1,0 +1,76 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Essensplan: Altbestand unverändert, mit Uhrzeit im Band > ohne Uhrzeit: Plan byte-gleich (Schnappschuss) – und gleich mit startMinutes: null 1`] = `
+[
+  {
+    "date": "2026-10-12",
+    "meals": [
+      "breakfast:-:haferdrink-oats:1.0918142216561721",
+      "lunch:pre:tofu-erdnuss-curry:1.3801189728873242",
+      "snack_afternoon:pre_snack:overnight-oats:0.5547628275818539",
+      "dinner:post:haehnchen-reis:1.6833333333333211",
+    ],
+    "status": "complete",
+  },
+  {
+    "date": "2026-10-13",
+    "meals": [
+      "breakfast:-:porridge-banane:1.22831541021582",
+      "lunch:-:lachs-reis-annahme:1.3666666666666771",
+      "snack_afternoon:-:erdnuss-banane:0.8893499859017169",
+      "dinner:-:lachs-reis:1.1714285714285804",
+    ],
+    "status": "complete",
+  },
+  {
+    "date": "2026-10-14",
+    "meals": [
+      "breakfast:-:omelett-champignons:1.7499999999999936",
+      "lunch:pre:tofu-paprika:2",
+      "snack_afternoon:pre_snack:banane-pur:2",
+      "dinner:post:tofu-erdnuss-curry:1.5373634651600694",
+    ],
+    "status": "complete",
+  },
+  {
+    "date": "2026-10-15",
+    "meals": [
+      "breakfast:-:porridge-banane:1.2341729525861969",
+      "lunch:-:spaghetti-tomatensauce:1.8621422646204742",
+      "snack_afternoon:-:brot-raeucherlachs:0.8749999999999929",
+      "dinner:-:champignon-reis:1.8028812368235974",
+    ],
+    "status": "complete",
+  },
+  {
+    "date": "2026-10-16",
+    "meals": [
+      "breakfast:-:omelett-champignons:1.3550491625221388",
+      "lunch:pre:haehnchen-reis:1.8964048202409942",
+      "snack_afternoon:pre_snack:overnight-oats:0.5468602204616817",
+      "dinner:post:lachs-reis:1.4499999999999864",
+    ],
+    "status": "complete",
+  },
+  {
+    "date": "2026-10-17",
+    "meals": [
+      "breakfast:-:haferdrink-oats:1.4143970434642832",
+      "lunch:-:tofu-paprika:1.3726566248543373",
+      "snack_afternoon:-:brot-raeucherlachs:0.8673071092920993",
+      "dinner:-:lachs-reis-annahme:1.1666666666666623",
+    ],
+    "status": "complete",
+  },
+  {
+    "date": "2026-10-18",
+    "meals": [
+      "breakfast:-:porridge-banane:1.2083333333333306",
+      "lunch:-:champignon-reis:2",
+      "snack_afternoon:-:mascarponecreme-roh:0.6919999081663092",
+      "dinner:-:spaghetti-tomatensauce:1.5627042720862676",
+    ],
+    "status": "complete",
+  },
+]
+`;

@@ -5,7 +5,12 @@ import { isBodyweightTemplate } from '../content/checks';
 
 import { makeExercise, makeTemplate, META } from '../content/test-fixtures';
 import { validateContent } from '../content/validate';
-import { isBodyweightTemplateId, planLibraryFromContent, selectPlanContent } from './content-pool';
+import {
+  isBodyweightTemplateId,
+  isFlowPoseId,
+  planLibraryFromContent,
+  selectPlanContent,
+} from './content-pool';
 import { loadRepoContentFiles, repoLibrary } from './test-library';
 
 describe('selectPlanContent', () => {
@@ -33,7 +38,10 @@ describe('selectPlanContent', () => {
   it('echter Inhaltsstand: live genau die freigegebenen Inhalte, Testmodus alles', () => {
     const result = validateContent(loadRepoContentFiles());
     const live = selectPlanContent(result, { allowDrafts: false });
-    const publishedExercises = result.exercises.filter((e) => e.status === 'published');
+    // Posen (Yoga/Pilates/Mobility) nie in der Plan-Engine – nur in displayExercises.
+    const publishedExercises = result.exercises.filter(
+      (e) => e.status === 'published' && !isFlowPoseId(e.id),
+    );
     expect([...live.exercises.keys()].sort()).toEqual(publishedExercises.map((e) => e.id).sort());
     expect(live.containsDrafts).toBe(false);
     const test = repoLibrary();

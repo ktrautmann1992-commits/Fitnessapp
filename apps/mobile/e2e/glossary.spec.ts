@@ -52,13 +52,10 @@ test('Glossar: Suche mit Umlaut-Toleranz, Filter, Trefferzahl, Detailseite', asy
   const total = Number((await count(page).innerText()).split(' ')[0]);
   expect(total).toBeGreaterThan(20);
   await expect(items(page)).toHaveCount(total);
-  // Testmodus: genau die Entwürfe sind gekennzeichnet (freigegebene Übungen nicht).
+  // Testmodus: alle Übungen aus dem Repository, ohne „Testinhalt“-Kennzeichen (Gründer-Entscheidung 27.10.2026).
   const exerciseStatus = repoContentStatus('exercises');
   expect(total).toBe(exerciseStatus.size);
-  const drafts = [...exerciseStatus.values()].filter((status) => status === 'draft').length;
-  await expect(
-    items(page).filter({ hasText: 'Testinhalt – noch nicht fachlich geprüft' }),
-  ).toHaveCount(drafts);
+  await expect(items(page).filter({ hasText: 'Testinhalt' })).toHaveCount(0);
 
   // Umlaut-tolerant: „rumaenisch“ findet „Rumänisches Kreuzheben …“.
   const search = page.getByLabel('Übungen suchen');
@@ -99,14 +96,9 @@ test('Glossar: Suche mit Umlaut-Toleranz, Filter, Trefferzahl, Detailseite', asy
   await items(page).filter({ hasText: 'mit Kurzhanteln' }).click();
   await heading(page, 'Rumänisches Kreuzheben mit Kurzhanteln');
   await expect(page.getByTestId('glossary-features')).toContainText('Hüfte/Gesäß · Kurzhanteln');
-  // Entwurf → „Testinhalt“; freigegeben (ohne Fachprüfung) → „nicht fachlich geprüft“.
-  if (exerciseStatus.get('rumaenisches-kreuzheben-kurzhantel') === 'draft') {
-    await expect(page.getByTestId('glossary-test-content')).toBeVisible();
-    await expect(page.getByTestId('glossary-not-reviewed')).toHaveCount(0);
-  } else {
-    await expect(page.getByTestId('glossary-not-reviewed')).toBeVisible();
-    await expect(page.getByTestId('glossary-test-content')).toHaveCount(0);
-  }
+  // Keine Prüf-Kennzeichen mehr (weder „Testinhalt“ noch „nicht fachlich geprüft“).
+  await expect(page.getByTestId('glossary-test-content')).toHaveCount(0);
+  await expect(page.getByTestId('glossary-not-reviewed')).toHaveCount(0);
   await heading(page, "So geht's");
   await heading(page, 'Tipps');
   await heading(page, 'Häufige Fehler');

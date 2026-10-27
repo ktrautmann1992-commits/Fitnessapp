@@ -1407,6 +1407,7 @@ export type Database = {
           storage: string | null;
           substitutions: Json;
           title_de: string;
+          user_chosen: boolean;
           user_id: string;
         };
         Insert: {
@@ -1431,6 +1432,7 @@ export type Database = {
           storage?: string | null;
           substitutions?: Json;
           title_de: string;
+          user_chosen?: boolean;
           user_id: string;
         };
         Update: {
@@ -1455,6 +1457,7 @@ export type Database = {
           storage?: string | null;
           substitutions?: Json;
           title_de?: string;
+          user_chosen?: boolean;
           user_id?: string;
         };
         Relationships: [
@@ -1956,6 +1959,7 @@ export type Database = {
           original_date: string | null;
           plan_id: string;
           scheduled_on: string;
+          start_time: string | null;
           status: Database['public']['Enums']['planned_session_status'];
           target_distance_m: number | null;
           template_day_index: number | null;
@@ -1984,6 +1988,7 @@ export type Database = {
           original_date?: string | null;
           plan_id: string;
           scheduled_on: string;
+          start_time?: string | null;
           status?: Database['public']['Enums']['planned_session_status'];
           target_distance_m?: number | null;
           template_day_index?: number | null;
@@ -2012,6 +2017,7 @@ export type Database = {
           original_date?: string | null;
           plan_id?: string;
           scheduled_on?: string;
+          start_time?: string | null;
           status?: Database['public']['Enums']['planned_session_status'];
           target_distance_m?: number | null;
           template_day_index?: number | null;
@@ -2736,6 +2742,83 @@ export type Database = {
             columns: ['template_id'];
             isOneToOne: false;
             referencedRelation: 'plan_templates';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      live_sessions: {
+        Row: {
+          display_name: string;
+          ended_at: string | null;
+          expires_at: string;
+          id: string;
+          planned_end_at: string;
+          sport: string;
+          started_at: string;
+          status: string;
+          token_hash: string;
+          update_interval_s: number;
+          user_id: string;
+        };
+        Insert: {
+          display_name: string;
+          ended_at?: string | null;
+          expires_at: string;
+          id?: string;
+          planned_end_at: string;
+          sport: string;
+          started_at?: string;
+          status?: string;
+          token_hash: string;
+          update_interval_s?: number;
+          user_id: string;
+        };
+        Update: {
+          display_name?: string;
+          ended_at?: string | null;
+          expires_at?: string;
+          id?: string;
+          planned_end_at?: string;
+          sport?: string;
+          started_at?: string;
+          status?: string;
+          token_hash?: string;
+          update_interval_s?: number;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      live_positions: {
+        Row: {
+          accuracy_m: number | null;
+          lat: number;
+          lon: number;
+          received_at: string;
+          recorded_at: string;
+          session_id: string;
+        };
+        Insert: {
+          accuracy_m?: number | null;
+          lat: number;
+          lon: number;
+          received_at?: string;
+          recorded_at: string;
+          session_id: string;
+        };
+        Update: {
+          accuracy_m?: number | null;
+          lat?: number;
+          lon?: number;
+          received_at?: string;
+          recorded_at?: string;
+          session_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'live_positions_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: true;
+            referencedRelation: 'live_sessions';
             referencedColumns: ['id'];
           },
         ];
@@ -3699,6 +3782,30 @@ export type Database = {
         Args: { p_token_hash: string; p_waitlist_id: string };
         Returns: undefined;
       };
+      start_live_session: {
+        Args: {
+          p_display_name: string;
+          p_planned_minutes: number;
+          p_replace?: boolean;
+          p_sport: string;
+          p_update_interval_s?: number;
+        };
+        Returns: Json;
+      };
+      push_live_position: {
+        Args: {
+          p_accuracy_m: number | null;
+          p_lat: number;
+          p_lon: number;
+          p_recorded_at: string;
+          p_session_id: string;
+        };
+        Returns: string;
+      };
+      set_live_status: { Args: { p_session_id: string; p_status: string }; Returns: Json };
+      rotate_live_token: { Args: { p_session_id: string }; Returns: Json };
+      get_live_view: { Args: { p_ip_hash: string; p_token_hash: string }; Returns: Json };
+      live_cleanup: { Args: never; Returns: number };
       waitlist_cleanup: { Args: never; Returns: number };
       waitlist_confirm: { Args: { p_token_hash: string }; Returns: string };
       waitlist_count: {

@@ -9,7 +9,6 @@ import {
   mealPlanWeekEditable,
   type ReplanReason,
   resolveMealPlanRecord,
-  resolveMealPlanWeek,
   type UnavailableMeal,
   resolveShoppingList,
   type ShoppingRangeMode,
@@ -46,6 +45,14 @@ import {
   nutritionCompetitionSchema,
   type NutritionWeekTargets,
   startOfIsoWeek,
+  resolveMealPlanWeekWithTraining,
+  startTimeToMinutes,
+  type TrainingAdaptation,
+  latestBodyValues,
+  type TrainingTimelineOptions,
+  shoppingListChanges,
+  type ShoppingListChanges,
+  type TrainingMealProtection,
 } from '@fitnessapp/core';
 
 import { todayIso } from '../lib/format';
@@ -116,9 +123,55 @@ function planSessionsForWeek(
         minutes: s.estimated_minutes,
         isDeload: s.is_deload,
         status: s.status,
+        // Nährstoff-Timing (T2): eigene Uhrzeit der Einheit; ohne Uhrzeit fehlt das Feld (Engine wie bisher).
+        ...(startTimeToMinutes(s.start_time) !== null
+          ? { startMinutes: startTimeToMinutes(s.start_time) as number }
+          : {}),
       },
     ];
   });
+}
+
+/**
+ * Als gegessen eingetragene Plan-Mahlzeiten (Ernährungstagebuch, Quelle Plan) – werden beim Verschieben des Trainings
+ * nie automatisch geändert (docs/PLAN-NAEHRSTOFF-TIMING.md 6). Nur `datum|platz`, keine Mengen.
+ */
+export function trainingMealProtectionFromRows(rows: UserRows): TrainingMealProtection {
+  return {
+    eaten: new Set(
+      rows.foodLogEntries
+        .filter((e) => e.source === 'plan_item' && e.slot !== null)
+        .map((e) => `${e.eaten_on}|${e.slot}`),
+    ),
+  };
+}
+
+/**
+ * Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 7): Angaben für die Zeitleiste – Trainingszeit, Erfahrung und
+ * Körperdaten NUR mit gültiger Einwilligung (sonst null → keine Gramm). „Kalorienzahlen anzeigen“ kommt vom Aufrufer.
+ * null = Angaben unvollständig.
+ */
+export function trainingTimelineOptionsFromRows(
+  rows: UserRows,
+  versions: ConsentVersions,
+  today: string,
+  weekStart: string,
+  showNumbers: boolean,
+): TrainingTimelineOptions | null {
+  const inputs = nutritionInputsFromRows(rows, versions, today, weekStart);
+  if (inputs === null) return null;
+  const latest = inputs.healthDataConsent
+    ? latestBodyValues(inputs.bodyMetricsRows ?? [], today)
+    : { height: null, weight: null };
+  return {
+    trainingTime: inputs.trainingTime ?? null,
+    body:
+      latest.weight !== null && latest.height !== null
+        ? { weightKg: latest.weight.value, heightCm: latest.height.value }
+        : null,
+    showNumbers,
+    experienceLevel: inputs.experienceLevel ?? null,
+  };
 }
 
 /**
@@ -289,6 +342,16 @@ export interface MealPlanState {
   ingredientSwapAllowed: boolean;
   /** Tag, an dem der Kochtag-Timer gestartet wurde (Gerätezeit) – an diesem Kochtag kein Tausch mehr (K1). */
   cookStartedOn: string | null;
+  /**
+   * Nährstoff-Timing (docs/PLAN-NAEHRSTOFF-TIMING.md 6): Mahlzeiten wurden gerade an das verschobene Training angepasst
+   * (wird mit dem Plan gespeichert) – mit dem Plan davor für „Rückgängig“. Sonst null.
+   */
+  training: {
+    adaptation: TrainingAdaptation;
+    previous: MealPlanWeek;
+    /** Unterschied der Einkaufsliste (nur mit gespeicherter Liste), sonst null. */
+    shopping: ShoppingListChanges | null;
+  } | null;
   input: MealPlanEngineInput;
   /**
    * Fingerabdruck der Angaben (Ziele, Vorlieben, Bestand) – nur im Arbeitsspeicher, nie gespeichert oder geloggt.
@@ -427,8 +490,20 @@ export function computeNutritionWeek(input: {
     // gespeicherte Plan geprüft (6.6, Wächter N7 H5).
     const resolved =
       usable !== null && usable.plan === null && usable.record !== undefined
-        ? resolveMealPlanRecord(usable.record, engineInput)
-        : { ...resolveMealPlanWeek(usable?.plan ?? null, engineInput), unavailable: [] };
+        ? resolveMealPlanRecord(
+            usable.record,
+            engineInput,
+            trainingMealProtectionFromRows(input.rows),
+          )
+        : {
+            // Nährstoff-Timing: zuerst Anpassung ans Training (gegessene Mahlzeiten bleiben), sonst wie bisher.
+            ...resolveMealPlanWeekWithTraining(
+              usable?.plan ?? null,
+              engineInput,
+              trainingMealProtectionFromRows(input.rows),
+            ),
+            unavailable: [],
+          };
     const editable = mealPlanWeekEditable(input.weekStart, input.today);
     // Einkaufsliste wie der Plan (Art. 9): ohne gültige Einwilligung keine Liste mit Gesundheitsbezug weiterverwenden.
     const listRow = storedShoppingListRow(input.rows, input.weekStart);
@@ -466,7 +541,7 @@ export function computeNutritionWeek(input: {
       // Nur in änderbaren Wochen (dort gibt es „Verstanden“; Wächter N5a K1).
       autoAdjusted:
         editable &&
-        (resolved.action === 'replanned' ||
+        ((resolved.action === 'replanned' && !resolved.reasons.includes('training_changed')) ||
           (resolved.action === 'stored' && usable?.auto_adjusted === true)),
       recipesChanged:
         editable &&
@@ -475,6 +550,20 @@ export function computeNutritionWeek(input: {
       editable,
       ingredientSwapAllowed:
         editable && healthConsentStatus(input.rows, input.versions) === 'valid',
+      training: (() => {
+        const adaptation =
+          'training' in resolved ? (resolved.training as TrainingAdaptation | null) : null;
+        return editable && adaptation !== null && usable?.plan
+          ? {
+              adaptation,
+              previous: usable.plan,
+              shopping:
+                usableList !== null && shopping.action === 'rebuilt'
+                  ? shoppingListChanges(usableList, shopping.list)
+                  : null,
+            }
+          : null;
+      })(),
       cookStartedOn:
         usable?.cook_day_started_at != null &&
         Number.isFinite(Date.parse(usable.cook_day_started_at))

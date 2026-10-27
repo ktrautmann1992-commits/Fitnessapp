@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: 'Impressum' };
 
 export default function Impressum() {
   return (
-    <RechtsSeite titel="Impressum" stand={'Entwurf – Oktober 2026'}>
+    <RechtsSeite titel="Impressum" stand={'Oktober 2026'}>
       <h2>Angaben gemäß § 5 DDG</h2>
       <p>
         <P>Name des Unternehmens bzw. Vor- und Nachname</P>

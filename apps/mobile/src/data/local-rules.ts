@@ -1,4 +1,5 @@
 import {
+  sessionStartTimeTextSchema,
   bodyMetricsStepSchema,
   contentIdSchema,
   cookingStepSchema,
@@ -635,6 +636,14 @@ export function isValidPlanOp(op: WriteOp, ctx: PlanRuleContext): boolean {
         return false;
       }
       if (session.status !== 'planned') return false;
+      // Nährstoff-Timing: Uhrzeit wie CHECK planned_sessions_start_time_check (HH:MM, 00:00–23:59) bzw. null.
+      if (
+        op.startTime !== undefined &&
+        op.startTime !== null &&
+        !sessionStartTimeTextSchema.safeParse(op.startTime).success
+      ) {
+        return false;
+      }
       const reference = session.original_date ?? session.scheduled_on;
       const weekStart = startOfIsoWeek(reference);
       if (addDays(weekStart, 6) < today) return false;

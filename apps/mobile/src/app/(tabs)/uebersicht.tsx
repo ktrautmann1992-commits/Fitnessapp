@@ -301,17 +301,6 @@ function Overview({ rows, today }: { rows: UserRows; today: string }) {
                 ),
               }
             : null,
-          app.backend.mode === 'local' || library?.containsDrafts
-            ? {
-                id: 'test-content',
-                level: 'info',
-                node: (
-                  <Notice tone="info" testID="overview-test-content">
-                    {t.plan.testContent}
-                  </Notice>
-                ),
-              }
-            : null,
         ]}
       />
       {/* Etappe E2: Kacheln in der Reihenfolge der Person, ausgeblendete fehlen (Hinweise oben bleiben immer). */}

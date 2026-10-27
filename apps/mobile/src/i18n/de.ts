@@ -8,6 +8,7 @@
 import { deAdjust } from './de-adjust';
 import { deCompetition } from './de-competition';
 import { deCompetitionNutrition } from './de-competition-nutrition';
+import { deTrainingMeals } from './de-training-meals';
 import { deCustomMeals } from './de-custom-meals';
 import {
   deConsentsPage,
@@ -24,6 +25,7 @@ import { deEndurance } from './de-endurance';
 import { deLoop } from './de-loop';
 import { deRacePace } from './de-race-pace';
 import { deShoes } from './de-shoes';
+import { deLive } from './de-live';
 import { deRunner } from './de-runner';
 import { deHydration } from './de-hydration';
 import { deFoodLog } from './de-food-log';
@@ -537,8 +539,6 @@ export const de = {
       'Für einen Plan fehlen noch Angaben (Erfahrung, Ziel oder Trainingstage). Ergänze sie unter Einstellungen → Training.',
     invalidInputs: 'Deine Angaben passen nicht zu den Regeln für einen Plan. Bitte prüfe sie.',
     loading: 'Dein Plan wird geladen …',
-    testContent: 'Testinhalte – KI-Entwurf, nicht fachlich geprüft',
-    notReviewed: 'Die Inhalte sind noch nicht fachlich geprüft.',
     offline: 'Offline – du siehst den zuletzt geladenen Plan.',
     droppedChange:
       'Eine Verschiebung konnte nicht übernommen werden – dein Plan wurde neu geladen.',
@@ -1496,8 +1496,6 @@ export const de = {
     reps: 'Wiederholungen',
     hold: 'Halten',
     unilateral: 'einseitig',
-    testContent: 'Testinhalt – noch nicht fachlich geprüft',
-    notReviewed: 'Noch nicht fachlich geprüft',
     alsoCalled: (names: string) => `auch genannt: ${names}`,
     englishName: (name: string) => `englisch: ${name}`,
     descriptionTitle: 'Beschreibung',
@@ -1687,6 +1685,8 @@ export const de = {
   competition: deCompetition,
   /** Wettkampf-Ernährung (Phase 10, Etappe W1). */
   competitionNutrition: deCompetitionNutrition,
+  /** Nährstoff-Timing 2: Essen rund ums Training (docs/PLAN-NAEHRSTOFF-TIMING.md). */
+  trainingMeals: deTrainingMeals,
   day: deDay,
   trainingWeek: deTrainingWeek,
   weekEval: deWeekEval,
@@ -1748,6 +1748,8 @@ export const de = {
   endurance: deEndurance,
   // Schuh-Kilometerzähler und Renn-Pace-Plan (docs/PLAN-PHASE-10.md Abschnitt 22).
   shoes: deShoes,
+  // Live-Begleitung / Notfallkontakte (docs/PLAN-PHASE-10.md Abschnitt 21).
+  live: deLive,
   runner: deRunner,
   racePace: deRacePace,
   hydration: deHydration,

@@ -252,6 +252,8 @@ export function localDataExport(
     shoes: [],
     shoe_defaults: [],
     shoe_assignments: [],
+    // Live-Begleitung: im Testmodus nur als Demo (nichts gespeichert), Notfallkontakte liegen nur auf dem Gerät.
+    live_sessions: [],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

@@ -245,7 +245,7 @@ test('Gratis-Rezepte: Mail-Link-Seiten, kein Download-Knopf ohne Bestätigung, P
   expect((await pdf.body()).subarray(0, 5).toString()).toBe('%PDF-');
 });
 
-test('Rechtsseiten mit Platzhaltern, verlinkt im Fuß', async ({ page }) => {
+test('Rechtsseiten verlinkt im Fuß, ohne Entwurfs-Hinweis', async ({ page }) => {
   await page.goto('/');
   for (const [link, titel] of [
     ['Impressum', 'Impressum'],
@@ -254,7 +254,8 @@ test('Rechtsseiten mit Platzhaltern, verlinkt im Fuß', async ({ page }) => {
   ] as const) {
     await page.getByRole('contentinfo').getByRole('link', { name: link, exact: true }).click();
     await expect(page.getByRole('heading', { level: 1, name: titel })).toBeVisible();
-    await expect(page.getByText('PLATZHALTER – vor Livegang ausfüllen.')).toBeVisible();
+    await expect(page.getByText('Stand: Oktober 2026')).toBeVisible();
+    await expect(page.getByText(/vor Livegang/)).toHaveCount(0);
     await page.goto('/');
   }
   await expect(page.getByRole('link', { name: 'App im Browser testen' })).toHaveAttribute(

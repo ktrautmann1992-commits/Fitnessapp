@@ -30,6 +30,12 @@ import { automaticReplan } from './replan';
 import { scalePortion } from './scale';
 import { resolveIngredientSwaps } from './swap-resolve';
 import type { NutritionDayTargets, NutritionWeekTargets } from './targets';
+import {
+  NO_TRAINING_PROTECTION,
+  resolveMealPlanWeekWithTraining,
+  type TrainingAdaptation,
+  type TrainingMealProtection,
+} from './training-replan';
 
 /**
  * Gespeicherter Essensplan AUS DER DATENBANK (Etappe N7 Teil 2, docs/PLAN-PHASE-5.md „Vorschlag N7 Teil 2“ Nr. 1,
@@ -189,6 +195,7 @@ function mealFromItem(
       // Schon gekochte Reste haben eine feste Portion (wie `fixedFactor` beim erneuten Ausgleich).
       fixed: item.prep_kind === 'leftover' && item.cook_date < today,
       mealPrepPlanId: item.meal_prep_plan_id,
+      ...(item.user_chosen === true ? { chosen: true as const } : {}),
     };
   } catch {
     return null;
@@ -315,7 +322,9 @@ export type MealPlanRecordResolution = MealPlanResolution & {
 export function resolveMealPlanRecord(
   record: MealPlanRecord | null,
   input: Omit<MealPlanInput, 'existingPlan' | 'variant'>,
-): MealPlanRecordResolution {
+  /** Nährstoff-Timing: gegessene Mahlzeiten (Anpassung ans Training, `resolveMealPlanWeekWithTraining`). */
+  protection: TrainingMealProtection = NO_TRAINING_PROTECTION,
+): MealPlanRecordResolution & { readonly training?: TrainingAdaptation | null } {
   const rebuilt = record === null ? null : mealPlanWeekFromRecord(record, input);
   if (rebuilt === null) return { ...resolveMealPlanWeek(null, input), unavailable: [] };
   const today = isoDateSchema.parse(input.today);
@@ -328,7 +337,7 @@ export function resolveMealPlanRecord(
       unavailable: past,
     };
   }
-  const resolved = resolveMealPlanWeek(rebuilt.plan, input);
+  const resolved = resolveMealPlanWeekWithTraining(rebuilt.plan, input, protection);
   // Neu erstellt (auch die vergangenen Tage): dann gibt es keine alten Mahlzeiten mehr anzuzeigen.
   const kept = resolved.action === 'stored' || resolved.action === 'replanned';
   return { ...resolved, unavailable: kept ? past : [] };
