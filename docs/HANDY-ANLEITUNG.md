@@ -2012,9 +2012,9 @@ Im Testmodus wird nichts gesendet: Der Link zeigt eine **Demo-Seite** mit ausged
    Projekt → **Database → Extensions** → „pg_cron“ ist **an** (dann räumt die Datenbank alle 5 min selbst auf). Falls aus:
    einschalten und in GitHub **Actions → db-migrate → Run workflow** erneut starten. Die stündliche GitHub Action
    **live-cleanup** läuft zusätzlich und braucht nur die schon vorhandenen Secrets `SUPABASE_URL` und `SUPABASE_SECRET_KEY`.
-2. **Vercel, Projekt „Web“:** vercel.com → Projekt → **Settings → Environment Variables**. Vorhanden sein müssen
-   `SUPABASE_SERVICE_ROLE_KEY` (wie Warteliste) und `WAITLIST_TOKEN_SECRET`. Optional eigener Schlüssel
-   `LIVE_VIEW_SECRET` (mind. 32 zufällige Zeichen, aus dem Passwort-Manager, Production + Preview) → **Save** →
+2. **Vercel, Projekt „Web“:** nichts Neues nötig – es reicht der schon eingetragene Supabase-„Secret key“
+   (`SUPABASE_SECRET_KEY`). Optional ein eigener Schlüssel `LIVE_VIEW_SECRET` (mind. 32 zufällige Zeichen, aus dem
+   Passwort-Manager): vercel.com → Projekt → **Settings → Environment Variables** → Production + Preview → **Save** →
    **Deployments → ⋯ → Redeploy**.
 3. **Expo/EAS und Vercel-Projekt „App“:** `EXPO_PUBLIC_WEB_URL` = Adresse der Website (z. B.
    `https://fitnessapp-web-eight.vercel.app`). Fehlt sie, nimmt die App genau diese Adresse.

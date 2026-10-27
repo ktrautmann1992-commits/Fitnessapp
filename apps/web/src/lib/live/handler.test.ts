@@ -1,9 +1,16 @@
-import { createHash } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 
 import { liveTokenFromBytes } from '@fitnessapp/core';
 import { describe, expect, it, vi } from 'vitest';
 
-import { handleLiveView, LIVE_HEADERS, liveIpHash, liveTokenHash, readLiveConfig } from './handler';
+import {
+  derivedIpSecret,
+  handleLiveView,
+  LIVE_HEADERS,
+  liveIpHash,
+  liveTokenHash,
+  readLiveConfig,
+} from './handler';
 
 const SECRET = 's'.repeat(32);
 const ENV = {
@@ -47,8 +54,24 @@ describe('readLiveConfig', () => {
     expect(readLiveConfig({ ...ENV, LIVE_VIEW_SECRET: 'kurz' })?.ipSecret).toBe(SECRET);
   });
 
-  it('fehlt etwas → null', () => {
-    expect(readLiveConfig({ ...ENV, WAITLIST_TOKEN_SECRET: 'kurz' })).toBeNull();
+  it('ohne eigenes Secret: IP-Schlüssel aus dem Secret key abgeleitet (kein Pflicht-Secret)', () => {
+    const derived = createHmac('sha256', 'sb_secret_abc')
+      .update('alpha5-live-view-ip-v1')
+      .digest('hex');
+    expect(derivedIpSecret('sb_secret_abc')).toBe(derived);
+    expect(readLiveConfig({ ...ENV, WAITLIST_TOKEN_SECRET: undefined })?.ipSecret).toBe(derived);
+    expect(readLiveConfig({ ...ENV, WAITLIST_TOKEN_SECRET: 'kurz' })?.ipSecret).toBe(derived);
+    expect(
+      readLiveConfig({
+        NEXT_PUBLIC_SUPABASE_URL: 'https://projekt.supabase.co',
+        SUPABASE_SECRET_KEY: 'sb_secret_abc',
+      })?.ipSecret,
+    ).toBe(derived);
+    // nicht der Key selbst
+    expect(derived).not.toContain('sb_secret_abc');
+  });
+
+  it('fehlt Supabase → null', () => {
     expect(readLiveConfig({ ...ENV, SUPABASE_SERVICE_ROLE_KEY: '' })).toBeNull();
     expect(readLiveConfig({ ...ENV, NEXT_PUBLIC_SUPABASE_URL: 'http://x' })).toBeNull();
     expect(readLiveConfig({})).toBeNull();

@@ -2143,7 +2143,8 @@ Einstellungen → Notfallkontakte (PNG-Tafeln, nicht im Repository).
   `110_live_companion.test.sql` (75 Prüfungen, lokal gegen Postgres 16 mit Supabase-Ersatz grün).
 - **LB3 Web** `apps/web/src/app/begleitung/` + `apps/web/src/app/api/begleitung/route.ts` +
   `apps/web/src/lib/live/` (Handler, Texte, Demo, Karte = MapLibre/OpenFreeMap wie die App). `#t=demo` zeigt eine Demo
-  (Testmodus der App). IP-Prüfwert mit `LIVE_VIEW_SECRET`, ersatzweise `WAITLIST_TOKEN_SECRET`. Playwright
+  (Testmodus der App). IP-Prüfwert mit `LIVE_VIEW_SECRET`, ersatzweise `WAITLIST_TOKEN_SECRET`, sonst aus dem Supabase-Secret-key abgeleitet
+  (HMAC, kein Pflicht-Secret). Playwright
   `apps/web/e2e/begleitung.spec.ts`.
 - **LB4 App** Einstellungen → Smartwatch & Apps → „Notfallkontakte & Live-Begleitung“ (`app/notfallkontakte.tsx`,
   verschlüsselt `data/live-store*.ts`, nie auf dem Server), Live-Begleitung + SOS im Lauf-Zustand

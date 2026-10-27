@@ -31,9 +31,10 @@ export interface LiveConfig {
 const clean = (value: string | undefined) => value?.trim() ?? '';
 
 /**
- * Einstellungen (Vercel-Projekt „Web“): Supabase-Adresse und Secret key wie die Warteliste; Schlüssel für den
- * IP-Prüfwert LIVE_VIEW_SECRET, ersatzweise WAITLIST_TOKEN_SECRET (beide mindestens 32 Zeichen). null = nicht
- * eingerichtet (Antwort 503, die Seite zeigt „gerade nicht verfügbar“).
+ * Einstellungen (Vercel-Projekt „Web“): Supabase-Adresse und Secret key wie die Warteliste (Pflicht). Schlüssel für den
+ * IP-Prüfwert: LIVE_VIEW_SECRET, sonst WAITLIST_TOKEN_SECRET (je mindestens 32 Zeichen), sonst aus dem Secret key
+ * abgeleitet (HMAC-SHA256 mit festem Zweck) – so braucht es kein eigenes Secret. Nur serverseitig, nie geloggt.
+ * null = nicht eingerichtet (Antwort 503, die Seite zeigt „gerade nicht verfügbar“).
  */
 export function readLiveConfig(env: Env): LiveConfig | null {
   const supabaseUrl = (clean(env.SUPABASE_URL) || clean(env.NEXT_PUBLIC_SUPABASE_URL)).replace(
@@ -41,12 +42,22 @@ export function readLiveConfig(env: Env): LiveConfig | null {
     '',
   );
   const supabaseServiceKey = clean(env.SUPABASE_SERVICE_ROLE_KEY) || clean(env.SUPABASE_SECRET_KEY);
-  const own = clean(env.LIVE_VIEW_SECRET);
-  const ipSecret = own.length >= LIVE_SECRET_MIN_LENGTH ? own : clean(env.WAITLIST_TOKEN_SECRET);
   if (!/^https:\/\/[^\s/]+$/.test(supabaseUrl)) return null;
   if (!supabaseServiceKey) return null;
-  if (ipSecret.length < LIVE_SECRET_MIN_LENGTH) return null;
+  const own = clean(env.LIVE_VIEW_SECRET);
+  const waitlist = clean(env.WAITLIST_TOKEN_SECRET);
+  const ipSecret =
+    own.length >= LIVE_SECRET_MIN_LENGTH
+      ? own
+      : waitlist.length >= LIVE_SECRET_MIN_LENGTH
+        ? waitlist
+        : derivedIpSecret(supabaseServiceKey);
   return { supabaseUrl, supabaseServiceKey, ipSecret };
+}
+
+/** Letzte Rückfalloption: IP-Schlüssel aus dem Secret key ableiten (der Key selbst verlässt den Server nie). */
+export function derivedIpSecret(serviceKey: string): string {
+  return createHmac('sha256', serviceKey).update('alpha5-live-view-ip-v1').digest('hex');
 }
 
 /** SHA-256 (Hex) der Token-Bytes – derselbe Wert wie token_hash in der Datenbank. null = Token ungültig. */
