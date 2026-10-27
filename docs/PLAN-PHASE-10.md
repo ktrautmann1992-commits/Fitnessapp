@@ -1933,10 +1933,10 @@ Format: _Worum es geht – Warum wir fragen – Empfehlung._
 
 ---
 
-## 21. Nachtrag (25.10.2026): Live-Begleitung / Notfallkontakt – Plan freigegeben, noch nicht umgesetzt
+## 21. Nachtrag (25.10.2026): Live-Begleitung / Notfallkontakt – umgesetzt 27.10.2026 (LB1–LB4, LB5 teilweise)
 
-**Status:** Regel in `CLAUDE.md` („Kein Teilen, keine Community“, Ausnahme 25.10.2026) und dieser Plan. **Noch kein
-Code.** Gründer-Entscheidungen 25.10.2026 (Karsten): „Notfallkontakt Ausnahme ja“ und zu F1–F9 „Deine Empfehlungen
+**Status:** Regel in `CLAUDE.md` („Kein Teilen, keine Community“, Ausnahme 25.10.2026) und dieser Plan. **Umgesetzt
+27.10.2026** – Stand und Abweichungen in 21.11. Gründer-Entscheidungen 25.10.2026 (Karsten): „Notfallkontakt Ausnahme ja“ und zu F1–F9 „Deine Empfehlungen
 umsetzen“ (Abschnitt 21.10). Umsetzung je Etappe als Pull Request mit Wächter-Prüfung.
 **Kurz:** Kontakte nur auf dem Gerät, gratis, kein Trail, Statusseite 2 h ohne Karte, Token im Fragment `#t=`,
 automatische Warnung später, alle Aufzeichnungs-Sportarten bis 12 h, Vorname vorausgefüllt, eigene Kurz-Domain.
@@ -2127,6 +2127,41 @@ Anzeigename max. 30) und RPC-Antworten. Grenzwerte in
 
 **Mockups (LB0):** Aufzeichnen mit Blatt „Live-Begleitung“, Lauf mit Banner/SOS/Beenden, Begleit-Seite im Browser,
 Einstellungen → Notfallkontakte (PNG-Tafeln, nicht im Repository).
+
+### 21.11 Umsetzungsstand (27.10.2026, Branch `claude/live-begleitung`, Gründer-Freigabe „baue alles fertig“)
+
+- **LB1 Core** `packages/core/src/live/` (`schema.ts`, `session.ts`, `texts.ts`), Konstanten `LIVE_COMPANION` in
+  `constants.ts` (statt einzelner `LIVE_*`-Namen; Pflicht-Grenzen per Test gesichert). Token 32 Bytes (256 Bit),
+  base64url 43 Zeichen, kanonisch geprüft. Tests `live.test.ts`, Abgleich mit der Datenbank `live-db-sync.test.ts`.
+- **LB2 Datenbank** `20261027170000_live_companion.sql` (Tabellen `live_sessions`, `live_positions`, private
+  `live_view_attempts`; RPCs `start_live_session(…, p_update_interval_s, p_replace)`, `push_live_position`,
+  `set_live_status`, `rotate_live_token`, `get_live_view` nur service_role, `live_cleanup` für die Action;
+  `private.purge_live_sessions()` per pg_cron alle 5 min, bei jedem Start und stündlich per `live-cleanup.yml`).
+  Abweichung: Läuft schon eine offene Sitzung, lehnt `start_live_session` ab (55000) – außer die Person bestätigt in der
+  App „Beenden und neu starten“ (`p_replace`). `push_live_position` liefert `ok | throttled | older | closed`.
+  Export: `20261027170100_live_export_my_data.sql` (Obermenge, `live_sessions` ohne `token_hash`). pgTAP
+  `110_live_companion.test.sql` (75 Prüfungen, lokal gegen Postgres 16 mit Supabase-Ersatz grün).
+- **LB3 Web** `apps/web/src/app/begleitung/` + `apps/web/src/app/api/begleitung/route.ts` +
+  `apps/web/src/lib/live/` (Handler, Texte, Demo, Karte = MapLibre/OpenFreeMap wie die App). `#t=demo` zeigt eine Demo
+  (Testmodus der App). IP-Prüfwert mit `LIVE_VIEW_SECRET`, ersatzweise `WAITLIST_TOKEN_SECRET`. Playwright
+  `apps/web/e2e/begleitung.spec.ts`.
+- **LB4 App** Einstellungen → Smartwatch & Apps → „Notfallkontakte & Live-Begleitung“ (`app/notfallkontakte.tsx`,
+  verschlüsselt `data/live-store*.ts`, nie auf dem Server), Live-Begleitung + SOS im Lauf-Zustand
+  (`components/live-companion.tsx`, Steuerung `lib/live-companion.ts`), „Angekommen“ im Speichern-Schritt, lokale
+  „Kein Lebenszeichen“-Erinnerung (Erlaubnis nur nach dem Tipp „Starten“). Beenden/Angekommen mit EINEM Tipp (ohne
+  Rückfrage). Testmodus: Demo ohne Server. Playwright `apps/mobile/e2e/live-companion.spec.ts`.
+- **Abweichungen/Offen:**
+  - **Vorname aus dem Profil:** Das Profil hat (noch) kein Namensfeld. Der Anzeigename wird beim ersten Start bzw. in
+    den Einstellungen eingetragen und auf dem Gerät gemerkt (F8 sinngemäß).
+  - **Start vor der Aufzeichnung:** v1 startet die Begleitung direkt nach dem Start der Aufzeichnung (Blatt im
+    Lauf-Zustand); ein eigener Schalter vor dem Start folgt bei Bedarf.
+  - **Benachrichtigung des Vordergrund-Dienstes** („Aufzeichnung läuft · Live-Begleitung an“): unverändert, das Banner
+    steht in der App (Änderung bräuchte einen Neustart des Standort-Dienstes – im Gerätetest prüfen).
+  - **Übernahme aus dem Adressbuch** (System-Kontaktwähler): noch nicht – Kontakte werden eingetippt.
+  - Nach einem App-Absturz endet eine laufende Begleitung beim nächsten Öffnen von Ausdauer sofort (lieber „beendet“
+    als ein vergessener geteilter Standort).
+  - **LB5 (Gründer):** Datenschutzerklärung Abschnitt 10 ergänzt (rechtlich prüfen), Store-Angaben (Play
+    Datensicherheit „Standort – geteilt auf Wunsch“, Apple Privacy), DSFA-Ergänzung, Gerätetest draußen (Akku).
 
 ---
 
