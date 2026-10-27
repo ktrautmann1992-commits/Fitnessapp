@@ -1,6 +1,14 @@
 import {
+  ageInYears,
+  AGE_PLAN_RULES,
+  allowedHyroxDivisions,
   COMPETITION_CYCLING,
   COMPETITION_DISCIPLINES,
+  HYROX_SAFETY,
+  HYROX_SPLIT_SEGMENTS,
+  type HyroxDivision,
+  type HyroxSplitSegment,
+  hyroxSplitsFromInput,
   type CompetitionDiscipline,
   type CompetitionFeasibility,
   type CompetitionGoal,
@@ -111,6 +119,9 @@ interface FormState {
   longRunWeekday: number | null;
   ownStart: string;
   ownStartConfirmed: boolean;
+  /** Sportarten Stufe 1 (Hyrox): Division und Bestätigung ab 65. */
+  hyroxDivision: HyroxDivision;
+  hyroxSeniorConfirmed: boolean;
 }
 
 type FormErrors = Partial<
@@ -137,6 +148,8 @@ function formFrom(
     longRunWeekday: draft?.longRunWeekday ?? null,
     ownStart: draft?.ownStart ? String(draft.ownStart.weeklyMinutes) : '',
     ownStartConfirmed: draft?.ownStart !== null && draft?.ownStart !== undefined,
+    hyroxDivision: draft?.hyroxDivision ?? 'open',
+    hyroxSeniorConfirmed: false,
   };
 }
 
@@ -144,6 +157,8 @@ function formFrom(
 function draftOf(
   form: FormState,
   today: string,
+  /** Unter 18: Hyrox nur Division Open (HYROX_SAFETY). */
+  minor = false,
 ): { draft: CompetitionDraft | null; errors: FormErrors } {
   const errors: FormErrors = {};
   const raceDate = isoFromDateParts(form.date.day, form.date.month, form.date.year);
@@ -171,7 +186,8 @@ function draftOf(
   if (goal === 'time' && targetTimeS === null) errors.target = C.errorsForm.time;
   let reference: { discipline: RunCompetitionDiscipline; timeS: number; date: string } | null =
     null;
-  if (run && form.withReference) {
+  // Sportarten Stufe 1: bei Hyrox ist eine Lauf-Referenzzeit erlaubt (nur „Ankommen“, Tempo-Richtwerte der Läufe).
+  if ((run || form.discipline === 'hyrox') && form.withReference) {
     const timeS = secondsFromParts(form.refTime.hours, form.refTime.minutes, form.refTime.seconds);
     const date = isoFromDateParts(form.refDate.day, form.refDate.month, form.refDate.year);
     if (timeS === null) errors.refTime = C.errorsForm.time;
@@ -210,6 +226,12 @@ function draftOf(
       },
       longRunWeekday: form.longRunWeekday,
       ownStart,
+      ...(form.discipline === 'hyrox'
+        ? {
+            hyroxDivision: minor ? ('open' as const) : form.hyroxDivision,
+            hyroxSeniorConfirmed: form.hyroxSeniorConfirmed,
+          }
+        : {}),
     },
     errors,
   };
@@ -256,6 +278,9 @@ export default function CompetitionScreen() {
   const [resultTime, setResultTime] = useState<Time>({ hours: '', minutes: '', seconds: '' });
   const [resultEffort, setResultEffort] = useState<number | null>(null);
   const [resultNotes, setResultNotes] = useState('');
+  /** Hyrox-Rennen (Etappe H): Teilzeiten als Text je Abschnitt, aufgeklappt nur auf Wunsch. */
+  const [splitsOpen, setSplitsOpen] = useState(false);
+  const [splitTexts, setSplitTexts] = useState<Partial<Record<HyroxSplitSegment, string>>>({});
   const [resultError, setResultError] = useState<string>();
   /** ID des eben gespeicherten Ergebnis-Eintrags (für den erneuten Versuch ohne zweiten Eintrag, M6). */
   const [savedResultLog, setSavedResultLog] = useState<string | null>(null);
@@ -270,7 +295,10 @@ export default function CompetitionScreen() {
   }
 
   const ownStartAllowed = ownStartAllowedLevel(level);
-  const parsed = useMemo(() => draftOf(form, today), [form, today]);
+  const minorNow =
+    rows?.profile?.birth_date != null &&
+    ageInYears(rows.profile.birth_date, today) < AGE_PLAN_RULES.minor.belowAge;
+  const parsed = useMemo(() => draftOf(form, today, minorNow), [form, today, minorNow]);
   const feasibility = useMemo(
     () =>
       rows && parsed.draft
@@ -315,6 +343,10 @@ export default function CompetitionScreen() {
 
   const competitionPlanActive = isCompetitionPlan(active);
   const timeGoal = timeGoalOffered(rows, app.safetyRules);
+  // Hyrox (HYROX_SAFETY): unter 18 nur Open, ab 65 nur mit Bestätigung.
+  const age = rows.profile?.birth_date ? ageInYears(rows.profile.birth_date, today) : null;
+  const minor = age !== null && age < AGE_PLAN_RULES.minor.belowAge;
+  const senior = age !== null && age >= HYROX_SAFETY.seniorFromAge;
   const offline = app.offline;
   function goBack() {
     if (router.canGoBack()) router.back();
@@ -510,6 +542,19 @@ export default function CompetitionScreen() {
       setResultError(t.workout.notesTooLong(SESSION_LOG_LIMITS.notesMaxChars));
       return;
     }
+    // Hyrox-Rennen: Teilzeiten prüfen (Zeitformat, Summe höchstens die Gesamtzeit) – packages/core.
+    const hyroxRace = raceEntry.stored.competition.discipline === 'hyrox';
+    const splits = hyroxRace ? hyroxSplitsFromInput(splitTexts) : null;
+    if (splits && !splits.ok) {
+      setResultError(
+        C.hyrox.splitInvalid(splits.invalid.map((s) => C.hyrox.segments[s]).join(', ')),
+      );
+      return;
+    }
+    if (splits?.ok && splits.splits.reduce((sum, s) => sum + s.duration_s, 0) > total) {
+      setResultError(C.hyrox.splitsExceed);
+      return;
+    }
     setResultError(undefined);
     setBusy(true);
     // Schon gespeichert (nur das Abschließen scheiterte)? Dann nur noch verknüpfen (Wächter WP4 M6).
@@ -532,10 +577,12 @@ export default function CompetitionScreen() {
       let draft = createFreeDraft({
         ownerUserId: app.session.userId,
         kind: 'endurance',
-        // WP5: Rad und Triathlon als Rad-Eintrag (Triathlon ohne Distanz), Laufen wie bisher.
-        modality: isRunCompetitionDiscipline(raceEntry.stored.competition.discipline)
-          ? 'run'
-          : 'bike',
+        // WP5: Rad und Triathlon als Rad-Eintrag (Triathlon ohne Distanz), Laufen wie bisher; Hyrox als Lauf-Eintrag
+        // „Hyrox-Rennen“ (Etappe H).
+        modality:
+          isRunCompetitionDiscipline(raceEntry.stored.competition.discipline) || hyroxRace
+            ? 'run'
+            : 'bike',
         exercises: [],
         performedOn: raceDate,
         today: berlinTodayIso(),
@@ -564,6 +611,7 @@ export default function CompetitionScreen() {
         .filter((line) => line !== '')
         .join(' · ');
       draft = setSessionFields(draft, { sessionRpe: resultEffort, notes }, now);
+      if (splits?.ok) draft = { ...draft, hyrox: { totalS: total, splits: splits.splits } };
       const outcome = await app.submitWorkout(draft);
       if (outcome.kind === 'saved') {
         setSavedResultLog(draft.logId);
@@ -617,6 +665,36 @@ export default function CompetitionScreen() {
           <Card>
             <Heading level={2}>{C.result.time}</Heading>
             <TimeFields value={resultTime} onChange={setResultTime} prefix="competition-result" />
+            {raceEntry.stored.competition.discipline === 'hyrox' ? (
+              <View testID="competition-result-hyrox">
+                <Body muted>{C.hyrox.private}</Body>
+                <Button
+                  label={splitsOpen ? C.hyrox.splitsHide : C.hyrox.splitsToggle}
+                  variant="link"
+                  onPress={() => setSplitsOpen(!splitsOpen)}
+                  testID="competition-result-splits-toggle"
+                />
+                {splitsOpen ? (
+                  <>
+                    <Heading level={2}>{C.hyrox.splitsTitle}</Heading>
+                    <Body muted>{C.hyrox.splitsHint}</Body>
+                    {HYROX_SPLIT_SEGMENTS.map((segment) => (
+                      <TextField
+                        key={segment}
+                        label={C.hyrox.segments[segment]}
+                        value={splitTexts[segment] ?? ''}
+                        onChangeText={(text) =>
+                          setSplitTexts({ ...splitTexts, [segment]: text.replace(/[^\d:]/g, '') })
+                        }
+                        keyboardType="numbers-and-punctuation"
+                        maxLength={8}
+                        testID={`competition-result-split-${segment}`}
+                      />
+                    ))}
+                  </>
+                ) : null}
+              </View>
+            ) : null}
             <EffortSlider
               label={C.result.effort}
               value={resultEffort}
@@ -751,10 +829,12 @@ export default function CompetitionScreen() {
             onChange={(value) =>
               update({
                 discipline: value,
-                // Rad und Triathlon nur „Ankommen“ ohne Referenzzeit (WP5).
+                // Rad und Triathlon nur „Ankommen“ ohne Referenzzeit (WP5); Hyrox „Ankommen“ mit Referenz.
                 ...(isRunCompetitionDiscipline(value)
                   ? {}
-                  : { goal: 'finish', withReference: false }),
+                  : value === 'hyrox'
+                    ? { goal: 'finish' }
+                    : { goal: 'finish', withReference: false }),
               })
             }
           />
@@ -769,6 +849,31 @@ export default function CompetitionScreen() {
               error={shownErrors.distanceKm}
               testID="competition-distance-km"
             />
+          ) : null}
+          {form.discipline === 'hyrox' ? (
+            <View testID="competition-hyrox">
+              <ChoiceList<HyroxDivision>
+                label={C.hyrox.division}
+                horizontal
+                options={allowedHyroxDivisions(minor).map((value) => ({
+                  value,
+                  label: C.hyrox.divisionNames[value],
+                }))}
+                value={minor ? 'open' : form.hyroxDivision}
+                onChange={(hyroxDivision) => update({ hyroxDivision })}
+              />
+              <Body muted>{minor ? C.hyrox.minorDivisionHint : C.hyrox.divisionHint}</Body>
+              {senior ? (
+                <>
+                  <Body muted>{C.hyrox.seniorText}</Body>
+                  <Checkbox
+                    label={C.hyrox.seniorConfirm}
+                    checked={form.hyroxSeniorConfirmed}
+                    onChange={(hyroxSeniorConfirmed) => update({ hyroxSeniorConfirmed })}
+                  />
+                </>
+              ) : null}
+            </View>
           ) : null}
           <Body muted>{C.disciplineHint}</Body>
           {goalOffer === 'coach' && rows.goals?.discipline ? (
@@ -837,10 +942,12 @@ export default function CompetitionScreen() {
             ) : null}
           </Card>
         ) : null}
-        {isRunCompetitionDiscipline(form.discipline) ? (
+        {isRunCompetitionDiscipline(form.discipline) || form.discipline === 'hyrox' ? (
           <Card>
             <Heading level={2}>{C.referenceTitle}</Heading>
-            <Body muted>{C.referenceText}</Body>
+            <Body muted>
+              {form.discipline === 'hyrox' ? C.hyrox.referenceText : C.referenceText}
+            </Body>
             {form.withReference ? (
               <>
                 <ChoiceList<RunCompetitionDiscipline>

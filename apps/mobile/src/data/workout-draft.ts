@@ -6,9 +6,12 @@ import {
   type EnduranceModality,
   type Exercise,
   exerciseLogStatusFor,
+  FREE_SESSION,
   type FreeSessionResult,
   freeSessionLogFromInput,
   freeSessionName,
+  freeSessionPayloadIssue,
+  type HyroxSplit,
   incrementKindFor,
   type ExerciseLogPayload,
   type IncrementKind,
@@ -165,6 +168,11 @@ export interface WorkoutDraft {
   finishedAt?: string;
   /** Sportart-Eintrag (Sportarten Stufe 2, data/sport-entry.ts); fehlt = Kraft/Ausdauer. */
   sport?: DraftSport;
+  /**
+   * Ergebnis eines Hyrox-Rennens (Sportarten Stufe 1, Etappe H): Gesamtzeit in Sekunden und Teilzeiten (auch leer). Nur
+   * an der freien Lauf-Einheit „Hyrox-Rennen“; fehlt = kein Hyrox-Rennen.
+   */
+  hyrox?: { readonly totalS: number; readonly splits: readonly HyroxSplit[] };
   updatedAt: string;
 }
 
@@ -524,7 +532,7 @@ export function freeDraftResult(
         weightConfirmed: e.weightConfirmed,
       };
     });
-  return freeSessionLogFromInput({
+  const result = freeSessionLogFromInput({
     id: draft.logId,
     writeId: options.writeId,
     baseRevision: draft.baseRevision,
@@ -544,6 +552,18 @@ export function freeDraftResult(
           finishedAt: draft.finishedAt ?? options.now,
         }),
   });
+  // Hyrox-Rennen (Etappe H): Name, genaue Gesamtzeit und Teilzeiten – geprüft wie save_session_log.
+  if (!draft.hyrox || !result.ok || !result.payload.cardio) return result;
+  const payload: SessionLogPayload = {
+    ...result.payload,
+    name_de: FREE_SESSION.names.hyroxRace,
+    cardio: { ...result.payload.cardio, duration_s: draft.hyrox.totalS },
+    hyrox_splits: [...draft.hyrox.splits],
+  };
+  return sessionLogPayloadSchema.safeParse(payload).success &&
+    freeSessionPayloadIssue(payload, options.today) === null
+    ? { ...result, payload }
+    : { ok: false, errors: ['invalid'], cardioErrors: {}, warnings: result.warnings };
 }
 
 /** Übung einer freien Einheit, die es in der Bibliothek nicht mehr (freigegeben) gibt. */

@@ -191,7 +191,8 @@ describe('Filter und Suche', () => {
 
   it('Übungen nach Bewegungsmuster, Gerät und „ohne Geräte“', () => {
     const squats = filterExercises(catalog.exercises, parseFilters({ muster: 'squat' }));
-    expect(squats.length).toBe(12); // 4 + Kniebeuge zum Stuhl / mit Pause / Tempo (K1) + 3 Pistol + 2 Schlingentrainer
+    // 4 + Kniebeuge zum Stuhl / mit Pause / Tempo (K1) + 3 Pistol + 2 Schlingentrainer + 2 Hyrox (Wall Balls, Thruster)
+    expect(squats.length).toBe(14);
     expect(squats.every((e) => e.exercise.movement_pattern === 'squat')).toBe(true);
     const dumbbells = filterExercises(catalog.exercises, parseFilters({ geraet: 'dumbbells' }));
     expect(dumbbells.length).toBeGreaterThan(0);

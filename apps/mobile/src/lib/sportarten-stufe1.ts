@@ -5,8 +5,8 @@
  * jeweilige Etappe entfernt ihre Einträge hier (gespeicherte Werte zeigt die App immer an).
  */
 
-/** Ausdauer- bzw. Wettkampf-Disziplin Hyrox – Etappe H. */
-export const PENDING_DISCIPLINES: ReadonlySet<string> = new Set(['hyrox']);
+/** Ausdauer- bzw. Wettkampf-Disziplinen in Vorbereitung – keine mehr (Hyrox seit Etappe H wählbar). */
+export const PENDING_DISCIPLINES: ReadonlySet<string> = new Set<string>([]);
 
 /** Ausdauer-Art Rudern (Eintragen/Nachtragen) – Etappe R. */
 export const PENDING_ENDURANCE_MODALITIES: ReadonlySet<string> = new Set(['row']);

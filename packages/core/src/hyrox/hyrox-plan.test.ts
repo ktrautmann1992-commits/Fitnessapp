@@ -56,6 +56,7 @@ import {
   hyroxStationSession,
   hyroxStationTravelName,
 } from './stations';
+import { suggestedTrainingSlots } from '../training-schedule';
 import { HYROX_TEXTS_DE } from './texts';
 
 const GENERAL: HardWorkoutLimits = {
@@ -812,5 +813,33 @@ describe('Pläne ohne Hyrox bleiben unverändert', () => {
     expect(sessions.some(isStation)).toBe(false);
     expect(sessions.some(isCombo)).toBe(false);
     expect(isoWeekday(MONDAY)).toBe(1);
+  });
+});
+
+describe('Vorschlag „Deine Trainingstage“ bei Hyrox', () => {
+  it('genau ein Kraft-Tag (Stations-Einheit), Rest Ausdauer (Lauf + Kombi)', () => {
+    for (const experienceLevel of ['beginner', 'advanced', 'competitive'] as const) {
+      for (const cautious of [false, true]) {
+        const s = suggestedTrainingSlots({
+          goalType: 'endurance',
+          discipline: 'hyrox',
+          experienceLevel,
+          ageYears: 30,
+          cautious,
+        });
+        const strength = s?.slots.filter((x) => x.kind !== 'endurance').length;
+        const endurance = s?.slots.filter((x) => x.kind === 'endurance').length ?? 0;
+        expect(strength, `${experienceLevel} ${cautious}`).toBe(1);
+        expect(endurance).toBeGreaterThanOrEqual(2);
+      }
+    }
+    const tenK = suggestedTrainingSlots({
+      goalType: 'endurance',
+      discipline: '10k',
+      experienceLevel: 'advanced',
+      ageYears: 30,
+      cautious: false,
+    });
+    expect(tenK?.slots.filter((x) => x.kind !== 'endurance').length).toBe(2);
   });
 });

@@ -173,6 +173,8 @@ export const deModes = {
       'Heute kürzer und locker (Anstrengung höchstens 3 von 10). Gelenkschonend geht z. B. Rad-Ergometer oder Schwimmen – nur, wenn es sich gut anfühlt.',
     pain_endurance_check:
       'Diese Einheit hat einen festen Ablauf. Mach sie heute nur, wenn sie sich gut anfühlt – sonst lieber locker oder Pause.',
+    pain_combo_run_only:
+      'Schon-Modus: Heute nur den Lauf-Teil der Kombi – die Stationen lässt du weg. Locker bleiben, wenn es zwickt.',
   } satisfies Record<ModeNotice, string>,
   marks: {
     travel: 'für die Reise getauscht',

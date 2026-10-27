@@ -321,7 +321,7 @@ export const de = {
         triathlon_long: 'Triathlon Langdistanz',
         cycling: 'Radfahren',
         swimming: 'Schwimmen',
-        hyrox: 'Hyrox',
+        hyrox: 'Hyrox-Wettkampf',
       },
       targetDate: 'Wettkampf-Datum (optional)',
       targetDateHint:
