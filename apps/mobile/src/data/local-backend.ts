@@ -1191,8 +1191,10 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
         today,
         rows: await overlaid(rows),
         exercises: library.displayExercises ?? library.exercises,
-        // Freie Einheit (A1b): nur freigegebene Übungen (wie der Server).
-        publishedExercises: library.exercises,
+        // Freie Einheit (A1b): nur freigegebene Übungen (wie der Server). Posen der Yoga-/Pilates-/Mobility-Routinen
+        // (Sportarten Stufe 1) sind auf dem Server normale freigegebene Übungen – nur die Plan-Engine kennt sie nicht,
+        // deshalb stehen sie lokal nur in displayExercises.
+        publishedExercises: library.displayExercises ?? library.exercises,
         healthConsentValid: healthConsentStatus(rows, LOCAL_VERSIONS) === 'valid',
         createdToday: db.logCounter?.day === today ? db.logCounter.created : 0,
       });
@@ -1218,7 +1220,9 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
             exercises: payload.exercises.map((e) => {
               const withId = otherExercises.has(e.id) ? { ...e, id: options.newId() } : e;
               // Freie Einheit: Name aus der Bibliothek übernehmen (wie der Server, Wächter S1).
-              const name = library.exercises.get(e.exercise_id)?.name_de;
+              const name = (library.displayExercises ?? library.exercises).get(
+                e.exercise_id,
+              )?.name_de;
               return payload.is_free === true && name
                 ? { ...withId, exercise_name_de: name }
                 : withId;

@@ -114,7 +114,7 @@ test('verbinden (Beispiel-Uhr) → Abgleich → Tagebuch/Puls → Story-Bild ohn
     .getByRole('button', { name: 'Einheiten löschen' })
     .click();
   await expect(page.getByTestId('smartwatch-message')).toContainText(
-    'Getrennt. 5 übernommene Einheiten wurden gelöscht.',
+    'Getrennt. 6 übernommene Einheiten wurden gelöscht.',
   );
   const after = await stored(page);
   expect(after.rows.sessionLogs).toHaveLength(0);

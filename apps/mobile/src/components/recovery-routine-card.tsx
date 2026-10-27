@@ -50,12 +50,12 @@ export function RecoveryRoutineCard({ rows, today }: { rows: UserRows; today: st
         .filter(Boolean)
         .join(' ')}
       note={`${suggestion.title} · ${R.notCounted} ${R.settingsHint}`}
-      noteTestID="overview-recovery-note"
+      noteTestID="overview-recovery-routine-note"
       actionLabel={R.open}
       actionIcon={null}
       onAction={() => router.push(`/workouts/${suggestion.workoutId}` as Href)}
-      actionTestID="overview-recovery-open"
-      testID="overview-recovery"
+      actionTestID="overview-recovery-routine-open"
+      testID="overview-recovery-routine"
     />
   );
 }
