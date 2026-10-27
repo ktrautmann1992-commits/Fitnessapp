@@ -495,6 +495,19 @@ export default function SettingsScreen() {
             />
           </ListGroup>
 
+          {/* Live-Begleitung / Notfallkontakte (docs/PLAN-PHASE-10.md 21): Kontakte nur auf diesem Gerät. */}
+          <SectionLabel>{t.live.contacts.title}</SectionLabel>
+          <ListGroup>
+            <ListRow
+              icon="user"
+              label={t.live.contacts.settingsLink}
+              description={t.live.contacts.settingsText}
+              onPress={() => router.push('/notfallkontakte' as Href)}
+              testID="settings-emergency-contacts"
+              last
+            />
+          </ListGroup>
+
           {/* Wetter zu Läufen (25.10.2026): Abruf bei Open-Meteo nur mit gerundeter Startposition. */}
           <WeatherSettings />
 

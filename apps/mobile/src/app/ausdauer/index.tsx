@@ -27,6 +27,7 @@ import { activitiesFromRows, routePoints } from '@/data/endurance-rows';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { berlinTodayIso } from '@/lib/format';
+import { restoreLiveCompanion } from '@/lib/live-companion';
 import { endRecording, restoreRecording } from '@/lib/recording-controller';
 import {
   parsePersistedRecording,
@@ -70,6 +71,11 @@ export default function EnduranceScreen() {
   const bikeChoice = useBikeChoice(userId);
   const [eBikePicked, setEBikePicked] = useState<boolean | null>(null);
   const eBike = eBikePicked ?? bikeChoice.eBike ?? false;
+
+  // Live-Begleitung nach Neustart: läuft ihre Aufzeichnung nicht mehr, endet sie sofort (Position gelöscht).
+  useEffect(() => {
+    if (userId) void restoreLiveCompanion(app.backend);
+  }, [app.backend, userId]);
 
   // Nach Absturz/Neustart: gesicherte Aufzeichnung anbieten (nur eigenes Konto, nur wenn keine im Speicher läuft).
   useEffect(() => {

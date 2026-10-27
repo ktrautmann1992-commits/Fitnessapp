@@ -36,6 +36,7 @@ import { AreaButton, Icon } from '@/components/design';
 import { BikeTypeChoice, EBikeBadge, useBikeChoice } from '@/components/e-bike';
 import { RouteSketch } from '@/components/endurance';
 import { DarknessNotice } from '@/components/runner';
+import { LiveCompanionPanel, LiveSaveCard } from '@/components/live-companion';
 import { LoopGuideCard } from '@/components/loop-guide-card';
 import { SportRecordingSave, useGpsSportart } from '@/components/sport-recording';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -65,6 +66,7 @@ import {
   resumeActiveRecording,
   stopActiveRecording,
 } from '@/lib/recording-controller';
+import { restoreLiveCompanion } from '@/lib/live-companion';
 import { recordingSession, useRecordingSession } from '@/lib/recording-session';
 import { previousSplitsFor, readVoiceSettings, startVoiceCoach } from '@/lib/voice-coach';
 import { appFont, displayFont } from '@/lib/fonts';
@@ -197,6 +199,11 @@ export default function RecordScreen() {
       });
     })();
   }, [app.backend, app.rows, baseRouteId, phase.kind, recordingId, sport, userId]);
+
+  // Live-Begleitung (docs/PLAN-PHASE-10.md 21): nach Neustart gesicherte Begleitung übernehmen bzw. sofort beenden.
+  useEffect(() => {
+    if (phase.kind === 'live' || phase.kind === 'save') void restoreLiveCompanion(app.backend);
+  }, [app.backend, phase.kind]);
 
   // Uhr für die großen Zahlen (1 s) und Grenze 12 h.
   useEffect(() => {
@@ -452,6 +459,9 @@ export default function RecordScreen() {
           </View>
         </View>
       </View>
+      {/* Live-Begleitung (Banner immer gleich unter den Zahlen) und SOS: nur auf ausdrücklichen Tipp, nur während
+          dieser Aufzeichnung (CLAUDE.md). */}
+      <LiveCompanionPanel sport={sport} />
       <FieldError message={error} />
       {status === 'recording' ? (
         <AreaButton
@@ -650,6 +660,7 @@ function SaveView({
   return (
     <Screen area="ausdauer" icon="run" title={E.save.title} testID="record-save">
       {limitNotice ? <Notice tone="info">{E.live.limit}</Notice> : null}
+      <LiveSaveCard />
       <Card>
         <View style={styles.summaryRow}>
           <RouteSketch points={points} width={120} height={80} testID="record-save-sketch" />
