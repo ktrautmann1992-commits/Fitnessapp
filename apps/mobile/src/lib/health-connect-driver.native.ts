@@ -203,14 +203,10 @@ export const healthConnectDriver: HealthConnectDriver = {
       };
     const has = (type: WearableDataType) => granted.includes(type);
     // Watt nur mit Freigabe „Leistung“ (READ_POWER) und nur am Rudergerät.
-    let powerAllowed = false;
-    try {
-      powerAllowed = hasPowerPermission(
-        (await getGrantedPermissions()) as { accessType: string; recordType: string }[],
-      );
-    } catch {
-      powerAllowed = false;
-    }
+    const powerAllowed = await getGrantedPermissions().then(
+      (list) => hasPowerPermission(list as { accessType: string; recordType: string }[]),
+      () => false,
+    );
     const sessions: HcReadResult['sessions'][number][] = [];
     if (has('exercise')) {
       const records = await readAll<{
