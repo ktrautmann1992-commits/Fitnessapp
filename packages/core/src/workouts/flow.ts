@@ -155,7 +155,7 @@ export function prepareFlowWorkout(
   const items: WorkoutContentItem[] = [];
   workout.exercises.forEach((item, itemIndex) => {
     const exercise = exercises.get(item.exercise_id);
-    let chosen: FlowExercise | null = null;
+    let chosen: FlowExercise | null;
     if (isPoseAllowed(exercise, input)) {
       allowed += 1;
       chosen = exercise ?? null;

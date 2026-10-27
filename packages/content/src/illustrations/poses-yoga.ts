@@ -12,24 +12,6 @@ import type { Limb, PoseSpec, Prop, SidePose } from './rig';
 // Grundhaltungen
 // ---------------------------------------------------------------------------------------------------------------
 
-const ARMS_DOWN = { near: [-86, -88] as Limb, far: [-95, -93] as Limb };
-const LEGS_STAND = { near: [-88, -91, 0] as Limb, far: [-93, -89, 0] as Limb };
-
-function standSide(
-  arms: { near: SidePose['arm']; far: SidePose['arm'] } = ARMS_DOWN,
-  props: Prop[] = [],
-  extra: Partial<PoseSpec> = {},
-): PoseSpec {
-  return {
-    view: 'side',
-    torso: 90,
-    near: { arm: arms.near, leg: LEGS_STAND.near },
-    far: { arm: arms.far, leg: LEGS_STAND.far },
-    props,
-    ...extra,
-  };
-}
-
 function front(
   arms: { near: Limb; far: Limb },
   legs: { near: Limb; far: Limb } = { near: [-88, -90], far: [-92, -90] },

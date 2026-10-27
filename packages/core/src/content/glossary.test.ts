@@ -525,7 +525,13 @@ describe('Echte Inhalte (content/exercises)', () => {
     const red = new Set(
       result.issues.filter((i) => i.severity === 'error' && i.kind === 'exercise').map((i) => i.id),
     );
-    expect(exercises.length).toBe(files.length - red.size);
+    // Posen der Etappe Y stehen nur in displayExercises (isFlowPoseId), im Lexikon trotzdem auffindbar.
+    const poses = [...(repo.displayExercises?.values() ?? [])].filter(
+      (e) => !repo.exercises.has(e.id),
+    );
+    expect(exercises.length + poses.length).toBe(files.length - red.size);
+    const listed = new Set(searchExercises(repo, {}).map((hit) => hit.exercise.id));
+    for (const pose of poses) expect(listed.has(pose.id), pose.id).toBe(true);
     expect(exercises.length).toBeGreaterThan(0);
     const context: GlossaryContext = { library: repo, rules: NORMAL };
     for (const exercise of exercises) {
@@ -568,7 +574,9 @@ describe('Echte Inhalte (content/exercises)', () => {
     const grouped = GLOSSARY_GROUP_IDS.flatMap((group) =>
       ids(searchExercises(repo, { groups: [group] })),
     );
-    expect(grouped.sort()).toEqual(exercises.map((e) => e.id).sort());
+    // Inklusive Posen der Etappe Y (nur in displayExercises).
+    const all = [...(repo.displayExercises ?? repo.exercises).values()];
+    expect(grouped.sort()).toEqual(all.map((e) => e.id).sort());
   });
 
   it('Schwangerschaft: keine erlaubte Übung mit Rückenlage-Merkmal, auch nicht unter den ähnlichen', () => {

@@ -62,9 +62,10 @@ function dbRows(publish: boolean, archived: readonly string[] = []) {
 }
 
 describe('Bibliothek aus der Datenbank', () => {
-  it('Zeilen → Inhalte im Format von packages/core (alle 170 Übungen, 49 Vorlagen)', () => {
+  it('Zeilen → Inhalte im Format von packages/core (alle 220 Übungen, 49 Vorlagen)', () => {
     const content = contentFromDbRows(dbRows(true));
-    expect(content.exercises).toHaveLength(170);
+    // 170 + 50 Posen der Etappe Y (Sportarten Stufe 1).
+    expect(content.exercises).toHaveLength(220);
     expect(content.templates).toHaveLength(49);
     expect(content.templates[0]?.sessions[0]?.exercises.length).toBeGreaterThan(0);
   });
@@ -79,7 +80,11 @@ describe('Bibliothek aus der Datenbank', () => {
   it('Zwischenspeicher: nur Übungen, wieder mit Zod geprüft', () => {
     const library = libraryFromDbRows(dbRows(true));
     const cached = libraryFromCache(JSON.parse(JSON.stringify(libraryToCache(library))));
+    // Posen (isFlowPoseId) nur zur Anzeige – die Plan-Engine sieht weiter 170 Übungen.
     expect(cached?.exercises.size).toBe(170);
+    expect(cached?.displayExercises?.size).toBe(220);
+    expect(library.exercises.size).toBe(170);
+    expect(library.displayExercises?.size).toBe(220);
     expect(cached?.templates).toEqual([]);
     expect(libraryFromCache(null)).toBeNull();
   });

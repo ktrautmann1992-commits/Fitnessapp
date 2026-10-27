@@ -104,6 +104,12 @@ const ICONS = {
   map: [{ d: 'M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3Z' }, { d: 'M9 3v15M15 6v15' }],
   // Auswertung je Lauf: Anstieg und höchster Punkt.
   mountain: [{ d: 'm3 20 6.5-11 4 6 2.5-3.5L21 20Z' }],
+  // Sportarten Stufe 1 (Yoga/Pilates): Figur im Schneidersitz – Kopf, Rumpf, Arme auf den Knien, gekreuzte Beine.
+  lotus: [
+    { cx: 12, cy: 5, r: 2 },
+    { d: 'M12 8v6M7 12l5-2 5 2' },
+    { d: 'M4 18c3-2 5-2 8 0 3-2 5-2 8 0M6 20h12' },
+  ],
   flag: [{ d: 'M5 21V4M5 4h11l-2 4 2 4H5' }],
   scale: [{ x: 3, y: 3, w: 18, h: 18, rx: 4 }, { d: 'M8 10a4 4 0 0 1 8 0M12 10l1.5-2.5' }],
   user: [{ cx: 12, cy: 8, r: 4 }, { d: 'M4 21a8 8 0 0 1 16 0' }],

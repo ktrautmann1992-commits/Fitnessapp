@@ -19,6 +19,7 @@ import { WeatherSettings } from '@/components/route-weather';
 import { VoiceCueSettingsCard } from '@/components/voice-cues';
 import { type IconName, ListGroup, ListRow, SectionLabel } from '@/components/design';
 import { Body, Button, Card, Checkbox, LoadingState, Notice, TextField } from '@/components/ui';
+import { RecoveryRoutineSetting } from '@/components/recovery-routine-card';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
 import { deModes } from '@/i18n/de-training-modes';
@@ -369,6 +370,8 @@ export default function SettingsScreen() {
             />
             <Body muted>{deModes.settings.warmupHint}</Body>
           </Card>
+          {/* Sportarten Stufe 1 (Etappe Y): Vorschlag „Erholungstag: Mobility“ auf „Heute“. */}
+          <RecoveryRoutineSetting />
 
           <SectionLabel>{t.settings.screen}</SectionLabel>
           <Card>

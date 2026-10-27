@@ -2,6 +2,7 @@ import {
   type AppLayout,
   type NavArea,
   normalizeLayout,
+  recoveryRoutineEnabled,
   storedStepGoal,
   toStoredLayout,
 } from '@fitnessapp/core';
@@ -25,6 +26,9 @@ export function useAppLayout(): {
   save: (layout: AppLayout) => Promise<void>;
   stepGoal: number;
   saveStepGoal: (goal: number) => Promise<void>;
+  /** „Erholungs-Routine vorschlagen“ (Sportarten Stufe 1, Standard an). */
+  recoveryRoutine: boolean;
+  saveRecoveryRoutine: (enabled: boolean) => Promise<void>;
 } {
   const app = useApp();
   const stored = app.rows?.appLayout ?? null;
@@ -54,5 +58,18 @@ export function useAppLayout(): {
     (goal: number) => saveAppLayout(toStoredLayout(layout, goal)),
     [saveAppLayout, layout],
   );
-  return { layout, available: AVAILABLE_AREAS, save, stepGoal, saveStepGoal };
+  const recoveryRoutine = recoveryRoutineEnabled(stored);
+  const saveRecoveryRoutine = useCallback(
+    (enabled: boolean) => saveAppLayout(toStoredLayout(layout, ownGoal, enabled)),
+    [saveAppLayout, layout, ownGoal],
+  );
+  return {
+    layout,
+    available: AVAILABLE_AREAS,
+    save,
+    stepGoal,
+    saveStepGoal,
+    recoveryRoutine,
+    saveRecoveryRoutine,
+  };
 }

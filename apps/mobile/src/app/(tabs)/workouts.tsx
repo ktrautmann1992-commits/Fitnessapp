@@ -1,6 +1,7 @@
 import {
   EMPTY_WORKOUT_FILTER,
   filterWorkouts,
+  visibleWorkouts,
   WORKOUT_CATEGORIES,
   WORKOUT_DURATION_FILTERS,
   type WorkoutCategory,
@@ -33,6 +34,7 @@ import { berlinTodayIso } from '@/lib/format';
 import { PENDING_WORKOUT_CATEGORIES, selectable } from '@/lib/sportarten-stufe1';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { useExerciseLookup, useFlowSafety } from '@/state/use-flow-safety';
 import { useWorkoutLibrary } from '@/state/use-workouts';
 
 const STARS = [1, 2, 3, 4, 5] as const;
@@ -52,10 +54,18 @@ export default function WorkoutsScreen() {
   const today = berlinTodayIso();
 
   const workouts = library.kind === 'ready' ? library.workouts : null;
-  const shown = useMemo(
-    () => (workouts ? filterWorkouts(workouts, filter) : []),
-    [workouts, filter],
-  );
+  const flowSafety = useFlowSafety();
+  const lookup = useExerciseLookup();
+  // Sportarten Stufe 1 (Yoga/Pilates/Mobility): Entwürfe nur, wenn die Quelle sie zulässt (Testmodus-Bündel; Supabase
+  // liefert nur freigegebene). Flow-Routinen mit zu wenigen passenden Posen blendet der Sicherheitsfilter aus.
+  const shown = useMemo(() => {
+    if (!workouts) return [];
+    // Lauf-Kraft-Entwürfe hängen weiter nur am Laufplan (nicht in der Liste).
+    const listed = filterWorkouts(workouts, filter, { includeDrafts: true }).filter(
+      (w) => w.status === 'published' || w.format === 'flow',
+    );
+    return lookup ? visibleWorkouts(listed, flowSafety, lookup) : listed;
+  }, [workouts, filter, flowSafety, lookup]);
   const done = useMemo(
     () => workoutsDoneOn(workouts ?? [], app.rows?.sessionLogs ?? [], today),
     [app.rows?.sessionLogs, today, workouts],

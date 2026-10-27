@@ -11,15 +11,11 @@ export const PENDING_DISCIPLINES: ReadonlySet<string> = new Set(['hyrox']);
 /** Ausdauer-Art Rudern (Eintragen/Nachtragen) – Etappe R. */
 export const PENDING_ENDURANCE_MODALITIES: ReadonlySet<string> = new Set(['row']);
 
-/** Workout-Kategorien ohne freigegebene Inhalte – Etappen Y (Yoga, Pilates) und R (Rudern). */
-export const PENDING_WORKOUT_CATEGORIES: ReadonlySet<string> = new Set([
-  'yoga',
-  'pilates',
-  'rowing',
-]);
+/** Workout-Kategorien ohne Inhalte – Etappe R (Rudern). Yoga und Pilates seit Etappe Y wählbar. */
+export const PENDING_WORKOUT_CATEGORIES: ReadonlySet<string> = new Set(['rowing']);
 
-/** Sportart-Einträge Yoga und Pilates – Etappe Y. */
-export const PENDING_SPORTS: ReadonlySet<string> = new Set(['yoga', 'pilates']);
+/** Sportart-Einträge – Yoga und Pilates seit Etappe Y wählbar. */
+export const PENDING_SPORTS: ReadonlySet<string> = new Set([]);
 
 /** Werte ohne die noch nicht wählbaren (Reihenfolge bleibt). */
 export function selectable<T extends string>(

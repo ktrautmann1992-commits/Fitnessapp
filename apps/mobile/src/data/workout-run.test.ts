@@ -29,7 +29,12 @@ async function setup() {
     if (!workout) throw new Error(`Workout ${id} fehlt`);
     return workout;
   };
-  return { ...s, exercises: library.exercises as ReadonlyMap<string, Exercise>, workouts, find };
+  // Inklusive Posen der Flow-Routinen (Sportarten Stufe 1: nur in displayExercises).
+  const exercises = (library.displayExercises ?? library.exercises) as ReadonlyMap<
+    string,
+    Exercise
+  >;
+  return { ...s, exercises, workouts, find };
 }
 
 /** Lauf bis zum Ende: Zeitübungen laufen ab, Übungen nach Wiederholungen werden sofort abgehakt. */
@@ -48,13 +53,15 @@ function runToEnd(active: ReturnType<typeof startActiveRun>) {
 }
 
 describe('Workout-Bibliothek im Testmodus', () => {
-  it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand 20–30) plus Lauf-Kraft-Entwürfe', async () => {
+  it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand 20–30) plus Lauf-Kraft- und Flow-Entwürfe', async () => {
     const s = await setup();
     const published = s.workouts.filter((w) => w.status === 'published');
     expect(published.length).toBeGreaterThanOrEqual(20);
     expect(published.length).toBeLessThanOrEqual(30);
     expect(
-      s.workouts.filter((w) => w.status === 'draft').every((w) => w.category === 'run_strength'),
+      s.workouts
+        .filter((w) => w.status === 'draft')
+        .every((w) => w.category === 'run_strength' || w.format === 'flow'),
     ).toBe(true);
     expect(new Set(s.workouts.map((w) => w.difficulty))).toEqual(new Set([1, 2, 3, 4, 5]));
     expect(s.workouts.some((w) => w.equipment_ids.length === 0)).toBe(true);

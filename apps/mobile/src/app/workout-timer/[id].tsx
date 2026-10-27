@@ -25,6 +25,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LiveRegion } from '@/components/calendar';
+import { FlowPlayer } from '@/components/flow-player';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { kcalFor, SessionKcalLine, useSessionKcalContext } from '@/components/session-kcal';
 import {
@@ -41,6 +42,7 @@ import {
 import { newId } from '@/data/create-backend';
 import { activeRunStore, workoutLogDraft } from '@/data/workout-run';
 import { t } from '@/i18n';
+import { deYoga } from '@/i18n/de-yoga';
 import { berlinTodayIso } from '@/lib/format';
 import { INTERVAL_TIMER_AWAKE_TAG, useScreenAwake } from '@/lib/keep-awake';
 import { useThemeColors } from '@/lib/theme';
@@ -54,6 +56,7 @@ import {
 } from '@/lib/workout-timer-format';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { useExerciseLookup } from '@/state/use-flow-safety';
 import { useActiveWorkoutRun, useWorkoutLibrary } from '@/state/use-workouts';
 import { Text } from '@/components/text';
 
@@ -96,9 +99,12 @@ export default function WorkoutTimerScreen() {
     void ensureLibrary();
   }, [ensureLibrary]);
 
-  const workout: Workout | undefined =
-    library.kind === 'ready' ? library.workouts.find((w) => w.id === params.id) : undefined;
   const run = active && active.workoutId === params.id ? active : null;
+  // Flow (Sportarten Stufe 1): der Lauf trägt die für die Person angepasste Routine (Posen getauscht/entfallen).
+  const workout: Workout | undefined =
+    library.kind === 'ready'
+      ? (run?.workout ?? library.workouts.find((w) => w.id === params.id))
+      : undefined;
   const computed = useMemo(
     () => (run ? workoutRunView(run.steps, run.run, now) : null),
     [run, now],
@@ -124,7 +130,8 @@ export default function WorkoutTimerScreen() {
   // Bildschirm bleibt an, solange der Timer läuft (eigener Tag, unabhängig von der Einstellung im Training).
   useScreenAwake(run !== null && !finished, INTERVAL_TIMER_AWAKE_TAG);
 
-  const exercises = app.library.kind === 'ready' ? app.library.library.exercises : null;
+  // Inklusive Posen der Yoga-/Pilates-/Mobility-Routinen (nur in displayExercises).
+  const exercises = useExerciseLookup();
   const names = useMemo(() => exercises ?? new Map(), [exercises]);
 
   // Schrittwechsel: Ton/Vibration und Ansage.
@@ -292,7 +299,7 @@ export default function WorkoutTimerScreen() {
         <Body testID="workout-finish-summary">
           {t.workouts.finish.summary(summary.workDone, summary.workTotal, minutes)}
         </Body>
-        {workout.format !== 'sets_reps' ? (
+        {workout.format !== 'sets_reps' && workout.format !== 'flow' ? (
           <Body testID="workout-finish-rounds">
             {t.workouts.finish.rounds(summary.roundsCompleted, summary.rounds)}
           </Body>
@@ -365,6 +372,7 @@ export default function WorkoutTimerScreen() {
   const next = view.nextWork;
   // Design 20.10.2026: Zeitanzeige immer auf dunkler Fläche (groß, kontrastreich); Arbeit violett, Pause grün –
   // jeweils mit Wort („Arbeit“/„Pause“), nie nur über die Farbe.
+  const isFlow = workout.format === 'flow';
   const box = heroColors.light;
   const accent = isWork ? areaColors.dark.workouts.icon : areaColors.dark.ernaehrung.icon;
   const frame = isWork ? areaColors.light.workouts.strong : areaColors.light.ernaehrung.strong;
@@ -391,7 +399,15 @@ export default function WorkoutTimerScreen() {
           <View style={styles.row}>
             <View style={styles.cell}>
               <Button
-                label={paused ? t.workouts.timer.resume : t.workouts.timer.pause}
+                label={
+                  isFlow
+                    ? paused
+                      ? deYoga.player.resume
+                      : deYoga.player.pause
+                    : paused
+                      ? t.workouts.timer.resume
+                      : t.workouts.timer.pause
+                }
                 variant="secondary"
                 onPress={() =>
                   update((steps, state, at) =>
@@ -403,7 +419,13 @@ export default function WorkoutTimerScreen() {
             </View>
             <View style={styles.cell}>
               <Button
-                label={isWork ? t.workouts.timer.skip : t.workouts.timer.skipRest}
+                label={
+                  isWork
+                    ? isFlow
+                      ? deYoga.player.skip
+                      : t.workouts.timer.skip
+                    : t.workouts.timer.skipRest
+                }
                 variant="secondary"
                 onPress={() => update(isWork ? skipWorkoutStep : completeWorkoutStep)}
                 testID="workout-timer-skip"
@@ -420,55 +442,62 @@ export default function WorkoutTimerScreen() {
       }
     >
       <LiveRegion text={live.text} version={live.version} />
-      <Body muted testID="workout-timer-progress">
-        {`${passText(workStep ?? next, view)} · ${t.workouts.timer.progress(view.workDone, view.workTotal)}`}
-      </Body>
-      <View
-        style={[styles.timerBox, { borderColor: frame, backgroundColor: box.background }]}
-        testID="workout-timer-box"
-      >
-        <Text style={[styles.stepLabel, { color: accent }]} testID="workout-timer-kind">
-          {step?.kind === 'work'
-            ? t.workouts.timer.work
-            : step?.kind === 'prepare'
-              ? t.workouts.timer.prepare
-              : t.workouts.timer.rest}
-        </Text>
-        <Text style={[styles.stepTitle, { color: box.text }]} testID="workout-timer-step">
-          {stepTitle(step, names)}
-        </Text>
-        {view.remainingS !== null ? (
-          <Text
-            style={[styles.countdown, { color: box.text }]}
-            accessibilityLabel={t.workouts.timer.remaining(view.remainingS)}
-            testID="workout-timer-remaining"
-          >
-            {clockText(view.remainingS)}
+      {isFlow ? <FlowPlayer workout={workout} view={view} names={names} /> : null}
+      {!isFlow ? (
+        <Body muted testID="workout-timer-progress">
+          {`${passText(workStep ?? next, view)} · ${t.workouts.timer.progress(view.workDone, view.workTotal)}`}
+        </Body>
+      ) : null}
+      {!isFlow ? (
+        <View
+          style={[styles.timerBox, { borderColor: frame, backgroundColor: box.background }]}
+          testID="workout-timer-box"
+        >
+          <Text style={[styles.stepLabel, { color: accent }]} testID="workout-timer-kind">
+            {step?.kind === 'work'
+              ? t.workouts.timer.work
+              : step?.kind === 'prepare'
+                ? t.workouts.timer.prepare
+                : t.workouts.timer.rest}
           </Text>
-        ) : workStep ? (
-          <Text style={[styles.reps, { color: box.text }]} testID="workout-timer-reps">
-            {doseText(workStep, names)}
+          <Text style={[styles.stepTitle, { color: box.text }]} testID="workout-timer-step">
+            {stepTitle(step, names)}
           </Text>
-        ) : null}
-        {paused ? (
-          <Text
-            style={[styles.paused, { color: brandColors.signal }]}
-            testID="workout-timer-paused"
-          >
-            {t.workouts.timer.paused}
-          </Text>
-        ) : null}
-      </View>
-      <Card>
-        <Body muted>{t.workouts.timer.next}</Body>
-        {next ? (
-          <Body testID="workout-timer-next">
-            {`${stepTitle(next, names)} · ${doseText(next, names)}`}
-          </Body>
-        ) : (
-          <Body testID="workout-timer-next">{t.workouts.timer.nextNone}</Body>
-        )}
-      </Card>
+          {view.remainingS !== null ? (
+            <Text
+              style={[styles.countdown, { color: box.text }]}
+              accessibilityLabel={t.workouts.timer.remaining(view.remainingS)}
+              testID="workout-timer-remaining"
+            >
+              {clockText(view.remainingS)}
+            </Text>
+          ) : workStep ? (
+            <Text style={[styles.reps, { color: box.text }]} testID="workout-timer-reps">
+              {doseText(workStep, names)}
+            </Text>
+          ) : null}
+          {paused ? (
+            <Text
+              style={[styles.paused, { color: brandColors.signal }]}
+              testID="workout-timer-paused"
+            >
+              {t.workouts.timer.paused}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
+      {!isFlow ? (
+        <Card>
+          <Body muted>{t.workouts.timer.next}</Body>
+          {next ? (
+            <Body testID="workout-timer-next">
+              {`${stepTitle(next, names)} · ${doseText(next, names)}`}
+            </Body>
+          ) : (
+            <Body testID="workout-timer-next">{t.workouts.timer.nextNone}</Body>
+          )}
+        </Card>
+      ) : null}
       <Checkbox
         label={t.workouts.timer.signals}
         checked={signals.enabled}
