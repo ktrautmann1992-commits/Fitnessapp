@@ -9,9 +9,6 @@ export const deEatingOut = {
     'Typische Gerichte aus Restaurant, Imbiss, Kantine, Bäckerei, Café und Fast Food. Die Werte sind Schätzungen für eine übliche Portion – berechnet aus unserem Lebensmittel-Katalog.',
   estimateBadge: 'Schätzwert',
   estimateA11y: 'Schätzwert – typische Portion, kann deutlich abweichen',
-  draftBadge: 'Entwurf',
-  draftA11y: 'Entwurf – noch nicht geprüft',
-  draftNote: 'Testmodus: Diese Gerichte sind Entwürfe und noch nicht von uns geprüft.',
   loggedAs:
     'Im Tagebuch steht das Gericht als „Auswärts gegessen“ mit den ca.-Werten – den Namen speichern wir nicht.',
   categoryLabel: 'Wo hast du gegessen?',
@@ -37,7 +34,7 @@ export const deEatingOut = {
   saved: (name: string) => `Eingetragen: ${name} (Schätzwert).`,
   empty: 'Kein Gericht gefunden. Versuch einen anderen Namen oder trag es schnell selbst ein.',
   noneAvailable:
-    'Die Gerichte für unterwegs werden gerade von uns geprüft und kommen bald. Bis dahin kannst du „Auswärts gegessen“ über „Schnell“ eintragen.',
+    'Die Gerichte für unterwegs kommen bald. Bis dahin kannst du „Auswärts gegessen“ über „Schnell“ eintragen.',
   toQuick: 'Selbst schätzen (Schnell)',
   picksLocal:
     'Favoriten und „Zuletzt“ merkt sich nur dieses Gerät (nur die Gerichte, keine Uhrzeit).',

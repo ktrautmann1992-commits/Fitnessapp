@@ -54,8 +54,7 @@ const card = (page: Page, id: string) => page.getByTestId(`workout-card-${id}`);
 
 test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({ page }) => {
   await setup(page);
-  // 27 freigegebene + 10 Rudern-Entwürfe (Etappe R) + 14 Yoga-/Pilates-/Mobility-Entwürfe (Etappe Y), im Testmodus als
-  // „Testinhalt“ in der Liste; ohne Gesundheits-Check ist
+  // 51 freigegebene Workouts (davon 10 Rudern, 14 Yoga/Pilates/Mobility – freigegeben 27.10.2026); ohne Gesundheits-Check ist
   // „Sanft in den Morgen“ ausgeblendet (zu viele Umkehrhaltungen für den vorsichtigen Plan).
   await expect(count(page)).toHaveText('51 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
@@ -106,9 +105,9 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
     'aria-label',
     'Schwierigkeit 2 von 5 Sternen: eher leicht',
   );
-  await expect(page.getByTestId('workout-testphase')).toHaveText(
-    'Testphase – noch nicht fachlich geprüft',
-  );
+  // Kein Testphase-/Testinhalt-Hinweis mehr (privater Nutzerkreis, Gründer-Entscheidung 27.10.2026).
+  await expect(page.getByTestId('workout-testphase')).toHaveCount(0);
+  await expect(page.getByTestId('workout-test-content')).toHaveCount(0);
   await expect(page.getByTestId('workout-safety-warmup')).toBeVisible();
   await expect(page.getByTestId('workout-exercises')).toContainText('1. Dead Bug');
 
@@ -214,7 +213,6 @@ test('Yoga (Flow): Stuhl-Yoga mit Seitenwechsel, Pose überspringen; Kategorie Y
   await expect(card(page, 'yoga-sanft-in-den-morgen')).toHaveCount(0);
   await card(page, 'yoga-stuhl').click();
   await heading(page, 'Stuhl-Yoga');
-  await expect(page.getByTestId('workout-test-content')).toBeVisible();
   await expect(page.getByTestId('workout-exercises')).toContainText('je Seite (rechts / links)');
 
   await page.getByTestId('workout-start').click();

@@ -16,8 +16,6 @@ export const deWorkouts = {
   intro:
     'Fertige Workouts mit Timer – einzeln machen, wann du willst. Nach dem Abschluss steht das Workout in deinem Tagebuch am heutigen Tag.',
   more: 'Workouts',
-  testPhase: 'Testphase – noch nicht fachlich geprüft',
-  testContent: 'Testinhalt – Entwurf, noch nicht freigegeben',
   offlineCached: 'Offline: gespeicherte Workout-Liste.',
   loading: 'Workouts werden geladen …',
   loadFailed: 'Die Workouts konnten nicht geladen werden.',

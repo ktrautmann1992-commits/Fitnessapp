@@ -596,26 +596,23 @@ function recipeSection(flow: PageFlow, group: RecipeGroup, foods: FoodLookup): v
     };
     head.push([description, blockMm(description)]);
   }
-  // Kennzeichen wie in der App (contentReviewMark, Wächter Testphase M1): KI-Entwurf bzw. Testphase (freigegeben, ohne
-  // Fachprüfung – auch von Hand erfasste alpha5-Rezepte). Andere Entwürfe: Allergen-Hinweis unten.
-  const reviewMark = contentReviewMark(recipe);
-  if (reviewMark === 'ai_draft' || reviewMark === 'testphase') {
+  // Kennzeichen wie in der App (contentReviewMark): nur KI-Entwurf. Freigegebene Rezepte ohne Kennzeichen (privater
+  // Nutzerkreis, Gründer-Entscheidung 27.10.2026). Andere Entwürfe: Allergen-Hinweis unten.
+  if (contentReviewMark(recipe) === 'ai_draft') {
     const mark: PrintBlock = {
       type: 'paragraph',
       muted: true,
-      text: label(reviewMark === 'ai_draft' ? 'recipe.mark.aiDraft' : 'recipe.mark.testphase'),
+      text: label('recipe.mark.aiDraft'),
     };
     head.push([mark, blockMm(mark)]);
   }
-  // Allergen-Hinweis (16 B (i)); Testphase wie in der App auch ohne Entwurf (Wächter M2, sichere Variante).
+  // Allergen-Hinweis (16 B (i)) nur bei Entwürfen.
   const isDraft = first.meal.recipeStatus === 'draft' || recipe.status === 'draft';
-  if (isDraft || reviewMark === 'testphase') {
+  if (isDraft) {
     const warning: PrintBlock = {
       type: 'notice',
       title: label('nutrition.notice.title'),
-      text: label(
-        isDraft ? 'nutrition.notice.draftAllergens' : 'nutrition.notice.testphaseAllergens',
-      ),
+      text: label('nutrition.notice.draftAllergens'),
     };
     head.push([warning, blockMm(warning)]);
   }
@@ -798,10 +795,6 @@ export function buildNutritionPlanDocument(
   const isDraftGroup = (g: (typeof groups)[number]) =>
     g.recipe.status === 'draft' || g.uses.some((u) => u.meal.recipeStatus === 'draft');
   const hasDraft = groups.some(isDraftGroup);
-  // Testphase (freigegeben ohne Fachprüfung): eigener Allergen-Hinweis auf dem Deckblatt (Wächter M2).
-  const hasTestphase = groups.some(
-    (g) => !isDraftGroup(g) && contentReviewMark(g.recipe) === 'testphase',
-  );
 
   const items: { label: PrintText; value: PrintText }[] = [];
   if (options.includeName && options.name) {
@@ -829,15 +822,6 @@ export function buildNutritionPlanDocument(
             type: 'notice',
             title: label('nutrition.notice.title'),
             text: label('nutrition.notice.draftAllergens'),
-          } as const,
-        ]
-      : []),
-    ...(hasTestphase
-      ? [
-          {
-            type: 'notice',
-            title: label('nutrition.notice.title'),
-            text: label('nutrition.notice.testphaseAllergens'),
           } as const,
         ]
       : []),

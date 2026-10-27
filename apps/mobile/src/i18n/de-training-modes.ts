@@ -204,7 +204,6 @@ export const deModes = {
     half_reps: 'ruhig, halbe Wiederholungen',
     fallbackWarmup: 'Aufwärmen laut Plan',
     fallbackCooldown: 'Cool-down laut Plan',
-    draft: 'Testinhalt',
     stretchNote: 'Ruhig atmen, nicht wippen.',
   },
 } as const;

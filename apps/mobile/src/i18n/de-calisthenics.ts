@@ -60,7 +60,7 @@ export const deCalisthenics = {
         `Tipp: Übe eine Weile die vorige Stufe (${name}) und komm dann zurück.`,
     },
     locks: {
-      missing_content: 'Übung wird noch fachlich geprüft',
+      missing_content: 'Übung noch nicht verfügbar',
       safety_rules: 'Nach deinen Plan-Regeln nicht vorgesehen',
       age: 'Ab 65 Jahren bzw. beim Ziel „Fit im Alter“ nicht vorgesehen',
       experience: 'Erst für Fortgeschrittene',
@@ -75,9 +75,7 @@ export const deCalisthenics = {
     stageA11y: (n: number, total: number, name: string, role: string) =>
       `Stufe ${n} von ${total}: ${name}, ${role}`,
     guide: 'Anleitung',
-    testContent: 'Testinhalt – noch nicht fachlich geprüft',
-    empty:
-      'Für die Skill-Pfade fehlen noch freigegebene Calisthenics-Übungen. Sie werden gerade fachlich geprüft.',
+    empty: 'Für die Skill-Pfade fehlen noch Calisthenics-Übungen. Sie kommen bald.',
     loadError: 'Die Übungen konnten nicht geladen werden.',
     retry: 'Erneut versuchen',
     entry: 'Skill-Pfade',

@@ -24,7 +24,6 @@ export default function LicensesScreen() {
         <Button label={t.foodLog.done} variant="secondary" onPress={back} testID="licenses-done" />
       }
     >
-      <Body muted>{L.draft}</Body>
       <Heading level={2}>{L.blsTitle}</Heading>
       <Card>
         <Body testID="licenses-bls">{L.bls}</Body>
