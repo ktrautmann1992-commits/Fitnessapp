@@ -1,0 +1,52 @@
+{
+  "id": "tomatenketchup",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Tomatenketchup",
+  "aliases_de": [],
+  "shopping_category": "oils_vinegar_sauces",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 98,
+    "protein_g": 1.4,
+    "carbs_g": 21.16,
+    "sugar_g": 20.82,
+    "fat_g": 0.1,
+    "sat_fat_g": 0.032,
+    "fiber_g": 1.81,
+    "salt_g": 1.9,
+    "organic_acids_g": 1.185,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "R141100",
+    "name": "Tomatenketchup",
+    "category": "spices_sauces",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-27"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

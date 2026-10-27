@@ -1,0 +1,52 @@
+{
+  "id": "pistazienkerne-ungesalzen",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Pistazienkerne (ungesalzen)",
+  "aliases_de": [],
+  "shopping_category": "nuts_seeds_dried_fruit",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 599,
+    "protein_g": 20.802,
+    "carbs_g": 7.6,
+    "sugar_g": 6.62,
+    "fat_g": 51.6,
+    "sat_fat_g": 6.139,
+    "fiber_g": 10.61,
+    "salt_g": 0.7285,
+    "organic_acids_g": 0.00055,
+    "alcohol_g": 0,
+    "polyols_g": 0.022
+  },
+  "units": {},
+  "groups": ["tree_nuts"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "H250100",
+    "name": "Pistazie",
+    "category": "nuts_seeds",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-27"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
