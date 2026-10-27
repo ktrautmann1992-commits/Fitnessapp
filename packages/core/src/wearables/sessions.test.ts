@@ -42,7 +42,8 @@ describe('mapExerciseType', () => {
 
   it('Rest → Sonstige mit deutschem Titel; unbekannte Arten nie verworfen', () => {
     expect(mapExerciseType(83)).toEqual({ group: 'other', nameDe: 'Yoga' });
-    expect(mapExerciseType(37)).toEqual({ group: 'other', nameDe: 'Wandern' });
+    // Sportarten Stufe 1 · Etappe W: Wandern ist jetzt Gehen mit walk_kind (hiking/hiking.test.ts).
+    expect(mapExerciseType(68)).toEqual({ group: 'other', nameDe: 'Treppensteigen' });
     expect(mapExerciseType(76)).toEqual({ group: 'other', nameDe: 'Tennis' });
     expect(mapExerciseType(0)).toEqual({ group: 'other', nameDe: OTHER_TITLE });
     expect(mapExerciseType(999)).toEqual({ group: 'other', nameDe: OTHER_TITLE });

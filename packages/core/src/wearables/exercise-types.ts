@@ -16,6 +16,14 @@ import type { WearableSessionGroup } from './schema';
 
 const RUN = [56, 57];
 const WALK = [79];
+/**
+ * Sportarten Stufe 1 · Etappe W: Wandern 37 → Gehen/Wanderung, Schneeschuhwandern 63 → Gehen/Bergwanderung
+ * (walk_kind; Name der freien Einheit je Art wie der Server, FREE_SESSION.names.walkKinds).
+ */
+const HIKE_KINDS: Readonly<Record<number, 'hike' | 'mountain_hike'>> = {
+  37: 'hike',
+  63: 'mountain_hike',
+};
 const BIKE = [8, 9];
 const SWIM = [73, 74];
 /** Krafttraining (70), Gewichtheben (81), Calisthenics (13) und einzelne Kraftübungen. */
@@ -78,6 +86,8 @@ export interface MappedExerciseType {
   readonly group: WearableSessionGroup;
   /** Name im Tagebuch: bei Ausdauer/Kraft der feste Name der freien Einheit (A1b), sonst der deutsche Titel. */
   readonly nameDe: string;
+  /** Art der Geh-Einheit (nur Wandern/Schneeschuhwandern); fehlt = Gehen. */
+  readonly walkKind?: 'hike' | 'mountain_hike';
 }
 
 /** Health-Connect-Trainingsart → Gruppe und Name im Tagebuch. */
@@ -85,6 +95,8 @@ export function mapExerciseType(hcType: number): MappedExerciseType {
   const names = FREE_SESSION.names;
   if (RUN.includes(hcType)) return { group: 'run', nameDe: names.endurance.run };
   if (WALK.includes(hcType)) return { group: 'walk', nameDe: names.endurance.walk };
+  const hike = HIKE_KINDS[hcType];
+  if (hike) return { group: 'walk', nameDe: names.walkKinds[hike], walkKind: hike };
   if (BIKE.includes(hcType)) return { group: 'bike', nameDe: names.endurance.bike };
   if (SWIM.includes(hcType)) return { group: 'swim', nameDe: names.endurance.swim };
   if (STRENGTH.includes(hcType)) return { group: 'strength', nameDe: names.strength };

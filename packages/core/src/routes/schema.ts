@@ -18,6 +18,8 @@ import {
   WALK_KINDS,
   type WalkKind,
 } from '../enums';
+import { hikingElevationOfSegments } from '../hiking/elevation';
+import { sacGradeToStore, walkKindToStore } from '../hiking/walk-kind';
 import { COMPETITION_NAME_TRIM_CLASS } from '../plan/competition-record';
 import {
   type ElevationProfilePoint,
@@ -290,6 +292,9 @@ export interface TrackSummary {
   readonly speedWarning: boolean;
   /** Höhenprofil (höchstens ROUTE_ELEVATION_PROFILE.maxPoints Stützpunkte); [] = keine Höhen. */
   readonly elevationProfile: ElevationProfilePoint[];
+  /** Sportarten Stufe 1 (Wandern): Abstieg und höchster Punkt in m, geglättet wie der Anstieg; null = unbekannt. */
+  readonly elevationLossM: number | null;
+  readonly maxAltitudeM: number | null;
   /** Vereinfachte Linie (höchstens TRACKED_ROUTE_LIMITS.maxPoints Punkte). */
   readonly polyline: string;
   readonly pointCount: number;
@@ -361,6 +366,7 @@ export function summarizeRecording(
     kmSplits: kmSplitsFromMotion(motion),
     speedWarning,
     elevationProfile: elevationProfileOfSegments(filtered, sport),
+    ...hikingElevationOfSegments(filtered, sport),
     polyline,
     pointCount: simplified.length,
     bbox: boundingBox(decodePolyline(polyline) ?? []),
@@ -382,6 +388,10 @@ export interface TrackedRouteDetails {
   readonly source: (typeof APP_ROUTE_SOURCES)[number];
   /** E-Bike (nur beim Rad wirksam); fehlt = normales Rad. */
   readonly eBike?: boolean;
+  /** Sportarten Stufe 1: Art der Geh-Einheit (nur beim Gehen wirksam); fehlt/„walk“ = Gehen. */
+  readonly walkKind?: WalkKind | null;
+  /** SAC-Stufe (nur Wandern/Bergwandern, gespeichert nur 1–3); fehlt = keine Angabe. */
+  readonly sacGrade?: number | null;
 }
 
 /**
@@ -416,8 +426,25 @@ export function toTrackedRoutePayload(
     elevation_profile: summary.elevationProfile.length >= 2 ? summary.elevationProfile : null,
     // Nur gesendet, wenn wahr (fehlt = normales Rad).
     ...(summary.sport === 'bike' && details.eBike === true ? { e_bike: true } : {}),
+    // Sportarten Stufe 1 (Wandern): nur beim Gehen – Abstieg/höchster Punkt für die Hinweise, Art und SAC-Stufe nur
+    // bei Wandern/Bergwandern. Läufe und Radfahrten bleiben byte-gleich.
+    ...(summary.sport === 'walk' ? walkRouteFields(summary, details) : {}),
   });
   return parsed.success ? parsed.data : null;
+}
+
+function walkRouteFields(
+  summary: TrackSummary,
+  details: TrackedRouteDetails,
+): Partial<TrackedRoutePayload> {
+  const kind = walkKindToStore('walk', details.walkKind);
+  const sac = sacGradeToStore(kind, details.sacGrade);
+  return {
+    ...(summary.elevationLossM !== null ? { elevation_loss_m: summary.elevationLossM } : {}),
+    ...(summary.maxAltitudeM !== null ? { max_altitude_m: summary.maxAltitudeM } : {}),
+    ...(kind !== null ? { walk_kind: kind } : {}),
+    ...(sac !== null ? { sac_grade: sac } : {}),
+  };
 }
 
 /** Was vom Tagebuch-Eintrag für den Abgleich mit der Strecke zählt. */

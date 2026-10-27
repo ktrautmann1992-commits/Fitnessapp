@@ -13,7 +13,7 @@ import {
   TRAINING_MET,
 } from '../constants';
 import { daysBetween } from '../dates';
-import type { ActivityLevel, Sex } from '../enums';
+import type { ActivityLevel, Sex, WalkKind } from '../enums';
 import { bodyMassIndex, type DatedValue } from './body-data';
 import { sexSchema } from '../validation';
 import { activityLevelSchema, type NutritionSession, nutritionSessionSchema } from './schemas';
@@ -116,6 +116,11 @@ export function metForSession(
   session: Pick<NutritionSession, 'kind' | 'enduranceModality' | 'effortTarget'> & {
     /** E-Bike (nur bei Sportart Rad wirksam, sonst ignoriert); fehlt = normales Rad. */
     readonly eBike?: boolean;
+    /**
+     * Sportarten Stufe 1: Art der Geh-Einheit (nur bei Gehen wirksam): Wanderung → TRAINING_MET.hike, Bergwanderung →
+     * TRAINING_MET.mountainHike; fehlt/null/`walk` = Gehen.
+     */
+    readonly walkKind?: WalkKind | null;
   },
 ): number {
   if (session.kind === 'strength') return TRAINING_MET.strength;
@@ -123,7 +128,11 @@ export function metForSession(
   const table =
     session.enduranceModality === 'bike' && session.eBike === true
       ? TRAINING_MET.eBike
-      : TRAINING_MET.endurance[session.enduranceModality];
+      : session.enduranceModality === 'walk' && session.walkKind === 'hike'
+        ? TRAINING_MET.hike
+        : session.enduranceModality === 'walk' && session.walkKind === 'mountain_hike'
+          ? TRAINING_MET.mountainHike
+          : TRAINING_MET.endurance[session.enduranceModality];
   if (session.effortTarget === null) return table.fallback;
   return session.effortTarget <= TRAINING_MET.lowEffortMax ? table.low : table.high;
 }

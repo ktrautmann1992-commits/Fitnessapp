@@ -130,6 +130,9 @@ export interface WatchRouteSummary {
   readonly polyline: string;
   readonly elevationProfile: TrackSummary['elevationProfile'];
   readonly pointCount: number;
+  /** Sportarten Stufe 1 (Wandern): Abstieg und höchster Punkt (null = unbekannt); gesendet nur beim Gehen. */
+  readonly elevationLossM?: number | null;
+  readonly maxAltitudeM?: number | null;
 }
 
 export type WatchRouteUnusable =
@@ -208,6 +211,9 @@ export function summarizeWatchRoute(
       polyline: summary.polyline,
       elevationProfile: summary.elevationProfile,
       pointCount: summary.pointCount,
+      ...(sport === 'walk'
+        ? { elevationLossM: summary.elevationLossM, maxAltitudeM: summary.maxAltitudeM }
+        : {}),
     },
   };
 }
@@ -291,6 +297,13 @@ export function wearableRoutePayload(
     polyline: summary.polyline,
     km_splits: summary.kmSplits,
     elevation_profile: summary.elevationProfile.length >= 2 ? summary.elevationProfile : null,
+    // Sportarten Stufe 1: nur beim Gehen (die Art der Geh-Einheit nimmt der Server aus dem Eintrag).
+    ...(summary.sport === 'walk' && summary.elevationLossM != null
+      ? { elevation_loss_m: summary.elevationLossM }
+      : {}),
+    ...(summary.sport === 'walk' && summary.maxAltitudeM != null
+      ? { max_altitude_m: summary.maxAltitudeM }
+      : {}),
   });
   return parsed.success ? parsed.data : null;
 }
