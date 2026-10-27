@@ -210,12 +210,14 @@ export const YOGA_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustration>> 
   'yoga-vorbeuge-stehend': {
     pose: {
       view: 'side',
-      torso: -55,
-      head: -80,
-      near: { arm: [-95, -95, -95], leg: [-70, -100, 0] },
-      far: { arm: [-93, -97, -95], leg: [-73, -98, 0] },
+      // Restpunkte E (27.10.2026): Rücken als klare Schräge vor den Beinen (vorher lag der Rumpf verdeckt auf den
+      // Oberschenkeln), Hände hängen vor den Füßen Richtung Boden.
+      torso: -28,
+      head: -70,
+      near: { arm: [-92, -94, -94], leg: [-80, -98, 0] },
+      far: { arm: [-90, -93, -94], leg: [-82, -97, 0] },
     },
-    alt: 'Ausgangsposition: stehend den Oberkörper nach vorn hängen lassen, Knie gebeugt, Arme und Kopf hängen locker Richtung Boden.',
+    alt: 'Ausgangsposition: stehend aus der Hüfte nach vorn beugen, Knie leicht gebeugt, Arme und Kopf hängen locker Richtung Boden.',
   },
   'yoga-vorbeuge-stuhl': {
     pose: {
@@ -231,10 +233,11 @@ export const YOGA_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustration>> 
   'pilates-abrollen-stehend': {
     pose: {
       view: 'side',
-      torso: -50,
-      head: -85,
-      near: { arm: [-92, -92, -92], leg: [-75, -98, 0] },
-      far: { arm: [-90, -94, -92], leg: [-77, -96, 0] },
+      // Restpunkte E: Rumpf etwas flacher und vor den Beinen, damit das Abrollen lesbar ist.
+      torso: -40,
+      head: -95,
+      near: { arm: [-93, -93, -93], leg: [-78, -100, 0] },
+      far: { arm: [-91, -95, -93], leg: [-80, -98, 0] },
     },
     alt: 'Ausgangsposition: im Stand Wirbel für Wirbel nach vorn abgerollt, Kinn zur Brust, Arme hängen locker, Knie leicht gebeugt.',
   },
