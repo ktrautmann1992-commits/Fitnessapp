@@ -260,8 +260,9 @@ test('Export: Hinweis vor dem Herunterladen, Datei mit Tagebuch, Konto und Einwi
   // + wearable_connections, wearable_sessions, heart_rate_summaries, daily_metrics (Phase 8 Smartwatch)
   // + supplement_screening, user_supplements (Phase 6 SU3/SU4) + recipe_preferences (Rezept-Favoriten 25.10.2026)
   // + pantry_items (Vorratsschrank 25.10.2026) + shoes, shoe_defaults, shoe_assignments (Schuhe 25.10.2026)
-  // + pain_episodes, travel_modes (Trainings-Modi 25.10.2026) + hydration_logs (Trinken, 25.10.2026).
-  expect(Object.keys(file.data)).toHaveLength(58);
+  // + pain_episodes, travel_modes (Trainings-Modi 25.10.2026) + hydration_logs (Trinken, 25.10.2026)
+  // + live_sessions (Live-Begleitung 27.10.2026; im Testmodus leer).
+  expect(Object.keys(file.data)).toHaveLength(59);
   expect(Object.keys(file.data)).toEqual(
     expect.arrayContaining([
       'recipe_preferences',
@@ -272,6 +273,7 @@ test('Export: Hinweis vor dem Herunterladen, Datei mit Tagebuch, Konto und Einwi
       'pain_episodes',
       'travel_modes',
       'hydration_logs',
+      'live_sessions',
       'user_food_products',
       'food_product_lookup_counts',
       'plan_adjustments',
