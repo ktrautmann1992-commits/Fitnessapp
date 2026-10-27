@@ -117,9 +117,27 @@ export function applyStepToAnswers(answers: OnboardingAnswers, save: StepSave): 
     case 'weight_goal':
       return { ...answers, weightGoal: save.weightGoal };
     case 'time_budget':
-      return { ...answers, trainingSchedule: save.schedule };
+      return {
+        ...answers,
+        trainingSchedule: save.schedule,
+        ...(save.gymRowing === undefined
+          ? {}
+          : {
+              equipment: [
+                ...(answers.equipment ?? []).filter((item) => item.location !== 'gym'),
+                ...gymRowingItems(save.gymRowing),
+              ],
+            }),
+      };
     case 'equipment':
-      return { ...answers, equipment: save.items };
+      // Nur Geräte zu Hause – Studio-Angaben (Etappe R: „Im Studio auch rudern“) bleiben erhalten.
+      return {
+        ...answers,
+        equipment: [
+          ...save.items,
+          ...(answers.equipment ?? []).filter((item) => item.location === 'gym'),
+        ],
+      };
     case 'nutrition':
       return { ...answers, nutrition: save.nutrition };
     case 'cooking':
@@ -230,6 +248,11 @@ export function toFoodPreferenceRows(
   return nutrition.foodPreferences
     .filter((p) => (scope === 'intolerance' ? p.kind === 'intolerance' : p.kind !== 'intolerance'))
     .map((p) => ({ user_id: userId, food_group: p.foodGroup, kind: p.kind }));
+}
+
+/** Studio-Geräte zur Angabe „Im Studio auch rudern“ (Etappe R): nur das Rudergerät oder nichts. */
+export function gymRowingItems(enabled: boolean): NonNullable<OnboardingAnswers['equipment']> {
+  return enabled ? [{ equipmentId: 'rowing_machine', location: 'gym', weightsKg: [] }] : [];
 }
 
 export function toUserEquipmentRows(
@@ -371,10 +394,20 @@ export function planStepWrites(save: StepSave, ctx: PlanContext): WriteOp[] {
       return ctx.onboardingCompleted ? ops : [...ops, progressOp];
     }
     case 'time_budget':
-      // Trainingstage + abgeleiteter Ort in goals (der Schritt „Trainingsort“ entfällt).
+      // Trainingstage + abgeleiteter Ort in goals (der Schritt „Trainingsort“ entfällt). Etappe R: geänderte Angabe
+      // „Im Studio auch rudern“ ersetzt die Studio-Geräte (nur rowing_machine oder leer).
       return [
         { kind: 'replace_training_slots', rows: toTrainingSlotRows(userId, save.schedule) },
         { kind: 'upsert_goals', row: toGoalsRow(userId, answers) },
+        ...(save.gymRowing === undefined
+          ? []
+          : [
+              {
+                kind: 'replace_user_equipment' as const,
+                location: 'gym' as const,
+                rows: toUserEquipmentRows(userId, gymRowingItems(save.gymRowing)),
+              },
+            ]),
         progressOp,
       ];
     case 'equipment':

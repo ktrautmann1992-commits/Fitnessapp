@@ -192,3 +192,25 @@ export interface RowingEquipmentItem {
 export function hasRowingMachine(homeEquipment: readonly RowingEquipmentItem[]): boolean {
   return homeEquipment.some((item) => item.equipmentId === R.equipmentId);
 }
+
+/**
+ * Darf der Plan Rudern einplanen? Rudergerät zu Hause ODER die ausdrückliche Angabe „Im Studio auch rudern“
+ * (`gymRowing`, Gründer-Entscheidung 27.10.2026; nie automatisch für alle Studio-Personen).
+ */
+export function rowingAvailable(input: {
+  readonly homeEquipment: readonly RowingEquipmentItem[];
+  readonly gymRowing?: boolean | undefined;
+}): boolean {
+  return input.gymRowing === true || hasRowingMachine(input.homeEquipment);
+}
+
+/** Eine Geräte-Zeile (user_equipment) – Ort und Gerät. */
+export interface RowingEquipmentRow {
+  readonly equipment_id: string;
+  readonly location: string;
+}
+
+/** Angabe „Im Studio auch rudern“ aus den gespeicherten Geräten: Zeile `rowing_machine` mit Ort `gym`. */
+export function gymRowingFromRows(rows: readonly RowingEquipmentRow[]): boolean {
+  return rows.some((row) => row.location === 'gym' && row.equipment_id === R.equipmentId);
+}

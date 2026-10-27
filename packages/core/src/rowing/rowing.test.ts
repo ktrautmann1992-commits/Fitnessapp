@@ -40,7 +40,9 @@ import { makeWorkout } from '../workouts/test-fixtures';
 import { parseRowClock, rowValuesFromInput } from './input';
 import {
   formatRowSplit,
+  gymRowingFromRows,
   hasRowingMachine,
+  rowingAvailable,
   rowIntervalSummary,
   rowMet,
   rowPlausibility,
@@ -673,5 +675,63 @@ describe('Rudern-Workouts in der Liste (Testmodus)', () => {
     expect(
       filterWorkouts(list, { ...EMPTY_WORKOUT_FILTER, category: 'rowing' }).map((w) => w.id),
     ).toEqual(['r-rudern']);
+  });
+});
+
+describe('Im Studio auch rudern (Gründer-Entscheidung 27.10.2026)', () => {
+  const gymSchedule = fixed(
+    [1, 'strength_gym', 60],
+    [2, 'endurance', 30],
+    [4, 'endurance', 30],
+    [6, 'endurance', 40],
+  );
+
+  it('ohne Angabe: Studio plant nie automatisch Rudern (byte-gleich)', () => {
+    const without = plan({ schedule: gymSchedule });
+    expect(rows(without)).toEqual([]);
+    expect(plan({ schedule: gymSchedule, gymRowing: false })).toEqual(without);
+  });
+
+  it('mit Angabe: jede zweite Ausdauer-Einheit Rudern, Minuten wie ohne, Invarianten halten', () => {
+    const without = plan({ schedule: gymSchedule });
+    const withGym = plan({ schedule: gymSchedule, gymRowing: true });
+    expect(endurance(withGym).map((s) => s.estimated_minutes)).toEqual(
+      endurance(without).map((s) => s.estimated_minutes),
+    );
+    expect(rows(withGym).length).toBeGreaterThan(0);
+    endurance(withGym).forEach((s, i) => {
+      expect(s.endurance_modality === 'row').toBe(i % 2 === 1);
+    });
+    const rules = planSafetyRules(person({ schedule: gymSchedule }), MONDAY);
+    expect(
+      checkWeekInvariants(stored(withGym.sessions), {
+        maxLoadWeeks: loadWeeksBeforeDeload('beginner', rules.cautious),
+        planStart: withGym.start_date,
+      }),
+    ).toEqual([]);
+  });
+
+  it('gleiche Ausnahmen: Schwangerschaft, ab 65, ohne Check, mit Disziplin → kein Rudern', () => {
+    for (const extra of [
+      { healthScreening: { flags: ['pregnancy', 'conservative_plan'] as const } },
+      { birthDate: '1950-01-01' },
+      { healthScreening: null },
+      {
+        goalType: 'endurance' as const,
+        discipline: '10k' as const,
+      },
+    ]) {
+      const p = plan({ schedule: gymSchedule, gymRowing: true, ...(extra as object) });
+      expect(rows(p), JSON.stringify(extra)).toEqual([]);
+    }
+  });
+
+  it('Angabe aus den Geräte-Zeilen: nur rowing_machine mit Ort gym', () => {
+    expect(gymRowingFromRows([{ equipment_id: 'rowing_machine', location: 'gym' }])).toBe(true);
+    expect(gymRowingFromRows([{ equipment_id: 'rowing_machine', location: 'home' }])).toBe(false);
+    expect(gymRowingFromRows([{ equipment_id: 'bike_ergometer', location: 'gym' }])).toBe(false);
+    expect(rowingAvailable({ homeEquipment: [], gymRowing: true })).toBe(true);
+    expect(rowingAvailable({ homeEquipment: [] })).toBe(false);
+    expect(rowingAvailable({ homeEquipment: [{ equipmentId: 'rowing_machine' }] })).toBe(true);
   });
 });

@@ -46,7 +46,7 @@ import {
 } from './intensity';
 import type { PlanLibrary } from './content-pool';
 import { loadWeeksBeforeDeload } from './deload';
-import { hasRowingMachine } from '../rowing/metrics';
+import { rowingAvailable } from '../rowing/metrics';
 import { equipmentProfile, isBodyweightOnly } from './equipment-profile';
 import {
   type PlanInputs,
@@ -509,9 +509,9 @@ function generatePlan(
         discipline: inputs.discipline,
         experienceLevel: inputs.experienceLevel,
         rules,
-        // Sportarten Stufe 1 · Etappe R: Rudergerät zu Hause → im Plan ohne Wettkampf und ohne Disziplin jede zweite
-        // Ausdauer-Einheit Rudern.
-        ...(competition === null && hasRowingMachine(inputs.homeEquipment) ? { rowing: true } : {}),
+        // Sportarten Stufe 1 · Etappe R: Rudergerät zu Hause oder ausdrücklich „im Studio auch rudern“ → im Plan ohne
+        // Wettkampf und ohne Disziplin jede zweite Ausdauer-Einheit Rudern.
+        ...(competition === null && rowingAvailable(inputs) ? { rowing: true } : {}),
       },
       rules,
       enduranceWishWeekly: enduranceDays.reduce((sum, d) => sum + d.minutes, 0),

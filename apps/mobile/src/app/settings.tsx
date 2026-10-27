@@ -341,6 +341,18 @@ export default function SettingsScreen() {
             ) : null}
           </ListGroup>
 
+          {/* Etappe R (Gründer-Entscheidung 27.10.2026): „Im Studio auch rudern“ – im Schritt Trainingstage. */}
+          <ListGroup>
+            <ListRow
+              icon="dumbbell"
+              label={t.rowing.gymOption}
+              description={t.rowing.gymSettingsText}
+              onPress={() => router.push('/onboarding/time_budget?edit=1')}
+              testID="settings-gym-rowing"
+              last
+            />
+          </ListGroup>
+
           {/* Trainings-Modi (docs/PLAN-TRAINING-MODI.md): Schon-Modus, Reise-Modus, Aufwärmen & Dehnen. */}
           <SectionLabel>{deModes.settings.section}</SectionLabel>
           <ListGroup>
