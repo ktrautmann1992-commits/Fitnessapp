@@ -2104,7 +2104,8 @@ export const COMPETITION_NUTRITION = {
     // COMPETITION_CYCLING.estimatedSpeedKmh.
     triathlon_sprint: { beginner: 110, advanced: 85, competitive: 70 },
     triathlon_olympic: { beginner: 210, advanced: 165, competitive: 140 },
-    // Sportarten Stufe 1 (Hyrox, docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): VORLÄUFIG – Fachlogik und Werte folgen in Etappe H.
+    // Sportarten Stufe 1 (Hyrox, Etappe H): Orientierung an veröffentlichten Ergebnislisten (Durchschnitt ca. 90 min,
+    // Einsteiger oft 1:45–2:00 h) – unbestätigt, nur für die Ernährung am Renntag.
     hyrox: { beginner: 120, advanced: 90, competitive: 70 },
   },
 } as const;
@@ -3580,8 +3581,10 @@ export const COMPETITION_REQUIRED_PEAK = {
     // keine Zielzeit bei Rad und Triathlon). Rad: je Distanzklasse in COMPETITION_CYCLING.classes.
     triathlon_sprint: { weeklyMinutes: 180, longRunMinutes: 75 },
     triathlon_olympic: { weeklyMinutes: 300, longRunMinutes: 120 },
-    // Sportarten Stufe 1 (Hyrox, docs/PLAN-SPORTARTEN-STUFE-1.md 2.1): VORLÄUFIG – Fachlogik und Werte folgen in Etappe H.
-    hyrox: { weeklyMinutes: 120, longRunMinutes: 60 },
+    // Sportarten Stufe 1 (Hyrox, Etappe H): Ausdauer-Minuten (Lauf + Kombi) wie 10 km „Ankommen“ – Lauf-Anteil 8 km,
+    // Renndauer ca. 1–2 h; langer Lauf 50 min (höchstens 90). So erreichen Einsteiger den Spitzenumfang mit der
+    // 10-%-Kette genau zum Mindestvorlauf von 12 Wochen (Test „Tabelle passt zur Kette“, hyrox-plan.test.ts).
+    hyrox: { weeklyMinutes: 100, longRunMinutes: 50 },
   },
   // Zielzeit nur beim Laufen (WP5: Rad und Triathlon nur „Ankommen“).
   time: {
@@ -3627,7 +3630,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 10,
     triathlon_sprint: 7,
     triathlon_olympic: 10,
-    hyrox: 7, // Stufe 1 (Hyrox): vorläufig, Etappe H
+    hyrox: 7, // Etappe H: Renndauer ca. 1–2 h wie 10 km bis Halbmarathon (Bosquet 2007: 8–14 Tage)
   },
   taperFactors: { 1: [0.7], 2: [0.75, 0.6] },
   raceWeekFactor: 0.4,
@@ -3639,7 +3642,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 3,
     triathlon_sprint: 2,
     triathlon_olympic: 3,
-    hyrox: 2, // Stufe 1 (Hyrox): vorläufig, Etappe H
+    hyrox: 2, // Etappe H: wie 10 km
   },
   buildWeeks: {
     '5k': 2,
@@ -3649,7 +3652,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 4,
     triathlon_sprint: 3,
     triathlon_olympic: 4,
-    hyrox: 3, // Stufe 1 (Hyrox): vorläufig, Etappe H
+    hyrox: 3, // Etappe H: Kombi-Einheiten ab Aufbau (HYROX_PLAN.combo) brauchen Zeit
   },
   recoveryWeeks: {
     '5k': 1,
@@ -3659,7 +3662,7 @@ export const COMPETITION_PERIODIZATION = {
     cycling: 1,
     triathlon_sprint: 1,
     triathlon_olympic: 1,
-    hyrox: 1, // Stufe 1 (Hyrox): vorläufig, Etappe H
+    hyrox: 1, // Etappe H: wie 10 km
   },
   recoveryFactors: [0.5, 0.6],
   restDaysBeforeRace: 1,
@@ -3818,7 +3821,7 @@ export const COMPETITION_INTENSITY = {
       cycling: 6,
       triathlon_sprint: 7,
       triathlon_olympic: 6,
-      hyrox: 7, // Stufe 1 (Hyrox): vorläufig wie 10 km, Etappe H
+      hyrox: 7, // Etappe H: ungenutzt – Hyrox plant kein Renntempo (HYROX_PLAN.runHardTypes)
     },
   },
   hardEffortCap: { general: 8, minor: 7, senior: 6 },
@@ -3863,7 +3866,7 @@ export const COMPETITION_WORKOUTS = {
       cycling: 600,
       triathlon_sprint: 180,
       triathlon_olympic: 300,
-      hyrox: 300, // Stufe 1 (Hyrox): vorläufig wie 10 km, Etappe H
+      hyrox: 300, // Etappe H: ungenutzt (kein Renntempo bei Hyrox)
     },
     restS: 120,
     minReps: 2,
@@ -5825,3 +5828,354 @@ export const RUN_STRENGTH_RULES = {
   minItems: number;
   units: { strength: readonly string[]; drills: string; gentle: string };
 };
+
+// ---------------------------------------------------------------------------------------------------------
+// Sportarten Stufe 1 · Etappe H – Hyrox (docs/PLAN-SPORTARTEN-STUFE-1.md 2.1, 5, 9 Punkt 4; Plan samt Empfehlungen
+// freigegeben 27.10.2026). „Hyrox“ nur beschreibend (Entscheidung 3: kein Logo, kein Anschein einer Kooperation).
+// Alle Werte ohne harte Quelle: PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN (Hyrox-Trainer:in, Entscheidung 12).
+// ---------------------------------------------------------------------------------------------------------
+
+/**
+ * Rennformat (Plan 2.1): 8 × (1 km Laufen + 1 Station), Stationen in Rennreihenfolge (HYROX_STATIONS) mit Menge und
+ * Einheit; Gewichte je Division und Geschlecht in kg (Schlitten inkl. Schlitten, Farmer's Carry je Hand), Wall-Ball-
+ * Zielhöhe in m. Doubles und Staffel nutzen in der App die Open-Gewichte (Entscheidung 2: nur Angabe, gleicher Plan).
+ * Quelle: HYROX Rulebook Singles, Saison 25/26 (hyrox.com/rulebook, PDF „25_26_HYROX_RulebookSingles_EN“, Tabelle der
+ * Divisionen) – übernommen aus der Tabellenwiedergabe der Websuche am 27.10.2026; das PDF selbst war aus der Sitzung
+ * nicht abrufbar. Deshalb ALLE Gewichte und Mengen „unbestätigt“ bis zum Abgleich mit dem Original der laufenden Saison
+ * 26/27. Besonders unbestätigt: Wall Balls Women Open (eine Quelle nennt für 25/26 75 statt 100 Wiederholungen).
+ * Mindestalter laut Rulebook 16 Jahre am Renntag (= MIN_AGE_YEARS).
+ * `estimatedFullS`: grobe Dauer einer ganzen Station für Freizeit-Starter (nur für die Zeit-Schritte der Kombi-Einheit,
+ * nie als Ziel angezeigt) – Orientierung an veröffentlichten Durchschnitts-Teilzeiten, PRODUKTENTSCHEIDUNG, unbestätigt.
+ */
+export const HYROX_FORMAT = {
+  rulebookSeason: '25/26',
+  rounds: 8,
+  runM: 1000,
+  minAgeYears: 16,
+  stations: {
+    ski_erg: { amount: 1000, unit: 'm', estimatedFullS: 300 },
+    sled_push: { amount: 50, unit: 'm', estimatedFullS: 180 },
+    sled_pull: { amount: 50, unit: 'm', estimatedFullS: 210 },
+    burpee_broad_jumps: { amount: 80, unit: 'm', estimatedFullS: 270 },
+    rowing: { amount: 1000, unit: 'm', estimatedFullS: 300 },
+    farmers_carry: { amount: 200, unit: 'm', estimatedFullS: 120 },
+    sandbag_lunges: { amount: 100, unit: 'm', estimatedFullS: 270 },
+    wall_balls: { amount: 100, unit: 'reps', estimatedFullS: 330 },
+  },
+  // Rulebook 25/26 (unbestätigt): Open Women/Men, Pro Women/Men. Ohne Gewicht: SkiErg, Burpee-Weitsprünge, Rudern.
+  weightsKg: {
+    sled_push: { open: { female: 102, male: 152 }, pro: { female: 152, male: 202 } },
+    sled_pull: { open: { female: 78, male: 103 }, pro: { female: 103, male: 153 } },
+    farmers_carry: { open: { female: 16, male: 24 }, pro: { female: 24, male: 32 } },
+    sandbag_lunges: { open: { female: 10, male: 20 }, pro: { female: 20, male: 30 } },
+    wall_balls: { open: { female: 4, male: 6 }, pro: { female: 6, male: 9 } },
+  },
+  wallBallTargetM: { female: 2.7, male: 3.0 },
+} as const satisfies {
+  rulebookSeason: string;
+  rounds: number;
+  runM: number;
+  minAgeYears: number;
+  stations: Record<
+    import('./enums').HyroxStation,
+    { amount: number; unit: 'm' | 'reps'; estimatedFullS: number }
+  >;
+  weightsKg: Partial<
+    Record<
+      import('./enums').HyroxStation,
+      Record<'open' | 'pro', { female: number; male: number }>
+    >
+  >;
+  wallBallTargetM: { female: number; male: number };
+};
+
+/**
+ * Hyrox-Wettkampfplan (Plan 2.1, Entscheidungen 1, 4 und 5):
+ * - `minimumLeadWeeks`: Mindestvorlauf 8 Wochen, Einsteiger 12 (Entscheidung 4) – = COMPETITION_LEAD_WEEKS.minimum.hyrox.
+ * - `weekPattern`: Wochenbau je Zahl der Trainingstage (Lauf, Station, Kombi) – Vorschlag für „Deine Trainingstage“
+ *   (Plan 2.1: 3 = 1+1+1, 4 = 2+1+1, 5 = 3+1+1; 6–7 Tage mehr Lauf, 1–2 Tage ohne Kombi). Station = Kraft-Tag
+ *   (Fokus hyrox_stations), Lauf und Kombi = Ausdauer-Tage.
+ * - `combo`: Kombi-Einheit („1 km + Station“, workout_type hyrox_combo, harte Art) im Muster des Koppeltrainings
+ *   (COMPETITION_TRIATHLON.brick): 8 min Einlaufen, Runden aus Lauf-Abschnitt (`runSegmentS` ≈ 1 km zügig, Anstrengung
+ *   `effort`; passen keine `minRounds` Runden, ≈ 500 m – `runSegmentFractions`) und Station (Anteil der Rennmenge), 4 min
+ *   Auslaufen; `minRounds`–`maxRounds` Runden, Einheit mindestens `minMinutes`. Ab Aufbau für alle, in der Basis nur `basePhaseLevels` außerhalb der vorsichtigen Startgruppe
+ *   (Plan 2.1: Einsteiger/vorsichtig in der Basis ohne Kombi); nie in einer Erholungswoche, in Woche 0, in der Rennwoche
+ *   oder der Erholung danach. Stations-Menge: Startanteil je Level, je Belastungswoche höchstens ×(1 +
+ *   `stationVolumeStep`) (Plan 2.1: +10 %/Woche), höchstens `maxFraction` der Rennmenge.
+ * - `simulation`: höchstens einmal im ganzen Zyklus, in der letzten Belastungswoche der Spitze, nie in den letzten
+ *   `notWithinDays` Tagen vor dem Renntag: alle 8 Stationen, Lauf und Stationen mit reduzierten Mengen.
+ * - `technique`: Arzt-Hinweis (HYROX_SAFETY) → lockere „Technik-Kombi“ (Art easy, Anstrengung ≤ ENDURANCE_EFFORT.easyMax).
+ * - `stationSessions`: 6 Stations-Einheiten (Einsteiger/Fortgeschritten × Basis/Aufbau/Spitze; Leistungssport wie
+ *   Fortgeschritten) – Stationen in Rennreihenfolge, Sätze, Wiederholungen (doppelte Progression wie Kraft: erst Wdh.
+ *   bis zum oberen Ende, dann Gewicht), Zeit-Übungen in Sekunden, Pause, RPE (Deckel der Sicherheitsregeln gilt).
+ *   Tapering/Rennwoche/Erholung: Spitze in Erholungs-Dosierung (deloadDosage).
+ * - `stationTemplateDayIndex`: Platz der Stations-Einheit in planned_sessions.template_day_index (Pflichtfeld bei Kraft;
+ *   die Stations-Einheit kommt nicht aus der Vorlagen-Rotation).
+ * - `runHardTypes`: harte Lauf-Arten je Phase (Plan 2.1: Fahrtspiel, Tempo, Intervalle; kein Renntempo – das übernimmt
+ *   die Kombi).
+ * Quellen: Concurrent Training – Wilson JM et al. (2012), „Concurrent training: a meta-analysis examining interference
+ * of aerobic and resistance exercises“, J Strength Cond Res 26(8):2293–2307 (Kraft- und Ausdauerreize trennen); 10-%-
+ * und Deload-Regeln wie bisher (ENDURANCE_START_RULES, DELOAD_DOSAGE); Rest PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH
+ * PRÜFEN.
+ */
+export const HYROX_PLAN = {
+  minimumLeadWeeks: { beginner: 12, advanced: 8, competitive: 8 },
+  weekPattern: {
+    1: { run: 1, station: 0, combo: 0 },
+    2: { run: 1, station: 1, combo: 0 },
+    3: { run: 1, station: 1, combo: 1 },
+    4: { run: 2, station: 1, combo: 1 },
+    5: { run: 3, station: 1, combo: 1 },
+    6: { run: 4, station: 1, combo: 1 },
+    7: { run: 5, station: 1, combo: 1 },
+  },
+  combo: {
+    phases: ['base', 'build', 'peak', 'taper'],
+    basePhaseLevels: ['advanced', 'competitive'],
+    warmupS: 480,
+    cooldownS: 240,
+    runSegmentS: { beginner: 420, advanced: 360, competitive: 330 },
+    runSegmentFractions: [1, 0.5],
+    effort: 7,
+    minRounds: 2,
+    maxRounds: 6,
+    minMinutes: 25,
+    minStationS: 30,
+    startFraction: { beginner: 0.25, advanced: 0.4, competitive: 0.5 },
+    stationVolumeStep: 0.1,
+    maxFraction: 0.75,
+  },
+  simulation: {
+    phase: 'peak',
+    notWithinDays: 10,
+    rounds: 8,
+    runFraction: 0.5,
+    stationFraction: 0.5,
+  },
+  technique: { stationFraction: 0.25, minRounds: 2, maxRounds: 4 },
+  stationTemplateDayIndex: 7,
+  stationSessions: {
+    beginner: {
+      base: {
+        stations: ['sled_pull', 'rowing', 'farmers_carry', 'sandbag_lunges', 'wall_balls'],
+        sets: 2,
+        reps: [10, 12],
+        durationS: 40,
+        restS: 90,
+        rpe: 6,
+      },
+      build: {
+        stations: [
+          'ski_erg',
+          'sled_push',
+          'sled_pull',
+          'farmers_carry',
+          'sandbag_lunges',
+          'wall_balls',
+        ],
+        sets: 3,
+        reps: [8, 12],
+        durationS: 45,
+        restS: 90,
+        rpe: 7,
+      },
+      peak: {
+        stations: [
+          'ski_erg',
+          'sled_push',
+          'sled_pull',
+          'burpee_broad_jumps',
+          'farmers_carry',
+          'sandbag_lunges',
+          'wall_balls',
+        ],
+        sets: 3,
+        reps: [10, 12],
+        durationS: 60,
+        restS: 75,
+        rpe: 7,
+      },
+    },
+    advanced: {
+      base: {
+        stations: [
+          'ski_erg',
+          'sled_push',
+          'sled_pull',
+          'farmers_carry',
+          'sandbag_lunges',
+          'wall_balls',
+        ],
+        sets: 3,
+        reps: [8, 12],
+        durationS: 45,
+        restS: 90,
+        rpe: 7,
+      },
+      build: {
+        stations: [
+          'ski_erg',
+          'sled_push',
+          'sled_pull',
+          'burpee_broad_jumps',
+          'farmers_carry',
+          'sandbag_lunges',
+          'wall_balls',
+        ],
+        sets: 3,
+        reps: [10, 15],
+        durationS: 60,
+        restS: 75,
+        rpe: 7,
+      },
+      peak: {
+        stations: [
+          'ski_erg',
+          'sled_push',
+          'sled_pull',
+          'burpee_broad_jumps',
+          'rowing',
+          'farmers_carry',
+          'sandbag_lunges',
+          'wall_balls',
+        ],
+        sets: 3,
+        reps: [12, 15],
+        durationS: 60,
+        restS: 60,
+        rpe: 7.5,
+      },
+    },
+  },
+  runHardTypes: {
+    build: { beginner: ['fartlek'], other: ['tempo', 'intervals'] },
+    peak: { beginner: ['tempo'], other: ['intervals', 'tempo'] },
+    taper: { beginner: ['fartlek'], other: ['tempo'] },
+  },
+} as const satisfies {
+  minimumLeadWeeks: Record<ExperienceLevel, number>;
+  weekPattern: Record<1 | 2 | 3 | 4 | 5 | 6 | 7, { run: number; station: number; combo: number }>;
+  combo: {
+    phases: readonly string[];
+    basePhaseLevels: readonly ExperienceLevel[];
+    warmupS: number;
+    cooldownS: number;
+    runSegmentS: Record<ExperienceLevel, number>;
+    runSegmentFractions: readonly number[];
+    effort: number;
+    minRounds: number;
+    maxRounds: number;
+    minMinutes: number;
+    minStationS: number;
+    startFraction: Record<ExperienceLevel, number>;
+    stationVolumeStep: number;
+    maxFraction: number;
+  };
+  simulation: {
+    phase: string;
+    notWithinDays: number;
+    rounds: number;
+    runFraction: number;
+    stationFraction: number;
+  };
+  technique: { stationFraction: number; minRounds: number; maxRounds: number };
+  stationTemplateDayIndex: number;
+  stationSessions: Record<
+    'beginner' | 'advanced',
+    Record<
+      'base' | 'build' | 'peak',
+      {
+        stations: readonly import('./enums').HyroxStation[];
+        sets: number;
+        reps: readonly [number, number];
+        durationS: number;
+        restS: number;
+        rpe: number;
+      }
+    >
+  >;
+  runHardTypes: Record<
+    'build' | 'peak' | 'taper',
+    Record<'beginner' | 'other', readonly ('fartlek' | 'tempo' | 'intervals')[]>
+  >;
+};
+
+/**
+ * Sicherheitsregeln Hyrox (Plan 2.1/5; strengste Regel gewinnt, wie Wettkampfplan Tabelle 3.3):
+ * - ohne Gesundheits-Check kein Plan, Schwangerschaft → kein Hyrox-Plan (Hinweis Ärztin/Arzt) – wie jeder Wettkampfplan,
+ * - unter 18 nur Division `minorDivisions` (Open) und RPE ≤ `minorRpeMax` (= AGE_PLAN_RULES.minor.rpeMax),
+ * - Arzt-Hinweis (Gesundheits-Flag) → keine harte Kombi, stattdessen lockere Technik-Kombi (HYROX_PLAN.technique),
+ * - ab `seniorFromAge` nur mit ausdrücklicher Bestätigung beim Erstellen und ohne Burpee-Weitsprünge
+ *   (`seniorExcludedCautionTags`; Kombi und Simulation lassen die Station dann aus).
+ * Quelle: bestehende Regeln (Phase 3, Wettkampfplan WP3), Altersklassen laut HYROX Rulebook 25/26 (Mindestalter 16) –
+ * PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const HYROX_SAFETY = {
+  minorDivisions: ['open'],
+  minorRpeMax: 8,
+  seniorFromAge: 65,
+  seniorExcludedCautionTags: ['high_impact'],
+  seniorExcludedStations: ['burpee_broad_jumps'],
+} as const satisfies {
+  minorDivisions: readonly import('./enums').HyroxDivision[];
+  minorRpeMax: number;
+  seniorFromAge: number;
+  seniorExcludedCautionTags: readonly CautionTag[];
+  seniorExcludedStations: readonly import('./enums').HyroxStation[];
+};
+
+/**
+ * Übungen je Station (Plan 2.1 „Equipment“, Entscheidung 5): Ersatz-Kette wie in der Plan-Engine (gleiches Muster,
+ * gleicher Hauptmuskel, nie schwerer). Die erste Übung ist die Station selbst; sie braucht oft ein Gerät, das der
+ * Geräte-Katalog nicht kennt (Schlitten, SkiErg, Wall Ball, Sandsack → Gerät „Sonstiges“, also nie verfügbar) – dann gilt
+ * die erste machbare und erlaubte Übung der Kette und die App zeigt „Ohne Schlitten – wir ersetzen die Station“. Das
+ * Ende jeder Kette sind freigegebene Übungen des Startbestands, damit die Einheit auch ohne die neuen (Entwurfs-)Übungen
+ * entsteht. Quelle: Plan 2.1 – PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const HYROX_STATION_EXERCISES = {
+  ski_erg: [
+    'hyrox-skierg',
+    'band-zug-ueber-kopf',
+    'latziehen-band',
+    'kettlebell-swing',
+    'hampelmann',
+  ],
+  sled_push: [
+    'hyrox-schlitten-schieben',
+    'ausfallschritt-gehen-kurzhantel',
+    'bulgarische-split-kniebeuge',
+    'step-up-stufe',
+  ],
+  sled_pull: [
+    'hyrox-schlitten-ziehen',
+    'band-zug-rueckwaerts-gehen',
+    'kurzhantelrudern-einarmig',
+    'rudern-band',
+    'tuerrahmen-rudern',
+  ],
+  burpee_broad_jumps: [
+    'burpee-weitsprung',
+    'burpee-ohne-sprung',
+    'liegestuetz-erhoeht',
+    'kniebeuge-koerpergewicht',
+  ],
+  rowing: ['hyrox-rudergeraet', 'kabelrudern', 'rudern-band', 'tuerrahmen-rudern'],
+  farmers_carry: [
+    'farmers-carry-kurzhantel',
+    'farmers-carry-kettlebell',
+    'koffer-tragen-einarmig',
+    'unterarmstuetz',
+  ],
+  sandbag_lunges: [
+    'sandsack-ausfallschritte',
+    'ausfallschritt-gehen-koerpergewicht',
+    'ausfallschritt-rueckwaerts-kurzhantel',
+    'split-kniebeuge',
+  ],
+  wall_balls: [
+    'wall-balls',
+    'kniebeuge-schulterdruecken-kurzhantel',
+    'goblet-kniebeuge',
+    'kniebeuge-koerpergewicht',
+  ],
+} as const satisfies Record<import('./enums').HyroxStation, readonly string[]>;

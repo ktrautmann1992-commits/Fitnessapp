@@ -16,6 +16,7 @@ import {
   MIN_AGE_YEARS,
 } from '../constants';
 import { addDays, daysBetween, startOfIsoWeek } from '../dates';
+import { hyroxExcludedStations } from '../hyrox/format';
 import type { ExperienceLevel } from '../enums';
 import {
   type Competition,
@@ -161,8 +162,8 @@ export function minorPlanAllowed(
   if (isTriathlonCompetitionDiscipline(discipline)) {
     return (G.minorTriathlon as readonly string[]).includes(discipline);
   }
-  // Sportarten Stufe 1 (Hyrox): unter 18 erlaubt, aber nur Division Open (Server: save_competition) – Fachlogik folgt
-  // in Etappe H (HYROX_SAFETY). = private.competition_minor_allowed.
+  // Sportarten Stufe 1 (Hyrox, HYROX_SAFETY): unter 18 erlaubt, aber nur Division Open (hyroxDivisionAllowed, Server:
+  // save_competition) und RPE ≤ 8 (AGE_PLAN_RULES.minor). = private.competition_minor_allowed.
   if (discipline === 'hyrox') return true;
   return (
     RUN_COMPETITION_DISCIPLINES.indexOf(discipline) <=
@@ -223,6 +224,8 @@ export const competitionRequestSchema = z.strictObject({
   startReference: competitionStartReferenceSchema.nullable().default(null),
   /** Wunsch-Tag des langen Laufs (ISO-Wochentag 1–7), null = automatisch (WP2, Plan 3.5). */
   longRunWeekday: z.number().int().min(1).max(7).nullable().default(null),
+  /** Sportarten Stufe 1 (HYROX_SAFETY): ab 65 nur mit ausdrücklicher Bestätigung beim Erstellen. */
+  hyroxSeniorConfirmed: z.boolean().default(false),
 });
 
 export interface CompetitionRequest {
@@ -235,6 +238,11 @@ export interface CompetitionRequest {
   readonly startReference?: CompetitionStartReference | null;
   /** Wunsch-Tag des langen Laufs (1 = Montag … 7 = Sonntag); fehlt/null = automatisch (Standard: Wochenende). */
   readonly longRunWeekday?: number | null;
+  /**
+   * Sportarten Stufe 1 (Hyrox, HYROX_SAFETY): ab 65 bestätigt die Person ausdrücklich (gesund, ärztlich besprochen).
+   * Gilt nur beim Erstellen; Folgeblöcke laufen weiter (strengere Regeln wirken über die Sicherheitsregeln).
+   */
+  readonly hyroxSeniorConfirmed?: boolean;
 }
 
 export type OwnStartNotice = 'own_start_capped' | 'own_start_ignored' | 'own_start_journal_used';
@@ -280,6 +288,8 @@ export const FEASIBILITY_REASONS = [
   'long_run_not_reachable',
   /** WP5: Triathlon braucht mindestens 3 Ausdauer-Tage je Woche (COMPETITION_TRIATHLON.minEnduranceDays). */
   'triathlon_days_too_few',
+  /** Sportarten Stufe 1 (HYROX_SAFETY): ab 65 nur mit ausdrücklicher Bestätigung. */
+  'hyrox_senior_confirmation',
 ] as const;
 export type FeasibilityReason = (typeof FEASIBILITY_REASONS)[number];
 
@@ -298,6 +308,12 @@ export const FEASIBILITY_NOTICES = [
   'open_water_safety',
   /** WP5: Einsteiger mit Triathlon Olympisch oder Rad über 120 km – wie beim Marathon ein ausdrücklicher Hinweis. */
   'beginner_long_event',
+  /** Sportarten Stufe 1 (Hyrox): kein Kraft-Tag in der Woche → keine Stations-Einheit (nur Lauf und Kombi). */
+  'hyrox_no_station_day',
+  /** Sportarten Stufe 1 (Hyrox, HYROX_SAFETY): Arzt-Hinweis → lockere Technik-Kombi statt harter Kombi. */
+  'hyrox_technique_combo',
+  /** Sportarten Stufe 1 (Hyrox, HYROX_SAFETY): ab 65 bzw. vorsichtig – ohne Burpee-Weitsprünge. */
+  'hyrox_no_jumps',
 ] as const;
 export type FeasibilityNotice = (typeof FEASIBILITY_NOTICES)[number];
 
@@ -368,6 +384,8 @@ interface Context {
   /** Referenzzeit (Pace, Zielzeit-Plausibilität) und Zielzeit des Wettkampfs. */
   readonly raceReference: CompetitionReference | null;
   readonly targetTimeS: number | null;
+  /** Hyrox ab 65: ausdrücklich bestätigt (HYROX_SAFETY). */
+  readonly hyroxSeniorConfirmed: boolean;
 }
 
 /** Disziplin und (nur Rad, WP5) Distanz in km – was Tabellen und Regeln je Wettkampf brauchen. */
@@ -387,6 +405,7 @@ function buildContext(
     ownStart: { weeklyMinutes: number } | null;
     startReference: CompetitionStartReference | null;
     longRunWeekday: number | null;
+    hyroxSeniorConfirmed: boolean;
   },
   today: string,
   competition: Competition,
@@ -427,6 +446,7 @@ function buildContext(
     longRunWeekday: request.longRunWeekday,
     raceReference: competition.reference,
     targetTimeS: competition.targetTimeS,
+    hyroxSeniorConfirmed: request.hyroxSeniorConfirmed,
   };
 }
 
@@ -437,11 +457,14 @@ function workoutBase(ctx: Context, discipline: CompetitionDiscipline): Competiti
     level: ctx.level,
     limits: hardWorkoutLimits(ctx.rules, ctx.level),
     longRunWeekday: ctx.longRunWeekday,
-    // Pace nur beim Laufen (WP5: Rad und Triathlon ohne Referenzzeit).
+    // Pace nur beim Laufen (WP5: Rad und Triathlon ohne Referenzzeit). Sportarten Stufe 1: Hyrox-Läufe mit Spannen
+    // auf 10-km-Basis (Lauf-Anteil 8 km; Renntempo plant Hyrox nicht).
     pace:
       ctx.raceReference && isRunCompetitionDiscipline(discipline)
         ? { reference: ctx.raceReference, discipline }
-        : null,
+        : ctx.raceReference && discipline === 'hyrox'
+          ? { reference: ctx.raceReference, discipline: '10k' }
+          : null,
   };
 }
 
@@ -600,12 +623,21 @@ interface Evaluation {
   readonly peakTarget: number;
 }
 
-function notAvailableReasons(ctx: Context, target: Target): FeasibilityReason[] {
+function notAvailableReasons(ctx: Context, target: Target, creating = true): FeasibilityReason[] {
   const reasons: FeasibilityReason[] = [];
   if (ctx.inputs.healthScreening?.flags.includes('pregnancy')) reasons.push('pregnancy');
   if (ctx.inputs.healthScreening === null) reasons.push('health_check_required');
   if (ctx.minor && !minorPlanAllowed(target.discipline, target.distanceKm)) {
     reasons.push('minor_distance_limit');
+  }
+  // Sportarten Stufe 1 (HYROX_SAFETY): ab 65 nur mit ausdrücklicher Bestätigung – beim Erstellen.
+  if (
+    creating &&
+    target.discipline === 'hyrox' &&
+    ctx.senior &&
+    !ctx.hyroxSeniorConfirmed
+  ) {
+    reasons.push('hyrox_senior_confirmation');
   }
   return reasons;
 }
@@ -765,7 +797,9 @@ function suggestionsFor(
   if (status === 'ok') return out;
   if (reasons.includes('health_check_required')) out.push({ kind: 'health_check' });
   const blockedForGroup =
-    reasons.includes('pregnancy') || reasons.includes('health_check_required');
+    reasons.includes('pregnancy') ||
+    reasons.includes('health_check_required') ||
+    reasons.includes('hyrox_senior_confirmation');
   const target = targetOf(competition);
   if (!blockedForGroup) {
     // Kürzere Distanz am selben Tag (längste, die passt bzw. knapp ist) – nur innerhalb derselben Sportart (WP5).
@@ -843,9 +877,24 @@ function noticesFor(ctx: Context, competition: Competition): FeasibilityNotice[]
   if (ctx.ownNotice) notices.add(ctx.ownNotice);
   if (ctx.referenceCapped) notices.add('start_reference_capped');
   if (ctx.rules.enduranceWalkOnly) notices.add('walk_only_plan');
-  // Wächter M3: Referenz zu weit von der Renn-Distanz entfernt → keine Zielzeit/kein Renntempo aus Riegel.
-  if (ctx.raceReference && !riegelReliable(ctx.raceReference, competition.discipline)) {
+  // Wächter M3: Referenz zu weit von der Renn-Distanz entfernt → keine Zielzeit/kein Renntempo aus Riegel. Hyrox: Läufe
+  // auf 10-km-Basis (workoutBase).
+  if (
+    ctx.raceReference &&
+    !riegelReliable(
+      ctx.raceReference,
+      competition.discipline === 'hyrox' ? '10k' : competition.discipline,
+    )
+  ) {
     notices.add('reference_distance_too_far');
+  }
+  // Sportarten Stufe 1 (Hyrox, Plan 2.1/HYROX_SAFETY).
+  if (competition.discipline === 'hyrox') {
+    if (!ctx.days.some((d) => d.kind !== 'endurance')) notices.add('hyrox_no_station_day');
+    if (ctx.rules.medicalNotice) notices.add('hyrox_technique_combo');
+    if (hyroxExcludedStations(ctx.rules.excludedCautionTags).length > 0) {
+      notices.add('hyrox_no_jumps');
+    }
   }
   // Wächter N6: Wunsch-Tag des langen Laufs ist kein Ausdauer-Tag → automatisch gewählt, mit Hinweis.
   if (
@@ -881,6 +930,7 @@ function parse(
     ownStart: request.ownStart ?? null,
     startReference: request.startReference ?? null,
     longRunWeekday: request.longRunWeekday ?? null,
+    hyroxSeniorConfirmed: request.hyroxSeniorConfirmed ?? false,
   });
   if (!inputs.success || !competition.success || !extra.success) return null;
   const plan = inputs.data;
@@ -1066,7 +1116,7 @@ export function competitionFollowUpBlock(
   const now = today >= planStart ? parse(rawInputs, request, today, planStart) : null;
   if (!now) return { ok: false, reason: 'invalid_inputs' };
   const { ctx, competition } = now;
-  if (notAvailableReasons(ctx, targetOf(competition)).length > 0) {
+  if (notAvailableReasons(ctx, targetOf(competition), false).length > 0) {
     return { ok: false, reason: 'not_available' };
   }
   const goal: CompetitionGoal =

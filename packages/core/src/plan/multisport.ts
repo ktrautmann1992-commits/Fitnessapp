@@ -234,5 +234,7 @@ export function workoutModalityFits(
 ): boolean {
   if (type === 'brick') return modality === 'bike';
   if (type === 'technique') return modality === 'swim';
+  // Sportarten Stufe 1 (Hyrox): Kombi nur als Lauf-Einheit (= CHECK planned_sessions_hyrox).
+  if (type === 'hyrox_combo') return modality === 'run';
   return true;
 }
