@@ -1,5 +1,4 @@
 import {
-  cardioSpeed,
   findGlossaryExercise,
   isBackfilledLog,
   isoDateInTimeZone,
@@ -11,7 +10,10 @@ import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-route
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { LiveRegion } from '@/components/calendar';
+import { StatValue } from '@/components/design';
 import { EBikeBadge } from '@/components/e-bike';
+import { RouteInsights } from '@/components/route-insights';
 import { RowLogInfo } from '@/components/rowing';
 import { ShoeChip } from '@/components/shoes';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -26,22 +28,30 @@ import { WearableLogInfo } from '@/components/wearables';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { EMPTY_LOG_ROWS, logRowsOf, mergeLogRows } from '@/data/log-rows';
 import { logDetail } from '@/data/log-summary';
+import { routeForLog } from '@/data/route-view';
 import { logStrengthComparisons } from '@/data/strength-progress';
 import { t } from '@/i18n';
 import { errorText } from '@/lib/error-text';
 import { formatDateDe, todayIso } from '@/lib/format';
-import { cardioDurationText, effortText, kmText, setLineText } from '@/lib/history-format';
+import { effortText, setLineText } from '@/lib/history-format';
 import { useThemeColors } from '@/lib/theme';
 import { strengthComparisonText } from '@/lib/strength-format';
-import { cardioSpeedTexts } from '@/lib/workout-format';
+import { cardioStatTiles } from '@/lib/workout-format';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { forgetTrackedRoutes, useTrackedRoutes } from '@/state/use-tracked-routes';
 import { Text } from '@/components/text';
 
 /**
  * Ein Eintrag aus Woche/Verlauf (docs/PLAN-PHASE-4.md 6.1 Punkt 5, Etappe D): ansehen, ändern (Trainingsmodus im
  * Änderungs-Modus, nur solange save_session_log die neue Fassung annimmt – logEditability() in packages/core) und
  * löschen (delete_session_log mit Revision, nur online, 4.5). Notizen werden nur angezeigt, nie ausgewertet (S3).
+ *
+ * Mit aufgezeichneter Strecke (tracked_routes.session_log_id, z. B. Lauf aus „Aufzeichnen“, gezählt zur geplanten
+ * Einheit, oder Uhr-Lauf mit Route; 28.10.2026): oben die volle Lauf-Auswertung wie unter `/ausdauer/[id]`
+ * (components/route-insights.tsx – Kopf-Karte, Tempo-Farben, Kilometer-Balken, Diagramme, Bestwerte, Pulszonen,
+ * Wetter), darunter nur, was der Eintrag zusätzlich weiß (erledigt, kcal, Belastung, Notiz) und seine Aktionen. Ohne
+ * Strecke (manuell eingetragen, Uhr ohne GPS): Ausdauer-Werte als Kacheln.
  */
 export default function LogEntryScreen() {
   const params = useLocalSearchParams<{ logId: string }>();
@@ -62,6 +72,10 @@ export default function LogEntryScreen() {
   const lib = library.kind === 'ready' ? library.library : null;
   const kcalContext = useSessionKcalContext();
   const watchKcal = useWatchKcal();
+  const { state: routesState, reload: reloadRoutes } = useTrackedRoutes();
+  const [live, setLive] = useState({ text: '', version: 0 });
+  const routes = routesState.kind === 'ready' ? routesState.result : null;
+  const linked = routeForLog(routes, logId);
 
   if (app.status.kind === 'loading') {
     return (
@@ -142,19 +156,50 @@ export default function LogEntryScreen() {
     measuredKcal: watchKcal(log.id),
   });
 
-  const speed = detail.cardio
-    ? cardioSpeed(detail.cardio.modality, detail.cardio.duration_s, detail.cardio.distance_m)
-    : null;
+  // Strecken laden noch (erster Aufruf): bei Laufen/Rad/Gehen kurz warten statt erst die schlichte Seite zu zeigen.
+  const gpsModality =
+    detail.cardio !== null && ['run', 'bike', 'walk'].includes(detail.cardio.modality);
+  if (routesState.kind === 'loading' && gpsModality) {
+    return (
+      <Screen>
+        <LoadingState />
+      </Screen>
+    );
+  }
+  const tiles = detail.cardio && !linked ? cardioStatTiles(detail.cardio) : [];
 
   return (
-    <Screen area="training" icon="dumbbell" title={log.name_de} testID="log-entry" footer={footer}>
+    <Screen
+      area={linked ? 'ausdauer' : 'training'}
+      icon={linked ? 'run' : 'dumbbell'}
+      title={log.name_de}
+      testID="log-entry"
+      footer={footer}
+    >
+      <LiveRegion text={live.text} version={live.version} />
       {message ? (
         <Notice tone={message.tone} testID="log-message">
           {message.text}
         </Notice>
       ) : null}
+      {/* Aufgezeichnete Strecke: volle Auswertung (gleich wie /ausdauer/[id]), kcal steht im Eintrag darunter. */}
+      {linked && routes ? (
+        <View style={styles.insights} testID="log-route-insights">
+          <RouteInsights
+            route={linked}
+            result={routes}
+            showKcal={false}
+            onRoutesChanged={async () => {
+              forgetTrackedRoutes();
+              await reloadRoutes();
+            }}
+            onAnnounce={(text) => setLive((c) => ({ text, version: c.version + 1 }))}
+          />
+        </View>
+      ) : null}
       <Card>
-        <Body>{t.logEntry.performedOn(formatDateDe(log.performed_on))}</Body>
+        {/* Mit Strecke steht der Tag schon in der Kopf-Karte. */}
+        {linked ? null : <Body>{t.logEntry.performedOn(formatDateDe(log.performed_on))}</Body>}
         {reference !== null && reference !== log.performed_on ? (
           <Body muted>{t.logEntry.caughtUpFrom(formatDateDe(reference))}</Body>
         ) : null}
@@ -177,11 +222,12 @@ export default function LogEntryScreen() {
       </Card>
 
       {/* Phase 8: Herkunft Smartwatch, kcal, möglicher Doppel-Eintrag und Puls (nie auf dem Story-Bild). */}
-      <WearableLogInfo logId={log.id} />
+      {/* Mit Strecke zeigt die Auswertung oben Uhr-Herkunft und Puls schon. */}
+      {linked ? null : <WearableLogInfo logId={log.id} />}
       {/* Sportarten Stufe 2: Sportart, Dauer, Distanz und Belastung. */}
       <SportLogInfo log={log} />
 
-      {detail.cardio ? (
+      {detail.cardio && !linked ? (
         <Card>
           <View testID="log-cardio" style={styles.block}>
             <Body>
@@ -196,24 +242,20 @@ export default function LogEntryScreen() {
             ) : null}
             {/* Schuh-Kilometerzähler (docs/PLAN-PHASE-10.md 22). */}
             <ShoeChip logId={log.id} />
-            <Body accessibilityLabel={cardioDurationText(detail.cardio.duration_s).a11y}>
-              {cardioDurationText(detail.cardio.duration_s).text}
-            </Body>
-            {detail.cardio.distance_m !== null && detail.cardio.distance_m > 0 ? (
-              <Body accessibilityLabel={t.logEntry.distanceA11y(kmText(detail.cardio.distance_m))}>
-                {t.logEntry.distance(kmText(detail.cardio.distance_m))}
-              </Body>
-            ) : null}
-            {detail.cardio.elevation_m !== null && detail.cardio.elevation_m > 0 ? (
-              <Body>{t.logEntry.elevation(detail.cardio.elevation_m)}</Body>
-            ) : null}
-            {speed
-              ? cardioSpeedTexts(speed).map((line) => (
-                  <Body key={line.text} accessibilityLabel={line.a11y}>
-                    {line.text}
-                  </Body>
-                ))
-              : null}
+            {/* Werte als Kacheln (zwei Spalten) statt Textzeilen (28.10.2026). */}
+            <View style={styles.tiles} testID="log-cardio-tiles">
+              {tiles.map((tile) => (
+                <View key={tile.key} style={styles.tile}>
+                  <StatValue
+                    size="lg"
+                    label={tile.label}
+                    value={tile.value}
+                    accessibilityLabel={tile.a11y}
+                    valueTestID={`log-cardio-${tile.key}`}
+                  />
+                </View>
+              ))}
+            </View>
             {/* Etappe R: Watt (berechnet bzw. eingetragen), Schlagzahl, Intervall-Ergebnis. */}
             {detail.cardio.modality === 'row' ? <RowLogInfo cardio={detail.cardio} /> : null}
           </View>
@@ -288,6 +330,17 @@ export default function LogEntryScreen() {
           onPress={() => router.push(`/teilen?log=${log.id}` as Href)}
           testID="log-share"
         />
+        {/* Strecke selbst (Name, Meine Strecke, GPX, Strecke löschen) bleibt unter /ausdauer/[id]. */}
+        {linked ? (
+          <Button
+            label={t.logEntry.routeTools}
+            variant="secondary"
+            onPress={() =>
+              router.push(`/ausdauer/${linked.saved?.id ?? linked.pending?.payload.id}` as Href)
+            }
+            testID="log-open-route"
+          />
+        ) : null}
         {hasDraft ? (
           <Notice tone="info">{t.logEntry.draftOpen}</Notice>
         ) : editability === 'editable' && session ? (
@@ -342,6 +395,9 @@ export default function LogEntryScreen() {
 
 const styles = StyleSheet.create({
   block: { gap: 2 },
+  insights: { gap: spacing.md },
+  tiles: { flexDirection: 'row', flexWrap: 'wrap', rowGap: spacing.md, marginTop: spacing.sm },
+  tile: { width: '50%', paddingRight: spacing.sm },
   exerciseName: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, lineHeight: 24 },
   actions: { gap: spacing.sm },
 });

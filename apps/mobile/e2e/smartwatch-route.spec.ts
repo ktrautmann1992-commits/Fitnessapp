@@ -127,17 +127,20 @@ test('Beispiel-Uhr: Läufe mit Route → Auswertung mit Karte, Puls, kcal; ohne 
   await expect(page.getByTestId('watch-route-missing')).toContainText('Trainingsrouten');
   await shot(page, 'uhr-lauf-ohne-route');
   await page.getByTestId('watch-route-release').click();
-  // Nach der Freigabe direkt zur Auswertung mit Karte.
-  await expect(page.getByTestId('route-detail-meta')).toContainText('laut Uhr');
-  await expect(page.getByTestId('route-map-note')).toBeVisible();
+  // Nach der Freigabe direkt zur Auswertung mit Karte (der Eintrag darunter im Stapel zeigt sie inzwischen auch).
+  const detail = page.getByTestId('route-detail');
+  await expect(detail.getByTestId('route-detail-meta')).toContainText('laut Uhr');
+  await expect(detail.getByTestId('route-map-note')).toBeVisible();
   expect(
     ((await stored(page)).trackedRoutes ?? []).filter(
       (r) => r.source === 'watch' && r.sport === 'run',
     ),
   ).toHaveLength(3);
-  // Zurück zum Eintrag: Link „Strecke mit Karte ansehen“ statt Hinweis.
+  // Zurück zum Eintrag: volle Auswertung mit Karte (28.10.2026) und Link zur Strecke statt Hinweis.
   await page.goto(`/log/${logWithout?.id ?? ''}`);
-  await expect(page.getByTestId('watch-route-open')).toBeVisible();
+  await expect(page.getByTestId('log-route-insights')).toBeVisible();
+  await expect(page.getByTestId('log-route-insights').getByTestId('route-map-note')).toBeVisible();
+  await expect(page.getByTestId('log-open-route')).toBeVisible();
   await expect(page.getByTestId('watch-route-missing')).toHaveCount(0);
 
   // Trennen („behalten“): Routen der Uhr weg, Einträge bleiben.
