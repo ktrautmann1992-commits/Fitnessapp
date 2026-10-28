@@ -1,0 +1,125 @@
+name: apk-github
+
+# Manuell startbar (GitHub-App → Actions → apk-github → Run workflow): baut die Android-Test-APK (Profil preview)
+# direkt auf dem GitHub-Rechner mit `eas build --local` – ohne das monatliche Build-Kontingent der Expo-Cloud.
+# Das Ergebnis liegt danach als Release „Android-APK #<Lauf>“ im Repository (GitHub-App → Code → Releases) und
+# zusätzlich als Artefakt am Lauf.
+# Signiert wird mit demselben Schlüssel wie in der Expo-Cloud (EAS lädt ihn mit EXPO_TOKEN), damit sich die APK
+# über eine vorhandene Installation installieren lässt. Umgebungsvariablen kommen wie beim Cloud-Build aus der
+# EAS-Umgebung „preview“.
+# Anleitung: docs/SETUP.md Teil D3.
+on:
+  workflow_dispatch:
+
+# Schreiben nur für das Release mit der APK.
+permissions:
+  contents: write
+
+concurrency:
+  group: apk-github
+  cancel-in-progress: false
+
+# Gleiche eas-cli-Version wie eas-build (Wächter E, S1).
+env:
+  EAS_CLI_VERSION: '24.11.0'
+  EXPO_NO_TELEMETRY: '1'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Voraussetzungen prüfen
+        id: check
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::warning title=apk-github übersprungen::GitHub-Secret EXPO_TOKEN fehlt (docs/SETUP.md Teil D)."
+            echo "### ⏭️ apk-github übersprungen – Secret EXPO_TOKEN fehlt" >> "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+      # Der Android-Build braucht viel Platz; vorinstallierte, hier unnötige Werkzeuge entfernen.
+      - name: Platz schaffen
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      - uses: actions/setup-java@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        if: steps.check.outputs.ready == 'true'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        if: steps.check.outputs.ready == 'true'
+      # Ohne `token`: Die Action würde EXPO_TOKEN sonst für alle folgenden Schritte setzen.
+      - uses: expo/expo-github-action@c7b66a9c327a43a8fa7c0158e7f30d6040d2481e # v8
+        if: steps.check.outputs.ready == 'true'
+        with:
+          eas-version: ${{ env.EAS_CLI_VERSION }}
+
+      - name: APK bauen (lokal auf dem GitHub-Rechner)
+        if: steps.check.outputs.ready == 'true'
+        working-directory: apps/mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false
+        run: |
+          eas build --local --platform android --profile preview --non-interactive \
+            --output "$RUNNER_TEMP/alpha5-${{ github.run_number }}.apk"
+          ls -lh "$RUNNER_TEMP"/*.apk
+
+      - name: APK als Artefakt ablegen
+        if: steps.check.outputs.ready == 'true'
+        id: artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alpha5-apk-${{ github.run_number }}
+          path: ${{ runner.temp }}/alpha5-${{ github.run_number }}.apk
+          retention-days: 30
+
+      # Klappt nur, wenn unter Settings → Actions → General → Workflow permissions „Read and write permissions“
+      # gewählt ist; sonst bleibt die APK als Artefakt am Lauf (Schritt oben) – der Lauf bleibt dann trotzdem grün.
+      - name: Release mit APK anlegen
+        if: steps.check.outputs.ready == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ github.run_number }}
+          SHA: ${{ github.sha }}
+        run: |
+          tag="apk-$RUN"
+          gh release create "$tag" "$RUNNER_TEMP/alpha5-$RUN.apk" \
+            --target "$SHA" --prerelease \
+            --title "Android-APK #$RUN" \
+            --notes "Test-APK (Profil preview), gebaut auf GitHub aus Commit ${SHA:0:7}. Am Handy: Datei antippen → herunterladen → öffnen → installieren."
+          {
+            echo "### ✅ APK fertig"
+            echo ""
+            echo "GitHub-App → Code → **Releases** → **Android-APK #$RUN** → \`alpha5-$RUN.apk\` antippen → installieren."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Download-Hinweis
+        if: steps.check.outputs.ready == 'true'
+        env:
+          URL: ${{ steps.artifact.outputs.artifact-url }}
+        run: |
+          {
+            echo ""
+            echo "**APK als Artefakt (immer verfügbar, 30 Tage):** $URL"
+            echo "Am Handy im Browser öffnen (bei GitHub angemeldet) → ZIP herunterladen → in „Dateien“ öffnen →"
+            echo "entpacken → \`alpha5-${{ github.run_number }}.apk\` antippen → installieren."
+          } >> "$GITHUB_STEP_SUMMARY"
