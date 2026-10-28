@@ -1,0 +1,50 @@
+{
+  "id": "tempeh",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Tempeh",
+  "aliases_de": [],
+  "shopping_category": "chilled_plant_based",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 157,
+    "protein_g": 17.6,
+    "carbs_g": 7.9,
+    "sugar_g": 0.2,
+    "fat_g": 4.7,
+    "sat_fat_g": 0.6,
+    "fiber_g": 6.2,
+    "salt_g": 0.1,
+    "alcohol_g": 0
+  },
+  "units": {},
+  "groups": ["legumes", "soy"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "ch_naehrwertdatenbank",
+    "version": "7.1",
+    "ref": "14251",
+    "name": "Tempeh, nature",
+    "category": "soy_products",
+    "license": "Nutzung mit Quellenvermerk (auch kommerziell)",
+    "retrieved_at": "2026-10-28"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-28",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

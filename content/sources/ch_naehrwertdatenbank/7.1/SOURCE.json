@@ -1,0 +1,16 @@
+{
+  "db": "ch_naehrwertdatenbank",
+  "version": "7.1",
+  "title": "Schweizer Nährwertdatenbank, Version 7.1",
+  "url": "https://naehrwertdaten.ch/wp-content/uploads/2026/07/Schweizer_Nahrwertdatenbank.xlsx",
+  "original_filename": "Schweizer_Nahrwertdatenbank.xlsx",
+  "original_bytes": 941213,
+  "original_sha256": "f4bb854944ef811f9b8463984389f8121e73278c4fd24fc3e8d16336cb711270",
+  "extract_sha256": "246f09778ec1d47ab858d4a3d9b4e90b3b9af796dd399ff5cb4d6aa813f2f0ec",
+  "extract_rows": 7,
+  "retrieved_at": "2026-10-28T13:45:39Z",
+  "workflow_run_id": "40699326396",
+  "license": "Nutzung mit Quellenvermerk (auch kommerziell)",
+  "license_url": "https://naehrwertdaten.ch/de/downloads/",
+  "attribution": "Schweizer Nährwertdatenbank, Version 7.1, Bundesamt für Lebensmittelsicherheit und Veterinärwesen BLV, naehrwertdaten.ch."
+}
