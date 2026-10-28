@@ -127,6 +127,8 @@ test('Verlauf → Lauf-Eintrag → volle Auswertung; Rad genauso; manueller Eint
   );
 
   // Strecke löschen → Eintrag bleibt, jetzt ohne GPS: schlichte Seite mit Werte-Kacheln.
+  const bikeLogUrl = new URL(page.url()).pathname;
+  expect(bikeLogUrl).toMatch(/^\/log\//);
   await page.getByTestId('log-open-route').click();
   await page.getByTestId('route-delete').last().click();
   await page
@@ -147,8 +149,8 @@ test('Verlauf → Lauf-Eintrag → volle Auswertung; Rad genauso; manueller Eint
       ),
     )
     .toBe(1);
-  await page.goto('/history');
-  await page.getByTestId('history-entry').first().click();
+  // Reihenfolge gleicher Tage im Verlauf ist nicht festgelegt → Rad-Eintrag direkt öffnen.
+  await page.goto(bikeLogUrl);
   await expect(page.getByTestId('log-entry')).toBeVisible();
   await expect(page.getByTestId('log-route-insights')).toHaveCount(0);
   await expect(page.getByTestId('log-cardio-tiles')).toBeVisible();
