@@ -10,9 +10,6 @@ name: apk-github
 # Anleitung: docs/SETUP.md Teil D3.
 on:
   workflow_dispatch:
-  # TEST: vorübergehend, wird vor dem PR entfernt
-  push:
-    branches: [claude/apk-github-build]
 
 # Schreiben nur für das Release mit der APK.
 permissions:
