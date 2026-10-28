@@ -203,8 +203,12 @@ Expo-Kontingent. Er braucht nur das vorhandene Secret `EXPO_TOKEN` (Teil D).
 
 1. GitHub-App → Repository **Fitnessapp** → **Actions** → **apk-github** → **Run workflow** → **Run workflow**.
 2. Nach ca. 20–40 Minuten ist der Lauf grün.
-3. **Code** → **Releases** → **Android-APK #…** → Datei `alpha5-….apk` antippen → herunterladen → öffnen →
-   installieren (über die vorhandene App, die Daten bleiben).
+3. Lauf antippen → ganz unten unter **Artifacts** `alpha5-apk-…` antippen → ZIP herunterladen → in der App
+   „Dateien“ öffnen → entpacken → `alpha5-….apk` antippen → installieren (über die vorhandene App, die Daten
+   bleiben).
+4. Bequemer (einmalig, optional): github.com im Browser → Repository → **Settings** → **Actions** → **General** →
+   **Workflow permissions** → **Read and write permissions** → **Save**. Danach legt der Workflow die APK
+   zusätzlich unter **Code** → **Releases** ab (direkt antippbar, ohne ZIP).
 
 Schlägt der Lauf fehl, den Link des Laufs an Claude geben.
 

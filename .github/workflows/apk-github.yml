@@ -84,14 +84,18 @@ jobs:
 
       - name: APK als Artefakt ablegen
         if: steps.check.outputs.ready == 'true'
+        id: artifact
         uses: actions/upload-artifact@v4
         with:
           name: alpha5-apk-${{ github.run_number }}
           path: ${{ runner.temp }}/alpha5-${{ github.run_number }}.apk
           retention-days: 30
 
+      # Klappt nur, wenn unter Settings → Actions → General → Workflow permissions „Read and write permissions“
+      # gewählt ist; sonst bleibt die APK als Artefakt am Lauf (Schritt oben) – der Lauf bleibt dann trotzdem grün.
       - name: Release mit APK anlegen
         if: steps.check.outputs.ready == 'true'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           RUN: ${{ github.run_number }}
@@ -106,4 +110,16 @@ jobs:
             echo "### ✅ APK fertig"
             echo ""
             echo "GitHub-App → Code → **Releases** → **Android-APK #$RUN** → \`alpha5-$RUN.apk\` antippen → installieren."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Download-Hinweis
+        if: steps.check.outputs.ready == 'true'
+        env:
+          URL: ${{ steps.artifact.outputs.artifact-url }}
+        run: |
+          {
+            echo ""
+            echo "**APK als Artefakt (immer verfügbar, 30 Tage):** $URL"
+            echo "Am Handy im Browser öffnen (bei GitHub angemeldet) → ZIP herunterladen → in „Dateien“ öffnen →"
+            echo "entpacken → \`alpha5-${{ github.run_number }}.apk\` antippen → installieren."
           } >> "$GITHUB_STEP_SUMMARY"
