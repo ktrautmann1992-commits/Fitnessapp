@@ -1,0 +1,52 @@
+{
+  "id": "wiener-wuerstchen",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Wiener Würstchen",
+  "aliases_de": [],
+  "shopping_category": "meat_sausage",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 289,
+    "protein_g": 12.9,
+    "carbs_g": 0,
+    "sugar_g": 0,
+    "fat_g": 26.15,
+    "sat_fat_g": 9.218,
+    "fiber_g": 0,
+    "salt_g": 2.0405,
+    "organic_acids_g": 0.724,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["beef"],
+  "animal": ["meat"],
+  "meat_kind": ["pork", "beef"],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "W211200",
+    "name": "Wiener Würstchen",
+    "category": "sausage_meat_products",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-27"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "fladenbrot",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Fladenbrot (Pide)",
+  "aliases_de": [],
+  "shopping_category": "bread_bakery",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 248,
+    "protein_g": 8.2,
+    "carbs_g": 47,
+    "sugar_g": 0.317,
+    "fat_g": 2.3,
+    "sat_fat_g": 0.2,
+    "fiber_g": 3.34,
+    "salt_g": 1.26,
+    "organic_acids_g": 0,
+    "alcohol_g": 0,
+    "polyols_g": 0
+  },
+  "units": {},
+  "groups": ["gluten", "sesame"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "bls",
+    "version": "4.0",
+    "ref": "B782100",
+    "name": "Weizenfladenbrot",
+    "category": "bread_bakery",
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-27"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-27",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
