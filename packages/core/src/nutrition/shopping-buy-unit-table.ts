@@ -267,6 +267,11 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   'nordseekrabben-gekocht-geschaelt': pack('Packung', 'Nordseekrabben', [100]),
   raeucherforellenfilet: pack('Packung', 'Räucherforellenfilet', [125]),
   raeucherlachs: pack('Packung', 'Räucherlachs', [100, 200]),
+  // Schweizer Nährwertdatenbank 7.1 (Zweitquelle): frische Kräuter im Bund.
+  'dill-frisch': piece('Bund', 'Dill', 30),
+  'koriander-frisch': piece('Bund', 'Koriander', 30),
+  'minze-frisch': piece('Bund', 'Minze', 30),
+  'salbei-frisch': piece('Bund', 'Salbei', 20),
   matjeshering: pack('Packung', 'Matjesfilets', [200]),
 
   // --- Kühlregal pflanzlich ---
@@ -288,6 +293,8 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
     gPerUnit: 1,
   }),
   'veganer-reibekaese': pack('Beutel', 'Vegane Käsealternative, gerieben', [150]),
+  'sojaskyr-natur': pack('Becher', 'Sojaskyr natur', [400]),
+  tempeh: pack('Packung', 'Tempeh', [200]),
 
   // --- Nudeln, Reis, Getreide ---
   'basmatireis-trocken': pack('Packung', 'Basmatireis', [500, 1000]),
@@ -410,6 +417,24 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   'instant-puddingpulver-zuckerfrei': pack('Packung', 'Instant-Puddingpulver', [40]),
   roestzwiebeln: pack('Packung', 'Röstzwiebeln', [150]),
   'weizenmehl-type-405': pack('Packung', 'Weizenmehl Type 405', [1000]),
+  // Schweizer Nährwertdatenbank 7.1 (Zweitquelle): Gewürze, Süßungs- und Bindemittel als Vorrat.
+  chiliflocken: stock('Chiliflocken'),
+  chilipulver: stock('Chilipulver'),
+  currypulver: stock('Currypulver'),
+  erythrit: stock('Erythrit'),
+  'gyros-gewuerz': stock('Gyros-Gewürz'),
+  gyrosgewuerz: stock('Gyros-Gewürz'),
+  johannisbrotkernmehl: stock('Johannisbrotkernmehl'),
+  kreuzkuemmel: stock('Kreuzkümmel'),
+  kurkuma: stock('Kurkuma'),
+  kuemmel: stock('Kümmel'),
+  'majoran-getrocknet': stock('Majoran'),
+  'muskatnuss-gerieben': stock('Muskatnuss'),
+  'oregano-getrocknet': stock('Oregano'),
+  'paprikapulver-edelsuess': stock('Paprikapulver edelsüß'),
+  'paprikapulver-geraeuchert': stock('Paprikapulver geräuchert'),
+  'rosmarin-getrocknet': stock('Rosmarin'),
+  zimt: stock('Zimt'),
 
   // --- Getränke und Sonstiges ---
   'espresso-zubereitet': stock('Espresso'),
@@ -421,4 +446,23 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   'schwarzer-tee-aufgebrueht': stock('Schwarzer Tee'),
   eiswuerfel: stock('Eiswürfel', 'aus dem Gefrierfach'),
   'zartbitterschokolade-70': pack('Tafel', 'Zartbitterschokolade 70 %', [100]),
+
+  // --- Schweizer Nährwertdatenbank 7.1 (Zweitquelle): Vorräte, Konserven, Proteinpulver ---
+  'kokosmilch-fettreduziert': pack('Dose', 'Kokosmilch fettreduziert', [400], {
+    labels: ['400 ml'],
+  }),
+  kokosraspeln: pack('Packung', 'Kokosraspeln', [200]),
+  reisessig: stock('Reisessig'),
+  'salsa-glas': pack('Glas', 'Salsa', [300]),
+  'tomatensalsa-glas': pack('Glas', 'Tomatensalsa', [300]),
+  'geschmackspulver-zuckerfrei': stock('Geschmackspulver'),
+  'casein-proteinpulver-vanille': stock('Casein-Proteinpulver Vanille'),
+  'clear-whey-isolat-fruchtgeschmack': stock('Clear-Whey-Isolat'),
+  'veganes-proteinpulver': stock('Veganes Proteinpulver'),
+  'veganes-proteinpulver-erbse-reis-neutral': stock('Veganes Proteinpulver neutral'),
+  'veganes-proteinpulver-schoko': stock('Veganes Proteinpulver Schoko'),
+  'veganes-proteinpulver-vanille': stock('Veganes Proteinpulver Vanille'),
+  'whey-proteinpulver-neutral': stock('Whey-Proteinpulver neutral'),
+  'whey-proteinpulver-schoko': stock('Whey-Proteinpulver Schoko'),
+  'whey-proteinpulver-vanille': stock('Whey-Proteinpulver Vanille'),
 };
