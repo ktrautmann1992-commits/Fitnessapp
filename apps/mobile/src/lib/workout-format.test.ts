@@ -6,6 +6,7 @@ import { cardioSpeed } from '@fitnessapp/core';
 
 import {
   cardioSpeedTexts,
+  cardioStatTiles,
   hintText,
   restTexts,
   targetNotes,
@@ -94,6 +95,48 @@ describe('Ausdauer und Pausentimer (Etappe C2)', () => {
     expect(cardioSpeedTexts(swim)).toEqual([
       { text: 'Pace: 2:30 min/100 m', a11y: 'Pace: 2 Minuten 30 Sekunden pro 100 Meter' },
     ]);
+  });
+
+  it('Werte-Kacheln (Eintrag ohne Strecke): Lauf wie im Screenshot – Dauer, Distanz, Höhenmeter, Pace, Tempo', () => {
+    const tiles = cardioStatTiles({
+      modality: 'run',
+      duration_s: 3960,
+      distance_m: 11_500,
+      elevation_m: 56,
+    });
+    expect(tiles.map((x) => [x.key, x.label, x.value])).toEqual([
+      ['duration', 'Dauer', '1:06:00'],
+      ['distance', 'Distanz', '11,5 km'],
+      ['elevation', 'Höhenmeter', '56 m'],
+      ['pace', 'Ø-Pace', '5:44 /km'],
+      ['speed', 'Ø-Tempo', '10,5 km/h'],
+    ]);
+    expect(tiles[0]?.a11y).toBe('Dauer: 1 Stunde 6 Minuten');
+    expect(tiles[1]?.a11y).toBe('Distanz: 11,5 Kilometer');
+    expect(tiles[3]?.a11y).toBe('Pace: 5 Minuten 44 Sekunden pro Kilometer');
+  });
+
+  it('Werte-Kacheln: nur Dauer ohne Distanz; Rad nur km/h; Schwimmen /100 m; Rudern Split /500 m', () => {
+    expect(
+      cardioStatTiles({ modality: 'run', duration_s: 1800, distance_m: null, elevation_m: null }),
+    ).toEqual([{ key: 'duration', label: 'Dauer', value: '30:00', a11y: 'Dauer: 30 Minuten' }]);
+    expect(
+      cardioStatTiles({ modality: 'bike', duration_s: 3600, distance_m: 25_300, elevation_m: 0 })
+        .map((x) => x.value)
+        .slice(1),
+    ).toEqual(['25,3 km', '25,3 km/h']);
+    expect(
+      cardioStatTiles({ modality: 'swim', duration_s: 1500, distance_m: 1000, elevation_m: null })
+        .map((x) => x.value)
+        .at(-1),
+    ).toBe('2:30 /100 m');
+    const row = cardioStatTiles({
+      modality: 'row',
+      duration_s: 480,
+      distance_m: 2000,
+      elevation_m: null,
+    }).at(-1);
+    expect([row?.label, row?.value]).toEqual(['Split', '2:00 /500 m']);
   });
 
   it('Restzeit der Pause', () => {

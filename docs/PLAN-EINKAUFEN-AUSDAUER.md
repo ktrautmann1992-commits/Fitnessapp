@@ -379,6 +379,19 @@ Lauf und in der abgeschlossenen Trainingseinheit/Verlauf.
   und Höhenprofil als Fläche mit gemeinsamer km-Achse (`distanceTicks`, `elevationStats`). Lädt die Karte nicht,
   steht die farbige Skizze da. Nur eigener Bildschirm – das Teilen-Bild bleibt unverändert (Privatzone, ohne Puls).
   Demo-Lauf mit wechselndem Tempo (Einlaufen, Anstieg ~22 m bei km 3, starker Schluss), fest ohne Zufall.
+- **Auswertung auch im Tagebuch-Eintrag** (Gründer-Wunsch 28.10.2026): Heute („Ansehen“), Woche, Verlauf, Tag,
+  Kalender, Wochenauswertung und Uhr-Zusammenführung öffnen immer `/log/[id]` – seit es diese Links gibt (Verlauf seit
+  Phase 4, Heute/Woche seit #157), nur die Ausdauer-Liste und das Speichern führten zu `/ausdauer/[id]`. Keine
+  Regression im Code, aber eine Lücke: Ein aufgezeichneter Lauf, der zur geplanten Einheit zählt („Lockerer
+  Dauerlauf“), erschien dort nur als Textzeilen. Jetzt: Die Darstellung der Auswertung steckt in
+  `components/route-insights.tsx` (`RouteInsights`) und wird von `/ausdauer/[id]` und `/log/[id]` genutzt. Hat der
+  Eintrag eine Strecke (`tracked_routes.session_log_id`, gespeichert oder wartend; `data/route-view.ts`
+  `routeForLog`), zeigt der Eintrag oben die volle Auswertung und darunter nur Eigenes (erledigt/teilweise, kcal einmal,
+  Belastung, Notiz) und die Aktionen (Als Bild teilen, „Strecke bearbeiten oder als GPX speichern“, Ändern, Eintrag
+  löschen) – ohne doppelte Werte. Gilt für Laufen, Rad, Gehen, Wandern. Einträge ohne Strecke (manuell, Uhr ohne GPS)
+  bleiben schlicht, die Werte stehen als Kacheln (`cardioStatTiles`). Entscheidung gegen eine Weiterleitung auf
+  `/ausdauer/[id]`: Ändern/Löschen/Entwurf/Übertragung des Eintrags hängen am Eintrag, die Seite ist das gemeinsame
+  Ziel aller Links. E2E `run-log-insights.spec.ts`.
 - **Migration (additiv)** `20261020210000_tracked_route_elevation_profile.sql`: `private.elevation_profile_valid`,
   Spalte `tracked_routes.elevation_profile` (CHECK, auch für service_role), `save_tracked_route` = S1-Fassung + nur das
   optionale Feld (db-sync prüft die Obermenge); Export automatisch (`to_jsonb(t)`). pgTAP neu

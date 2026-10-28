@@ -1,9 +1,16 @@
-import { type CardioSpeed, formatDuration, type WorkoutItem } from '@fitnessapp/core';
+import {
+  cardioSpeed,
+  type CardioSpeed,
+  type EnduranceModality,
+  formatDuration,
+  type WorkoutItem,
+} from '@fitnessapp/core';
 
 import { type DraftTarget, draftTargetFrom } from '@/data/workout-draft';
 import { t } from '@/i18n';
 
 import { formatDecimal, formatKg } from './format';
+import { cardioDurationText, kmText } from './history-format';
 import { buildSummary, type ExerciseSummary, repsRange, reserveFromRpe } from './plan-format';
 
 /**
@@ -145,6 +152,75 @@ export function cardioSpeedTexts(speed: CardioSpeed): { text: string; a11y: stri
           a11y: t.workout.cardio.pace100A11y(minutes, seconds),
         };
   return speed.kind === 'per_km' ? [pace, speedLine] : [pace];
+}
+
+/** Eine Werte-Kachel (StatValue): Beschriftung, großer Wert, Ansage und testID. */
+export interface CardioStatTile {
+  readonly key: 'duration' | 'distance' | 'elevation' | 'pace' | 'speed';
+  readonly label: string;
+  readonly value: string;
+  readonly a11y: string;
+}
+
+/**
+ * Werte-Kacheln eines Ausdauer-Eintrags ohne aufgezeichnete Strecke (`/log/[id]`, 28.10.2026): Dauer, Distanz,
+ * Höhenmeter, Ø-Pace (bzw. /100 m, Split /500 m) und Ø-Tempo – statt reiner Textzeilen. Werte nur, wenn vorhanden.
+ */
+export function cardioStatTiles(cardio: {
+  readonly modality: EnduranceModality;
+  readonly duration_s: number;
+  readonly distance_m: number | null;
+  readonly elevation_m: number | null;
+}): CardioStatTile[] {
+  const T = t.logEntry.tiles;
+  const duration = cardioDurationText(cardio.duration_s);
+  const tiles: CardioStatTile[] = [
+    {
+      key: 'duration',
+      label: T.duration,
+      value: formatDuration(cardio.duration_s),
+      a11y: duration.a11y,
+    },
+  ];
+  if (cardio.distance_m !== null && cardio.distance_m > 0) {
+    const km = kmText(cardio.distance_m);
+    tiles.push({
+      key: 'distance',
+      label: T.distance,
+      value: T.km(km),
+      a11y: t.logEntry.distanceA11y(km),
+    });
+  }
+  if (cardio.elevation_m !== null && cardio.elevation_m > 0) {
+    tiles.push({
+      key: 'elevation',
+      label: T.elevation,
+      value: T.meters(cardio.elevation_m),
+      a11y: T.elevationA11y(cardio.elevation_m),
+    });
+  }
+  const speed = cardioSpeed(cardio.modality, cardio.duration_s, cardio.distance_m);
+  if (!speed) return tiles;
+  const [first, second] = cardioSpeedTexts(speed);
+  const kmh = { key: 'speed', label: T.speed, value: T.kmh(formatDecimal(speed.kmh)) } as const;
+  if (speed.kind === 'kmh' || speed.paceS === null) {
+    return [...tiles, { ...kmh, a11y: first?.a11y ?? '' }];
+  }
+  const pace = formatDuration(speed.paceS);
+  const paceTile: CardioStatTile = {
+    key: 'pace',
+    label: speed.kind === 'per_500m' ? T.split : T.pace,
+    value:
+      speed.kind === 'per_km'
+        ? T.paceKm(pace)
+        : speed.kind === 'per_100m'
+          ? T.pace100(pace)
+          : T.split500(pace),
+    a11y: first?.a11y ?? '',
+  };
+  return speed.kind === 'per_km' && second
+    ? [...tiles, paceTile, { ...kmh, a11y: second.a11y }]
+    : [...tiles, paceTile];
 }
 
 /** Restzeit der Pause, z. B. „1:30“, und für den Bildschirmleser. */
