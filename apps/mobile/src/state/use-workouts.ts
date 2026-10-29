@@ -1,5 +1,5 @@
-import type { Workout } from '@fitnessapp/core';
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
+import { availableWorkoutEquipment, type Workout } from '@fitnessapp/core';
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
 import type { Backend } from '@/data/backend';
 import { activeRunStore, type ActiveWorkoutRun } from '@/data/workout-run';
@@ -53,4 +53,21 @@ export function useWorkoutLibrary(): WorkoutLibraryState & { retry: () => void }
 /** Das laufende Workout dieser App-Sitzung (nur Arbeitsspeicher). */
 export function useActiveWorkoutRun(): ActiveWorkoutRun | null {
   return useSyncExternalStore(activeRunStore.subscribe, activeRunStore.get, activeRunStore.get);
+}
+
+/**
+ * Geräte laut Angaben (Zuhause, Studio) für den Hinweis „Dir fehlt …“ (packages/core availableWorkoutEquipment) –
+ * Hinweis statt Ausblenden. null = Angaben noch nicht geladen (kein Hinweis).
+ */
+export function useWorkoutEquipment(): ReadonlySet<string> | null {
+  const { rows } = useApp();
+  const userEquipment = rows?.userEquipment ?? null;
+  const trainingSlots = rows?.trainingSlots ?? null;
+  return useMemo(
+    () =>
+      userEquipment && trainingSlots
+        ? availableWorkoutEquipment({ userEquipment, trainingSlots })
+        : null,
+    [trainingSlots, userEquipment],
+  );
 }

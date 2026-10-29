@@ -62,6 +62,75 @@ export const deWorkouts = {
     sets_reps: 'Sätze × Wdh.',
     flow: 'Flow',
   },
+  /**
+   * Bereiche (Gründer-Wunsch 29.10.2026: Yoga, Entspannung, Hyrox, Calisthenics, CrossFit-Stil ausprobieren) – für
+   * jeden sichtbar, unabhängig vom eigenen Plan. „CrossFit“ ist eine geschützte Marke: nur beschreibend („-Stil“).
+   */
+  themes: {
+    label: 'Bereiche',
+    all: 'Alle',
+    names: {
+      relax: 'Entspannung',
+      yoga_pilates: 'Yoga & Pilates',
+      hyrox: 'Hyrox',
+      calisthenics: 'Calisthenics',
+      functional: 'CrossFit-Stil / Functional Fitness',
+      try_new: 'Neues ausprobieren',
+    },
+    chip: (name: string, n: number) => `${name} (${n})`,
+    chipA11y: (name: string, n: number) => `${name}: ${n === 1 ? '1 Workout' : `${n} Workouts`}`,
+    intro: {
+      relax:
+        'Ruhige Yoga- und Dehn-Abläufe zum Abschalten – mit Atemübung und Body-Scan im Liegen.',
+      yoga_pilates: 'Alle Yoga- und Pilates-Abläufe, vom sanften Einstieg bis zur Kräftigung.',
+      hyrox:
+        'Hyrox-Stationen zum Kennenlernen – mit und ohne Wettkampf-Geräte. Dein Plan bleibt unverändert.',
+      calisthenics:
+        'Training mit dem eigenen Körpergewicht – die Basis der Skill-Pfade, zuhause, an der Stange oder im Park.',
+      functional:
+        'Funktionelle Workouts im WOD-Stil: AMRAP (so viele Runden wie möglich), EMOM (jede Minute), For Time und Chipper (so schnell wie sauber möglich). Skalieren: Einsteiger nehmen weniger Gewicht und Wiederholungen.',
+      try_new:
+        'Je Sportart der leichteste Einstieg – einfach reinschnuppern. Das Workout landet als freie Einheit im Tagebuch, dein Plan bleibt, wie er ist.',
+    },
+    empty: 'In diesem Bereich passt gerade kein Workout zu deinen Filtern.',
+    showAll: 'Alle Bereiche zeigen',
+  },
+  /** Sportart/Trainingsform auf der Karte (statt der Kategorie, wenn bekannt). */
+  disciplines: {
+    yoga: 'Yoga',
+    pilates: 'Pilates',
+    mobility: 'Mobilität',
+    hyrox: 'Hyrox',
+    calisthenics: 'Calisthenics',
+    functional: 'Functional',
+    rowing: 'Rudern',
+    run_strength: 'Lauf-Kraft',
+  },
+  wod: {
+    styles: {
+      amrap: 'AMRAP – so viele Runden wie möglich',
+      emom: 'EMOM – jede Minute eine Übung',
+      for_time: 'For Time – so schnell wie sauber möglich',
+      chipper: 'Chipper – einmal durch die Liste, so schnell wie sauber möglich',
+    },
+    amrapHow: (minutes: number) =>
+      `Runde für Runde, bis nach ${minutes} Minuten der Timer endet. Gezählt werden volle Runden plus Übungen.`,
+    emomHow:
+      'Zu jeder vollen Minute beginnt die nächste Übung – was von der Minute übrig ist, ist Pause.',
+    forTimeHow: (minutes: number) =>
+      `Alles so schnell wie sauber möglich; nach ${minutes} Minuten endet der Timer (Zeitlimit).`,
+    cap: (s: number) => `Zeitlimit: noch ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`,
+    capA11y: (s: number) => `Zeitlimit: noch ${Math.floor(s / 60)} Minuten ${s % 60} Sekunden`,
+    capReached: 'Zeitlimit erreicht',
+    amrapResult: (rounds: number, extra: number) =>
+      `Ergebnis: ${rounds === 1 ? '1 Runde' : `${rounds} Runden`} + ${extra === 1 ? '1 Übung' : `${extra} Übungen`}`,
+    forTimeResult: (time: string) => `Deine Zeit: ${time}`,
+    scaling:
+      'Skalieren: Einsteiger nehmen weniger Gewicht, weniger Wiederholungen und Pausen nach Bedarf; Fortgeschrittene steigern Gewicht und Tempo. Technik geht vor Tempo.',
+  },
+  equipmentMissing: (names: string) => `Dir fehlt laut deinen Angaben: ${names}.`,
+  equipmentMissingHint:
+    'Du kannst das Workout trotzdem ansehen und starten – zum Beispiel im Studio oder mit Ersatz.',
   minutes: (n: number) => `${n} Min.`,
   noEquipment: 'ohne Geräte',
   doneToday: 'Heute erledigt ✓',

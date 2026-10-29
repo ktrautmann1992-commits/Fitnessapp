@@ -1,4 +1,11 @@
-import { findEquipment, WORKOUT_LIMITS, type Workout, workoutTileSummary } from '@fitnessapp/core';
+import {
+  findEquipment,
+  missingWorkoutEquipment,
+  WORKOUT_LIMITS,
+  type Workout,
+  workoutDiscipline,
+  workoutTileSummary,
+} from '@fitnessapp/core';
 import { areaColors, fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -69,20 +76,30 @@ export function equipmentText(ids: readonly string[]): string {
   return ids.map((id) => findEquipment(id)?.nameDe ?? id).join(', ');
 }
 
-/** Karte in der Liste: Titel, Sterne, Dauer, Ziel, Geräte; ganze Karte tippbar (Rolle „Link“). */
+/**
+ * Karte in der Liste: Titel, Sterne, Dauer, Sportart (sonst Ziel), Geräte; fehlende Geräte als Hinweis (nie
+ * ausgeblendet); ganze Karte tippbar (Rolle „Link“).
+ */
 export function WorkoutCard({
   workout,
   doneToday,
   onPress,
+  available = null,
 }: {
   workout: Workout;
   doneToday: boolean;
   onPress: () => void;
+  /** Geräte laut Angaben (useWorkoutEquipment); null = unbekannt, kein Hinweis. */
+  available?: ReadonlySet<string> | null;
 }) {
   const theme = useThemeColors();
+  const discipline = workoutDiscipline(workout);
+  const missing = missingWorkoutEquipment(workout, available);
+  const missingText =
+    missing.length > 0 ? t.workouts.equipmentMissing(equipmentText(missing)) : null;
   const meta = [
     t.workouts.minutes(workout.minutes),
-    t.workouts.categories[workout.category],
+    discipline ? t.workouts.disciplines[discipline] : t.workouts.categories[workout.category],
     t.workouts.formats[workout.format],
     equipmentText(workout.equipment_ids),
   ].join(' · ');
@@ -93,6 +110,7 @@ export function WorkoutCard({
         workout.title_de,
         t.workouts.stars.a11y(workout.difficulty),
         meta,
+        missingText,
         doneToday ? t.workouts.doneToday : null,
       ]
         .filter((x): x is string => x !== null)
@@ -114,6 +132,14 @@ export function WorkoutCard({
       </View>
       <StarRating difficulty={workout.difficulty} />
       <Text style={[styles.cardMeta, { color: theme.textMuted }]}>{meta}</Text>
+      {missingText ? (
+        <Text
+          style={[styles.cardMeta, { color: theme.warning }]}
+          testID={`workout-card-${workout.id}-missing`}
+        >
+          {missingText}
+        </Text>
+      ) : null}
       {doneToday ? (
         <Text style={[styles.cardDone, { color: theme.success }]}>{t.workouts.doneToday}</Text>
       ) : null}

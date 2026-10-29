@@ -1,5 +1,4 @@
 import {
-  buildWorkoutTimerPlan,
   type Exercise,
   type Workout,
   workoutLogExercises,
@@ -8,6 +7,10 @@ import {
   workoutRunSummary,
   type WorkoutTimerStep,
   startWorkoutRun,
+  wodCapReached,
+  wodStyle,
+  wodTimeCapS,
+  wodTimerPlan,
 } from '@fitnessapp/core';
 
 import { createFreeDraft, freeDraftKey, type WorkoutDraft } from './workout-draft';
@@ -45,7 +48,8 @@ export function startActiveRun(input: {
   nowMs: number;
   newId: () => string;
 }): ActiveWorkoutRun {
-  const steps = buildWorkoutTimerPlan(input.workout);
+  // WOD-Stil: AMRAP mit Höchstzahl Runden (das Zeitlimit beendet den Lauf), sonst wie buildWorkoutTimerPlan.
+  const steps = wodTimerPlan(input.workout);
   return {
     ownerUserId: input.ownerUserId,
     workoutId: input.workout.id,
@@ -140,8 +144,15 @@ export function workoutLogDraft(input: {
         format: workout.format,
         summary,
         userNote: input.userNote,
+        wod: wodNote(workout, current.run),
       }),
       workoutId: workout.id,
     },
   };
+}
+
+/** WOD-Angaben für die Notiz (Trainingsform, Zeitlimit erreicht) – null bei anderen Workouts. */
+function wodNote(workout: Workout, run: WorkoutRun) {
+  const style = wodStyle(workout);
+  return style ? { style, capReached: wodCapReached(run, wodTimeCapS(workout)) } : null;
 }

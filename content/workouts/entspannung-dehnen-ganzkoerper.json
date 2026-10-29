@@ -1,0 +1,104 @@
+{
+  "id": "entspannung-dehnen-ganzkoerper",
+  "version": 1,
+  "status": "published",
+  "title_de": "Ganzkörper sanft dehnen",
+  "summary_de": "Sanftes Dehnen von Kopf bis Fuß im Stehen und Sitzen – ideal am Abend oder nach einem langen Tag am Schreibtisch.",
+  "category": "mobility",
+  "difficulty": 1,
+  "minutes": 9,
+  "format": "flow",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": [],
+  "warmup_de": "Zwei Minuten locker gehen und die Arme kreisen, damit die Muskeln warm sind.",
+  "cooldown_de": "Im Sitzen ein paar ruhige Atemzüge nehmen und nachspüren.",
+  "exercises": [
+    {
+      "exercise_id": "brustdehnung-tuerrahmen",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Nur bis zu einem angenehmen Ziehen."
+    },
+    {
+      "exercise_id": "schulter-rueckseite-dehnen",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "unterarm-dehnen",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "oberschenkel-vorderseite-dehnen",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "wadendehnung-wand",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "adduktoren-dehnen-stehend",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "beinrueckseite-dehnen-sitzend",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "gesaess-dehnen-sitzend",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-entspannung-sitzend",
+      "reps": null,
+      "duration_s": 90,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

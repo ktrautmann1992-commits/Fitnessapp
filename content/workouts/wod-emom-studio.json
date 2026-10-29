@@ -1,0 +1,60 @@
+{
+  "id": "wod-emom-studio",
+  "version": 1,
+  "status": "published",
+  "title_de": "EMOM 16 – Rudern & Kettlebell",
+  "summary_de": "Jede Minute eine Station: Rudern, Kettlebell tragen, Hängen an der Stange, Burpees. Einsteiger: 30 Sekunden arbeiten. Fortgeschrittene: die volle Zeit.",
+  "category": "hiit_cardio",
+  "difficulty": 4,
+  "minutes": 16,
+  "format": "interval",
+  "rounds": 4,
+  "round_rest_s": 15,
+  "equipment_ids": ["rowing_machine", "kettlebells", "pull_up_bar"],
+  "warmup_de": "Fünf Minuten locker einrollen (rudern, gehen oder Step-Jacks), dann je zehn Kniebeugen, Liegestütz und Hüftkreise.",
+  "cooldown_de": "Fünf Minuten locker gehen und ruhig atmen, danach Hüfte und Schultern dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "rudergeraet",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "farmers-carry-kettlebell",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "toter-hang",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": "Einsteiger: Füße am Boden lassen."
+    },
+    {
+      "exercise_id": "burpee-ohne-sprung",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

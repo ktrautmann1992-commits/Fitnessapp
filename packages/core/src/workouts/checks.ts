@@ -5,6 +5,7 @@ import { findNutritionTextRuleHits } from '../content/text-rules';
 import { findEquipment } from '../equipment';
 import type { Workout } from './schema';
 import { buildWorkoutTimerPlan, estimateWorkoutSeconds } from './timer';
+import { wodTimeCapS } from './wod';
 
 /**
  * Prüfregeln der Workouts (docs/PLAN-WORKOUTS.md Abschnitt 3). Eingabe ist ein per Zod geprüftes Workout (W1) und die
@@ -15,7 +16,8 @@ import { buildWorkoutTimerPlan, estimateWorkoutSeconds } from './timer';
  * - W4: Format passt zur Belastungsart: Halte-/Zeitübungen nach Sekunden, Übungen mit Gewicht nach Wiederholungen.
  * - W5: Sicherheit: 1–2 Sterne nur leichte Übungen (Schwierigkeit ≤ 2, ohne „high_skill“) und mit Pausen (außer im
  *       Format `flow`, das ohne Pausen-Bildschirm läuft); 1 Stern ohne Sprünge („high_impact“).
- * - W6 (gelb): Angegebene Dauer passt zur geschätzten Dauer (±20 %, mindestens ±2 Minuten).
+ * - W6 (gelb): Angegebene Dauer passt zur geschätzten Dauer (±20 %, mindestens ±2 Minuten). WOD-Stil mit Zeitlimit
+ *       (AMRAP, For Time, Chipper – wod.ts): `minutes` ist das Limit, gelb nur, wenn die Schätzung darüber liegt.
  * - W7: Textregeln (keine Heil-/Gesundheitsversprechen, keine Marken) wie bei Rezepten.
  */
 export function checkWorkout(workout: Workout, library: ExerciseLookup): ContentIssue[] {
@@ -181,7 +183,9 @@ export function checkWorkout(workout: Workout, library: ExerciseLookup): Content
     L.durationTolerance.minMinutes,
     workout.minutes * L.durationTolerance.share,
   );
-  if (Math.abs(estimatedMin - workout.minutes) > tolerance) {
+  const capped = wodTimeCapS(workout) !== null;
+  const off = capped ? estimatedMin - workout.minutes : Math.abs(estimatedMin - workout.minutes);
+  if (off > tolerance) {
     issues.push(
       makeIssue(
         'W6',

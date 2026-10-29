@@ -1,0 +1,76 @@
+{
+  "id": "calisthenics-park",
+  "version": 1,
+  "status": "published",
+  "title_de": "Calisthenics im Park",
+  "summary_de": "Für Stange und Barren im Park: negative Klimmzüge, Dips, Pistol-Vorstufe und Hollow Body – kräftig, ohne Akrobatik.",
+  "category": "full_body",
+  "difficulty": 4,
+  "minutes": 22,
+  "format": "circuit",
+  "rounds": 3,
+  "round_rest_s": 120,
+  "equipment_ids": ["pull_up_bar", "dip_station"],
+  "warmup_de": "Fünf Minuten locker laufen, dann Schultern kreisen und fünf Schulterblatt-Klimmzüge.",
+  "cooldown_de": "Ruhig gehen, Brust und Schultern dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "klimmzug-negativ",
+      "reps": 5,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 45,
+      "note_de": "Fünf Sekunden absenken."
+    },
+    {
+      "exercise_id": "dips-barren",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 45,
+      "note_de": null
+    },
+    {
+      "exercise_id": "pistol-kniebeuge-kasten",
+      "reps": 6,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 45,
+      "note_de": "Je Bein, auf eine Bank setzen."
+    },
+    {
+      "exercise_id": "australian-pull-up",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 45,
+      "note_de": null
+    },
+    {
+      "exercise_id": "diamant-liegestuetz",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 45,
+      "note_de": null
+    },
+    {
+      "exercise_id": "hollow-body-halten",
+      "reps": null,
+      "duration_s": 25,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

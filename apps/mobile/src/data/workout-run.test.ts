@@ -2,12 +2,14 @@ import { randomUUID } from 'node:crypto';
 
 import {
   advanceWorkoutRun,
+  capWorkoutRun,
   completeWorkoutStep,
   endWorkoutRun,
   type Exercise,
   sessionLogPayloadSchema,
   skipWorkoutStep,
   type Workout,
+  wodTimeCapS,
 } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
@@ -56,9 +58,10 @@ describe('Workout-Bibliothek im Testmodus', () => {
   it('lädt die freigegebenen Workouts aus dem Bündel (Startbestand, Lauf-Kraft, Rudern, Flows – freigegeben 27.10.2026)', async () => {
     const s = await setup();
     const published = s.workouts.filter((w) => w.status === 'published');
-    // 56 + 10 Yoga-/Pilates-Routinen der Restpunkte A (27.10.2026).
-    expect(published.length).toBe(66);
-    expect(s.workouts).toHaveLength(66);
+    // 56 + 10 Yoga-/Pilates-Routinen der Restpunkte A (27.10.2026) + 15 „Neues ausprobieren“ (29.10.2026: 3 Entspannung,
+    // 3 Hyrox, 3 Calisthenics, 6 im WOD-Stil).
+    expect(published.length).toBe(81);
+    expect(s.workouts).toHaveLength(81);
     expect(
       s.workouts
         .filter((w) => w.status === 'draft')
@@ -71,7 +74,8 @@ describe('Workout-Bibliothek im Testmodus', () => {
     expect(new Set(s.workouts.map((w) => w.difficulty))).toEqual(new Set([1, 2, 3, 4, 5]));
     expect(s.workouts.some((w) => w.equipment_ids.length === 0)).toBe(true);
     for (const w of s.workouts) {
-      expect(w.minutes).toBeGreaterThanOrEqual(10);
+      // Kurze Entspannung ab 5 Minuten (29.10.2026, „Fünf Minuten Ruhe“).
+      expect(w.minutes).toBeGreaterThanOrEqual(5);
       expect(w.minutes).toBeLessThanOrEqual(45);
       for (const item of w.exercises) expect(s.exercises.has(item.exercise_id)).toBe(true);
     }
@@ -212,6 +216,49 @@ describe('Workout abschließen → freie Einheit am Tag (Herkunft „workout“)
     expect(payload.notes).toContain('1/14 Sätze');
     expect(payload.notes).toContain('vorzeitig beendet');
     expect(payload.finished_at).toBe(new Date(T0 + 120_000).toISOString());
+  });
+
+  it('AMRAP: Höchstzahl Runden, Zeitlimit beendet den Lauf, Notiz mit Ergebnis (29.10.2026)', async () => {
+    const s = await setup();
+    const workout = s.find('wod-amrap-zuhause');
+    const active = startActiveRun({ ownerUserId: USER_ID, workout, nowMs: T0, newId: randomUUID });
+    const rounds = Math.max(...active.steps.map((st) => (st.kind === 'work' ? st.round : 0)));
+    expect(rounds).toBe(10);
+    const capS = wodTimeCapS(workout);
+    expect(capS).toBe(12 * 60);
+    // Wiederholungs-Übungen dauern je 20 s, Zeitübungen laufen ab – nach 12 Minuten greift das Limit.
+    let run = active.run;
+    let now = T0;
+    for (let i = 0; i < 2000 && run.finishedAtMs === null; i += 1) {
+      now += 1000;
+      run = capWorkoutRun(active.steps, run, now, capS);
+      const step = active.steps[run.index];
+      const due = now - (run.stepStartedAtMs + run.stepPausedMs) >= 20_000;
+      if (run.finishedAtMs === null && step?.kind === 'work' && step.seconds === null && due) {
+        run = completeWorkoutStep(active.steps, run, now);
+      }
+    }
+    expect(run.finishedAtMs).toBe(T0 + 12 * 60 * 1000);
+    const result = workoutLogDraft({
+      active: { ...active, run },
+      workout,
+      exercises: s.exercises,
+      nowMs: now,
+      today: TODAY,
+      sessionRpe: 8,
+      userNote: '',
+      newId: randomUUID,
+    });
+    if (!result.ok) throw new Error('kein Entwurf');
+    const payload = draftToPayload(result.draft, {
+      writeId: randomUUID(),
+      now: new Date(now).toISOString(),
+      today: TODAY,
+    });
+    expect(sessionLogPayloadSchema.safeParse(payload).success).toBe(true);
+    expect(payload.notes).toMatch(/AMRAP: \d+ Runden \+ \d+ Übungen/);
+    expect(payload.notes).toContain('Zeitlimit erreicht');
+    expect(payload.notes).not.toContain('vorzeitig beendet');
   });
 
   it('nichts erledigt → kein Entwurf', async () => {
