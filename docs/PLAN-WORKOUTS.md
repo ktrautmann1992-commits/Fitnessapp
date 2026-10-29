@@ -150,7 +150,7 @@ Hinweise auf fehlende Geräte.
   Tagebuch: „AMRAP: x Runden + y Übungen“ bzw. „Zeit m:ss“, „Zeitlimit erreicht“ statt „vorzeitig beendet“. „CrossFit“
   ist eine geschützte Marke – nur beschreibend im Bereichsnamen, nie in Inhalten.
 - **W-E16 W6 bei Zeitlimit:** Bei AMRAP/For Time/Chipper ist `minutes` das Limit – gelb nur, wenn die Schätzung
-  darüber liegt (Validator von `main` meldet für die vier WODs bis zum Merge einen gelben, nicht blockierenden W6).
+  darüber liegt (Validator von `main` meldet bis zum Merge für „For Time – Kurzhantel“ und „Chipper – Langhantel“ einen gelben, nicht blockierenden W6; geprüft: 0 rote Fehler).
 - **W-E17 Geräte-Hinweis statt Ausblenden:** Geräte laut Angaben (Zuhause inkl. Park → Stange/Barren; Studio, wenn
   Studio-Termine oder Studio-Angaben – Hyrox-Geräte nur mit „Hyrox-Geräte im Studio“). Fehlt ein Gerät: „Dir fehlt laut
   deinen Angaben: …“ auf Karte und Detail; Starten bleibt möglich. Matte/Block zählen nie als fehlend.
