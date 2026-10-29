@@ -58,7 +58,7 @@ function categorize(files: readonly NutritionContentFile[], ids: string[], categ
 
 // Jeder Aufbau prüft den Bestand dreimal (validateContent + je ein „nachher“ für zwei Vorschauen; vor K2 fünfmal) –
 // unter Last (turbo parallel) trotzdem langsam, daher der großzügige Timeout.
-describe('Redaktionsbereich Ernährung (N2d)', { timeout: 30_000 }, () => {
+describe('Redaktionsbereich Ernährung (N2d)', { timeout: 120_000 }, () => {
   it('echter Stand aus dem Bündel lässt sich aufbauen (mit oder ohne Katalog im Repository)', () => {
     const admin = getNutritionAdmin();
     expect(admin.recipes.length).toBeLessThanOrEqual(CONTENT_BUNDLE.nutritionFiles.length);
