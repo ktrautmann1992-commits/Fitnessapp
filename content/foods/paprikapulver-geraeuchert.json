@@ -1,0 +1,50 @@
+{
+  "id": "paprikapulver-geraeuchert",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Paprikapulver geräuchert",
+  "aliases_de": [],
+  "shopping_category": "spices_baking",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 358,
+    "protein_g": 14.8,
+    "carbs_g": 34.9,
+    "sugar_g": 33.2,
+    "fat_g": 13,
+    "sat_fat_g": 2.1,
+    "fiber_g": 20.9,
+    "salt_g": 0.1,
+    "alcohol_g": 0
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "ch_naehrwertdatenbank",
+    "version": "7.1",
+    "ref": "663",
+    "name": "Paprika (Gewürz)",
+    "category": "spices_sauces",
+    "license": "Nutzung mit Quellenvermerk (auch kommerziell)",
+    "retrieved_at": "2026-10-28"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-28",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
