@@ -5,6 +5,7 @@ import { codePointLength } from '../log/schemas';
 import type { LoggedSet } from '../log/types';
 import type { Workout, WorkoutCategory, WorkoutFormat } from './schema';
 import type { WorkoutRunSummary } from './timer';
+import { amrapScore, type WodStyle } from './wod';
 
 /**
  * Workout-Bibliothek in der App (docs/PLAN-WORKOUTS.md Abschnitte 4–5): Filter der Liste, Sicherheitshinweise und der
@@ -244,6 +245,8 @@ export function workoutStars(difficulty: number): string {
 /**
  * Notiz des Eintrags (höchstens SESSION_LOG_LIMITS.notesMaxChars Zeichen): Titel, Sterne, Runden bzw. Sätze, aktive
  * Minuten; „vorzeitig beendet“, wenn nicht alles erledigt wurde; danach die eigene Notiz (gekürzt, falls nötig).
+ * WOD-Stil (`wod`, wod.ts): AMRAP mit „x Runden + y Übungen“, For Time/Chipper mit der genauen Zeit; endet der Lauf am
+ * Zeitlimit, steht „Zeitlimit erreicht“ statt „vorzeitig beendet“.
  */
 export function workoutLogNote(input: {
   readonly title: string;
@@ -252,12 +255,20 @@ export function workoutLogNote(input: {
   readonly summary: Pick<
     WorkoutRunSummary,
     'roundsCompleted' | 'rounds' | 'workDone' | 'workTotal' | 'complete' | 'activeS'
-  >;
+  > &
+    Partial<Pick<WorkoutRunSummary, 'items'>>;
   readonly userNote: string;
+  readonly wod?: { readonly style: WodStyle; readonly capReached: boolean } | null;
 }): string {
   const { summary } = input;
-  const progress =
-    input.format === 'sets_reps'
+  const wod = input.wod ?? null;
+  const score =
+    wod?.style === 'amrap'
+      ? amrapScore({ items: summary.items ?? [], roundsCompleted: summary.roundsCompleted })
+      : null;
+  const progress = score
+    ? `AMRAP: ${score.rounds} Runden + ${score.extra} Übungen`
+    : input.format === 'sets_reps'
       ? `${summary.workDone}/${summary.workTotal} Sätze`
       : input.format === 'flow'
         ? `${summary.workDone}/${summary.workTotal} Posen`
@@ -267,13 +278,22 @@ export function workoutLogNote(input: {
     `${WORKOUT_NOTE_PREFIX}„${input.title}“ (${workoutStars(input.difficulty)})`,
     progress,
     `${minutes} Min.`,
-    ...(summary.complete ? [] : ['vorzeitig beendet']),
+    ...((wod?.style === 'for_time' || wod?.style === 'chipper') && summary.complete
+      ? [`Zeit ${clock(summary.activeS)}`]
+      : []),
+    ...(wod?.capReached ? ['Zeitlimit erreicht'] : summary.complete ? [] : ['vorzeitig beendet']),
   ].join(' · ');
   const own = input.userNote.trim();
   const max = SESSION_LOG_LIMITS.notesMaxChars;
   if (own === '') return truncate(head, max);
   const room = max - codePointLength(head) - 1;
   return room <= 0 ? truncate(head, max) : `${head}\n${truncate(own, room)}`;
+}
+
+/** Sekunden als „m:ss“. */
+function clock(seconds: number): string {
+  const s = Math.max(0, Math.round(seconds));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
 function truncate(text: string, max: number): string {

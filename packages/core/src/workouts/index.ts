@@ -4,3 +4,5 @@ export * from './schema';
 export * from './timer';
 export * from './flow';
 export * from './recovery-routine';
+export * from './wod';
+export * from './discover';

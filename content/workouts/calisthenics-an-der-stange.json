@@ -1,0 +1,76 @@
+{
+  "id": "calisthenics-an-der-stange",
+  "version": 1,
+  "status": "published",
+  "title_de": "Calisthenics an der Stange",
+  "summary_de": "Zug und Druck mit Klimmzugstange: Hängen, Schulterblatt-Klimmzug, Australian Pull-ups, Liegestütz und Knieheben.",
+  "category": "upper_body",
+  "difficulty": 3,
+  "minutes": 18,
+  "format": "circuit",
+  "rounds": 3,
+  "round_rest_s": 90,
+  "equipment_ids": ["pull_up_bar"],
+  "warmup_de": "Fünf Minuten Schultern und Handgelenke mobilisieren, dann ein paar Liegestütz an der Wand.",
+  "cooldown_de": "Brust, Schultern und Unterarme sanft dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "toter-hang",
+      "reps": null,
+      "duration_s": 20,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "skapula-klimmzug",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "australian-pull-up",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "liegestuetz",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "knieheben-haengend",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "hollow-body-gehockt",
+      "reps": null,
+      "duration_s": 20,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

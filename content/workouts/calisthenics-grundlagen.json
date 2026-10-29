@@ -1,0 +1,68 @@
+{
+  "id": "calisthenics-grundlagen",
+  "version": 1,
+  "status": "published",
+  "title_de": "Calisthenics-Grundlagen",
+  "summary_de": "Die Basis-Übungen der Skill-Pfade ohne Geräte: Liegestütz, Rudern am Türrahmen, Kniebeugen, Dips am Stuhl, Hollow Body.",
+  "category": "full_body",
+  "difficulty": 2,
+  "minutes": 15,
+  "format": "circuit",
+  "rounds": 3,
+  "round_rest_s": 60,
+  "equipment_ids": [],
+  "warmup_de": "Fünf Minuten Arme kreisen, Step-Jacks und lockere Kniebeugen.",
+  "cooldown_de": "Brust, Schultern und Oberschenkel sanft dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "liegestuetz-erhoeht",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "tuerrahmen-rudern",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Je Seite."
+    },
+    {
+      "exercise_id": "kniebeuge-koerpergewicht",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "dips-stuhl",
+      "reps": 8,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "hollow-body-gehockt",
+      "reps": null,
+      "duration_s": 20,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

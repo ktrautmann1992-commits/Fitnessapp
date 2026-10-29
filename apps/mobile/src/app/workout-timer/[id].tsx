@@ -1,4 +1,6 @@
 import {
+  amrapScore,
+  capWorkoutRun,
   completeWorkoutStep,
   endWorkoutRun,
   pauseWorkoutRun,
@@ -10,6 +12,10 @@ import {
   workoutRunSummary,
   type WorkoutTimerStep,
   workoutRunView,
+  wodCapReached,
+  wodCapRemainingS,
+  wodStyle,
+  wodTimeCapS,
 } from '@fitnessapp/core';
 import {
   areaColors,
@@ -105,9 +111,12 @@ export default function WorkoutTimerScreen() {
     library.kind === 'ready'
       ? (run?.workout ?? library.workouts.find((w) => w.id === params.id))
       : undefined;
+  // WOD-Stil (AMRAP, For Time, Chipper): Zeitlimit = `minutes`, der Lauf endet genau am Limit (packages/core wod.ts).
+  const capS = workout ? wodTimeCapS(workout) : null;
   const computed = useMemo(
-    () => (run ? workoutRunView(run.steps, run.run, now) : null),
-    [run, now],
+    () =>
+      run ? workoutRunView(run.steps, capWorkoutRun(run.steps, run.run, now, capS), now) : null,
+    [run, now, capS],
   );
   const view = computed?.view ?? null;
   const finished = view?.finished ?? false;
@@ -242,15 +251,20 @@ export default function WorkoutTimerScreen() {
   // ---------------------------------------------------------------------------------------------------------
   // Fertig: Zusammenfassung und Speichern
   // ---------------------------------------------------------------------------------------------------------
+  const wod = wodStyle(workout);
   if (finished) {
     const summary = workoutRunSummary(run.steps, computed.run, now);
     const minutes = Math.max(1, Math.round(summary.activeS / 60));
+    const capReached = wodCapReached(computed.run, capS);
+    const score = wod === 'amrap' ? amrapScore(summary) : null;
     const done = save.kind === 'done' || run.saved;
     return (
       <Screen
         area="workouts"
         icon="stopwatch"
-        title={summary.complete ? t.workouts.finish.title : t.workouts.finish.titleEarly}
+        title={
+          summary.complete || capReached ? t.workouts.finish.title : t.workouts.finish.titleEarly
+        }
         testID="workout-finish"
         footer={
           <View style={styles.footer}>
@@ -299,7 +313,17 @@ export default function WorkoutTimerScreen() {
         <Body testID="workout-finish-summary">
           {t.workouts.finish.summary(summary.workDone, summary.workTotal, minutes)}
         </Body>
-        {workout.format !== 'sets_reps' && workout.format !== 'flow' ? (
+        {capReached ? <Body testID="workout-finish-cap">{t.workouts.wod.capReached}</Body> : null}
+        {score ? (
+          <Body testID="workout-finish-wod">
+            {t.workouts.wod.amrapResult(score.rounds, score.extra)}
+          </Body>
+        ) : (wod === 'for_time' || wod === 'chipper') && summary.complete ? (
+          <Body testID="workout-finish-wod">
+            {t.workouts.wod.forTimeResult(clockText(summary.activeS))}
+          </Body>
+        ) : null}
+        {workout.format !== 'sets_reps' && workout.format !== 'flow' && !score ? (
           <Body testID="workout-finish-rounds">
             {t.workouts.finish.rounds(summary.roundsCompleted, summary.rounds)}
           </Body>
@@ -373,6 +397,7 @@ export default function WorkoutTimerScreen() {
   // Design 20.10.2026: Zeitanzeige immer auf dunkler Fläche (groß, kontrastreich); Arbeit violett, Pause grün –
   // jeweils mit Wort („Arbeit“/„Pause“), nie nur über die Farbe.
   const isFlow = workout.format === 'flow';
+  const capRemaining = wodCapRemainingS(computed.run, now, capS);
   const box = heroColors.light;
   const accent = isWork ? areaColors.dark.workouts.icon : areaColors.dark.ernaehrung.icon;
   const frame = isWork ? areaColors.light.workouts.strong : areaColors.light.ernaehrung.strong;
@@ -443,6 +468,11 @@ export default function WorkoutTimerScreen() {
     >
       <LiveRegion text={live.text} version={live.version} />
       {isFlow ? <FlowPlayer workout={workout} view={view} names={names} /> : null}
+      {capRemaining !== null ? (
+        <Body testID="workout-timer-cap" accessibilityLabel={t.workouts.wod.capA11y(capRemaining)}>
+          {t.workouts.wod.cap(capRemaining)}
+        </Body>
+      ) : null}
       {!isFlow ? (
         <Body muted testID="workout-timer-progress">
           {`${passText(workStep ?? next, view)} · ${t.workouts.timer.progress(view.workDone, view.workTotal)}`}

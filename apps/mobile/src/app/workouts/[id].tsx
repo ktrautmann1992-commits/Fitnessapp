@@ -1,4 +1,10 @@
-import { prepareFlowWorkout, type Workout, workoutSafetyHints } from '@fitnessapp/core';
+import {
+  missingWorkoutEquipment,
+  prepareFlowWorkout,
+  wodStyle,
+  type Workout,
+  workoutSafetyHints,
+} from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect } from 'react';
@@ -15,7 +21,7 @@ import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useExerciseLookup, useFlowSafety } from '@/state/use-flow-safety';
-import { useActiveWorkoutRun, useWorkoutLibrary } from '@/state/use-workouts';
+import { useActiveWorkoutRun, useWorkoutEquipment, useWorkoutLibrary } from '@/state/use-workouts';
 import { Text } from '@/components/text';
 
 /**
@@ -33,6 +39,7 @@ export default function WorkoutDetailScreen() {
   const flowSafety = useFlowSafety();
   // Inklusive Posen (Sportarten Stufe 1: Posen stehen nur in displayExercises).
   const exercises = useExerciseLookup();
+  const available = useWorkoutEquipment();
   const { ensureLibrary } = app;
   useEffect(() => {
     void ensureLibrary();
@@ -114,14 +121,23 @@ export default function WorkoutDetailScreen() {
     router.push(`/workout-timer/${workout.id}` as Href);
   }
 
+  // WOD-Stil (AMRAP/EMOM/For Time/Chipper, packages/core wod.ts): eigene Ablauf-Erklärung und Skalierungs-Hinweis.
+  const wod = wodStyle(workout);
+  const missingEquipment = missingWorkoutEquipment(workout, available);
   const how =
-    workout.format === 'circuit'
-      ? t.workouts.detail.circuitHow(workout.rounds)
-      : workout.format === 'interval'
-        ? t.workouts.detail.intervalHow(workout.rounds)
-        : workout.format === 'flow'
-          ? deYoga.detail.how
-          : t.workouts.detail.setsHow;
+    wod === 'amrap'
+      ? t.workouts.wod.amrapHow(workout.minutes)
+      : wod === 'emom'
+        ? t.workouts.wod.emomHow
+        : wod === 'for_time' || wod === 'chipper'
+          ? t.workouts.wod.forTimeHow(workout.minutes)
+          : workout.format === 'circuit'
+            ? t.workouts.detail.circuitHow(workout.rounds)
+            : workout.format === 'interval'
+              ? t.workouts.detail.intervalHow(workout.rounds)
+              : workout.format === 'flow'
+                ? deYoga.detail.how
+                : t.workouts.detail.setsHow;
   const swappedFrom = new Map(
     (prepared?.swapped ?? []).map((s) => [s.toId, exercises?.get(s.fromId)?.name_de ?? s.fromId]),
   );
@@ -169,6 +185,12 @@ export default function WorkoutDetailScreen() {
           equipmentText(workout.equipment_ids),
         ].join(' · ')}
       </Body>
+      {missingEquipment.length > 0 ? (
+        <Notice tone="warning" testID="workout-equipment-missing">
+          <Body>{t.workouts.equipmentMissing(equipmentText(missingEquipment))}</Body>
+          <Body muted>{t.workouts.equipmentMissingHint}</Body>
+        </Notice>
+      ) : null}
       <Notice
         tone={hints.length > 1 ? 'warning' : 'info'}
         title={t.workouts.safety.title}
@@ -186,7 +208,14 @@ export default function WorkoutDetailScreen() {
       ) : null}
       <Card>
         <Heading level={2}>{t.workouts.detail.format}</Heading>
-        <Body>{`${t.workouts.formats[workout.format]}: ${how}`}</Body>
+        <Body testID="workout-detail-how">
+          {`${wod ? t.workouts.wod.styles[wod] : t.workouts.formats[workout.format]}: ${how}`}
+        </Body>
+        {wod ? (
+          <Body muted testID="workout-detail-scaling">
+            {t.workouts.wod.scaling}
+          </Body>
+        ) : null}
         {workout.format !== 'sets_reps' && workout.rounds > 1 && workout.round_rest_s > 0 ? (
           <Body muted>{t.workouts.detail.roundRest(workout.round_rest_s)}</Body>
         ) : null}

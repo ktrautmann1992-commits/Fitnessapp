@@ -5,10 +5,14 @@ import {
   WORKOUT_CATEGORIES,
   WORKOUT_DURATION_FILTERS,
   WORKOUT_LIST_DRAFT_CATEGORIES,
+  WORKOUT_THEMES,
   type WorkoutCategory,
   type WorkoutDurationFilter,
   type WorkoutFilter,
+  type WorkoutTheme,
   workoutsDoneOn,
+  workoutsForTheme,
+  workoutThemeCounts,
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useRouter, type Href } from 'expo-router';
@@ -35,14 +39,16 @@ import { berlinTodayIso } from '@/lib/format';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useExerciseLookup, useFlowSafety } from '@/state/use-flow-safety';
-import { useWorkoutLibrary } from '@/state/use-workouts';
+import { useWorkoutEquipment, useWorkoutLibrary } from '@/state/use-workouts';
 
 const STARS = [1, 2, 3, 4, 5] as const;
 
 /**
  * Reiter „Workouts“ (docs/PLAN-WORKOUTS.md Abschnitt 4, Gründer-Wunsch „eigenes Menü“): Liste mit Filtern nach
  * Sternen, Dauer, Ziel und „ohne Geräte“; Karte mit Sternen und Wort. Filter und Sortierung aus packages/core
- * (filterWorkouts); heute Erledigtes über workoutsDoneOn.
+ * (filterWorkouts); heute Erledigtes über workoutsDoneOn. Bereiche (Gründer-Wunsch 29.10.2026: Entspannung, Yoga &
+ * Pilates, Hyrox, Calisthenics, CrossFit-Stil, Neues ausprobieren) immer sichtbar über der Liste – für jeden, unabhängig
+ * vom Plan (workoutsForTheme). Fehlende Geräte: Hinweis auf der Karte statt Ausblenden.
  */
 export default function WorkoutsScreen() {
   const router = useRouter();
@@ -51,6 +57,8 @@ export default function WorkoutsScreen() {
   const [filter, setFilter] = useState<WorkoutFilter>(EMPTY_WORKOUT_FILTER);
   const [live, setLive] = useState({ text: '', version: 0 });
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [theme, setTheme] = useState<WorkoutTheme | null>(null);
+  const equipment = useWorkoutEquipment();
   const today = berlinTodayIso();
 
   const workouts = library.kind === 'ready' ? library.workouts : null;
@@ -58,7 +66,7 @@ export default function WorkoutsScreen() {
   const lookup = useExerciseLookup();
   // Sportarten Stufe 1 (Yoga/Pilates/Mobility): Entwürfe nur, wenn die Quelle sie zulässt (Testmodus-Bündel; Supabase
   // liefert nur freigegebene). Flow-Routinen mit zu wenigen passenden Posen blendet der Sicherheitsfilter aus.
-  const shown = useMemo(() => {
+  const listed = useMemo(() => {
     if (!workouts) return [];
     // Lauf-Kraft-Entwürfe hängen weiter nur am Laufplan (nicht in der Liste).
     const listed = filterWorkouts(workouts, filter, { includeDrafts: true }).filter(
@@ -69,6 +77,9 @@ export default function WorkoutsScreen() {
     );
     return lookup ? visibleWorkouts(listed, flowSafety, lookup) : listed;
   }, [workouts, filter, flowSafety, lookup]);
+  // Bereiche nach Filtern und Sicherheitsfilter: „Neues ausprobieren“ wählt nur aus, was die Person sehen darf.
+  const shown = useMemo(() => workoutsForTheme(listed, theme), [listed, theme]);
+  const themeCounts = useMemo(() => workoutThemeCounts(listed), [listed]);
   const done = useMemo(
     () => workoutsDoneOn(workouts ?? [], app.rows?.sessionLogs ?? [], today),
     [app.rows?.sessionLogs, today, workouts],
@@ -86,7 +97,7 @@ export default function WorkoutsScreen() {
       text: t.workouts.filters.resultLive(shown.length),
       version: current.version + 1,
     }));
-  }, [shown.length, filter, workouts]);
+  }, [shown.length, filter, theme, workouts]);
 
   if (app.status.kind === 'loading') {
     return (
@@ -135,6 +146,38 @@ export default function WorkoutsScreen() {
       ) : null}
       {workouts && workouts.length > 0 ? (
         <>
+          {/* Bereiche: immer sichtbar (Gründer-Wunsch 29.10.2026), Chips mit Anzahl. */}
+          <View style={styles.section} testID="workouts-themes">
+            <Body muted>{t.workouts.themes.label}</Body>
+            <View style={styles.chips}>
+              <OptionButton
+                role="radio"
+                compact
+                label={t.workouts.themes.all}
+                selected={theme === null}
+                onPress={() => setTheme(null)}
+                testID="workouts-theme-all"
+              />
+              {WORKOUT_THEMES.map((value) => {
+                const name = t.workouts.themes.names[value];
+                return (
+                  <OptionButton
+                    key={value}
+                    role="radio"
+                    compact
+                    label={t.workouts.themes.chip(name, themeCounts[value])}
+                    accessibilityLabel={t.workouts.themes.chipA11y(name, themeCounts[value])}
+                    selected={theme === value}
+                    onPress={() => setTheme(theme === value ? null : value)}
+                    testID={`workouts-theme-${value}`}
+                  />
+                );
+              })}
+            </View>
+            {theme !== null ? (
+              <Body testID="workouts-theme-intro">{t.workouts.themes.intro[theme]}</Body>
+            ) : null}
+          </View>
           {/* Filter zugeklappt (Entwurf 2-training: 18 Filter standen immer offen über der Liste). */}
           <View style={styles.filterRow}>
             <Button
@@ -240,7 +283,29 @@ export default function WorkoutsScreen() {
           ) : null}
           <Body testID="workouts-count">{t.workouts.count(shown.length)}</Body>
           {shown.length === 0 ? (
-            <Notice testID="workouts-no-match">{t.workouts.noMatch}</Notice>
+            <Notice testID="workouts-no-match">
+              {theme !== null && listed.length > 0 ? t.workouts.themes.empty : t.workouts.noMatch}
+            </Notice>
+          ) : null}
+          {shown.length === 0 && (theme !== null || filtered) ? (
+            <View style={styles.filterRow}>
+              {theme !== null ? (
+                <Button
+                  label={t.workouts.themes.showAll}
+                  variant="link"
+                  onPress={() => setTheme(null)}
+                  testID="workouts-theme-reset"
+                />
+              ) : null}
+              {filtered ? (
+                <Button
+                  label={t.workouts.resetFilters}
+                  variant="link"
+                  onPress={() => setFilter(EMPTY_WORKOUT_FILTER)}
+                  testID="workouts-no-match-reset"
+                />
+              ) : null}
+            </View>
           ) : null}
           <View style={styles.list} testID="workouts-list">
             {shown.map((workout) => (
@@ -248,6 +313,7 @@ export default function WorkoutsScreen() {
                 key={workout.id}
                 workout={workout}
                 doneToday={done.has(workout.id)}
+                available={equipment}
                 onPress={() => router.push(`/workouts/${workout.id}` as Href)}
               />
             ))}

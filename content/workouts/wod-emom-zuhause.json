@@ -1,0 +1,52 @@
+{
+  "id": "wod-emom-zuhause",
+  "version": 1,
+  "status": "published",
+  "title_de": "EMOM 12 – zuhause",
+  "summary_de": "Jede Minute eine Übung: 40 Sekunden Arbeit, den Rest der Minute Pause. Einsteiger: 30 Sekunden arbeiten. Fortgeschrittene: Tempo halten.",
+  "category": "hiit_cardio",
+  "difficulty": 3,
+  "minutes": 12,
+  "format": "interval",
+  "rounds": 4,
+  "round_rest_s": 20,
+  "equipment_ids": [],
+  "warmup_de": "Fünf Minuten locker einrollen (rudern, gehen oder Step-Jacks), dann je zehn Kniebeugen, Liegestütz und Hüftkreise.",
+  "cooldown_de": "Fünf Minuten locker gehen und ruhig atmen, danach Hüfte und Schultern dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "hampelmann",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Ohne Sprung: Step-Jacks."
+    },
+    {
+      "exercise_id": "kniebeuge-koerpergewicht",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "burpee-ohne-sprung",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

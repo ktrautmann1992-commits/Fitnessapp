@@ -872,6 +872,44 @@ export const FLOW_RULES = {
 } as const;
 
 /**
+ * Bereiche im Reiter „Workouts“ (Gründer-Wunsch 29.10.2026 „Yoga, Entspannung, mal Hyrox oder Calisthenics
+ * ausprobieren“, docs/PLAN-WORKOUTS.md Abschnitt 6): Zuordnung eines Workouts zu einem Bereich aus Kategorie, Format und
+ * Übungen – ohne neues Inhaltsfeld.
+ * - `relaxMaxStars` 1: „Entspannung“ = ruhige Flow-Routinen (Yoga/Mobilität) mit höchstens 1 Stern.
+ * - `hyroxMinShare` 0,5 und `hyroxMinExercises` 2: mindestens die Hälfte (und mindestens 2) der Übungen sind Hyrox-
+ *   Stations-Übungen bzw. ihre Hyrox-Ersatzübungen (HYROX_ONLY_EXERCISE_IDS).
+ * - `calisthenicsMinShare` 0,75 und `calisthenicsMinExercises` 3: mindestens 75 % (und mindestens 3) der Übungen stehen
+ *   in den Calisthenics-Skill-Pfaden, und das Workout braucht nur Calisthenics-Geräte (`calisthenicsEquipment`).
+ * - `wodTitlePrefixes`: Funktionelle Workouts im WOD-Stil erkennt die App am Titelanfang (AMRAP, EMOM, For Time,
+ *   Chipper) – die Begriffe sind gängige, markenfreie Bezeichnungen der Trainingsformen.
+ * Quelle: PRODUKTENTSCHEIDUNG (Gründer-Auftrag 29.10.2026, Testphase).
+ */
+export const WORKOUT_THEME_RULES = {
+  relaxMaxStars: 1,
+  hyroxMinShare: 0.5,
+  hyroxMinExercises: 2,
+  calisthenicsMinShare: 0.75,
+  calisthenicsMinExercises: 3,
+  calisthenicsEquipment: [
+    'pull_up_bar',
+    'dip_station',
+    'gymnastic_rings',
+    'parallettes',
+    'calisthenics_park',
+    'resistance_bands',
+    'mat',
+  ],
+  wodTitlePrefixes: {
+    amrap: 'AMRAP',
+    emom: 'EMOM',
+    for_time: 'For Time',
+    chipper: 'Chipper',
+  },
+  /** EMOM: jede Übung samt Pause genau eine Minute. */
+  emomSlotS: 60,
+} as const;
+
+/**
  * RPE je Satz 5–10 in 0,5er-Schritten, eingegeben als „Wiederholungen in Reserve“ (0 / 1 / 2 / 3 / 4 / 5+).
  * Quelle: Zourdos MC et al. (2016), „Novel resistance training-specific rating of perceived exertion scale
  * measuring repetitions in reserve“, J Strength Cond Res 30(1):267–275.

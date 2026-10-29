@@ -1,0 +1,68 @@
+{
+  "id": "hyrox-zuhause",
+  "version": 1,
+  "status": "published",
+  "title_de": "Hyrox-Training zuhause",
+  "summary_de": "Hyrox-Bewegungen ohne Spezialgeräte: Ausfallschritte, Burpees, Tragen und Kniebeugen als Zirkel mit Kurzhanteln.",
+  "category": "hiit_cardio",
+  "difficulty": 3,
+  "minutes": 18,
+  "format": "circuit",
+  "rounds": 3,
+  "round_rest_s": 90,
+  "equipment_ids": ["dumbbells"],
+  "warmup_de": "Fünf Minuten auf der Stelle gehen, Step-Jacks und lockere Kniebeugen.",
+  "cooldown_de": "Ruhig gehen, dann Waden und Oberschenkel sanft dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "ausfallschritt-gehen-koerpergewicht",
+      "reps": 16,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Gesamt, abwechselnd links und rechts."
+    },
+    {
+      "exercise_id": "burpee-ohne-sprung",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "koffer-tragen-einarmig",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Seite nach der Hälfte wechseln."
+    },
+    {
+      "exercise_id": "kniebeuge-schulterdruecken-kurzhantel",
+      "reps": 12,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "farmers-carry-kurzhantel",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

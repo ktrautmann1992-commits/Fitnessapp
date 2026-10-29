@@ -1,0 +1,108 @@
+{
+  "id": "wod-chipper-studio",
+  "version": 1,
+  "status": "published",
+  "title_de": "Chipper – Langhantel",
+  "summary_de": "Einmal durch die ganze Liste, so schnell wie sauber möglich, Zeitlimit 25 Minuten. Einsteiger: leichte Stange und Wiederholungen halbieren. Fortgeschrittene: Gewicht steigern.",
+  "category": "full_body",
+  "difficulty": 5,
+  "minutes": 25,
+  "format": "circuit",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": [
+    "rowing_machine",
+    "barbell",
+    "power_rack",
+    "pull_up_bar",
+    "dip_station",
+    "kettlebells",
+    "wall_ball"
+  ],
+  "warmup_de": "Fünf Minuten locker einrollen (rudern, gehen oder Step-Jacks), dann je zehn Kniebeugen, Liegestütz und Hüftkreise.",
+  "cooldown_de": "Fünf Minuten locker gehen und ruhig atmen, danach Hüfte und Schultern dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "rudergeraet",
+      "reps": null,
+      "duration_s": 120,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "kniebeuge-langhantel",
+      "reps": 20,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "klimmzug",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Einsteiger: mit Band."
+    },
+    {
+      "exercise_id": "rumaenisches-kreuzheben-langhantel",
+      "reps": 20,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "dips-barren",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "schulterdruecken-langhantel",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "kettlebell-swing",
+      "reps": 25,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "wall-balls",
+      "reps": 25,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "burpee-ohne-sprung",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

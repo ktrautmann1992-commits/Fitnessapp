@@ -109,3 +109,60 @@ Dehnübungen in der Bibliothek – die zwei Mobilitäts-Workouts nutzen ruhige B
 - **W-O3** Dehn-/Mobilitätsübungen in die Übungsbibliothek aufnehmen, danach Mobilitäts-Workouts erweitern.
 - **W-O4** Laufenden Timer geschützt zwischenspeichern (Neustart mitten im Workout), falls Rückmeldungen das wünschen.
 - **W-O5** Fachprüfung des Startbestands vor dem Livegang (Sterne, Dosierung, Texte).
+
+## 6. Nachtrag 29.10.2026: Bereiche „Neues ausprobieren“ (Yoga, Entspannung, Hyrox, Calisthenics, CrossFit-Stil)
+
+Gründer-Wunsch (wörtlich): „Toll wäre noch wenn sich jeder auch z.B Yoga anzeigen lassen könnte oder andere Übungen
+die auch vlt der Entspannung dienen oder wenn jemand mal was neues testen will wie Hyrox Calisthenics“ – Nachtrag
+„Crossfit fehlt uns noch“. Umsetzung freigegeben (privater Nutzerkreis).
+
+**Ausgangslage (vorher):** Die Liste zeigte schon allen alle freigegebenen Workouts – ohne Filter nach Ziel, Plan oder
+Sportart. Yoga, Pilates, Mobilität und Rudern waren über den (zugeklappten) Filter „Ziel“ erreichbar. Ausgeblendet
+wurden nur Entwürfe (außer Rudern/Flows im Testmodus; Supabase liefert ohnehin nur freigegebene) und Flow-Routinen, bei
+denen nach dem Sicherheitsfilter (Gesundheits-Check, Schon-Modus, `visibleWorkouts`) weniger als 80 % der Posen erlaubt
+sind. **Lücken:** Hyrox gab es nur als Wettkampf-Plan (Stations-Einheit), Calisthenics nur als Plan-Vorlagen und
+Skill-Pfade – beides nicht als freie Einheit im Reiter; keine Entspannungs-Gruppe; keine Workouts im WOD-Stil; keine
+Hinweise auf fehlende Geräte.
+
+| Baustein                                                            | Wo                                                                    |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Bereiche, Sportart je Workout, „Neues ausprobieren“, Geräte-Hinweis | `packages/core/src/workouts/discover.ts` (+ Tests)                    |
+| WOD-Stil: Erkennung, Zeitlimit, AMRAP-Ablauf und -Ergebnis          | `packages/core/src/workouts/wod.ts` (+ Tests), Notiz in `library.ts`  |
+| Grenzwerte (PRODUKTENTSCHEIDUNG)                                    | `WORKOUT_THEME_RULES` in `packages/core/src/constants.ts`             |
+| App: Bereichs-Chips, Karte (Sportart, „Dir fehlt …“), Detail, Timer | `workouts.tsx`, `components/workouts.tsx`, `workouts/[id].tsx`, Timer |
+| 15 neue Workouts                                                    | `content/workouts/{entspannung,hyrox,calisthenics,wod}-*.json`        |
+| E2E                                                                 | `apps/mobile/e2e/workouts-bereiche.spec.ts`                           |
+
+**Entscheidungen**
+
+- **W-E14 Bereiche ohne neues Inhaltsfeld:** Chips immer sichtbar über der Liste (nicht im zugeklappten Filter), mit
+  Anzahl, für jeden – unabhängig von Ziel und Plan. Zuordnung rein aus den Inhalten:
+  „Entspannung“ = Flow (Yoga/Mobilität) mit 1 Stern; „Yoga & Pilates“ = Kategorie; „Hyrox“ = mind. 2 und mind. 50 %
+  Hyrox-Stations-/Ersatzübungen; „Calisthenics“ = mind. 3 und mind. 75 % Übungen der Skill-Pfade, nur Calisthenics-
+  Geräte; „CrossFit-Stil / Functional Fitness“ = WOD-Stil (W-E15); „Neues ausprobieren“ = je Sportart (Yoga, Pilates,
+  Mobilität, Hyrox, Calisthenics, Functional, Rudern, Lauf-Kraft) das leichteste Workout. Bereiche wirken NACH Filtern
+  und Sicherheitsfilter. Keine DB-Migration, kein Schema-Wechsel (vorhandene Kategorien `yoga`, `mobility`,
+  `full_body`, `upper_body`, `hiit_cardio`).
+- **W-E15 WOD-Stil über den Titel:** „AMRAP …“, „EMOM …“, „For Time …“, „Chipper …“ am Titelanfang, passend zum Ablauf
+  (`wodStyle`): AMRAP/For Time/Chipper = Zirkel (Chipper: 1 Runde), EMOM = Intervall mit genau 60 s je Übung samt
+  Pause. Zeitlimit = `minutes` (AMRAP, For Time, Chipper): Der Timer endet genau am Limit (aktive Zeit ohne Pausen,
+  `capWorkoutRun`); AMRAP läuft mit bis zu 10 Runden („x Runden + y Übungen“), For Time/Chipper zeigen die Zeit. Notiz im
+  Tagebuch: „AMRAP: x Runden + y Übungen“ bzw. „Zeit m:ss“, „Zeitlimit erreicht“ statt „vorzeitig beendet“. „CrossFit“
+  ist eine geschützte Marke – nur beschreibend im Bereichsnamen, nie in Inhalten.
+- **W-E16 W6 bei Zeitlimit:** Bei AMRAP/For Time/Chipper ist `minutes` das Limit – gelb nur, wenn die Schätzung
+  darüber liegt (Validator von `main` meldet für die vier WODs bis zum Merge einen gelben, nicht blockierenden W6).
+- **W-E17 Geräte-Hinweis statt Ausblenden:** Geräte laut Angaben (Zuhause inkl. Park → Stange/Barren; Studio, wenn
+  Studio-Termine oder Studio-Angaben – Hyrox-Geräte nur mit „Hyrox-Geräte im Studio“). Fehlt ein Gerät: „Dir fehlt laut
+  deinen Angaben: …“ auf Karte und Detail; Starten bleibt möglich. Matte/Block zählen nie als fehlend.
+- **W-E18 Freie Einheit:** Start wie jedes Workout → Eintrag „workout“ im Tagebuch; der Plan bleibt unverändert (E2E).
+
+**Neue Inhalte (15, freigegeben „Karsten (Auftrag an Claude)“, `expert_reviewed: false`, nur vorhandene Übungen):**
+Entspannung: „Atmen und loslassen“ (Atemübung + Body-Scan), „Ganzkörper sanft dehnen“, „Fünf Minuten Ruhe“. Hyrox:
+„Hyrox-Stationen im Studio“ (alle 8 Stationen), „Hyrox-Training zuhause“ (Kurzhanteln), „Hyrox-Einstieg ohne Geräte“.
+Calisthenics: „Calisthenics-Grundlagen“, „Calisthenics an der Stange“, „Calisthenics im Park“. WOD-Stil: „AMRAP 12 –
+Körpergewicht“, „EMOM 12 – zuhause“ (ohne Geräte), „For Time – Kurzhantel“ (zuhause), „AMRAP 15 – Studio“, „EMOM 16 –
+Rudern & Kettlebell“, „Chipper – Langhantel“ – jeweils mit Skalierungs-Hinweis (Einsteiger/Fortgeschritten).
+Box-Sprünge und Springseil gibt es in der Übungsbibliothek noch nicht (W-O6).
+
+- **W-O6** Übungen Box Jump/Box Step-up, Springseil, Thruster/Clean in die Bibliothek aufnehmen, dann WODs erweitern.
+- **W-O7** Fachprüfung der Bereichs-Regeln und der 15 neuen Workouts vor dem Livegang.

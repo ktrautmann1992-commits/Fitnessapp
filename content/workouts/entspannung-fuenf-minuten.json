@@ -1,0 +1,70 @@
+{
+  "id": "entspannung-fuenf-minuten",
+  "version": 1,
+  "status": "published",
+  "title_de": "Fünf Minuten Ruhe",
+  "summary_de": "Eine kurze Pause für zwischendurch im Sitzen: Atmung, Schultern und Nacken – ganz ohne Hinlegen und ohne Matte.",
+  "category": "yoga",
+  "difficulty": 1,
+  "minutes": 5,
+  "format": "flow",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": [],
+  "warmup_de": "Aufrecht auf einen Stuhl setzen, beide Füße stehen fest am Boden.",
+  "cooldown_de": "Die Augen öffnen, sich strecken und langsam aufstehen.",
+  "exercises": [
+    {
+      "exercise_id": "yoga-entspannung-sitzend",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Lange ausatmen."
+    },
+    {
+      "exercise_id": "mobility-schulterkreisen",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "mobility-nacken-seitneige",
+      "reps": null,
+      "duration_s": 20,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "yoga-seitneige-stuhl",
+      "reps": null,
+      "duration_s": 20,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null,
+      "side": "both"
+    },
+    {
+      "exercise_id": "pilates-rumpf-atmung-sitzend",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

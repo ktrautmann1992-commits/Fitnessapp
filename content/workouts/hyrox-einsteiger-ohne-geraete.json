@@ -1,0 +1,60 @@
+{
+  "id": "hyrox-einsteiger-ohne-geraete",
+  "version": 1,
+  "status": "published",
+  "title_de": "Hyrox-Einstieg ohne Geräte",
+  "summary_de": "Sanfter Einstieg in die Hyrox-Bewegungen ganz ohne Geräte und ohne Sprünge – mit Pausen nach jeder Übung.",
+  "category": "hiit_cardio",
+  "difficulty": 2,
+  "minutes": 15,
+  "format": "circuit",
+  "rounds": 3,
+  "round_rest_s": 60,
+  "equipment_ids": [],
+  "warmup_de": "Fünf Minuten zügig gehen und die Arme kreisen.",
+  "cooldown_de": "Langsam gehen und tief durchatmen.",
+  "exercises": [
+    {
+      "exercise_id": "ausfallschritt-gehen-koerpergewicht",
+      "reps": 12,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Gesamt, kleine Schritte sind in Ordnung."
+    },
+    {
+      "exercise_id": "burpee-ohne-sprung",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "taschen-tragen",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Zwei gefüllte Einkaufstaschen oder Wasserflaschen."
+    },
+    {
+      "exercise_id": "kniebeuge-koerpergewicht",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

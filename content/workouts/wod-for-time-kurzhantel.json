@@ -1,0 +1,68 @@
+{
+  "id": "wod-for-time-kurzhantel",
+  "version": 1,
+  "status": "published",
+  "title_de": "For Time – Kurzhantel",
+  "summary_de": "Drei Runden so schnell wie sauber möglich, Zeitlimit 20 Minuten. Einsteiger: leichtere Hanteln und Pausen nach Bedarf. Fortgeschrittene: schwerer und ohne Pausen.",
+  "category": "full_body",
+  "difficulty": 4,
+  "minutes": 20,
+  "format": "circuit",
+  "rounds": 3,
+  "round_rest_s": 0,
+  "equipment_ids": ["dumbbells"],
+  "warmup_de": "Fünf Minuten locker einrollen (rudern, gehen oder Step-Jacks), dann je zehn Kniebeugen, Liegestütz und Hüftkreise.",
+  "cooldown_de": "Fünf Minuten locker gehen und ruhig atmen, danach Hüfte und Schultern dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "kniebeuge-schulterdruecken-kurzhantel",
+      "reps": 12,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "vorgebeugtes-rudern-kurzhantel",
+      "reps": 12,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "ausfallschritt-rueckwaerts-kurzhantel",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Je Bein."
+    },
+    {
+      "exercise_id": "burpee-ohne-sprung",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    },
+    {
+      "exercise_id": "rumaenisches-kreuzheben-kurzhantel",
+      "reps": 12,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-29",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-29",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+  }
+}

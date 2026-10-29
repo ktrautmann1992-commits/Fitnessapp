@@ -56,8 +56,9 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await setup(page);
   // 66 freigegebene Workouts (seit 27.10.2026 auch 4 Lauf-Kraft, 10 Rudern, 15 Yoga/Pilates/Mobility, dazu 10
   // Yoga-/Pilates-Routinen der Restpunkte); ohne Gesundheits-Check sind „Sanft in den Morgen“ (zu viele
-  // Umkehrhaltungen für den vorsichtigen Plan) und 2 Restpunkte-Routinen (gestützte Brücke) ausgeblendet.
-  await expect(count(page)).toHaveText('63 Workouts');
+  // Umkehrhaltungen für den vorsichtigen Plan) und 2 Restpunkte-Routinen (gestützte Brücke) ausgeblendet. Dazu 15 aus
+  // „Neues ausprobieren“ (29.10.2026: Entspannung, Hyrox, Calisthenics, WOD-Stil).
+  await expect(count(page)).toHaveText('78 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
@@ -67,7 +68,8 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   // Filter sind zugeklappt („Filter“ antippen).
   await page.getByTestId('workouts-filter-toggle').click();
   await page.getByTestId('workouts-filter-stars-5').click();
-  await expect(count(page)).toHaveText('3 Workouts');
+  // 5 Sterne: 3 + „Chipper – Langhantel“ (29.10.2026).
+  await expect(count(page)).toHaveText('4 Workouts');
   await expect(card(page, 'koerpergewicht-extrem')).toBeVisible();
   await expect(card(page, 'bauch-blitz')).toHaveCount(0);
 
@@ -87,7 +89,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-1').click();
   await expect(page.getByTestId('workouts-no-match')).toBeVisible();
   await page.getByTestId('workouts-filter-reset').click();
-  await expect(count(page)).toHaveText('63 Workouts');
+  await expect(count(page)).toHaveText('78 Workouts');
 
   // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();
@@ -210,8 +212,9 @@ test('Yoga (Flow): Stuhl-Yoga mit Seitenwechsel, Pose überspringen; Kategorie Y
   // Kategorie „Yoga“ ist wählbar (Sportarten Stufe 1 · Etappe Y).
   await page.getByTestId('workouts-filter-toggle').click();
   await page.getByTestId('workouts-filter-category-yoga').click();
-  // 5 aus Etappe Y + 4 der Restpunkte A (2 weitere mit Umkehrhaltung ohne Gesundheits-Check ausgeblendet).
-  await expect(count(page)).toHaveText('9 Workouts');
+  // 5 aus Etappe Y + 4 der Restpunkte A (2 weitere mit Umkehrhaltung ohne Gesundheits-Check ausgeblendet) + 2 zur
+  // Entspannung (29.10.2026).
+  await expect(count(page)).toHaveText('11 Workouts');
   await expect(card(page, 'yoga-sanft-in-den-morgen')).toHaveCount(0);
   await expect(card(page, 'yoga-fuer-den-schreibtisch')).toBeVisible();
   await card(page, 'yoga-stuhl').click();
