@@ -1,6 +1,6 @@
 import { hasValidConsent, WEARABLE_DATA_TYPES, type WearableDataType } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
-import { Redirect, useRouter, type Href } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -60,15 +60,20 @@ function syncMessage(outcome: WearableSyncOutcome | null): Message | null {
  * „Smartwatch-Daten“, DANN der Systemdialog von Health Connect (nur Leserechte). Danach Stand, letzter Abgleich,
  * freigegebene Daten, Tageswerte, „Jetzt abgleichen“ und „Trennen“ (behalten/löschen, Puls immer gelöscht, W8-12).
  * Browser/iPhone: Hinweis „nur in der Android-App“; im Testmodus eine Beispiel-Uhr.
+ * Schritte vom Handy (29.10.2026, docs/PLAN-PHASE-8.md 13.5): „Nur Schritte vom Handy verbinden“ fragt in Health Connect
+ * nur das Leserecht „Schritte“ – ohne Uhr; `?quelle=handy` (Kachel „Schritte“ → „Handy nutzen“) stellt das nach vorn.
  */
 export default function SmartwatchScreen() {
   const router = useRouter();
+  const phoneFirst = useLocalSearchParams<{ quelle?: string }>().quelle === 'handy';
   const app = useApp();
   const { state, reload } = useWearables();
   const mode = app.backend.mode;
   const driver = useMemo(() => wearableDriver(mode), [mode]);
   const [availability, setAvailability] = useState<HcAvailability | null>(null);
-  const [busy, setBusy] = useState<'consent' | 'connect' | 'sync' | 'disconnect' | null>(null);
+  const [busy, setBusy] = useState<'consent' | 'connect' | 'phone' | 'sync' | 'disconnect' | null>(
+    null,
+  );
   const [message, setMessage] = useState<Message | null>(null);
   const [dialog, setDialog] = useState(false);
   const [dialogError, setDialogError] = useState<string>();
@@ -139,11 +144,12 @@ export default function SmartwatchScreen() {
     }
   }
 
-  async function connect() {
-    setBusy('connect');
+  /** `types` = nur diese Datentypen (Schritte vom Handy), sonst alle. */
+  async function connect(types?: readonly WearableDataType[]) {
+    setBusy(types ? 'phone' : 'connect');
     setMessage(null);
     try {
-      const granted: WearableDataType[] = await driver.requestPermissions();
+      const granted: WearableDataType[] = await driver.requestPermissions(types);
       await app.backend.wearables.connect(granted);
       forgetWearables();
       await reload();
@@ -193,6 +199,30 @@ export default function SmartwatchScreen() {
   }
 
   const unsupported = driver.kind === 'none';
+  const phoneOnly =
+    connection !== null &&
+    connection.granted_types.length === 1 &&
+    connection.granted_types[0] === 'steps';
+  const phoneCard = (
+    <Card>
+      <View style={styles.actions} testID="smartwatch-phone">
+        <Heading level={2}>{W.phone.title}</Heading>
+        <Body>{W.phone.intro}</Body>
+        {W.phone.how.map((line) => (
+          <Body key={line} muted>{`• ${line}`}</Body>
+        ))}
+        <Body muted>{W.phone.consentNote}</Body>
+        <Button
+          label={driver.kind === 'demo' ? W.phone.demoConnect : W.phone.connect}
+          variant={phoneFirst ? 'primary' : 'secondary'}
+          loading={busy === 'phone'}
+          disabled={busy !== null}
+          onPress={() => void connect(['steps'])}
+          testID="smartwatch-phone-connect"
+        />
+      </View>
+    </Card>
+  );
   const dailyLines = recentDailyLines(loaded?.rows.dailyMetrics ?? [], todayIso());
   const daily = (
     <>
@@ -239,6 +269,22 @@ export default function SmartwatchScreen() {
               <Body muted>{W.lastCount(connection.last_sync_count)}</Body>
             ) : null}
           </Card>
+          {/* Nur Schritte vom Handy: Hinweis und „Uhr zusätzlich verbinden“ (fragt alle Leserechte). */}
+          {phoneOnly && !unsupported ? (
+            <Card>
+              <Heading level={2}>{W.phone.title}</Heading>
+              <Body testID="smartwatch-phone-mode">{W.phone.connected}</Body>
+              <Body muted>{W.phone.syncNote}</Body>
+              <Button
+                label={W.phone.addWatch}
+                variant="secondary"
+                loading={busy === 'connect'}
+                disabled={busy !== null || !wearableValid}
+                onPress={() => void connect()}
+                testID="smartwatch-add-watch"
+              />
+            </Card>
+          ) : null}
           {connection.status === 'permission_missing' ? (
             <Notice
               tone="warning"
@@ -312,11 +358,12 @@ export default function SmartwatchScreen() {
             </View>
           )}
           {/* Erholung aus der Uhr (25.10.2026): Status, Werte heute, Regeln, Hinweise. */}
-          <RecoveryDetails today={todayIso()} />
+          {phoneOnly ? null : <RecoveryDetails today={todayIso()} />}
           {/* Schrittziel für die Kachel „Schritte“ auf der Übersicht (22.10.2026). */}
           <StepGoalCard />
           {/* Lauf-Paket 2: Pulszonen (eigener Maximalpuls, Herzfrequenz-Reserve). */}
-          <PulseZoneSettingsCard />
+          {/* Nur Schritte vom Handy: keine Erholung/Pulszonen (brauchen die Uhr). */}
+          {phoneOnly ? null : <PulseZoneSettingsCard />}
           {daily}
           <Button
             label={W.disconnect}
@@ -330,6 +377,11 @@ export default function SmartwatchScreen() {
         </>
       ) : (
         <>
+          {phoneFirst ? (
+            <Notice tone="info" title={W.phone.title} testID="smartwatch-phone-intro">
+              {W.phone.lead}
+            </Notice>
+          ) : null}
           <Body>{W.intro}</Body>
           <Card>
             <Heading level={2}>{W.whatTitle}</Heading>
@@ -394,13 +446,17 @@ export default function SmartwatchScreen() {
                   {W.demoText}
                 </Notice>
               ) : null}
+              {phoneFirst ? phoneCard : null}
               <Body muted>{W.connectHint}</Body>
               <Button
                 label={driver.kind === 'demo' ? W.demoConnect : W.connect}
+                variant={phoneFirst ? 'secondary' : 'primary'}
                 loading={busy === 'connect'}
+                disabled={busy !== null}
                 onPress={() => void connect()}
                 testID="smartwatch-connect"
               />
+              {phoneFirst ? null : phoneCard}
             </>
           )}
           {(loaded?.rows.dailyMetrics.length ?? 0) > 0 ? daily : null}

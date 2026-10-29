@@ -5,7 +5,11 @@ import {
 } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
-import { createDemoHealthConnectDriver, demoRead } from '../lib/health-connect-demo';
+import {
+  createDemoHealthConnectDriver,
+  demoRead,
+  resetDemoGrantsForTests,
+} from '../lib/health-connect-demo';
 import type { HealthConnectDriver } from '../lib/health-connect-driver.types';
 import { BackendError } from './backend';
 import { createMemoryStore } from './kv';
@@ -523,6 +527,38 @@ describe('Abgleich mit der Beispiel-Uhr (runWearableSync)', () => {
       today: TODAY,
     });
     expect(second).toMatchObject({ kind: 'imported', result: { created: 0, merged: 0 } });
+  });
+
+  it('Schritte vom Handy (ohne Uhr): nur das Leserecht „Schritte“ → nur Tageswerte, keine Einheiten', async () => {
+    const backend = await signedIn();
+    const driver = createDemoHealthConnectDriver(() => TODAY);
+    try {
+      expect(await driver.requestPermissions(['steps'])).toEqual(['steps']);
+      expect(await driver.grantedTypes()).toEqual(['steps']);
+      await backend.wearables.connect(['steps']);
+      const outcome = await runWearableSync({
+        driver,
+        backend: backend.wearables,
+        rows: (await backend.loadRows()).rows,
+        wearable: (await backend.wearables.load()).rows,
+        now: NOW,
+        today: TODAY,
+      });
+      expect(outcome).toMatchObject({ kind: 'imported', result: { created: 0, merged: 0 } });
+      const w = (await backend.wearables.load()).rows;
+      expect(w.connection?.granted_types).toEqual(['steps']);
+      expect(w.sessions).toEqual([]);
+      expect(w.heartRates).toEqual([]);
+      expect(w.dailyMetrics.length).toBeGreaterThan(0);
+      expect(w.dailyMetrics.every((d) => d.steps !== null)).toBe(true);
+      expect(
+        w.dailyMetrics.every(
+          (d) => d.resting_hr_bpm === null && d.sleep_min === null && d.hrv_rmssd_ms === null,
+        ),
+      ).toBe(true);
+    } finally {
+      resetDemoGrantsForTests();
+    }
   });
 
   it('ohne Rechte in Health Connect → „Zugriff fehlt“', async () => {

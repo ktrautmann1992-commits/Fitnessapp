@@ -23,9 +23,10 @@ const PRESETS = [6000, 8000, 10_000, 12_000] as const;
 
 /**
  * Kachel „Schritte“ auf der Übersicht (Gründer-Wunsch 22.10.2026, docs/PLAN-PHASE-8.md 13.4): Ring füllt sich mit den
- * heutigen Schritten der Uhr bis zum Tagesziel, große Zahl in der Mitte, „von 8.000“ darunter; erreicht → Ring voll in
+ * heutigen Schritten (Handy und/oder Uhr) bis zum Tagesziel, große Zahl in der Mitte, „von 8.000“ darunter; erreicht → Ring voll in
  * Erfolgsfarbe mit „✓ Ziel erreicht“. Darunter Mini-Balken der letzten 7 Tage. Leer: ohne Uhr/Einwilligung Hinweis mit
- * „Uhr verbinden“, verbunden ohne Wert heute „Noch keine Schritte heute“. Antippen → Smartwatch (dort Schrittziel).
+ * „Handy nutzen“ (Schritte, die das Handy selbst zählt – über Health Connect, auch ganz ohne Uhr) und „Uhr verbinden“,
+ * verbunden ohne Wert heute „Noch keine Schritte heute“. Antippen → Smartwatch (dort Schrittziel).
  * Rechnet nichts selbst (packages/core: stepProgress, stepWeek). Schritte sind Gesundheitsdaten: nur Anzeige, nie Logs.
  */
 export function StepsTile({ today }: { today: string }) {
@@ -64,13 +65,24 @@ export function StepsTile({ today }: { today: string }) {
           {text}
         </Body>
         {unsupported ? null : (
-          <Button
-            label={S.tile.connect}
-            variant="secondary"
-            compact
-            onPress={toSmartwatch}
-            testID="overview-steps-connect"
-          />
+          <>
+            {/* Ohne Uhr: Schritte, die das Handy selbst zählt (Health Connect, 29.10.2026). */}
+            <Button
+              label={S.tile.phone}
+              accessibilityLabel={S.tile.phoneA11y}
+              variant="secondary"
+              compact
+              onPress={() => router.push('/smartwatch?quelle=handy' as Href)}
+              testID="overview-steps-phone"
+            />
+            <Button
+              label={S.tile.connect}
+              variant="secondary"
+              compact
+              onPress={toSmartwatch}
+              testID="overview-steps-connect"
+            />
+          </>
         )}
       </DashboardTile>
     );

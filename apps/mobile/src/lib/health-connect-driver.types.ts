@@ -40,8 +40,11 @@ export interface HealthConnectDriver {
   /** `native` = echtes Health Connect, `demo` = Beispiel-Uhr (Testmodus), `none` = nicht verfügbar. */
   readonly kind: 'native' | 'demo' | 'none';
   availability(): Promise<HcAvailability>;
-  /** Systemdialog mit genau den Leserechten aus WEARABLE_DATA_TYPES; Ergebnis = freigegebene Datentypen. */
-  requestPermissions(): Promise<WearableDataType[]>;
+  /**
+   * Systemdialog mit den Leserechten aus WEARABLE_DATA_TYPES (bzw. nur `types`, z. B. „Nur Schritte vom Handy“ =
+   * `['steps']`); Ergebnis = freigegebene Datentypen.
+   */
+  requestPermissions(types?: readonly WearableDataType[]): Promise<WearableDataType[]>;
   /** Aktuell freigegebene Datentypen (ohne Dialog). */
   grantedTypes(): Promise<WearableDataType[]>;
   /** Daten im Zeitraum lesen (nur freigegebene Typen). `days` = Kalendertage für die Schritte (Europe/Berlin). */
