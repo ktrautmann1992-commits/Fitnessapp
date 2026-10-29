@@ -171,7 +171,7 @@ test('Ratgeber im Flugmodus; Zahlen aus blendet Mengen aus, fester Carb-Loading-
   await page.context().setOffline(true);
   await page.getByTestId('guide-open-demo-wettkampf').click();
   await expect(page.getByTestId('guide')).toBeVisible();
-  await expect(page.getByTestId('guide-draft')).toBeVisible();
+  await expect(page.getByTestId('guide-draft')).toHaveCount(0);
   await expect(page.getByTestId('guide-sections')).toContainText('Carb-Loading');
   await expect(page.getByTestId('guide-sections')).toContainText('8–10 g Kohlenhydrate');
   await expect(page.getByTestId('guide-notice')).toHaveText(

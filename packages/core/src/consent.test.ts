@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   activeConsentVersion,
+  consentBodyForDisplay,
   type ConsentRecord,
   consentRecordSchema,
   CURRENT_CONSENT_VERSIONS,
@@ -106,5 +107,33 @@ describe('Sonstiges', () => {
     expect(
       consentRecordSchema.safeParse({ ...granted('privacy', 1), consentType: 'marketing' }).success,
     ).toBe(false);
+  });
+});
+
+describe('consentBodyForDisplay', () => {
+  it('entfernt die Entwurfs-Zeile am Anfang samt Leerzeilen', () => {
+    expect(consentBodyForDisplay('ENTWURF – juristisch prüfen\n\n1. Geltungsbereich\nText')).toBe(
+      '1. Geltungsbereich\nText',
+    );
+  });
+
+  it('entfernt auch die Zeile mit Zusatz in Klammern (Zyklusdaten) und Windows-Zeilenenden', () => {
+    expect(
+      consentBodyForDisplay(
+        'ENTWURF – juristisch prüfen (Fassung für die Testphase, Prüfung vor dem öffentlichen Livegang)\r\n\r\nMit dem Zyklus-Modul',
+      ),
+    ).toBe('Mit dem Zyklus-Modul');
+  });
+
+  it('lässt Texte ohne Entwurfs-Zeile und das Wort mitten im Text unverändert', () => {
+    expect(consentBodyForDisplay('1. Geltungsbereich')).toBe('1. Geltungsbereich');
+    expect(consentBodyForDisplay('Text\nENTWURF – juristisch prüfen')).toBe(
+      'Text\nENTWURF – juristisch prüfen',
+    );
+    expect(consentBodyForDisplay('')).toBe('');
+  });
+
+  it('Grenzfall: nur die Entwurfs-Zeile → leerer Text', () => {
+    expect(consentBodyForDisplay('ENTWURF – juristisch prüfen')).toBe('');
   });
 });

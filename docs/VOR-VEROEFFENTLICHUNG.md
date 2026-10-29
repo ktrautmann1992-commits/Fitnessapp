@@ -17,19 +17,24 @@ Suche nach diesen Wörtern findet sie.
    ausfüllen (Name, Anschrift, Kontakt, Verantwortliche Stelle) und von Anwalt/Datenschutzberatung prüfen lassen
    (DE, AT, CH). Der Hinweis-Kasten „PLATZHALTER – vor Livegang ausfüllen“ ist entfernt; bei Bedarf in
    `_components/Recht.tsx` wieder einbauen.
-2. **Einwilligungstexte** (`consent_documents`, Kopie in `apps/mobile/src/data/consent-texts.ts`): tragen noch
-   „ENTWURF – juristisch prüfen“. Bewusst nicht geändert – eine Textänderung braucht eine neue Fassung mit neuer
-   Zustimmung. Juristisch prüfen, dann als neue Fassung per Migration einspielen (`health_data` Fassung 2 ist in der
-   Datenbank noch unveröffentlicht).
-3. **Health-Claims** (Supplemente, Ratgeber, Rezepte): Wortlaute und Pflichthinweise gegen das EU-Register prüfen
+2. **Einwilligungstexte** (`consent_documents`, Kopie in `apps/mobile/src/data/consent-texts.ts`): Die Fassungen
+   tragen in der Datenbank weiter die erste Zeile „ENTWURF – juristisch prüfen“ (bewusst unverändert – eine
+   Textänderung braucht eine neue Fassung mit neuer Zustimmung aller Nutzer). Die App blendet diese Zeile seit
+   29.10.2026 nur in der Anzeige aus (`consentBodyForDisplay` in `packages/core/src/consent.ts`). Juristisch prüfen,
+   dann als neue Fassungen ohne die Zeile per Migration einspielen (`health_data` Fassung 2 ist in der Datenbank noch
+   unveröffentlicht).
+3. **Allergen-Angaben bei nicht freigegebenen Rezepten** (nur Testmodus ohne Supabase): statt „Entwurf … noch nicht
+   freigegeben“ steht seit 29.10.2026 die neutrale Zeile „Allergen-Angaben ohne Gewähr – bitte Zutatenliste prüfen.“;
+   Packungsgrößen und Ratgeber tragen kein Entwurfs-Kennzeichen mehr.
+4. **Health-Claims** (Supplemente, Ratgeber, Rezepte): Wortlaute und Pflichthinweise gegen das EU-Register prüfen
    (Health-Claims-Verordnung, docs/PLAN-PHASE-6.md 18).
-4. **Auftragsverarbeitung**: AVV mit Google (Gemini), Supabase, Vercel, Expo; Wearable-Anbieter (Strava, Garmin)
+5. **Auftragsverarbeitung**: AVV mit Google (Gemini), Supabase, Vercel, Expo; Wearable-Anbieter (Strava, Garmin)
    prüfen.
-5. **Live-Begleitung / Notfallkontakt** (docs/PLAN-PHASE-10.md 21): Rechts- und Haftungsprüfung, bevor mehr als der
+6. **Live-Begleitung / Notfallkontakt** (docs/PLAN-PHASE-10.md 21): Rechts- und Haftungsprüfung, bevor mehr als der
    private Kreis sie nutzt; Notrufnummern (DE/AT 112, CH 144/112) gegen offizielle Angaben prüfen.
-6. **Lizenzen und Quellen** (App „Lizenzen“, Website `/lizenzen`): Wortlaut juristisch prüfen (Open Food Facts,
+7. **Lizenzen und Quellen** (App „Lizenzen“, Website `/lizenzen`): Wortlaut juristisch prüfen (Open Food Facts,
    BLS 4.0, Schriften, Strichcode-Leser).
-7. **Affiliate/Werbung, Abos (RevenueCat/Stripe)**: Kennzeichnung „Anzeige“, Widerrufsbelehrung, Preisangaben.
+8. **Affiliate/Werbung, Abos (RevenueCat/Stripe)**: Kennzeichnung „Anzeige“, Widerrufsbelehrung, Preisangaben.
 
 ## 2. Fachliche Prüfung der Inhalte
 

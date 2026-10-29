@@ -69,9 +69,10 @@ test('Was habe ich da?: Auswahl, Übereinstimmung, nur Gewürze, Entwurf-Warnung
   await expect(page.getByTestId('fridge-hit-banane-pur-missing')).toHaveText(
     'Alle Hauptzutaten hast du da.',
   );
-  await expect(page.getByTestId('fridge-draft-warning')).toContainText(
-    'Allergen-Angaben noch nicht freigegeben',
+  await expect(page.getByTestId('fridge-draft-warning')).toHaveText(
+    'Allergen-Angaben ohne Gewähr – bitte Zutatenliste prüfen.',
   );
+  await expect(page.getByTestId('fridge-search')).not.toContainText(/Entwurf|freigegeben/);
   await expect(page.getByTestId('fridge-results')).toContainText(/\d+\skcal\s·\s\d+\sg\sEiweiß/);
 
   // Suchfeld grenzt die Auswahl ein.

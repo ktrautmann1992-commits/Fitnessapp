@@ -17,7 +17,7 @@ import {
   NutritionGate,
   nutritionReady,
 } from '@/components/nutrition';
-import { RecipeFlagChip, RecipeThumb } from '@/components/recipe-image';
+import { RecipeThumb } from '@/components/recipe-image';
 import { Screen } from '@/components/screen';
 import {
   Body,
@@ -310,7 +310,7 @@ export default function FridgeSearchScreen() {
               <Body>{texts.results(total)}</Body>
             </Text>
             {found?.hasDrafts === true ? (
-              <Notice tone="warning" testID="fridge-draft-warning">
+              <Notice tone="info" testID="fridge-draft-warning">
                 {texts.allergenWarning}
               </Notice>
             ) : null}
@@ -368,7 +368,6 @@ function FridgeCard({
   const a11y = [
     `${texts.cardA11y(card.title)}, ${texts.matchA11y(card.percent)}`,
     numbers ? `${numbers.a11y}, ${t.nutrition.search.perServingA11y}` : null,
-    card.isDraft ? texts.draft : null,
   ]
     .filter((part): part is string => part !== null)
     .join('. ');
@@ -398,7 +397,6 @@ function FridgeCard({
             >
               {texts.match(card.percent)}
             </Text>
-            {card.isDraft ? <RecipeFlagChip label={texts.draft} a11y={texts.draft} /> : null}
           </View>
         </View>
       </View>

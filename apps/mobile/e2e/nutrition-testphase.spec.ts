@@ -8,8 +8,9 @@ import { heading } from './plan-helpers';
  * Inhalte als „freigegeben, nicht fachlich geprüft“ – so, wie sie aus der Datenbank kommen. Seit der Gründer-
  * Entscheidung 27.10.2026 (privater Nutzerkreis, höchstens 5 Personen) zeigt die App dazu KEIN Kennzeichen mehr:
  * Rezeptsuche, Rezeptansicht, Kühlschrank-Suche und Ratgeber ohne „Testphase“, ohne „Entwurf“, ohne Allergen-Hinweis
- * „nicht fachlich geprüft“. Ratgeber mit Dosierungs-Befund (R21H) bleiben ohne Fachprüfung Entwurf (Freigabe-Regel).
- * Gegenprobe: Entwürfe (normaler Testmodus) behalten „Entwurf“ und den Allergen-Hinweis für Entwürfe.
+ * „nicht fachlich geprüft“. Ratgeber mit Dosierungs-Befund (R21H) bleiben ohne Fachprüfung Entwurf (Freigabe-Regel),
+ * werden aber ebenfalls nicht gekennzeichnet. Gegenprobe: Entwürfe (normaler Testmodus) ohne „Entwurf“, nur mit der
+ * neutralen Allergen-Zeile „ohne Gewähr“.
  * Fester Start: Montag, 12.10.2026, 9 Uhr.
  */
 
@@ -62,14 +63,16 @@ test('Testphase: Suche, Rezeptansicht, Kühlschrank und Ratgeber ohne Prüf-Kenn
   await expect(page.getByTestId('guide-testphase')).toHaveCount(0);
   await expect(page.getByTestId('guide-draft')).toHaveCount(0);
 
-  // Ratgeber mit Dosierungs-Befund (R21H) wird ohne Fachprüfung NICHT freigegeben (Wächter H1): bleibt Entwurf.
+  // Ratgeber mit Dosierungs-Befund (R21H) wird ohne Fachprüfung NICHT freigegeben (Wächter H1): bleibt Entwurf,
+  // ohne Kennzeichen (Gründer-Entscheidung 27.10.2026).
   await page.goto('/ratgeber/demo-wettkampf');
   await expect(page.getByTestId('guide')).toBeVisible();
-  await expect(page.getByTestId('guide-draft')).toHaveText('Entwurf');
+  await expect(page.getByTestId('guide-draft')).toHaveCount(0);
+  await expect(page.getByTestId('guide')).not.toContainText('Entwurf');
   await expect(page.getByTestId('guide-testphase')).toHaveCount(0);
 });
 
-test('Gegenprobe: normaler Testmodus (Entwürfe) behält „Entwurf“ und Allergen-Hinweis', async ({
+test('Gegenprobe: normaler Testmodus (Entwürfe) ohne „Entwurf“, mit neutraler Allergen-Zeile', async ({
   page,
 }) => {
   test.setTimeout(180_000);
@@ -79,9 +82,14 @@ test('Gegenprobe: normaler Testmodus (Entwürfe) behält „Entwurf“ und Aller
   await openNutrition(page);
   await page.goto('/rezept/overnight-oats');
   await expect(page.getByTestId('recipe')).toBeVisible();
-  await expect(page.getByTestId('recipe-allergen-warning')).toBeVisible();
+  await expect(page.getByTestId('recipe-allergen-warning')).toHaveText(
+    'Allergen-Angaben ohne Gewähr – bitte Zutatenliste prüfen.',
+  );
+  await expect(page.getByTestId('recipe')).not.toContainText(/Entwurf|freigegeben/);
   await expect(page.getByTestId('recipe-testphase')).toHaveCount(0);
   await page.goto('/ratgeber/demo-wettkampf');
-  await expect(page.getByTestId('guide-draft')).toBeVisible();
+  await expect(page.getByTestId('guide')).toBeVisible();
+  await expect(page.getByTestId('guide-draft')).toHaveCount(0);
+  await expect(page.getByTestId('guide')).not.toContainText('Entwurf');
   await expect(page.getByTestId('guide-testphase')).toHaveCount(0);
 });

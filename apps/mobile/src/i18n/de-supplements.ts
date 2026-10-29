@@ -151,7 +151,7 @@ export const deSupplements = {
       'Neu dazu kommen der Supplement-Check und „Meine Supplements“. Es wird nichts gelöscht. Bis du zustimmst, siehst du hier nur allgemeine Informationen und kannst keine Gesundheitsdaten ergänzen.',
     reconsent: 'Neuen Text lesen und zustimmen',
     pending:
-      'Die persönliche Einordnung kommt, sobald die ergänzte Einwilligung Gesundheitsdaten freigegeben ist. Bis dahin siehst du allgemeine Informationen.',
+      'Die persönliche Einordnung ist noch nicht verfügbar – sie braucht eine ergänzte Einwilligung Gesundheitsdaten. Bis dahin siehst du allgemeine Informationen.',
   },
   testTools: {
     title: 'Testmodus',

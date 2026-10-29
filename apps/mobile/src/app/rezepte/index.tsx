@@ -16,7 +16,7 @@ import {
   NutritionGate,
   nutritionReady,
 } from '@/components/nutrition';
-import { RecipeThumb, RecipeFlagChip } from '@/components/recipe-image';
+import { RecipeThumb } from '@/components/recipe-image';
 import { FavoriteToggle } from '@/components/recipe-preference';
 import { Screen } from '@/components/screen';
 import {
@@ -363,7 +363,6 @@ function RecipeCard({
     texts.cardA11y(card.title),
     card.favorite ? t.nutrition.favorites.favoriteMark : null,
     numbers ? `${numbers.a11y}, ${texts.perServingA11y}` : null,
-    card.isDraft ? texts.draft : null,
   ]
     .filter((part): part is string => part !== null)
     .join('. ');
@@ -389,11 +388,6 @@ function RecipeCard({
           <View style={styles.cardText}>
             <Text style={[styles.title, { color: theme.text }]}>{card.title}</Text>
             <Text style={[styles.detail, { color: theme.textMuted }]}>{details.join(' · ')}</Text>
-            {card.isDraft ? (
-              <View style={styles.flags}>
-                <RecipeFlagChip label={texts.draft} a11y={texts.draft} />
-              </View>
-            ) : null}
             {card.outsideProfileDiet ? (
               <Text
                 style={[styles.marker, { color: theme.text, borderColor: theme.border }]}
@@ -419,7 +413,6 @@ function RecipeCard({
 
 const styles = StyleSheet.create({
   cardRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  flags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
   cardText: { flex: 1, minWidth: 0, gap: spacing.xs },
   group: { gap: spacing.xs },
   count: { fontSize: fontSize.md },

@@ -638,23 +638,22 @@ describe('Essensplan als PDF (Dokumentmodell)', () => {
       const count = new Set(plan.days.flatMap((d) => d.meals.map((m) => m.recipeId))).size;
       return {
         count,
-        aiDraft: withCode(doc, 'recipe.mark.aiDraft').length,
         draftAllergens: withCode(doc, 'nutrition.notice.draftAllergens').length,
       };
     };
-    // Freigegeben – mit und ohne Fachprüfung, von Hand (alpha5) und KI: kein Kennzeichen, kein Entwurfs-Hinweis.
+    // Freigegeben – mit und ohne Fachprüfung, von Hand (alpha5) und KI: kein Kennzeichen, keine Allergen-Zeile.
     for (const origin of ['manual', 'claude_session'] as const) {
       for (const expert of [false, true]) {
         const m = marks(variant({ origin, expert_reviewed: expert }, 'published'));
         expect(m.count, origin).toBeGreaterThan(0);
-        expect(m, origin).toMatchObject({ aiDraft: 0, draftAllergens: 0 });
+        expect(m, origin).toMatchObject({ draftAllergens: 0 });
       }
     }
-    // KI-Entwurf → „KI-Entwurf“ wie bisher; Entwurf von Hand → kein Kennzeichen (Allergen-Hinweis bleibt).
+    // Entwürfe (KI oder von Hand) → kein Kennzeichen mehr (27.10.2026); nur die neutrale Allergen-Zeile.
     const ai = marks(variant({ origin: 'claude_session', expert_reviewed: false }, 'draft'));
-    expect(ai).toMatchObject({ aiDraft: ai.count, draftAllergens: ai.count + 1 });
+    expect(ai).toMatchObject({ draftAllergens: ai.count + 1 });
     const manual = marks(variant({ origin: 'manual', expert_reviewed: false }, 'draft'));
-    expect(manual).toMatchObject({ aiDraft: 0, draftAllergens: manual.count + 1 });
+    expect(manual).toMatchObject({ draftAllergens: manual.count + 1 });
   });
 });
 

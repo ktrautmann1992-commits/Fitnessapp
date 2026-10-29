@@ -88,7 +88,7 @@ export const deModes = {
       'Angaben zu Beschwerden sind Gesundheitsdaten. Dafür brauchst du die Einwilligung „Gesundheitsdaten“ in der aktuellen Fassung.',
     consentButton: 'Einwilligung ansehen',
     consentPending:
-      'Der Schon-Modus braucht eine neue Fassung der Einwilligung „Gesundheitsdaten“. Sie wird gerade rechtlich geprüft – danach kannst du ihn nutzen.',
+      'Der Schon-Modus braucht eine neue Fassung der Einwilligung „Gesundheitsdaten“. Sie ist noch nicht verfügbar – danach kannst du ihn nutzen.',
     historyTitle: 'Frühere Einträge',
     historyEmpty: 'Noch keine früheren Einträge.',
     historyLine: (region: string, intensity: string, from: string, to: string) =>

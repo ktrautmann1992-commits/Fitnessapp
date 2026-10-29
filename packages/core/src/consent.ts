@@ -112,6 +112,19 @@ export function missingRequiredConsents(
 }
 
 /**
+ * Arbeitszeile am Anfang der bisherigen Einwilligungstexte („ENTWURF – juristisch prüfen …“). Die Fassungen bleiben in
+ * der Datenbank wörtlich unverändert (Nachweis, welcher Text zu welcher Version gehört; keine neue Version und damit
+ * keine erneute Zustimmung nötig). Angezeigt wird der Text ohne diese Zeile – keine Entwurfs-Hinweise in der App
+ * (privater Nutzerkreis, Gründer-Entscheidung 27.10.2026). Nur am Anfang, sonst bleibt der Text, wie er ist.
+ */
+const CONSENT_DRAFT_MARK = /^ENTWURF – juristisch prüfen[^\n]*(?:\r?\n)*/;
+
+/** Einwilligungstext zur Anzeige: ohne die Entwurfs-Zeile am Anfang (siehe CONSENT_DRAFT_MARK). */
+export function consentBodyForDisplay(body: string): string {
+  return body.replace(CONSENT_DRAFT_MARK, '');
+}
+
+/**
  * Braucht diese Art von Lebensmittel-Vorliebe die Einwilligung health_data?
  * Unverträglichkeiten sind Gesundheitsdaten, „mag“/„mag nicht“ nicht.
  */

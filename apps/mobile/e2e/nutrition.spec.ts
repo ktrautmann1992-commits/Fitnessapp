@@ -49,10 +49,13 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
   await expect(page.getByTestId('nutrition-target')).toContainText('Tagesziel');
   await expect(page.getByTestId('nutrition-macros')).toBeVisible();
   await expect(page.getByText('Schätzung – ±10 % sind normal.').first()).toBeVisible();
-  // Abends trainieren → Abendessen „nach dem Training“ (4.8); Entwürfe gekennzeichnet (K6).
+  // Abends trainieren → Abendessen „nach dem Training“ (4.8); Entwürfe nur mit neutraler Allergen-Zeile (K6).
   await expect(page.getByTestId('meal-dinner')).toContainText('nach dem Training');
   await expandNotices(page, 'nutrition-notice-line');
-  await expect(page.getByTestId('nutrition-plan-notice-drafts_allergens_unreviewed')).toBeVisible();
+  await expect(page.getByTestId('nutrition-plan-notice-drafts_allergens_unreviewed')).toHaveText(
+    'Allergen-Angaben ohne Gewähr – bitte Zutatenliste prüfen.',
+  );
+  await expect(page.getByTestId('nutrition-plan-notice-drafts_used')).toHaveCount(0);
   await expect(page.getByTestId('nutrition-day')).not.toContainText(/Champignon|Pilz-/);
 
   // Zurück zu „Heute“: nächste Mahlzeit um 9 Uhr ist das Mittagessen.
@@ -64,8 +67,9 @@ test('Onboarding → Ziel sichtbar → Rezept öffnen → Kalorienzahlen ausblen
   await page.getByTestId('meal-lunch').click();
   await expect(page.getByTestId('recipe')).toBeVisible();
   await expect(page.getByTestId('recipe-allergen-warning')).toHaveText(
-    'Entwurf: Allergen-Angaben noch nicht freigegeben – bei Allergien bitte nicht verwenden.',
+    'Allergen-Angaben ohne Gewähr – bitte Zutatenliste prüfen.',
   );
+  await expect(page.getByTestId('recipe')).not.toContainText(/Entwurf|freigegeben/);
   await expect(page.getByTestId('recipe-portion')).toContainText('Deine Portion');
   await expect(page.getByTestId('recipe-contains')).toContainText('Enthält');
   await expect(page.getByTestId('recipe-nutrients')).toContainText('kcal');

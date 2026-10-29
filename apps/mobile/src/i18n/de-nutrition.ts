@@ -42,7 +42,7 @@ export const deNutrition = {
   noRecipes: 'Für deine Angaben gibt es noch keine Rezepte.',
   /** Supabase-Modus (N7 Teil 2, G-N7-3): noch keine freigegebenen Rezepte – klarer Leer-Zustand. */
   noRecipesReview:
-    'Noch keine Rezepte: Unsere Rezepte erscheinen hier, sobald sie freigegeben sind. Dein Tagesziel siehst du schon.',
+    'Noch keine Rezepte: Unsere Rezepte erscheinen hier, sobald sie verfügbar sind. Dein Tagesziel siehst du schon.',
   noRecipesTestMode:
     'Noch keine Rezepte: Der Lebensmittel-Katalog wird gerade importiert. Zum Ausprobieren kannst du Beispiel-Rezepte mit Testwerten verwenden.',
   demoUse: 'Beispiel-Rezepte mit Testwerten verwenden',
@@ -139,7 +139,7 @@ export const deNutrition = {
   substitution: (food: string) => `mit ${food}`,
   omitted: (food: string) => `ohne ${food}`,
   emptyReasons: {
-    status: 'nicht freigegeben',
+    status: 'noch nicht verfügbar',
     red_issue: 'Prüfung offen',
     food_unavailable: 'Zutaten fehlen im Katalog',
     nutrients_incomplete: 'Nährwerte unvollständig',
@@ -235,9 +235,8 @@ export const deNutrition = {
     meal_prep_freeze:
       'Einige vorgekochte Portionen bitte einfrieren und am Vortag im Kühlschrank auftauen.',
     meal_prep_fresh_days: 'An einigen Tagen kochst du frisch.',
-    drafts_used: 'Die Rezepte sind Entwürfe und noch nicht freigegeben.',
-    drafts_allergens_unreviewed:
-      'Allergen-Angaben noch nicht freigegeben – bei Allergien bitte nicht verwenden.',
+    // drafts_used zeigt die App nicht (lib/nutrition-format.ts visiblePlanNotices, Gründer-Entscheidung 27.10.2026).
+    drafts_allergens_unreviewed: 'Allergen-Angaben ohne Gewähr – bitte Zutatenliste prüfen.',
   },
   // --- Gespeicherter Plan, Woche, Tauschen (6.3 Nr. 7, 6.6, 8.2 Nr. 2–3, Etappe N5) ---------------------------
   plan: {
@@ -380,10 +379,7 @@ export const deNutrition = {
     title: 'Rezept',
     notFound: 'Dieses Rezept gibt es nicht (mehr).',
     notForYou: 'Dieses Rezept passt nicht zu deinen Angaben.',
-    aiDraft: 'KI-Entwurf – noch nicht freigegeben',
-    draft: 'Entwurf – noch nicht freigegeben',
-    allergenWarning:
-      'Entwurf: Allergen-Angaben noch nicht freigegeben – bei Allergien bitte nicht verwenden.',
+    allergenWarning: 'Allergen-Angaben ohne Gewähr – bitte Zutatenliste prüfen.',
     times: (prep: number, cook: number) =>
       cook > 0
         ? `Vorbereitung ${prep} Min. · Kochen ${cook} Min.`
@@ -891,7 +887,6 @@ export const deNutrition = {
     line: (list: string) => `Nutzt deinen Rest: ${list}`,
     item: (food: string, weekday: string) => `${food} (seit ${weekday})`,
     weekShort: 'nutzt einen Rest',
-    unreviewed: 'Packungsgröße noch nicht freigegeben (Entwurf)',
     shortLived:
       'Angebrochen nur kurz haltbar: Die App plant diesen Rest nur bis zum Folgetag ein. Gut gekühlt lagern und die Angaben auf der Packung beachten.',
     explain:
@@ -931,7 +926,6 @@ export const deNutrition = {
     minutes: (n: number) => `${n} Min.`,
     /** Werte auf der Karte gelten je Portion des Grundrezepts – für Bildschirmleser ausgeschrieben. */
     perServingA11y: 'Werte je Portion',
-    draft: 'Entwurf',
     cardA11y: (title: string) => `Rezept öffnen: ${title}`,
     outsideDietRecipe:
       'Du hast dieses Rezept über die erweiterte Suche gefunden. Es kommt nie automatisch in deinen Essensplan.',
@@ -974,9 +968,7 @@ export const deNutrition = {
     missingNone: 'Alle Hauptzutaten hast du da.',
     missingMinor: (list: string) => `Aus dem Vorrat: ${list}`,
     minutes: (n: number) => `${n} Min.`,
-    draft: 'Entwurf',
-    allergenWarning:
-      'Entwürfe: Allergen-Angaben noch nicht freigegeben – bei Allergien bitte nicht verwenden.',
+    allergenWarning: 'Allergen-Angaben ohne Gewähr – bitte Zutatenliste prüfen.',
     cardA11y: (title: string) => `Rezept öffnen: ${title}`,
     toSearch: 'Zur Rezeptsuche',
     more: (n: number) => `Mehr anzeigen (noch ${n})`,
@@ -999,8 +991,7 @@ export const deNutrition = {
     noticeTitle: 'Wichtig',
     testValues:
       'Beispiel-Rezepte mit TESTWERTEN – keine echten Nährwerte, keine geprüften Allergene. Nur zum Ausprobieren.',
-    draftAllergens:
-      'Entwürfe: Allergen-Angaben noch nicht freigegeben – bei Allergien bitte nicht verwenden.',
+    draftAllergens: 'Allergen-Angaben ohne Gewähr – bitte Zutatenliste prüfen.',
     weekHeading: 'Wochenübersicht',
     weekHeadingContinued: 'Wochenübersicht (Fortsetzung)',
     colSlot: 'Mahlzeit',
@@ -1064,7 +1055,6 @@ export const deNutrition = {
       'Zum Nachlesen – die Ratgeber sind in der App gespeichert und funktionieren auch ohne Netz.',
     none: 'Es gibt noch keine Ratgeber.',
     notFound: 'Diesen Ratgeber gibt es nicht (mehr).',
-    draft: 'Entwurf',
     openA11y: (title: string) => `Ratgeber öffnen: ${title}`,
     hiddenNumbers: 'Zahlenangaben zu Kalorien und Nährstoff-Mengen sind hier ausgeblendet.',
     hiddenInSection: (n: number) =>

@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { CURRENT_CONSENT_VERSIONS } from '@fitnessapp/core';
+import { consentBodyForDisplay, CURRENT_CONSENT_VERSIONS } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
 import { LOCAL_CONSENT_DOCUMENTS } from './consent-texts';
@@ -76,9 +76,13 @@ describe('Einwilligungstexte im Testmodus', () => {
     }
   });
 
-  it('sind als Entwurf gekennzeichnet', () => {
+  it('tragen wie die Datenbank die Entwurfs-Zeile, angezeigt wird der Text ohne sie (27.10.2026)', () => {
     for (const doc of LOCAL_CONSENT_DOCUMENTS) {
       expect(doc.body.startsWith('ENTWURF – juristisch prüfen')).toBe(true);
+      const shown = consentBodyForDisplay(doc.body);
+      expect(shown).not.toMatch(/ENTWURF|juristisch prüfen/);
+      expect(shown.length).toBeGreaterThan(100);
+      expect(doc.body.endsWith(shown)).toBe(true);
     }
   });
 });

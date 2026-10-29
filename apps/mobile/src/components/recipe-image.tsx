@@ -99,40 +99,4 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.semibold,
     lineHeight: 14,
   },
-  chip: {
-    alignSelf: 'flex-start',
-    fontSize: 11,
-    lineHeight: 14,
-    fontWeight: fontWeight.semibold,
-    borderWidth: 1,
-    borderRadius: radius.sm,
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-    marginTop: 2,
-  },
 });
-
-/**
- * Kleines Kennzeichen an Rezeptkarten, z. B. „Testphase“ (freigegeben ohne Fachprüfung) oder „Entwurf“ – mit
- * ausgeschriebenem Text für Bildschirmleser.
- */
-export function RecipeFlagChip({
-  label,
-  a11y,
-  testID,
-}: {
-  label: string;
-  a11y: string;
-  testID?: string;
-}) {
-  const theme = useThemeColors();
-  return (
-    <Text
-      accessibilityLabel={a11y}
-      testID={testID}
-      style={[styles.chip, { color: theme.textMuted, borderColor: theme.border }]}
-    >
-      {label}
-    </Text>
-  );
-}

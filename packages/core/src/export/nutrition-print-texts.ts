@@ -89,7 +89,6 @@ export interface NutritionPrintTextParams {
   'recipe.inPlan': { uses: readonly { date: string; slot: MealPlanSlotKey }[] };
   'recipe.label.time': Empty;
   'recipe.time': { prep: number; cook: number };
-  'recipe.mark.aiDraft': Empty;
   'recipe.ingredients': Empty;
   'recipe.col.ingredient': Empty;
   /** Spalte je Portionsgröße mit den Wochentagen, an denen sie gilt. */
@@ -192,7 +191,6 @@ export const NUTRITION_PARAM_SCHEMAS = {
     prep: z.number().int().min(0).max(RECIPE_SCHEMA_LIMITS.prepMinutes.max),
     cook: z.number().int().min(0).max(RECIPE_SCHEMA_LIMITS.cookMinutes.max),
   }),
-  'recipe.mark.aiDraft': empty,
   'recipe.ingredients': empty,
   'recipe.col.ingredient': empty,
   'recipe.col.portion': z.strictObject({ factor: factorSchema, weekdays: weekdaysSchema }),

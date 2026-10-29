@@ -56,9 +56,10 @@ async function startUntilSex(page: Page) {
   await expect(terms).toHaveAttribute('aria-checked', 'false');
   await page.getByRole('button', { name: 'Zustimmen und weiter' }).click();
   await expect(page.getByText('Bitte bestätige beide Punkte, um fortzufahren.')).toBeVisible();
-  // „Text lesen“ zeigt den Entwurfstext (lokale Kopie der Version 1).
+  // „Text lesen“ zeigt den Text (lokale Kopie der Version 1) – ohne Entwurfs-Zeile (Gründer-Entscheidung 27.10.2026).
   await page.getByRole('link', { name: 'Nutzungsbedingungen: Text lesen' }).click();
-  await expect(page.getByText('ENTWURF – juristisch prüfen').first()).toBeVisible();
+  await expect(page.getByTestId('consent-text-body')).toContainText('1. Geltungsbereich');
+  await expect(page.getByTestId('consent-text-body')).not.toContainText(/ENTWURF|juristisch/);
   await page.getByRole('button', { name: 'Schließen' }).click();
   await terms.click();
   await page.getByRole('checkbox', { name: 'Ich habe die Datenschutzerklärung gelesen.' }).click();
