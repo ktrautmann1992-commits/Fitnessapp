@@ -55,6 +55,27 @@ export const deWearables = {
     n === 1
       ? 'Für 1 Lauf fragt Health Connect nach der Route. Öffne ihn und tippe auf „Route freigeben“.'
       : `Für ${n} Läufe fragt Health Connect nach der Route. Öffne sie und tippe auf „Route freigeben“.`,
+  /** Schritte vom Handy ohne Uhr (Gründer-Wunsch 29.10.2026, docs/PLAN-PHASE-8.md 13.5). */
+  phone: {
+    title: 'Schritte vom Handy',
+    lead: 'Du brauchst keine Uhr: Unten verbindest du nur die Schritte deines Handys.',
+    intro:
+      'Keine Smartwatch? Kein Problem: Dein Handy zählt deine Schritte auch in der Hosentasche. Alpha5 liest sie aus Health Connect – nur die Schritte, sonst nichts.',
+    how: [
+      'Ab Android 14 ist Health Connect eingebaut, viele Handys zählen die Schritte dort von selbst.',
+      'Kommen keine Schritte an? Öffne Samsung Health oder Google Fit, erlaube dort „Körperliche Aktivität“ und unter „Health Connect“ das Schreiben der Schritte.',
+      'Handy und Uhr zugleich? Health Connect zählt keinen Schritt doppelt.',
+    ],
+    consentNote:
+      'Schritte sind Gesundheitsdaten. Alpha5 nutzt dafür deine Einwilligung „Smartwatch-Daten“ – sie gilt auch für Schritte vom Handy.',
+    connect: 'Nur Schritte vom Handy verbinden',
+    demoConnect: 'Schritte vom Handy verbinden (Testmodus)',
+    connected:
+      'Deine Schritte kommen vom Handy (Health Connect). Trainingseinheiten, Puls und Schlaf übernimmt Alpha5, sobald du zusätzlich eine Uhr verbindest.',
+    addWatch: 'Uhr zusätzlich verbinden',
+    syncNote:
+      'Die Schritte kommen beim Öffnen der App an (höchstens alle 15 Minuten) oder mit „Jetzt abgleichen“ – Alpha5 liest nicht im Hintergrund.',
+  },
   installTitle: 'Health Connect fehlt',
   installText:
     'Auf deinem Handy ist Health Connect nicht installiert oder veraltet. Ab Android 14 ist es eingebaut; bei älteren Versionen installierst du die App „Health Connect“ aus dem Play Store.',

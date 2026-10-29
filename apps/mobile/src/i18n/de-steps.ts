@@ -22,10 +22,15 @@ export const deSteps = {
       `${n(steps)} von ${n(goal)} Schritten, ${percent} Prozent${reached ? ', Ziel erreicht' : ''}`,
     open: 'Smartwatch und Schrittziel öffnen',
     noData: 'Noch keine Schritte heute – synchronisiert alle 15 Minuten.',
-    noWatch: 'Verbinde deine Smartwatch, dann füllt sich hier dein Schrittziel.',
-    noConsent: 'Für Schritte brauchst du die Einwilligung „Smartwatch-Daten“.',
-    onlyAndroid: 'Schritte gibt es mit der Android-App und einer Smartwatch.',
+    noWatch:
+      'Zähl deine Schritte mit dem Handy oder deiner Smartwatch – dann füllt sich hier dein Schrittziel.',
+    noConsent:
+      'Für Schritte vom Handy oder von der Smartwatch brauchst du die Einwilligung „Smartwatch-Daten“.',
+    onlyAndroid: 'Schritte gibt es in der Android-App – vom Handy oder von der Smartwatch.',
     connect: 'Uhr verbinden',
+    /** Kurz (halbe Kachel, eine Zeile); vorgelesen wird `phoneA11y`. */
+    phone: 'Handy nutzen',
+    phoneA11y: 'Schritte vom Handy nutzen',
     loading: 'Schritte werden geladen …',
     /** Ansage der Mini-Balken: „Schritte der letzten 7 Tage: Freitag 7.400, …, heute 6.240“. */
     barsA11y: (days: readonly { weekday: number; steps: number | null }[]) =>

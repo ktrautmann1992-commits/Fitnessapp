@@ -992,6 +992,42 @@ export const NOTIFICATIONS = {
   restEndMinLeadMs: 1000,
 } as const;
 
+/**
+ * Erinnerungen an Training, Essen und Trinken (docs/PLAN-ERINNERUNGEN.md, Gründer-Wunsch 29.10.2026): nur lokale
+ * Benachrichtigungen, nur auf diesem Gerät, Standard aus. Quelle aller Werte: PRODUKTENTSCHEIDUNG.
+ * - `horizonDays`/`maxScheduled`: höchstens die nächsten 7 Tage und höchstens 60 Benachrichtigungen auf einmal (iOS
+ *   erlaubt 64, Android mehr) – neu geplant bei jedem App-Start und bei jeder Plan- bzw. Einstellungsänderung.
+ * - `quietFromMinutes`–`quietToMinutes`: Nachtruhe 22:00–07:00 – in dieser Zeit kommt NIE eine Erinnerung (auch nicht
+ *   vor einem frühen Training; die fällt dann weg). Nicht abschaltbar.
+ * - Training: `trainingLeadOptions` Minuten vor dem Start (eigene Uhrzeit der Einheit bzw. „Trainingszeit“); ohne
+ *   jede Uhrzeit eine Erinnerung am Morgen (`untimedTrainingMinutes`).
+ * - Essen: Mahlzeiten zur eigenen Essenszeit (`mealDefaults`, in `timeStepMinutes`-Schritten einstellbar zwischen
+ *   `mealMinMinutes` und `mealMaxMinutes`); fehlt vor dem Training eine Mahlzeit bzw. ein Snack, kommt ein Snack-Hinweis
+ *   `preSnackLeadMinutes` vor dem Start (= MEAL_TIMING_RULES.preSnackMinutes.max), fehlt danach eine Mahlzeit, ein
+ *   Hinweis `postMealDelayMinutes` nach dem Ende.
+ * - Trinken: im Zeitfenster `drinkDefaults` alle `drinkEveryOptions` Minuten.
+ * - `minGapMinutes`: Liegt eine Trink-Erinnerung bzw. ein Snack-Hinweis näher als so viele Minuten an einer anderen
+ *   Erinnerung (Snack-Hinweis: an der Trainings-Erinnerung), entfällt er – nie zwei Meldungen direkt hintereinander.
+ */
+export const REMINDERS = {
+  horizonDays: 7,
+  maxScheduled: 60,
+  quietFromMinutes: 22 * 60,
+  quietToMinutes: 7 * 60,
+  trainingLeadOptions: [15, 30, 60, 120],
+  trainingLeadDefault: 60,
+  untimedTrainingMinutes: 8 * 60,
+  mealDefaults: { breakfast: 7 * 60 + 30, lunch: 12 * 60 + 30, dinner: 18 * 60 + 30 },
+  mealMinMinutes: 7 * 60,
+  mealMaxMinutes: 21 * 60 + 30,
+  timeStepMinutes: 30,
+  preSnackLeadMinutes: 60,
+  postMealDelayMinutes: 15,
+  drinkEveryOptions: [60, 90, 120, 180],
+  drinkDefaults: { fromMinutes: 8 * 60, toMinutes: 20 * 60, everyMinutes: 120 },
+  minGapMinutes: 20,
+} as const;
+
 /** So viele Wochen Einträge liegen im (geschützten) Gerätespeicher. Quelle: PRODUKTENTSCHEIDUNG. */
 export const LOG_CACHE_WEEKS = 12;
 

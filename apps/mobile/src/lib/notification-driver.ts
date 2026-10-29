@@ -7,11 +7,20 @@
  */
 export type NotificationPermission = 'granted' | 'denied' | 'undetermined';
 
+/**
+ * Android-Kanal (je Art einzeln in den System-Einstellungen abschaltbar): `reminders` = Mess-Erinnerung, Pausenende,
+ * Snack vor dem Training (bisheriger Kanal „Erinnerungen“); `training`, `meals`, `drink` = Erinnerungen an Training,
+ * Essen und Trinken (docs/PLAN-ERINNERUNGEN.md).
+ */
+export type NotificationChannel = 'reminders' | 'training' | 'meals' | 'drink';
+
 /** Fester Text ohne Werte (DSGVO Art. 9) und optional ein App-Pfad, der beim Antippen geöffnet wird. */
 export interface NotificationContent {
   readonly title: string;
   readonly body: string | null;
   readonly route: string | null;
+  /** Fehlt = `reminders`. */
+  readonly channel?: NotificationChannel;
 }
 
 export interface NotificationDriver {

@@ -231,6 +231,16 @@ describe('app.config.ts', () => {
     expect(ANDROID_MIN_SDK).toBe(26);
   });
 
+  it('Schritte vom Handy (29.10.2026): nur READ_STEPS über Health Connect – kein eigener Schrittzähler, kein ACTIVITY_RECOGNITION', () => {
+    // Health Connect zählt bzw. sammelt die Handy-Schritte (Android 14+ selbst, sonst Samsung Health/Google Fit);
+    // Alpha5 liest nur die Tagessumme. Ein eigener Schrittzähler (expo-sensors) bräuchte ACTIVITY_RECOGNITION.
+    expect(HEALTH_CONNECT_READ_PERMISSIONS).toContain('android.permission.health.READ_STEPS');
+    expect(config().android?.permissions ?? []).not.toContain(
+      'android.permission.ACTIVITY_RECOGNITION',
+    );
+    expect(config().plugins ?? []).not.toContain('expo-sensors');
+  });
+
   it('Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md): nur Android, Name wie im Code, Vorschaubild vorhanden', async () => {
     const plugin = config().plugins?.find(
       (entry) => Array.isArray(entry) && entry[0] === 'react-native-android-widget',

@@ -251,14 +251,38 @@ export function demoRead(today: string, from: string, to: string): HcReadResult 
   };
 }
 
+/**
+ * Zuletzt im Testmodus erteilte Freigaben („Nur Schritte vom Handy“ = nur `steps`). Nur im Arbeitsspeicher: nach dem
+ * Neuladen der Seite gilt wieder „alles erlaubt“ wie bisher.
+ */
+let demoGranted: readonly WearableDataType[] | null = null;
+
+/** Nur Tests: Freigaben der Beispiel-Uhr zurücksetzen. */
+export function resetDemoGrantsForTests(): void {
+  demoGranted = null;
+}
+
 export function createDemoHealthConnectDriver(today: () => string): HealthConnectDriver {
   return {
     kind: 'demo',
     availability: async () => 'available',
-    requestPermissions: async (): Promise<WearableDataType[]> => [...WEARABLE_DATA_TYPES],
-    // Beispiel-Uhr: nach dem Verbinden ist alles erlaubt (auch nach Neuladen der Seite).
-    grantedTypes: async () => [...WEARABLE_DATA_TYPES],
-    read: async (window) => demoRead(today(), window.from, window.to),
+    requestPermissions: async (types = WEARABLE_DATA_TYPES): Promise<WearableDataType[]> => {
+      demoGranted = WEARABLE_DATA_TYPES.filter((type) => types.includes(type));
+      return [...demoGranted];
+    },
+    // Beispiel-Uhr: nach dem Verbinden ist alles erlaubt (auch nach Neuladen der Seite) – außer „nur Schritte“.
+    grantedTypes: async () => [...(demoGranted ?? WEARABLE_DATA_TYPES)],
+    read: async (window, granted) => {
+      const raw = demoRead(today(), window.from, window.to);
+      const has = (type: WearableDataType) => granted.includes(type);
+      return {
+        sessions: has('exercise') ? raw.sessions : [],
+        restingHeartRates: has('resting_heart_rate') ? raw.restingHeartRates : [],
+        sleepSessions: has('sleep') ? raw.sleepSessions : [],
+        steps: has('steps') ? raw.steps : [],
+        heartRateVariabilities: has('hrv') ? raw.heartRateVariabilities : [],
+      };
+    },
     routeAccess: async () => false,
     // „Route freigeben“ im Testmodus: der Lauf bekommt die Beispiel-Runde.
     requestRoute: async (externalId) => {

@@ -34,7 +34,10 @@ export type {
 } from './health-connect-driver.types';
 
 /**
- * Android: Health Connect über react-native-health-connect 4.1.3 (eingebautes Config-Plugin, TurboModule). NUR
+ * Android: Health Connect über react-native-health-connect 4.1.3 (eingebautes Config-Plugin, TurboModule). Schritte
+ * kommen als Tagessumme über aggregateRecord OHNE Herkunfts-Filter: Health Connect zählt Handy (eigener Schrittzähler ab
+ * Android 14 bzw. Samsung Health/Google Fit) und Uhr zusammen und entdoppelt selbst – so gehen „Schritte vom Handy“ auch
+ * ganz ohne Uhr (docs/PLAN-PHASE-8.md 13.5). NUR
  * Leserechte der Datentypen aus WEARABLE_DATA_TYPES plus Trainingsrouten (Manifest: app.config.ts), kein Schreiben,
  * kein Hintergrund-Lesen. Routen (23.10.2026): je Ausdauer-Einheit über readRecord (nur dort liefert Health Connect die
  * Route); ohne „Trainingsrouten“-Recht meldet Health Connect „Freigabe nötig“ – dann „Route freigeben“
@@ -163,11 +166,16 @@ export const healthConnectDriver: HealthConnectDriver = {
     }
     return 'not_installed';
   },
-  requestPermissions: async () => {
+  requestPermissions: async (types = TYPES) => {
     if (!(await ready())) return [];
+    const wanted = TYPES.filter((type) => types.includes(type));
     const granted = await requestPermission(
-      TYPES.map((type) => ({ accessType: 'read' as const, recordType: HC_RECORD_TYPES[type] })),
+      wanted.map((type) => ({ accessType: 'read' as const, recordType: HC_RECORD_TYPES[type] })),
     );
+    // „Nur Schritte vom Handy“: keine Trainingsrouten und keine Leistung fragen (gehören zu Einheiten der Uhr).
+    if (!wanted.includes('exercise')) {
+      return typesFrom(granted as { accessType: string; recordType: string }[]);
+    }
     // Trainingsrouten getrennt fragen: Ältere Health-Connect-Versionen kennen das Recht nicht – dann bleibt es bei der
     // Freigabe je Einheit, die übrigen Rechte sind schon erteilt.
     try {

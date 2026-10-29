@@ -97,6 +97,7 @@ import type {
   UserRows,
 } from '@/data/types';
 import { appNotifications } from '@/lib/app-notifications';
+import { forgetReminderPrefs } from '@/lib/reminder-prefs';
 import { berlinTodayIso, todayIso } from '@/lib/format';
 import { deviceTimeZone } from '@/lib/notifications';
 import { supabaseConfig } from '@/lib/supabase';
@@ -1822,6 +1823,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     if (owner) await forgetRunnerDeviceData(deviceStore, owner).catch(() => undefined);
     // Etappe E: alle geplanten Benachrichtigungen stornieren, Geräte-Einstellung zurücksetzen.
     await appNotifications.reset().catch(() => undefined);
+    forgetReminderPrefs();
     // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3): Schalter aus, Stand löschen.
     await resetHomeWidget();
     resetUser();
@@ -1846,6 +1848,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       await forgetDaySwaps();
       if (owner) await forgetRunnerDeviceData(deviceStore, owner).catch(() => undefined);
       await appNotifications.reset().catch(() => undefined);
+      forgetReminderPrefs();
       // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3): Schalter aus, Stand löschen.
       await resetHomeWidget();
       resetUser();
@@ -1864,6 +1867,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const clearDeviceData = useCallback(async () => {
     await backend.clearDeviceData();
     await appNotifications.reset().catch(() => undefined);
+    forgetReminderPrefs();
     // Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md 3): Schalter aus, Stand löschen.
     await resetHomeWidget();
     setPendingBirthDateState(null);

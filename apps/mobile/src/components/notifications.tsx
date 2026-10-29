@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Linking, Platform } from 'react-native';
 
 import { SectionLabel } from '@/components/design';
+import { ReminderSettingsCard, ReminderWebNotice } from '@/components/reminders';
 import { Body, Button, Card, Checkbox, Heading, Notice } from '@/components/ui';
 import type { UserRows } from '@/data/types';
 import { t } from '@/i18n';
@@ -187,6 +188,8 @@ export function NotificationSettings({ rows }: { rows: UserRows }) {
             {t.notifications.web}
           </Notice>
         </Card>
+        {/* Erinnerungen an Training, Essen, Trinken: im Testmodus zum Ausprobieren, sonst nur „nur in der App“. */}
+        {app.backend.mode === 'local' ? <ReminderSettingsCard /> : <ReminderWebNotice />}
       </>
     );
   }
@@ -280,6 +283,7 @@ export function NotificationSettings({ rows }: { rows: UserRows }) {
           </>
         ) : null}
       </Card>
+      <ReminderSettingsCard />
     </>
   );
 }

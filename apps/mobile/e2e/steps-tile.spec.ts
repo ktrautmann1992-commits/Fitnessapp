@@ -116,3 +116,54 @@ test('Schritte: ohne Uhr Hinweis → Beispiel-Uhr → Ring 6.240 von 8.000 → Z
   await page.getByTestId('overview-edit-done').click();
   await expect(page.getByTestId('overview-steps-goal')).toHaveText('von 6.000');
 });
+
+/**
+ * Schritte vom Handy (Gründer-Wunsch 29.10.2026, docs/PLAN-PHASE-8.md 13.5): ohne Uhr „Handy nutzen“ → Smartwatch-Seite
+ * mit „Schritte vom Handy“ vorn → Einwilligung → nur Schritte verbinden (Testmodus: Beispiel-Schritte) → Ring füllt
+ * sich; die Seite zeigt „Schritte kommen vom Handy“ und bietet „Uhr zusätzlich verbinden“, keine Einheiten übernommen.
+ */
+test('Schritte vom Handy ohne Uhr: „Handy nutzen“ → nur Schritte verbinden → Ring', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await setup(page);
+
+  await page.goto('/uebersicht');
+  // Noch ohne Einwilligung „Smartwatch-Daten“ (gilt auch für Schritte vom Handy).
+  await expect(page.getByTestId('overview-steps-empty')).toHaveText(
+    'Für Schritte vom Handy oder von der Smartwatch brauchst du die Einwilligung „Smartwatch-Daten“.',
+  );
+  const phone = page.getByTestId('overview-steps-phone');
+  await expect(phone).toHaveText('Handy nutzen');
+  await expect(phone).toHaveAccessibleName('Schritte vom Handy nutzen');
+  // Beide Knöpfe einzeilig in der halben Kachel.
+  for (const id of ['overview-steps-phone', 'overview-steps-connect']) {
+    const box = await page.getByTestId(id).boundingBox();
+    expect(box && box.height < 64, `${id} einzeilig`).toBe(true);
+  }
+  await phone.click();
+
+  await expect(page).toHaveURL(/\/smartwatch\?quelle=handy/);
+  await expect(page.getByTestId('smartwatch-phone-intro')).toContainText('keine Uhr');
+  await page.getByTestId('smartwatch-consent-accept').click();
+  const card = page.getByTestId('smartwatch-phone');
+  await expect(card).toContainText('Health Connect zählt keinen Schritt doppelt.');
+  await expect(card).toContainText('Einwilligung „Smartwatch-Daten“');
+  // Mit ?quelle=handy steht „Schritte vom Handy“ vor „Uhr verbinden“.
+  const phoneBox = await card.boundingBox();
+  const watchBox = await page.getByTestId('smartwatch-connect').boundingBox();
+  expect(phoneBox && watchBox && phoneBox.y < watchBox.y).toBe(true);
+  await page.getByTestId('smartwatch-phone-connect').click();
+  await expect(page.getByTestId('smartwatch-message')).toContainText('Abgleich fertig');
+  await expect(page.getByTestId('smartwatch-phone-mode')).toContainText(
+    'Deine Schritte kommen vom Handy',
+  );
+  await expect(page.getByTestId('smartwatch-add-watch')).toBeVisible();
+  if (shots) {
+    await page.screenshot({ path: `${shots}/schritte-vom-handy.png`, fullPage: true });
+  }
+
+  await page.goto('/uebersicht');
+  await expect(page.getByTestId('overview-steps-value')).toHaveText('6.240');
+  await expect(page.getByTestId('overview-steps-goal')).toHaveText('von 8.000');
+});

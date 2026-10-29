@@ -339,6 +339,30 @@ external_id)`, weil ein zusammengeführter Eintrag seine Herkunft (z. B. `gps`) 
    Europe/Berlin wie das übrige Tagebuch.
 7. **Play-Formular** Health-Connect-Berechtigungen und Datenschutzerklärung (Abschnitt 8) – vor der Store-Einreichung.
 
+### 13.5 Schritte vom Handy ohne Uhr (Gründer-Wunsch 29.10.2026, Branch `claude/handy-schritte-erinnerungen`)
+
+- **Ausgangslage:** Der Health-Connect-Pfad liest Schritte schon immer als Tagessumme per `aggregateRecord` **ohne
+  Herkunfts-Filter** – Handy und Uhr werden von Health Connect selbst entdoppelt. Gebunden an „Uhr“ waren nur
+  Oberfläche und Verbinden: Die Kachel bot nur „Uhr verbinden“, das Verbinden fragte immer alle Leserechte.
+- **Lösung:** Kachel „Schritte“ leer → „Handy nutzen“ (vorgelesen „Schritte vom Handy nutzen“) und „Uhr verbinden“.
+  „Handy nutzen“ öffnet `/smartwatch?quelle=handy`; dort Karte „Schritte vom Handy“ mit Erklärung und
+  **„Nur Schritte vom Handy verbinden“** → Health-Connect-Dialog nur mit `READ_STEPS`
+  (`requestPermissions(['steps'])`, ohne Trainingsrouten/Leistung) → `connect(['steps'])` → Abgleich wie bisher
+  (beim App-Start/Vordergrund, höchstens alle 15 min, kein Hintergrund). Verbunden mit nur `steps` zeigt die Seite
+  „Deine Schritte kommen vom Handy“ und **„Uhr zusätzlich verbinden“** (fragt alle Rechte); Erholung/Pulszonen sind
+  dann ausgeblendet. Testmodus: die Beispiel-Uhr merkt sich „nur Schritte“ (bis zum Neuladen) und liefert dann nur
+  Schritte.
+- **Einwilligung:** keine neue Fassung – genutzt werden die vorhandenen `wearable_data` + `health_data` (der Server
+  prüft beide); der Text in Kachel/Karte sagt, dass „Smartwatch-Daten“ auch für Schritte vom Handy gilt.
+- **Kein eigener Schrittzähler (expo-sensors):** Auf Android liefert der Pedometer nur live gezählte Schritte ab
+  App-Start, keinen Tagesverlauf und im Hintergrund nichts – das wären falsche Zahlen. Deshalb kein
+  `ACTIVITY_RECOGNITION`, kein neues natives Modul (native-config-Test prüft das). Fehlt Health Connect (Android 9–13),
+  bleibt der Hinweis „Health Connect installieren“ (Play Store).
+- **Woher die Handy-Schritte kommen:** Ab Android 14 ist Health Connect eingebaut; je nach Handy/Version zählt es die
+  Schritte selbst, sonst schreiben Samsung Health oder Google Fit sie hinein (dort „Körperliche Aktivität“ erlauben
+  und in deren Health-Connect-Einstellung „Schritte“ freigeben). Das ist am echten Gerät zu prüfen.
+- Tests: `wearable.test.ts` (nur Schritte → nur Tageswerte), `native-config.test.ts`, E2E `steps-tile.spec.ts`.
+
 ## 14. Routen der Uhr lesen (Gründer-Entscheidung 23.10.2026 „Routen lesen“, ersetzt W8-4)
 
 **Anlass:** Gerätetest des Gründers mit Galaxy Watch → Samsung Health → Health Connect: Alpha5 zeigte ca. 1 km weniger
