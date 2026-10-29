@@ -568,7 +568,8 @@ describe('Echte Inhalte (content/exercises)', () => {
         expect(ids(searchExercises(repo, { query: alias })), alias).toContain(exercise.id);
       }
     }
-  });
+    // Durchsucht den ganzen Bestand je Name und Alias – auf dem CI-Rechner länger als die 5-s-Vorgabe.
+  }, 60_000);
 
   it('alle Bewegungsmuster des Inhaltsstands sind einem Bereich zugeordnet; Bereichs-Filter teilen lückenlos auf', () => {
     const grouped = GLOSSARY_GROUP_IDS.flatMap((group) =>
