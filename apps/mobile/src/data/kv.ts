@@ -170,6 +170,16 @@ export const STORAGE_KEYS = {
    */
   trainingMealPrefs: 'fitnessapp.training-meal-prefs.v1',
   /**
+   * Erinnerungen an Training, Essen und Trinken (docs/PLAN-ERINNERUNGEN.md, 29.10.2026): an/aus, Vorlauf, Essenszeiten,
+   * Trink-Zeitfenster – nur dieses Gerät, keine Nutzerdaten (lib/reminder-prefs.ts). Abmelden setzt sie zurück.
+   */
+  reminderPrefs: 'fitnessapp.reminder-prefs.v1',
+  /**
+   * Zuletzt geplante Erinnerungen (Kennung, Zeitpunkt, fester Text) – damit beim Neuplanen nur Geändertes ersetzt und
+   * Weggefallenes storniert wird. Enthält keine Gesundheitswerte (lib/notifications.ts).
+   */
+  reminderScheduled: 'fitnessapp.reminder-scheduled.v1',
+  /**
    * Reiter „Unterwegs“ (Auswärts essen, 25.10.2026): Favoriten und „Zuletzt“ – nur Gericht-IDs und Portion, ohne Datum
    * oder Werte, je Konto (lib/eating-out-picks.ts).
    */

@@ -2,18 +2,26 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import type {
+  NotificationChannel,
   NotificationContent,
   NotificationDriver,
   NotificationPermission,
 } from './notification-driver';
 
-export type { NotificationContent, NotificationDriver, NotificationPermission };
+export type {
+  NotificationChannel,
+  NotificationContent,
+  NotificationDriver,
+  NotificationPermission,
+};
 
 /**
  * iPhone/Android: lokale Benachrichtigungen über expo-notifications (docs/PLAN-PHASE-4B.md Abschnitt 7).
  * - Nur auf dem Gerät geplant: kein Push-Token, kein Server, kein Versand über Expo, Apple oder Google.
- * - Android: ein Kanal „Erinnerungen“ (Mess-Erinnerung und Pausenende), angelegt vor der Erlaubnis-Abfrage
- *   (Android 13+ zeigt die Abfrage erst, wenn ein Kanal existiert) und vor jedem Planen.
+ * - Android: Kanal „Erinnerungen“ (Mess-Erinnerung und Pausenende) sowie je ein Kanal „Training“, „Essen“ und
+ *   „Trinken“ (docs/PLAN-ERINNERUNGEN.md – einzeln in den System-Einstellungen abschaltbar). „Erinnerungen“ wird vor der
+ *   Erlaubnis-Abfrage angelegt (Android 13+ zeigt die Abfrage erst, wenn ein Kanal existiert), jeder Kanal vor dem
+ *   ersten Planen.
  * - Die Erlaubnis wird nur in `requestPermission()` abgefragt – nie beim Import oder App-Start.
  */
 export const ANDROID_CHANNEL_ID = 'erinnerungen';
@@ -29,23 +37,39 @@ Notifications.setNotificationHandler({
   }),
 });
 
-let channelReady: Promise<void> | null = null;
+/** Android-Kanäle: Kennung, Name in den System-Einstellungen, Wichtigkeit (Trinken leiser: ohne Ton-Vorrang). */
+export const ANDROID_CHANNELS: Readonly<
+  Record<NotificationChannel, { id: string; name: string; quiet: boolean }>
+> = {
+  reminders: { id: ANDROID_CHANNEL_ID, name: ANDROID_CHANNEL_NAME, quiet: false },
+  training: { id: 'erinnerung-training', name: 'Training', quiet: false },
+  meals: { id: 'erinnerung-essen', name: 'Essen', quiet: false },
+  drink: { id: 'erinnerung-trinken', name: 'Trinken', quiet: true },
+};
 
-function ensureChannel(): Promise<void> {
+const channelReady = new Map<NotificationChannel, Promise<void>>();
+
+function ensureChannel(channel: NotificationChannel = 'reminders'): Promise<void> {
   if (Platform.OS !== 'android') return Promise.resolve();
-  channelReady ??= Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
-    name: ANDROID_CHANNEL_NAME,
-    importance: Notifications.AndroidImportance.HIGH,
+  const existing = channelReady.get(channel);
+  if (existing) return existing;
+  const spec = ANDROID_CHANNELS[channel];
+  const ready = Notifications.setNotificationChannelAsync(spec.id, {
+    name: spec.name,
+    importance: spec.quiet
+      ? Notifications.AndroidImportance.DEFAULT
+      : Notifications.AndroidImportance.HIGH,
     vibrationPattern: [0, 250, 250, 250],
     showBadge: false,
   }).then(
     () => undefined,
     (error: unknown) => {
-      channelReady = null;
+      channelReady.delete(channel);
       throw error;
     },
   );
-  return channelReady;
+  channelReady.set(channel, ready);
+  return ready;
 }
 
 function toPermission(status: { status: string; granted: boolean }): NotificationPermission {
@@ -70,7 +94,8 @@ export const notificationDriver: NotificationDriver = {
     );
   },
   schedule: async (id, content, atMs) => {
-    await ensureChannel();
+    const channel = content.channel ?? 'reminders';
+    await ensureChannel(channel);
     await Notifications.scheduleNotificationAsync({
       identifier: id,
       content: {
@@ -82,7 +107,7 @@ export const notificationDriver: NotificationDriver = {
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
         date: atMs,
-        channelId: ANDROID_CHANNEL_ID,
+        channelId: ANDROID_CHANNELS[channel].id,
       },
     });
   },

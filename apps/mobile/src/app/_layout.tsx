@@ -7,6 +7,7 @@ import { Platform, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { NotificationRouter } from '@/components/notification-router';
+import { ReminderScheduler } from '@/components/reminders';
 import { TrainingCalendarSync } from '@/components/training-calendar-sync';
 // Ausdauer (Etappe E4): Hintergrund-Aufgabe der Aufzeichnung muss beim Start der App definiert sein (expo-task-manager);
 // im Browser ohne Wirkung.
@@ -54,6 +55,8 @@ function RootContent() {
     <SafeAreaProvider>
       <AppStateProvider>
         <NotificationRouter />
+        {/* Erinnerungen an Training, Essen, Trinken: beim Start, bei Rückkehr und bei Plan-/Einstellungsänderung. */}
+        <ReminderScheduler />
         <TrainingCalendarSync />
         {/* Phase 8: Smartwatch-Abgleich beim Start und bei Rückkehr in die App (nur Android, höchstens alle 15 min). */}
         <WearableAutoSync />

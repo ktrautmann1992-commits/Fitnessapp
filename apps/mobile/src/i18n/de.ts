@@ -41,6 +41,7 @@ import { deWeekEval } from './de-week-eval';
 import { deWearables } from './de-wearables';
 import { deSteps } from './de-steps';
 import { deRecovery } from './de-recovery';
+import { deReminders } from './de-reminders';
 import { deStrength } from './de-strength';
 import { deSessionKcal } from './de-session-kcal';
 import { deSports } from './de-sports';
@@ -1788,6 +1789,8 @@ export const de = {
   recovery: deRecovery,
   /** Rundkurs-Vorschlag (docs/PLAN-RUNDKURS.md, 25.10.2026). */
   loop: deLoop,
+  /** Erinnerungen an Training, Essen und Trinken (docs/PLAN-ERINNERUNGEN.md, 29.10.2026). */
+  reminders: deReminders,
   /** Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md, 25.10.2026). */
   widget: deWidget,
   /** Indoor-Rudern (Sportarten Stufe 1 · Etappe R). */

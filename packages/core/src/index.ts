@@ -36,6 +36,8 @@ export * from './widget';
 export * from './layout';
 export * from './notice-queue';
 export * from './notifications';
+// Erinnerungen an Training, Essen und Trinken (docs/PLAN-ERINNERUNGEN.md).
+export * from './reminders';
 // Barrierefreiheit (docs/PLAN-FIT-IM-ALTER.md 12, Etappe FA5).
 export * from './accessibility';
 // Zyklus-Modul (docs/PLAN-PHASE-9.md, ZY1) und „Heute leichter“ (gemeinsam mit Phase 8b).

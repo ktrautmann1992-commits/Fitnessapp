@@ -15,7 +15,11 @@ import type { UserRows } from '@/data/types';
 import { t } from '@/i18n';
 import { healthConsentStatus } from '@/state/flow';
 
-import type { NotificationDriver, NotificationPermission } from './notification-driver';
+import type {
+  NotificationContent,
+  NotificationDriver,
+  NotificationPermission,
+} from './notification-driver';
 
 /**
  * Lokale Benachrichtigungen planen und stornieren (docs/PLAN-PHASE-4B.md Abschnitt 7, Etappe E). WANN etwas kommt,
@@ -41,8 +45,46 @@ export const NOTIFICATION_IDS = {
 
 /** Antippen der Mess-Erinnerung öffnet die Messung (Schritt „Körperumfänge“, danach zurück zu „Heute“). */
 export const MEASUREMENT_ROUTE = '/onboarding/body_measurements?edit=1';
+/** Erinnerungen an Training, Essen und Trinken (docs/PLAN-ERINNERUNGEN.md): Antippen öffnet den passenden Reiter. */
+export const REMINDER_ROUTES = {
+  training: '/today',
+  meals: '/ernaehrung',
+  drink: '/uebersicht',
+} as const;
 /** Nur diese Pfade darf eine Benachrichtigung öffnen. */
-const OPENABLE_ROUTES: readonly string[] = [MEASUREMENT_ROUTE];
+const OPENABLE_ROUTES: readonly string[] = [MEASUREMENT_ROUTE, ...Object.values(REMINDER_ROUTES)];
+
+/** Gemeinsamer Anfang der Kennungen aller Erinnerungen an Training, Essen und Trinken. */
+export const REMINDER_ID_PREFIX = 'erinnerung-';
+
+/** Eine fertige Erinnerung zum Planen (Zeitpunkt aus packages/core `plannedReminders`, Text aus der App). */
+export interface ReminderNotification {
+  readonly id: string;
+  readonly atMs: number;
+  readonly content: NotificationContent;
+}
+
+const scheduledRemindersSchema = z.array(
+  z.object({
+    id: z.string(),
+    atMs: z.number(),
+    title: z.string(),
+    body: z.string().nullable(),
+    route: z.string().nullable(),
+    channel: z.string().optional(),
+  }),
+);
+
+function reminderKey(r: ReminderNotification): string {
+  return JSON.stringify([
+    r.id,
+    r.atMs,
+    r.content.title,
+    r.content.body,
+    r.content.route,
+    r.content.channel ?? null,
+  ]);
+}
 
 /** Test-Knopf (nur Testmodus): Mess-Erinnerung in 2 Minuten. */
 export const TEST_MEASUREMENT_DELAY_MS = 2 * 60 * 1000;
@@ -113,6 +155,16 @@ export interface Notifications {
   allowTrainingMeal(): Promise<EnableResult>;
   /** Erinnerung planen (Zeitpunkt in ms) bzw. stornieren (null). Fester Text ohne Werte, nur bei Erlaubnis. */
   syncTrainingMeal(atMs: number | null): Promise<void>;
+  /**
+   * Erinnerungen an Training, Essen und Trinken eingeschaltet (Tipp der Person) – fragt ggf. nach der Erlaubnis. Die
+   * Einstellung selbst liegt in lib/reminder-prefs.ts.
+   */
+  allowReminders(): Promise<EnableResult>;
+  /**
+   * Erinnerungen ersetzen: Weggefallene stornieren, Neue bzw. Geänderte planen, Gleiche unverändert lassen. Ohne
+   * Erlaubnis werden alle storniert. Ergebnis = Anzahl geplanter Erinnerungen.
+   */
+  syncReminders(items: readonly ReminderNotification[]): Promise<number>;
   /** Abmelden, Konto löschen, Testdaten löschen. */
   reset(): Promise<void>;
   /** Versteckter Test-Knopf (nur Testmodus): Mess-Erinnerung in 2 Minuten. */
@@ -275,10 +327,55 @@ export function createNotifications(
           atMs,
         );
       }),
+    allowReminders: async () => {
+      if (!driver.supported) return 'unsupported';
+      // Nur hier fragt das System nach – nach dem Einschalten einer Erinnerung in den Einstellungen.
+      const current = await driver.permission();
+      return current === 'granted' ? current : driver.requestPermission();
+    },
+    syncReminders: (items) =>
+      queue(async () => {
+        if (!driver.supported) return 0;
+        const stored = scheduledRemindersSchema.safeParse(
+          await readJson<unknown>(store, STORAGE_KEYS.reminderScheduled).catch(() => null),
+        );
+        const before = stored.success ? stored.data : [];
+        const next = (await driver.permission()) === 'granted' ? items : [];
+        const keep = new Set(
+          before.map((b) =>
+            reminderKey({
+              id: b.id,
+              atMs: b.atMs,
+              content: {
+                title: b.title,
+                body: b.body,
+                route: b.route,
+                ...(b.channel ? { channel: b.channel as NotificationContent['channel'] } : {}),
+              },
+            }),
+          ),
+        );
+        const nextIds = new Set(next.map((r) => r.id));
+        for (const b of before) {
+          if (!nextIds.has(b.id)) await driver.cancel(b.id);
+        }
+        for (const r of next) {
+          if (!r.id.startsWith(REMINDER_ID_PREFIX)) continue;
+          if (!keep.has(reminderKey(r))) await driver.schedule(r.id, r.content, r.atMs);
+        }
+        await writeJson(
+          store,
+          STORAGE_KEYS.reminderScheduled,
+          next.map((r) => ({ id: r.id, atMs: r.atMs, ...r.content })),
+        );
+        return next.length;
+      }),
     reset: () =>
       queue(async () => {
         if (driver.supported) await driver.cancelAll();
         await store.removeItem(STORAGE_KEYS.notificationPrefs);
+        await store.removeItem(STORAGE_KEYS.reminderPrefs);
+        await store.removeItem(STORAGE_KEYS.reminderScheduled);
       }),
     scheduleTestMeasurement: (input) =>
       queue(async () => {
