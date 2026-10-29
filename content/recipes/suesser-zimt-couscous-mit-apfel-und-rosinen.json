@@ -1,0 +1,110 @@
+{
+  "id": "suesser-zimt-couscous-mit-apfel-und-rosinen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Süßer Zimt-Couscous mit Apfel und Rosinen",
+  "description_de": "Warmer Frühstücks-Couscous mit Sojadrink, Apfel und Rosinen – schnell verfügbare Kohlenhydrate, kaum Fett und sanft für den Magen vor dem Halbmarathon.",
+  "section_de": "Vor langen Einheiten",
+  "categories": ["schnell", "pre-workout", "cardio"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "couscous-trocken",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "apfel",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Apfel (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rosinen",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (20 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Erhitze den Sojadrink mit Zimt und einer Prise Salz in einem kleinen Topf, bis er kurz aufkocht.",
+    "Nimm den Topf vom Herd, rühre Couscous und Rosinen ein und lass alles abgedeckt 5 Minuten quellen.",
+    "Schäle den Apfel, reibe ihn grob und hebe ihn unter.",
+    "Lockere den Couscous mit einer Gabel auf und iss ihn warm."
+  ],
+  "tip_de": "Geschälter Apfel ist bekömmlicher als ungeschälter. Iss die Portion 2–3 Stunden vor dem Start und trink in der Zeit bis zum Start noch etwa 500 ml in kleinen Schlucken.",
+  "tags_de": ["Unter 10 Minuten", "Ausdauer"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 464,
+    "protein_g": 17,
+    "carbs_g": 84.4,
+    "fat_g": 5.1
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "sulphites", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "6abae976cb200c5a792aa6f9ef4a691ac353e26d5f810ad87ae79cb634545b85"
+  }
+}

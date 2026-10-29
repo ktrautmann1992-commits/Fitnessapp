@@ -1,0 +1,62 @@
+{
+  "id": "eismaschine",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Eis selbst machen",
+  "sections": [
+    {
+      "heading_de": "Gut mixen",
+      "body_de": [
+        "Proteinpulver, Geschmackspulver und Puddingpulver klumpen leicht. Mixe die Masse deshalb im Mixer oder mit dem Pürierstab, bis sie ganz glatt ist – Klümpchen bleiben sonst auch im fertigen Eis spürbar. Bei Clear-Whey-Isolat nur kurz und auf niedriger Stufe mixen und den Schaum kurz zusammenfallen lassen."
+      ]
+    },
+    {
+      "heading_de": "Max-Linie beachten und waagerecht einfrieren",
+      "body_de": [
+        "Fülle den Gefrierbecher höchstens bis zur Max-Linie, denn die Masse dehnt sich beim Gefrieren aus. Friere ihn mit Deckel mindestens 24 Stunden auf einer ebenen Fläche waagerecht ein, damit die Oberfläche gerade wird und die Maschine gleichmäßig arbeiten kann."
+      ]
+    },
+    {
+      "heading_de": "Das passende Programm wählen",
+      "body_de": [
+        "Eis mit wenig Fett und Zucker ist im gefrorenen Zustand sehr fest. Wähle dafür das Programm für leichtes Eis bzw. das Programm, das dein Gerät für fett- und zuckerarme Massen vorsieht. Beachte immer die Anleitung deines eigenen Geräts."
+      ]
+    },
+    {
+      "heading_de": "Bröselig ist normal – einfach nachdrehen",
+      "body_de": [
+        "Gerade beim ersten Durchgang sieht Protein-Eis oft pulvrig oder bröselig aus. Gib 1–2 EL Flüssigkeit (z. B. Mandeldrink, Milch oder Wasser) in eine Mulde in der Mitte und lass das Eis noch einmal nachdrehen. Das kannst du bei Bedarf wiederholen, bis es cremig ist."
+      ]
+    },
+    {
+      "heading_de": "Mix-ins erst zum Schluss",
+      "body_de": [
+        "Nüsse, Schokolade, Kekse oder Beeren kommen erst ins fertig verarbeitete Eis: Drück mit einem Löffel eine Mulde in die Mitte, gib die Stückchen hinein und nutze die Mix-in-Funktion. Kleine Mengen genügen – sie sind in den Nährwerten bereits eingerechnet."
+      ]
+    },
+    {
+      "heading_de": "Sehr harter Kern? Kurz antauen lassen",
+      "body_de": [
+        "Ist die Masse extrem hart gefroren, lass den Becher vor dem Verarbeiten 5–10 Minuten bei Zimmertemperatur stehen. So wird das Eis gleichmäßiger und die Maschine muss weniger kämpfen."
+      ]
+    },
+    {
+      "heading_de": "Reste und Hygiene",
+      "body_de": [
+        "Streich übrig gebliebenes Eis glatt, verschließe den Becher und friere ihn wieder ein; vor dem nächsten Essen erneut verarbeiten. Stell Reste dafür direkt nach dem Portionieren zurück ins Gefrierfach; Eis, das länger angetaut herumstand, lieber nicht erneut einfrieren. Becher, Deckel und Messer nach jedem Gebrauch gründlich spülen und vollständig trocknen lassen."
+      ]
+    }
+  ],
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "19672b57c9e0a7eaadcc4c83fe3a9b4ba17b02b3bcdc6281252aadce6ddcc6d9"
+  }
+}

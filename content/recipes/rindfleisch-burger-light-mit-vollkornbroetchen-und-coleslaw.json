@@ -1,0 +1,203 @@
+{
+  "id": "rindfleisch-burger-light-mit-vollkornbroetchen-und-coleslaw",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rindfleisch-Burger light mit Vollkornbrötchen und Coleslaw",
+  "description_de": "Saftiges Patty aus magerem Rinderhack mit hausgemachter Burgersauce aus Skyr und einem frischen Krautsalat – voller Burger-Genuss mit wenig Fett.",
+  "section_de": "Burger & Hot Dog",
+  "categories": ["fitness-fast-food"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "rinderhackfleisch-5-fett",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "vollkornbroetchen",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 großes Brötchen (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gouda-light-scheiben",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "blattsalat",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Blätter (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Ringe (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gewuerzgurken-glas",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Gurke (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g (für Sauce und Coleslaw)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "tomatenmark",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "weisskohl",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Karotte (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "apfelessig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "protein"
+    }
+  ],
+  "steps_de": [
+    "Hoble den Weißkohl fein, raspele die Karotte und vermenge beides mit 40 g Skyr, Apfelessig, Salz und Pfeffer; lass den Coleslaw kurz ziehen.",
+    "Verrühre den restlichen Skyr mit Tomatenmark, Senf und 1 EL fein gehackter Gewürzgurke zur Burgersauce.",
+    "Forme das Hackfleisch zu einem flachen Patty (ca. 12 cm, etwas größer als das Brötchen) und würze es mit Salz und Pfeffer.",
+    "Brate das Patty in einer heißen beschichteten Pfanne ohne Öl 3–4 Minuten pro Seite, bis es durchgegart ist, und lege in der letzten Minute die Käsescheibe darauf.",
+    "Röste das aufgeschnittene Brötchen kurz mit der Schnittfläche in der Pfanne an.",
+    "Belege das Brötchen mit Sauce, Salat, Tomate, Patty, Zwiebel und Gurkenscheiben und serviere den Coleslaw dazu."
+  ],
+  "tip_de": "Drücke mit dem Daumen eine kleine Mulde in die Mitte des Pattys – so wölbt es sich beim Braten nicht. Hackfleisch immer vollständig durchgaren.",
+  "tags_de": ["Fitness-Fast-Food"],
+  "total_minutes": 25,
+  "prep_minutes": 21,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 565,
+    "protein_g": 57.6,
+    "carbs_g": 49.3,
+    "fat_g": 13.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "beef",
+    "mustard",
+    "sulphites",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c40b93b63873e90adf9f4d7df9d83680e18caab03580d36b72435eaceef6b634"
+  }
+}
