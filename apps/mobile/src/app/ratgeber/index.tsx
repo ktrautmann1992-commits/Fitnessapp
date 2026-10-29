@@ -89,9 +89,6 @@ export default function GuideListScreen() {
                 ]}
               >
                 <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
-                {guide.status === 'draft' ? (
-                  <Text style={[styles.detail, { color: theme.textMuted }]}>{texts.draft}</Text>
-                ) : null}
               </Pressable>
             );
           })}
@@ -111,5 +108,4 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   title: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
-  detail: { fontSize: fontSize.sm, lineHeight: 20 },
 });

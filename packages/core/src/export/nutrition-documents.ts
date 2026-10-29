@@ -4,7 +4,6 @@ import { isoDateSchema } from '../age';
 import { MEAL_SLOT_TIMES, PRINT_EXPORT } from '../constants';
 import type { FoodLookup } from '../content/food-schema';
 import type { Recipe } from '../content/recipe-schema';
-import { contentReviewMark } from '../content/seed-settings';
 import { addDays, isoWeekday } from '../dates';
 import { mealsInDayOrder } from '../nutrition/day-view';
 import { withoutNutrientAmounts } from '../nutrition/guides';
@@ -596,17 +595,8 @@ function recipeSection(flow: PageFlow, group: RecipeGroup, foods: FoodLookup): v
     };
     head.push([description, blockMm(description)]);
   }
-  // Kennzeichen wie in der App (contentReviewMark): nur KI-Entwurf. Freigegebene Rezepte ohne Kennzeichen (privater
-  // Nutzerkreis, Gründer-Entscheidung 27.10.2026). Andere Entwürfe: Allergen-Hinweis unten.
-  if (contentReviewMark(recipe) === 'ai_draft') {
-    const mark: PrintBlock = {
-      type: 'paragraph',
-      muted: true,
-      text: label('recipe.mark.aiDraft'),
-    };
-    head.push([mark, blockMm(mark)]);
-  }
-  // Allergen-Hinweis (16 B (i)) nur bei Entwürfen.
+  // Kein Freigabe-Kennzeichen (wie in der App, privater Nutzerkreis, Gründer-Entscheidung 27.10.2026).
+  // Allergen-Zeile „ohne Gewähr“ (16 B (i)) nur bei nicht freigegebenen Rezepten (Testmodus).
   const isDraft = first.meal.recipeStatus === 'draft' || recipe.status === 'draft';
   if (isDraft) {
     const warning: PrintBlock = {

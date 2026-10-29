@@ -28,7 +28,7 @@ async function collectHints(page: Page): Promise<Map<string, string>> {
       const slot = id.replace(/^leftover-/, '');
       const label = (await page.getByTestId(`meal-${slot}`).getAttribute('aria-label')) ?? '';
       expect(label).toContain(text.split('\n')[0] ?? '');
-      expect(label).toContain('Packungsgröße noch nicht freigegeben (Entwurf)');
+      expect(label).not.toMatch(/Entwurf|freigegeben/);
     }
     if (count > 0) await expect(page.getByTestId('nutrition-leftover-explain')).toBeVisible();
     else await expect(page.getByTestId('nutrition-leftover-explain')).toHaveCount(0);
@@ -65,8 +65,8 @@ test('„Nutzt deinen Rest“: ohne Mengen, deterministisch, nicht gespeichert; 
     // Keine Mengen und keine Packungszahlen – nur Lebensmittel und Anbruchstag.
     expect(text.split('\n')[0]).not.toMatch(/\d/);
     expect(text).not.toMatch(/Packungen|\bg\b|kcal/);
-    // Beispiel-Packungen sind Testwerte → gekennzeichnet.
-    expect(text).toContain('Packungsgröße noch nicht freigegeben (Entwurf)');
+    // Keine Freigabe-Kennzeichnung der Packungsgröße (Gründer-Entscheidung 27.10.2026).
+    expect(text).not.toMatch(/Entwurf|freigegeben/);
   }
   // Vegetarische Person ohne empfindliche Lebensmittel mit Packungsgröße: kein Lagerhinweis „nur bis zum Folgetag“.
   // (Ein Fleisch-Fall ist mit den Beispiel-Daten nicht erreichbar – Wächter N14 H8, abgedeckt in core/App-Vitest.)

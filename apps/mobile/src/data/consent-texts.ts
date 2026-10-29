@@ -12,7 +12,8 @@ import type { ConsentDocument } from './types';
  * bricht ab, wenn sie auseinanderlaufen. In der Datenbank ist health_data Fassung 2 bis zur juristischen Prüfung ein
  * unveröffentlichter Entwurf; der Testmodus nutzt sie schon (Supplement-Check testbar, Testschalter „Einwilligung nur
  * alte Fassung“ für die Hinweis-Karte). Im Supabase-Modus kommen die Texte immer aus consent_documents.
- * ENTWURF – juristisch prüfen (Entscheidung zu Frage 6).
+ * Die erste Zeile „ENTWURF – juristisch prüfen“ steht wörtlich in den Fassungen (Entscheidung zu Frage 6) und bleibt
+ * hier deshalb stehen; angezeigt wird sie nicht (core `consentBodyForDisplay`, Gründer-Entscheidung 27.10.2026).
  */
 export const LOCAL_CONSENT_DOCUMENTS: readonly ConsentDocument[] = [
   {

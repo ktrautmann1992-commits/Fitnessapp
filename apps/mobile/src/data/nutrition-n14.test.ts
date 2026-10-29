@@ -205,22 +205,22 @@ describe('Resteplanung in der App (Etappe N14)', () => {
     expect(view.line).toContain('(seit So)');
     expect(view.line).not.toMatch(/\d/);
     expect(view.line).not.toMatch(/Packung/);
-    expect(view).toMatchObject({ unreviewed: true, shortLived: true });
+    // Keine Freigabe-Kennzeichnung der Packungsgröße mehr (Gründer-Entscheidung 27.10.2026).
+    expect(view).toEqual({ line: view.line, shortLived: true });
     // Wächter N14 S3: neutraler Wortlaut – kein „roh“ (Kochschinken, Rohmilchkäse, Sprossen fallen auch darunter).
     expect(t.nutrition.leftovers.shortLived).toMatch(/Folgetag/);
     expect(t.nutrition.leftovers.shortLived).not.toMatch(/roh|Fleisch|Fisch/i);
     expect(t.nutrition.leftovers.explain).not.toMatch(/\d/);
     // Wächter N14 H3: der Erklärsatz behauptet nicht, dass der Plan Reste bevorzugt (stimmt nicht für alte Pläne).
     expect(t.nutrition.leftovers.explain).not.toMatch(/bevorzug/);
-    // Wächter N14 S2: Vorlesetext enthält Hinweis, Testwert-Kennzeichnung und Lagerhinweis.
+    // Wächter N14 S2: Vorlesetext enthält Hinweis und Lagerhinweis (ohne Freigabe-Kennzeichnung).
     const spoken = leftoverAccessibilityText(view);
     expect(spoken).toContain(view.line);
-    expect(spoken).toContain(t.nutrition.leftovers.unreviewed);
+    expect(spoken).not.toMatch(/Entwurf|freigegeben/);
     expect(spoken).toContain(t.nutrition.leftovers.shortLived);
     expect(
       leftoverAccessibilityText({
         line: 'Nutzt deinen Rest: Tofu (seit Mo)',
-        unreviewed: false,
         shortLived: false,
       }),
     ).toBe('Nutzt deinen Rest: Tofu (seit Mo)');

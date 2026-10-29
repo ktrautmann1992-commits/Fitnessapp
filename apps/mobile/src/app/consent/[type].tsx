@@ -1,4 +1,4 @@
-import { consentTypeSchema } from '@fitnessapp/core';
+import { consentBodyForDisplay, consentTypeSchema } from '@fitnessapp/core';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { Screen } from '@/components/screen';
@@ -6,7 +6,7 @@ import { Body, Button, LoadingState, Notice } from '@/components/ui';
 import { t } from '@/i18n';
 import { useApp } from '@/state/app-state';
 
-/** Volltext einer Einwilligung (Link „Text lesen“). */
+/** Volltext einer Einwilligung (Link „Text lesen“), ohne Entwurfs-Zeile (consentBodyForDisplay, 27.10.2026). */
 export default function ConsentTextScreen() {
   const router = useRouter();
   const { documents, status } = useApp();
@@ -30,7 +30,7 @@ export default function ConsentTextScreen() {
       {doc ? (
         <>
           <Body muted>{t.baseConsents.version(doc.version)}</Body>
-          <Body>{doc.body}</Body>
+          <Body testID="consent-text-body">{consentBodyForDisplay(doc.body)}</Body>
         </>
       ) : (
         <Notice tone="warning">{t.consentText.notFound}</Notice>

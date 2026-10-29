@@ -2,7 +2,6 @@ import {
   type DietType,
   dietTypeSchema,
   isoDateSchema,
-  contentReviewMark,
   mealPrepKeeping,
   RECIPE_SERVINGS_PICKER,
   recipeContains,
@@ -53,9 +52,9 @@ import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useNutritionWeek, useShoppingListActions } from '@/state/use-nutrition';
 
 /**
- * Rezeptansicht (docs/PLAN-PHASE-5.md 8.2 Nr. 4, 19.6, Etappe N4): Titel, Kennzeichnung nur bei Entwürfen
- * („KI-Entwurf“/„Entwurf – noch nicht freigegeben“, freigegeben ohne Kennzeichen seit 27.10.2026)
- * und bei Entwürfen deutlich der Allergen-Hinweis (K6),
+ * Rezeptansicht (docs/PLAN-PHASE-5.md 8.2 Nr. 4, 19.6, Etappe N4): Titel ohne Freigabe-Kennzeichen (privater
+ * Nutzerkreis, Gründer-Entscheidung 27.10.2026), bei nicht freigegebenen Rezepten (nur Testmodus) eine neutrale
+ * Allergen-Zeile „ohne Gewähr“ (K6),
  * Zeiten, Portion (aus dem Essensplan bzw. Portionswähler 1–12), Zutaten mit Mengen, Ersatz- und Weglass-Hinweise,
  * Schritte, Nährwerte je Portion (ausblendbar), „Enthält: …“ inkl. Kokos, Spuren-Hinweis, HFI/Zöliakie, Meal-Prep-
  * Haltbarkeit, Nährwert-Quelle. Jedes Rezept läuft vorher durch den Filter der Person (recipeForPerson).
@@ -179,8 +178,6 @@ export default function RecipeScreen() {
   const { variant, plannedMeal, outsideProfileDiet } = found;
   const recipe = variant.recipe;
   const texts = t.nutrition.recipe;
-  /** Kennzeichen (core): KI-Entwurf, Entwurf oder keins – Allergen-Warnung unabhängig davon (nur Entwürfe). */
-  const reviewMark = contentReviewMark(recipe);
   const foods = library.foods;
   const foodName = (id: string) => foods.get(id)?.name_de ?? id;
   // K1: In Schwangerschaft/Stillzeit (B5) auch per Deep-Link keine Energie-Zahlen.
@@ -341,19 +338,9 @@ export default function RecipeScreen() {
         </Body>
       ) : null}
       {demo ? <DemoBanner /> : null}
-      {/* Freigegebene Rezepte ohne Kennzeichen (privater Nutzerkreis, Gründer-Entscheidung 27.10.2026). */}
-      {reviewMark === 'ai_draft' ? (
-        <Notice tone="info" icon="info" testID="recipe-ai-draft">
-          {texts.aiDraft}
-        </Notice>
-      ) : reviewMark === 'draft' ? (
-        <Notice tone="info" icon="info">
-          {texts.draft}
-        </Notice>
-      ) : null}
-      {/* K6: Allergen-Warnung nur bei Entwürfen (nicht freigegeben). */}
+      {/* Kein Freigabe-Kennzeichen (Gründer-Entscheidung 27.10.2026); K6: neutrale Allergen-Zeile, nur Testmodus. */}
       {recipe.status === 'draft' ? (
-        <Notice tone="warning" icon="alert" testID="recipe-allergen-warning">
+        <Notice tone="info" icon="info" testID="recipe-allergen-warning">
           {texts.allergenWarning}
         </Notice>
       ) : null}

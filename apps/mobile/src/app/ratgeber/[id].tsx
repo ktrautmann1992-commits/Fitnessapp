@@ -72,11 +72,6 @@ export default function GuideScreen() {
     display.title ?? texts.title,
     <>
       {view.library.result.demo ? <DemoBanner /> : null}
-      {display.isDraft ? (
-        <Notice tone="info" testID="guide-draft">
-          {texts.draft}
-        </Notice>
-      ) : null}
       {display.hiddenCount > 0 ? (
         <Notice tone="info" testID="guide-numbers-hidden">
           {texts.hiddenNumbers}

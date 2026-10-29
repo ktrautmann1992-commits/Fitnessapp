@@ -46,6 +46,7 @@ import {
   mealNumbersLine,
   roleLabel,
   slotLabel,
+  visiblePlanNotices,
 } from '@/lib/nutrition-format';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
@@ -313,7 +314,8 @@ export function NutritionNotices({
   planNotices?: readonly MealPlanNoticeCode[];
   showNumbers: boolean;
 }) {
-  if (notices.length === 0 && planNotices.length === 0) return null;
+  const shownPlanNotices = visiblePlanNotices(planNotices);
+  if (notices.length === 0 && shownPlanNotices.length === 0) return null;
   return (
     <View style={styles.list} testID="nutrition-notices">
       {notices.map((code) => (
@@ -325,10 +327,10 @@ export function NutritionNotices({
           <Body>{noticeText(code, showNumbers)}</Body>
         </Notice>
       ))}
-      {planNotices.map((code) => (
+      {shownPlanNotices.map((code) => (
         <Notice
           key={code}
-          tone={code === 'day_below_floor' || code.startsWith('drafts') ? 'warning' : 'info'}
+          tone={code === 'day_below_floor' ? 'warning' : 'info'}
           testID={`nutrition-plan-notice-${code}`}
         >
           <Body>{t.nutrition.planNotices[code]}</Body>
@@ -349,8 +351,8 @@ const SAFETY_NOTICES = new Set<NutritionNoticeCode>([
 /**
  * Dieselben Hinweise wie `NutritionNotices`, aber einzeln für die Hinweis-Zeile („App verschlanken“, 26.10.2026,
  * components/slim.tsx `NoticeStack`): Sicherheit (Schwangerschaft, Untergewicht, ärztliche Abklärung) sperrend und
- * immer sichtbar, fehlender Gesundheits-Check „handeln“, alles andere (Eiweiß bei Nierenerkrankung, Entwürfe,
- * Allergene ungeprüft …) Info hinter dem Zähler. testIDs wie bisher.
+ * immer sichtbar, fehlender Gesundheits-Check „handeln“, alles andere (Eiweiß bei Nierenerkrankung, Allergen-Zeile
+ * „ohne Gewähr“ …) Info hinter dem Zähler. testIDs wie bisher.
  */
 export function nutritionNoticeItems(
   notices: readonly NutritionNoticeCode[],
@@ -374,12 +376,12 @@ export function nutritionNoticeItems(
         </Notice>
       ),
     })),
-    ...planNotices.map((code): StackNotice => ({
+    ...visiblePlanNotices(planNotices).map((code): StackNotice => ({
       id: `plan-notice-${code}`,
       level: code === 'day_below_floor' ? 'action' : 'info',
       node: (
         <Notice
-          tone={code === 'day_below_floor' || code.startsWith('drafts') ? 'warning' : 'info'}
+          tone={code === 'day_below_floor' ? 'warning' : 'info'}
           testID={`nutrition-plan-notice-${code}`}
         >
           <Body>{t.nutrition.planNotices[code]}</Body>
@@ -544,11 +546,6 @@ export function MealRow({
           {leftover ? (
             <View testID={`leftover-${meal.slot}`}>
               <Text style={[styles.detail, { color: theme.text }]}>{leftover.line}</Text>
-              {leftover.unreviewed ? (
-                <Text style={[styles.detail, { color: theme.textMuted }]}>
-                  {t.nutrition.leftovers.unreviewed}
-                </Text>
-              ) : null}
               {leftover.shortLived ? (
                 <Text
                   style={[styles.detail, { color: theme.textMuted }]}

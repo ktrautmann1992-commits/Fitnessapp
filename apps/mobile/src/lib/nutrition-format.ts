@@ -2,6 +2,7 @@ import {
   FOOD_GROUPS,
   type FoodGroupId,
   type LeftoverMealHint,
+  type MealPlanNoticeCode,
   type MealPlanSlotKey,
   type MealRole,
   type NutritionNoticeCode,
@@ -204,11 +205,21 @@ export function nutrientSourcesText(
   );
 }
 
+/**
+ * Hinweis-Codes des Essensplans, die die App nicht zeigt: „Rezepte sind Entwürfe“ (nur Testmodus) – keine
+ * Freigabe-Hinweise mehr (privater Nutzerkreis, Gründer-Entscheidung 27.10.2026). Die Allergen-Zeile bleibt neutral.
+ */
+export type VisibleMealPlanNoticeCode = Exclude<MealPlanNoticeCode, 'drafts_used'>;
+
+export function visiblePlanNotices(
+  codes: readonly MealPlanNoticeCode[],
+): VisibleMealPlanNoticeCode[] {
+  return codes.filter((code): code is VisibleMealPlanNoticeCode => code !== 'drafts_used');
+}
+
 /** Anzeige des Hinweises „Nutzt deinen Rest“ (Etappe N14) – ohne Mengen und ohne Packungszahlen. */
 export interface LeftoverHintView {
   readonly line: string;
-  /** Mindestens eine Packungsgröße ist noch ein Entwurf/Testwert. */
-  readonly unreviewed: boolean;
   /** Ein nur bis zum Folgetag eingeplanter Rest (roh tierisch oder empfindlich, Wächter N14 S3) – Lagerhinweis. */
   readonly shortLived: boolean;
 }
@@ -223,7 +234,6 @@ export function leftoverHintView(
         .map((f) => t.nutrition.leftovers.item(foodName(f.foodId), weekdayShort(f.openedOn)))
         .join(', '),
     ),
-    unreviewed: hint.foods.some((f) => !f.packageReviewed),
     shortLived: hint.foods.some((f) => f.shortLived),
   };
 }
@@ -241,7 +251,6 @@ export function leftoverHintsBySlot(
  */
 export function leftoverAccessibilityText(view: LeftoverHintView): string {
   const parts = [view.line];
-  if (view.unreviewed) parts.push(t.nutrition.leftovers.unreviewed);
   if (view.shortLived) parts.push(t.nutrition.leftovers.shortLived);
   return parts.join('. ');
 }

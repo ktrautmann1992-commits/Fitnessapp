@@ -18,6 +18,7 @@ import {
   shoppingCategoryLabel,
   shoppingItemText,
   visibleNotices,
+  visiblePlanNotices,
   mealNumbersLine,
   recipeNumbersText,
 } from './nutrition-format';
@@ -65,7 +66,7 @@ describe('Ernährung: Zahlen und Bausteine im deutschen Format (8.4)', () => {
     for (const code of visibleNotices(NUTRITION_NOTICE_CODES, false)) {
       expect(noticeText(code, false), code).not.toMatch(numbers);
     }
-    for (const code of MEAL_PLAN_NOTICE_CODES) {
+    for (const code of visiblePlanNotices(MEAL_PLAN_NOTICE_CODES)) {
       expect(t.nutrition.planNotices[code], code).not.toMatch(numbers);
     }
     // Mit Zahlen bleiben die genauen Fassungen.
@@ -145,6 +146,36 @@ describe('Zahlen auf Rezeptkarten und Mahlzeiten (24.10.2026)', () => {
     expect(more.text.length).toBeLessThanOrEqual(35);
     expect(nb(mealNumbersLine(0.5, { kcal: 300, protein_g: 0, carbs_g: 0 }).text)).toBe(
       '0,5× · 300 kcal · 0 g E · 0 g KH',
+    );
+  });
+});
+
+describe('Keine Freigabe-Hinweise in der Ernährung (Gründer-Entscheidung 27.10.2026)', () => {
+  /** Alle festen Texte (Funktionen ausgenommen) eines Text-Bereichs. */
+  function strings(value: unknown): string[] {
+    if (typeof value === 'string') return [value];
+    if (value !== null && typeof value === 'object') return Object.values(value).flatMap(strings);
+    return [];
+  }
+
+  it('kein „Entwurf“, „noch nicht freigegeben“, „juristisch“ oder „fachlich geprüft“ in den Ernährungs-Texten', () => {
+    const texts = strings(t.nutrition);
+    expect(texts.length).toBeGreaterThan(100);
+    for (const text of texts) {
+      expect(text).not.toMatch(/entwurf|entwürfe|nicht freigegeben|juristisch|fachlich geprüft/i);
+    }
+  });
+
+  it('„Rezepte sind Entwürfe“ wird nie gezeigt, die Allergen-Zeile bleibt neutral', () => {
+    expect(
+      visiblePlanNotices(['drafts_used', 'drafts_allergens_unreviewed', 'day_below_floor']),
+    ).toEqual(['drafts_allergens_unreviewed', 'day_below_floor']);
+    expect(visiblePlanNotices([])).toEqual([]);
+    expect(t.nutrition.planNotices.drafts_allergens_unreviewed).toBe(
+      'Allergen-Angaben ohne Gewähr – bitte Zutatenliste prüfen.',
+    );
+    expect(t.nutrition.recipe.allergenWarning).toBe(
+      t.nutrition.planNotices.drafts_allergens_unreviewed,
     );
   });
 });
