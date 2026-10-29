@@ -414,7 +414,7 @@ test('mit Einwilligung: Körperdaten, Umfänge, Gesundheits-Check mit Arzt-Hinwe
   await page.getByRole('link', { name: 'Einstellungen' }).click();
   await expect(page.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
   await page.getByTestId('settings-topic-erinnerungen').click();
-  await expect(page.getByRole('heading', { name: 'Erinnerungen' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Erinnerungen', exact: true })).toBeVisible();
   await expect(page.getByText(/^Nächste Messung: \d{2}\.\d{2}\.\d{4}$/)).toBeVisible();
 
   // Mess-Erinnerung: Grenzen 7–90 Tage.
