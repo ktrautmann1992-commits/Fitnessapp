@@ -4345,6 +4345,29 @@ Gründer-Wunsch: Rezeptlisten mit Vorschaufoto und „28 Min. · 482 kcal · 31 
   davor, wenn er gerundet nicht 1 ist („1,3× · …“, eine Nachkommastelle; genaue Portion in der Rezeptansicht).
   E/KH erklärt die Übersicht darüber; Bildschirmleser hören „Eine Portion: 669 Kilokalorien, 44 Gramm Eiweiß, …“.
 
+## Nachtrag 30.10.2026: Dritte Nährwert-Quelle USDA FoodData Central (Gründer-Entscheidung)
+
+**Anlass:** 30 Zutaten der Gründer-Datei (u. a. Kreuzkümmel, Kurkuma, Curry, Muskat, Oregano, Majoran, Dill,
+Koriander, Kümmel, Chili, alle Proteinpulver, Erythrit, Johannisbrotkernmehl, Kokosmilch fettreduziert, Sojaskyr,
+Salsa, Reisessig) führen weder BLS 4.0 noch die Schweizer Nährwertdatenbank 7.1 (vollständige Namensliste geprüft,
+Lauf „kandidaten“ 40910553124). Daran hängen 79 Rezepte. **Entscheidung (Karsten, 30.10.2026):** USDA FoodData
+Central als dritte Quelle, nur für Zutaten ohne BLS- und CH-Zeile.
+
+- **Datensatz:** SR Legacy (April 2018), CSV-ZIP von fdc.nal.usda.gov, Lizenz CC0 1.0 (gemeinfrei, Quellenangabe
+  erbeten). Eintrag `USDA_SR_LEGACY` in `sources.ts` (`db: usda_fdc`, `version: sr-legacy-2018-04`), Adresse,
+  Lizenz, Spalten und Prüfsumme zunächst ungeprüft → Lauf „kandidaten“, dann festnageln per Gründer-PR (wie CH).
+- **Format `fdc_csv_zip`:** FoodData Central liefert das lange Format (`food.csv`, `nutrient.csv`,
+  `food_nutrient.csv`). `fdc-csv.ts` stellt es in eine Zeile je Lebensmittel um (Spalte „<Nährstoff-ID> <Name>
+  (<Einheit>)“); Zellen sind die Texte aus `food_nutrient.csv`, unverändert. Original-Datei (Prüfsumme,
+  `sources-integrity`) ist das ganze ZIP.
+- **Umrechnungen:** Salz = Natrium × 2,5 (wie bisher, LMIV); **verfügbare Kohlenhydrate = „Carbohydrate, by
+  difference“ (1005) minus Ballaststoffe (1079)** – USDA zählt Ballaststoffe zu den KH, der Katalog nicht
+  (`SourceNutrientColumn.minus`). Fehlt einer der Werte, fehlt der KH-Wert (Zeile nicht importiert, nie geschätzt);
+  kleine negative Differenzen (Rundung der Quelle) zählen als 0.
+- **Ablauf:** (1) dieser PR (Gründer merged, sources.ts), (2) Lauf „kandidaten“ → Prüfsumme und Spalten per
+  Gründer-PR festnageln, (3) Quell-IDs der 30 Zutaten in `alpha5-zuordnung.json` (englische Namen aus der
+  Namensliste des Laufs), (4) Lauf „import“ (Gründer merged), (5) `alpha5-import` neu.
+
 ## Nachtrag 24.10.2026: Nur etwa die Hälfte der Rezeptbuch-Rezepte in der App (Gründer-Entscheidung)
 
 **Entscheidung (Karsten, 24.10.2026):** Die App enthält nur rund 150 der 306 Rezepte aus `alpha5-rezepte.json`

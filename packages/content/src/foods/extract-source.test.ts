@@ -467,7 +467,7 @@ describe('SOURCE.json, Namensnennung und Allowlist', () => {
       expect(source.url.startsWith('https://')).toBe(true);
       expect(source.url).not.toMatch(/latest|neueste|current/i);
       if (source.downloadPage === null) {
-        expect(source.url).toMatch(/\.(xlsx|csv)$/);
+        expect(source.url).toMatch(source.format === 'fdc_csv_zip' ? /\.zip$/ : /\.(xlsx|csv)$/);
         expect(source.url).toContain(source.originalFilename);
       } else {
         // Feste Seite ohne Code; der Link mit wechselndem Code wird erst beim Laden gelesen.

@@ -49,6 +49,13 @@ export interface SourceNutrientColumn {
    * mehrere Überschriften mit demselben ersten Wort und derselben Einheit hat.
    */
   readonly header?: string;
+  /**
+   * Abzuziehende Spalte (nur dieser feste Fall, LMIV Anhang I Nr. 7 – „Kohlenhydrate“ = verwertbare KH): USDA führt
+   * „Carbohydrate, by difference“ INKLUSIVE Ballaststoffen; verfügbare KH = Spalte − `minus` (Ballaststoffe).
+   * Fehlt einer der beiden Werte, fehlt der Wert (nie geschätzt); kleine negative Differenzen (Rundung der Quelle)
+   * zählen als 0.
+   */
+  readonly minus?: SourceNutrientColumn;
 }
 
 /** Felder von `nutrients_per_100g` (Plan 5.1). */
@@ -90,8 +97,12 @@ export interface SourceDefinition {
    * ein ZIP-Archiv, wird zuerst ein Eintrag mit genau diesem Namen gewählt.
    */
   readonly originalFilename: string;
-  /** Format der Original-Datei. */
-  readonly format: 'xlsx' | 'csv';
+  /**
+   * Format der Original-Datei. `fdc_csv_zip` = USDA FoodData Central als CSV-ZIP im langen Format (food.csv,
+   * nutrient.csv, food_nutrient.csv); Original-Datei ist das ganze ZIP, die Tabelle baut `fdc-csv.ts` (reine
+   * Umordnung, Werte unverändert).
+   */
+  readonly format: 'xlsx' | 'csv' | 'fdc_csv_zip';
   /** Nur xlsx: Name des Tabellenblatts; null = erstes Blatt. */
   readonly sheet: string | null;
   /** Nur csv: Trennzeichen. */
@@ -302,8 +313,75 @@ const CH_7_1: SourceDefinition = {
     'Auszug: nur die von Alpha5 verwendeten Zeilen, Werte unverändert. In der App: Salz ggf. aus Natrium berechnet (× 2,5), Nährwerte je Rezept aus Zutatenmengen hochgerechnet.',
 };
 
+/**
+ * Dritte Quelle (Gründer-Entscheidung 30.10.2026): USDA FoodData Central, Datensatz „SR Legacy“ (Stand April 2018,
+ * letzte Fassung der früheren USDA National Nutrient Database for Standard Reference) – nur für Zutaten, die weder
+ * BLS noch Schweizer Nährwertdatenbank führen (Gewürze, Proteinpulver, Kokosmilch light u. a.).
+ *
+ * Adresse: feste Datei-Adresse von fdc.nal.usda.gov/download-datasets („SR Legacy“, CSV), aus der öffentlichen
+ * Dokumentation abgeleitet – beim ersten Lauf „kandidaten“ zu bestätigen (`urlStatus: 'unconfirmed'`).
+ * Lizenz: FoodData Central steht unter CC0 1.0 (gemeinfrei, laut fdc.nal.usda.gov „Data are in the public domain“);
+ * eine Quellenangabe wird erbeten.
+ *
+ * Aufbau (langes Format) liest `fdc-csv.ts`: Spalten „<Nährstoff-ID> <Name> (<Einheit>)“. Nährstoff-IDs laut
+ * FoodData-Central-Dokumentation: 1008 Energy (kcal), 1003 Protein, 1004 Total lipid (fat), 1005 Carbohydrate, by
+ * difference (inkl. Ballaststoffe → minus 1079), 2000 Sugars, total, 1258 Fatty acids, total saturated, 1079 Fiber,
+ * total dietary, 1093 Sodium (mg → Salz × 2,5), 1018 Alcohol, ethyl. Bis zum Lauf „kandidaten“ ungeprüft
+ * (`columnsStatus: 'unconfirmed'`, Prüfsumme offen) – der Import bricht bei abweichender Kopfzeile ab.
+ */
+const USDA_SR_LEGACY: SourceDefinition = {
+  db: 'usda_fdc',
+  version: 'sr-legacy-2018-04',
+  title: 'USDA FoodData Central, SR Legacy (April 2018)',
+  url: 'https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip',
+  downloadPage: null,
+  urlStatus: 'unconfirmed',
+  licenseStatus: 'unconfirmed',
+  confirmedBy:
+    'Adresse und Lizenz aus der öffentlichen Dokumentation von fdc.nal.usda.gov abgeleitet (Claude-Sitzung 30.10.2026); Bestätigung durch Lauf „kandidaten“ und Gründer-Merge',
+  originalFilename: 'FoodData_Central_sr_legacy_food_csv_2018-04.zip',
+  format: 'fdc_csv_zip',
+  sheet: null,
+  csvDelimiter: ',',
+  originalSha256: null,
+  keyColumn: 0,
+  // fdc_id von SR Legacy: 6 Ziffern (z. B. 171326); bis 7 zugelassen.
+  keyPattern: '^[0-9]{5,7}$',
+  // Spalte 1 „description“ (englisch).
+  nameColumn: 1,
+  nutrients: {
+    kcal: [{ code: '1008', unit: 'kcal', convert: 'none' }],
+    protein_g: [{ code: '1003', unit: 'g', convert: 'none' }],
+    carbs_g: [
+      {
+        code: '1005',
+        unit: 'g',
+        convert: 'none',
+        minus: { code: '1079', unit: 'g', convert: 'none' },
+      },
+    ],
+    sugar_g: [{ code: '2000', unit: 'g', convert: 'none' }],
+    fat_g: [{ code: '1004', unit: 'g', convert: 'none' }],
+    sat_fat_g: [{ code: '1258', unit: 'g', convert: 'none' }],
+    fiber_g: [{ code: '1079', unit: 'g', convert: 'none' }],
+    salt_g: [{ code: '1093', unit: 'mg', convert: 'sodium_mg_to_salt_g' }],
+  },
+  energyExtras: {
+    alcohol_g: [{ code: '1018', unit: 'g', convert: 'none' }],
+  },
+  columnsStatus: 'unconfirmed',
+  license: 'CC0 1.0',
+  licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
+  licenseText:
+    'FoodData Central data are in the public domain and are not copyrighted. They are published under the Creative Commons 0 (CC0 1.0 Universal) license. Citation is requested.',
+  attribution:
+    'U.S. Department of Agriculture, Agricultural Research Service. FoodData Central: SR Legacy, April 2018. fdc.nal.usda.gov.',
+  changesNote:
+    'Auszug: nur die von Alpha5 verwendeten Lebensmittel, Werte unverändert (aus dem langen CSV-Format je Lebensmittel in eine Zeile gestellt). In der App: Salz aus Natrium berechnet (× 2,5), verfügbare Kohlenhydrate = „Carbohydrate, by difference“ minus Ballaststoffe, Nährwerte je Rezept aus Zutatenmengen hochgerechnet.',
+};
+
 /** Allowlist: genau diese Quellen/Versionen darf `foods-import` laden und `sources-integrity` anerkennen. */
-export const SOURCES: readonly SourceDefinition[] = [BLS_4_0, CH_7_1];
+export const SOURCES: readonly SourceDefinition[] = [BLS_4_0, CH_7_1, USDA_SR_LEGACY];
 
 /** Quelle nach Datenbank und Version (undefined = nicht in der Allowlist). */
 export function findSource(
