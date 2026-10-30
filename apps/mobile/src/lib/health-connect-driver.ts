@@ -24,6 +24,8 @@ export const healthConnectDriver: HealthConnectDriver = {
     heartRateVariabilities: [],
   }),
   routeAccess: async () => false,
+  backgroundAccess: async () => false,
+  requestBackgroundAccess: async () => false,
   requestRoute: async () => ({ kind: 'error' }),
   openSettings: () => undefined,
   openInstall: () => undefined,

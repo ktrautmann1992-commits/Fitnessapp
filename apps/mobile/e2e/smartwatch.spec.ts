@@ -71,6 +71,8 @@ test('verbinden (Beispiel-Uhr) → Abgleich → Tagebuch/Puls → Story-Bild ohn
   );
   await expect(page.getByText('✓ Puls')).toBeVisible();
   await expect(page.getByTestId('wearable-daily-line').first()).toContainText('Schritte');
+  // Im Hintergrund aktualisieren (30.10.2026): auch mit Uhr angeboten, Recht erst auf Tipp.
+  await expect(page.getByTestId('smartwatch-background-allow')).toBeVisible();
 
   const db = await stored(page);
   // 3 Läufe, Kraft, Wanderung (Sportarten Stufe 1 · Etappe W), Yoga.
@@ -122,6 +124,8 @@ test('verbinden (Beispiel-Uhr) → Abgleich → Tagebuch/Puls → Story-Bild ohn
   expect(after.wearables?.dailyMetrics ?? []).toHaveLength(0);
   await expect(page.getByTestId('smartwatch-consent-accept')).toHaveCount(0);
   await expect(page.getByTestId('smartwatch-connect')).toBeVisible();
+  // Getrennt → keine Hintergrund-Karte mehr.
+  await expect(page.getByTestId('smartwatch-background')).toHaveCount(0);
 });
 
 test('Widerruf „Smartwatch-Daten“ in den Einwilligungen löscht Puls und Tageswerte, Einträge bleiben', async ({

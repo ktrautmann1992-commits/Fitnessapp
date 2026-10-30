@@ -64,7 +64,7 @@ import {
   type PlanBlocker,
   plannedCompetition,
 } from '@/data/competition';
-import { createBackend, deviceStore, newId } from '@/data/create-backend';
+import { deviceStore, newId, sharedBackend } from '@/data/create-backend';
 import { createDaySwapStore, prunedDaySwaps, withoutHealthPlanSwaps } from '@/data/day-swaps';
 import type { FavoriteChange } from '@/data/food-log-rows';
 import { followUpAdjustments, type LocalAdjustment } from '@/data/live-adjust';
@@ -445,7 +445,8 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   // Betriebsart wird einmal beim Start gewählt (Supabase-Werte ändern sich nur mit einem neuen Build).
-  const [backend] = useState<Backend>(() => createBackend());
+  // Dieselbe Instanz wie der Hintergrund-Abgleich (sharedBackend, docs/PLAN-PHASE-8.md 13.6).
+  const [backend] = useState<Backend>(() => sharedBackend());
 
   const [status, setStatus] = useState<LoadStatus>({ kind: 'loading' });
   const [documents, setDocuments] = useState<ConsentDocument[]>([]);

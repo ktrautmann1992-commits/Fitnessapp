@@ -12,7 +12,8 @@ import type {
 /**
  * Health Connect (Phase 8, docs/PLAN-PHASE-8.md 2, 7.1): gemeinsamer Vertrag für Android (health-connect-driver.native.ts,
  * react-native-health-connect), Browser/iPhone (health-connect-driver.ts: nicht verfügbar) und die Beispiel-Uhr im
- * Testmodus (health-connect-demo.ts). NUR lesen (W8-3), kein Hintergrund-Lesen (W8-7). Routen (GPS) der Ausdauer-
+ * Testmodus (health-connect-demo.ts). NUR lesen (W8-3). Lesen im Hintergrund nur mit eigenem Recht
+ * (READ_HEALTH_DATA_IN_BACKGROUND, Gründer-Freigabe 30.10.2026, docs/PLAN-PHASE-8.md 13.6, ändert W8-7). Routen (GPS) der Ausdauer-
  * Einheiten seit 23.10.2026 (Gründer-Entscheidung „Routen lesen“, docs/PLAN-PHASE-8.md 14). Gelesene Werte sind
  * Gesundheits- bzw. Standortdaten: nie loggen, nie in Fehlermeldungen.
  */
@@ -63,6 +64,16 @@ export interface HealthConnectDriver {
    * ausdrücklichen Tipp der Person aufrufen.
    */
   requestRoute(externalId: string): Promise<HcRouteRead>;
+  /**
+   * Abgleich im Hintergrund (30.10.2026): Recht „Daten im Hintergrund lesen“ (READ_HEALTH_DATA_IN_BACKGROUND) erteilt?
+   * Ohne das Recht liest die App nur im Vordergrund.
+   */
+  backgroundAccess(): Promise<boolean>;
+  /**
+   * Systemdialog von Health Connect NUR für das Hintergrund-Recht (auf ausdrücklichen Tipp der Person). Ergebnis =
+   * erteilt. Ältere Health-Connect-Versionen kennen das Recht nicht → false (Vordergrund bleibt).
+   */
+  requestBackgroundAccess(): Promise<boolean>;
   /** Health-Connect-Einstellungen bzw. Berechtigungen öffnen (Zugriff zurückgeben/entziehen). */
   openSettings(): void;
   /** Play Store: Health Connect installieren/aktualisieren. */

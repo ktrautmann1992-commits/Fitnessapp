@@ -4977,6 +4977,21 @@ export const WEARABLE_SYNC = {
 } as const;
 
 /**
+ * Abgleich im Hintergrund (Gründer-Freigabe 30.10.2026, docs/PLAN-PHASE-8.md 13.6, ändert W8-7): nur Android-App mit
+ * Health Connect, nur mit gültigen Einwilligungen `wearable_data` + `health_data`, verbundenen Schritten und dem
+ * Health-Connect-Recht „Daten im Hintergrund lesen“ (READ_HEALTH_DATA_IN_BACKGROUND, Android 14+ bzw. aktuelles
+ * Health Connect).
+ * - `minimumIntervalMin` 15: kleinster Abstand, den Android WorkManager für wiederkehrende Aufgaben erlaubt
+ *   (PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS = 15 min; expo-background-task „minimumInterval“, Doku Expo SDK 57).
+ *   Das Betriebssystem behandelt den Wert als Untergrenze und legt den echten Takt selbst fest (Energiesparmodus,
+ *   Doze, App-Standby-Gruppen) – in der Praxis eher 15 min bis mehrere Stunden. Gleich groß wie
+ *   WEARABLE_SYNC.autoMinIntervalMin, damit Vordergrund und Hintergrund dieselbe Sperre „höchstens alle 15 min“ teilen.
+ */
+export const WEARABLE_BACKGROUND_SYNC = {
+  minimumIntervalMin: 15,
+} as const;
+
+/**
  * Route (GPS) einer Uhr-Einheit aus Health Connect (Gründer-Entscheidung 23.10.2026 „Routen lesen“, docs/PLAN-PHASE-8.md
  * 3 und 12): Distanz, Höhenmeter und Kilometerzeiten rechnet Alpha5 selbst aus der Route – mit denselben Filtern wie die
  * eigene Aufzeichnung (summarizeTrack). Die Distanz der Route gilt nur, wenn sie plausibel ist; sonst bleibt die Summe
