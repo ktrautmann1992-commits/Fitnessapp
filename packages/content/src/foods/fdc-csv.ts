@@ -54,7 +54,9 @@ function readTable(
   needed: readonly string[],
 ): { rows: string[][]; col: Record<string, number> } {
   const [header, ...rows] = parseCsv(
-    readZipEntry(buffer, entry).toString('utf8').replace(/^\uFEFF/, ''),
+    readZipEntry(buffer, entry)
+      .toString('utf8')
+      .replace(/^\uFEFF/, ''),
   );
   if (header === undefined) {
     throw new Error(`FoodData-Central-ZIP: ${basename(entry.name)} ist leer.`);
