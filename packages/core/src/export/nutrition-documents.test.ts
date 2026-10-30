@@ -128,7 +128,8 @@ const withCode = (doc: PrintDocument, code: string) =>
 
 const pages = (doc: PrintDocument) => doc.sections.filter((b) => b.type === 'pageBreak').length + 1;
 
-describe('Essensplan als PDF (Dokumentmodell)', () => {
+// Jeder Test baut eine ganze Essensplan-Woche aus dem Rezeptbestand – unter Last (turbo parallel) über der 5-s-Vorgabe.
+describe('Essensplan als PDF (Dokumentmodell)', { timeout: 60_000 }, () => {
   it('Deckblatt, Wochenübersicht, je Rezept ein Abschnitt; Arzt- und Produkt-Hinweis; Namensnennung im Fuß', () => {
     const { plan, doc } = build(female);
     expect(doc.meta.kind).toBe('nutrition_plan');
