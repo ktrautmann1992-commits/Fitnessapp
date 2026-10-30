@@ -33,7 +33,7 @@ Story-Bild). Gründer-Wunsch: „Die Daten meiner Galaxy Watch sollen automatisc
 | W8-4  | Strecken (GPS) der Uhr        | ~~In Etappe 1 nicht importieren~~ → **Routen lesen** (Abschnitt 14)                            | **geändert 23.10.**    |
 | W8-5  | Einwilligung                  | Neue, getrennte Einwilligungsart `wearable_data` (Version 1)                                   | wie empfohlen (21.10.) |
 | W8-6  | Speichertiefe Puls            | Nur Zusammenfassung je Einheit (Ø, Max, Sekunden je Zone), keine Rohreihen                     | wie empfohlen (21.10.) |
-| W8-7  | Abgleich-Zeitpunkt            | App-Start/Vordergrund + Knopf; kein Hintergrund-Abgleich in Etappe 1                           | wie empfohlen (21.10.) |
+| W8-7  | Abgleich-Zeitpunkt            | App-Start/Vordergrund + Knopf; ~~kein Hintergrund-Abgleich~~ → **auch im Hintergrund** (13.6)  | **geändert 30.10.**    |
 | W8-8  | Erster Abgleich               | Letzte 30 Tage (= Standardgrenze von Health Connect, keine Zusatzberechtigung)                 | wie empfohlen (21.10.) |
 | W8-9  | Doppelte Einheit (App + Uhr)  | Zusammenführen: App-Eintrag bleibt führend, Uhr ergänzt Puls/kcal; Rückfrage nur bei Zweifel   | wie empfohlen (21.10.) |
 | W8-10 | Pulszonen                     | 5 Zonen nach % HFmax; HFmax geschätzt (Tanaka) oder eigener Wert                               | wie empfohlen (21.10.) |
@@ -185,7 +185,8 @@ jsonb)`; `disconnect_wearable(p_delete_imported boolean)`. `save_session_log` bl
   verzögert; Duplikate verhindert `external_id`).
 - **Offline-first:** gelesene Daten → verschlüsselte Warteschlange (`wearableQueue`, wie `routeQueue`) → senden bei
   Verbindung; Teilerfolge bleiben stehen.
-- **Kein Hintergrund-Abgleich** (Akku, Play-Regeln, Zusatzberechtigung) – Etappe 2 prüfen.
+- ~~**Kein Hintergrund-Abgleich**~~ – seit 30.10.2026 zusätzlich im Hintergrund, nur mit eigenem Health-Connect-Recht
+  (Abschnitt 13.6).
 - **Zustände:** Health Connect fehlt/veraltet → Installieren-Knopf; Berechtigung entzogen (in Health Connect
   abgeschaltet) → Status „Zugriff fehlt“, Knopf „Berechtigungen öffnen“, keine Fehlerschleife; keine Daten →
   „Noch keine Daten von der Uhr. Prüfe in Samsung Health, ob Health Connect eingeschaltet ist.“; Fehler →
@@ -286,7 +287,7 @@ es am Handy“.
 
 - **Neu, nur lesen:** `android.permission.health.READ_EXERCISE`, `READ_DISTANCE`, `READ_TOTAL_CALORIES_BURNED`,
   `READ_HEART_RATE`, `READ_RESTING_HEART_RATE`, `READ_SLEEP`, `READ_STEPS` (je Datentyp genau eine).
-- **Entfernt (`tools:node="remove"`):** `READ_HEALTH_DATA_IN_BACKGROUND`, `READ_HEALTH_DATA_HISTORY`,
+- **Entfernt (`tools:node="remove"`):** ~~`READ_HEALTH_DATA_IN_BACKGROUND`~~ (seit 30.10.2026 erlaubt, 13.6), `READ_HEALTH_DATA_HISTORY`,
   `READ_EXERCISE_ROUTES` und alle `WRITE_*` dieser Typen inkl. `WRITE_EXERCISE_ROUTE`.
 - **Health-Connect-Erklärung:** Intent-Filter `androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE` an der
   `MainActivity` (Android ≤ 13) und `activity-alias` `ViewPermissionUsageActivity` (Aktion `VIEW_PERMISSION_USAGE`,
@@ -362,6 +363,63 @@ external_id)`, weil ein zusammengeführter Eintrag seine Herkunft (z. B. `gps`) 
   Schritte selbst, sonst schreiben Samsung Health oder Google Fit sie hinein (dort „Körperliche Aktivität“ erlauben
   und in deren Health-Connect-Einstellung „Schritte“ freigeben). Das ist am echten Gerät zu prüfen.
 - Tests: `wearable.test.ts` (nur Schritte → nur Tageswerte), `native-config.test.ts`, E2E `steps-tile.spec.ts`.
+
+### 13.6 Abgleich im Hintergrund (Gründer-Freigabe 30.10.2026, Branch `claude/schritte-hintergrund`, ändert W8-7)
+
+- **Ausgangslage:** Schritte (und alle Uhr-Daten) wurden nur beim App-Start, bei Rückkehr in die App (höchstens alle
+  15 min, `WEARABLE_SYNC.autoMinIntervalMin`) und mit „Jetzt abgleichen“ gelesen (`WearableAutoSync` →
+  `syncWearables` → `runWearableSync`). Gespeichert wird **serverseitig**: Tageswerte (`daily_metrics.steps`, je Tag
+  eine Tagessumme per `aggregateRecord`) und Einheiten gehen über `import_wearable_batch` (vorher verschlüsselte
+  Warteschlange `wearableQueue`, offline-first); der Aufruf setzt `wearable_connections.last_sync_at`. Die Kachel
+  „Schritte“, die Smartwatch-Seite und das Widget zeigen den Stand vom Server. Hinweis: `lib/step-alert.native.ts` ist
+  der **Schrittwechsel im Intervall-Timer** (Vibration), keine Schritt-Erinnerung – eine Erinnerung nach Schrittzahl
+  gibt es (noch) nicht.
+- **Lösung:** `expo-background-task` ~57.0.21 (Android WorkManager, mit `expo-task-manager`) startet eine
+  Hintergrund-Aufgabe `alpha5-wearable-background-sync` (Mindestabstand 15 min, `WEARABLE_BACKGROUND_SYNC` in
+  constants.ts). Sie führt **denselben Abgleich** aus wie der Vordergrund (`syncWearables` → `runWearableSync`, gleiche
+  Warteschlange, gleicher Server-Aufruf) – nicht nur Schritte: Weil `import_wearable_batch` `last_sync_at` setzt, würde
+  ein reiner Schritte-Abgleich den Lese-Zeitraum für Einheiten nach vorn schieben und spät geschriebene Uhr-Einheiten
+  (> 48 h) verpassen. Vorder- und Hintergrund teilen die Sperre „höchstens alle 15 min“ (`wearableSyncAttempt`): Wer
+  die App kurz nach einem Hintergrund-Lauf öffnet, sieht sofort die aktuellen Werte, ohne erneut zu lesen.
+- **Regeln (packages/core `wearables/background.ts`, Vitest):** `backgroundSyncPlan` – anmelden NUR in der Android-App
+  mit echtem Health Connect, mit Sitzung, gültigen Einwilligungen `wearable_data` + `health_data`, Verbindung
+  `connected` mit `steps` und erteiltem Recht `READ_HEALTH_DATA_IN_BACKGROUND`; sonst abmelden.
+  `backgroundRunDecision` – jede Ausführung prüft alles erneut (Widerruf auf einem anderen Gerät, Recht entzogen →
+  `stop` = Aufgabe meldet sich selbst ab, liest nichts), dann die 15-min-Sperre (`skip`). `backgroundAccessOffer` –
+  Karte auf der Smartwatch-Seite ausgeblendet / anbieten / aktiv.
+- **An- und Abmelden (App):** `WearableAutoSync` prüft beim Start und sobald sich Sitzung oder Einwilligungen ändern
+  (Abmelden, Konto löschen, Widerruf → sofort abmelden); nach jedem Abgleich, nach „Trennen“ und nach dem Erlauben auf
+  der Smartwatch-Seite ebenso. Ohne das Hintergrund-Recht bleibt es still beim Lesen im Vordergrund.
+- **Ohne geöffnete App:** Die Aufgabe ist in `index.ts` definiert (`defineWearableBackground`, Pflicht für Android).
+  Lebt der React-Baum, nutzt sie dessen Zustand; sonst lädt sie Sitzung, Einwilligungstexte und Daten selbst über
+  dieselbe Backend-Instanz (`sharedBackend` – App und Hintergrund teilen Warteschlangen, nie zwei Instanzen).
+- **Oberfläche:** Smartwatch-Seite → Karte **„Im Hintergrund aktualisieren“** (verbunden mit Schritten): Erklärung
+  (Android bestimmt den Takt, Energiesparmodus, eigenes Recht, gleiche Einwilligung), Knopf „Im Hintergrund erlauben“ →
+  Health-Connect-Dialog NUR für „Daten im Hintergrund lesen“; erteilt → „✓ Aktiv“ + „In Health Connect ändern“;
+  abgelehnt bzw. unbekannt → Hinweis, Vordergrund bleibt. Testmodus: Beispiel-Uhr merkt sich das Recht (ohne Aufgabe).
+  Texte „Was nicht passiert“ und „Schritte vom Handy“ angepasst.
+- **Einwilligung:** keine neue Fassung – der Text `wearable_data` (Fassung 3) nennt keinen Zeitpunkt; gelesen werden
+  dieselben Daten wie beim Öffnen. Zusätzlich muss die Person das eigene Health-Connect-Recht ausdrücklich erteilen.
+- **Datenschutz:** keine Logs, keine Fehlertexte mit Werten (die Aufgabe meldet nur Erfolg/Fehler). Keine Analytics.
+- **Manifest/Build:** `READ_HEALTH_DATA_IN_BACKGROUND` aus der Sperrliste in `HEALTH_CONNECT_READ_PERMISSIONS`
+  (`HEALTH_CONNECT_BACKGROUND_PERMISSION`). WorkManager-Dienste und `TaskJobService` kommen aus den Bibliotheks-Manifesten
+  (beim Gradle-Build zusammengeführt, keine weitere Berechtigung; `RECEIVE_BOOT_COMPLETED` war schon da). **iPhone:** kein
+  Health Connect → Modul per `expo.autolinking.ios.exclude` nicht eingebunden (es würde sonst beim Start eine
+  BGTask-Kennung ohne Info.plist-Eintrag anmelden), kein Plugin, kein Hintergrundmodus `processing`; Browser:
+  `lib/background-task.ts` tut nichts. Neues natives Modul → **neue APK nötig** (Workflow apk-github).
+- **Einschränkungen:** Android bestimmt den Takt (frühestens 15 min, oft seltener); WorkManager startet nur **mit
+  Internet**; im **Energiesparmodus**, bei „Akku optimiert/eingeschränkt“ für Alpha5 oder bei Herstellern mit
+  aggressivem Akku-Management (z. B. Samsung „Apps in den Standby-Modus“) teils stundenlang nicht. Das Hintergrund-Recht
+  gibt es ab Android 14 bzw. mit aktuellem Health Connect – fehlt es, bleibt alles beim Vordergrund. Läuft die App gerade
+  im Vordergrund, verschiebt expo-background-task den Lauf. Das Widget aktualisiert seine Schritte nur, wenn der
+  React-Baum lebt (sonst beim nächsten Öffnen). Ob Samsung/Health Connect im Hintergrund wirklich liefert, ist am echten
+  Gerät zu prüfen (13.4 Punkt 1). **Play-Einreichung:** Hintergrund-Recht im Health-Connect-Formular begründen
+  (Abschnitt 8).
+- **Am Handy erlauben:** Smartwatch-Seite → „Im Hintergrund erlauben“ → im Health-Connect-Dialog „Zulassen“. Für
+  zuverlässige Läufe zusätzlich Android-Einstellungen → Apps → Alpha5 → Akku → „Nicht eingeschränkt“.
+- **Tests:** `packages/core/src/wearables/background.test.ts`, `native-config.test.ts` (Recht, Modul nur Android, Aufgabe
+  in `index.ts`), E2E `steps-tile.spec.ts` (Karte, Erlauben im Testmodus), `smartwatch.spec.ts` (Karte mit Uhr, weg
+  nach Trennen).
 
 ## 14. Routen der Uhr lesen (Gründer-Entscheidung 23.10.2026 „Routen lesen“, ersetzt W8-4)
 
