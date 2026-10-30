@@ -1,0 +1,51 @@
+{
+  "id": "box-sprung",
+  "version": 1,
+  "status": "published",
+  "name_de": "Box-Sprung",
+  "name_en": "Box Jump",
+  "aliases_de": ["Box Jump", "Kastensprung", "Sprung auf die Box"],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["hamstrings", "calves"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["high_impact", "high_skill"],
+  "description_de": "Beidbeiniger Sprung aus dem Stand auf eine stabile Box (im Studio Sprungkasten bzw. Plyo-Box, zu Hause eine feste, niedrige Stufe). Fordert Sprungkraft, Beine und Koordination – typisch für Workouts im WOD-Stil.",
+  "steps_de": [
+    "Etwa eine Fußlänge vor der Box stehen, Füße hüftbreit.",
+    "Kurz in die Hocke gehen und die Arme nach hinten schwingen.",
+    "Arme nach vorn schwingen und explosiv auf die Box springen.",
+    "Weich mit beiden ganzen Füßen landen und oben ganz aufrichten.",
+    "Mit einem Schritt rückwärts herunter steigen, nicht zurückspringen."
+  ],
+  "tips_de": [
+    "Lieber niedrige Box und saubere Landung als hohe Box.",
+    "Einsteiger: auf die Box steigen statt springen (Step-up)."
+  ],
+  "common_mistakes_de": [
+    "Knie fallen bei der Landung nach innen.",
+    "Rückwärts herunterspringen – belastet Achillessehne und Knie unnötig."
+  ],
+  "safety_note_de": "Nur auf eine stabile, rutschfeste Box springen, die nicht kippen kann, mit freiem Raum dahinter. Bei Ermüdung aufhören – Stolpern an der Kante ist die häufigste Verletzung. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "kniebeuge-koerpergewicht",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-30",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-30",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 30.10.2026 (Übungen für Workouts im WOD-Stil, docs/PLAN-WORKOUTS.md W-O6) – nicht fachlich geprüft."
+  }
+}

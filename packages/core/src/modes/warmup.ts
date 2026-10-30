@@ -1,4 +1,4 @@
-import { HYROX_ONLY_EXERCISE_IDS, WARMUP_RULES } from '../constants';
+import { LIBRARY_SEARCH_EXCLUDED_IDS, WARMUP_RULES } from '../constants';
 import type { Exercise } from '../content/schemas';
 import { MUSCLE_GROUPS, type MuscleGroup, type PlannedSessionKind } from '../enums';
 import type { PlannedExerciseDraft } from '../plan/adapt';
@@ -119,9 +119,9 @@ export function sessionRoutine(
   const main = mainMusclesOf(session.exercises, lookup);
   const mainSet = new Set(main);
   const trained = new Set(mainMusclesOf(session.exercises, lookup, MUSCLE_GROUPS.length));
-  // Sportarten Stufe 1: Hyrox-Übungen nie in der Aufwärm-Routine (HYROX_ONLY_EXERCISE_IDS).
+  // Sportarten Stufe 1: Hyrox- und WOD-Übungen nie in der Aufwärm-Routine (LIBRARY_SEARCH_EXCLUDED_IDS).
   const pool = [...ctx.library.values()]
-    .filter((e) => usable(e, ctx) && !HYROX_ONLY_EXERCISE_IDS.includes(e.id))
+    .filter((e) => usable(e, ctx) && !LIBRARY_SEARCH_EXCLUDED_IDS.includes(e.id))
     .sort(byId);
 
   const general = pool

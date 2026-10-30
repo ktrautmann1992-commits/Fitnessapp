@@ -5327,6 +5327,8 @@ export const PAIN_REGION_LOAD = {
       // Sportarten Stufe 1 (Hyrox, Plan 2.1): Wall Balls (tiefe Kniebeuge mit Wurf) belasten das Knie stark.
       { exercise: 'wall-balls' },
       { exercise: 'kniebeuge-schulterdruecken-kurzhantel' },
+      // Workouts im WOD-Stil (docs/PLAN-WORKOUTS.md W-O6): Thruster = Frontkniebeuge mit Drücken, wie Wall Balls.
+      { exercise: 'thruster-langhantel' },
     ],
     any: [
       { pattern: 'squat' },
@@ -6571,6 +6573,26 @@ export const HYROX_ONLY_EXERCISE_IDS: readonly string[] = [
   'ausfallschritt-gehen-koerpergewicht',
   'wall-balls',
   'kniebeuge-schulterdruecken-kurzhantel',
+];
+
+/**
+ * Übungen für Workouts im WOD-Stil (docs/PLAN-WORKOUTS.md W-O6, 30.10.2026): Box-Sprung, Seilspringen, Double-Unders,
+ * Thruster mit Langhantel. Wie HYROX_ONLY_EXERCISE_IDS nur über Workouts bzw. ihre eigenen Alternativen – nie über die
+ * Bibliotheks-Suche (Tausch Schritt 4/5, „Andere Übung“ Stufe 3, Aufwärm-Routine): Box und Springseil stehen nicht im
+ * Geräte-Katalog (Box-Sprung/Seilspringen ohne Gerät angegeben), ein Plan soll sie nie ungefragt einsetzen. So bleiben
+ * alle Pläne byte-gleich. PRODUKTENTSCHEIDUNG.
+ */
+export const WOD_ONLY_EXERCISE_IDS: readonly string[] = [
+  'box-sprung',
+  'seilspringen',
+  'double-unders',
+  'thruster-langhantel',
+];
+
+/** Nur über Hyrox-Ketten bzw. Workouts – nie über die Bibliotheks-Suche (Hyrox- und WOD-Übungen). */
+export const LIBRARY_SEARCH_EXCLUDED_IDS: readonly string[] = [
+  ...HYROX_ONLY_EXERCISE_IDS,
+  ...WOD_ONLY_EXERCISE_IDS,
 ];
 
 /**
