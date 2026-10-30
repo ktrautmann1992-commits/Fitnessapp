@@ -1,6 +1,6 @@
 {
   "id": "paprikapulver-edelsuess",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "name_de": "Paprikapulver edelsüß",
   "aliases_de": [],
@@ -17,7 +17,10 @@
     "salt_g": 0.1,
     "alcohol_g": 0
   },
-  "units": {},
+  "units": {
+    "tbsp_g": 6.8,
+    "tsp_g": 2.3
+  },
   "groups": [],
   "animal": [],
   "meat_kind": [],

@@ -1,6 +1,6 @@
 {
   "id": "rosmarin-getrocknet",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "name_de": "Rosmarin (getrocknet)",
   "aliases_de": [],
@@ -17,7 +17,9 @@
     "salt_g": 0.1,
     "alcohol_g": 0
   },
-  "units": {},
+  "units": {
+    "tsp_g": 1.2
+  },
   "groups": [],
   "animal": [],
   "meat_kind": [],
