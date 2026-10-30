@@ -1,0 +1,52 @@
+{
+  "id": "wod-amrap-thruster-box",
+  "version": 1,
+  "status": "published",
+  "title_de": "AMRAP 14 – Thruster & Box-Sprung",
+  "summary_de": "Vierzehn Minuten so viele Runden wie möglich: Thruster mit der Langhantel, Box-Sprünge und Seilspringen. Einsteiger: leere Stange, auf die Box steigen statt springen. Fortgeschrittene: schwerere Stange und Double-Unders.",
+  "category": "full_body",
+  "difficulty": 4,
+  "minutes": 14,
+  "format": "circuit",
+  "rounds": 6,
+  "round_rest_s": 0,
+  "equipment_ids": ["barbell"],
+  "warmup_de": "Fünf Minuten locker seilspringen oder auf der Stelle gehen, dann zehn Kniebeugen, zehn Thruster mit der leeren Stange und drei ruhige Sprünge auf die Box.",
+  "cooldown_de": "Fünf Minuten locker gehen und ruhig atmen, danach Waden, Oberschenkel und Schultern dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "thruster-langhantel",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Einsteiger: leere Stange."
+    },
+    {
+      "exercise_id": "box-sprung",
+      "reps": 12,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Einsteiger: niedrige Box oder auf die Box steigen statt springen."
+    },
+    {
+      "exercise_id": "seilspringen",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Fortgeschrittene: Double-Unders. Ohne Seil: Hampelmann."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-30",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-30",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 30.10.2026 (Box-Sprung, Seilspringen und Thruster in Workouts im WOD-Stil, docs/PLAN-WORKOUTS.md W-O6) – nicht fachlich geprüft."
+  }
+}
