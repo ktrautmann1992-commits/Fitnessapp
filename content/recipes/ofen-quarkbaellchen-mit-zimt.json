@@ -1,0 +1,131 @@
+{
+  "id": "ofen-quarkbaellchen-mit-zimt",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Ofen-Quarkbällchen mit Zimt",
+  "description_de": "Fluffige Quarkbällchen wie vom Bäcker, nur im Ofen gebacken statt frittiert – eiweißreich und perfekt für die Snackdose.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "magerquark",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Packung (250 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "honig",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (30 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 180 °C Ober-/Unterhitze vor und lege ein Blech mit Backpapier aus.",
+    "Verrühre Quark, Eier, Honig, Zitronensaft und Salz glatt.",
+    "Mische Mehl, Backpulver und die Hälfte des Zimts und rühre sie kurz unter, bis ein klebriger Teig entsteht.",
+    "Forme mit zwei feuchten Teelöffeln 20 Bällchen, setze sie mit Abstand aufs Blech und backe sie 15–18 Minuten goldbraun.",
+    "Wälze die noch warmen Bällchen im restlichen Zimt, lass sie abkühlen und packe je 4 Stück in eine Dose."
+  ],
+  "tip_de": "Halten in einer gut schließenden Dose 4 Tage im Kühlschrank; die Freitagsportion einfrieren und am Vorabend herausnehmen. Kurz 10 Sekunden in der Mikrowelle oder 3 Minuten im Ofen bei 160 °C aufgebacken werden sie wieder fluffig. Dazu passt ein Klecks Skyr.",
+  "tags_de": ["zum Mitnehmen"],
+  "meal_prep_plan_id": "vegetarisch",
+  "total_minutes": 20,
+  "prep_minutes": 2,
+  "cook_minutes": 18,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 189,
+    "protein_g": 12.4,
+    "carbs_g": 28.2,
+    "fat_g": 2.8
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "7605fd05a1824355c43527f4c7ef10e79c5c014bcf03315d7ea1d4a9a71d4fc2"
+  }
+}

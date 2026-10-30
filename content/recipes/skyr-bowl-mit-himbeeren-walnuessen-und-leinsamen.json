@@ -1,0 +1,100 @@
+{
+  "id": "skyr-bowl-mit-himbeeren-walnuessen-und-leinsamen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Skyr-Bowl mit Himbeeren, Walnüssen und Leinsamen",
+  "description_de": "Cremiger Skyr mit Himbeeren, knackigen Walnüssen und Leinsamen – ein schnelles Eiweißfrühstück ohne Haferflocken und ohne Zuckerzusatz.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "low-carb"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "skyr-natur",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "himbeeren-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g, aufgetaut",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "walnuesse",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Handvoll (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "leinsamen-geschrotet",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Rühre den Skyr mit Zimt glatt und gib ihn in eine Schale.",
+    "Verteile die aufgetauten Himbeeren darauf und drücke einige mit der Gabel leicht an, damit sich Saft bildet.",
+    "Hacke die Walnüsse grob und streue sie zusammen mit den Leinsamen darüber."
+  ],
+  "tip_de": "Gefrorene Himbeeren am Vorabend in den Kühlschrank stellen – morgens sind sie aufgetaut und saftig.",
+  "tags_de": ["Unter 10 Minuten", "Low Carb"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 346,
+    "protein_g": 32.9,
+    "carbs_g": 16,
+    "fat_g": 14.8
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "tree_nuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "6c7b96d6a7fbb82e4a2af324c3177b9cfe50fe45975de72c4489cf46bb088535"
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "id": "kraeuter-schweinefilet-medaillons-mit-knoblauch-kartoffeln-und-honig-moehren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kräuter-Schweinefilet-Medaillons mit Knoblauch-Kartoffeln und Honig-Möhren",
+  "description_de": "Mageres Schweinefilet mit Rosmarin-Kruste, außen gebräunt und innen saftig, dazu knusprige Kartoffelwürfel, glasierte Möhren und Schnittlauchquark – ein Sonntagsessen aus einem Korb.",
+  "section_de": "Hauptgerichte",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schweinefilet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g (3 Medaillons)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 mittelgroße Kartoffeln (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "moehre",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Möhren (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rosmarin-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Schneide die Kartoffeln ungeschält in 2 cm große Würfel, mische sie mit 1 TL Olivenöl, gepresstem Knoblauch, Salz und gare sie 10 Minuten bei 200 °C; nach 5 Minuten schütteln.",
+    "Schneide die Möhren in Stifte, mische sie mit Honig und einer Prise Salz, gib sie zu den Kartoffeln und gare beides weitere 6 Minuten; einmal schütteln.",
+    "Schneide das Filet in 3 Medaillons (3 cm dick), reibe sie mit restlichem Olivenöl, Rosmarin, Salz und Pfeffer ein und lege sie auf das Gemüse.",
+    "Gare alles bei 190 °C 8–10 Minuten und wende die Medaillons nach 5 Minuten. Das Fleisch ist fertig, wenn es innen nur noch zart rosa ist (Kerntemperatur mindestens 63 °C); lass es danach 2 Minuten ruhen.",
+    "Verrühre Magerquark mit Schnittlauch, etwas Wasser, Salz und Pfeffer und serviere ihn mit Petersilie bestreut zu Fleisch und Gemüse."
+  ],
+  "tip_de": "Ein Fleischthermometer nimmt das Raten ab: Medaillons gleich dick schneiden, dann garen sie gleichmäßig. Statt Schweinefilet passen auch Putenbrust-Medaillons (dann Kerntemperatur mindestens 74 °C).",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 35,
+  "prep_minutes": 1,
+  "cook_minutes": 34,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 543,
+    "protein_g": 49,
+    "carbs_g": 56.3,
+    "fat_g": 11.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "fructose", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c9516af4522a75aeb6f39f22ea954d242779591e4619110683d9763a84524e82"
+  }
+}

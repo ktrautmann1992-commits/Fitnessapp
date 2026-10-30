@@ -1,0 +1,167 @@
+{
+  "id": "mini-frikadellen-mit-honig-senf-skyr-dip",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Mini-Frikadellen mit Honig-Senf-Skyr-Dip",
+  "description_de": "Kleine, magere Frikadellen aus dem Ofen mit cremigem Dip und Gurkensticks – der herzhafte Snack für die Bürodose.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "schweinehackfleisch-mager",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "400 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 EL (40 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zwiebel (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "senf",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¾ Gurke (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C Umluft vor und lege ein Blech mit Backpapier aus.",
+    "Verknete Hackfleisch, Ei, Haferflocken, fein gewürfelte Zwiebel, 1 EL Senf, Paprikapulver, Salz und Pfeffer.",
+    "Forme mit feuchten Händen 20 walnussgroße Bällchen und backe sie 15–18 Minuten, bis sie durchgegart sind (innen nicht mehr rosa).",
+    "Verrühre Skyr mit dem restlichen Senf und dem Honig und fülle den Dip in 5 kleine Becher.",
+    "Schneide die Gurke in Sticks und packe je 4 Frikadellen mit Gurke und Dip in eine Dose."
+  ],
+  "tip_de": "Gegartes Hackfleisch hält im Kühlschrank 3 Tage: Friere 8 Frikadellen für Donnerstag und Freitag ein und lege sie am Vorabend in den Kühlschrank. Schmecken kalt oder 1 Minute bei 600 Watt aufgewärmt; Dip und Gurke bleiben getrennt frisch.",
+  "tags_de": ["zum Mitnehmen"],
+  "meal_prep_plan_id": "fleisch",
+  "total_minutes": 20,
+  "prep_minutes": 2,
+  "cook_minutes": 18,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 222,
+    "protein_g": 25.5,
+    "carbs_g": 10.3,
+    "fat_g": 8.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "eggs",
+    "mustard",
+    "fructose",
+    "onion_garlic"
+  ],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "092122533156db087560cef6b1418a5c763ae19cf8e11c8469621a162a5ed6f9"
+  }
+}

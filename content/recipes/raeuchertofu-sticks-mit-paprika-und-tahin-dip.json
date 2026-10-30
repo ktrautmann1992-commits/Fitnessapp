@@ -1,0 +1,100 @@
+{
+  "id": "raeuchertofu-sticks-mit-paprika-und-tahin-dip",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Räuchertofu-Sticks mit Paprika und Tahin-Dip",
+  "description_de": "Rauchige Tofustreifen und knackige Paprika zum Dippen in einen cremigen Sesam-Zitronen-Dip – ein herzhafter veganer Snack in 5 Minuten.",
+  "section_de": "Snack",
+  "categories": ["schnell", "low-carb"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "raeuchertofu",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tahin",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide Räuchertofu und Paprika in Sticks.",
+    "Verrühre Tahin mit Zitronensaft, 1–2 EL Wasser und einer Prise Salz zu einem glatten Dip.",
+    "Richte alles an und dippe nach Lust und Laune."
+  ],
+  "tip_de": "Der Dip dickt beim Rühren erst an – einfach esslöffelweise Wasser zugeben, bis er cremig ist.",
+  "tags_de": ["Unter 10 Minuten", "Low Carb"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 255,
+    "protein_g": 19.7,
+    "carbs_g": 8.1,
+    "fat_g": 15.2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "sesame"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4b9a8c755da3e50e5225536bdf416f9ee2a0f872d3c31f83671938d81cd4c038"
+  }
+}

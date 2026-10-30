@@ -1,0 +1,101 @@
+{
+  "id": "kirsch-skyr-becher-mit-hafer-crunch",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kirsch-Skyr-Becher mit Hafer-Crunch",
+  "description_de": "Viel Eiweiß aus Skyr plus Sauerkirschen, Hafer und Honig – schnell gegessen, leicht verdaulich und ideal, um die Speicher nach dem Training wieder aufzufüllen.",
+  "section_de": "Direkt danach",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "skyr-natur",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sauerkirschen-glas-abgetropft",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "honig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Röste die Haferflocken in einer trockenen Pfanne bei mittlerer Hitze 2–3 Minuten goldbraun, bis sie duften.",
+    "Rühre den Skyr mit Zimt glatt und gib ihn in eine Schale oder ein Glas.",
+    "Verteile die abgetropften Sauerkirschen darauf.",
+    "Streue den Hafer-Crunch darüber und beträufle alles mit Honig."
+  ],
+  "tip_de": "Zum Mitnehmen den Skyr mit Kirschen im Schraubglas vorbereiten und den gerösteten Hafer separat in einer kleinen Dose mitnehmen, damit er knusprig bleibt.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 359,
+    "protein_g": 36.5,
+    "carbs_g": 46.3,
+    "fat_g": 2.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8981fdfa4c1fac81578f795db446b0838c89121a7931af7b9af4dfac772166e0"
+  }
+}
