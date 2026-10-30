@@ -38,8 +38,9 @@ export type {
  * kommen als Tagessumme über aggregateRecord OHNE Herkunfts-Filter: Health Connect zählt Handy (eigener Schrittzähler ab
  * Android 14 bzw. Samsung Health/Google Fit) und Uhr zusammen und entdoppelt selbst – so gehen „Schritte vom Handy“ auch
  * ganz ohne Uhr (docs/PLAN-PHASE-8.md 13.5). NUR
- * Leserechte der Datentypen aus WEARABLE_DATA_TYPES plus Trainingsrouten (Manifest: app.config.ts), kein Schreiben,
- * kein Hintergrund-Lesen. Routen (23.10.2026): je Ausdauer-Einheit über readRecord (nur dort liefert Health Connect die
+ * Leserechte der Datentypen aus WEARABLE_DATA_TYPES plus Trainingsrouten (Manifest: app.config.ts), kein Schreiben.
+ * Hintergrund-Lesen (30.10.2026, docs/PLAN-PHASE-8.md 13.6) nur mit dem eigenen Recht READ_HEALTH_DATA_IN_BACKGROUND,
+ * getrennt gefragt (requestBackgroundAccess) – ohne das Recht liest die App nur im Vordergrund. Routen (23.10.2026): je Ausdauer-Einheit über readRecord (nur dort liefert Health Connect die
  * Route); ohne „Trainingsrouten“-Recht meldet Health Connect „Freigabe nötig“ – dann „Route freigeben“
  * (requestExerciseRoute, Dialog je Einheit). Das Leserecht READ_EXERCISE_ROUTES fragt die App über einen kleinen Patch
  * der Bibliothek ab (patches/react-native-health-connect@4.1.3.patch). iPhone: nicht verfügbar. Gelesene Werte nie
@@ -84,6 +85,23 @@ function hasPowerPermission(
   permissions: readonly { accessType: string; recordType: string }[],
 ): boolean {
   return permissions.some((p) => p.accessType === 'read' && p.recordType === 'Power');
+}
+
+/**
+ * Recht „Daten im Hintergrund lesen“ (READ_HEALTH_DATA_IN_BACKGROUND, Android 14+ bzw. aktuelles Health Connect); die
+ * Bibliothek meldet es als `BackgroundAccessPermission`.
+ */
+const BACKGROUND_PERMISSION = {
+  accessType: 'read',
+  recordType: 'BackgroundAccessPermission',
+} as const;
+
+function hasBackgroundPermission(
+  permissions: readonly { accessType: string; recordType: string }[],
+): boolean {
+  return permissions.some(
+    (p) => p.accessType === 'read' && p.recordType === BACKGROUND_PERMISSION.recordType,
+  );
 }
 
 function hasRoutePermission(
@@ -354,6 +372,25 @@ export const healthConnectDriver: HealthConnectDriver = {
       const granted = await getGrantedPermissions();
       return hasRoutePermission(granted as { accessType: string; recordType: string }[]);
     } catch {
+      return false;
+    }
+  },
+  backgroundAccess: async () => {
+    if (!(await ready())) return false;
+    try {
+      const granted = await getGrantedPermissions();
+      return hasBackgroundPermission(granted as { accessType: string; recordType: string }[]);
+    } catch {
+      return false;
+    }
+  },
+  requestBackgroundAccess: async () => {
+    if (!(await ready())) return false;
+    try {
+      const granted = await requestPermission([BACKGROUND_PERMISSION]);
+      return hasBackgroundPermission(granted as { accessType: string; recordType: string }[]);
+    } catch {
+      // Ältere Health-Connect-Version ohne dieses Recht bzw. Dialog geschlossen – Vordergrund bleibt.
       return false;
     }
   },

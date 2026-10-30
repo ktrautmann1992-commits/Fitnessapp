@@ -1,15 +1,23 @@
-import { hasValidConsent, shouldAutoSync } from '@fitnessapp/core';
+import {
+  backgroundRunDecision,
+  backgroundSyncPlan,
+  type BackgroundSyncPlan,
+  hasValidConsent,
+  shouldAutoSync,
+  WEARABLE_BACKGROUND_SYNC,
+} from '@fitnessapp/core';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Platform } from 'react-native';
 
 import type { WearableLoadResult } from '@/data/backend';
-import { deviceStore } from '@/data/create-backend';
+import { deviceStore, sharedBackend } from '@/data/create-backend';
 import { STORAGE_KEYS } from '@/data/kv';
-import { consentRecordsFromRows } from '@/data/mapping';
+import { consentRecordsFromRows, versionsFromDocuments } from '@/data/mapping';
 import { applyAutoMatches } from '@/data/route-match';
 import { mergeCadence, mergeZoneBasis, readPulseZoneSettings } from '@/data/runner';
 import { runWearableSync, type WearableSyncOutcome } from '@/data/wearable-sync';
+import { defineWearableBackgroundTask, setWearableBackgroundTask } from '@/lib/background-task';
 import { todayIso } from '@/lib/format';
 import { createDemoHealthConnectDriver } from '@/lib/health-connect-demo';
 import { healthConnectDriver } from '@/lib/health-connect-driver';
@@ -20,7 +28,9 @@ import { forgetTrackedRoutes } from '@/state/use-tracked-routes';
 /**
  * Smartwatch-Daten des Kontos (Phase 8): geladen über das Backend; der zuletzt geladene Stand bleibt im
  * Arbeitsspeicher (kein Flackern zwischen Einstellungen, Tagebuch und Auswertung). Abgleich beim App-Start und bei
- * Rückkehr in den Vordergrund (höchstens alle 15 min, W8-7) sowie über „Jetzt abgleichen“. Kein Hintergrund-Abgleich.
+ * Rückkehr in den Vordergrund (höchstens alle 15 min, W8-7) sowie über „Jetzt abgleichen“. Seit 30.10.2026 zusätzlich
+ * im Hintergrund (docs/PLAN-PHASE-8.md 13.6) – nur Android, nur mit dem Health-Connect-Recht „Daten im Hintergrund
+ * lesen“, mit DERSELBEN Abgleich-Logik (syncWearables) und derselben Sperre „höchstens alle 15 min“.
  */
 export type WearablesState =
   { kind: 'loading' } | { kind: 'ready'; result: WearableLoadResult } | { kind: 'error' };
@@ -37,6 +47,15 @@ export function wearableDriver(mode: 'local' | 'supabase'): HealthConnectDriver 
   if (healthConnectDriver.kind !== 'none') return healthConnectDriver;
   return mode === 'local' ? createDemoHealthConnectDriver(todayIso) : healthConnectDriver;
 }
+
+/**
+ * Was der Abgleich aus dem App-Zustand braucht. Vordergrund: der App-Zustand selbst; Hintergrund ohne geöffnete App:
+ * selbst geladen (headlessContext).
+ */
+export type WearableSyncContext = Pick<
+  AppContextValue,
+  'backend' | 'session' | 'rows' | 'versions' | 'reload'
+>;
 
 /** Einwilligungen für den Abgleich (wie der Server: wearable_data UND health_data). */
 export function wearableConsentsValid(app: Pick<AppContextValue, 'rows' | 'versions'>): boolean {
@@ -91,7 +110,7 @@ async function writeAttempt(at: string): Promise<void> {
  * Einwilligungen und frühestens 15 min nach dem letzten Versuch. Ergebnis null = nichts getan.
  */
 export function syncWearables(
-  app: AppContextValue,
+  app: WearableSyncContext,
   options: { auto: boolean },
 ): Promise<WearableSyncOutcome | null> {
   if (running) return running;
@@ -137,11 +156,115 @@ export function syncWearables(
       forgetTrackedRoutes();
     }
     forgetWearables();
+    // Hintergrund-Aufgabe passend halten (z. B. „Zugriff fehlt“ → abmelden).
+    await updateWearableBackgroundSync(app).catch(() => undefined);
     return outcome;
   })().finally(() => {
     running = null;
   });
   return running;
+}
+
+/**
+ * Hintergrund-Aufgabe an- bzw. abmelden (Regel: backgroundSyncPlan in packages/core). Ohne Sitzung, Einwilligung,
+ * Verbindung mit Schritten oder Hintergrund-Recht → abmelden; Health Connect wird dann nur im Vordergrund gelesen.
+ * Lässt sich die Verbindung gerade nicht laden, bleibt alles, wie es ist (Ergebnis null).
+ */
+export async function updateWearableBackgroundSync(
+  app: WearableSyncContext,
+): Promise<BackgroundSyncPlan | null> {
+  const driver = wearableDriver(app.backend.mode);
+  const signedIn = app.session !== null && app.rows !== null;
+  const consentsValid = wearableConsentsValid(app);
+  let connection: WearableLoadResult['rows']['connection'] = null;
+  let backgroundAccess = false;
+  if (signedIn && consentsValid && driver.kind === 'native') {
+    try {
+      connection = (await app.backend.wearables.load()).rows.connection;
+    } catch {
+      return null;
+    }
+    backgroundAccess = await driver.backgroundAccess().catch(() => false);
+  }
+  const plan = backgroundSyncPlan({
+    driverKind: driver.kind,
+    signedIn,
+    consentsValid,
+    connection,
+    backgroundAccess,
+  });
+  await setWearableBackgroundTask(
+    plan.kind === 'register',
+    WEARABLE_BACKGROUND_SYNC.minimumIntervalMin,
+  );
+  return plan;
+}
+
+/** Zustand der geöffneten App (React-Baum geladen) – der Hintergrund-Abgleich nutzt dann genau diesen. */
+let liveApp: { current: WearableSyncContext } | null = null;
+
+/** Hintergrund ohne geöffnete App: Sitzung, Einwilligungstexte und Daten selbst laden (gemeinsames Backend). */
+async function headlessContext(): Promise<WearableSyncContext | null> {
+  const backend = sharedBackend();
+  const session = await backend.getSession();
+  if (!session) return null;
+  const [documents, loaded] = await Promise.all([
+    backend.loadConsentDocuments(),
+    backend.loadRows(),
+  ]);
+  return {
+    backend,
+    session,
+    rows: loaded.rows,
+    versions: versionsFromDocuments(documents),
+    reload: async () => undefined,
+  };
+}
+
+/**
+ * Eine Ausführung der Hintergrund-Aufgabe (vom Betriebssystem gestartet, docs/PLAN-PHASE-8.md 13.6): Voraussetzungen
+ * erneut prüfen (backgroundRunDecision), dann derselbe Abgleich wie im Vordergrund. Fehlt eine Voraussetzung
+ * inzwischen (Widerruf, Abmelden, Recht entzogen), meldet sich die Aufgabe selbst ab. Keine Logs mit Werten.
+ * Ergebnis: true = erledigt (auch „nichts zu tun“), false = fehlgeschlagen (Android versucht es später erneut).
+ */
+export async function runWearableBackgroundSync(): Promise<boolean> {
+  const minutes = WEARABLE_BACKGROUND_SYNC.minimumIntervalMin;
+  // Gerade erst abgeglichen (Vordergrund oder Hintergrund): nichts laden – spart Netz und Akku.
+  if (!shouldAutoSync(await readAttempt(), new Date().toISOString())) return true;
+  const app = liveApp?.current ?? (await headlessContext());
+  if (!app || !app.session) {
+    await setWearableBackgroundTask(false, minutes);
+    return true;
+  }
+  // Geöffnete App lädt gerade bzw. konnte nicht laden: diesmal nichts tun (die App meldet passend an/ab).
+  if (!app.rows) return true;
+  const driver = wearableDriver(app.backend.mode);
+  const consentsValid = wearableConsentsValid(app);
+  const connection =
+    consentsValid && driver.kind === 'native'
+      ? (await app.backend.wearables.load()).rows.connection
+      : null;
+  const decision = backgroundRunDecision({
+    driverKind: driver.kind,
+    signedIn: true,
+    consentsValid,
+    connection,
+    backgroundAccess: connection ? await driver.backgroundAccess().catch(() => false) : false,
+    lastAttemptAt: await readAttempt(),
+    now: new Date().toISOString(),
+  });
+  if (decision.kind === 'stop') {
+    await setWearableBackgroundTask(false, minutes);
+    return true;
+  }
+  if (decision.kind === 'skip') return true;
+  const outcome = await syncWearables(app, { auto: true });
+  return outcome === null || outcome.kind !== 'unavailable';
+}
+
+/** Beim Start des JS-Bündels (index.ts): Hintergrund-Aufgabe bekannt machen (Android; Browser/iPhone: nichts). */
+export function defineWearableBackground(): void {
+  defineWearableBackgroundTask(runWearableBackgroundSync);
 }
 
 export function useWearables(): { state: WearablesState; reload: () => Promise<void> } {
@@ -181,12 +304,27 @@ export function useWearables(): { state: WearablesState; reload: () => Promise<v
 /**
  * Abgleich beim App-Start und bei Rückkehr in den Vordergrund (W8-7). Nur auf Android mit Health Connect – die
  * Beispiel-Uhr (Testmodus) gleicht nur auf Knopfdruck ab. Fehler bleiben still (Hinweis auf der Smartwatch-Seite).
+ * Dazu (30.10.2026): Hintergrund-Aufgabe an-/abmelden, sobald sich Sitzung oder Einwilligungen ändern (Abmelden,
+ * Widerruf → sofort abmelden), und der Hintergrund-Abgleich nutzt bei geladener App deren Zustand.
  */
 export function WearableAutoSync(): null {
   const app = useApp();
-  const appRef = useRef(app);
+  const appRef = useRef<WearableSyncContext>(app);
   appRef.current = app;
   const ready = app.status.kind !== 'loading' && app.session !== null && app.rows !== null;
+  const loaded = app.status.kind !== 'loading';
+  const userId = app.session?.userId ?? null;
+  const consentsValid = wearableConsentsValid(app);
+  useEffect(() => {
+    liveApp = appRef;
+    return () => {
+      if (liveApp === appRef) liveApp = null;
+    };
+  }, []);
+  useEffect(() => {
+    if (Platform.OS !== 'android' || healthConnectDriver.kind !== 'native' || !loaded) return;
+    void updateWearableBackgroundSync(appRef.current).catch(() => undefined);
+  }, [loaded, userId, consentsValid]);
   useEffect(() => {
     if (Platform.OS !== 'android' || healthConnectDriver.kind !== 'native' || !ready) return;
     void syncWearables(appRef.current, { auto: true }).catch(() => undefined);

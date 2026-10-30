@@ -53,6 +53,18 @@ export function newId(): string {
   });
 }
 
+let shared: Backend | null = null;
+
+/**
+ * Die EINE Backend-Instanz der App (Ansichten und Hintergrund-Abgleich, docs/PLAN-PHASE-8.md 13.6): Läuft der
+ * Hintergrund-Abgleich ohne geöffnete App und öffnet die Person die App danach im selben JS-Prozess, teilen sich beide
+ * Warteschlangen und Zwischenspeicher – nie zwei Instanzen, die dieselben Speicher gleichzeitig schreiben.
+ */
+export function sharedBackend(): Backend {
+  shared ??= createBackend();
+  return shared;
+}
+
 /**
  * Wählt die Betriebsart: Supabase, wenn EXPO_PUBLIC_SUPABASE_URL und …_PUBLISHABLE_KEY gültig gesetzt sind,
  * sonst automatisch der lokale Testmodus.

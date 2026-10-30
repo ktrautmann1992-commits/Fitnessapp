@@ -51,8 +51,8 @@ export const CALENDAR_PERMISSION_TEXT =
   'Alpha5 trägt deine geplanten Trainings als Termine in einen eigenen Kalender „Alpha5 Training“ ein – nur Name der Einheit, Tag und Uhrzeit, keine Gesundheitsangaben. Andere Termine liest Alpha5 nicht.';
 
 /**
- * Smartwatch über Health Connect (Phase 8, docs/PLAN-PHASE-8.md 2–3; W8-2 Datenumfang, W8-3 nur lesen, W8-7 kein
- * Hintergrund-Abgleich): je genutztem Datentyp GENAU eine Leseberechtigung (= WEARABLE_DATA_TYPES in packages/core bzw.
+ * Smartwatch über Health Connect (Phase 8, docs/PLAN-PHASE-8.md 2–3; W8-2 Datenumfang, W8-3 nur lesen): je genutztem
+ * Datentyp GENAU eine Leseberechtigung (= WEARABLE_DATA_TYPES in packages/core bzw.
  * HC_RECORD_TYPES in lib/health-connect-driver.native.ts) und seit 23.10.2026 (Gründer-Entscheidung „Routen lesen“,
  * ersetzt W8-4) das Leserecht „Trainingsrouten“ (READ_EXERCISE_ROUTES, Android 15+/aktuelles Health Connect; sonst
  * fragt Health Connect je Einheit – „Route freigeben“). Seit 25.10.2026 („Erholung aus der Uhr“) zusätzlich HRV
@@ -67,6 +67,15 @@ export const HEALTH_CONNECT_ROUTE_PERMISSION = 'android.permission.health.READ_E
  * Gesundheitsdatum (Leistung am Gerät, kein Puls). Abwählbar; ohne Freigabe bleibt Watt leer.
  */
 export const HEALTH_CONNECT_POWER_PERMISSION = 'android.permission.health.READ_POWER';
+/**
+ * Abgleich im Hintergrund (Gründer-Freigabe 30.10.2026, docs/PLAN-PHASE-8.md 13.6, ändert W8-7): „Daten im Hintergrund
+ * lesen“ (Android 14+ bzw. aktuelles Health Connect). Die App fragt es erst auf Tipp auf der Smartwatch-Seite („Im
+ * Hintergrund erlauben“), getrennt von den übrigen Rechten; ohne das Recht liest sie nur im Vordergrund. Die Aufgabe
+ * selbst läuft über expo-background-task (Android WorkManager, bringt seine Dienste über das Bibliotheks-Manifest mit –
+ * keine weitere Berechtigung; RECEIVE_BOOT_COMPLETED ist schon da).
+ */
+export const HEALTH_CONNECT_BACKGROUND_PERMISSION =
+  'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND';
 export const HEALTH_CONNECT_READ_PERMISSIONS = [
   'android.permission.health.READ_EXERCISE',
   'android.permission.health.READ_DISTANCE',
@@ -78,14 +87,14 @@ export const HEALTH_CONNECT_READ_PERMISSIONS = [
   'android.permission.health.READ_HEART_RATE_VARIABILITY',
   HEALTH_CONNECT_ROUTE_PERMISSION,
   HEALTH_CONNECT_POWER_PERMISSION,
+  HEALTH_CONNECT_BACKGROUND_PERMISSION,
 ] as const;
 
 /**
- * Bewusst GESPERRT (tools:node="remove", falls eine Bibliothek sie mitbringt): Schreiben (W8-3), Lesen im Hintergrund
- * (W8-7) und Daten älter als 30 Tage (W8-8, Standardgrenze reicht).
+ * Bewusst GESPERRT (tools:node="remove", falls eine Bibliothek sie mitbringt): Schreiben (W8-3) und Daten älter als
+ * 30 Tage (W8-8, Standardgrenze reicht). Lesen im Hintergrund ist seit 30.10.2026 erlaubt (oben).
  */
 export const HEALTH_CONNECT_BLOCKED_PERMISSIONS = [
-  'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
   'android.permission.health.READ_HEALTH_DATA_HISTORY',
   'android.permission.health.WRITE_EXERCISE',
   'android.permission.health.WRITE_EXERCISE_ROUTE',
@@ -131,7 +140,9 @@ export const ANDROID_MIN_SDK = 26;
  * `audio` (Sprachansagen während der Aufzeichnung, Gründer-Freigabe 25.10.2026 – nur solange eine Aufzeichnung läuft
  * und die Ansagen eingeschaltet sind; sonst spielt die App nie Ton im Hintergrund). Das Plugin von expo-task-manager
  * trägt immer `fetch` (Hintergrund-Aktualisierung) ein – die App nutzt das nicht. Deshalb wird es entfernt
- * (Datensparsamkeit, App-Review fragt sonst nach dem Zweck).
+ * (Datensparsamkeit, App-Review fragt sonst nach dem Zweck). Auch kein `processing`: Der Hintergrund-Abgleich der
+ * Schritte (expo-background-task, docs/PLAN-PHASE-8.md 13.6) gibt es nur auf Android (Health Connect); das Modul ist
+ * auf iOS vom Autolinking ausgenommen (package.json → expo.autolinking.ios.exclude) und hat bewusst kein Plugin hier.
  */
 export const IOS_BACKGROUND_MODES = ['location', 'audio'] as const;
 
@@ -302,8 +313,10 @@ const appConfig = (config: ConfigContext['config']): ExpoConfig => ({
     // Berechtigungen mit. Ohne google-services.json wird Firebase nie gestartet, es gibt kein Push-Token. Bewusst KEIN
     // Plugin, das den Dienst aus dem Manifest entfernt (ohne echten Build nicht prüfbar). Vor der ersten Play-Einreichung
     // die fertige APK mit `aapt dump permissions` prüfen (docs/PLAN-PHASE-4B.md Umsetzungsstand E).
-    // Smartwatch (Phase 8): nur die Leserechte aus HEALTH_CONNECT_READ_PERMISSIONS (Health Connect, keine Strecken,
-    // kein Hintergrund, kein Schreiben – die gesperrten stehen in HEALTH_CONNECT_BLOCKED_PERMISSIONS).
+    // Smartwatch (Phase 8): nur die Leserechte aus HEALTH_CONNECT_READ_PERMISSIONS (Health Connect; seit 30.10.2026 mit
+    // „Daten im Hintergrund lesen“, erst auf Tipp gefragt; kein Schreiben – die gesperrten stehen in
+    // HEALTH_CONNECT_BLOCKED_PERMISSIONS). Hintergrund-Aufgabe: expo-background-task (WorkManager) aus dem
+    // Bibliotheks-Manifest, ohne eigene Berechtigung.
     permissions: [...HEALTH_CONNECT_READ_PERMISSIONS],
     blockedPermissions: [
       'android.permission.READ_EXTERNAL_STORAGE',

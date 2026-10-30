@@ -257,9 +257,16 @@ export function demoRead(today: string, from: string, to: string): HcReadResult 
  */
 let demoGranted: readonly WearableDataType[] | null = null;
 
+/**
+ * Hintergrund-Recht der Beispiel-Uhr (30.10.2026): nur im Arbeitsspeicher, damit die Karte „Im Hintergrund
+ * aktualisieren“ im Browser testbar ist. Eine echte Hintergrund-Aufgabe gibt es im Testmodus nicht.
+ */
+let demoBackground = false;
+
 /** Nur Tests: Freigaben der Beispiel-Uhr zurücksetzen. */
 export function resetDemoGrantsForTests(): void {
   demoGranted = null;
+  demoBackground = false;
 }
 
 export function createDemoHealthConnectDriver(today: () => string): HealthConnectDriver {
@@ -284,6 +291,11 @@ export function createDemoHealthConnectDriver(today: () => string): HealthConnec
       };
     },
     routeAccess: async () => false,
+    backgroundAccess: async () => demoBackground,
+    requestBackgroundAccess: async () => {
+      demoBackground = true;
+      return true;
+    },
     // „Route freigeben“ im Testmodus: der Lauf bekommt die Beispiel-Runde.
     requestRoute: async (externalId) => {
       const day = /^demo-run-(\d{4}-\d{2}-\d{2})$/.exec(externalId)?.[1];

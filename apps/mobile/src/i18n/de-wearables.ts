@@ -22,7 +22,7 @@ export const deWearables = {
     'Alpha5 schreibt nichts in Health Connect zurück.',
     'Keine Pulskurven, keine Schlafphasen, keine einzelnen HRV-Messungen; von Routen nur eine vereinfachte Linie.',
     'Die Erholung ist nur ein Vorschlag: Dein Plan ändert sich nie von allein.',
-    'Kein Abgleich im Hintergrund – nur beim Öffnen der App oder mit „Jetzt abgleichen“.',
+    'Im Hintergrund liest Alpha5 nur, wenn du es ausdrücklich in Health Connect erlaubst – sonst nur beim Öffnen der App oder mit „Jetzt abgleichen“.',
     'Keine Weitergabe, kein Teilen; Puls steht nie auf einem geteilten Bild.',
   ],
   onlyAndroidTitle: 'Nur in der Android-App',
@@ -74,7 +74,30 @@ export const deWearables = {
       'Deine Schritte kommen vom Handy (Health Connect). Trainingseinheiten, Puls und Schlaf übernimmt Alpha5, sobald du zusätzlich eine Uhr verbindest.',
     addWatch: 'Uhr zusätzlich verbinden',
     syncNote:
-      'Die Schritte kommen beim Öffnen der App an (höchstens alle 15 Minuten) oder mit „Jetzt abgleichen“ – Alpha5 liest nicht im Hintergrund.',
+      'Die Schritte kommen beim Öffnen der App an (höchstens alle 15 Minuten) oder mit „Jetzt abgleichen“. Damit sie auch bei geschlossener App aktuell bleiben, erlaube unten „Im Hintergrund aktualisieren“.',
+  },
+  /**
+   * Abgleich im Hintergrund (Gründer-Freigabe 30.10.2026, docs/PLAN-PHASE-8.md 13.6): eigenes Recht in Health Connect
+   * („Daten im Hintergrund lesen“). Ohne das Recht bleibt alles beim Lesen im Vordergrund.
+   */
+  background: {
+    title: 'Im Hintergrund aktualisieren',
+    intro:
+      'Alpha5 kann deine Schritte (und, wenn verbunden, die übrigen Daten der Uhr) auch bei geschlossener App abgleichen – dann sind die Werte beim Öffnen schon aktuell.',
+    how: [
+      'Android entscheidet, wann: frühestens alle 15 Minuten, oft seltener – im Energiesparmodus oder ohne Internet auch stundenlang nicht.',
+      'Dafür fragt Health Connect ein eigenes Recht: „Daten im Hintergrund lesen“. Du kannst es jederzeit in Health Connect wieder entziehen.',
+      'Es gilt deine Einwilligung „Smartwatch-Daten“ – es werden keine anderen Daten gelesen als beim Öffnen der App.',
+    ],
+    allow: 'Im Hintergrund erlauben',
+    demoAllow: 'Im Hintergrund erlauben (Testmodus)',
+    active:
+      '✓ Aktiv: Alpha5 gleicht auch bei geschlossener App ab (Android bestimmt den Takt, frühestens alle 15 Minuten).',
+    demoActive:
+      '✓ Testmodus: Hintergrund erlaubt. Im Browser läuft nichts im Hintergrund – in der Android-App gleicht Alpha5 dann auch bei geschlossener App ab.',
+    change: 'In Health Connect ändern',
+    denied:
+      'Health Connect hat das Recht nicht erteilt (oder dein Health Connect kennt es noch nicht – dann Health Connect bzw. Android aktualisieren). Alpha5 liest weiter beim Öffnen der App.',
   },
   installTitle: 'Health Connect fehlt',
   installText:
