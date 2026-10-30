@@ -1,0 +1,136 @@
+{
+  "id": "gemuesesticks-mit-weissem-bohnen-dip",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gemüsesticks mit weißem Bohnen-Dip",
+  "description_de": "Cremiger Dip aus weißen Bohnen, Tahin und Zitrone mit knackigen Karotten- und Gurkensticks.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "weisse-bohnen-dose-abgetropft",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "tahin",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "hefeflocken",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zehe (2 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "karotten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Karotte (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Gurke (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Püriere Bohnen, Tahin, Hefeflocken, Zitronensaft, Knoblauch und Salz mit dem Stabmixer cremig; bei Bedarf 1–2 EL Wasser zugeben.",
+    "Streue etwas Paprikapulver über den Dip.",
+    "Schneide Karotte und Gurke in Sticks und serviere sie zum Dip."
+  ],
+  "tip_de": "Der Dip hält sich 3 Tage im Kühlschrank – gleich die doppelte Menge machen.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 215,
+    "protein_g": 12.9,
+    "carbs_g": 26.4,
+    "fat_g": 4
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "sesame", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "cff2bbfdd8020236564e81906bbce710dfd81a79cb7ef777184408c53f3e2ea6"
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "id": "spinat-feta-omelett-mit-tomatensalat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Spinat-Feta-Omelett mit Tomatensalat",
+  "description_de": "Fluffiges Omelett aus drei Eiern mit Babyspinat und Feta, dazu ein frischer Tomatensalat – herzhaft, sättigend und fast ohne Kohlenhydrate.",
+  "section_de": "Frühstück",
+  "categories": ["low-carb"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 165,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Eier (M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Handvoll (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "feta",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, in Röllchen",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verquirle die Eier mit Salz und Pfeffer in einer Schüssel.",
+    "Erhitze das Öl in einer beschichteten Pfanne und lass den Spinat darin 1 Minute zusammenfallen.",
+    "Gieß die Eier darüber, zerbrösle den Feta darauf und lass das Omelett bei mittlerer Hitze mit Deckel 4–5 Minuten stocken.",
+    "Halbiere die Tomaten, würze sie mit Salz, Pfeffer und Schnittlauch und serviere sie neben dem zusammengeklappten Omelett."
+  ],
+  "tip_de": "Wer mehr Eiweiß braucht, ersetzt ein Ei durch 100 g Eiklar – das spart Fett und bringt zusätzlich rund 11 g Eiweiß.",
+  "tags_de": ["Low Carb"],
+  "total_minutes": 12,
+  "prep_minutes": 12,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 402,
+    "protein_g": 29,
+    "carbs_g": 8,
+    "fat_g": 27.7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ea1a028c8d4c810acc812642ac3204bb31bbd906c7c096f56f732b01cca6fc2a"
+  }
+}

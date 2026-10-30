@@ -1,0 +1,116 @@
+{
+  "id": "quark-hafer-pfannkuchen-mit-apfelmus",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Quark-Hafer-Pfannkuchen mit Apfelmus",
+  "description_de": "Fluffige Pfannkuchen aus Haferflocken, Magerquark und Eiern, die ohne Mehl und Pulver auf über 35 g Eiweiß kommen.",
+  "section_de": "Frühstück",
+  "categories": ["spar-kueche"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "apfelmus-ungesuesst",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Püriere oder verrühre Haferflocken, Magerquark, Eier und Zimt zu einem dickflüssigen Teig und lass ihn 3 Minuten quellen.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne bei mittlerer Hitze.",
+    "Gib je 2 EL Teig pro Pfannkuchen in die Pfanne und brate sie 2–3 Minuten pro Seite goldbraun.",
+    "Richte die Pfannkuchen mit dem Apfelmus an."
+  ],
+  "tip_de": "Statt Apfelmus passt ein geriebener Apfel mit Zimt. Die Pfannkuchen lassen sich am Vorabend backen und kalt mitnehmen.",
+  "tags_de": ["Spar-Küche"],
+  "total_minutes": 15,
+  "prep_minutes": 12,
+  "cook_minutes": 3,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 535,
+    "protein_g": 40,
+    "carbs_g": 45,
+    "fat_g": 20
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "cost_estimate": {
+    "eur_per_serving": 1.27,
+    "as_of": "2026-10-23",
+    "basis": "estimate"
+  },
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "83b868778721fd26ee2fcd5cd6e62d578276be09728943537db232ab49f347db"
+  }
+}

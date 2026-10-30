@@ -1,0 +1,102 @@
+{
+  "id": "roastbeef-gurken-roellchen-mit-meerrettich-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Roastbeef-Gurken-Röllchen mit Meerrettich-Skyr",
+  "description_de": "Dünne Roastbeefscheiben mit scharfem Meerrettich-Skyr und Gurkenstiften gerollt – ein eleganter Eiweiß-Snack ganz ohne Brot.",
+  "section_de": "Snack",
+  "categories": ["schnell", "low-carb"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "roastbeef-aufschnitt",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Scheiben (80 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Gurke (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "meerrettich-glas",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, in Röllchen",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Skyr, Meerrettich und Schnittlauch und würze mit Salz und Pfeffer.",
+    "Schneide die Gurke in lange, dünne Stifte.",
+    "Bestreiche die Roastbeefscheiben mit der Creme, lege einige Gurkenstifte darauf und rolle sie auf.",
+    "Serviere die restlichen Gurkenstifte dazu."
+  ],
+  "tip_de": "Die Röllchen lassen sich gut mit einem Zahnstocher fixieren und bis zu einem Tag vorbereiten.",
+  "tags_de": ["Unter 10 Minuten", "Low Carb"],
+  "total_minutes": 8,
+  "prep_minutes": 8,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 167,
+    "protein_g": 25.4,
+    "carbs_g": 6.8,
+    "fat_g": 3.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "beef", "sulphites", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "0619d5e421f2aea1af68cb5edb92b66a92f94295a10ae42195352abdc7124541"
+  }
+}
