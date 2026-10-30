@@ -825,7 +825,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 1.8
+      },
       "groups": ["spicy"],
       "animal": [],
       "meat_kind": [],
@@ -859,7 +861,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 2.7
+      },
       "groups": ["spicy"],
       "animal": [],
       "meat_kind": [],
@@ -994,7 +998,10 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 2,
+        "tbsp_g": 6.3
+      },
       "groups": ["celery", "mustard", "spicy"],
       "animal": [],
       "meat_kind": [],
@@ -1944,7 +1951,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 2.5
+      },
       "groups": ["celery", "mustard", "onion_garlic"],
       "animal": [],
       "meat_kind": [],
@@ -1978,7 +1987,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 2.5
+      },
       "groups": ["celery", "mustard", "onion_garlic"],
       "animal": [],
       "meat_kind": [],
@@ -3126,7 +3137,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 2.1
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
@@ -3153,7 +3166,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 3
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
@@ -3187,7 +3202,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 2.1
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
@@ -3630,7 +3647,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 0.6
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
@@ -4128,7 +4147,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 1
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
@@ -4270,7 +4291,10 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 2.3,
+        "tbsp_g": 6.8
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
@@ -4304,7 +4328,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 2.3
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
@@ -5042,7 +5068,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 1.2
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
@@ -5323,7 +5351,9 @@
       "aliases_de": [],
       "shopping_category": "fruit_vegetables",
       "pantry": false,
-      "units": {},
+      "units": {
+        "piece_g": 1
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
@@ -5384,7 +5414,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 6
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
@@ -6945,7 +6977,9 @@
       "shopping_category": "drinks",
       "pantry": true,
       "units": {
-        "ml_to_g": 1
+        "ml_to_g": 1,
+        "tsp_g": 5,
+        "tbsp_g": 15
       },
       "groups": [],
       "animal": [],
@@ -7297,7 +7331,9 @@
       "aliases_de": [],
       "shopping_category": "spices_baking",
       "pantry": true,
-      "units": {},
+      "units": {
+        "tsp_g": 2.6
+      },
       "groups": [],
       "animal": [],
       "meat_kind": [],
