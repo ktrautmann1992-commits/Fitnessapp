@@ -4345,6 +4345,22 @@ Gründer-Wunsch: Rezeptlisten mit Vorschaufoto und „28 Min. · 482 kcal · 31 
   davor, wenn er gerundet nicht 1 ist („1,3× · …“, eine Nachkommastelle; genaue Portion in der Rezeptansicht).
   E/KH erklärt die Übersicht darüber; Bildschirmleser hören „Eine Portion: 669 Kilokalorien, 44 Gramm Eiweiß, …“.
 
+## Nachtrag 30.10.2026: Alle Rezeptbuch-Rezepte in die App (Gründer-Entscheidung, ersetzt 24.10.2026)
+
+**Entscheidung (Karsten, 30.10.2026):** „Importiere aktuell alle Rezepte unseres Rezeptbuchs in die App.“ Die
+Hälfte-Regel vom 24.10.2026 (unten) gilt nicht mehr.
+
+- **Auswahl-Datei** `content/rezeptbuch-app-auswahl.json` Version 2: alle 306 Rezepte der Fassung 1.1 außer zwei
+  Namens-Doppeln (gleicher Titel in zwei Kapiteln kommt nur einmal in die App, die erste Fassung in Datei-Reihenfolge:
+  `teriyaki-tofu-bowl-mit-edamame-vegetarisch` und `schoko-proteinpudding-fleisch` bleiben nur im Buch) = **304
+  Rezepte**, dazu **alle vier Meal-Prep-Pläne**. Foto je Rezept bleibt Pflicht (alle 306 haben eins).
+- **Rezeptbilder:** `pnpm recipe-media` neu erzeugt – 305 Rezepte mit Foto (304 Auswahl + die schon veröffentlichte
+  vegetarische Teriyaki-Bowl aus `content/recipes`), Bilder zusammen ≈ 19 MB im App-Bündel (vorher 9,9 MB).
+- **Tests:** `app-selection.test.ts` prüft jetzt „alle außer Namens-Doppel“ und alle Meal-Prep-Pläne; die
+  Hälfte-Quoten (`appSelectionQuotas`) sind entfernt.
+- **Nährwerte:** Rezepte mit Zutaten ohne Quell-ID bleiben weiter draußen, bis die Zutat importiert ist (30 Zutaten,
+  u. a. Gewürze und Proteinpulver – dritte Quelle USDA FoodData Central, Gründer-Entscheidung 30.10.2026).
+
 ## Nachtrag 24.10.2026: Nur etwa die Hälfte der Rezeptbuch-Rezepte in der App (Gründer-Entscheidung)
 
 **Entscheidung (Karsten, 24.10.2026):** Die App enthält nur rund 150 der 306 Rezepte aus `alpha5-rezepte.json`

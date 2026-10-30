@@ -1,0 +1,30 @@
+{
+  "recipe_id": "eiweiss-muffins-mit-schinken-und-spinat",
+  "alt_de": "Foto: Eiweiß-Muffins mit Schinken und Spinat",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/eiweiss-muffins-mit-schinken-und-spinat.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "eiweiss-muffins-mit-schinken-und-spinat-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "eiweiss-muffins-mit-schinken-und-spinat-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

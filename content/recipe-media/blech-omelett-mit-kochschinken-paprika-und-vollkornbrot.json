@@ -1,0 +1,30 @@
+{
+  "recipe_id": "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot",
+  "alt_de": "Foto: Blech-Omelett mit Kochschinken, Paprika und Vollkornbrot",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/blech-omelett-mit-kochschinken-paprika-und-vollkornbrot.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

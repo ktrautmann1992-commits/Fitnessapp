@@ -1,0 +1,30 @@
+{
+  "recipe_id": "quark-honig-toast-mit-bananenscheiben",
+  "alt_de": "Foto: Quark-Honig-Toast mit Bananenscheiben",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/quark-honig-toast-mit-bananenscheiben.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "quark-honig-toast-mit-bananenscheiben-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "quark-honig-toast-mit-bananenscheiben-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 /**
- * App-Auswahl des Rezeptbuchs (Gründer-Entscheidung 24.10.2026, docs/PLAN-PHASE-5.md Nachtrag 24.10.2026):
- * Die App enthält nur etwa die Hälfte der Rezepte aus `alpha5-rezepte.json` (je Kategorie/Abschnitt), der Rest
- * bleibt nur im Buch (PDF). Die Liste steht in `content/rezeptbuch-app-auswahl.json`; der Import
- * (`importAlpha5`) übernimmt nur diese Rezepte und nur die dort genannten Meal-Prep-Pläne.
+ * App-Auswahl des Rezeptbuchs (Gründer-Entscheidung 30.10.2026, docs/PLAN-PHASE-5.md Nachtrag 30.10.2026; ersetzt
+ * die Hälfte-Regel vom 24.10.2026): alle Rezepte und Meal-Prep-Pläne aus `alpha5-rezepte.json` kommen in die App,
+ * ein Rezept mit gleichem Namen in zwei Kapiteln nur einmal. Die Liste steht in `content/rezeptbuch-app-auswahl.json`;
+ * der Import (`importAlpha5`) übernimmt nur diese Rezepte und nur die dort genannten Meal-Prep-Pläne.
  *
  * Rein, ohne Dateisystem. Prüft die Auswahl gegen die Gründer-Datei: unbekannte/doppelte IDs, Foto je Rezept
  * (Dateiname wie im Rezeptbuch-Baukasten), Meal-Prep-Pläne vollständig.
@@ -22,7 +22,7 @@ const str = z.string().min(1);
 export const appSelectionSchema = z.strictObject({
   format: z.literal('rezeptbuch-app-auswahl'),
   version: z.number().int().min(1),
-  /** Wer hat entschieden, wann („Karsten 24.10.2026“). */
+  /** Wer hat entschieden, wann („Karsten 30.10.2026“). */
   entschieden: str,
   /** Fassung der Gründer-Datei, für die die Auswahl getroffen wurde („alpha5-rezepte.json@1.1“). */
   quelle: str,
@@ -137,35 +137,4 @@ export function parseAppSelection(data: unknown, file: Alpha5File): AppSelection
     throw new Alpha5InputError(problems, APP_SELECTION_FILE_NAME);
   }
   return parsed.data;
-}
-
-/** Gruppe (Kategorie/Abschnitt), die immer abgerundet wird – sonst läge die Summe bei 154 (Regel der Auswahl). */
-export const APP_SELECTION_ALWAYS_DOWN = { kategorie: 'fleisch', abschnitt: 'Abendessen' } as const;
-
-/**
- * Soll-Anzahl je Kategorie/Abschnitt nach der Regel der Auswahl (Gründer 24.10.2026): gerade n → n/2; ungerade n in
- * Datei-Reihenfolge abwechselnd ab- und aufgerundet (beginnend mit abrunden); n = 1 → 1;
- * `APP_SELECTION_ALWAYS_DOWN` immer abgerundet und nicht im Wechsel. Schlüssel: `kategorie|abschnitt`.
- */
-export function appSelectionQuotas(file: Alpha5File): Map<string, number> {
-  const sizes = new Map<string, number>();
-  for (const r of file.rezepte) {
-    const key = `${r.kategorie}|${r.abschnitt}`;
-    sizes.set(key, (sizes.get(key) ?? 0) + 1);
-  }
-  const quotas = new Map<string, number>();
-  let up = false;
-  for (const [key, n] of sizes) {
-    if (n === 1) quotas.set(key, 1);
-    else if (
-      key === `${APP_SELECTION_ALWAYS_DOWN.kategorie}|${APP_SELECTION_ALWAYS_DOWN.abschnitt}`
-    )
-      quotas.set(key, Math.floor(n / 2));
-    else if (n % 2 === 0) quotas.set(key, n / 2);
-    else {
-      quotas.set(key, up ? Math.ceil(n / 2) : Math.floor(n / 2));
-      up = !up;
-    }
-  }
-  return quotas;
 }

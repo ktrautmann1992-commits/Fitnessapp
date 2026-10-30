@@ -1,0 +1,30 @@
+{
+  "recipe_id": "lachs-mit-kraeuter-panko-kruste-ofengemuese-und-couscous",
+  "alt_de": "Foto: Lachs mit Kräuter-Panko-Kruste, Ofengemüse und Couscous",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/lachs-mit-kraeuter-panko-kruste-ofengemuese-und-couscous.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "lachs-mit-kraeuter-panko-kruste-ofengemuese-und-couscous-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "lachs-mit-kraeuter-panko-kruste-ofengemuese-und-couscous-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

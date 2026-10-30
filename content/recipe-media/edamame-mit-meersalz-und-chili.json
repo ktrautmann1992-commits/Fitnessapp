@@ -1,0 +1,30 @@
+{
+  "recipe_id": "edamame-mit-meersalz-und-chili",
+  "alt_de": "Foto: Edamame mit Meersalz & Chili",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/edamame-mit-meersalz-und-chili.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "edamame-mit-meersalz-und-chili-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "edamame-mit-meersalz-und-chili-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

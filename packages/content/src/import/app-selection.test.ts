@@ -10,7 +10,6 @@ import {
   APP_SELECTION_PATH,
   type AppSelection,
   appSelectionProblems,
-  appSelectionQuotas,
   appSelectionSchema,
   parseAppSelection,
   photoSlug,
@@ -18,9 +17,9 @@ import {
 } from './app-selection';
 
 /**
- * App-Auswahl des Rezeptbuchs (Gründer-Entscheidung 24.10.2026, docs/PLAN-PHASE-5.md Nachtrag 24.10.2026):
- * etwa die Hälfte je Kategorie/Abschnitt, nur Rezepte mit Foto, Meal-Prep-Pläne vollständig, Essensplan für jede
- * Ernährungsform weiter machbar.
+ * App-Auswahl des Rezeptbuchs (Gründer-Entscheidung 30.10.2026, docs/PLAN-PHASE-5.md Nachtrag 30.10.2026):
+ * alle Rezepte (gleicher Name in zwei Kapiteln nur einmal), nur Rezepte mit Foto, alle Meal-Prep-Pläne vollständig,
+ * Essensplan für jede Ernährungsform weiter machbar.
  */
 
 const REPO_ROOT = join(__dirname, '../../../..');
@@ -35,29 +34,18 @@ const APP = FILE.rezepte.filter((r) => SELECTED.has(r.id));
 describe('content/rezeptbuch-app-auswahl.json (echte Datei)', () => {
   it('Aufbau gültig, passt zur Gründer-Datei, keine Probleme', () => {
     expect(appSelectionProblems(SELECTION, FILE)).toEqual([]);
-    expect(SELECTION.entschieden).toBe('Karsten 24.10.2026');
+    expect(SELECTION.entschieden).toBe('Karsten 30.10.2026');
     expect(SELECTION.quelle).toBe(`alpha5-rezepte.json@${FILE.version}`);
     expect(SELECTION.regel.length).toBeGreaterThan(100);
     expect(() => parseAppSelection(RAW, FILE)).not.toThrow();
   });
 
-  it('etwa 150 Rezepte (150 ± 3), Rest nur im Buch', () => {
-    expect(SELECTION.rezepte.length).toBeGreaterThanOrEqual(147);
-    expect(SELECTION.rezepte.length).toBeLessThanOrEqual(153);
-    expect(FILE.rezepte.length - SELECTION.rezepte.length).toBeGreaterThanOrEqual(150);
-  });
-
-  it('je Kategorie/Abschnitt genau die Soll-Anzahl der Regel (etwa die Hälfte)', () => {
-    const quotas = appSelectionQuotas(FILE);
-    const counts = new Map<string, number>();
-    for (const r of APP) {
-      const key = `${r.kategorie}|${r.abschnitt}`;
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-    }
-    for (const [key, quota] of quotas) {
-      expect({ key, count: counts.get(key) ?? 0 }).toEqual({ key, count: quota });
-    }
-    expect([...quotas.values()].reduce((a, b) => a + b, 0)).toBe(SELECTION.rezepte.length);
+  it('alle Rezepte der Gründer-Datei, nur Namens-Doppel (zweites Kapitel) bleiben im Buch', () => {
+    const firstByName = new Map<string, string>();
+    for (const r of FILE.rezepte) if (!firstByName.has(r.name)) firstByName.set(r.name, r.id);
+    expect(SELECTION.rezepte).toEqual(
+      FILE.rezepte.filter((r) => firstByName.get(r.name) === r.id).map((r) => r.id),
+    );
   });
 
   it('Reihenfolge wie in der Gründer-Datei (stabile Diffs)', () => {
@@ -79,12 +67,10 @@ describe('content/rezeptbuch-app-auswahl.json (echte Datei)', () => {
     },
   );
 
-  it('Meal-Prep-Pläne „vegan“ und „ohne-schwein“ vollständig in der App, die anderen nur im Buch', () => {
-    expect(SELECTION.meal_prep_plaene).toEqual(['vegan', 'ohne-schwein']);
+  it('alle Meal-Prep-Pläne vollständig in der App', () => {
+    expect(SELECTION.meal_prep_plaene).toEqual(FILE.meal_prep_plaene.map((p) => p.id));
     for (const plan of FILE.meal_prep_plaene) {
-      const all = plan.rezepte.every((id) => SELECTED.has(id));
-      const none = plan.rezepte.every((id) => !SELECTED.has(id));
-      expect(SELECTION.meal_prep_plaene.includes(plan.id) ? all : none).toBe(true);
+      expect(plan.rezepte.every((id) => SELECTED.has(id))).toBe(true);
     }
   });
 
@@ -248,31 +234,5 @@ describe('appSelectionProblems / parseAppSelection', () => {
     expect(photoSlug('Teriyaki-Tofu-Bowl mit Edamame')).toBe('teriyaki-tofu-bowl-mit-edamame');
     expect(photoSlug('Grüne Bohnen & Süßkartoffel')).toBe('gruene-bohnen-und-suesskartoffel');
     expect(photoSlug('Crème brûlée')).toBe('creme-brulee');
-  });
-
-  it('Soll-Anzahl: gerade Hälfte, ungerade abwechselnd ab/auf, 1 bleibt 1, große Fleisch-Gruppe abgerundet', () => {
-    const many = (kategorie: string, abschnitt: string, n: number) =>
-      Array.from({ length: n }, (_, i) =>
-        recipe(`${kategorie}-${abschnitt}-${i}`.toLowerCase(), { kategorie, abschnitt }),
-      );
-    const quotas = appSelectionQuotas({
-      ...file,
-      rezepte: [
-        ...many('vegan', 'Frühstück', 4),
-        ...many('vegan', 'Snack', 5),
-        ...many('fleisch', 'Abendessen', 19),
-        ...many('schnell', 'Snack', 3),
-        ...many('wettkampf', 'Im Rennen', 1),
-        ...many('cardio', 'Nach der Einheit', 3),
-      ],
-    });
-    expect(Object.fromEntries(quotas)).toEqual({
-      'vegan|Frühstück': 2,
-      'vegan|Snack': 2,
-      'fleisch|Abendessen': 9,
-      'schnell|Snack': 2,
-      'wettkampf|Im Rennen': 1,
-      'cardio|Nach der Einheit': 1,
-    });
   });
 });

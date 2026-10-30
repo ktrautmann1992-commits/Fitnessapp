@@ -1,0 +1,30 @@
+{
+  "recipe_id": "schnelles-seitan-paprika-gulasch-mit-express-reis",
+  "alt_de": "Foto: Schnelles Seitan-Paprika-Gulasch mit Express-Reis",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/schnelles-seitan-paprika-gulasch-mit-express-reis.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "schnelles-seitan-paprika-gulasch-mit-express-reis-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "schnelles-seitan-paprika-gulasch-mit-express-reis-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

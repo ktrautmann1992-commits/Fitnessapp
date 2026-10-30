@@ -1,0 +1,30 @@
+{
+  "recipe_id": "haehnchen-gyros-bowl-mit-reis-und-tzatziki",
+  "alt_de": "Foto: Hähnchen-Gyros-Bowl mit Reis und Tzatziki",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/haehnchen-gyros-bowl-mit-reis-und-tzatziki.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "haehnchen-gyros-bowl-mit-reis-und-tzatziki-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "haehnchen-gyros-bowl-mit-reis-und-tzatziki-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}
