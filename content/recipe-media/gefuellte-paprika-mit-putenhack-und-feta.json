@@ -1,0 +1,30 @@
+{
+  "recipe_id": "gefuellte-paprika-mit-putenhack-und-feta",
+  "alt_de": "Foto: Gefüllte Paprika mit Putenhack und Feta",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/gefuellte-paprika-mit-putenhack-und-feta.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "gefuellte-paprika-mit-putenhack-und-feta-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "gefuellte-paprika-mit-putenhack-und-feta-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

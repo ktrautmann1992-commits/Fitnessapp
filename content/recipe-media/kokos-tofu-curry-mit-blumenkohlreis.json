@@ -1,0 +1,30 @@
+{
+  "recipe_id": "kokos-tofu-curry-mit-blumenkohlreis",
+  "alt_de": "Foto: Kokos-Tofu-Curry mit Blumenkohlreis",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/kokos-tofu-curry-mit-blumenkohlreis.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "kokos-tofu-curry-mit-blumenkohlreis-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "kokos-tofu-curry-mit-blumenkohlreis-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

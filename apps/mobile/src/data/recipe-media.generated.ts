@@ -16,11 +16,47 @@ export interface GeneratedRecipeMedia {
 }
 
 export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedia>> = {
+  'ahorn-reiskuchen-fuer-die-trikottasche': {
+    alt_de: 'Foto: Ahorn-Reiskuchen für die Trikottasche',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/ahorn-reiskuchen-fuer-die-trikottasche-thumb.webp'),
+    banner: require('../../assets/recipe-media/ahorn-reiskuchen-fuer-die-trikottasche-banner.webp'),
+  },
+  'american-protein-pancakes-mit-knuspriger-putenbrust': {
+    alt_de: 'Foto: American Protein-Pancakes mit knuspriger Putenbrust',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/american-protein-pancakes-mit-knuspriger-putenbrust-thumb.webp'),
+    banner: require('../../assets/recipe-media/american-protein-pancakes-mit-knuspriger-putenbrust-banner.webp'),
+  },
   'apfel-zimt-baked-oats-mit-sojaskyr': {
     alt_de: 'Foto: Apfel-Zimt-Baked-Oats mit Sojaskyr',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/apfel-zimt-baked-oats-mit-sojaskyr-thumb.webp'),
     banner: require('../../assets/recipe-media/apfel-zimt-baked-oats-mit-sojaskyr-banner.webp'),
+  },
+  'apfel-zimt-crumble-mit-skyr-haube': {
+    alt_de: 'Foto: Apfel-Zimt-Crumble mit Skyr-Haube',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/apfel-zimt-crumble-mit-skyr-haube-thumb.webp'),
+    banner: require('../../assets/recipe-media/apfel-zimt-crumble-mit-skyr-haube-banner.webp'),
+  },
+  'apfel-zimt-quark-mit-haferflocken': {
+    alt_de: 'Foto: Apfel-Zimt-Quark mit Haferflocken',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/apfel-zimt-quark-mit-haferflocken-thumb.webp'),
+    banner: require('../../assets/recipe-media/apfel-zimt-quark-mit-haferflocken-banner.webp'),
+  },
+  'apfel-zimt-taschen-mit-quarkfuellung': {
+    alt_de: 'Foto: Apfel-Zimt-Taschen mit Quarkfüllung',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/apfel-zimt-taschen-mit-quarkfuellung-thumb.webp'),
+    banner: require('../../assets/recipe-media/apfel-zimt-taschen-mit-quarkfuellung-banner.webp'),
+  },
+  'aprikose-vanille-protein-eis': {
+    alt_de: 'Foto: Aprikose-Vanille-Protein-Eis',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/aprikose-vanille-protein-eis-thumb.webp'),
+    banner: require('../../assets/recipe-media/aprikose-vanille-protein-eis-banner.webp'),
   },
   'asia-nudelsuppe-mit-tofu-und-ei': {
     alt_de: 'Foto: Asia-Nudelsuppe mit Tofu & Ei',
@@ -34,11 +70,35 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/asia-ofenlachs-mit-sesam-brokkoli-thumb.webp'),
     banner: require('../../assets/recipe-media/asia-ofenlachs-mit-sesam-brokkoli-banner.webp'),
   },
+  'bami-goreng-mit-schweinefilet': {
+    alt_de: 'Foto: Bami Goreng mit Schweinefilet',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/bami-goreng-mit-schweinefilet-thumb.webp'),
+    banner: require('../../assets/recipe-media/bami-goreng-mit-schweinefilet-banner.webp'),
+  },
   'bananen-pancake-bites-mit-heidelbeer-skyr': {
     alt_de: 'Foto: Bananen-Pancake-Bites mit Heidelbeer-Skyr',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/bananen-pancake-bites-mit-heidelbeer-skyr-thumb.webp'),
     banner: require('../../assets/recipe-media/bananen-pancake-bites-mit-heidelbeer-skyr-banner.webp'),
+  },
+  'bananen-proteinshake': {
+    alt_de: 'Foto: Bananen-Proteinshake',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/bananen-proteinshake-thumb.webp'),
+    banner: require('../../assets/recipe-media/bananen-proteinshake-banner.webp'),
+  },
+  'bananen-vanille-porridge-mit-sojadrink': {
+    alt_de: 'Foto: Bananen-Vanille-Porridge mit Sojadrink',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/bananen-vanille-porridge-mit-sojadrink-thumb.webp'),
+    banner: require('../../assets/recipe-media/bananen-vanille-porridge-mit-sojadrink-banner.webp'),
+  },
+  'bauernfruehstueck-mit-pute': {
+    alt_de: 'Foto: Bauernfrühstück mit Pute',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/bauernfruehstueck-mit-pute-thumb.webp'),
+    banner: require('../../assets/recipe-media/bauernfruehstueck-mit-pute-banner.webp'),
   },
   'beeren-frozen-joghurt-bark': {
     alt_de: 'Foto: Beeren-Frozen-Joghurt-Bark',
@@ -46,11 +106,23 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/beeren-frozen-joghurt-bark-thumb.webp'),
     banner: require('../../assets/recipe-media/beeren-frozen-joghurt-bark-banner.webp'),
   },
+  'beeren-hafer-recovery-shake': {
+    alt_de: 'Foto: Beeren-Hafer-Recovery-Shake',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/beeren-hafer-recovery-shake-thumb.webp'),
+    banner: require('../../assets/recipe-media/beeren-hafer-recovery-shake-banner.webp'),
+  },
   'beeren-quark-mit-mandeln': {
     alt_de: 'Foto: Beeren-Quark mit Mandeln',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/beeren-quark-mit-mandeln-thumb.webp'),
     banner: require('../../assets/recipe-media/beeren-quark-mit-mandeln-banner.webp'),
+  },
+  'blech-omelett-mit-kochschinken-paprika-und-vollkornbrot': {
+    alt_de: 'Foto: Blech-Omelett mit Kochschinken, Paprika und Vollkornbrot',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/blech-omelett-mit-kochschinken-paprika-und-vollkornbrot-thumb.webp'),
+    banner: require('../../assets/recipe-media/blech-omelett-mit-kochschinken-paprika-und-vollkornbrot-banner.webp'),
   },
   'blumenkohl-tofu-curry': {
     alt_de: 'Foto: Blumenkohl-Tofu-Curry',
@@ -70,11 +142,35 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/brokkoli-kaese-auflauf-mit-eiern-thumb.webp'),
     banner: require('../../assets/recipe-media/brokkoli-kaese-auflauf-mit-eiern-banner.webp'),
   },
+  'burrito-bowl-mit-putenhack-und-schwarzen-bohnen': {
+    alt_de: 'Foto: Burrito-Bowl mit Putenhack und schwarzen Bohnen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/burrito-bowl-mit-putenhack-und-schwarzen-bohnen-thumb.webp'),
+    banner: require('../../assets/recipe-media/burrito-bowl-mit-putenhack-und-schwarzen-bohnen-banner.webp'),
+  },
+  'burrito-bowl-mit-schweinehack-und-bohnen': {
+    alt_de: 'Foto: Burrito-Bowl mit Schweinehack und Bohnen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/burrito-bowl-mit-schweinehack-und-bohnen-thumb.webp'),
+    banner: require('../../assets/recipe-media/burrito-bowl-mit-schweinehack-und-bohnen-banner.webp'),
+  },
+  'burrito-bowl-mit-tempeh-hack': {
+    alt_de: 'Foto: Burrito-Bowl mit Tempeh-Hack',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/burrito-bowl-mit-tempeh-hack-thumb.webp'),
+    banner: require('../../assets/recipe-media/burrito-bowl-mit-tempeh-hack-banner.webp'),
+  },
   'caprese-spiesse-mit-balsamico': {
     alt_de: 'Foto: Caprese-Spieße mit Balsamico',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/caprese-spiesse-mit-balsamico-thumb.webp'),
     banner: require('../../assets/recipe-media/caprese-spiesse-mit-balsamico-banner.webp'),
+  },
+  'casein-quarkcreme-mit-himbeeren': {
+    alt_de: 'Foto: Casein-Quarkcreme mit Himbeeren',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/casein-quarkcreme-mit-himbeeren-thumb.webp'),
+    banner: require('../../assets/recipe-media/casein-quarkcreme-mit-himbeeren-banner.webp'),
   },
   'casein-vanillepudding-mit-beeren': {
     alt_de: 'Foto: Casein-Vanillepudding mit Beeren',
@@ -93,6 +189,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/chili-con-carne-mit-schweinehack-und-reis-thumb.webp'),
     banner: require('../../assets/recipe-media/chili-con-carne-mit-schweinehack-und-reis-banner.webp'),
+  },
+  'chili-sin-carne-mit-reis': {
+    alt_de: 'Foto: Chili sin Carne mit Reis',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/chili-sin-carne-mit-reis-thumb.webp'),
+    banner: require('../../assets/recipe-media/chili-sin-carne-mit-reis-banner.webp'),
   },
   'curry-blumenkohl-bites-mit-tahin-sojajoghurt-dip': {
     alt_de: 'Foto: Curry-Blumenkohl-Bites mit Tahin-Sojajoghurt-Dip',
@@ -118,11 +220,23 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/doener-teller-mit-haehnchen-gyros-und-heissluft-pommes-thumb.webp'),
     banner: require('../../assets/recipe-media/doener-teller-mit-haehnchen-gyros-und-heissluft-pommes-banner.webp'),
   },
+  'edamame-gurken-salat-mit-raeuchertofu-und-sesam': {
+    alt_de: 'Foto: Edamame-Gurken-Salat mit Räuchertofu und Sesam',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/edamame-gurken-salat-mit-raeuchertofu-und-sesam-thumb.webp'),
+    banner: require('../../assets/recipe-media/edamame-gurken-salat-mit-raeuchertofu-und-sesam-banner.webp'),
+  },
   'edamame-hummus-mit-gemuesesticks': {
     alt_de: 'Foto: Edamame-Hummus mit Gemüsesticks',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/edamame-hummus-mit-gemuesesticks-thumb.webp'),
     banner: require('../../assets/recipe-media/edamame-hummus-mit-gemuesesticks-banner.webp'),
+  },
+  'edamame-mit-meersalz-und-chili': {
+    alt_de: 'Foto: Edamame mit Meersalz & Chili',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/edamame-mit-meersalz-und-chili-thumb.webp'),
+    banner: require('../../assets/recipe-media/edamame-mit-meersalz-und-chili-banner.webp'),
   },
   'eier-curry-mit-blumenkohl-und-spinat': {
     alt_de: 'Foto: Eier-Curry mit Blumenkohl & Spinat',
@@ -148,6 +262,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/eierspaetzle-mit-erbsen-und-schnittlauchquark-thumb.webp'),
     banner: require('../../assets/recipe-media/eierspaetzle-mit-erbsen-und-schnittlauchquark-banner.webp'),
   },
+  'eiweiss-muffins-mit-schinken-und-spinat': {
+    alt_de: 'Foto: Eiweiß-Muffins mit Schinken und Spinat',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/eiweiss-muffins-mit-schinken-und-spinat-thumb.webp'),
+    banner: require('../../assets/recipe-media/eiweiss-muffins-mit-schinken-und-spinat-banner.webp'),
+  },
   'englische-bohnen-tofu-pfanne-auf-toast': {
     alt_de: 'Foto: Englische Bohnen-Tofu-Pfanne auf Toast',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -159,6 +279,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/erbsen-ricotta-pasta-mit-zitrone-thumb.webp'),
     banner: require('../../assets/recipe-media/erbsen-ricotta-pasta-mit-zitrone-banner.webp'),
+  },
+  'erdbeer-basilikum-frozen-joghurt': {
+    alt_de: 'Foto: Erdbeer-Basilikum-Frozen-Joghurt',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/erdbeer-basilikum-frozen-joghurt-thumb.webp'),
+    banner: require('../../assets/recipe-media/erdbeer-basilikum-frozen-joghurt-banner.webp'),
   },
   'erdbeer-cheesecake-im-glas': {
     alt_de: 'Foto: Erdbeer-Cheesecake im Glas',
@@ -178,6 +304,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/erdnuss-bananen-toast-mit-zimt-sojaskyr-thumb.webp'),
     banner: require('../../assets/recipe-media/erdnuss-bananen-toast-mit-zimt-sojaskyr-banner.webp'),
   },
+  'erdnuss-dattel-energy-balls-mit-whey': {
+    alt_de: 'Foto: Erdnuss-Dattel-Energy-Balls mit Whey',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/erdnuss-dattel-energy-balls-mit-whey-thumb.webp'),
+    banner: require('../../assets/recipe-media/erdnuss-dattel-energy-balls-mit-whey-banner.webp'),
+  },
   'erdnuss-nudeln-mit-tofu-und-brokkoli': {
     alt_de: 'Foto: Erdnuss-Nudeln mit Tofu und Brokkoli',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -195,6 +327,24 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/espresso-eiskaffee-protein-eis-thumb.webp'),
     banner: require('../../assets/recipe-media/espresso-eiskaffee-protein-eis-banner.webp'),
+  },
+  'fajita-salat-mit-haehnchen-und-tortilla-chips': {
+    alt_de: 'Foto: Fajita-Salat mit Hähnchen und Tortilla-Chips',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/fajita-salat-mit-haehnchen-und-tortilla-chips-thumb.webp'),
+    banner: require('../../assets/recipe-media/fajita-salat-mit-haehnchen-und-tortilla-chips-banner.webp'),
+  },
+  'falafel-wrap-mit-skyr-joghurtsauce': {
+    alt_de: 'Foto: Falafel-Wrap mit Skyr-Joghurtsauce',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/falafel-wrap-mit-skyr-joghurtsauce-thumb.webp'),
+    banner: require('../../assets/recipe-media/falafel-wrap-mit-skyr-joghurtsauce-banner.webp'),
+  },
+  'flammkuchen-mit-skyr-creme-zwiebeln-und-putenbrust-streifen': {
+    alt_de: 'Foto: Flammkuchen mit Skyr-Creme, Zwiebeln und Putenbrust-Streifen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/flammkuchen-mit-skyr-creme-zwiebeln-und-putenbrust-streifen-thumb.webp'),
+    banner: require('../../assets/recipe-media/flammkuchen-mit-skyr-creme-zwiebeln-und-putenbrust-streifen-banner.webp'),
   },
   'fluffige-bananen-pfannkuchen-mit-ahornsirup': {
     alt_de: 'Foto: Fluffige Bananen-Pfannkuchen mit Ahornsirup',
@@ -238,11 +388,41 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/gefuellte-eier-mit-senf-skyr-und-gurke-thumb.webp'),
     banner: require('../../assets/recipe-media/gefuellte-eier-mit-senf-skyr-und-gurke-banner.webp'),
   },
+  'gefuellte-paprika-mit-bulgur-linsen-und-feta': {
+    alt_de: 'Foto: Gefüllte Paprika mit Bulgur, Linsen & Feta',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/gefuellte-paprika-mit-bulgur-linsen-und-feta-thumb.webp'),
+    banner: require('../../assets/recipe-media/gefuellte-paprika-mit-bulgur-linsen-und-feta-banner.webp'),
+  },
+  'gefuellte-paprika-mit-hackfleisch': {
+    alt_de: 'Foto: Gefüllte Paprika mit Hackfleisch',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/gefuellte-paprika-mit-hackfleisch-thumb.webp'),
+    banner: require('../../assets/recipe-media/gefuellte-paprika-mit-hackfleisch-banner.webp'),
+  },
+  'gefuellte-paprika-mit-putenhack-und-feta': {
+    alt_de: 'Foto: Gefüllte Paprika mit Putenhack und Feta',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/gefuellte-paprika-mit-putenhack-und-feta-thumb.webp'),
+    banner: require('../../assets/recipe-media/gefuellte-paprika-mit-putenhack-und-feta-banner.webp'),
+  },
+  'gefuellte-paprika-mit-sojaschnetzeln': {
+    alt_de: 'Foto: Gefüllte Paprika mit Sojaschnetzeln',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/gefuellte-paprika-mit-sojaschnetzeln-thumb.webp'),
+    banner: require('../../assets/recipe-media/gefuellte-paprika-mit-sojaschnetzeln-banner.webp'),
+  },
   'gekochte-eier-mit-gemuesesticks': {
     alt_de: 'Foto: Gekochte Eier mit Gemüsesticks',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/gekochte-eier-mit-gemuesesticks-thumb.webp'),
     banner: require('../../assets/recipe-media/gekochte-eier-mit-gemuesesticks-banner.webp'),
+  },
+  'gemuese-frittata-mit-feta': {
+    alt_de: 'Foto: Gemüse-Frittata mit Feta',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/gemuese-frittata-mit-feta-thumb.webp'),
+    banner: require('../../assets/recipe-media/gemuese-frittata-mit-feta-banner.webp'),
   },
   'gemuesesticks-mit-weissem-bohnen-dip': {
     alt_de: 'Foto: Gemüsesticks mit weißem Bohnen-Dip',
@@ -250,11 +430,59 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/gemuesesticks-mit-weissem-bohnen-dip-thumb.webp'),
     banner: require('../../assets/recipe-media/gemuesesticks-mit-weissem-bohnen-dip-banner.webp'),
   },
+  'gesalzene-rosmarin-kartoffelhaeppchen': {
+    alt_de: 'Foto: Gesalzene Rosmarin-Kartoffelhäppchen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/gesalzene-rosmarin-kartoffelhaeppchen-thumb.webp'),
+    banner: require('../../assets/recipe-media/gesalzene-rosmarin-kartoffelhaeppchen-banner.webp'),
+  },
+  'gnocchi-in-tomatensauce-mit-parmesan': {
+    alt_de: 'Foto: Gnocchi in Tomatensauce mit Parmesan',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/gnocchi-in-tomatensauce-mit-parmesan-thumb.webp'),
+    banner: require('../../assets/recipe-media/gnocchi-in-tomatensauce-mit-parmesan-banner.webp'),
+  },
   'griechischer-bauernsalat-mit-kichererbsen-und-ei': {
     alt_de: 'Foto: Griechischer Bauernsalat mit Kichererbsen & Ei',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/griechischer-bauernsalat-mit-kichererbsen-und-ei-thumb.webp'),
     banner: require('../../assets/recipe-media/griechischer-bauernsalat-mit-kichererbsen-und-ei-banner.webp'),
+  },
+  'griechischer-salat-mit-haehnchen': {
+    alt_de: 'Foto: Griechischer Salat mit Hähnchen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/griechischer-salat-mit-haehnchen-thumb.webp'),
+    banner: require('../../assets/recipe-media/griechischer-salat-mit-haehnchen-banner.webp'),
+  },
+  'griechischer-salat-mit-oregano-tofu': {
+    alt_de: 'Foto: Griechischer Salat mit Oregano-Tofu',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/griechischer-salat-mit-oregano-tofu-thumb.webp'),
+    banner: require('../../assets/recipe-media/griechischer-salat-mit-oregano-tofu-banner.webp'),
+  },
+  'gruene-bohnen-buendel-im-lachsschinken-mantel-mit-kraeuterquark': {
+    alt_de: 'Foto: Grüne-Bohnen-Bündel im Lachsschinken-Mantel mit Kräuterquark',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/gruene-bohnen-buendel-im-lachsschinken-mantel-mit-kraeuterquark-thumb.webp'),
+    banner: require('../../assets/recipe-media/gruene-bohnen-buendel-im-lachsschinken-mantel-mit-kraeuterquark-banner.webp'),
+  },
+  'gruene-mango-smoothie-bowl': {
+    alt_de: 'Foto: Grüne Mango-Smoothie-Bowl',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/gruene-mango-smoothie-bowl-thumb.webp'),
+    banner: require('../../assets/recipe-media/gruene-mango-smoothie-bowl-banner.webp'),
+  },
+  'gurkenschiffchen-mit-krabben-skyr': {
+    alt_de: 'Foto: Gurkenschiffchen mit Krabben-Skyr',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/gurkenschiffchen-mit-krabben-skyr-thumb.webp'),
+    banner: require('../../assets/recipe-media/gurkenschiffchen-mit-krabben-skyr-banner.webp'),
+  },
+  'hackbaellchen-in-tomatensauce-mit-vollkornnudeln': {
+    alt_de: 'Foto: Hackbällchen in Tomatensauce mit Vollkornnudeln',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/hackbaellchen-in-tomatensauce-mit-vollkornnudeln-thumb.webp'),
+    banner: require('../../assets/recipe-media/hackbaellchen-in-tomatensauce-mit-vollkornnudeln-banner.webp'),
   },
   'haehnchen-brokkoli-pfanne-mit-cashews': {
     alt_de: 'Foto: Hähnchen-Brokkoli-Pfanne mit Cashews',
@@ -268,6 +496,18 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/haehnchen-fajita-pfanne-mit-wrap-thumb.webp'),
     banner: require('../../assets/recipe-media/haehnchen-fajita-pfanne-mit-wrap-banner.webp'),
   },
+  'haehnchen-gemuese-spiesse-mit-zitronen-bulgur-und-kraeuter-skyr': {
+    alt_de: 'Foto: Hähnchen-Gemüse-Spieße mit Zitronen-Bulgur und Kräuter-Skyr',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/haehnchen-gemuese-spiesse-mit-zitronen-bulgur-und-kraeuter-skyr-thumb.webp'),
+    banner: require('../../assets/recipe-media/haehnchen-gemuese-spiesse-mit-zitronen-bulgur-und-kraeuter-skyr-banner.webp'),
+  },
+  'haehnchen-gyros-bowl-mit-reis-und-tzatziki': {
+    alt_de: 'Foto: Hähnchen-Gyros-Bowl mit Reis und Tzatziki',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/haehnchen-gyros-bowl-mit-reis-und-tzatziki-thumb.webp'),
+    banner: require('../../assets/recipe-media/haehnchen-gyros-bowl-mit-reis-und-tzatziki-banner.webp'),
+  },
   'haehnchen-hummus-wrap-roellchen': {
     alt_de: 'Foto: Hähnchen-Hummus-Wrap-Röllchen',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -279,6 +519,30 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/haehnchen-nudelsuppe-zum-auffuellen-thumb.webp'),
     banner: require('../../assets/recipe-media/haehnchen-nudelsuppe-zum-auffuellen-banner.webp'),
+  },
+  'haehnchen-satay-spiesschen-mit-erdnuss-dip': {
+    alt_de: 'Foto: Hähnchen-Satay-Spießchen mit Erdnuss-Dip',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/haehnchen-satay-spiesschen-mit-erdnuss-dip-thumb.webp'),
+    banner: require('../../assets/recipe-media/haehnchen-satay-spiesschen-mit-erdnuss-dip-banner.webp'),
+  },
+  'haehnchenschenkel-reispfanne-mit-erbsen-und-moehren': {
+    alt_de: 'Foto: Hähnchenschenkel-Reispfanne mit Erbsen und Möhren',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/haehnchenschenkel-reispfanne-mit-erbsen-und-moehren-thumb.webp'),
+    banner: require('../../assets/recipe-media/haehnchenschenkel-reispfanne-mit-erbsen-und-moehren-banner.webp'),
+  },
+  'halloumi-couscous-salat': {
+    alt_de: 'Foto: Halloumi-Couscous-Salat',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/halloumi-couscous-salat-thumb.webp'),
+    banner: require('../../assets/recipe-media/halloumi-couscous-salat-banner.webp'),
+  },
+  'halloumi-mit-champignons-paprika-und-oregano': {
+    alt_de: 'Foto: Halloumi mit Champignons, Paprika und Oregano',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/halloumi-mit-champignons-paprika-und-oregano-thumb.webp'),
+    banner: require('../../assets/recipe-media/halloumi-mit-champignons-paprika-und-oregano-banner.webp'),
   },
   'harzer-brot-mit-radieschen-und-schnittlauch': {
     alt_de: 'Foto: Harzer-Brot mit Radieschen & Schnittlauch',
@@ -298,11 +562,23 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/heidelbeer-protein-muffins-thumb.webp'),
     banner: require('../../assets/recipe-media/heidelbeer-protein-muffins-banner.webp'),
   },
+  'heisser-protein-kakao': {
+    alt_de: 'Foto: Heißer Protein-Kakao',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/heisser-protein-kakao-thumb.webp'),
+    banner: require('../../assets/recipe-media/heisser-protein-kakao-banner.webp'),
+  },
   'herzhafte-protein-waffeln-mit-kochschinken-und-kaese': {
     alt_de: 'Foto: Herzhafte Protein-Waffeln mit Kochschinken und Käse',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/herzhafte-protein-waffeln-mit-kochschinken-und-kaese-thumb.webp'),
     banner: require('../../assets/recipe-media/herzhafte-protein-waffeln-mit-kochschinken-und-kaese-banner.webp'),
+  },
+  'herzhafte-protein-waffeln-mit-raeucherlachs': {
+    alt_de: 'Foto: Herzhafte Protein-Waffeln mit Räucherlachs',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/herzhafte-protein-waffeln-mit-raeucherlachs-thumb.webp'),
+    banner: require('../../assets/recipe-media/herzhafte-protein-waffeln-mit-raeucherlachs-banner.webp'),
   },
   'herzhafter-spinat-porridge-mit-spiegelei-und-pute': {
     alt_de: 'Foto: Herzhafter Spinat-Porridge mit Spiegelei und Pute',
@@ -327,6 +603,24 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/hot-dog-light-mit-gefluegelwuerstchen-roestzwiebeln-und-gurkenrelish-thumb.webp'),
     banner: require('../../assets/recipe-media/hot-dog-light-mit-gefluegelwuerstchen-roestzwiebeln-und-gurkenrelish-banner.webp'),
+  },
+  'huettenkaese-mit-radieschen-und-kuerbiskernen': {
+    alt_de: 'Foto: Hüttenkäse mit Radieschen und Kürbiskernen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/huettenkaese-mit-radieschen-und-kuerbiskernen-thumb.webp'),
+    banner: require('../../assets/recipe-media/huettenkaese-mit-radieschen-und-kuerbiskernen-banner.webp'),
+  },
+  'hummus-brot-mit-ei-feta-und-gurke': {
+    alt_de: 'Foto: Hummus-Brot mit Ei, Feta & Gurke',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/hummus-brot-mit-ei-feta-und-gurke-thumb.webp'),
+    banner: require('../../assets/recipe-media/hummus-brot-mit-ei-feta-und-gurke-banner.webp'),
+  },
+  'iced-coffee-proteinshake-mit-hafer': {
+    alt_de: 'Foto: Iced-Coffee-Proteinshake mit Hafer',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/iced-coffee-proteinshake-mit-hafer-thumb.webp'),
+    banner: require('../../assets/recipe-media/iced-coffee-proteinshake-mit-hafer-banner.webp'),
   },
   'ingwer-gemuesesuppe-mit-tofu-und-reisnudeln': {
     alt_de: 'Foto: Ingwer-Gemüsesuppe mit Tofu und Reisnudeln',
@@ -376,11 +670,23 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/kassler-bauernfruehstueck-mit-ei-thumb.webp'),
     banner: require('../../assets/recipe-media/kassler-bauernfruehstueck-mit-ei-banner.webp'),
   },
+  'kassler-mit-apfel-sauerkraut-und-kartoffelpueree': {
+    alt_de: 'Foto: Kassler mit Apfel-Sauerkraut und Kartoffelpüree',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/kassler-mit-apfel-sauerkraut-und-kartoffelpueree-thumb.webp'),
+    banner: require('../../assets/recipe-media/kassler-mit-apfel-sauerkraut-und-kartoffelpueree-banner.webp'),
+  },
   'kichererbsen-avocado-stulle-mit-raeuchertofu': {
     alt_de: 'Foto: Kichererbsen-Avocado-Stulle mit Räuchertofu',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/kichererbsen-avocado-stulle-mit-raeuchertofu-thumb.webp'),
     banner: require('../../assets/recipe-media/kichererbsen-avocado-stulle-mit-raeuchertofu-banner.webp'),
+  },
+  'kichererbsen-kartoffel-curry-mit-spinat': {
+    alt_de: 'Foto: Kichererbsen-Kartoffel-Curry mit Spinat',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/kichererbsen-kartoffel-curry-mit-spinat-thumb.webp'),
+    banner: require('../../assets/recipe-media/kichererbsen-kartoffel-curry-mit-spinat-banner.webp'),
   },
   'kichererbsen-shawarma-bowl-mit-bulgur': {
     alt_de: 'Foto: Kichererbsen-Shawarma-Bowl mit Bulgur',
@@ -400,6 +706,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/kirsch-schoko-eis-mit-zartbitterstueckchen-thumb.webp'),
     banner: require('../../assets/recipe-media/kirsch-schoko-eis-mit-zartbitterstueckchen-banner.webp'),
   },
+  'kirsch-skyr-becher-mit-hafer-crunch': {
+    alt_de: 'Foto: Kirsch-Skyr-Becher mit Hafer-Crunch',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/kirsch-skyr-becher-mit-hafer-crunch-thumb.webp'),
+    banner: require('../../assets/recipe-media/kirsch-skyr-becher-mit-hafer-crunch-banner.webp'),
+  },
   'knaeckebrot-mit-huettenkaese-und-gurke': {
     alt_de: 'Foto: Knäckebrot mit Hüttenkäse & Gurke',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -412,17 +724,53 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/knoblauch-garnelen-mit-zucchini-nudeln-thumb.webp'),
     banner: require('../../assets/recipe-media/knoblauch-garnelen-mit-zucchini-nudeln-banner.webp'),
   },
+  'knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing': {
+    alt_de: 'Foto: Knusper-Tofu auf Asia-Krautsalat mit Erdnussdressing',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing-thumb.webp'),
+    banner: require('../../assets/recipe-media/knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing-banner.webp'),
+  },
   'knusprige-gnocchi-pfanne-mit-kochschinken-und-erbsen': {
     alt_de: 'Foto: Knusprige Gnocchi-Pfanne mit Kochschinken und Erbsen',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/knusprige-gnocchi-pfanne-mit-kochschinken-und-erbsen-thumb.webp'),
     banner: require('../../assets/recipe-media/knusprige-gnocchi-pfanne-mit-kochschinken-und-erbsen-banner.webp'),
   },
+  'knusprige-ofen-tofu-nuggets-mit-senf-dip': {
+    alt_de: 'Foto: Knusprige Ofen-Tofu-Nuggets mit Senf-Dip',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/knusprige-ofen-tofu-nuggets-mit-senf-dip-thumb.webp'),
+    banner: require('../../assets/recipe-media/knusprige-ofen-tofu-nuggets-mit-senf-dip-banner.webp'),
+  },
+  'knusprige-paprika-kichererbsen': {
+    alt_de: 'Foto: Knusprige Paprika-Kichererbsen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/knusprige-paprika-kichererbsen-thumb.webp'),
+    banner: require('../../assets/recipe-media/knusprige-paprika-kichererbsen-banner.webp'),
+  },
+  'knusprige-zimt-apfelringe-mit-sojaskyr-und-mandeln': {
+    alt_de: 'Foto: Knusprige Zimt-Apfelringe mit Sojaskyr und Mandeln',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/knusprige-zimt-apfelringe-mit-sojaskyr-und-mandeln-thumb.webp'),
+    banner: require('../../assets/recipe-media/knusprige-zimt-apfelringe-mit-sojaskyr-und-mandeln-banner.webp'),
+  },
+  'knuspriger-chicken-burger-aus-der-heissluftfritteuse': {
+    alt_de: 'Foto: Knuspriger Chicken-Burger aus der Heißluftfritteuse',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/knuspriger-chicken-burger-aus-der-heissluftfritteuse-thumb.webp'),
+    banner: require('../../assets/recipe-media/knuspriger-chicken-burger-aus-der-heissluftfritteuse-banner.webp'),
+  },
   'knuspriger-sesam-tofu-mit-brokkoli-edamame-und-reis': {
     alt_de: 'Foto: Knuspriger Sesam-Tofu mit Brokkoli, Edamame und Reis',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/knuspriger-sesam-tofu-mit-brokkoli-edamame-und-reis-thumb.webp'),
     banner: require('../../assets/recipe-media/knuspriger-sesam-tofu-mit-brokkoli-edamame-und-reis-banner.webp'),
+  },
+  'knuspriges-schweineschnitzel-mit-kartoffel-gurken-salat': {
+    alt_de: 'Foto: Knuspriges Schweineschnitzel mit Kartoffel-Gurken-Salat',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/knuspriges-schweineschnitzel-mit-kartoffel-gurken-salat-thumb.webp'),
+    banner: require('../../assets/recipe-media/knuspriges-schweineschnitzel-mit-kartoffel-gurken-salat-banner.webp'),
   },
   'kochschinken-huettenkaese-brote-mit-radieschen': {
     alt_de: 'Foto: Kochschinken-Hüttenkäse-Brote mit Radieschen',
@@ -448,11 +796,35 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/kokos-garnelen-mit-mango-limetten-skyr-thumb.webp'),
     banner: require('../../assets/recipe-media/kokos-garnelen-mit-mango-limetten-skyr-banner.webp'),
   },
+  'kokos-tofu-curry-mit-blumenkohlreis': {
+    alt_de: 'Foto: Kokos-Tofu-Curry mit Blumenkohlreis',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/kokos-tofu-curry-mit-blumenkohlreis-thumb.webp'),
+    banner: require('../../assets/recipe-media/kokos-tofu-curry-mit-blumenkohlreis-banner.webp'),
+  },
+  'kraeuter-lachs-mit-blumenkohlpueree-und-gruenen-bohnen': {
+    alt_de: 'Foto: Kräuter-Lachs mit Blumenkohlpüree und grünen Bohnen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/kraeuter-lachs-mit-blumenkohlpueree-und-gruenen-bohnen-thumb.webp'),
+    banner: require('../../assets/recipe-media/kraeuter-lachs-mit-blumenkohlpueree-und-gruenen-bohnen-banner.webp'),
+  },
+  'kraeuter-schweinefilet-medaillons-mit-knoblauch-kartoffeln-und-honig-moehren': {
+    alt_de: 'Foto: Kräuter-Schweinefilet-Medaillons mit Knoblauch-Kartoffeln und Honig-Möhren',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/kraeuter-schweinefilet-medaillons-mit-knoblauch-kartoffeln-und-honig-moehren-thumb.webp'),
+    banner: require('../../assets/recipe-media/kraeuter-schweinefilet-medaillons-mit-knoblauch-kartoffeln-und-honig-moehren-banner.webp'),
+  },
   'krautnudeln-mit-ei-und-huettenkaese': {
     alt_de: 'Foto: Krautnudeln mit Ei und Hüttenkäse',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/krautnudeln-mit-ei-und-huettenkaese-thumb.webp'),
     banner: require('../../assets/recipe-media/krautnudeln-mit-ei-und-huettenkaese-banner.webp'),
+  },
+  'lachs-mit-kraeuter-panko-kruste-ofengemuese-und-couscous': {
+    alt_de: 'Foto: Lachs mit Kräuter-Panko-Kruste, Ofengemüse und Couscous',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/lachs-mit-kraeuter-panko-kruste-ofengemuese-und-couscous-thumb.webp'),
+    banner: require('../../assets/recipe-media/lachs-mit-kraeuter-panko-kruste-ofengemuese-und-couscous-banner.webp'),
   },
   'lachs-spinat-pasta-in-zitronen-frischkaesesauce': {
     alt_de: 'Foto: Lachs-Spinat-Pasta in Zitronen-Frischkäsesauce',
@@ -484,17 +856,41 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/lachsschinken-mit-honigmelone-und-huettenkaese-thumb.webp'),
     banner: require('../../assets/recipe-media/lachsschinken-mit-honigmelone-und-huettenkaese-banner.webp'),
   },
+  'lammfilet-mit-ofengemuese-und-tzatziki': {
+    alt_de: 'Foto: Lammfilet mit Ofengemüse und Tzatziki',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/lammfilet-mit-ofengemuese-und-tzatziki-thumb.webp'),
+    banner: require('../../assets/recipe-media/lammfilet-mit-ofengemuese-und-tzatziki-banner.webp'),
+  },
+  'langlauf-toast-mit-banane-honig-und-quark': {
+    alt_de: 'Foto: Langlauf-Toast mit Banane, Honig und Quark',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/langlauf-toast-mit-banane-honig-und-quark-thumb.webp'),
+    banner: require('../../assets/recipe-media/langlauf-toast-mit-banane-honig-und-quark-banner.webp'),
+  },
   'laugenbrezel-mit-schnittlauchquark-und-radieschen': {
     alt_de: 'Foto: Laugenbrezel mit Schnittlauchquark und Radieschen',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/laugenbrezel-mit-schnittlauchquark-und-radieschen-thumb.webp'),
     banner: require('../../assets/recipe-media/laugenbrezel-mit-schnittlauchquark-und-radieschen-banner.webp'),
   },
+  'linsen-bolognese-mit-parmesan': {
+    alt_de: 'Foto: Linsen-Bolognese mit Parmesan',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/linsen-bolognese-mit-parmesan-thumb.webp'),
+    banner: require('../../assets/recipe-media/linsen-bolognese-mit-parmesan-banner.webp'),
+  },
   'linsen-kartoffel-eintopf-mit-moehren-und-majoran': {
     alt_de: 'Foto: Linsen-Kartoffel-Eintopf mit Möhren und Majoran',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/linsen-kartoffel-eintopf-mit-moehren-und-majoran-thumb.webp'),
     banner: require('../../assets/recipe-media/linsen-kartoffel-eintopf-mit-moehren-und-majoran-banner.webp'),
+  },
+  'linsen-spinat-lasagne-mit-huettenkaese': {
+    alt_de: 'Foto: Linsen-Spinat-Lasagne mit Hüttenkäse',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/linsen-spinat-lasagne-mit-huettenkaese-thumb.webp'),
+    banner: require('../../assets/recipe-media/linsen-spinat-lasagne-mit-huettenkaese-banner.webp'),
   },
   'linsensalat-mit-raeuchertofu-und-senf-vinaigrette': {
     alt_de: 'Foto: Linsensalat mit Räuchertofu und Senf-Vinaigrette',
@@ -514,6 +910,30 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/mango-hafer-recovery-smoothie-thumb.webp'),
     banner: require('../../assets/recipe-media/mango-hafer-recovery-smoothie-banner.webp'),
   },
+  'mango-maracuja-sorbet-mit-seidentofu': {
+    alt_de: 'Foto: Mango-Maracuja-Sorbet mit Seidentofu',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/mango-maracuja-sorbet-mit-seidentofu-thumb.webp'),
+    banner: require('../../assets/recipe-media/mango-maracuja-sorbet-mit-seidentofu-banner.webp'),
+  },
+  'mango-reispudding-mit-vanille-protein': {
+    alt_de: 'Foto: Mango-Reispudding mit Vanille-Protein',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/mango-reispudding-mit-vanille-protein-thumb.webp'),
+    banner: require('../../assets/recipe-media/mango-reispudding-mit-vanille-protein-banner.webp'),
+  },
+  'mango-sojaskyr-mit-ahorn-kuerbiskernen': {
+    alt_de: 'Foto: Mango-Sojaskyr mit Ahorn-Kürbiskernen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/mango-sojaskyr-mit-ahorn-kuerbiskernen-thumb.webp'),
+    banner: require('../../assets/recipe-media/mango-sojaskyr-mit-ahorn-kuerbiskernen-banner.webp'),
+  },
+  'mediterraner-ofen-seelachs-mit-kartoffeln-und-feta': {
+    alt_de: 'Foto: Mediterraner Ofen-Seelachs mit Kartoffeln und Feta',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/mediterraner-ofen-seelachs-mit-kartoffeln-und-feta-thumb.webp'),
+    banner: require('../../assets/recipe-media/mediterraner-ofen-seelachs-mit-kartoffeln-und-feta-banner.webp'),
+  },
   'mexikanische-bohnenpfanne-mit-spiegelei': {
     alt_de: 'Foto: Mexikanische Bohnenpfanne mit Spiegelei',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -531,6 +951,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/mildes-haehnchen-joghurt-curry-mit-kichererbsen-und-reis-thumb.webp'),
     banner: require('../../assets/recipe-media/mildes-haehnchen-joghurt-curry-mit-kichererbsen-und-reis-banner.webp'),
+  },
+  'mini-frikadellen-mit-honig-senf-skyr-dip': {
+    alt_de: 'Foto: Mini-Frikadellen mit Honig-Senf-Skyr-Dip',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/mini-frikadellen-mit-honig-senf-skyr-dip-thumb.webp'),
+    banner: require('../../assets/recipe-media/mini-frikadellen-mit-honig-senf-skyr-dip-banner.webp'),
   },
   'mini-reisbowl-mit-haehnchen-und-gurke': {
     alt_de: 'Foto: Mini-Reisbowl mit Hähnchen und Gurke',
@@ -550,11 +976,35 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/nasi-goreng-mit-garnelen-thumb.webp'),
     banner: require('../../assets/recipe-media/nasi-goreng-mit-garnelen-banner.webp'),
   },
+  'ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr': {
+    alt_de: 'Foto: Ofen-Kaiserschmarrn vom Blech mit Apfelmus und Skyr',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr-thumb.webp'),
+    banner: require('../../assets/recipe-media/ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr-banner.webp'),
+  },
+  'ofen-quarkbaellchen-mit-zimt': {
+    alt_de: 'Foto: Ofen-Quarkbällchen mit Zimt',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/ofen-quarkbaellchen-mit-zimt-thumb.webp'),
+    banner: require('../../assets/recipe-media/ofen-quarkbaellchen-mit-zimt-banner.webp'),
+  },
+  'ofengemuese-mit-kichererbsen-und-quark-dip': {
+    alt_de: 'Foto: Ofengemüse mit Kichererbsen & Quark-Dip',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/ofengemuese-mit-kichererbsen-und-quark-dip-thumb.webp'),
+    banner: require('../../assets/recipe-media/ofengemuese-mit-kichererbsen-und-quark-dip-banner.webp'),
+  },
   'ofengemuese-mit-tofu-und-tahin-zitronen-sauce': {
     alt_de: 'Foto: Ofengemüse mit Tofu und Tahin-Zitronen-Sauce',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/ofengemuese-mit-tofu-und-tahin-zitronen-sauce-thumb.webp'),
     banner: require('../../assets/recipe-media/ofengemuese-mit-tofu-und-tahin-zitronen-sauce-banner.webp'),
+  },
+  'ofenlachs-mit-brokkoli-und-suesskartoffel': {
+    alt_de: 'Foto: Ofenlachs mit Brokkoli und Süßkartoffel',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/ofenlachs-mit-brokkoli-und-suesskartoffel-thumb.webp'),
+    banner: require('../../assets/recipe-media/ofenlachs-mit-brokkoli-und-suesskartoffel-banner.webp'),
   },
   'one-pan-eiertoast-mit-kaese-und-spinat': {
     alt_de: 'Foto: One-Pan-Eiertoast mit Käse und Spinat',
@@ -562,17 +1012,47 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/one-pan-eiertoast-mit-kaese-und-spinat-thumb.webp'),
     banner: require('../../assets/recipe-media/one-pan-eiertoast-mit-kaese-und-spinat-banner.webp'),
   },
+  'orangen-bananen-shake-mit-vanille-protein': {
+    alt_de: 'Foto: Orangen-Bananen-Shake mit Vanille-Protein',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/orangen-bananen-shake-mit-vanille-protein-thumb.webp'),
+    banner: require('../../assets/recipe-media/orangen-bananen-shake-mit-vanille-protein-banner.webp'),
+  },
+  'orientalische-haehnchen-couscous-pfanne': {
+    alt_de: 'Foto: Orientalische Hähnchen-Couscous-Pfanne',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/orientalische-haehnchen-couscous-pfanne-thumb.webp'),
+    banner: require('../../assets/recipe-media/orientalische-haehnchen-couscous-pfanne-banner.webp'),
+  },
   'orientalischer-couscous-salat-mit-haehnchen': {
     alt_de: 'Foto: Orientalischer Couscous-Salat mit Hähnchen',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/orientalischer-couscous-salat-mit-haehnchen-thumb.webp'),
     banner: require('../../assets/recipe-media/orientalischer-couscous-salat-mit-haehnchen-banner.webp'),
   },
+  'orientalischer-couscous-salat-mit-kichererbsen': {
+    alt_de: 'Foto: Orientalischer Couscous-Salat mit Kichererbsen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/orientalischer-couscous-salat-mit-kichererbsen-thumb.webp'),
+    banner: require('../../assets/recipe-media/orientalischer-couscous-salat-mit-kichererbsen-banner.webp'),
+  },
+  'overnight-oats-banane-erdnuss': {
+    alt_de: 'Foto: Overnight Oats Banane-Erdnuss',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/overnight-oats-banane-erdnuss-thumb.webp'),
+    banner: require('../../assets/recipe-media/overnight-oats-banane-erdnuss-banner.webp'),
+  },
   'overnight-oats-mit-sojaskyr-und-beeren': {
     alt_de: 'Foto: Overnight Oats mit Sojaskyr und Beeren',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/overnight-oats-mit-sojaskyr-und-beeren-thumb.webp'),
     banner: require('../../assets/recipe-media/overnight-oats-mit-sojaskyr-und-beeren-banner.webp'),
+  },
+  'paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen': {
+    alt_de: 'Foto: Paprika-Gulasch vom Schweinefilet mit Kartoffeln und Bohnen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen-thumb.webp'),
+    banner: require('../../assets/recipe-media/paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen-banner.webp'),
   },
   'paprika-haehnchenschenkel-mit-kartoffelspalten-und-schnittlauchquark': {
     alt_de: 'Foto: Paprika-Hähnchenschenkel mit Kartoffelspalten und Schnittlauchquark',
@@ -586,11 +1066,53 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/pellkartoffeln-mit-kraeuterquark-thumb.webp'),
     banner: require('../../assets/recipe-media/pellkartoffeln-mit-kraeuterquark-banner.webp'),
   },
+  'pfirsich-eistee-sorbet': {
+    alt_de: 'Foto: Pfirsich-Eistee-Sorbet',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/pfirsich-eistee-sorbet-thumb.webp'),
+    banner: require('../../assets/recipe-media/pfirsich-eistee-sorbet-banner.webp'),
+  },
+  'pilz-stroganoff-mit-skyr-und-erbsen': {
+    alt_de: 'Foto: Pilz-Stroganoff mit Skyr & Erbsen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/pilz-stroganoff-mit-skyr-und-erbsen-thumb.webp'),
+    banner: require('../../assets/recipe-media/pilz-stroganoff-mit-skyr-und-erbsen-banner.webp'),
+  },
+  'pistazien-protein-eis-mit-pistazienkernen': {
+    alt_de: 'Foto: Pistazien-Protein-Eis mit Pistazienkernen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/pistazien-protein-eis-mit-pistazienkernen-thumb.webp'),
+    banner: require('../../assets/recipe-media/pistazien-protein-eis-mit-pistazienkernen-banner.webp'),
+  },
+  'pizza-schinken-pilze-mit-quark-oel-teig': {
+    alt_de: 'Foto: Pizza Schinken-Pilze mit Quark-Öl-Teig',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/pizza-schinken-pilze-mit-quark-oel-teig-thumb.webp'),
+    banner: require('../../assets/recipe-media/pizza-schinken-pilze-mit-quark-oel-teig-banner.webp'),
+  },
   'protein-bananenbrot-mit-skyr-und-heidelbeeren': {
     alt_de: 'Foto: Protein-Bananenbrot mit Skyr und Heidelbeeren',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/protein-bananenbrot-mit-skyr-und-heidelbeeren-thumb.webp'),
     banner: require('../../assets/recipe-media/protein-bananenbrot-mit-skyr-und-heidelbeeren-banner.webp'),
+  },
+  'protein-french-toast-mit-zimt-und-himbeer-skyr': {
+    alt_de: 'Foto: Protein-French-Toast mit Zimt und Himbeer-Skyr',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/protein-french-toast-mit-zimt-und-himbeer-skyr-thumb.webp'),
+    banner: require('../../assets/recipe-media/protein-french-toast-mit-zimt-und-himbeer-skyr-banner.webp'),
+  },
+  'protein-griessbrei-mit-sauerkirschen': {
+    alt_de: 'Foto: Protein-Grießbrei mit Sauerkirschen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/protein-griessbrei-mit-sauerkirschen-thumb.webp'),
+    banner: require('../../assets/recipe-media/protein-griessbrei-mit-sauerkirschen-banner.webp'),
+  },
+  'protein-griessbrei-mit-zimtaepfeln': {
+    alt_de: 'Foto: Protein-Grießbrei mit Zimtäpfeln',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/protein-griessbrei-mit-zimtaepfeln-thumb.webp'),
+    banner: require('../../assets/recipe-media/protein-griessbrei-mit-zimtaepfeln-banner.webp'),
   },
   'protein-mac-und-cheese-mit-huettenkaese-sauce': {
     alt_de: 'Foto: Protein-Mac-&-Cheese mit Hüttenkäse-Sauce',
@@ -604,6 +1126,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/protein-nudelsalat-mit-huettenkaese-und-erbsen-thumb.webp'),
     banner: require('../../assets/recipe-media/protein-nudelsalat-mit-huettenkaese-und-erbsen-banner.webp'),
   },
+  'protein-pancakes-mit-heidelbeeren-und-skyr': {
+    alt_de: 'Foto: Protein-Pancakes mit Heidelbeeren & Skyr',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/protein-pancakes-mit-heidelbeeren-und-skyr-thumb.webp'),
+    banner: require('../../assets/recipe-media/protein-pancakes-mit-heidelbeeren-und-skyr-banner.webp'),
+  },
   'protein-pizza-margherita-mit-quark-oel-teig': {
     alt_de: 'Foto: Protein-Pizza Margherita mit Quark-Öl-Teig',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -615,6 +1143,18 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/protein-pizzaschnecken-mit-kochschinken-thumb.webp'),
     banner: require('../../assets/recipe-media/protein-pizzaschnecken-mit-kochschinken-banner.webp'),
+  },
+  'protein-quarkbroetchen-mit-lachsschinken': {
+    alt_de: 'Foto: Protein-Quarkbrötchen mit Lachsschinken',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/protein-quarkbroetchen-mit-lachsschinken-thumb.webp'),
+    banner: require('../../assets/recipe-media/protein-quarkbroetchen-mit-lachsschinken-banner.webp'),
+  },
+  'protein-tassenbrot-mit-haehnchenbrust-und-avocado': {
+    alt_de: 'Foto: Protein-Tassenbrot mit Hähnchenbrust und Avocado',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/protein-tassenbrot-mit-haehnchenbrust-und-avocado-thumb.webp'),
+    banner: require('../../assets/recipe-media/protein-tassenbrot-mit-haehnchenbrust-und-avocado-banner.webp'),
   },
   'puten-caesar-salat-mit-parmesan-skyr-dressing': {
     alt_de: 'Foto: Puten-Caesar-Salat mit Parmesan-Skyr-Dressing',
@@ -640,6 +1180,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/putenbrust-roellchen-mit-frischkaese-und-walnuessen-thumb.webp'),
     banner: require('../../assets/recipe-media/putenbrust-roellchen-mit-frischkaese-und-walnuessen-banner.webp'),
   },
+  'putenbrust-suesskartoffel-pfanne-mit-brokkoli': {
+    alt_de: 'Foto: Putenbrust-Süßkartoffel-Pfanne mit Brokkoli',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/putenbrust-suesskartoffel-pfanne-mit-brokkoli-thumb.webp'),
+    banner: require('../../assets/recipe-media/putenbrust-suesskartoffel-pfanne-mit-brokkoli-banner.webp'),
+  },
   'putengeschnetzeltes-mit-champignons-und-kartoffeln': {
     alt_de: 'Foto: Putengeschnetzeltes mit Champignons und Kartoffeln',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -658,6 +1204,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/quark-hafer-pfannkuchen-mit-apfelmus-thumb.webp'),
     banner: require('../../assets/recipe-media/quark-hafer-pfannkuchen-mit-apfelmus-banner.webp'),
   },
+  'quark-honig-toast-mit-bananenscheiben': {
+    alt_de: 'Foto: Quark-Honig-Toast mit Bananenscheiben',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/quark-honig-toast-mit-bananenscheiben-thumb.webp'),
+    banner: require('../../assets/recipe-media/quark-honig-toast-mit-bananenscheiben-banner.webp'),
+  },
   'quark-porridge-mit-beeren': {
     alt_de: 'Foto: Quark-Porridge mit Beeren',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -670,6 +1222,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/raeucherforellen-brot-mit-huettenkaese-und-radieschen-thumb.webp'),
     banner: require('../../assets/recipe-media/raeucherforellen-brot-mit-huettenkaese-und-radieschen-banner.webp'),
   },
+  'raeucherlachs-ruehrei-mit-gurke-und-dill': {
+    alt_de: 'Foto: Räucherlachs-Rührei mit Gurke und Dill',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/raeucherlachs-ruehrei-mit-gurke-und-dill-thumb.webp'),
+    banner: require('../../assets/recipe-media/raeucherlachs-ruehrei-mit-gurke-und-dill-banner.webp'),
+  },
   'raeuchertofu-knaeckebrot-mit-gurke': {
     alt_de: 'Foto: Räuchertofu-Knäckebrot mit Gurke',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -681,6 +1239,18 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/raeuchertofu-reispfanne-mit-edamame-und-paprika-thumb.webp'),
     banner: require('../../assets/recipe-media/raeuchertofu-reispfanne-mit-edamame-und-paprika-banner.webp'),
+  },
+  'raeuchertofu-sticks-mit-paprika-und-tahin-dip': {
+    alt_de: 'Foto: Räuchertofu-Sticks mit Paprika und Tahin-Dip',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/raeuchertofu-sticks-mit-paprika-und-tahin-dip-thumb.webp'),
+    banner: require('../../assets/recipe-media/raeuchertofu-sticks-mit-paprika-und-tahin-dip-banner.webp'),
+  },
+  'recovery-milchreis-mit-sauerkirschen': {
+    alt_de: 'Foto: Recovery-Milchreis mit Sauerkirschen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/recovery-milchreis-mit-sauerkirschen-thumb.webp'),
+    banner: require('../../assets/recipe-media/recovery-milchreis-mit-sauerkirschen-banner.webp'),
   },
   'reiswaffeln-mit-erdbeerkonfituere-und-banane': {
     alt_de: 'Foto: Reiswaffeln mit Erdbeerkonfitüre und Banane',
@@ -730,6 +1300,18 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/roastbeef-reiswaffeln-mit-meerrettichquark-thumb.webp'),
     banner: require('../../assets/recipe-media/roastbeef-reiswaffeln-mit-meerrettichquark-banner.webp'),
   },
+  'rosenkohl-mit-parmesan-und-zitronen-skyr': {
+    alt_de: 'Foto: Rosenkohl mit Parmesan und Zitronen-Skyr',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/rosenkohl-mit-parmesan-und-zitronen-skyr-thumb.webp'),
+    banner: require('../../assets/recipe-media/rosenkohl-mit-parmesan-und-zitronen-skyr-banner.webp'),
+  },
+  'rote-linsen-dal-mit-spinat': {
+    alt_de: 'Foto: Rote-Linsen-Dal mit Spinat',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/rote-linsen-dal-mit-spinat-thumb.webp'),
+    banner: require('../../assets/recipe-media/rote-linsen-dal-mit-spinat-banner.webp'),
+  },
   'rotes-linsen-dal-mit-spinat-und-reis': {
     alt_de: 'Foto: Rotes Linsen-Dal mit Spinat und Reis',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -760,6 +1342,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/ruehrei-mit-putenbrust-auf-vollkornbrot-thumb.webp'),
     banner: require('../../assets/recipe-media/ruehrei-mit-putenbrust-auf-vollkornbrot-banner.webp'),
   },
+  'saltimbocca-mit-zucchini-tomaten-gemuese': {
+    alt_de: 'Foto: Saltimbocca mit Zucchini-Tomaten-Gemüse',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/saltimbocca-mit-zucchini-tomaten-gemuese-thumb.webp'),
+    banner: require('../../assets/recipe-media/saltimbocca-mit-zucchini-tomaten-gemuese-banner.webp'),
+  },
   'salziges-ahorn-dattel-gel-fuer-die-soft-flask': {
     alt_de: 'Foto: Salziges Ahorn-Dattel-Gel für die Soft-Flask',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -772,11 +1360,23 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/schinken-huettenkaese-roellchen-thumb.webp'),
     banner: require('../../assets/recipe-media/schinken-huettenkaese-roellchen-banner.webp'),
   },
+  'schnelles-seitan-paprika-gulasch-mit-express-reis': {
+    alt_de: 'Foto: Schnelles Seitan-Paprika-Gulasch mit Express-Reis',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/schnelles-seitan-paprika-gulasch-mit-express-reis-thumb.webp'),
+    banner: require('../../assets/recipe-media/schnelles-seitan-paprika-gulasch-mit-express-reis-banner.webp'),
+  },
   'schoko-bananen-proteinshake': {
     alt_de: 'Foto: Schoko-Bananen-Proteinshake',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/schoko-bananen-proteinshake-thumb.webp'),
     banner: require('../../assets/recipe-media/schoko-bananen-proteinshake-banner.webp'),
+  },
+  'schoko-erdnuss-porridge': {
+    alt_de: 'Foto: Schoko-Erdnuss-Porridge',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/schoko-erdnuss-porridge-thumb.webp'),
+    banner: require('../../assets/recipe-media/schoko-erdnuss-porridge-banner.webp'),
   },
   'schoko-haferriegel-mit-mandeln-und-whey': {
     alt_de: 'Foto: Schoko-Haferriegel mit Mandeln und Whey',
@@ -790,11 +1390,47 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/schoko-himbeer-baked-oats-aus-dem-foermchen-thumb.webp'),
     banner: require('../../assets/recipe-media/schoko-himbeer-baked-oats-aus-dem-foermchen-banner.webp'),
   },
+  'schoko-mandel-sojaskyr': {
+    alt_de: 'Foto: Schoko-Mandel-Sojaskyr',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/schoko-mandel-sojaskyr-thumb.webp'),
+    banner: require('../../assets/recipe-media/schoko-mandel-sojaskyr-banner.webp'),
+  },
+  'schoko-protein-energy-balls': {
+    alt_de: 'Foto: Schoko-Protein-Energy-Balls',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/schoko-protein-energy-balls-thumb.webp'),
+    banner: require('../../assets/recipe-media/schoko-protein-energy-balls-banner.webp'),
+  },
+  'schoko-protein-tassenkuchen': {
+    alt_de: 'Foto: Schoko-Protein-Tassenkuchen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/schoko-protein-tassenkuchen-thumb.webp'),
+    banner: require('../../assets/recipe-media/schoko-protein-tassenkuchen-banner.webp'),
+  },
+  'schoko-proteinpudding': {
+    alt_de: 'Foto: Schoko-Proteinpudding',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/schoko-proteinpudding-thumb.webp'),
+    banner: require('../../assets/recipe-media/schoko-proteinpudding-banner.webp'),
+  },
   'schoko-smoothie-bowl-mit-banane': {
     alt_de: 'Foto: Schoko-Smoothie-Bowl mit Banane',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/schoko-smoothie-bowl-mit-banane-thumb.webp'),
     banner: require('../../assets/recipe-media/schoko-smoothie-bowl-mit-banane-banner.webp'),
+  },
+  'schweinefilet-mit-senfkartoffeln-und-bohnen': {
+    alt_de: 'Foto: Schweinefilet mit Senfkartoffeln und Bohnen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/schweinefilet-mit-senfkartoffeln-und-bohnen-thumb.webp'),
+    banner: require('../../assets/recipe-media/schweinefilet-mit-senfkartoffeln-und-bohnen-banner.webp'),
+  },
+  'schweinefilet-souvlaki-mit-bauernsalat-und-tzatziki': {
+    alt_de: 'Foto: Schweinefilet-Souvlaki mit Bauernsalat und Tzatziki',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/schweinefilet-souvlaki-mit-bauernsalat-und-tzatziki-thumb.webp'),
+    banner: require('../../assets/recipe-media/schweinefilet-souvlaki-mit-bauernsalat-und-tzatziki-banner.webp'),
   },
   'schweinefilet-spiesse-mit-paprika-und-kraeuterquark': {
     alt_de: 'Foto: Schweinefilet-Spieße mit Paprika und Kräuterquark',
@@ -808,11 +1444,29 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/schweinemedaillons-mit-pilzrahm-und-brokkoli-thumb.webp'),
     banner: require('../../assets/recipe-media/schweinemedaillons-mit-pilzrahm-und-brokkoli-banner.webp'),
   },
+  'seelachs-mit-gurken-dill-salat-und-petersilienkartoffeln': {
+    alt_de: 'Foto: Seelachs mit Gurken-Dill-Salat und Petersilienkartoffeln',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/seelachs-mit-gurken-dill-salat-und-petersilienkartoffeln-thumb.webp'),
+    banner: require('../../assets/recipe-media/seelachs-mit-gurken-dill-salat-und-petersilienkartoffeln-banner.webp'),
+  },
+  'seidentofu-pancakes-mit-beeren': {
+    alt_de: 'Foto: Seidentofu-Pancakes mit Beeren',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/seidentofu-pancakes-mit-beeren-thumb.webp'),
+    banner: require('../../assets/recipe-media/seidentofu-pancakes-mit-beeren-banner.webp'),
+  },
   'seidentofu-schokomousse-mit-himbeeren': {
     alt_de: 'Foto: Seidentofu-Schokomousse mit Himbeeren',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/seidentofu-schokomousse-mit-himbeeren-thumb.webp'),
     banner: require('../../assets/recipe-media/seidentofu-schokomousse-mit-himbeeren-banner.webp'),
+  },
+  'seitan-doener-wrap-mit-knoblauch-soja-joghurt': {
+    alt_de: 'Foto: Seitan-Döner-Wrap mit Knoblauch-Soja-Joghurt',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/seitan-doener-wrap-mit-knoblauch-soja-joghurt-thumb.webp'),
+    banner: require('../../assets/recipe-media/seitan-doener-wrap-mit-knoblauch-soja-joghurt-banner.webp'),
   },
   'seitan-geschnetzeltes-mit-champignons-und-kartoffeln': {
     alt_de: 'Foto: Seitan-Geschnetzeltes mit Champignons und Kartoffeln',
@@ -820,17 +1474,59 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/seitan-geschnetzeltes-mit-champignons-und-kartoffeln-thumb.webp'),
     banner: require('../../assets/recipe-media/seitan-geschnetzeltes-mit-champignons-und-kartoffeln-banner.webp'),
   },
+  'selbstgemachte-seelachs-fischstaebchen-mit-rosmarinkartoffeln-und-skyr-remoulade': {
+    alt_de: 'Foto: Selbstgemachte Seelachs-Fischstäbchen mit Rosmarinkartoffeln und Skyr-Remoulade',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/selbstgemachte-seelachs-fischstaebchen-mit-rosmarinkartoffeln-und-skyr-remoulade-thumb.webp'),
+    banner: require('../../assets/recipe-media/selbstgemachte-seelachs-fischstaebchen-mit-rosmarinkartoffeln-und-skyr-remoulade-banner.webp'),
+  },
+  'senfeier-mit-brokkoli': {
+    alt_de: 'Foto: Senfeier mit Brokkoli',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/senfeier-mit-brokkoli-thumb.webp'),
+    banner: require('../../assets/recipe-media/senfeier-mit-brokkoli-banner.webp'),
+  },
+  'sesam-edamame': {
+    alt_de: 'Foto: Sesam-Edamame',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/sesam-edamame-thumb.webp'),
+    banner: require('../../assets/recipe-media/sesam-edamame-banner.webp'),
+  },
+  'shakshuka-mit-feta': {
+    alt_de: 'Foto: Shakshuka mit Feta',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/shakshuka-mit-feta-thumb.webp'),
+    banner: require('../../assets/recipe-media/shakshuka-mit-feta-banner.webp'),
+  },
   'shakshuka-mit-putenbrust': {
     alt_de: 'Foto: Shakshuka mit Putenbrust',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/shakshuka-mit-putenbrust-thumb.webp'),
     banner: require('../../assets/recipe-media/shakshuka-mit-putenbrust-banner.webp'),
   },
+  'shakshuka-mit-rinderhack': {
+    alt_de: 'Foto: Shakshuka mit Rinderhack',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/shakshuka-mit-rinderhack-thumb.webp'),
+    banner: require('../../assets/recipe-media/shakshuka-mit-rinderhack-banner.webp'),
+  },
+  'shakshuka-mit-tofu-und-weissen-bohnen': {
+    alt_de: 'Foto: Shakshuka mit Tofu und weißen Bohnen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/shakshuka-mit-tofu-und-weissen-bohnen-thumb.webp'),
+    banner: require('../../assets/recipe-media/shakshuka-mit-tofu-und-weissen-bohnen-banner.webp'),
+  },
   'skyr-bowl-mit-apfel-und-walnuss': {
     alt_de: 'Foto: Skyr-Bowl mit Apfel & Walnuss',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/skyr-bowl-mit-apfel-und-walnuss-thumb.webp'),
     banner: require('../../assets/recipe-media/skyr-bowl-mit-apfel-und-walnuss-banner.webp'),
+  },
+  'skyr-bowl-mit-himbeeren-walnuessen-und-leinsamen': {
+    alt_de: 'Foto: Skyr-Bowl mit Himbeeren, Walnüssen und Leinsamen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/skyr-bowl-mit-himbeeren-walnuessen-und-leinsamen-thumb.webp'),
+    banner: require('../../assets/recipe-media/skyr-bowl-mit-himbeeren-walnuessen-und-leinsamen-banner.webp'),
   },
   'skyr-mit-beeren-und-mandeln': {
     alt_de: 'Foto: Skyr mit Beeren und Mandeln',
@@ -844,6 +1540,12 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/sojaskyr-mit-beeren-und-kuerbiskernen-thumb.webp'),
     banner: require('../../assets/recipe-media/sojaskyr-mit-beeren-und-kuerbiskernen-banner.webp'),
   },
+  'spaghetti-pomodoro-mit-parmesan': {
+    alt_de: 'Foto: Spaghetti Pomodoro mit Parmesan',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/spaghetti-pomodoro-mit-parmesan-thumb.webp'),
+    banner: require('../../assets/recipe-media/spaghetti-pomodoro-mit-parmesan-banner.webp'),
+  },
   'spinat-feta-omelett-mit-tomatensalat': {
     alt_de: 'Foto: Spinat-Feta-Omelett mit Tomatensalat',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -856,11 +1558,29 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/spinat-omelett-mit-eiklar-und-vollkornbrot-thumb.webp'),
     banner: require('../../assets/recipe-media/spinat-omelett-mit-eiklar-und-vollkornbrot-banner.webp'),
   },
+  'spitzkohl-pfanne-mit-raeuchertofu-und-kartoffeln': {
+    alt_de: 'Foto: Spitzkohl-Pfanne mit Räuchertofu und Kartoffeln',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/spitzkohl-pfanne-mit-raeuchertofu-und-kartoffeln-thumb.webp'),
+    banner: require('../../assets/recipe-media/spitzkohl-pfanne-mit-raeuchertofu-und-kartoffeln-banner.webp'),
+  },
+  'stracciatella-proteineis': {
+    alt_de: 'Foto: Stracciatella-Proteineis',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/stracciatella-proteineis-thumb.webp'),
+    banner: require('../../assets/recipe-media/stracciatella-proteineis-banner.webp'),
+  },
   'suess-saure-schweinepfanne-mit-reis': {
     alt_de: 'Foto: Süß-saure Schweinepfanne mit Reis',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/suess-saure-schweinepfanne-mit-reis-thumb.webp'),
     banner: require('../../assets/recipe-media/suess-saure-schweinepfanne-mit-reis-banner.webp'),
+  },
+  'suess-saurer-ananas-tofu-mit-basmatireis': {
+    alt_de: 'Foto: Süß-saurer Ananas-Tofu mit Basmatireis',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/suess-saurer-ananas-tofu-mit-basmatireis-thumb.webp'),
+    banner: require('../../assets/recipe-media/suess-saurer-ananas-tofu-mit-basmatireis-banner.webp'),
   },
   'suesser-zimt-couscous-mit-apfel-und-rosinen': {
     alt_de: 'Foto: Süßer Zimt-Couscous mit Apfel und Rosinen',
@@ -874,11 +1594,29 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis-thumb.webp'),
     banner: require('../../assets/recipe-media/suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis-banner.webp'),
   },
+  'suesskartoffel-wuerfel-mit-feta-und-limetten-skyr': {
+    alt_de: 'Foto: Süßkartoffel-Würfel mit Feta und Limetten-Skyr',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/suesskartoffel-wuerfel-mit-feta-und-limetten-skyr-thumb.webp'),
+    banner: require('../../assets/recipe-media/suesskartoffel-wuerfel-mit-feta-und-limetten-skyr-banner.webp'),
+  },
   'tandoori-putenbrust-mit-paprika-zwiebel-gemuese-und-minz-joghurt': {
     alt_de: 'Foto: Tandoori-Putenbrust mit Paprika-Zwiebel-Gemüse und Minz-Joghurt',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/tandoori-putenbrust-mit-paprika-zwiebel-gemuese-und-minz-joghurt-thumb.webp'),
     banner: require('../../assets/recipe-media/tandoori-putenbrust-mit-paprika-zwiebel-gemuese-und-minz-joghurt-banner.webp'),
+  },
+  'tempeh-gemuesepfanne-mit-cashews': {
+    alt_de: 'Foto: Tempeh-Gemüsepfanne mit Cashews',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/tempeh-gemuesepfanne-mit-cashews-thumb.webp'),
+    banner: require('../../assets/recipe-media/tempeh-gemuesepfanne-mit-cashews-banner.webp'),
+  },
+  'tempeh-gyros-wrap-mit-soja-tzatziki': {
+    alt_de: 'Foto: Tempeh-Gyros-Wrap mit Soja-Tzatziki',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/tempeh-gyros-wrap-mit-soja-tzatziki-thumb.webp'),
+    banner: require('../../assets/recipe-media/tempeh-gyros-wrap-mit-soja-tzatziki-banner.webp'),
   },
   'teriyaki-haehnchen-bowl-mit-brokkoli': {
     alt_de: 'Foto: Teriyaki-Hähnchen-Bowl mit Brokkoli',
@@ -910,11 +1648,23 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/thai-garnelen-curry-mit-gemuese-thumb.webp'),
     banner: require('../../assets/recipe-media/thai-garnelen-curry-mit-gemuese-banner.webp'),
   },
+  'thai-gemuesepfanne-mit-tofu-und-erdnusssauce': {
+    alt_de: 'Foto: Thai-Gemüsepfanne mit Tofu & Erdnusssauce',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/thai-gemuesepfanne-mit-tofu-und-erdnusssauce-thumb.webp'),
+    banner: require('../../assets/recipe-media/thai-gemuesepfanne-mit-tofu-und-erdnusssauce-banner.webp'),
+  },
   'thai-hacksalat-mit-minze-und-reisnudeln': {
     alt_de: 'Foto: Thai-Hacksalat mit Minze und Reisnudeln',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/thai-hacksalat-mit-minze-und-reisnudeln-thumb.webp'),
     banner: require('../../assets/recipe-media/thai-hacksalat-mit-minze-und-reisnudeln-banner.webp'),
+  },
+  'thunfisch-avocado-toast-mit-ei': {
+    alt_de: 'Foto: Thunfisch-Avocado-Toast mit Ei',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/thunfisch-avocado-toast-mit-ei-thumb.webp'),
+    banner: require('../../assets/recipe-media/thunfisch-avocado-toast-mit-ei-banner.webp'),
   },
   'thunfisch-ei-toast-mit-avocado': {
     alt_de: 'Foto: Thunfisch-Ei-Toast mit Avocado',
@@ -940,11 +1690,41 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/thunfisch-skyr-dip-mit-gemuesesticks-thumb.webp'),
     banner: require('../../assets/recipe-media/thunfisch-skyr-dip-mit-gemuesesticks-banner.webp'),
   },
+  'tiramisu-creme-im-glas': {
+    alt_de: 'Foto: Tiramisu-Creme im Glas',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/tiramisu-creme-im-glas-thumb.webp'),
+    banner: require('../../assets/recipe-media/tiramisu-creme-im-glas-banner.webp'),
+  },
+  'tofu-ruehrei-auf-vollkornbrot': {
+    alt_de: 'Foto: Tofu-Rührei auf Vollkornbrot',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/tofu-ruehrei-auf-vollkornbrot-thumb.webp'),
+    banner: require('../../assets/recipe-media/tofu-ruehrei-auf-vollkornbrot-banner.webp'),
+  },
   'tofu-scramble-mit-champignons-und-avocado': {
     alt_de: 'Foto: Tofu-Scramble mit Champignons und Avocado',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/tofu-scramble-mit-champignons-und-avocado-thumb.webp'),
     banner: require('../../assets/recipe-media/tofu-scramble-mit-champignons-und-avocado-banner.webp'),
+  },
+  'tomaten-gnocchi-mit-raeuchertofu-wuerfeln': {
+    alt_de: 'Foto: Tomaten-Gnocchi mit Räuchertofu-Würfeln',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/tomaten-gnocchi-mit-raeuchertofu-wuerfeln-thumb.webp'),
+    banner: require('../../assets/recipe-media/tomaten-gnocchi-mit-raeuchertofu-wuerfeln-banner.webp'),
+  },
+  'tomaten-thunfisch-pasta-mit-rucola': {
+    alt_de: 'Foto: Tomaten-Thunfisch-Pasta mit Rucola',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/tomaten-thunfisch-pasta-mit-rucola-thumb.webp'),
+    banner: require('../../assets/recipe-media/tomaten-thunfisch-pasta-mit-rucola-banner.webp'),
+  },
+  'vanille-chia-pudding-mit-mango-spiegel': {
+    alt_de: 'Foto: Vanille-Chia-Pudding mit Mango-Spiegel',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/vanille-chia-pudding-mit-mango-spiegel-thumb.webp'),
+    banner: require('../../assets/recipe-media/vanille-chia-pudding-mit-mango-spiegel-banner.webp'),
   },
   'vanille-dattel-energy-balls': {
     alt_de: 'Foto: Vanille-Dattel-Energy-Balls',
@@ -964,6 +1744,36 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/vanille-protein-waffeln-mit-apfelmus-thumb.webp'),
     banner: require('../../assets/recipe-media/vanille-protein-waffeln-mit-apfelmus-banner.webp'),
   },
+  'vegane-chili-cheese-fries-mit-sojaschnetzel-chili': {
+    alt_de: 'Foto: Vegane Chili-Cheese-Fries mit Sojaschnetzel-Chili',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/vegane-chili-cheese-fries-mit-sojaschnetzel-chili-thumb.webp'),
+    banner: require('../../assets/recipe-media/vegane-chili-cheese-fries-mit-sojaschnetzel-chili-banner.webp'),
+  },
+  'vegane-protein-pizza-mit-raeuchertofu-und-gemuese': {
+    alt_de: 'Foto: Vegane Protein-Pizza mit Räuchertofu und Gemüse',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/vegane-protein-pizza-mit-raeuchertofu-und-gemuese-thumb.webp'),
+    banner: require('../../assets/recipe-media/vegane-protein-pizza-mit-raeuchertofu-und-gemuese-banner.webp'),
+  },
+  'veganer-linsen-bohnen-burger': {
+    alt_de: 'Foto: Veganer Linsen-Bohnen-Burger',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/veganer-linsen-bohnen-burger-thumb.webp'),
+    banner: require('../../assets/recipe-media/veganer-linsen-bohnen-burger-banner.webp'),
+  },
+  'vollkorn-spaghetti-bolognese-mit-sojaschnetzeln': {
+    alt_de: 'Foto: Vollkorn-Spaghetti Bolognese mit Sojaschnetzeln',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/vollkorn-spaghetti-bolognese-mit-sojaschnetzeln-thumb.webp'),
+    banner: require('../../assets/recipe-media/vollkorn-spaghetti-bolognese-mit-sojaschnetzeln-banner.webp'),
+  },
+  'vollkornpasta-mit-thunfisch-und-tomaten': {
+    alt_de: 'Foto: Vollkornpasta mit Thunfisch und Tomaten',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/vollkornpasta-mit-thunfisch-und-tomaten-thumb.webp'),
+    banner: require('../../assets/recipe-media/vollkornpasta-mit-thunfisch-und-tomaten-banner.webp'),
+  },
   'wassermelone-limette-sorbet': {
     alt_de: 'Foto: Wassermelone-Limette-Sorbet',
     ai_notice_de: 'KI-Bild, Higgsfield',
@@ -982,17 +1792,53 @@ export const GENERATED_RECIPE_MEDIA: Readonly<Record<string, GeneratedRecipeMedi
     thumbnail: require('../../assets/recipe-media/wuerzige-auberginen-scheiben-mit-knoblauch-sojaskyr-und-kuerbiskernen-thumb.webp'),
     banner: require('../../assets/recipe-media/wuerzige-auberginen-scheiben-mit-knoblauch-sojaskyr-und-kuerbiskernen-banner.webp'),
   },
+  'zimt-casein-quarkcreme-mit-walnuessen': {
+    alt_de: 'Foto: Zimt-Casein-Quarkcreme mit Walnüssen',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/zimt-casein-quarkcreme-mit-walnuessen-thumb.webp'),
+    banner: require('../../assets/recipe-media/zimt-casein-quarkcreme-mit-walnuessen-banner.webp'),
+  },
+  'zimt-griessbrei-mit-banane-und-ahornsirup': {
+    alt_de: 'Foto: Zimt-Grießbrei mit Banane und Ahornsirup',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/zimt-griessbrei-mit-banane-und-ahornsirup-thumb.webp'),
+    banner: require('../../assets/recipe-media/zimt-griessbrei-mit-banane-und-ahornsirup-banner.webp'),
+  },
+  'zimtschnecken-mit-quark-oel-teig-und-skyr-guss': {
+    alt_de: 'Foto: Zimtschnecken mit Quark-Öl-Teig und Skyr-Guss',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/zimtschnecken-mit-quark-oel-teig-und-skyr-guss-thumb.webp'),
+    banner: require('../../assets/recipe-media/zimtschnecken-mit-quark-oel-teig-und-skyr-guss-banner.webp'),
+  },
   'zitronen-risotto-mit-erbsen': {
     alt_de: 'Foto: Zitronen-Risotto mit Erbsen',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/zitronen-risotto-mit-erbsen-thumb.webp'),
     banner: require('../../assets/recipe-media/zitronen-risotto-mit-erbsen-banner.webp'),
   },
+  'zitronenkuchen-frozen-joghurt': {
+    alt_de: 'Foto: Zitronenkuchen-Frozen-Joghurt',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/zitronenkuchen-frozen-joghurt-thumb.webp'),
+    banner: require('../../assets/recipe-media/zitronenkuchen-frozen-joghurt-banner.webp'),
+  },
+  'zucchini-lasagne-mit-huettenkaese-und-spinat': {
+    alt_de: 'Foto: Zucchini-Lasagne mit Hüttenkäse und Spinat',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/zucchini-lasagne-mit-huettenkaese-und-spinat-thumb.webp'),
+    banner: require('../../assets/recipe-media/zucchini-lasagne-mit-huettenkaese-und-spinat-banner.webp'),
+  },
   'zucchini-puffer-mit-skyr-tzatziki': {
     alt_de: 'Foto: Zucchini-Puffer mit Skyr-Tzatziki',
     ai_notice_de: 'KI-Bild, Higgsfield',
     thumbnail: require('../../assets/recipe-media/zucchini-puffer-mit-skyr-tzatziki-thumb.webp'),
     banner: require('../../assets/recipe-media/zucchini-puffer-mit-skyr-tzatziki-banner.webp'),
+  },
+  'zucchini-schiffchen-mit-spinat-huettenkaese-fuellung-und-mozzarella': {
+    alt_de: 'Foto: Zucchini-Schiffchen mit Spinat-Hüttenkäse-Füllung und Mozzarella',
+    ai_notice_de: 'KI-Bild, Higgsfield',
+    thumbnail: require('../../assets/recipe-media/zucchini-schiffchen-mit-spinat-huettenkaese-fuellung-und-mozzarella-thumb.webp'),
+    banner: require('../../assets/recipe-media/zucchini-schiffchen-mit-spinat-huettenkaese-fuellung-und-mozzarella-banner.webp'),
   },
   'zwieback-mit-honig-quark': {
     alt_de: 'Foto: Zwieback mit Honig-Quark',

@@ -1,0 +1,30 @@
+{
+  "recipe_id": "gruene-bohnen-buendel-im-lachsschinken-mantel-mit-kraeuterquark",
+  "alt_de": "Foto: Grüne-Bohnen-Bündel im Lachsschinken-Mantel mit Kräuterquark",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/gruene-bohnen-buendel-im-lachsschinken-mantel-mit-kraeuterquark.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "gruene-bohnen-buendel-im-lachsschinken-mantel-mit-kraeuterquark-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "gruene-bohnen-buendel-im-lachsschinken-mantel-mit-kraeuterquark-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

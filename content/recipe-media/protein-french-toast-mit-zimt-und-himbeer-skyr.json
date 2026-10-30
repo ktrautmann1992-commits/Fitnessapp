@@ -1,0 +1,30 @@
+{
+  "recipe_id": "protein-french-toast-mit-zimt-und-himbeer-skyr",
+  "alt_de": "Foto: Protein-French-Toast mit Zimt und Himbeer-Skyr",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/protein-french-toast-mit-zimt-und-himbeer-skyr.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "protein-french-toast-mit-zimt-und-himbeer-skyr-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "protein-french-toast-mit-zimt-und-himbeer-skyr-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}
