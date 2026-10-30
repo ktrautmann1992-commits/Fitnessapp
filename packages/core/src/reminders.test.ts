@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { MEAL_TIMING_RULES, REMINDERS } from './constants';
 import {
   DEFAULT_REMINDER_SETTINGS,
+  drinkGoalReached,
   inQuietHours,
   nudgeReminderTime,
   parseReminderSettings,
@@ -420,5 +421,105 @@ describe('Trinken', () => {
     expect(times).toEqual([...times].sort((a, b) => a - b));
     expect(list.every((r) => !inQuietHours(r.minutes))).toBe(true);
     expect(new Set(list.map((r) => r.id)).size).toBe(list.length);
+  });
+});
+
+describe('Trinken: Tagesziel des Trink-Trackers erreicht', () => {
+  const drink = settings({ meals: { enabled: true }, drink: { enabled: true } });
+  /** 29.10. 10:30 Ortszeit, zwei Tage geplant. */
+  const base = {
+    settings: drink,
+    nowMs: at('2026-10-29T09:30:00Z'),
+    days: [day('2026-10-29'), day('2026-10-30')],
+  };
+  const drinksOn = (list: readonly PlannedReminder[], date: string) =>
+    list.filter((r) => r.kind === 'drink' && r.date === date).length;
+
+  it('drinkGoalReached: genau erreicht, darüber, darunter, ohne Ziel, ohne Tracker', () => {
+    expect(drinkGoalReached({ date: '2026-10-29', totalMl: 2000, goalMl: 2000 })).toBe(true);
+    expect(drinkGoalReached({ date: '2026-10-29', totalMl: 2500, goalMl: 2000 })).toBe(true);
+    expect(drinkGoalReached({ date: '2026-10-29', totalMl: 1999, goalMl: 2000 })).toBe(false);
+    expect(drinkGoalReached({ date: '2026-10-29', totalMl: 5000, goalMl: null })).toBe(false);
+    expect(drinkGoalReached(null)).toBe(false);
+    expect(drinkGoalReached(undefined)).toBe(false);
+  });
+
+  it('kein Tracker (null/fehlend) → wie bisher', () => {
+    const without = run(base);
+    expect(run({ ...base, drinkProgress: null })).toEqual(without);
+    expect(drinksOn(without, '2026-10-29')).toBe(5);
+    expect(drinksOn(without, '2026-10-30')).toBe(7);
+  });
+
+  it('Ziel genau erreicht → restliche Trink-Erinnerungen heute entfallen, morgen bleiben, Essen bleibt', () => {
+    const without = run(base);
+    const list = run({
+      ...base,
+      drinkProgress: { date: '2026-10-29', totalMl: 2000, goalMl: 2000 },
+    });
+    expect(drinksOn(list, '2026-10-29')).toBe(0);
+    expect(drinksOn(list, '2026-10-30')).toBe(7);
+    expect(list.filter((r) => r.kind !== 'drink')).toEqual(
+      without.filter((r) => r.kind !== 'drink'),
+    );
+  });
+
+  it('knapp darunter bzw. ohne Ziel (Herz/Niere, kein Gewicht) → wie bisher', () => {
+    const without = run(base);
+    expect(
+      run({ ...base, drinkProgress: { date: '2026-10-29', totalMl: 1950, goalMl: 2000 } }),
+    ).toEqual(without);
+    expect(
+      run({ ...base, drinkProgress: { date: '2026-10-29', totalMl: 4000, goalMl: null } }),
+    ).toEqual(without);
+  });
+
+  it('Ziel geändert (z. B. Training kam dazu) → Menge reicht nicht mehr → Erinnerungen kommen wieder', () => {
+    const reached = run({
+      ...base,
+      drinkProgress: { date: '2026-10-29', totalMl: 2100, goalMl: 2000 },
+    });
+    const raised = run({
+      ...base,
+      drinkProgress: { date: '2026-10-29', totalMl: 2100, goalMl: 2600 },
+    });
+    expect(drinksOn(reached, '2026-10-29')).toBe(0);
+    expect(drinksOn(raised, '2026-10-29')).toBe(5);
+  });
+
+  it('über Mitternacht: Stand von gestern wirkt nicht auf heute; Stand von heute nicht auf morgen', () => {
+    // 30.10. 07:30 Ortszeit – der Tracker-Stand ist noch vom 29.10. (Ziel erreicht).
+    const nextMorning = {
+      settings: drink,
+      nowMs: at('2026-10-30T06:30:00Z'),
+      days: [day('2026-10-30'), day('2026-10-31')],
+    };
+    expect(
+      run({
+        ...nextMorning,
+        drinkProgress: { date: '2026-10-29', totalMl: 3000, goalMl: 2000 },
+      }),
+    ).toEqual(run(nextMorning));
+    const list = run({
+      ...nextMorning,
+      drinkProgress: { date: '2026-10-30', totalMl: 2000, goalMl: 2000 },
+    });
+    expect(drinksOn(list, '2026-10-30')).toBe(0);
+    expect(drinksOn(list, '2026-10-31')).toBe(7);
+  });
+
+  it('Trinken aus → nichts zu tun; ungültiger Stand wird abgelehnt (Zod)', () => {
+    expect(
+      run({
+        settings: settings({ drink: { enabled: false } }),
+        drinkProgress: { date: '2026-10-29', totalMl: 0, goalMl: 2000 },
+      }),
+    ).toEqual([]);
+    expect(() =>
+      run({ ...base, drinkProgress: { date: '2026-10-29', totalMl: -1, goalMl: 2000 } }),
+    ).toThrow();
+    expect(() =>
+      run({ ...base, drinkProgress: { date: '29.10.2026', totalMl: 0, goalMl: 2000 } }),
+    ).toThrow();
   });
 });

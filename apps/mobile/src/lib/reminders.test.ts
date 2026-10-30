@@ -10,6 +10,7 @@ import { createMemoryStore, STORAGE_KEYS } from '@/data/kv';
 import type { MealPlanRow, PlannedSessionRow, UserPlanRow, UserRows } from '@/data/types';
 import { rowsWith } from '@/test/fixtures';
 
+import { drinkProgressFor } from './hydration-status';
 import { ANDROID_CHANNELS, notificationDriver } from './notification-driver.native';
 import { createNotifications, REMINDER_ROUTES } from './notifications';
 import { reminderContent, reminderDaysFromRows, reminderNotifications } from './reminders';
@@ -316,5 +317,96 @@ describe('syncReminders', () => {
     expect(fake.scheduled.size).toBe(0);
     expect(await store.getItem(STORAGE_KEYS.reminderPrefs)).toBeNull();
     expect(await store.getItem(STORAGE_KEYS.reminderScheduled)).toBeNull();
+  });
+});
+
+describe('Trink-Erinnerungen: Tagesziel erreicht', () => {
+  const on = settings({ drink: { enabled: true } });
+  const drinkIds = (list: { id: string }[], date: string) =>
+    list.filter((r) => r.id.startsWith(`erinnerung-d-${date}`)).map((r) => r.id);
+  const planWith = (drinkProgress: Parameters<typeof reminderNotifications>[0]['drinkProgress']) =>
+    reminderNotifications({
+      rows: rows(),
+      settings: on,
+      today: TODAY,
+      nowMs: NOW_MS,
+      timeZone: TZ,
+      drinkProgress,
+    });
+  const entry = (day: string, amount_ml: number) => ({ day, amount_ml });
+
+  it('drinkProgressFor: Ziel der Karte (gleiches Konto/Tag) vor dem berechneten; ohne Einträge null', () => {
+    const fallback = {
+      kind: 'goal',
+      goalMl: 2000,
+      baseMl: 2000,
+      trainingMl: 0,
+      heatMl: 0,
+    } as const;
+    const entries = [entry(TODAY, 1500), entry(TODAY, 750), entry('2026-10-28', 3000)];
+    const shown = { userId: 'u1', date: TODAY, goalMl: 2500 };
+    expect(drinkProgressFor({ userId: 'u1', today: TODAY, entries, shown, fallback })).toEqual({
+      date: TODAY,
+      totalMl: 2250,
+      goalMl: 2500,
+    });
+    // Karte von gestern bzw. anderem Konto → berechnetes Ziel.
+    for (const other of [
+      { ...shown, date: '2026-10-28' },
+      { ...shown, userId: 'u2' },
+    ]) {
+      expect(
+        drinkProgressFor({ userId: 'u1', today: TODAY, entries, shown: other, fallback })?.goalMl,
+      ).toBe(2000);
+    }
+    // Karte zeigt kein Ziel (Herz/Niere) → kein Ziel, auch wenn berechnet eins da wäre.
+    expect(
+      drinkProgressFor({
+        userId: 'u1',
+        today: TODAY,
+        entries,
+        shown: { ...shown, goalMl: null },
+        fallback,
+      })?.goalMl,
+    ).toBeNull();
+    expect(
+      drinkProgressFor({ userId: 'u1', today: TODAY, entries: null, shown, fallback }),
+    ).toBeNull();
+    expect(
+      drinkProgressFor({
+        userId: 'u1',
+        today: TODAY,
+        entries,
+        shown: null,
+        fallback: { kind: 'no_goal', reason: 'no_weight' },
+      })?.goalMl,
+    ).toBeNull();
+  });
+
+  it('Ziel erreicht → heute keine Trink-Erinnerung, morgen schon; kein Tracker → wie bisher', () => {
+    const before = planWith(undefined);
+    expect(planWith(null)).toEqual(before);
+    expect(drinkIds(before, TODAY).length).toBeGreaterThan(0);
+    const reached = planWith({ date: TODAY, totalMl: 2000, goalMl: 2000 });
+    expect(drinkIds(reached, TODAY)).toEqual([]);
+    expect(drinkIds(reached, '2026-10-30')).toEqual(drinkIds(before, '2026-10-30'));
+  });
+
+  it('Eintrag erreicht das Ziel → storniert; Eintrag zurückgenommen → wieder geplant', async () => {
+    const n = createNotifications(notificationDriver, createMemoryStore());
+    await n.syncReminders(planWith({ date: TODAY, totalMl: 1750, goalMl: 2000 }));
+    const all = [...fake.scheduled.keys()];
+    expect(
+      drinkIds(
+        all.map((id) => ({ id })),
+        TODAY,
+      ).length,
+    ).toBeGreaterThan(0);
+    await n.syncReminders(planWith({ date: TODAY, totalMl: 2250, goalMl: 2000 }));
+    const after = [...fake.scheduled.keys()].map((id) => ({ id }));
+    expect(drinkIds(after, TODAY)).toEqual([]);
+    expect(drinkIds(after, '2026-10-30').length).toBeGreaterThan(0);
+    await n.syncReminders(planWith({ date: TODAY, totalMl: 1750, goalMl: 2000 }));
+    expect([...fake.scheduled.keys()].sort()).toEqual(all.sort());
   });
 });

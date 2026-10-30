@@ -1,6 +1,6 @@
 import { HYDRATION, hydrationFraction, hydrationHistory, hydrationTotal } from '@fitnessapp/core';
 import { areaColors, fontSize, spacing } from '@fitnessapp/ui';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { MiniBars, ProgressRing, SectionLabel } from '@/components/design';
@@ -9,6 +9,7 @@ import { Body, Button, Card, LoadingState, Notice } from '@/components/ui';
 import { HydrationError } from '@/data/hydration';
 import { t } from '@/i18n';
 import { appFont } from '@/lib/fonts';
+import { publishHydrationGoal } from '@/lib/hydration-status';
 import { useColorSchemeName, useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { useSupplements } from '@/state/use-supplements';
@@ -51,6 +52,14 @@ export function HydrationCard({
         : null,
     [app.rows, kidney, routes.state, today],
   );
+  // Trink-Erinnerungen nutzen dasselbe Ziel wie die Karte (inkl. Wärme und Herz/Niere).
+  const userId = app.session?.userId ?? null;
+  const shownGoalMl = goal === null ? undefined : goal.kind === 'goal' ? goal.goalMl : null;
+  useEffect(() => {
+    if (userId !== null && shownGoalMl !== undefined) {
+      publishHydrationGoal({ userId, date: today, goalMl: shownGoalMl });
+    }
+  }, [userId, today, shownGoalMl]);
   if (state.kind === 'unsupported' || !goal) return null;
   const entries = state.kind === 'ready' ? state.entries : [];
   const total = hydrationTotal(entries, today);
