@@ -16,11 +16,13 @@ import { reminderNotifications } from '@/lib/reminders';
 import { useThemeColors } from '@/lib/theme';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
+import { useDrinkProgress } from '@/state/use-drink-progress';
 
 /**
  * Erinnerungen an Training, Essen und Trinken (docs/PLAN-ERINNERUNGEN.md, Gründer-Wunsch 29.10.2026):
  * - `ReminderScheduler` (im Wurzel-Layout): plant beim App-Start, bei Rückkehr in die App, bei jeder Änderung des Plans
- *   (Zeilen) und der Einstellung neu – nur lokal, die nächsten 7 Tage. Im Browser ein No-op.
+ *   (Zeilen) und der Einstellung neu – nur lokal, die nächsten 7 Tage. Im Browser ein No-op. Ist das Trink-Tagesziel
+ *   erreicht, entfallen die restlichen Trink-Erinnerungen des Tages; jeder Eintrag im Trink-Tracker plant neu.
  * - `ReminderSettingsCard`: drei Schalter mit Optionen in Einstellungen → Benachrichtigungen. Die System-Erlaubnis kommt
  *   erst beim Einschalten (Tipp der Person).
  */
@@ -41,6 +43,14 @@ export function ReminderScheduler(): null {
   const loading = app.status.kind === 'loading';
   const rows = app.session ? app.rows : null;
   const signedIn = app.session !== null;
+  const drink = useDrinkProgress(
+    today,
+    appNotifications.supported && prefs.loaded && prefs.settings.drink.enabled,
+    wake,
+  );
+  const drinkDate = drink?.date ?? null;
+  const drinkTotal = drink?.totalMl ?? null;
+  const drinkGoal = drink?.goalMl ?? null;
   useEffect(() => {
     if (!appNotifications.supported || !prefs.loaded || loading) return;
     const items = signedIn
@@ -50,10 +60,14 @@ export function ReminderScheduler(): null {
           today,
           nowMs: Date.now(),
           timeZone: deviceTimeZone(),
+          drinkProgress:
+            drinkDate !== null && drinkTotal !== null
+              ? { date: drinkDate, totalMl: drinkTotal, goalMl: drinkGoal }
+              : null,
         })
       : [];
     void appNotifications.syncReminders(items).catch(() => undefined);
-  }, [rows, prefs, today, wake, loading, signedIn]);
+  }, [rows, prefs, today, wake, loading, signedIn, drinkDate, drinkTotal, drinkGoal]);
   return null;
 }
 

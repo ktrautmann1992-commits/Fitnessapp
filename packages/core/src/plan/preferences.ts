@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import {
   EXERCISE_PREFERENCE_LIMITS,
-  HYROX_ONLY_EXERCISE_IDS,
+  LIBRARY_SEARCH_EXCLUDED_IDS,
   REST_RANGES_S,
   SWAP_RULES,
 } from '../constants';
@@ -271,9 +271,12 @@ export function swapCandidatesFor(
     Number(b.load_type === stored.load_type) - Number(a.load_type === stored.load_type) ||
     compareIds(a, b);
   [...ctx.library.values()]
-    // Sportarten Stufe 1: Hyrox-Übungen nur innerhalb von Hyrox (HYROX_ONLY_EXERCISE_IDS).
+    // Sportarten Stufe 1: Hyrox-Übungen nur innerhalb von Hyrox, WOD-Übungen nur in Workouts
+    // (LIBRARY_SEARCH_EXCLUDED_IDS).
     .filter(
-      (c) => !HYROX_ONLY_EXERCISE_IDS.includes(c.id) || HYROX_ONLY_EXERCISE_IDS.includes(stored.id),
+      (c) =>
+        !LIBRARY_SEARCH_EXCLUDED_IDS.includes(c.id) ||
+        LIBRARY_SEARCH_EXCLUDED_IDS.includes(stored.id),
     )
     .filter((c) => sharesPrimaryMuscle(c, stored))
     .sort(rank)

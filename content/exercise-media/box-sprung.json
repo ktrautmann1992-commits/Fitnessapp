@@ -1,0 +1,20 @@
+{
+  "exercise_id": "box-sprung",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "box-sprung-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht etwa eine Fußlänge vor einer stabilen Box stehen, Füße hüftbreit, Arme seitlich am Körper.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

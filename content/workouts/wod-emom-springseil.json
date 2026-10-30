@@ -1,0 +1,52 @@
+{
+  "id": "wod-emom-springseil",
+  "version": 1,
+  "status": "published",
+  "title_de": "EMOM 12 – Springseil",
+  "summary_de": "Jede Minute eine Übung: Seilspringen, Kniebeugen und Liegestütz, je 40 Sekunden Arbeit und den Rest der Minute Pause. Du brauchst ein Springseil. Einsteiger: 30 Sekunden arbeiten. Fortgeschrittene: Double-Unders statt einfacher Sprünge.",
+  "category": "hiit_cardio",
+  "difficulty": 3,
+  "minutes": 12,
+  "format": "interval",
+  "rounds": 4,
+  "round_rest_s": 20,
+  "equipment_ids": [],
+  "warmup_de": "Fünf Minuten locker einrollen: auf der Stelle gehen, Step-Jacks und ein paar ruhige Sprünge mit dem Seil, dann Fußgelenke und Waden lockern.",
+  "cooldown_de": "Fünf Minuten locker gehen und ruhig atmen, danach Waden und Oberschenkel dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "seilspringen",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Ohne Seil: gleiche Sprünge mit angedeutetem Schwung."
+    },
+    {
+      "exercise_id": "kniebeuge-koerpergewicht",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "liegestuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Einsteiger: an der Bank oder auf den Knien."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-30",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-30",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 30.10.2026 (Box-Sprung, Seilspringen und Thruster in Workouts im WOD-Stil, docs/PLAN-WORKOUTS.md W-O6) – nicht fachlich geprüft."
+  }
+}

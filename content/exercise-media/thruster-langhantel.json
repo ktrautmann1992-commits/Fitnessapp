@@ -1,0 +1,20 @@
+{
+  "exercise_id": "thruster-langhantel",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "thruster-langhantel-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, die Langhantel liegt auf den vorderen Schultern, Ellbogen vorn, Füße schulterbreit; dahinter das Rack.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

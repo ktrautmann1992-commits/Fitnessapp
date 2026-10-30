@@ -1,14 +1,14 @@
 {
   "id": "wod-amrap-studio",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "AMRAP 15 – Studio",
-  "summary_de": "Fünfzehn Minuten so viele Runden wie möglich mit Rudergerät, Kettlebell, Wall Ball und Klimmzugstange. Einsteiger: weniger Wiederholungen. Fortgeschrittene: schwerere Kugel.",
+  "summary_de": "Fünfzehn Minuten so viele Runden wie möglich mit Rudergerät, Kettlebell, Wall Ball, Klimmzugstange und Box-Sprüngen. Einsteiger: weniger Wiederholungen, auf die Box steigen. Fortgeschrittene: schwerere Kugel.",
   "category": "full_body",
   "difficulty": 4,
   "minutes": 15,
   "format": "circuit",
-  "rounds": 5,
+  "rounds": 4,
   "round_rest_s": 0,
   "equipment_ids": [
     "rowing_machine",
@@ -51,6 +51,14 @@
       "sets": null,
       "rest_s": 0,
       "note_de": "Fortgeschrittene: ohne Band."
+    },
+    {
+      "exercise_id": "box-sprung",
+      "reps": 10,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Einsteiger: auf die Box steigen statt springen."
     }
   ],
   "meta": {
@@ -60,7 +68,7 @@
     "created_on": "2026-10-29",
     "expert_reviewed": false,
     "reviewed_by": "Karsten (Auftrag an Claude)",
-    "reviewed_at": "2026-10-29",
-    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+    "reviewed_at": "2026-10-30",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft. Nachtrag 30.10.2026: Box-Sprung/Seilspringen ergänzt (W-O6)."
   }
 }

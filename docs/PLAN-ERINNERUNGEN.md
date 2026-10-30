@@ -22,8 +22,14 @@ Einstellungen → Benachrichtigungen → Karte „Erinnerungen an Training, Esse
 - Höchstens die **nächsten 7 Tage** und **60** Benachrichtigungen (iOS-Grenze 64); Uhrzeiten in der Zeitzone des
   Geräts inkl. Sommerzeit (`zonedTimeToUtcMs`).
 - Snack-Hinweis entfällt neben einer Trainings-Erinnerung zur selben Zeit (nie zwei Meldungen direkt hintereinander).
+- **Trink-Tagesziel erreicht** (Nachtrag 30.10.2026): Ist die heutige Menge im Trink-Tracker ≥ Tagesziel
+  (`drinkProgress`, `drinkGoalReached`), entfallen die restlichen Trink-Erinnerungen dieses Tages (Folgetage
+  unverändert). Sinkt die Menge wieder darunter (Eintrag zurückgenommen) oder steigt das Ziel (Training, Wärme),
+  kommen sie wieder. Ohne Ziel (Herz/Niere, kein Gewicht) oder ohne Tracker-Stand: wie bisher. Ein Stand von gestern
+  wirkt nach Mitternacht nicht.
 - Vitest: Mitternacht, Sommer-/Winterzeit Europe/Berlin, Einheit verschoben, keine Einheit, 1 vs. 7 Trainingstage,
-  Grenze 60, ungültige Einstellungen.
+  Grenze 60, ungültige Einstellungen; Trink-Ziel genau erreicht, knapp darunter, über Mitternacht, Ziel geändert,
+  ohne Ziel, kein Tracker.
 
 ## App (apps/mobile)
 
@@ -32,7 +38,10 @@ Einstellungen → Benachrichtigungen → Karte „Erinnerungen an Training, Esse
 - `lib/notifications.ts` `syncReminders`: ersetzt nur Geändertes, storniert Weggefallenes (gemerkt in
   `fitnessapp.reminder-scheduled.v1`), ohne Erlaubnis alles storniert; `reset` (Abmelden/Konto löschen) löscht alles.
 - `components/reminders.tsx` `ReminderScheduler` im Wurzel-Layout: plant beim App-Start, bei Rückkehr in die App,
-  bei jeder Plan-/Einstellungsänderung (Zeilen) und bei Tageswechsel neu.
+  bei jeder Plan-/Einstellungsänderung (Zeilen), bei Tageswechsel und bei jedem Eintrag im Trink-Tracker neu.
+- `state/use-drink-progress.ts`: heutige Menge (Trink-Tracker, nur wenn Trink-Erinnerungen an) und Tagesziel – wie auf
+  der Karte „Trinken“ (`lib/hydration-status.ts`, inkl. Wärme und Nieren-Angabe, nur Arbeitsspeicher); vor der ersten
+  Anzeige der Karte (Neustart) aus den Zeilen (Gewicht, Alter, Training, Herz-Angabe).
 - Android-Kanäle je Art: „Training“, „Essen“, „Trinken“ (leiser) – einzeln in den System-Einstellungen abschaltbar.
 - Antippen öffnet „Heute“ (Training), „Ernährung“ (Essen), „Übersicht“ (Trinken).
 - Texte ohne Gesundheitswerte: nur Uhrzeit, Name der Einheit bzw. Gericht (kein Gewicht, keine kcal, kein Zyklus).
@@ -50,7 +59,9 @@ Einstellungen → Benachrichtigungen → Karte „Erinnerungen an Training, Esse
 
 - Wird die App länger als 7 Tage nicht geöffnet, laufen die Erinnerungen aus (kein Hintergrund-Planen).
 - Android ohne „exakte Wecker“: Meldungen können im Energiesparen einige Minuten später kommen.
-- Trink-Erinnerungen hören nicht auf, wenn das Tagesziel erreicht ist (Folge-Idee).
+- Trink-Erinnerungen enden mit erreichtem Tagesziel nur, wenn die App danach einmal geplant hat (Eintrag in der App,
+  App-Start, Rückkehr) – ohne Eintrag in der App weiß sie nichts vom Trinken. Nach einem Neustart gilt bis zur
+  Anzeige der Karte „Trinken“ das Ziel ohne Wärme- und Nieren-Angabe.
 - Ein Essensplan, der nur als Datenbank-Zeilen (ohne vollständigen Plan) vorliegt, liefert keine Gerichte – dann
   Frühstück/Mittag/Abend; nach dem Öffnen von „Ernährung“ ist der Plan da.
 - Die bisherige Einzel-Erinnerung „Snack vor dem Training“ in der Zeitleiste bleibt unabhängig bestehen.
