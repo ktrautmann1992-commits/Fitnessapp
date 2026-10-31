@@ -120,23 +120,25 @@ export const de = {
     benefits: [
       {
         title: 'Plan für dein Ziel',
-        text: 'Kraft, Fitness oder lockere Ausdauer – im Studio oder zu Hause, mit deinem Equipment.',
+        text: 'Kraft, Abnehmen, Laufen, Rad, Hyrox, Calisthenics, Yoga und mehr – im Studio, zu Hause oder draußen, mit deinem Equipment.',
       },
       {
         title: 'Jede Woche klar geplant',
         text: 'Übungen, Sätze und Pausen für jede Einheit. Erholungswochen sind fest eingeplant.',
       },
       {
+        title: 'Ernährung mit Rezepten',
+        text: 'Wochenplan mit Rezepten, Mahlzeiten passend zu deinem Training und Einkaufsliste.',
+      },
+      {
+        title: 'Tagebuch und Auswertung',
+        text: 'Sätze, Gewichte und Läufe festhalten – mit Karte, Pace pro Kilometer und Fortschritt.',
+      },
+      {
         title: 'Sicher von Anfang an',
         text: 'Ein kurzer Gesundheits-Check sorgt dafür, dass dein Plan zu dir passt.',
       },
     ],
-    soon: {
-      badge: 'Bald',
-      title: 'Ernährung und Tagebuch',
-      text: 'Wochenplan mit Rezepten und Einkaufsliste, dazu Sätze und Gewichte festhalten.',
-      label: 'Bald verfügbar: Ernährungsplan und Trainingstagebuch',
-    },
     start: "Neu hier – Los geht's",
     startHint: 'Startet die Fragen zu deinem Plan',
     haveAccount: 'Anmelden',
