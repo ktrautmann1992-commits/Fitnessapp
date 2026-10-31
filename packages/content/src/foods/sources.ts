@@ -319,15 +319,16 @@ const CH_7_1: SourceDefinition = {
  * BLS noch Schweizer Nährwertdatenbank führen (Gewürze, Proteinpulver, Kokosmilch light u. a.).
  *
  * Adresse: feste Datei-Adresse von fdc.nal.usda.gov/download-datasets („SR Legacy“, CSV), aus der öffentlichen
- * Dokumentation abgeleitet – beim ersten Lauf „kandidaten“ zu bestätigen (`urlStatus: 'unconfirmed'`).
+ * Dokumentation abgeleitet, bestätigt durch den Lauf „kandidaten“ 41208228261 vom 31.10.2026.
  * Lizenz: FoodData Central steht unter CC0 1.0 (gemeinfrei, laut fdc.nal.usda.gov „Data are in the public domain“);
  * eine Quellenangabe wird erbeten.
  *
  * Aufbau (langes Format) liest `fdc-csv.ts`: Spalten „<Nährstoff-ID> <Name> (<Einheit>)“. Nährstoff-IDs laut
  * FoodData-Central-Dokumentation: 1008 Energy (kcal), 1003 Protein, 1004 Total lipid (fat), 1005 Carbohydrate, by
  * difference (inkl. Ballaststoffe → minus 1079), 2000 Sugars, total, 1258 Fatty acids, total saturated, 1079 Fiber,
- * total dietary, 1093 Sodium (mg → Salz × 2,5), 1018 Alcohol, ethyl. Bis zum Lauf „kandidaten“ ungeprüft
- * (`columnsStatus: 'unconfirmed'`, Prüfsumme offen) – der Import bricht bei abweichender Kopfzeile ab.
+ * total dietary, 1093 Sodium (mg → Salz × 2,5), 1018 Alcohol, ethyl. An der Kopfzeile des Laufs 41208228261
+ * geprüft (Zucker heißt dort „2000 Sugars, Total (g)“; gesucht wird nach ID und Einheit) – der Import bricht bei
+ * abweichender Kopfzeile ab.
  */
 const USDA_SR_LEGACY: SourceDefinition = {
   db: 'usda_fdc',
@@ -335,15 +336,17 @@ const USDA_SR_LEGACY: SourceDefinition = {
   title: 'USDA FoodData Central, SR Legacy (April 2018)',
   url: 'https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip',
   downloadPage: null,
-  urlStatus: 'unconfirmed',
+  urlStatus: 'confirmed',
+  // Lizenz-Wortlaut noch nicht beim Herausgeber gegengeprüft (Seite aus der Claude-Sitzung nicht erreichbar).
   licenseStatus: 'unconfirmed',
   confirmedBy:
-    'Adresse und Lizenz aus der öffentlichen Dokumentation von fdc.nal.usda.gov abgeleitet (Claude-Sitzung 30.10.2026); Bestätigung durch Lauf „kandidaten“ und Gründer-Merge',
+    'Adresse bestätigt durch Lauf „kandidaten“ 41208228261 vom 31.10.2026 (HTTP 200, application/zip, 6074592 Bytes, 7793 Lebensmittel); Prüfsumme und Spalten festgenagelt per Gründer-Merge',
   originalFilename: 'FoodData_Central_sr_legacy_food_csv_2018-04.zip',
   format: 'fdc_csv_zip',
   sheet: null,
   csvDelimiter: ',',
-  originalSha256: null,
+  // SHA-256 aus Lauf „kandidaten“ 41208228261 (31.10.2026).
+  originalSha256: 'b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0',
   keyColumn: 0,
   // fdc_id von SR Legacy: 6 Ziffern (z. B. 171326); bis 7 zugelassen.
   keyPattern: '^[0-9]{5,7}$',
@@ -369,7 +372,8 @@ const USDA_SR_LEGACY: SourceDefinition = {
   energyExtras: {
     alcohol_g: [{ code: '1018', unit: 'g', convert: 'none' }],
   },
-  columnsStatus: 'unconfirmed',
+  // Geprüft an der Kopfzeile des Laufs 41208228261: alle Nährstoff-IDs mit erwarteter Einheit vorhanden.
+  columnsStatus: 'confirmed',
   license: 'CC0 1.0',
   licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
   licenseText:
