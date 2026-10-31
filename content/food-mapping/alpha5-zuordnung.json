@@ -667,8 +667,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
-        "search": ["casein", "milk protein"],
+        "ref": "173180",
+        "search": ["whey", "casein"],
         "state_de": "Pulver",
         "category": "dairy"
       },
@@ -685,7 +685,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: Pulver. Quell-ID 173180 „Beverages, Protein powder whey based“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Casein-Pulver führt SR Legacy nicht (nur Markenprodukte); Milchprotein-Pulver auf Molkenbasis hat eine sehr ähnliche Nährstoffzusammensetzung. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "cashewkerne",
@@ -1322,8 +1322,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
-        "search": ["erythritol", "sugar alcohol", "sweetener"],
+        "ref": "170679",
+        "search": ["stevia", "erythritol", "sweetener"],
         "state_de": "Pulver",
         "category": "sugar_sweets"
       },
@@ -1340,7 +1340,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: Pulver. Quell-ID 170679 „Sweetener, herbal extract powder from Stevia leaf“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Erythrit führt SR Legacy nicht; Süßungsmittel-Pulver aus Steviablättern als Näherung (Erythrit nach LMIV 0 kcal/g). Werte im Import-PR prüfen. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "espresso-zubereitet",
@@ -1692,8 +1692,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
-        "search": ["gelatin dessert", "low calorie", "sugar free", "sugar-free"],
+        "ref": "170679",
+        "search": ["stevia", "sweetener", "sugar free"],
         "state_de": "Pulver, mit Süßungsmitteln",
         "category": "other"
       },
@@ -1710,7 +1710,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, mit Süßungsmitteln. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: Pulver, mit Süßungsmitteln. Quell-ID 170679 „Sweetener, herbal extract powder from Stevia leaf“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: zuckerfreies Aromapulver besteht fast nur aus Süßungsmittel und Aroma; Stevia-Pulver als Näherung, Mengen je Rezept klein. Werte im Import-PR prüfen. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "gewuerzgurken-glas",
@@ -2552,8 +2552,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
-        "search": ["locust bean", "carob", "gum"],
+        "ref": "169045",
+        "search": ["locust bean", "gum"],
         "state_de": "Pulver",
         "category": "other"
       },
@@ -2570,7 +2570,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: Pulver. Quell-ID 169045 „Gums, seed gums (includes locust bean, guar)“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend (Samen-Verdickungsmittel inkl. Johannisbrotkernmehl). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "kabeljaufilet",
@@ -2993,7 +2993,7 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
+        "ref": "170173",
         "search": ["coconut milk"],
         "state_de": "Konserve, fettreduziert",
         "category": "nuts_seeds"
@@ -3011,7 +3011,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve, fettreduziert. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: Konserve, fettreduziert. Quell-ID 170173 „Nuts, coconut milk, canned (liquid expressed from grated meat and water)“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Kokosmilch aus der Dose in voller Fettstufe – eine fettreduzierte Variante führt SR Legacy nicht; Energie und Fett werden überschätzt. Bei der Katalog-Prüfung beachten. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "kokosraspeln",
@@ -3047,8 +3047,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
-        "search": ["coriander", "cilantro"],
+        "ref": "169997",
+        "search": ["cilantro", "coriander"],
         "state_de": "frisch, roh",
         "category": "vegetables"
       },
@@ -3065,7 +3065,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: frisch, roh. Quell-ID 169997 „Coriander (cilantro) leaves, raw“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend (frisch, roh). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "kreuzkuemmel",
@@ -4656,7 +4656,7 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
+        "ref": "172237",
         "search": ["vinegar"],
         "state_de": "Essig",
         "category": "spices_sauces"
@@ -4674,7 +4674,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Essig. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: Essig. Quell-ID 172237 „Vinegar, distilled“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Reisessig führt SR Legacy nicht; Branntweinessig als Näherung (ungesüßt, Nährwerte vernachlässigbar). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "reisnudeln-trocken",
@@ -5989,7 +5989,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: natur. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: natur. Quell-ID offen (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nur Soja-/Tofu-Joghurt (167722 „Tofu yogurt“, Markenprodukte) mit deutlich weniger Eiweiß als Sojaskyr – passt nicht (wie schon H844000 in BLS). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1."
     },
     {
       "alpha5_id": "spaghetti-trocken",
@@ -6494,8 +6494,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
-        "search": ["pea protein", "rice protein", "soy protein", "Protein powder"],
+        "ref": "173181",
+        "search": ["soy protein", "pea protein"],
         "state_de": "Pulver",
         "category": "other"
       },
@@ -6512,7 +6512,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: Pulver. Quell-ID 173181 „Beverages, Protein powder soy based“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Erbsen-/Reisprotein führt SR Legacy nicht; Proteinpulver auf Sojabasis als Näherung (ähnliche Makronährstoffe). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "veganes-proteinpulver-erbse-reis-neutral",
@@ -6521,8 +6521,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
-        "search": ["pea protein", "rice protein", "soy protein", "Protein powder"],
+        "ref": "173181",
+        "search": ["soy protein", "pea protein"],
         "state_de": "Pulver, neutral",
         "category": "other"
       },
@@ -6539,7 +6539,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, neutral. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: Pulver, neutral. Quell-ID 173181 „Beverages, Protein powder soy based“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Erbsen-/Reisprotein führt SR Legacy nicht; Proteinpulver auf Sojabasis als Näherung (ähnliche Makronährstoffe). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "veganes-proteinpulver-schoko",
@@ -6548,8 +6548,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
-        "search": ["pea protein", "rice protein", "soy protein", "Protein powder"],
+        "ref": "173181",
+        "search": ["soy protein", "pea protein"],
         "state_de": "Pulver, Kakao",
         "category": "other"
       },
@@ -6566,7 +6566,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Kakao. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: Pulver, Kakao. Quell-ID 173181 „Beverages, Protein powder soy based“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Erbsen-/Reisprotein führt SR Legacy nicht; Proteinpulver auf Sojabasis als Näherung (Kakao-Anteil gering). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "veganes-proteinpulver-vanille",
@@ -6575,8 +6575,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": null,
-        "search": ["pea protein", "rice protein", "soy protein", "Protein powder"],
+        "ref": "173181",
+        "search": ["soy protein", "pea protein"],
         "state_de": "Pulver, Vanille",
         "category": "other"
       },
@@ -6593,7 +6593,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Vanille. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
+      "reason_de": "Zustand: Pulver, Vanille. Quell-ID 173181 „Beverages, Protein powder soy based“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Erbsen-/Reisprotein führt SR Legacy nicht; Proteinpulver auf Sojabasis als Näherung (Aroma ohne Nährwert). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "vollkorn-knaeckebrot",
