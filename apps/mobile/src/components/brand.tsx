@@ -61,35 +61,6 @@ export function CheckBadge({ size = 28 }: { size?: number }) {
   );
 }
 
-/** Gestrichelter Kreis mit Uhr – „kommt bald“, bewusst ohne Häkchen (dekorativ). */
-export function SoonBadge({ size = 28 }: { size?: number }) {
-  return (
-    <View aria-hidden style={{ width: size, height: size }}>
-      <Svg {...HIDDEN} width={size} height={size} viewBox="0 0 28 28">
-        <Rect
-          x={1}
-          y={1}
-          width={26}
-          height={26}
-          rx={13}
-          fill="none"
-          stroke={brandColors.grauDunkel}
-          strokeWidth={1.5}
-          strokeDasharray="3 3"
-        />
-        <Path
-          d="M14 8.5V14l3.5 2.5"
-          fill="none"
-          stroke={brandColors.grauDunkel}
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </Svg>
-    </View>
-  );
-}
-
 /** Blauer Schein hinter dem Logo – wie beim App-Icon und dem Open-Graph-Bild (dekorativ). */
 export function BrandGlow() {
   return (

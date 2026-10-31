@@ -1,16 +1,9 @@
-import {
-  brandColors,
-  fontSize,
-  fontWeight,
-  maxContentWidth,
-  radius,
-  spacing,
-} from '@fitnessapp/ui';
+import { brandColors, fontSize, fontWeight, maxContentWidth, spacing } from '@fitnessapp/ui';
 import { useRouter } from 'expo-router';
 import { Platform, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Alpha5Mark, BrandGlow, CheckBadge, SoonBadge } from '@/components/brand';
+import { Alpha5Mark, BrandGlow, CheckBadge } from '@/components/brand';
 import { TopBanner } from '@/components/screen';
 import { Button } from '@/components/ui';
 import { t } from '@/i18n';
@@ -58,21 +51,6 @@ export default function WelcomeScreen() {
                   </View>
                 </View>
               ))}
-              <View
-                role="listitem"
-                accessible
-                accessibilityLabel={`${t.welcome.soon.label}. ${t.welcome.soon.text}`}
-                style={styles.item}
-              >
-                <SoonBadge />
-                <View style={styles.itemText}>
-                  <View style={styles.soonRow}>
-                    <Text style={[styles.itemTitle, styles.soonTitle]}>{t.welcome.soon.title}</Text>
-                    <Text style={styles.badge}>{t.welcome.soon.badge}</Text>
-                  </View>
-                  <Text style={styles.itemBody}>{t.welcome.soon.text}</Text>
-                </View>
-              </View>
             </View>
           </View>
         </ScrollView>
@@ -153,22 +131,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   itemBody: { color: brandColors.grauDunkel, fontSize: fontSize.sm + 1, lineHeight: 22 },
-  soonRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.sm },
-  soonTitle: { flexShrink: 1 },
-  badge: {
-    color: brandColors.himmel,
-    borderColor: brandColors.graphitHell,
-    backgroundColor: brandColors.graphit,
-    borderWidth: 1,
-    borderRadius: radius.pill,
-    paddingHorizontal: spacing.sm + 2,
-    paddingVertical: 2,
-    fontSize: 12,
-    fontWeight: fontWeight.bold,
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-    overflow: 'hidden',
-  },
   footer: {
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
