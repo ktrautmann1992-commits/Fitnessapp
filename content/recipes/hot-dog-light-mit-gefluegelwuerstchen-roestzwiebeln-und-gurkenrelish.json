@@ -1,0 +1,148 @@
+{
+  "id": "hot-dog-light-mit-gefluegelwuerstchen-roestzwiebeln-und-gurkenrelish",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hot Dog light mit Geflügelwürstchen, Röstzwiebeln und Gurkenrelish",
+  "description_de": "Zwei Hot Dogs mit fettreduzierten Geflügelwürstchen, frischem Gurkenrelish und einer Senf-Skyr-Sauce – Imbiss-Feeling mit deutlich mehr Eiweiß.",
+  "section_de": "Burger & Hot Dog",
+  "categories": ["fitness-fast-food"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "hot-dog-broetchen",
+      "amount": 110,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Brötchen (110 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gefluegelwuerstchen-fettreduziert",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Würstchen (100 g)",
+      "scales": true,
+      "heated": false,
+      "role": "fat"
+    },
+    {
+      "food_id": "gewuerzgurken-glas",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 kleine Gurken (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "senf",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "roestzwiebeln",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Erhitze Wasser in einem Topf bis kurz vor dem Kochen, nimm ihn vom Herd und lass die Würstchen darin 5–6 Minuten heiß ziehen (nicht kochen, sonst platzen sie).",
+    "Würfle Gewürzgurken und Zwiebel sehr fein und verrühre sie mit Honig, 1 EL Gurkenwasser und Pfeffer zum Relish.",
+    "Verrühre den Skyr mit dem Senf zur Hot-Dog-Sauce.",
+    "Wärme die Brötchen 3–4 Minuten im Backofen bei 180 °C oder auf dem Toaster-Aufsatz auf und schneide sie seitlich ein.",
+    "Bestreiche die Brötchen mit Sauce, lege je ein Würstchen hinein und toppe die Hot Dogs mit Relish und Röstzwiebeln."
+  ],
+  "tip_de": "Achte auf die Zutatenliste: Manche Geflügelwürstchen enthalten Schweinespeck oder stecken in Schweinedarm. Für ohne Schwein Würstchen ohne Haut, im Schafsaitling oder Alginat-/Kunstdarm wählen.",
+  "tags_de": ["Fitness-Fast-Food"],
+  "total_minutes": 15,
+  "prep_minutes": 9,
+  "cook_minutes": 6,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 616,
+    "protein_g": 38.1,
+    "carbs_g": 72.1,
+    "fat_g": 19.1
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "poultry",
+    "mustard",
+    "sulphites",
+    "fructose",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8c88aa09a1bc1a68dfbf5337acb95a73891436002f8de75d087b40ac6fa5695c"
+  }
+}

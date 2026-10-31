@@ -1,9 +1,9 @@
 {
   "id": "wod-chipper-studio",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Chipper – Langhantel",
-  "summary_de": "Einmal durch die ganze Liste, so schnell wie sauber möglich, Zeitlimit 25 Minuten. Einsteiger: leichte Stange und Wiederholungen halbieren. Fortgeschrittene: Gewicht steigern.",
+  "summary_de": "Einmal durch die ganze Liste – vom Seilspringen bis zu den Burpees, so schnell wie sauber möglich, Zeitlimit 25 Minuten. Einsteiger: leichte Stange und Wiederholungen halbieren. Fortgeschrittene: Gewicht steigern.",
   "category": "full_body",
   "difficulty": 5,
   "minutes": 25,
@@ -22,6 +22,14 @@
   "warmup_de": "Fünf Minuten locker einrollen (rudern, gehen oder Step-Jacks), dann je zehn Kniebeugen, Liegestütz und Hüftkreise.",
   "cooldown_de": "Fünf Minuten locker gehen und ruhig atmen, danach Hüfte und Schultern dehnen.",
   "exercises": [
+    {
+      "exercise_id": "seilspringen",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Fortgeschrittene: Double-Unders."
+    },
     {
       "exercise_id": "rudergeraet",
       "reps": null,
@@ -87,6 +95,14 @@
       "note_de": null
     },
     {
+      "exercise_id": "box-sprung",
+      "reps": 20,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 0,
+      "note_de": "Einsteiger: auf die Box steigen statt springen."
+    },
+    {
       "exercise_id": "burpee-ohne-sprung",
       "reps": null,
       "duration_s": 60,
@@ -102,7 +118,7 @@
     "created_on": "2026-10-29",
     "expert_reviewed": false,
     "reviewed_by": "Karsten (Auftrag an Claude)",
-    "reviewed_at": "2026-10-29",
-    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft."
+    "reviewed_at": "2026-10-30",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 29.10.2026 (Yoga, Entspannung, Hyrox, Calisthenics und funktionelle Workouts ausprobieren) – nicht fachlich geprüft. Nachtrag 30.10.2026: Box-Sprung/Seilspringen ergänzt (W-O6)."
   }
 }

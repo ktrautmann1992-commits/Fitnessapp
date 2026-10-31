@@ -1,0 +1,146 @@
+{
+  "id": "puten-caesar-salat-mit-parmesan-skyr-dressing",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Puten-Caesar-Salat mit Parmesan-Skyr-Dressing",
+  "description_de": "Der Klassiker ohne Croûtons und schwere Sauce: gebratene Putenbrust auf knackigem Romanasalat mit einem cremigen Dressing aus Skyr, Parmesan und Zitrone.",
+  "section_de": "Mittagessen",
+  "categories": ["low-carb"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "putenbrustfilet",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "180 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "romanasalat",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Kopf (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "15 g, gerieben",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zehe",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Brate die Putenbrust im Öl bei mittlerer Hitze 5–6 Minuten pro Seite, salze und pfeffere sie und lass sie kurz ruhen.",
+    "Verrühre Skyr, die Hälfte des Parmesans, Zitronensaft, Senf und gepressten Knoblauch zu einem Dressing, eventuell mit 1 EL Wasser verdünnen.",
+    "Zupfe den Salat in Stücke, halbiere die Tomaten und mische beides mit dem Dressing.",
+    "Schneide die Pute in Streifen, lege sie auf den Salat und streue den restlichen Parmesan darüber."
+  ],
+  "tip_de": "Für unterwegs Dressing separat einpacken und erst kurz vor dem Essen untermischen.",
+  "tags_de": ["Low Carb"],
+  "total_minutes": 15,
+  "prep_minutes": 9,
+  "cook_minutes": 6,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 402,
+    "protein_g": 60.5,
+    "carbs_g": 10.9,
+    "fat_g": 12.1
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "poultry", "mustard", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "putenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 1 gart die Zutat durch: „Brate die Putenbrust im Öl bei mittlerer Hitze 5–6 Minuten pro Seite, salze und pfeffere sie und lass sie kurz ruhen.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "d019d257d518c1c49bf349640aba8ecb4c47b55ed8aa0f7242cdea923de32baf"
+  }
+}

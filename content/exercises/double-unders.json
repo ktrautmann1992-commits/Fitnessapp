@@ -1,0 +1,50 @@
+{
+  "id": "double-unders",
+  "version": 1,
+  "status": "published",
+  "name_de": "Double-Unders (Seil zweimal durchschlagen)",
+  "name_en": "Double-Unders",
+  "aliases_de": ["Double Unders", "Doppelsprünge", "Doppeldurchschläge"],
+  "movement_pattern": "conditioning",
+  "primary_muscles": ["calves"],
+  "secondary_muscles": ["quadriceps", "glutes", "forearms", "abs"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["high_impact", "high_skill"],
+  "description_de": "Fortgeschrittene Seilsprung-Variante: Das Springseil läuft bei jedem Sprung zweimal unter den Füßen durch. Fordert Waden, Timing und Ausdauer stark – erst angehen, wenn einfaches Seilspringen locker über eine Minute klappt.",
+  "steps_de": [
+    "Mit einfachem Seilspringen in einen gleichmäßigen Rhythmus kommen.",
+    "Für den Doppelsprung etwas höher abspringen, Körper gestreckt, Knie fast gerade.",
+    "Das Seil in der Luft mit zwei schnellen Handgelenk-Drehungen zweimal durchschlagen.",
+    "Weich auf den Fußballen landen und direkt weiterspringen oder einen einfachen Sprung dazwischen machen."
+  ],
+  "tips_de": [
+    "Zum Lernen: abwechselnd ein einfacher und ein doppelter Sprung.",
+    "Ein leichtes, schnelles Seil macht es einfacher."
+  ],
+  "common_mistakes_de": [
+    "Knie zum Bauch ziehen statt gestreckt zu springen.",
+    "Arme weit ausholen statt aus den Handgelenken zu drehen."
+  ],
+  "safety_note_de": "Nur auf ebenem, rutschfestem Boden in festen Schuhen. Das Seil kann bei Fehlversuchen schmerzhaft treffen – Abstand zu anderen halten. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "seilspringen",
+      "reason": "easier",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-30",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-30",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 30.10.2026 (Übungen für Workouts im WOD-Stil, docs/PLAN-WORKOUTS.md W-O6) – nicht fachlich geprüft."
+  }
+}

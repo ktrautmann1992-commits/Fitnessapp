@@ -162,7 +162,43 @@ Entspannung: „Atmen und loslassen“ (Atemübung + Body-Scan), „Ganzkörper 
 Calisthenics: „Calisthenics-Grundlagen“, „Calisthenics an der Stange“, „Calisthenics im Park“. WOD-Stil: „AMRAP 12 –
 Körpergewicht“, „EMOM 12 – zuhause“ (ohne Geräte), „For Time – Kurzhantel“ (zuhause), „AMRAP 15 – Studio“, „EMOM 16 –
 Rudern & Kettlebell“, „Chipper – Langhantel“ – jeweils mit Skalierungs-Hinweis (Einsteiger/Fortgeschritten).
-Box-Sprünge und Springseil gibt es in der Übungsbibliothek noch nicht (W-O6).
+Box-Sprünge und Springseil gab es damals in der Übungsbibliothek noch nicht (W-O6, erledigt 30.10.2026).
 
-- **W-O6** Übungen Box Jump/Box Step-up, Springseil, Thruster/Clean in die Bibliothek aufnehmen, dann WODs erweitern.
+- **W-O6 erledigt (30.10.2026):** Box-Sprung, Seilspringen, Double-Unders und Thruster mit Langhantel aufgenommen,
+  WODs erweitert – siehe Abschnitt 7. Das Umsetzen (Clean) bleibt bewusst draußen (hohe Technik, Fachprüfung nötig).
 - **W-O7** Fachprüfung der Bereichs-Regeln und der 15 neuen Workouts vor dem Livegang.
+
+## 7. Nachtrag 30.10.2026: Box-Sprung, Seilspringen, Thruster (W-O6)
+
+Gründer-Auftrag 30.10.2026, Umsetzung freigegeben (privater Nutzerkreis, Prüfvermerk „Karsten (Auftrag an Claude)“,
+`expert_reviewed: false` wie alle Inhalte der Testphase).
+
+**Neue Übungen (4, mit eigener Illustration in `packages/content/src/illustrations/poses-wod.ts`):**
+
+| Übung                                      | Muster       | Gerät      | Merkmale                 | Alternativen                                      |
+| ------------------------------------------ | ------------ | ---------- | ------------------------ | ------------------------------------------------- |
+| Box-Sprung (Box Jump, Kastensprung)        | squat        | –          | high_impact, high_skill  | Kniebeuge (leichter); Einsteiger-Tipp Step-up     |
+| Seilspringen (Jump Rope, Springseil)       | conditioning | –          | high_impact              | Hampelmann, Step-Jacks (leichter), Double-Unders  |
+| Double-Unders (Seil zweimal durchschlagen) | conditioning | –          | high_impact, high_skill  | Seilspringen (leichter)                           |
+| Thruster (Langhantel)                      | squat        | Langhantel | overhead, spinal_loading | Kurzhantel-Thruster, Wall Balls, Goblet-Kniebeuge |
+
+- **Kurzhantel-Thruster** gab es schon („Kniebeuge mit Schulterdrücken (Kurzhanteln)“) – nur die Aliase
+  „Kurzhantel-Thruster“ und „Thruster mit Kurzhanteln“ ergänzt (Version 2). **Step-up** gibt es schon („Step-up auf
+  die Treppenstufe“), daher keine eigene Box-Step-up-Übung.
+- **W-E19 Box und Springseil ohne Geräte-Eintrag:** Box und Springseil stehen nicht im Geräte-Katalog. Ein neuer
+  Katalog-Wert bräuchte eine Migration und würde vom Validator auf `main` (CI-Check „sources-integrity (Code von
+  main)“) bis zum Merge abgelehnt – daher `equipment_ids: []`; Box bzw. Seil stehen in Beschreibung, Schritten und
+  Workout-Text („Du brauchst ein Springseil“, ohne Seil: Hampelmann bzw. angedeuteter Schwung). Geprüft: Validator von
+  `main` und vom Branch – 0 rote Fehler.
+- **W-E20 Nur in Workouts:** Die vier Übungen stehen in `WOD_ONLY_EXERCISE_IDS` (constants.ts) und kommen wie die
+  Hyrox-Übungen nie über die Bibliotheks-Suche in einen Plan (Tausch, „Andere Übung“, Ersatz bei fehlendem Gerät,
+  Aufwärmen) – Pläne bleiben byte-gleich (Test `plan/wod-exercises.test.ts`).
+- **Sicherheit:** Sprünge (`high_impact`) fallen bei vorsichtigem Plan, Schwangerschaft und ab 65 weg (Workout-Hinweis
+  bzw. Ausblenden wie bisher); Schmerz-Modus: Sprünge belasten Knie, Hüfte, Sprunggelenk und unteren Rücken stark, der
+  Thruster zusätzlich ausdrücklich das Knie (`PAIN_REGION_LOAD`, wie Wall Balls) und über Kopf die Schulter.
+
+**Workouts:** neu „AMRAP 14 – Thruster & Box-Sprung“ (4 Sterne, Langhantel, Seilspringen als dritte Station) und
+„EMOM 12 – Springseil“ (3 Sterne, Seilspringen, Kniebeugen, Liegestütz; Fortgeschrittene: Double-Unders). Ergänzt
+(Version 2): „AMRAP 15 – Studio“ (+ Box-Sprünge, Richtwert 4 Runden) und „Chipper – Langhantel“ (+ Seilspringen zum
+Start, + Box-Sprünge nach den Wall Balls). Hyrox- und HIIT-Workouts bleiben unverändert: Seilspringen ist keine
+Hyrox-Station, und die HIIT-Workouts sind bewusst ohne Geräte.

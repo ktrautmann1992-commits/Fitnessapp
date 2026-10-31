@@ -1,0 +1,184 @@
+{
+  "id": "paprika-haehnchenschenkel-mit-kartoffelspalten-und-schnittlauchquark",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Paprika-Hähnchenschenkel mit Kartoffelspalten und Schnittlauchquark",
+  "description_de": "Würzig marinierte Hähnchenschenkel und knusprige Kartoffelspalten garen nacheinander im selben Korb – saftig, rauchig und mit wenig Abwasch.",
+  "section_de": "Hauptgerichte",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haehnchenschenkelfilet-ohne-haut",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Hähnchenschenkelfilets ohne Haut (180 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 mittelgroße Kartoffeln (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-geraeuchert",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g), gepresst",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rosmarin-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 2,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "2 Prisen",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre 1 TL Olivenöl mit beiden Paprikapulvern, Knoblauch, Salz und Pfeffer und reibe die Hähnchenschenkel damit ein.",
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Schneide die Kartoffeln mit Schale in Spalten, tupfe sie trocken und mische sie mit dem restlichen Öl, Rosmarin und Salz.",
+    "Gare die Kartoffelspalten 12 Minuten bei 200 °C in einer Lage und schüttle sie nach 6 Minuten.",
+    "Gib Paprika- und Zwiebelstücke dazu, lege die Hähnchenschenkel obenauf und gare alles bei 190 °C weitere 14–16 Minuten. Wende das Fleisch nach 8 Minuten und schüttle dabei das Gemüse kurz durch.",
+    "Prüfe, ob das Hähnchen vollständig durchgegart ist: Kerntemperatur an der dicksten Stelle mindestens 74 °C, Fleischsaft klar. Sonst 2–3 Minuten weitergaren.",
+    "Verrühre Magerquark mit 2–3 EL Wasser, Schnittlauch, Salz und Pfeffer und serviere ihn dazu."
+  ],
+  "tip_de": "Hähnchenschenkel bleiben saftiger als Brust; mit Hähnchenbrust verkürzt sich die Garzeit um 2–3 Minuten, Kerntemperatur trotzdem prüfen.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 40,
+  "prep_minutes": 1,
+  "cook_minutes": 39,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 594,
+    "protein_g": 54,
+    "carbs_g": 51.8,
+    "fat_g": 17.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "poultry", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "haehnchenschenkelfilet-ohne-haut",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 4 gart die Zutat durch: „Gib Paprika- und Zwiebelstücke dazu, lege die Hähnchenschenkel obenauf und gare alles bei 190 °C weitere 14–16 Minuten. Wende das Fleisch nach 8 Minuten und schüttle dabei das Gemüse kurz durch.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "eadf10ec4d728292399904cccf07e151119371ed879a6475bdd4a8f66a871c19"
+  }
+}

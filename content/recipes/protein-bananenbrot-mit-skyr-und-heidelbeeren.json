@@ -1,0 +1,150 @@
+{
+  "id": "protein-bananenbrot-mit-skyr-und-heidelbeeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Protein-Bananenbrot mit Skyr und Heidelbeeren",
+  "description_de": "Saftiges Bananenbrot aus Haferflocken und Quark ohne Zuckerzusatz, dazu Skyr mit Beeren.",
+  "section_de": "Frühstück",
+  "categories": ["meal-prep"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "banane",
+      "amount": 360,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 reife Bananen (360 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 240,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "400 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "walnuesse",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (30 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 750,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ Becher (750 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "heidelbeeren",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 175 °C Ober-/Unterhitze vor und lege eine Kastenform (25 cm) mit Backpapier aus.",
+    "Mahle die Haferflocken im Mixer zu feinem Mehl und vermische sie mit Backpulver, Zimt und Salz.",
+    "Zerdrücke die Bananen mit einer Gabel und verrühre sie mit Eiern und Quark; hebe die Hafermischung und die gehackten Walnüsse unter.",
+    "Fülle den Teig in die Form und backe das Brot 50–55 Minuten (Stäbchenprobe); bei zu starker Bräunung nach 30 Minuten mit Alufolie abdecken.",
+    "Lass das Brot vollständig abkühlen, schneide es in 10 Scheiben und packe je 2 Scheiben in eine Dose.",
+    "Verteile Skyr und Heidelbeeren (150 g und 50 g pro Portion) auf 5 kleine Becher."
+  ],
+  "tip_de": "Das Bananenbrot hält gut verpackt 4–5 Tage im Kühlschrank und lässt sich scheibenweise einfrieren (bis 2 Monate); einzelne Scheiben kannst du direkt toasten. Skyr mit Beeren hält bis zum Mindesthaltbarkeitsdatum des Skyrs.",
+  "tags_de": ["zum Mitnehmen"],
+  "meal_prep_plan_id": "ohne-schwein",
+  "total_minutes": 15,
+  "prep_minutes": 1,
+  "cook_minutes": 14,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 494,
+    "protein_g": 39.5,
+    "carbs_g": 52,
+    "fat_g": 12.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "tree_nuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "5f6e20114f2adebcfaa0975983eb14887856bbed001e0abde6b6106f520c7c77"
+  }
+}

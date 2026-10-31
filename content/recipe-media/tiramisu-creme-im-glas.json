@@ -1,0 +1,30 @@
+{
+  "recipe_id": "tiramisu-creme-im-glas",
+  "alt_de": "Foto: Tiramisu-Creme im Glas",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/tiramisu-creme-im-glas.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "tiramisu-creme-im-glas-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "tiramisu-creme-im-glas-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

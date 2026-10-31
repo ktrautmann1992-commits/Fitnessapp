@@ -1740,6 +1740,15 @@ Der Weg: Uhr → **Samsung Health** (Handy) → **Health Connect** (Android) →
 nichts zurück, übernimmt keine Strecken der Uhr und gleicht **nicht im Hintergrund** ab (nur beim Öffnen der App,
 höchstens alle 15 Minuten, und mit **Jetzt abgleichen**). Nur in der **Android-App** – im Browser und auf dem iPhone
 steht ein Hinweis.
+**Nachtrag 30.10.2026 – im Hintergrund aktualisieren (neue APK nötig):**
+1. Alpha5 öffnen → **Einstellungen** → **Smartwatch** (bzw. Kachel **Schritte** antippen).
+2. Karte **Im Hintergrund aktualisieren** → **Im Hintergrund erlauben** antippen.
+3. Im Health-Connect-Fenster **Zulassen** antippen („Daten im Hintergrund lesen“).
+4. Die Karte zeigt **✓ Aktiv**. Für zuverlässige Läufe: Android-**Einstellungen** → **Apps** → **Alpha5** → **Akku** →
+   **Nicht eingeschränkt**.
+5. Prüfen: App schließen, 20–60 Minuten gehen, App öffnen – die Schritte sind sofort aktuell (ohne „Abgleich läuft“).
+   Android bestimmt den Takt selbst (frühestens alle 15 Minuten, nur mit Internet, im Energiesparmodus seltener).
+Ausschalten: Health Connect → **App-Berechtigungen** → **Alpha5** → „Daten im Hintergrund lesen“ aus.
 
 **A – Im Handy-Browser (Vercel-Vorschau, Testmodus) – geht sofort, ohne APK (Beispiel-Uhr mit ausgedachten Daten)**
 1. Vorschau-Link → **Ohne Konto testen** → Onboarding **mit** Einwilligung Gesundheitsdaten bis **Geschafft!** →

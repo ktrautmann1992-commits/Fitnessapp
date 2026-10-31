@@ -57,8 +57,9 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   // 66 freigegebene Workouts (seit 27.10.2026 auch 4 Lauf-Kraft, 10 Rudern, 15 Yoga/Pilates/Mobility, dazu 10
   // Yoga-/Pilates-Routinen der Restpunkte); ohne Gesundheits-Check sind „Sanft in den Morgen“ (zu viele
   // Umkehrhaltungen für den vorsichtigen Plan) und 2 Restpunkte-Routinen (gestützte Brücke) ausgeblendet. Dazu 15 aus
-  // „Neues ausprobieren“ (29.10.2026: Entspannung, Hyrox, Calisthenics, WOD-Stil).
-  await expect(count(page)).toHaveText('78 Workouts');
+  // „Neues ausprobieren“ (29.10.2026: Entspannung, Hyrox, Calisthenics, WOD-Stil) und 2 WODs mit Box-Sprung/Seilspringen
+  // (30.10.2026, W-O6).
+  await expect(count(page)).toHaveText('80 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
@@ -89,7 +90,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-1').click();
   await expect(page.getByTestId('workouts-no-match')).toBeVisible();
   await page.getByTestId('workouts-filter-reset').click();
-  await expect(count(page)).toHaveText('78 Workouts');
+  await expect(count(page)).toHaveText('80 Workouts');
 
   // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();

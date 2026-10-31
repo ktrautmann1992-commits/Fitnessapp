@@ -55,7 +55,7 @@ test('Bereiche für jeden sichtbar: Entspannung, Yoga & Pilates, Hyrox, Calisthe
   await expect(page.getByTestId('workouts-themes')).toBeVisible();
   await expect(chip(page, 'hyrox')).toHaveText('Hyrox (3)');
   await expect(chip(page, 'calisthenics')).toHaveText('Calisthenics (3)');
-  await expect(chip(page, 'functional')).toHaveText('CrossFit-Stil / Functional Fitness (6)');
+  await expect(chip(page, 'functional')).toHaveText('CrossFit-Stil / Functional Fitness (8)');
 
   await chip(page, 'relax').click();
   await expect(page.getByTestId('workouts-theme-intro')).toContainText('Body-Scan');
@@ -88,8 +88,11 @@ test('Bereiche für jeden sichtbar: Entspannung, Yoga & Pilates, Hyrox, Calisthe
   await expect(card(page, 'calisthenics-park')).toBeVisible();
 
   await chip(page, 'functional').click();
-  await expect(count(page)).toHaveText('6 Workouts');
+  await expect(count(page)).toHaveText('8 Workouts');
   await expect(card(page, 'wod-emom-zuhause')).toBeVisible();
+  // W-O6 (30.10.2026): Box-Sprung, Seilspringen und Thruster in eigenen WODs.
+  await expect(card(page, 'wod-amrap-thruster-box')).toBeVisible();
+  await expect(card(page, 'wod-emom-springseil')).toBeVisible();
 
   // Neues ausprobieren: je Sportart der leichteste Einstieg.
   await chip(page, 'try_new').click();

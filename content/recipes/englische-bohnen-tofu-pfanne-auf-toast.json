@@ -1,0 +1,142 @@
+{
+  "id": "englische-bohnen-tofu-pfanne-auf-toast",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Englische Bohnen-Tofu-Pfanne auf Toast",
+  "description_de": "Herzhaftes Frühstück nach britischem Vorbild mit weißen Bohnen in Tomatensauce und gebratenem Tofu, das günstig und rein pflanzlich viel Eiweiß liefert.",
+  "section_de": "Frühstück",
+  "categories": ["spar-kueche"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "weisse-bohnen-dose-abgetropft",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g (ca. ¾ Dose)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "tofu-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Packung (100 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "vollkorntoast",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle die Zwiebel fein und zerbröckle den Tofu mit einer Gabel.",
+    "Brate beides im Rapsöl bei mittlerer bis hoher Hitze 4–5 Minuten an, bis der Tofu leicht gebräunt ist, und würze mit Paprikapulver.",
+    "Gib Bohnen und passierte Tomaten dazu und lass alles 4 Minuten köcheln, bis die Sauce eindickt; mit Salz und Pfeffer abschmecken.",
+    "Toaste das Brot und verteile die Bohnen-Tofu-Pfanne darauf."
+  ],
+  "tip_de": "Den Rest Bohnen und Tofu am nächsten Tag in einen Salat oder eine Suppe geben – so wird nichts weggeworfen.",
+  "tags_de": ["Spar-Küche"],
+  "total_minutes": 15,
+  "prep_minutes": 6,
+  "cook_minutes": 9,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 530,
+    "protein_g": 33.3,
+    "carbs_g": 56.5,
+    "fat_g": 15.8
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "cost_estimate": {
+    "eur_per_serving": 1.8,
+    "as_of": "2026-10-23",
+    "basis": "estimate"
+  },
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "bf588de268683f19baa31663f3c7d2182f248bca7c414f497d36ba8c05cb2adb"
+  }
+}

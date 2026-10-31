@@ -6801,7 +6801,7 @@
     },
     {
      "zutat_id": "wasser",
-     "menge_g": 0,
+     "menge_g": 22,
      "anzeige": "1–2 EL"
     },
     {
@@ -7922,7 +7922,7 @@
   {
    "id": "vollkorn-spaghetti-bolognese-mit-sojaschnetzeln",
    "name": "Vollkorn-Spaghetti Bolognese mit Sojaschnetzeln",
-   "beschreibung": "Der italienische Klassiker mit herzhafter Sojaschnetzel-Gemüse-Sauce – sättigend, eiweißreich und ideal zum Vorkochen.",
+   "beschreibung": "Der italienische Klassiker mit herzhafter Sojaschnetzel-Gemüse-Sauce – sättigend und ideal zum Vorkochen.",
    "kategorie": "vegan",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
@@ -8087,7 +8087,7 @@
     },
     {
      "zutat_id": "wasser",
-     "menge_g": 0,
+     "menge_g": 52,
      "anzeige": "3–4 EL Nudelwasser"
     },
     {
@@ -8787,7 +8787,7 @@
     },
     {
      "zutat_id": "salz",
-     "menge_g": 0,
+     "menge_g": 3,
      "anzeige": "½ TL"
     },
     {
@@ -9303,7 +9303,7 @@
   {
    "id": "quark-porridge-mit-beeren",
    "name": "Quark-Porridge mit Beeren",
-   "beschreibung": "Cremiger Haferbrei, in den zum Schluss Magerquark gerührt wird – warm, sättigend und richtig eiweißreich.",
+   "beschreibung": "Cremiger Haferbrei, in den zum Schluss Magerquark gerührt wird – warm, cremig und sättigend.",
    "kategorie": "vegetarisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
@@ -9352,7 +9352,7 @@
    "zubereitung": [
     "Gib Haferflocken und Milch in einen kleinen Topf und bring alles bei mittlerer Hitze unter Rühren zum Köcheln.",
     "Lass den Brei 3–4 Minuten leise köcheln, bis er schön sämig ist, und nimm den Topf dann vom Herd.",
-    "Rühre den Magerquark und den Zimt unter, damit das Porridge cremig und eiweißreich wird.",
+    "Rühre den Magerquark und den Zimt unter, damit das Porridge schön cremig wird.",
     "Erwärme die TK-Beeren kurz in der Mikrowelle (ca. 1 Minute) oder lass sie antauen.",
     "Fülle das Porridge in eine Schüssel und toppe es mit den Beeren und den gehackten Mandeln."
    ],
@@ -11129,7 +11129,7 @@
     },
     {
      "zutat_id": "wasser",
-     "menge_g": 0,
+     "menge_g": 30,
      "anzeige": "2 EL"
     }
    ],
@@ -11222,7 +11222,7 @@
   },
   {
    "id": "kaesespaetzle-light-mit-roestzwiebeln",
-   "name": "Käsespätzle light mit Röstzwiebeln",
+   "name": "Käsespätzle mit Röstzwiebeln",
    "beschreibung": "Der Allgäuer Klassiker in leichter: Spätzle mit einer cremigen Sauce aus Hüttenkäse und würzigem Gouda.",
    "kategorie": "vegetarisch",
    "abschnitt": "Mittagessen",
@@ -11901,7 +11901,7 @@
     },
     {
      "zutat_id": "wasser",
-     "menge_g": 0,
+     "menge_g": 45,
      "anzeige": "3 EL"
     }
    ],
@@ -12219,7 +12219,7 @@
   {
    "id": "heidelbeer-protein-muffins",
    "name": "Heidelbeer-Protein-Muffins",
-   "beschreibung": "Saftige Quark-Muffins mit Vanille-Whey und Heidelbeeren – süß, eiweißreich und gut zum Mitnehmen.",
+   "beschreibung": "Saftige Quark-Muffins mit Vanille-Whey und Heidelbeeren – süß, saftig und gut zum Mitnehmen.",
    "kategorie": "vegetarisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
@@ -12346,7 +12346,7 @@
   {
    "id": "harzer-brot-mit-radieschen-und-schnittlauch",
    "name": "Harzer-Brot mit Radieschen & Schnittlauch",
-   "beschreibung": "Der deutsche Fitness-Klassiker: Harzer Käse auf Vollkornbrot mit knackigen Radieschen – fast fettfrei und voller Eiweiß.",
+   "beschreibung": "Der deutsche Fitness-Klassiker: Harzer Käse auf Vollkornbrot mit knackigen Radieschen – würzig und schnell gemacht.",
    "kategorie": "vegetarisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
@@ -13230,7 +13230,7 @@
   {
    "id": "schweinemedaillons-mit-pilzrahm-und-brokkoli",
    "name": "Schweinemedaillons mit Pilzrahm und Brokkoli",
-   "beschreibung": "Low-Carb-Abendessen aus zarten Filetmedaillons, Champignon-Rahmsauce und viel Brokkoli.",
+   "beschreibung": "Abendessen aus zarten Filetmedaillons, Champignon-Rahmsauce und viel Brokkoli.",
    "kategorie": "fleisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
@@ -13824,7 +13824,7 @@
   {
    "id": "thunfisch-skyr-dip-mit-gemuesesticks",
    "name": "Thunfisch-Skyr-Dip mit Gemüsesticks",
-   "beschreibung": "Cremiger, eiweißreicher Dip aus Thunfisch und Skyr mit knackigen Rohkoststicks.",
+   "beschreibung": "Cremiger Dip aus Thunfisch und Skyr mit knackigen Rohkoststicks.",
    "kategorie": "fleisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
@@ -15680,7 +15680,7 @@
   {
    "id": "ruehrei-mit-putenbrust-auf-vollkornbrot",
    "name": "Rührei mit Putenbrust auf Vollkornbrot",
-   "beschreibung": "Cremiges Rührei mit Putenbrust und Lauchzwiebeln auf kräftigem Vollkornbrot – der deutsche Frühstücksklassiker in eiweißreich.",
+   "beschreibung": "Cremiges Rührei mit Putenbrust und Lauchzwiebeln auf kräftigem Vollkornbrot – der deutsche Frühstücksklassiker.",
    "kategorie": "fleisch",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
@@ -16153,7 +16153,7 @@
     },
     {
      "zutat_id": "wasser",
-     "menge_g": 0,
+     "menge_g": 30,
      "anzeige": "2 EL"
     }
    ],
@@ -17153,7 +17153,7 @@
   {
    "id": "skyr-mit-beeren-und-mandeln",
    "name": "Skyr mit Beeren und Mandeln",
-   "beschreibung": "Cremiger Skyr mit fruchtigen Beeren, einem Hauch Honig und gerösteten Mandeln – süß, frisch und eiweißreich.",
+   "beschreibung": "Cremiger Skyr mit fruchtigen Beeren, einem Hauch Honig und gerösteten Mandeln – süß, frisch und knackig.",
    "kategorie": "fleisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
@@ -18506,7 +18506,7 @@
   {
    "id": "gurkenschiffchen-mit-krabben-skyr",
    "name": "Gurkenschiffchen mit Krabben-Skyr",
-   "beschreibung": "Ausgehöhlte Gurkenhälften gefüllt mit Nordseekrabben in Dill-Skyr, dazu ein Vollkorn-Knäckebrot – frisch, leicht und eiweißreich.",
+   "beschreibung": "Ausgehöhlte Gurkenhälften gefüllt mit Nordseekrabben in Dill-Skyr, dazu ein Vollkorn-Knäckebrot – frisch, leicht und schnell gemacht.",
    "kategorie": "fleisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
@@ -18578,7 +18578,7 @@
   {
    "id": "erdnuss-bananen-toast-mit-zimt-sojaskyr",
    "name": "Erdnuss-Bananen-Toast mit Zimt-Sojaskyr",
-   "beschreibung": "Knuspriger Vollkorntoast mit Erdnussmus und Banane, dazu ein cremiger Zimt-Sojaskyr als Eiweißquelle.",
+   "beschreibung": "Knuspriger Vollkorntoast mit Erdnussmus und Banane, dazu ein cremiger Zimt-Sojaskyr.",
    "kategorie": "schnell",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
@@ -18989,7 +18989,7 @@
   {
    "id": "edamame-gurken-salat-mit-raeuchertofu-und-sesam",
    "name": "Edamame-Gurken-Salat mit Räuchertofu und Sesam",
-   "beschreibung": "Frischer, asiatisch angemachter Salat aus Edamame, Gurke und Räuchertofu mit etwas Reis – leicht und trotzdem eiweißreich.",
+   "beschreibung": "Frischer, asiatisch angemachter Salat aus Edamame, Gurke und Räuchertofu mit etwas Reis – leicht und trotzdem sättigend.",
    "kategorie": "schnell",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
@@ -19284,7 +19284,7 @@
   {
    "id": "quark-honig-toast-mit-bananenscheiben",
    "name": "Quark-Honig-Toast mit Bananenscheiben",
-   "beschreibung": "Heller Toast mit Honig und Banane liefert schnell verfügbare Kohlenhydrate, der Magerquark sorgt fettarm für Eiweiß, ohne den Magen zu belasten.",
+   "beschreibung": "Heller Toast mit Honig und Banane liefert schnell verfügbare Kohlenhydrate, der Magerquark liefert Eiweiß, ohne den Magen zu belasten.",
    "kategorie": "pre-workout",
    "abschnitt": "60–90 Min. vorher",
    "ernaehrungsformen": [
@@ -19343,7 +19343,7 @@
   {
    "id": "mini-reisbowl-mit-haehnchen-und-gurke",
    "name": "Mini-Reisbowl mit Hähnchen und Gurke",
-   "beschreibung": "Eine kleine, fettarme Bowl aus Reis und magerem Hähnchen, die Energie liefert und mit wenig Gemüse leicht im Magen liegt.",
+   "beschreibung": "Eine kleine Bowl aus Reis und magerem Hähnchen, die Energie liefert und mit wenig Gemüse leicht im Magen liegt.",
    "kategorie": "pre-workout",
    "abschnitt": "60–90 Min. vorher",
    "ernaehrungsformen": [
@@ -19411,7 +19411,7 @@
   {
    "id": "tomaten-gnocchi-mit-raeuchertofu-wuerfeln",
    "name": "Tomaten-Gnocchi mit Räuchertofu-Würfeln",
-   "beschreibung": "Weiche Gnocchi in schlanker Tomatensauce bringen viel leicht verdauliche Stärke, kleine Räuchertofu-Würfel ergänzen pflanzliches Eiweiß.",
+   "beschreibung": "Weiche Gnocchi in leichter Tomatensauce bringen viel leicht verdauliche Stärke, kleine Räuchertofu-Würfel ergänzen pflanzliches Eiweiß.",
    "kategorie": "pre-workout",
    "abschnitt": "60–90 Min. vorher",
    "ernaehrungsformen": [
@@ -19463,7 +19463,7 @@
     "Gib die passierten Tomaten und den Oregano dazu und lass die Sauce 3 Minuten köcheln; mit Salz und Pfeffer abschmecken.",
     "Gieße die Gnocchi ab und schwenke sie in der Sauce."
    ],
-   "tipp": "Ohne Öl angebraten bleibt das Gericht fettarm und gut verträglich. Wer vor dem Training wenig Appetit hat, nimmt 130 g Gnocchi.",
+   "tipp": "Ohne Öl angebraten liegt das Gericht leicht im Magen. Wer vor dem Training wenig Appetit hat, nimmt 130 g Gnocchi.",
    "naehrwerte_pro_portion": {
     "kcal": 368,
     "eiweiss_g": 16.1,
@@ -19516,7 +19516,7 @@
     "Streiche die Preiselbeeren auf die untere Hälfte.",
     "Belege es mit Putenbrust und Gurkenscheiben und klappe es zu."
    ],
-   "tipp": "Ohne Butter oder Frischkäse bleibt das Brötchen fettarm. In Butterbrotpapier gewickelt hält es sich ein paar Stunden in der Sporttasche.",
+   "tipp": "Ohne Butter oder Frischkäse liegt das Brötchen leicht im Magen. In Butterbrotpapier gewickelt hält es sich ein paar Stunden in der Sporttasche.",
    "naehrwerte_pro_portion": {
     "kcal": 281,
     "eiweiss_g": 20.1,
@@ -19666,7 +19666,7 @@
     },
     {
      "zutat_id": "wasser",
-     "menge_g": 0,
+     "menge_g": 7,
      "anzeige": "1–2 TL"
     }
    ],
@@ -20461,7 +20461,7 @@
     },
     {
      "zutat_id": "wasser",
-     "menge_g": 0,
+     "menge_g": 45,
      "anzeige": "3 EL"
     },
     {
@@ -20690,7 +20690,7 @@
   {
    "id": "gnocchi-in-tomatensauce-mit-parmesan",
    "name": "Gnocchi in Tomatensauce mit Parmesan",
-   "beschreibung": "Kartoffel-Gnocchi in schlanker Tomatensauce – viel leicht verdauliche Stärke und nur wenig Fett, ein klassisches Carbo-Essen vor dem langen Sonntagslauf.",
+   "beschreibung": "Kartoffel-Gnocchi in leichter Tomatensauce – viel leicht verdauliche Stärke und nur wenig Fett, ein klassisches Carbo-Essen vor dem langen Sonntagslauf.",
    "kategorie": "cardio",
    "abschnitt": "Vor langen Einheiten",
    "ernaehrungsformen": [
@@ -21340,7 +21340,7 @@
     },
     {
      "zutat_id": "wasser",
-     "menge_g": 0,
+     "menge_g": 60,
      "anzeige": "4 EL"
     }
    ],
@@ -22023,7 +22023,7 @@
   {
    "id": "edamame-hummus-mit-gemuesesticks",
    "name": "Edamame-Hummus mit Gemüsesticks",
-   "beschreibung": "Grüner, extra eiweißreicher Hummus aus Edamame und Kichererbsen mit knackigen Sticks für die ganze Woche.",
+   "beschreibung": "Grüner Hummus aus Edamame und Kichererbsen mit knackigen Sticks für die ganze Woche.",
    "kategorie": "meal-prep",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
@@ -22076,7 +22076,7 @@
     },
     {
      "zutat_id": "salz",
-     "menge_g": 0,
+     "menge_g": 6,
      "anzeige": "1 TL"
     },
     {
@@ -22326,7 +22326,7 @@
   {
    "id": "ofen-quarkbaellchen-mit-zimt",
    "name": "Ofen-Quarkbällchen mit Zimt",
-   "beschreibung": "Fluffige Quarkbällchen wie vom Bäcker, nur im Ofen gebacken statt frittiert – eiweißreich und perfekt für die Snackdose.",
+   "beschreibung": "Fluffige Quarkbällchen wie vom Bäcker, nur im Ofen gebacken statt frittiert – fluffig und perfekt für die Snackdose.",
    "kategorie": "meal-prep",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
@@ -22457,7 +22457,7 @@
     },
     {
      "zutat_id": "salz",
-     "menge_g": 0,
+     "menge_g": 6,
      "anzeige": "1 TL"
     },
     {
@@ -22665,7 +22665,7 @@
     },
     {
      "zutat_id": "salz",
-     "menge_g": 0,
+     "menge_g": 3,
      "anzeige": "½ TL"
     },
     {
@@ -22694,7 +22694,7 @@
   {
    "id": "protein-bananenbrot-mit-skyr-und-heidelbeeren",
    "name": "Protein-Bananenbrot mit Skyr und Heidelbeeren",
-   "beschreibung": "Saftiges Bananenbrot aus Haferflocken und Quark ohne Zuckerzusatz, dazu Skyr mit Beeren.",
+   "beschreibung": "Saftiges Bananenbrot aus Haferflocken und Quark, gesüßt nur mit Banane, dazu Skyr mit Beeren.",
    "kategorie": "meal-prep",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
@@ -23052,7 +23052,7 @@
   {
    "id": "pizza-schinken-pilze-mit-quark-oel-teig",
    "name": "Pizza Schinken-Pilze mit Quark-Öl-Teig",
-   "beschreibung": "Der Pizzeria-Klassiker mit magerem Kochschinken, frischen Champignons und eiweißreichem Quarkboden – herzhaft und trotzdem fettarm.",
+   "beschreibung": "Der Pizzeria-Klassiker mit magerem Kochschinken, frischen Champignons und Quark-Öl-Boden – herzhaft und schnell gemacht.",
    "kategorie": "fitness-fast-food",
    "abschnitt": "Pizza & Flammkuchen",
    "ernaehrungsformen": [
@@ -23138,7 +23138,7 @@
   },
   {
    "id": "low-carb-pizza-mit-haehnchen-boden",
-   "name": "Low-Carb-Pizza mit Hähnchen-Boden",
+   "name": "Pizza mit Hähnchen-Boden",
    "beschreibung": "Ein Boden aus fein gehackter Hähnchenbrust, Ei und Parmesan ersetzt den Teig – das liefert enorm viel Eiweiß bei wenig Kohlenhydraten.",
    "kategorie": "fitness-fast-food",
    "abschnitt": "Pizza & Flammkuchen",
@@ -23285,7 +23285,7 @@
     },
     {
      "zutat_id": "wasser",
-     "menge_g": 0,
+     "menge_g": 30,
      "anzeige": "2 EL"
     },
     {
@@ -23435,7 +23435,7 @@
   },
   {
    "id": "rindfleisch-burger-light-mit-vollkornbroetchen-und-coleslaw",
-   "name": "Rindfleisch-Burger light mit Vollkornbrötchen und Coleslaw",
+   "name": "Rindfleisch-Burger mit Vollkornbrötchen und Coleslaw",
    "beschreibung": "Saftiges Patty aus magerem Rinderhack mit hausgemachter Burgersauce aus Skyr und einem frischen Krautsalat – voller Burger-Genuss mit wenig Fett.",
    "kategorie": "fitness-fast-food",
    "abschnitt": "Burger & Hot Dog",
@@ -23759,7 +23759,7 @@
   },
   {
    "id": "hot-dog-light-mit-gefluegelwuerstchen-roestzwiebeln-und-gurkenrelish",
-   "name": "Hot Dog light mit Geflügelwürstchen, Röstzwiebeln und Gurkenrelish",
+   "name": "Hot Dog mit Geflügelwürstchen, Röstzwiebeln und Gurkenrelish",
    "beschreibung": "Zwei Hot Dogs mit fettreduzierten Geflügelwürstchen, frischem Gurkenrelish und einer Senf-Skyr-Sauce – Imbiss-Feeling mit deutlich mehr Eiweiß.",
    "kategorie": "fitness-fast-food",
    "abschnitt": "Burger & Hot Dog",
@@ -24037,7 +24037,7 @@
   {
    "id": "vegane-chili-cheese-fries-mit-sojaschnetzel-chili",
    "name": "Vegane Chili-Cheese-Fries mit Sojaschnetzel-Chili",
-   "beschreibung": "Knusprige Pommes aus der Heißluftfritteuse unter einem würzigen Sojaschnetzel-Bohnen-Chili und cremiger Hefeflocken-Käsesauce – vegan, eiweißreich und richtig sättigend.",
+   "beschreibung": "Knusprige Pommes aus der Heißluftfritteuse unter einem würzigen Sojaschnetzel-Bohnen-Chili und cremiger Hefeflocken-Käsesauce – vegan und richtig sättigend.",
    "kategorie": "fitness-fast-food",
    "abschnitt": "Klassiker",
    "ernaehrungsformen": [
@@ -24899,7 +24899,7 @@
   {
    "id": "curry-knusper-kichererbsen-mit-kraeuter-sojaskyr-dip",
    "name": "Curry-Knusper-Kichererbsen mit Kräuter-Sojaskyr-Dip",
-   "beschreibung": "Kichererbsen aus der Dose werden in der Heißluft in 15 Minuten zu einem würzig-knusprigen Knabbersnack – dazu ein eiweißreicher Kräuter-Dip.",
+   "beschreibung": "Kichererbsen aus der Dose werden in der Heißluft in 15 Minuten zu einem würzig-knusprigen Knabbersnack – dazu ein cremiger Kräuter-Dip.",
    "kategorie": "heissluftfritteuse",
    "abschnitt": "Snacks & Süßes",
    "ernaehrungsformen": [
@@ -25229,7 +25229,7 @@
     },
     {
      "zutat_id": "wasser",
-     "menge_g": 0,
+     "menge_g": 30,
      "anzeige": "2 EL"
     },
     {
@@ -25679,7 +25679,7 @@
   {
    "id": "gruene-bohnen-buendel-im-lachsschinken-mantel-mit-kraeuterquark",
    "name": "Grüne-Bohnen-Bündel im Lachsschinken-Mantel mit Kräuterquark",
-   "beschreibung": "Kleine Bohnenbündel, umwickelt mit magerem Lachsschinken, der in der Heißluft knusprig wird – eine eiweißreiche Gemüsebeilage zu Kartoffeln, Fisch oder Fleisch.",
+   "beschreibung": "Kleine Bohnenbündel, umwickelt mit magerem Lachsschinken, der in der Heißluft knusprig wird – eine knusprige Gemüsebeilage zu Kartoffeln, Fisch oder Fleisch.",
    "kategorie": "heissluftfritteuse",
    "abschnitt": "Beilagen & Gemüse",
    "ernaehrungsformen": [
@@ -25913,7 +25913,7 @@
   {
    "id": "moehren-pastinaken-sticks-mit-ahorn-glasur-und-erbsen-minz-dip",
    "name": "Möhren-Pastinaken-Sticks mit Ahorn-Glasur und Erbsen-Minz-Dip",
-   "beschreibung": "Süßliche Wurzelgemüse-Sticks mit leichter Ahornsirup-Glasur, dazu ein knallgrüner Dip aus Erbsen und Sojaskyr, der die Beilage eiweißreich macht.",
+   "beschreibung": "Süßliche Wurzelgemüse-Sticks mit leichter Ahornsirup-Glasur, dazu ein knallgrüner Dip aus Erbsen und Sojaskyr, der die Beilage abrundet.",
    "kategorie": "heissluftfritteuse",
    "abschnitt": "Beilagen & Gemüse",
    "ernaehrungsformen": [
@@ -26146,7 +26146,7 @@
   {
    "id": "knusprige-zimt-apfelringe-mit-sojaskyr-und-mandeln",
    "name": "Knusprige Zimt-Apfelringe mit Sojaskyr und Mandeln",
-   "beschreibung": "Dünne Apfelringe mit Zimt werden in der Heißluft weich mit leicht karamellisierten Rändern – mit Sojaskyr und gerösteten Mandeln ein veganer, eiweißreicher Nachtisch.",
+   "beschreibung": "Dünne Apfelringe mit Zimt werden in der Heißluft weich mit leicht karamellisierten Rändern – mit Sojaskyr und gerösteten Mandeln ein veganer Nachtisch.",
    "kategorie": "heissluftfritteuse",
    "abschnitt": "Snacks & Süßes",
    "ernaehrungsformen": [
@@ -26210,7 +26210,7 @@
   {
    "id": "kokos-garnelen-mit-mango-limetten-skyr",
    "name": "Kokos-Garnelen mit Mango-Limetten-Skyr",
-   "beschreibung": "Garnelen in einer knusprigen Kokos-Panko-Hülle mit fruchtigem Mango-Dip – ein eiweißreicher Snack, der nach Urlaub schmeckt.",
+   "beschreibung": "Garnelen in einer knusprigen Kokos-Panko-Hülle mit fruchtigem Mango-Dip – ein Snack, der nach Urlaub schmeckt.",
    "kategorie": "heissluftfritteuse",
    "abschnitt": "Snacks & Süßes",
    "ernaehrungsformen": [
@@ -26575,7 +26575,7 @@
   {
    "id": "fudgy-bohnen-brownie-fuer-eine-person",
    "name": "Fudgy Bohnen-Brownie für eine Person",
-   "beschreibung": "Saftiger, schokoladiger Mini-Brownie aus schwarzen Bohnen, Kakao und Datteln – vegan, ballaststoffreich und ohne Mehl.",
+   "beschreibung": "Saftiger, schokoladiger Mini-Brownie aus schwarzen Bohnen, Kakao und Datteln – vegan und ohne Mehl.",
    "kategorie": "protein-dessert",
    "abschnitt": "Aus dem Ofen oder der Mikrowelle",
    "ernaehrungsformen": [
@@ -27589,7 +27589,7 @@
     "Ist die Masse noch bröselig, gib 1–2 EL Milch dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
     "Gib die Keksbrösel in eine Mulde in der Mitte und verteile sie mit der Mix-in-Funktion."
    ],
-   "tipp": "Nur unbehandelte Zitronen abreiben. Mit 1 EL zuckerfreiem Instant-Puddingpulver (Vanille) wird die Konsistenz noch cremiger.",
+   "tipp": "Nur unbehandelte Zitronen abreiben. Mit 1 EL Instant-Puddingpulver mit Süßungsmitteln (Vanille) wird die Konsistenz noch cremiger.",
    "naehrwerte_pro_portion": {
     "kcal": 285,
     "eiweiss_g": 33.0,
@@ -27726,7 +27726,7 @@
   {
    "id": "mango-maracuja-sorbet-mit-seidentofu",
    "name": "Mango-Maracuja-Sorbet mit Seidentofu",
-   "beschreibung": "Leuchtend gelbes, exotisch-frisches Sorbet aus Mango und Maracuja, das durch Seidentofu cremig wird – vegan und fettarm.",
+   "beschreibung": "Leuchtend gelbes, exotisch-frisches Sorbet aus Mango und Maracuja, das durch Seidentofu cremig wird – vegan und erfrischend.",
    "kategorie": "sommer-eis",
    "abschnitt": "Sorbet & Erfrischung",
    "ernaehrungsformen": [
@@ -27846,7 +27846,7 @@
     "Verrühre das Proteinpulver mit dem restlichen Sojadrink glatt und rühre es unter den etwas abgekühlten Brei.",
     "Schneide die Banane in Scheiben, gib sie auf das Porridge und bestreue alles mit Zimt."
    ],
-   "tipp": "Ohne Pulver: Rühr 2 EL Erdnussmus und 150 g Sojaskyr natur unter – etwas teurer, aber ähnlich eiweißreich. Überreife Bananen gibt es oft reduziert, die sind hier ideal.",
+   "tipp": "Ohne Pulver: Rühr 2 EL Erdnussmus und 150 g Sojaskyr natur unter – etwas teurer, aber ähnlich sättigend. Überreife Bananen gibt es oft reduziert, die sind hier ideal.",
    "naehrwerte_pro_portion": {
     "kcal": 512,
     "eiweiss_g": 33.2,
@@ -28538,9 +28538,7 @@
    ],
    "zeit_min": 12,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "ei",
@@ -28612,9 +28610,7 @@
    ],
    "zeit_min": 12,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "tofu-natur",
@@ -28680,7 +28676,7 @@
   {
    "id": "skyr-bowl-mit-himbeeren-walnuessen-und-leinsamen",
    "name": "Skyr-Bowl mit Himbeeren, Walnüssen und Leinsamen",
-   "beschreibung": "Cremiger Skyr mit Himbeeren, knackigen Walnüssen und Leinsamen – ein schnelles Eiweißfrühstück ohne Haferflocken und ohne Zuckerzusatz.",
+   "beschreibung": "Cremiger Skyr mit Himbeeren, knackigen Walnüssen und Leinsamen – ein schnelles Eiweißfrühstück ohne Haferflocken.",
    "kategorie": "low-carb",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
@@ -28691,8 +28687,7 @@
    "zeit_min": 5,
    "portionen": 1,
    "tags": [
-    "Unter 10 Minuten",
-    "Low Carb"
+    "Unter 10 Minuten"
    ],
    "zutaten": [
     {
@@ -28738,7 +28733,7 @@
   {
    "id": "raeucherlachs-ruehrei-mit-gurke-und-dill",
    "name": "Räucherlachs-Rührei mit Gurke und Dill",
-   "beschreibung": "Cremiges Rührei mit Räucherlachs, frischem Dill und knackigen Gurkenscheiben – ein Wochenendfrühstück mit viel Eiweiß und gesunden Fetten.",
+   "beschreibung": "Cremiges Rührei mit Räucherlachs, frischem Dill und knackigen Gurkenscheiben – ein entspanntes Wochenendfrühstück.",
    "kategorie": "low-carb",
    "abschnitt": "Frühstück",
    "ernaehrungsformen": [
@@ -28748,8 +28743,7 @@
    "zeit_min": 10,
    "portionen": 1,
    "tags": [
-    "Unter 10 Minuten",
-    "Low Carb"
+    "Unter 10 Minuten"
    ],
    "zutaten": [
     {
@@ -28819,7 +28813,6 @@
    "portionen": 1,
    "tags": [
     "Unter 10 Minuten",
-    "Low Carb",
     "Vorbereiten"
    ],
    "zutaten": [
@@ -28859,7 +28852,7 @@
     "Rühr nach 5 Minuten noch einmal um, damit nichts verklumpt, und stell den Pudding abgedeckt über Nacht in den Kühlschrank.",
     "Gib morgens den Sojaskyr darauf, verteile die Beeren darüber und bestreue alles mit Kokosraspeln."
    ],
-   "tipp": "Ohne Pulver: Nimm 150 g Sojaskyr statt 100 g – der Pudding wird etwas weniger süß, bleibt aber eiweißreich.",
+   "tipp": "Ohne Pulver: Nimm 150 g Sojaskyr statt 100 g – der Pudding wird etwas weniger süß, bleibt aber schön cremig.",
    "naehrwerte_pro_portion": {
     "kcal": 426,
     "eiweiss_g": 35.7,
@@ -28880,9 +28873,7 @@
    ],
    "zeit_min": 20,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "haehnchenbrustfilet",
@@ -28955,7 +28946,6 @@
    "zeit_min": 40,
    "portionen": 1,
    "tags": [
-    "Low Carb",
     "Vorbereiten"
    ],
    "zutaten": [
@@ -29034,9 +29024,7 @@
    ],
    "zeit_min": 20,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "tofu-natur",
@@ -29111,9 +29099,7 @@
    ],
    "zeit_min": 15,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "putenbrustfilet",
@@ -29179,7 +29165,7 @@
   {
    "id": "senfeier-mit-brokkoli",
    "name": "Senfeier mit Brokkoli",
-   "beschreibung": "Der norddeutsche Klassiker in Low-Carb-Version: wachsweiche Eier in einer leichten Senfsauce, dazu Brokkoli statt Kartoffeln.",
+   "beschreibung": "Der norddeutsche Klassiker in leichter Version: wachsweiche Eier in einer leichten Senfsauce, dazu Brokkoli statt Kartoffeln.",
    "kategorie": "low-carb",
    "abschnitt": "Mittagessen",
    "ernaehrungsformen": [
@@ -29189,9 +29175,7 @@
    ],
    "zeit_min": 20,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "ei",
@@ -29267,9 +29251,7 @@
    ],
    "zeit_min": 20,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "rinderhackfleisch-5-fett",
@@ -29345,9 +29327,7 @@
    ],
    "zeit_min": 30,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "lachsfilet",
@@ -29419,9 +29399,7 @@
    ],
    "zeit_min": 25,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "tofu-natur",
@@ -29490,9 +29468,7 @@
    ],
    "zeit_min": 25,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "schweinefilet",
@@ -29563,9 +29539,7 @@
    ],
    "zeit_min": 35,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "brokkoli",
@@ -29638,8 +29612,7 @@
    "zeit_min": 5,
    "portionen": 1,
    "tags": [
-    "Unter 10 Minuten",
-    "Low Carb"
+    "Unter 10 Minuten"
    ],
    "zutaten": [
     {
@@ -29696,8 +29669,7 @@
    "zeit_min": 5,
    "portionen": 1,
    "tags": [
-    "Unter 10 Minuten",
-    "Low Carb"
+    "Unter 10 Minuten"
    ],
    "zutaten": [
     {
@@ -29753,8 +29725,7 @@
    "zeit_min": 8,
    "portionen": 1,
    "tags": [
-    "Unter 10 Minuten",
-    "Low Carb"
+    "Unter 10 Minuten"
    ],
    "zutaten": [
     {
@@ -29801,7 +29772,7 @@
   {
    "id": "gefuellte-eier-mit-senf-skyr-und-gurke",
    "name": "Gefüllte Eier mit Senf-Skyr und Gurke",
-   "beschreibung": "Hart gekochte Eier mit einer cremigen Füllung aus Eigelb, Skyr und Senf, bestäubt mit Paprika – Partyklassiker als proteinreicher Snack.",
+   "beschreibung": "Hart gekochte Eier mit einer cremigen Füllung aus Eigelb, Skyr und Senf, bestäubt mit Paprika – Partyklassiker als herzhafter Snack.",
    "kategorie": "low-carb",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
@@ -29811,9 +29782,7 @@
    ],
    "zeit_min": 15,
    "portionen": 1,
-   "tags": [
-    "Low Carb"
-   ],
+   "tags": [],
    "zutaten": [
     {
      "zutat_id": "ei",
@@ -29877,7 +29846,6 @@
    "portionen": 1,
    "tags": [
     "Unter 10 Minuten",
-    "Low Carb",
     "Süß"
    ],
    "zutaten": [
@@ -29993,7 +29961,7 @@
    "id": "vegetarisch",
    "ernaehrungsform": "vegetarisch",
    "titel": "Veggie-Wohlfühl-Woche",
-   "beschreibung": "Ofen-Kaiserschmarrn, eine eiweißreiche Linsen-Lasagne und fluffige Ofen-Quarkbällchen: vegetarischer Genuss, der satt macht. Der Ofen läuft fast durchgehend, du schnippelst parallel.",
+   "beschreibung": "Ofen-Kaiserschmarrn, eine Linsen-Lasagne und fluffige Ofen-Quarkbällchen: vegetarischer Genuss, der satt macht. Der Ofen läuft fast durchgehend, du schnippelst parallel.",
    "rezepte": [
     "ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr",
     "linsen-spinat-lasagne-mit-huettenkaese",
@@ -30060,7 +30028,7 @@
    "id": "fleisch",
    "ernaehrungsform": "fleisch",
    "titel": "Deftige Protein-Woche",
-   "beschreibung": "Blech-Omelett mit Schinken, ein mageres Schweinefilet-Gulasch und Mini-Frikadellen: herzhaft, deftig und richtig eiweißreich. Ofen und Herd arbeiten parallel, damit du nach rund 2 Stunden fertig bist.",
+   "beschreibung": "Blech-Omelett mit Schinken, ein mageres Schweinefilet-Gulasch und Mini-Frikadellen: herzhaft, deftig und sättigend. Ofen und Herd arbeiten parallel, damit du nach rund 2 Stunden fertig bist.",
    "rezepte": [
     "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot",
     "paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen",
@@ -30206,7 +30174,7 @@
     "text": "Carb-Loading lohnt sich in der Regel nur bei Belastungen über etwa 90 Minuten, also etwa beim Marathon, bei langen Triathlons oder Radrennen. Als Richtwert gelten an den 1–2 Tagen davor etwa 8–10 g Kohlenhydrate pro kg Körpergewicht pro Tag, verteilt auf mehrere Mahlzeiten und Snacks. Gleichzeitig reduzierst du das Training, damit die Speicher sich füllen können. Eine leichte Gewichtszunahme durch eingelagertes Wasser ist dabei normal."
    },
    {
-    "titel": "Ballaststoff- und fettarm essen",
+    "titel": "Wenig Ballaststoffe und Fett",
     "text": "In den letzten 1–2 Tagen vor dem Rennen greifen viele Sportler zu hellem Brot, weißem Reis, Nudeln und geschältem Obst statt zu Vollkorn, Hülsenfrüchten und großen Rohkostportionen. Das entlastet den Darm und macht es leichter, viele Kohlenhydrate zu essen. Auch fette und sehr scharfe Speisen lässt man besser weg. Wie stark du reduzierst, hängt von deiner persönlichen Verträglichkeit ab."
    },
    {
@@ -30231,7 +30199,7 @@
    },
    {
     "titel": "Richtwerte, keine Regeln",
-    "text": "Alle Angaben sind allgemeine Richtwerte für gesunde Freizeitsportler und ersetzen keine individuelle Beratung. Körpergewicht, Renndauer, Wetter und persönliche Verträglichkeit beeinflussen, was für dich passt. Teste deine Strategie deshalb im Training und passe sie Schritt für Schritt an. Bei Vorerkrankungen oder Magen-Darm-Problemen sprich vorab mit einer Ärztin, einem Arzt oder einer Ernährungsfachkraft."
+    "text": "Alle Angaben sind allgemeine Richtwerte für Freizeitsportler ohne Vorerkrankungen und ersetzen keine individuelle Beratung. Körpergewicht, Renndauer, Wetter und persönliche Verträglichkeit beeinflussen, was für dich passt. Teste deine Strategie deshalb im Training und passe sie Schritt für Schritt an. Bei Vorerkrankungen oder Magen-Darm-Problemen sprich vorab mit einer Ärztin, einem Arzt oder einer Ernährungsfachkraft."
    }
   ],
   "eismaschine": [
@@ -30245,7 +30213,7 @@
    },
    {
     "titel": "Das passende Programm wählen",
-    "text": "Eis mit wenig Fett und Zucker ist im gefrorenen Zustand sehr fest. Wähle dafür das Programm für leichtes Eis bzw. das Programm, das dein Gerät für fett- und zuckerarme Massen vorsieht. Beachte immer die Anleitung deines eigenen Geräts."
+    "text": "Eis mit wenig Fett und Zucker ist im gefrorenen Zustand sehr fest. Wähle dafür das Programm für leichtes Eis bzw. das Programm, das dein Gerät für Massen mit wenig Fett und Zucker vorsieht. Beachte immer die Anleitung deines eigenen Geräts."
    },
    {
     "titel": "Bröselig ist normal – einfach nachdrehen",
@@ -30297,10 +30265,10 @@
   "unterwegs": {
    "einleitung": "Unterwegs, in der Kantine oder im Restaurant musst du nicht auf deine Ziele verzichten. Mit ein paar einfachen Faustregeln findest du fast überall eine gute Wahl, ohne zu zählen oder dich einzuschränken. Und wenn es mal das Lieblingsessen ohne Kompromiss sein soll: genieß es einfach und mach bei der nächsten Mahlzeit normal weiter.",
    "grundregeln": [
-    "Wähle zuerst deine Eiweißquelle (Fleisch, Fisch, Eier, Hülsenfrüchte, Milchprodukte) und baue den Rest drumherum.",
+    "Wähle zuerst, was Eiweiß liefert (Fleisch, Fisch, Eier, Hülsenfrüchte, Milchprodukte) und baue den Rest drumherum.",
     "Gemüse oder Salat dazu: Die Hälfte des Tellers darf ruhig grün und bunt sein.",
     "Soßen und Dressings extra bestellen, dann bestimmst du die Menge selbst.",
-    "Getränke ohne Zucker: Wasser, ungesüßter Tee, Kaffee oder Light-Getränke.",
+    "Getränke ohne Zucker: Wasser, ungesüßter Tee, Kaffee oder Getränke mit Süßungsmitteln.",
     "Lieber gegrillt, gedünstet oder gebacken als frittiert oder paniert.",
     "Iss langsam und hör auf, wenn du angenehm satt bist – Reste einpacken ist völlig okay."
    ],
@@ -30337,7 +30305,7 @@
       "Bockwurst mit Brötchen und viel Ketchup",
       "Chips und Knabbergebäck"
      ],
-     "trick": "Geh zuerst zum Kühlregal statt zur Kasse – dort stehen meist die eiweißreichen Optionen, während an der Kasse die Süßigkeiten warten."
+     "trick": "Geh zuerst zum Kühlregal statt zur Kasse – dort stehen meist Joghurt, Quark und Skyr, während an der Kasse die Süßigkeiten warten."
     },
     {
      "ort": "In der Kantine",
@@ -30464,7 +30432,7 @@
       "Selbst mitgebrachte Snacks wie Nüsse, Obst oder Proteinriegel",
       "Belegte Vollkornbrote oder Wraps von zu Hause",
       "Leere Trinkflasche einpacken und nach der Sicherheitskontrolle auffüllen",
-      "Am Bahnhof oder Flughafen: Salat, Sushi oder belegtes Brot mit Eiweißquelle",
+      "Am Bahnhof oder Flughafen: Salat, Sushi oder belegtes Brot mit Käse, Ei oder Fisch",
       "Wasser und ungesüßter Tee während des Fluges"
      ],
      "lieber_seltener": [

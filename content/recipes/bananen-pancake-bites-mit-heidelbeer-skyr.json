@@ -1,0 +1,131 @@
+{
+  "id": "bananen-pancake-bites-mit-heidelbeer-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Bananen-Pancake-Bites mit Heidelbeer-Skyr",
+  "description_de": "Kleine, fluffige Pancake-Happen aus Banane, Ei und Hafer aus der Mini-Muffinform – zum Dippen in Heidelbeer-Skyr.",
+  "section_de": "Aus dem Ofen oder der Mikrowelle",
+  "categories": ["protein-dessert"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "banane",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ reife Banane (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "eiklar",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g (ca. 2 Eiweiß)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2½ EL (25 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (2 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "heidelbeeren",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 180 °C Umluft vor und fette eine Mini-Muffinform leicht ein oder leg Silikonförmchen bereit.",
+    "Püriere Banane, Ei, Eiklar, Haferflocken, Backpulver und Zimt zu einem glatten Teig.",
+    "Füll den Teig in 8–10 Mulden zu etwa zwei Dritteln und backe die Bites 12–14 Minuten, bis sie goldbraun und aufgegangen sind.",
+    "Zerdrück die Hälfte der Heidelbeeren mit einer Gabel, rühre sie unter den Skyr und gib die übrigen Beeren darüber.",
+    "Lass die Bites 5 Minuten abkühlen und dippe sie in den Heidelbeer-Skyr."
+  ],
+  "tip_de": "Die Bites lassen sich gut auf Vorrat backen und einfrieren; kurz in der Mikrowelle oder im Toaster aufwärmen. Für unterwegs Dip und Bites getrennt einpacken.",
+  "tags_de": ["Dessert", "zum Mitnehmen"],
+  "total_minutes": 25,
+  "prep_minutes": 11,
+  "cook_minutes": 14,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 330,
+    "protein_g": 27.2,
+    "carbs_g": 34.1,
+    "fat_g": 8
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "351700ff7404618adb796aac02ab9b3ac2a73b714dc985753be6ed946f9c2a3d"
+  }
+}

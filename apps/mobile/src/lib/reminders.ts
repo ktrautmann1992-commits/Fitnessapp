@@ -1,4 +1,5 @@
 import {
+  type DrinkProgress,
   MEAL_SLOT_TIMES,
   type MealSlotId,
   type PlannedReminder,
@@ -102,6 +103,8 @@ export function reminderNotifications(input: {
   today: string;
   nowMs: number;
   timeZone: string;
+  /** Trink-Tracker heute (Menge und Ziel wie auf der Karte „Trinken“); Ziel erreicht → restliche Trink-Erinnerungen entfallen. */
+  drinkProgress?: DrinkProgress | null;
 }): ReminderNotification[] {
   const { settings } = input;
   if (!settings.training.enabled && !settings.meals.enabled && !settings.drink.enabled) return [];
@@ -113,6 +116,7 @@ export function reminderNotifications(input: {
     days,
     settings,
     trainingTime: rows?.nutritionSetup?.training_time ?? null,
+    drinkProgress: input.drinkProgress ?? null,
     nowMs: input.nowMs,
     timeZone: input.timeZone,
   }).map((r) => ({

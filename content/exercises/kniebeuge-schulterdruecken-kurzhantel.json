@@ -1,10 +1,10 @@
 {
   "id": "kniebeuge-schulterdruecken-kurzhantel",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "name_de": "Kniebeuge mit Schulterdrücken (Kurzhanteln)",
   "name_en": "Dumbbell Thruster",
-  "aliases_de": ["Thruster"],
+  "aliases_de": ["Kurzhantel-Thruster", "Thruster mit Kurzhanteln"],
   "movement_pattern": "squat",
   "primary_muscles": ["quadriceps", "glutes", "front_delts"],
   "secondary_muscles": ["triceps", "abs"],

@@ -3,7 +3,7 @@ import type { EquipmentLocation, TrainingLocation } from '../enums';
 import {
   BARBELL_DEFAULT_BAR_KG,
   BODYWEIGHT_PROFILE_RULES,
-  HYROX_ONLY_EXERCISE_IDS,
+  LIBRARY_SEARCH_EXCLUDED_IDS,
 } from '../constants';
 import {
   BARBELL_ID,
@@ -300,9 +300,11 @@ export function findSubstitute(original: Exercise, ctx: SubstituteContext): Subs
     b.difficulty - a.difficulty ||
     Number(b.load_type === original.load_type) - Number(a.load_type === original.load_type) ||
     compareIds(a, b);
-  // Sportarten Stufe 1: Hyrox-Übungen nur innerhalb von Hyrox (HYROX_ONLY_EXERCISE_IDS).
+  // Sportarten Stufe 1: Hyrox-Übungen nur innerhalb von Hyrox, WOD-Übungen nur in Workouts
+  // (LIBRARY_SEARCH_EXCLUDED_IDS).
   const hyroxOnly = (c: Exercise) =>
-    HYROX_ONLY_EXERCISE_IDS.includes(c.id) && !HYROX_ONLY_EXERCISE_IDS.includes(original.id);
+    LIBRARY_SEARCH_EXCLUDED_IDS.includes(c.id) &&
+    !LIBRARY_SEARCH_EXCLUDED_IDS.includes(original.id);
   const pool = [...ctx.library.values()]
     .filter(ok)
     .filter((c) => !hyroxOnly(c) && sharesPrimaryMuscle(c, original));

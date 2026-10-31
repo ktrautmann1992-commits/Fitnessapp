@@ -21,6 +21,7 @@ import {
 import { CALISTHENICS_ILLUSTRATIONS } from './poses-calisthenics';
 import { HYROX_ILLUSTRATIONS } from './poses-hyrox';
 import { ROWING_ILLUSTRATIONS } from './poses-rowing';
+import { WOD_ILLUSTRATIONS } from './poses-wod';
 import { YOGA_ILLUSTRATIONS } from './poses-yoga';
 import { YOGA_REST_ILLUSTRATIONS } from './poses-yoga-rest';
 import type { Limb, PoseSpec, Prop, SidePose } from './rig';
@@ -1318,4 +1319,6 @@ export const EXERCISE_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustratio
   ...YOGA_REST_ILLUSTRATIONS,
   // --- Hyrox-Stationen (Entwürfe, Sportarten Stufe 1 · Etappe H) --------------------------------------------------
   ...HYROX_ILLUSTRATIONS,
+  // --- Workouts im WOD-Stil: Box-Sprung, Seilspringen, Thruster (docs/PLAN-WORKOUTS.md W-O6) -----------------------
+  ...WOD_ILLUSTRATIONS,
 };

@@ -1,0 +1,30 @@
+{
+  "recipe_id": "suess-saurer-ananas-tofu-mit-basmatireis",
+  "alt_de": "Foto: Süß-saurer Ananas-Tofu mit Basmatireis",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/suess-saurer-ananas-tofu-mit-basmatireis.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "suess-saurer-ananas-tofu-mit-basmatireis-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "suess-saurer-ananas-tofu-mit-basmatireis-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

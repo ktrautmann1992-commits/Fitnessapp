@@ -1,0 +1,119 @@
+{
+  "id": "gefuellte-eier-mit-senf-skyr-und-gurke",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gefüllte Eier mit Senf-Skyr und Gurke",
+  "description_de": "Hart gekochte Eier mit einer cremigen Füllung aus Eigelb, Skyr und Senf, bestäubt mit Paprika – Partyklassiker als proteinreicher Snack.",
+  "section_de": "Snack",
+  "categories": ["low-carb"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 110,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (M)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Gurke (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Eier 10 Minuten hart, schrecke sie kalt ab, pelle und halbiere sie.",
+    "Drücke die Eigelbe mit einer Gabel fein und verrühre sie mit Skyr, Senf und Salz.",
+    "Fülle die Creme in die Eiweißhälften und bestäube sie mit Paprikapulver.",
+    "Schneide die Gurke in Scheiben und serviere sie dazu."
+  ],
+  "tip_de": "Mit einem Gefrierbeutel, bei dem du eine Ecke abschneidest, lässt sich die Creme sauber einfüllen.",
+  "tags_de": ["Low Carb"],
+  "total_minutes": 15,
+  "prep_minutes": 5,
+  "cook_minutes": 10,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 193,
+    "protein_g": 19.2,
+    "carbs_g": 4.4,
+    "fat_g": 10.7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "eggs", "mustard"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "huehnerei",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 1 gart die Zutat durch: „Koche die Eier 10 Minuten hart, schrecke sie kalt ab, pelle und halbiere sie.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f20d038d369370c143e33cd3751a2e3b3fc3986557a74e3f22402de3465e5db3"
+  }
+}

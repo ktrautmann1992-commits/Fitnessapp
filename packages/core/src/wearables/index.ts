@@ -7,6 +7,7 @@ export * from './daily';
 export * from './route';
 export * from './sessions';
 export * from './sync';
+export * from './background';
 export * from './rows';
 export * from './steps';
 export * from './recovery';

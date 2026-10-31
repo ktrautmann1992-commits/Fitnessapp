@@ -32,6 +32,14 @@ export type HydrationState =
 
 const listeners = new Set<() => void>();
 
+/** Bei jeder Änderung (Eintrag, Zurücknehmen) benachrichtigen – z. B. die Trink-Erinnerungen neu planen. */
+export function subscribeHydrationChanges(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
 /** Ziel-Eingaben aus den Zeilen der App (nur Zusammensetzen). */
 export function hydrationGoalFromRows(
   rows: UserRows,

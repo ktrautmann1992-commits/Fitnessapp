@@ -16,6 +16,7 @@ import appConfig, {
   ANDROID_MIN_SDK,
   CALENDAR_PERMISSION_TEXT,
   CAMERA_PERMISSION_TEXT,
+  HEALTH_CONNECT_BACKGROUND_PERMISSION,
   HEALTH_CONNECT_BLOCKED_PERMISSIONS,
   HEALTH_CONNECT_READ_PERMISSIONS,
   HOME_WIDGET,
@@ -57,6 +58,8 @@ const ALLOWED_ANDROID_PERMISSIONS = [
   'android.permission.health.READ_EXERCISE_ROUTES',
   // Rudergerät: Ø Watt (Sportarten Stufe 1 · Restpunkte, 27.10.2026).
   'android.permission.health.READ_POWER',
+  // Abgleich im Hintergrund (Gründer-Freigabe 30.10.2026, docs/PLAN-PHASE-8.md 13.6) – erst auf Tipp gefragt.
+  'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
   // Trainings im Handy-Kalender (opt-in, Gründer-Freigabe 25.10.2026): eigener Kalender „Alpha5 Training“.
   'android.permission.READ_CALENDAR',
   'android.permission.WRITE_CALENDAR',
@@ -67,8 +70,7 @@ const BLOCKED_ANDROID_PERMISSIONS = [
   'android.permission.SYSTEM_ALERT_WINDOW',
   // Kein „Immer erlauben“ (W-G13): Der Vordergrund-Dienst braucht es nicht.
   'android.permission.ACCESS_BACKGROUND_LOCATION',
-  // Phase 8: kein Hintergrund-Lesen, keine älteren Daten, kein Schreiben (Routen lesen seit 23.10.2026 erlaubt).
-  'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
+  // Phase 8: keine älteren Daten, kein Schreiben (Routen lesen seit 23.10.2026, Hintergrund seit 30.10.2026 erlaubt).
   'android.permission.health.READ_HEALTH_DATA_HISTORY',
   'android.permission.health.WRITE_EXERCISE',
   'android.permission.health.WRITE_EXERCISE_ROUTE',
@@ -209,8 +211,8 @@ describe('app.config.ts', () => {
   });
 
   it('Health Connect (Phase 8): je Datentyp genau eine Leseberechtigung plus Trainingsrouten, Plugin und minSdk 26', () => {
-    // + Trainingsrouten + Leistung (Rudergerät, Restpunkte 27.10.2026).
-    expect(HEALTH_CONNECT_READ_PERMISSIONS).toHaveLength(WEARABLE_DATA_TYPES.length + 2);
+    // + Trainingsrouten + Leistung (Rudergerät, Restpunkte 27.10.2026) + Hintergrund (30.10.2026).
+    expect(HEALTH_CONNECT_READ_PERMISSIONS).toHaveLength(WEARABLE_DATA_TYPES.length + 3);
     expect(HEALTH_CONNECT_READ_PERMISSIONS).toContain('android.permission.health.READ_POWER');
     expect(HEALTH_CONNECT_READ_PERMISSIONS).toContain(
       'android.permission.health.READ_EXERCISE_ROUTES',
@@ -219,12 +221,9 @@ describe('app.config.ts', () => {
       expect(permission).toMatch(/^android\.permission\.health\.READ_[A-Z_]+$/);
       expect(HEALTH_CONNECT_BLOCKED_PERMISSIONS as readonly string[]).not.toContain(permission);
     }
-    for (const blocked of [
-      'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
+    expect(HEALTH_CONNECT_BLOCKED_PERMISSIONS as readonly string[]).toContain(
       'android.permission.health.READ_HEALTH_DATA_HISTORY',
-    ]) {
-      expect(HEALTH_CONNECT_BLOCKED_PERMISSIONS as readonly string[]).toContain(blocked);
-    }
+    );
     const plugins = config().plugins ?? [];
     expect(plugins).toContain('react-native-health-connect');
     expect(plugins).toContainEqual(['expo-build-properties', { android: { minSdkVersion: 26 } }]);
@@ -239,6 +238,37 @@ describe('app.config.ts', () => {
       'android.permission.ACTIVITY_RECOGNITION',
     );
     expect(config().plugins ?? []).not.toContain('expo-sensors');
+  });
+
+  it('Abgleich im Hintergrund (30.10.2026): READ_HEALTH_DATA_IN_BACKGROUND, expo-background-task nur Android, Aufgabe im Einstieg', () => {
+    expect(HEALTH_CONNECT_BACKGROUND_PERMISSION).toBe(
+      'android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND',
+    );
+    expect(config().android?.permissions ?? []).toContain(HEALTH_CONNECT_BACKGROUND_PERMISSION);
+    expect(config().android?.blockedPermissions ?? []).not.toContain(
+      HEALTH_CONNECT_BACKGROUND_PERMISSION,
+    );
+    const pkg = JSON.parse(readFileSync(join(APP_DIR, 'package.json'), 'utf8')) as {
+      dependencies: Record<string, string>;
+      expo?: { autolinking?: { ios?: { exclude?: string[] } } };
+    };
+    // SDK-57-Fassung (npx expo install), WorkManager auf Android.
+    expect(pkg.dependencies['expo-background-task']).toMatch(/^~57\./);
+    expect(pkg.dependencies['expo-task-manager']).toMatch(/^~57\./);
+    // iPhone: kein Health Connect → Modul nicht einbinden (sonst BGTask-Kennung ohne Info.plist-Eintrag beim Start),
+    // kein Plugin, kein Hintergrundmodus „processing“ (Test „iOS: Hintergrundmodi“ unten).
+    expect(pkg.expo?.autolinking?.ios?.exclude).toEqual(['expo-background-task']);
+    const plugins = (config().plugins ?? []).map((entry) =>
+      Array.isArray(entry) ? entry[0] : entry,
+    );
+    expect(plugins).not.toContain('expo-background-task');
+    expect(IOS_BACKGROUND_MODES as readonly string[]).not.toContain('processing');
+    // Aufgabe wird beim Start des JS-Bündels bekannt gemacht (Pflicht für Android ohne geöffnete App).
+    expect(readFileSync(join(APP_DIR, 'index.ts'), 'utf8')).toContain('defineWearableBackground()');
+    // Browser/iPhone-Fassung lädt das native Modul nie.
+    const fallback = readFileSync(join(APP_DIR, 'src/lib/background-task.ts'), 'utf8');
+    expect(fallback).not.toContain("from 'expo-background-task'");
+    expect(existsSync(join(APP_DIR, 'src/lib/background-task.android.ts'))).toBe(true);
   });
 
   it('Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md): nur Android, Name wie im Code, Vorschaubild vorhanden', async () => {

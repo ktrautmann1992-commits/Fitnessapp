@@ -7,6 +7,7 @@ import { StyleSheet, View } from 'react-native';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { PulseZoneSettingsCard } from '@/components/runner';
 import { StepGoalCard } from '@/components/steps';
+import { WearableBackgroundCard } from '@/components/wearable-background';
 import { RecoveryDetails } from '@/components/recovery';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { consentRecordsFromRows } from '@/data/mapping';
@@ -21,6 +22,7 @@ import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import {
   forgetWearables,
   syncWearables,
+  updateWearableBackgroundSync,
   useWearables,
   wearableConsentsValid,
   wearableDriver,
@@ -62,6 +64,8 @@ function syncMessage(outcome: WearableSyncOutcome | null): Message | null {
  * Browser/iPhone: Hinweis „nur in der Android-App“; im Testmodus eine Beispiel-Uhr.
  * Schritte vom Handy (29.10.2026, docs/PLAN-PHASE-8.md 13.5): „Nur Schritte vom Handy verbinden“ fragt in Health Connect
  * nur das Leserecht „Schritte“ – ohne Uhr; `?quelle=handy` (Kachel „Schritte“ → „Handy nutzen“) stellt das nach vorn.
+ * Im Hintergrund aktualisieren (30.10.2026, docs/PLAN-PHASE-8.md 13.6): Karte mit Erklärung und dem eigenen
+ * Health-Connect-Recht „Daten im Hintergrund lesen“.
  */
 export default function SmartwatchScreen() {
   const router = useRouter();
@@ -183,6 +187,8 @@ export default function SmartwatchScreen() {
     try {
       const deleted = await app.backend.wearables.disconnect(deleteImported);
       forgetWearables();
+      // Getrennt → Hintergrund-Aufgabe sofort abmelden (docs/PLAN-PHASE-8.md 13.6).
+      await updateWearableBackgroundSync(app).catch(() => undefined);
       await Promise.all([app.reload(), reload()]);
       setDialog(false);
       setMessage({
@@ -356,6 +362,15 @@ export default function SmartwatchScreen() {
                 />
               ) : null}
             </View>
+          )}
+          {/* Abgleich im Hintergrund (30.10.2026): erklärt, Recht erst auf Tipp. */}
+          {unsupported ? null : (
+            <WearableBackgroundCard
+              app={app}
+              driver={driver}
+              connection={connection}
+              consentsValid={wearableValid}
+            />
           )}
           {/* Erholung aus der Uhr (25.10.2026): Status, Werte heute, Regeln, Hinweise. */}
           {phoneOnly ? null : <RecoveryDetails today={todayIso()} />}

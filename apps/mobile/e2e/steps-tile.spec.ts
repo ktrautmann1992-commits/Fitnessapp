@@ -159,9 +159,23 @@ test('Schritte vom Handy ohne Uhr: „Handy nutzen“ → nur Schritte verbinden
     'Deine Schritte kommen vom Handy',
   );
   await expect(page.getByTestId('smartwatch-add-watch')).toBeVisible();
+  await expect(
+    page.getByText('Damit sie auch bei geschlossener App aktuell bleiben', { exact: false }),
+  ).toBeVisible();
+  // Im Hintergrund aktualisieren (30.10.2026, docs/PLAN-PHASE-8.md 13.6): erklärt, Recht erst auf Tipp.
+  const background = page.getByTestId('smartwatch-background');
+  await expect(background).toContainText('Im Hintergrund aktualisieren');
+  await expect(background).toContainText('Android entscheidet, wann: frühestens alle 15 Minuten');
+  await expect(background).toContainText('„Daten im Hintergrund lesen“');
+  await expect(page.getByTestId('smartwatch-background-active')).toHaveCount(0);
   if (shots) {
     await page.screenshot({ path: `${shots}/schritte-vom-handy.png`, fullPage: true });
   }
+  await page.getByTestId('smartwatch-background-allow').click();
+  await expect(page.getByTestId('smartwatch-background-active')).toContainText(
+    'Testmodus: Hintergrund erlaubt',
+  );
+  await expect(page.getByTestId('smartwatch-background-allow')).toHaveCount(0);
 
   await page.goto('/uebersicht');
   await expect(page.getByTestId('overview-steps-value')).toHaveText('6.240');

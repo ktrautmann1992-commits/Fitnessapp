@@ -1,0 +1,129 @@
+{
+  "id": "schweinefilet-spiesse-mit-paprika-und-kraeuterquark",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schweinefilet-Spieße mit Paprika und Kräuterquark",
+  "description_de": "Zartes Schweinefilet mit Paprika, Zucchini und roter Zwiebel am Spieß, aus Pfanne oder Grill, dazu ein frischer Schnittlauchquark.",
+  "section_de": "Abendessen",
+  "categories": ["low-carb"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schweinefilet",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "180 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zucchini (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, in Röllchen",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 ml)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-geraeuchert",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide Filet, Paprika, Zucchini und Zwiebel in mundgerechte Stücke und stecke sie abwechselnd auf 3–4 Spieße.",
+    "Bestreiche die Spieße mit Öl und würze sie mit Paprikapulver, Salz und Pfeffer.",
+    "Brate sie in einer Grillpfanne oder auf dem Grill 10–12 Minuten rundum, bis das Fleisch durch, aber noch saftig ist.",
+    "Verrühre den Quark mit Schnittlauch, 2 EL Wasser, Salz und Pfeffer und serviere ihn dazu."
+  ],
+  "tip_de": "Holzspieße vorher 20 Minuten in Wasser legen, dann verbrennen sie nicht. Ohne Schwein klappt das Rezept genauso mit Hähnchen- oder Putenbrust.",
+  "tags_de": ["Low Carb"],
+  "total_minutes": 25,
+  "prep_minutes": 13,
+  "cook_minutes": 12,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 417,
+    "protein_g": 54.7,
+    "carbs_g": 16.6,
+    "fat_g": 13
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "701050feaa6af831334535a9e493df1710a34331b338271b6f08a2e01a9b1384"
+  }
+}

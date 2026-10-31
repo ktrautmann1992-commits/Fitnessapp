@@ -1,0 +1,30 @@
+{
+  "recipe_id": "knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing",
+  "alt_de": "Foto: Knusper-Tofu auf Asia-Krautsalat mit Erdnussdressing",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "file": "content/rezeptbuch/fotos/knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing.jpg",
+    "obtained_on": "2026-10-23"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing-thumb.webp",
+      "width": 160,
+      "height": 160
+    },
+    {
+      "kind": "banner",
+      "file": "knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

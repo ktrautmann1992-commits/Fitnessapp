@@ -1,0 +1,111 @@
+{
+  "id": "quark-porridge-mit-beeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Quark-Porridge mit Beeren",
+  "description_de": "Cremiger Haferbrei, in den zum Schluss Magerquark gerührt wird – warm, sättigend und richtig eiweißreich.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "beeren-mischung-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mandeln",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehackt (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gib Haferflocken und Milch in einen kleinen Topf und bring alles bei mittlerer Hitze unter Rühren zum Köcheln.",
+    "Lass den Brei 3–4 Minuten leise köcheln, bis er schön sämig ist, und nimm den Topf dann vom Herd.",
+    "Rühre den Magerquark und den Zimt unter, damit das Porridge cremig und eiweißreich wird.",
+    "Erwärme die TK-Beeren kurz in der Mikrowelle (ca. 1 Minute) oder lass sie antauen.",
+    "Fülle das Porridge in eine Schüssel und toppe es mit den Beeren und den gehackten Mandeln."
+  ],
+  "tip_de": "Den Quark erst nach dem Kochen einrühren – so flockt er nicht aus.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 6,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 523,
+    "protein_g": 36,
+    "carbs_g": 59.7,
+    "fat_g": 13.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "tree_nuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "5f60d3bc11ea1ff458f79691f2a848e033dae43cb1ae08bc394188cbcf68895a"
+  }
+}

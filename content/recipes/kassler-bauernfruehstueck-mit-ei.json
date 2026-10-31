@@ -1,0 +1,147 @@
+{
+  "id": "kassler-bauernfruehstueck-mit-ei",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kassler-Bauernfrühstück mit Ei",
+  "description_de": "Deftige Bratkartoffeln mit magerem Kassler und Ei aus der Pfanne – der Klassiker für Hungrige.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g, gekocht vom Vortag",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kassler-mager",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g, gewürfelt",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, in Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die gekochten Kartoffeln in Scheiben, würfle Zwiebel und Kassler.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne und brate die Kartoffeln bei mittlerer bis hoher Hitze 6–8 Minuten rundum goldbraun.",
+    "Gib Zwiebel und Kassler dazu und brate alles 2–3 Minuten weiter.",
+    "Verquirle die Eier mit Paprikapulver, Salz und Pfeffer, gieße sie über die Kartoffeln und lass sie bei niedriger Hitze unter gelegentlichem Wenden 2–3 Minuten stocken.",
+    "Bestreue das Bauernfrühstück mit Schnittlauch und serviere es sofort."
+  ],
+  "tip_de": "Koch abends ein paar Kartoffeln mehr – dann steht das Frühstück morgens in 15 Minuten. Dazu passt eine Gewürzgurke.",
+  "total_minutes": 20,
+  "prep_minutes": 9,
+  "cook_minutes": 11,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 487,
+    "protein_g": 36.5,
+    "carbs_g": 32.9,
+    "fat_g": 22.7
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["eggs", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 1,
+        "food_id": "kassler-mager",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 3 gart die Zutat durch: „Gib Zwiebel und Kassler dazu und brate alles 2–3 Minuten weiter.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f17294e7b76b8c5f312a7afca96a94af95b12c81152d913d77bd93c6ff35d368"
+  }
+}

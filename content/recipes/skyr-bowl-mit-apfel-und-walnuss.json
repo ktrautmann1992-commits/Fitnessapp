@@ -1,0 +1,110 @@
+{
+  "id": "skyr-bowl-mit-apfel-und-walnuss",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Skyr-Bowl mit Apfel & Walnuss",
+  "description_de": "Kühle Skyr-Schüssel mit knackigem Apfel, Haferflocken und Walnüssen – fertig in fünf Minuten.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "skyr-natur",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "apfel",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Apfel (120 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "walnuesse",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "15 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "honig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gib den Skyr in eine Schüssel und rühre ihn mit Honig und Zimt glatt.",
+    "Wasche den Apfel, entferne das Kerngehäuse und schneide ihn in kleine Würfel.",
+    "Hacke die Walnüsse grob.",
+    "Streue Haferflocken, Apfelwürfel und Walnüsse über den Skyr und iss die Bowl sofort."
+  ],
+  "tip_de": "Statt Apfel passt auch eine Birne oder eine Handvoll Beeren.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 500,
+    "protein_g": 35.5,
+    "carbs_g": 56.5,
+    "fat_g": 13.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "tree_nuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "265b039804bc99634e4a862cda8b927c721302436725c2a622f7449f2451f91d"
+  }
+}

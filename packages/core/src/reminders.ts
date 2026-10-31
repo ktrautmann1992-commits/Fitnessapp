@@ -137,8 +137,29 @@ export const reminderDaySchema = z.strictObject({
     .nullable(),
 });
 
+/**
+ * Stand des Trink-Trackers für EINEN Kalendertag (Tagesziel = Richtwert aus hydrationGoal, Menge = Summe der Einträge).
+ * `goalMl` null = kein Ziel (Herz/Niere, kein Gewicht) → Trink-Erinnerungen wie bisher.
+ */
+export const drinkProgressSchema = z.strictObject({
+  date: isoDateSchema,
+  totalMl: z.number().int().min(0),
+  goalMl: z.number().int().positive().nullable(),
+});
+export type DrinkProgress = z.infer<typeof drinkProgressSchema>;
+
+/** Tagesziel erreicht (Menge ≥ Ziel)? Ohne Ziel bzw. ohne Tracker-Stand nie. */
+export function drinkGoalReached(progress: DrinkProgress | null | undefined): boolean {
+  return progress?.goalMl != null && progress.totalMl >= progress.goalMl;
+}
+
 export const reminderInputSchema = z.strictObject({
   days: z.array(reminderDaySchema).max(REMINDERS.horizonDays),
+  /**
+   * Trink-Tracker (optional): Ist an diesem Tag das Tagesziel erreicht, entfallen dort alle (restlichen)
+   * Trink-Erinnerungen. Gilt nur für genau diesen Tag – ein Stand von gestern (über Mitternacht) wirkt nicht.
+   */
+  drinkProgress: drinkProgressSchema.nullable().optional(),
   settings: reminderSettingsSchema,
   /** Angabe „Trainingszeit“ – Start für Einheiten ohne eigene Uhrzeit („ca.“). */
   trainingTime: z.enum(TRAINING_TIMES).nullable(),
@@ -201,6 +222,7 @@ function dayDrafts(
   day: ReminderDay,
   settings: ReminderSettings,
   trainingTime: TrainingTime | null,
+  drinkProgress: DrinkProgress | null,
 ): Draft[] {
   const out: Draft[] = [];
   const concreteTime = trainingTime !== null && trainingTime !== 'varies';
@@ -310,7 +332,8 @@ function dayDrafts(
     });
   }
 
-  if (settings.drink.enabled) {
+  const drinkDone = drinkProgress?.date === day.date && drinkGoalReached(drinkProgress);
+  if (settings.drink.enabled && !drinkDone) {
     const others = out.map((d) => d.minutes);
     const { fromMinutes, toMinutes, everyMinutes } = settings.drink;
     for (let m = fromMinutes; m <= toMinutes; m += everyMinutes) {
@@ -329,11 +352,15 @@ function dayDrafts(
  * - Training: `leadMinutes` vor dem Start (eigene Uhrzeit bzw. „Trainingszeit“), ohne Uhrzeit einmal am Morgen;
  * - Essen: Mahlzeiten des Plans (ohne Plan Frühstück/Mittag/Abend) zur Essenszeit; vor/nach dem Training mit Rolle,
  *   fehlende Mahlzeit vor/nach dem Training als Hinweis relativ zur Einheit (wandert mit, wenn sie verschoben wird);
- * - Trinken: im Zeitfenster, nicht dicht neben einer anderen Erinnerung.
+ * - Trinken: im Zeitfenster, nicht dicht neben einer anderen Erinnerung; entfällt für den Tag, an dem das Tagesziel
+ *   des Trink-Trackers erreicht ist (`drinkProgress`) – sinkt die Menge wieder unter das Ziel (Eintrag zurückgenommen,
+ *   Ziel gestiegen), plant die App neu und die restlichen Erinnerungen kommen wieder.
  */
 export function plannedReminders(rawInput: ReminderInput): PlannedReminder[] {
   const input = reminderInputSchema.parse(rawInput);
-  const drafts = input.days.flatMap((day) => dayDrafts(day, input.settings, input.trainingTime));
+  const drafts = input.days.flatMap((day) =>
+    dayDrafts(day, input.settings, input.trainingTime, input.drinkProgress ?? null),
+  );
   const result: PlannedReminder[] = [];
   for (const d of drafts) {
     if (d.minutes < 0 || d.minutes >= 24 * 60 || inQuietHours(d.minutes)) continue;

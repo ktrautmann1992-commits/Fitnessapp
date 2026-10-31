@@ -25,6 +25,7 @@
     "barcode-detector": "3.2.2",
     "expo": "~57.0.26",
     "expo-audio": "~57.0.5",
+    "expo-background-task": "~57.0.21",
     "expo-build-properties": "~57.0.22",
     "expo-calendar": "~57.0.6",
     "expo-camera": "~57.0.6",
@@ -69,5 +70,14 @@
     "@types/react": "~19.2.2",
     "happy-dom": "^20.14.5",
     "tsx": "^4.23.15"
+  },
+  "expo": {
+    "autolinking": {
+      "ios": {
+        "exclude": [
+          "expo-background-task"
+        ]
+      }
+    }
   }
 }

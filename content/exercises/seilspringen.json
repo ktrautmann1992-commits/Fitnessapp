@@ -1,0 +1,60 @@
+{
+  "id": "seilspringen",
+  "version": 1,
+  "status": "published",
+  "name_de": "Seilspringen",
+  "name_en": "Jump Rope",
+  "aliases_de": ["Springseil", "Rope Skipping", "Single-Unders", "Seilhüpfen"],
+  "movement_pattern": "conditioning",
+  "primary_muscles": ["calves"],
+  "secondary_muscles": ["quadriceps", "glutes", "forearms"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["high_impact"],
+  "description_de": "Lockeres Springen mit dem Springseil – ein Durchschlag je Sprung. Ausdauertraining für Waden, Füße und Koordination. Ohne Seil geht es mit derselben Bewegung und angedeutetem Schwung aus den Handgelenken.",
+  "steps_de": [
+    "Aufrecht stehen, Seil hinter den Fersen, Griffe locker auf Hüfthöhe, Ellbogen nah am Körper.",
+    "Das Seil aus den Handgelenken über den Kopf nach vorn schwingen.",
+    "Kurz bevor es den Boden erreicht, mit kleinen Sprüngen von den Fußballen abheben.",
+    "Gleichmäßig weiterspringen, die Arme bleiben ruhig."
+  ],
+  "tips_de": [
+    "Seillänge: Mit einem Fuß auf der Mitte reichen die Griffe etwa bis unter die Achseln.",
+    "Nur wenige Zentimeter hoch springen, leise landen."
+  ],
+  "common_mistakes_de": [
+    "Seil aus den Schultern statt aus den Handgelenken drehen.",
+    "Hart auf den Fersen landen oder zu hoch springen."
+  ],
+  "safety_note_de": "Auf ebenem, rutschfestem Boden in festen Schuhen springen, mit genug Platz über und neben dir. Mit kurzen Intervallen beginnen, Waden und Achillessehnen brauchen Gewöhnung. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "hampelmann",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "step-jacks",
+      "reason": "easier",
+      "priority": 2
+    },
+    {
+      "alternative_id": "double-unders",
+      "reason": "harder",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-10-30",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-10-30",
+    "review_note": "Freigabe für privaten Nutzerkreis (≤ 5 Personen), Gründer-Auftrag 30.10.2026 (Übungen für Workouts im WOD-Stil, docs/PLAN-WORKOUTS.md W-O6) – nicht fachlich geprüft."
+  }
+}
