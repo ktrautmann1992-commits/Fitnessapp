@@ -1,6 +1,6 @@
 {
   "id": "salbei-frisch",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "name_de": "Salbei (frisch)",
   "aliases_de": [],
@@ -17,7 +17,9 @@
     "salt_g": 0,
     "alcohol_g": 0
   },
-  "units": {},
+  "units": {
+    "piece_g": 1
+  },
   "groups": [],
   "animal": [],
   "meat_kind": [],

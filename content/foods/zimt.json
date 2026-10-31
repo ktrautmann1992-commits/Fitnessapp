@@ -1,6 +1,6 @@
 {
   "id": "zimt",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "name_de": "Zimt",
   "aliases_de": [],
@@ -17,7 +17,9 @@
     "salt_g": 0.1,
     "alcohol_g": 0
   },
-  "units": {},
+  "units": {
+    "tsp_g": 2.6
+  },
   "groups": [],
   "animal": [],
   "meat_kind": [],
