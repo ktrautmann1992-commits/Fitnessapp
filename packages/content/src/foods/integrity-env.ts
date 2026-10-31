@@ -64,7 +64,7 @@ const allowlistSchema = z.array(
         })
         .nullable()
         .optional(),
-      format: z.enum(['xlsx', 'csv']),
+      format: z.enum(['xlsx', 'csv', 'fdc_csv_zip']),
       keyColumn: z.number().int().min(0),
     })
     .passthrough(),

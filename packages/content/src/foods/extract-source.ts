@@ -13,6 +13,7 @@ import { createHash } from 'node:crypto';
 import { z } from 'zod';
 
 import { parseCsv, serializeCsv, serializeRecord } from './csv';
+import { readFdcCsvZipRecords } from './fdc-csv';
 import type { SourceDefinition } from './sources';
 import { readXlsxRows } from './xlsx';
 
@@ -36,7 +37,9 @@ export function readOriginalRecords(
   const records = (
     def.format === 'xlsx'
       ? readXlsxRows(buffer, def.sheet)
-      : parseCsv(buffer.toString('utf8'), def.csvDelimiter)
+      : def.format === 'fdc_csv_zip'
+        ? readFdcCsvZipRecords(buffer)
+        : parseCsv(buffer.toString('utf8'), def.csvDelimiter)
   ).slice(def.headerRow ?? 0);
   if (records.length < 2) {
     throw new Error('Original-Datei: keine Datenzeilen gefunden.');

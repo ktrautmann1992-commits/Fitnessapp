@@ -60,12 +60,13 @@ export const deNutrition = {
   sourceNames: {
     bls: { name: 'Bundeslebensmittelschlüssel (BLS)', publisher: 'Max Rubner-Institut' },
     ch_naehrwertdatenbank: { name: 'Schweizer Nährwertdatenbank', publisher: 'BLV' },
-    usda_fdc: { name: 'USDA FoodData Central', publisher: '' },
+    usda_fdc: { name: 'USDA FoodData Central', publisher: 'U.S. Department of Agriculture' },
   },
   /** Verweis auf den Lizenztext (ohne „https://“ – reiner Text im PDF, kein Link). */
-  licenseTexts: { 'CC BY 4.0': 'CC BY 4.0, creativecommons.org/licenses/by/4.0' } as Readonly<
-    Record<string, string>
-  >,
+  licenseTexts: {
+    'CC BY 4.0': 'CC BY 4.0, creativecommons.org/licenses/by/4.0',
+    'CC0 1.0': 'CC0 1.0 (gemeinfrei), creativecommons.org/publicdomain/zero/1.0',
+  } as Readonly<Record<string, string>>,
 
   // --- Tag ----------------------------------------------------------------------------------------------------
   dayStatus: {

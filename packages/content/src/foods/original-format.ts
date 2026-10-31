@@ -13,6 +13,7 @@
  * hängt.
  */
 import { CHALLENGE_MESSAGE, detectChallenge, maskUrl, SourceDownloadError } from './download-page';
+import { fdcEntries, readFdcCsvZipRecords } from './fdc-csv';
 import { describeHtmlPage, mdCode } from './html-diagnosis';
 import type { SourceDefinition } from './sources';
 import {
@@ -174,6 +175,23 @@ export function unpackOriginal(
     );
   }
   const listing = describeEntries(entries);
+  if (def.format === 'fdc_csv_zip') {
+    // USDA FoodData Central: Original-Datei ist das ganze ZIP (mehrere CSV-Dateien, siehe fdc-csv.ts).
+    try {
+      fdcEntries(entries);
+    } catch (error) {
+      throw new SourceDownloadError((error as Error).message, [
+        `Antwort: ${info.join(', ')}`,
+        `ZIP: ${listing}`,
+      ]);
+    }
+    return {
+      data: buffer,
+      filename: served,
+      container: 'datei',
+      details: [...details, `ZIP: ${listing}`],
+    };
+  }
   if (isXlsxArchive(entries)) {
     if (def.format !== 'xlsx') {
       throw new SourceDownloadError(
@@ -247,6 +265,16 @@ export function diagnoseOriginal(
       lines.push(`ZIP: ${describeEntries(readZipEntries(buffer))}`);
     } catch (error) {
       lines.push(`ZIP nicht lesbar: ${(error as Error).message}`);
+      return lines;
+    }
+    if (def.format === 'fdc_csv_zip') {
+      try {
+        const rows = readFdcCsvZipRecords(buffer);
+        lines.push(`Lebensmittel (Zeilen ohne Kopfzeile): ${rows.length - 1}`);
+        lines.push(headerLine(rows[0] ?? []));
+      } catch (error) {
+        lines.push(`FoodData-Central-ZIP nicht lesbar: ${(error as Error).message}`);
+      }
       return lines;
     }
     try {

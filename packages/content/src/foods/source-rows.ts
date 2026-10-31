@@ -44,6 +44,8 @@ export interface ResolvedColumn {
   readonly index: number;
   readonly column: SourceNutrientColumn;
   readonly header: string;
+  /** Spalte von `column.minus` (abzuziehender Wert), falls eingetragen. */
+  readonly minus?: ResolvedColumn;
 }
 
 function headerCode(header: string): string {
@@ -101,6 +103,14 @@ function resolveColumns<K extends string>(
         break;
       }
       hit = { index: match.index, column, header: match.text };
+      if (column.minus !== undefined) {
+        const minus = resolveColumns(
+          header,
+          [[`${key} (abzüglich)`, [column.minus]] as const],
+          problems,
+        )[`${key} (abzüglich)`];
+        if (minus !== undefined) hit = { ...hit, minus };
+      }
       break;
     }
     if (hit === undefined) {
@@ -222,6 +232,21 @@ export function convertSourceValue(
   return Math.round(converted * 1e6) / 1e6;
 }
 
+/**
+ * Wert abzüglich der `minus`-Spalte (`SourceNutrientColumn.minus`, z. B. USDA: KH by difference − Ballaststoffe).
+ * Fehlt einer der beiden Werte → null (nie geschätzt); eine kleine negative Differenz (Rundung der Quelle) → 0.
+ */
+function minusValue(
+  value: number | null,
+  minus: ResolvedColumn | undefined,
+  record: readonly string[],
+): number | null {
+  if (minus === undefined || value === null) return value;
+  const subtract = sourceCellValue(record[minus.index] ?? '');
+  if (subtract === null) return null;
+  return Math.max(0, Math.round((value - subtract) * 1e6) / 1e6);
+}
+
 export interface SourceRowsResult {
   readonly rows: Map<string, SourceNutrientRow>;
   /** Zeilen, die nicht übernommen werden können (fehlender Pflichtwert, Schemafehler) – mit Grund. */
@@ -264,9 +289,9 @@ export function sourceNutrientRows(
     const withoutValue: string[] = [];
     const zeroed: string[] = [];
     for (const key of NUTRIENT_KEYS) {
-      const { index, column, header: title } = columns[key];
+      const { index, column, header: title, minus } = columns[key];
       const raw = record[index] ?? '';
-      const value = sourceCellValue(raw);
+      const value = minusValue(sourceCellValue(raw), minus, record);
       if (value !== null && isBelowDetection(raw)) {
         zeroed.push(`${key} („${raw.trim()}“)`);
       }
