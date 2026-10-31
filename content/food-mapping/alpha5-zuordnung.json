@@ -665,17 +665,10 @@
       "food_id": "casein-proteinpulver-vanille",
       "alpha5_name": "Casein-Proteinpulver (Vanille)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": [
-          "Casein",
-          "Kasein",
-          "Milcheiweißpulver",
-          "Milchprotein",
-          "Eiweißpulver",
-          "Proteinpulver"
-        ],
+        "search": ["casein", "milk protein"],
         "state_de": "Pulver",
         "category": "dairy"
       },
@@ -692,7 +685,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Casein-/Milcheiweißpulver (Lauf fand keinen Kandidaten). Proteinpulver hat in der Hauptquelle vermutlich keinen eigenen Eintrag → (1) gleichwertiger Eintrag mit Begründung, (2) Zweitquelle, sonst (3) ungeprüft (Plan 19.3). Nie Werte vom Etikett oder von einer KI. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "cashewkerne",
@@ -807,17 +800,10 @@
       "food_id": "chiliflocken",
       "alpha5_name": "Chiliflocken",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": [
-          "Chili",
-          "Pfefferschote getrocknet",
-          "Pfefferschote Pulver",
-          "Cayennepfeffer",
-          "Chili getrocknet",
-          "Chilipulver"
-        ],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "170932",
+        "search": ["pepper, red", "cayenne"],
         "state_de": "getrocknet",
         "category": "spices_sauces"
       },
@@ -836,24 +822,17 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: nur frische Pfefferschote (G553100/G554100), kein getrocknetes Chili; frisch wäre bei Nährwerten pro Gramm falsch. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: getrocknet. Quell-ID 170932 „Spices, pepper, red or cayenne“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: getrockneter roter Chili (Cayenne); Flocken sind dasselbe Produkt grob zerkleinert. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "chilipulver",
       "food_id": "chilipulver",
       "alpha5_name": "Chilipulver",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": [
-          "Chili",
-          "Pfefferschote Pulver",
-          "Pfefferschote getrocknet",
-          "Cayennepfeffer",
-          "Chili Pulver",
-          "Chilipulver"
-        ],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "171319",
+        "search": ["chili powder"],
         "state_de": "getrocknet, gemahlen",
         "category": "spices_sauces"
       },
@@ -872,7 +851,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet, gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: nur frische Pfefferschote (G553100/G554100), kein Chilipulver; frisch wäre bei Nährwerten pro Gramm falsch. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: getrocknet, gemahlen. Quell-ID 171319 „Spices, chili powder“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend (Gewürzmischung auf Chili-Basis). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "chinakohl",
@@ -906,10 +885,10 @@
       "food_id": "clear-whey-isolat-fruchtgeschmack",
       "alpha5_name": "Clear-Whey-Isolat (Fruchtgeschmack)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": ["Molkenprotein", "Molkenproteinisolat", "Eiweißpulver", "Proteinpulver"],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "173177",
+        "search": ["whey"],
         "state_de": "Pulver, Fruchtgeschmack",
         "category": "dairy"
       },
@@ -926,7 +905,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Fruchtgeschmack. Quell-ID offen (Lauf 40093377661 „kandidaten“ 24.10.2026, BLS 4.0): keine Kandidaten in BLS 4.0 (kein Molkenprotein) → Zweitquelle oder ungeprüft (Plan 19.3). Laktosearm, aber nicht sicher laktosefrei – vorsichtig mit „lactose“ (R18). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver, Fruchtgeschmack. Quell-ID 173177 „Beverages, Whey protein powder isolate“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): passend (Molkenproteinisolat). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "cornflakes-ungezuckert",
@@ -987,10 +966,10 @@
       "food_id": "currypulver",
       "alpha5_name": "Currypulver",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": ["Curry", "Currypulver", "Curry Pulver", "Curry Gewürz", "Curry gemahlen"],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "170924",
+        "search": ["curry powder"],
         "state_de": "Gewürzmischung",
         "category": "spices_sauces"
       },
@@ -1010,7 +989,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Gewürzmischung. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Currypulver, nur Curry-Gerichte/-Ketchup. Gewürzmischung – Senf/Sellerie je nach Produkt enthalten, vorsichtig gesetzt. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Gewürzmischung. Quell-ID 170924 „Spices, curry powder“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "datteln-getrocknet-entsteint",
@@ -1044,10 +1023,10 @@
       "food_id": "dill-frisch",
       "alpha5_name": "Dill (frisch)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": ["Dill", "Dill roh", "Dill getrocknet", "Dillkraut", "Dillspitzen"],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "172233",
+        "search": ["dill weed"],
         "state_de": "frisch, roh",
         "category": "vegetables"
       },
@@ -1064,7 +1043,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Dill-Eintrag. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: frisch, roh. Quell-ID 172233 „Dill weed, fresh“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend (frisch). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "dinkelmehl-type-630",
@@ -1341,16 +1320,10 @@
       "food_id": "erythrit",
       "alpha5_name": "Erythrit",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": [
-          "Erythrit",
-          "Erythritol",
-          "Zuckeraustauschstoff",
-          "Süßungsmittel",
-          "Zuckeralkohol"
-        ],
+        "search": ["erythritol", "sugar alcohol", "sweetener"],
         "state_de": "Pulver",
         "category": "sugar_sweets"
       },
@@ -1367,7 +1340,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: nur Sorbit (S162000) und Xylit (S163000) – andere Stoffe mit anderem Energiegehalt. Erythrit hat in der Hauptquelle vermutlich keinen Eintrag → Zweitquelle oder ungeprüft (Plan 19.3). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "espresso-zubereitet",
@@ -1717,10 +1690,10 @@
       "food_id": "geschmackspulver-zuckerfrei",
       "alpha5_name": "Geschmackspulver (zuckerfrei)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": ["Süssstoff", "Geschmackspulver", "Aromapulver", "Süßstoff", "Süßungsmittel"],
+        "search": ["gelatin dessert", "low calorie", "sugar free", "sugar-free"],
         "state_de": "Pulver, mit Süßungsmitteln",
         "category": "other"
       },
@@ -1737,7 +1710,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, mit Süßungsmitteln. Quell-ID offen (Lauf 40093377661 „kandidaten“ 24.10.2026, BLS 4.0): nur Tafelsüße und gesüßte Gerichte – passt nicht → Zweitquelle oder ungeprüft (Plan 19.3). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle. Name ohne „zuckerfrei“ (R10, Health-Claims-Verordnung)."
+      "reason_de": "Zustand: Pulver, mit Süßungsmitteln. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "gewuerzgurken-glas",
@@ -1933,17 +1906,10 @@
       "food_id": "gyros-gewuerz",
       "alpha5_name": "Gyros-Gewürz",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": [
-          "Gewürz",
-          "Gyrosgewürz",
-          "Gyros Gewürz",
-          "Würzmischung",
-          "Grillgewürz",
-          "Gewürzsalz"
-        ],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "171331",
+        "search": ["seasoning"],
         "state_de": "Gewürzmischung",
         "category": "spices_sauces"
       },
@@ -1962,24 +1928,17 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Gewürzmischung. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: keine Gyros-/Grillgewürzmischung; Gewürzsalz R115000 ist überwiegend Salz und passt nicht. Gewürzmischung; Zusammensetzung je Produkt – Gruppen vorsichtig. Wahrscheinlich kein Quelleintrag → ungeprüft oder gleichwertige Mischung. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Gewürzmischung. Quell-ID 171331 „Spices, poultry seasoning“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Kräuter-Gewürzmischung ohne Salz/Zucker als Näherung; eine Gyros-Mischung führt SR Legacy nicht. Mengen je Rezept klein. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "gyrosgewuerz",
       "food_id": "gyrosgewuerz",
       "alpha5_name": "Gyrosgewürz",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": [
-          "Gewürz",
-          "Gyrosgewürz",
-          "Gyros Gewürz",
-          "Würzmischung",
-          "Grillgewürz",
-          "Gewürzsalz"
-        ],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "171331",
+        "search": ["seasoning"],
         "state_de": "Gewürzmischung",
         "category": "spices_sauces"
       },
@@ -1998,7 +1957,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Gewürzmischung. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: keine Gyros-/Grillgewürzmischung; Gewürzsalz R115000 ist überwiegend Salz und passt nicht. Doppelte Zutat-ID zu „gyros-gewuerz“. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Gewürzmischung. Quell-ID 171331 „Spices, poultry seasoning“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Kräuter-Gewürzmischung ohne Salz/Zucker als Näherung; eine Gyros-Mischung führt SR Legacy nicht. Mengen je Rezept klein. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "hackfleisch-vom-schwein",
@@ -2591,10 +2550,10 @@
       "food_id": "johannisbrotkernmehl",
       "alpha5_name": "Johannisbrotkernmehl",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": ["Johannisbrot", "Johannisbrotkernmehl", "Bindemittel"],
+        "search": ["locust bean", "carob", "gum"],
         "state_de": "Pulver",
         "category": "other"
       },
@@ -2611,7 +2570,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 40093377661 „kandidaten“ 24.10.2026, BLS 4.0): keine Kandidaten in BLS 4.0 → Zweitquelle oder ungeprüft (Plan 19.3). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "kabeljaufilet",
@@ -3032,16 +2991,10 @@
       "food_id": "kokosmilch-fettreduziert",
       "alpha5_name": "Kokosmilch (fettreduziert)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": [
-          "Kokosmilch",
-          "Kokosmilch fettreduziert",
-          "Kokosmilch light",
-          "Kokosnussmilch fettreduziert",
-          "Kokosmilch fettarm"
-        ],
+        "search": ["coconut milk"],
         "state_de": "Konserve, fettreduziert",
         "category": "nuts_seeds"
       },
@@ -3058,7 +3011,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve, fettreduziert. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: nur Kokosmilch normal (H154000); die fettreduzierte Variante fehlt, Vollfett würde Fett und kcal etwa verdoppeln. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Konserve, fettreduziert. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "kokosraspeln",
@@ -3092,17 +3045,10 @@
       "food_id": "koriander-frisch",
       "alpha5_name": "Koriander (frisch)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": [
-          "Koriander",
-          "Korianderblatt",
-          "Koriandergrün",
-          "Koriander roh",
-          "Koriander getrocknet",
-          "Cilantro"
-        ],
+        "search": ["coriander", "cilantro"],
         "state_de": "frisch, roh",
         "category": "vegetables"
       },
@@ -3119,17 +3065,17 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Koriander-Eintrag (Kraut oder Samen). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: frisch, roh. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "kreuzkuemmel",
       "food_id": "kreuzkuemmel",
       "alpha5_name": "Kreuzkümmel",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": ["Kreuzkümmel", "Cumin", "Kumin", "Kreuzkümmel gemahlen", "Römischer Kümmel"],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "170923",
+        "search": ["cumin"],
         "state_de": "gemahlen",
         "category": "spices_sauces"
       },
@@ -3148,17 +3094,17 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Kreuzkümmel-Eintrag. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: gemahlen. Quell-ID 170923 „Spices, cumin seed“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend (Samen, gemahlen gleiche Werte). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "kurkuma",
       "food_id": "kurkuma",
       "alpha5_name": "Kurkuma",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": ["Kurkuma", "Curcuma", "Gelbwurz", "Kurkumapulver", "Kurkuma gemahlen"],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "172231",
+        "search": ["turmeric"],
         "state_de": "gemahlen",
         "category": "spices_sauces"
       },
@@ -3177,24 +3123,17 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Kurkuma-Eintrag. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: gemahlen. Quell-ID 172231 „Spices, turmeric, ground“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "kuemmel",
       "food_id": "kuemmel",
       "alpha5_name": "Kümmel",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": [
-          "Kümmel",
-          "Kümmel getrocknet",
-          "Kümmel ganz",
-          "Kümmelsamen",
-          "Kümmel Gewürz",
-          "Kümmel gemahlen"
-        ],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "170918",
+        "search": ["caraway"],
         "state_de": "ganz bzw. gemahlen",
         "category": "spices_sauces"
       },
@@ -3213,7 +3152,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: ganz bzw. gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Kümmel als Gewürz, nur Brot/Wurst mit Kümmel. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: ganz bzw. Quell-ID 170918 „Spices, caraway seed“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "kuerbiskerne",
@@ -3636,10 +3575,10 @@
       "food_id": "majoran-getrocknet",
       "alpha5_name": "Majoran (getrocknet)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": ["Majoran", "Majoran getrocknet", "Wilder Majoran", "Kräuter getrocknet"],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "170928",
+        "search": ["marjoram"],
         "state_de": "getrocknet",
         "category": "spices_sauces"
       },
@@ -3658,7 +3597,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Majoran-Eintrag. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: getrocknet. Quell-ID 170928 „Spices, marjoram, dried“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "makkaroni-trocken",
@@ -3974,10 +3913,10 @@
       "food_id": "muskatnuss-gerieben",
       "alpha5_name": "Muskatnuss gerieben",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": ["Muskat", "Muskatnuss", "Muskatnuss gemahlen", "Macis", "Muskatblüte"],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "171326",
+        "search": ["nutmeg"],
         "state_de": "gemahlen",
         "category": "spices_sauces"
       },
@@ -3994,7 +3933,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: gemahlen. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Muskat-Eintrag. Muskatnuss ist keine Schalenfrucht (Plan 5.1.3). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: gemahlen. Quell-ID 171326 „Spices, nutmeg, ground“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "moehre",
@@ -4136,10 +4075,10 @@
       "food_id": "oregano-getrocknet",
       "alpha5_name": "Oregano (getrocknet)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": ["Oregano", "Oregano getrocknet", "Dost", "Origanum"],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "171328",
+        "search": ["oregano"],
         "state_de": "getrocknet",
         "category": "spices_sauces"
       },
@@ -4158,7 +4097,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Oregano-Eintrag. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: getrocknet. Quell-ID 171328 „Spices, oregano, dried“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "paniermehl",
@@ -4715,10 +4654,10 @@
       "food_id": "reisessig",
       "alpha5_name": "Reisessig",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": ["Essig", "Reis Essig", "Reisweinessig", "Essig asiatisch"],
+        "search": ["vinegar"],
         "state_de": "Essig",
         "category": "spices_sauces"
       },
@@ -4735,7 +4674,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Essig. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Reisessig, nur Wein-/Branntwein-/Apfelessig; Reisessig ist oft gesüßt. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Essig. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "reisnudeln-trocken",
@@ -5369,17 +5308,10 @@
       "food_id": "salsa-glas",
       "alpha5_name": "Salsa (Glas)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": [
-          "Salsa",
-          "Salsa Dip",
-          "Tomatensalsa",
-          "Salsa Tomate",
-          "Dip Tomate",
-          "Salsa mexikanisch"
-        ],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "174524",
+        "search": ["salsa"],
         "state_de": "Sauce im Glas",
         "category": "spices_sauces"
       },
@@ -5396,7 +5328,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Sauce im Glas. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: keine Tomaten-Salsa (Dip); X3A7040 „Spanische Sauce (Salsa)“ ist eine gekochte Sauce und kein Dip aus dem Glas. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Sauce im Glas. Quell-ID 174524 „Sauce, salsa, ready-to-serve“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend (Tomatensalsa, verzehrfertig). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "salz",
@@ -6037,17 +5969,10 @@
       "food_id": "sojaskyr-natur",
       "alpha5_name": "Sojaskyr natur",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": [
-          "Soja",
-          "Soja Skyr",
-          "Skyralternative",
-          "Soja-Skyralternative",
-          "Soja Quark",
-          "Soja-Quarkalternative"
-        ],
+        "search": ["soy yogurt", "yogurt, soy", "tofu"],
         "state_de": "natur",
         "category": "soy_products"
       },
@@ -6064,7 +5989,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: natur. Quell-ID offen (null). Korrektur Import-Lauf 1 (PR #47): vorher H844000 „Soja-Joghurtalternative ungesüßt“ (44 kcal, 4,2 g Eiweiß); Sojaskyr hat etwa doppelt so viel Eiweiß (Gründer-Datei 8,5 g) – anderes Produkt, kein Datenunterschied. Eine Skyr-Alternative fehlt im BLS (Namensliste: nur Soja-Joghurtalternativen, Sojadrinks). Offene Gründer-Frage N2b 1 (3): Zweitquelle oder ohne Quellwerte; bis dahin 11 Rezepte nur als Struktur (N2c). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: natur. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "spaghetti-trocken",
@@ -6513,17 +6438,10 @@
       "food_id": "tomatensalsa-glas",
       "alpha5_name": "Tomatensalsa (Glas)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": [
-          "Salsa",
-          "Tomatensalsa",
-          "Salsa Dip",
-          "Salsa Tomate",
-          "Dip Tomate",
-          "Salsa mexikanisch"
-        ],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "174524",
+        "search": ["salsa"],
         "state_de": "Sauce im Glas",
         "category": "spices_sauces"
       },
@@ -6540,7 +6458,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Sauce im Glas. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: keine Tomaten-Salsa (Dip); X3A7040 „Spanische Sauce (Salsa)“ ist eine gekochte Sauce und kein Dip aus dem Glas. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Sauce im Glas. Quell-ID 174524 „Sauce, salsa, ready-to-serve“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend (Tomatensalsa, verzehrfertig). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "veganer-reibekaese",
@@ -6574,17 +6492,10 @@
       "food_id": "veganes-proteinpulver",
       "alpha5_name": "Veganes Proteinpulver",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": [
-          "Protein",
-          "Erbsenprotein",
-          "Erbsenproteinisolat",
-          "Reisprotein",
-          "Proteinpulver vegan",
-          "Eiweißpulver"
-        ],
+        "search": ["pea protein", "rice protein", "soy protein", "Protein powder"],
         "state_de": "Pulver",
         "category": "other"
       },
@@ -6601,24 +6512,17 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein veganes Proteinpulver; Sojaproteinisolat H011000 passt nur, wenn die Ware reines Sojaisolat ist. Pflanzliches Proteinpulver (oft Erbse/Soja): kein Quelleintrag erwartet → Zweitquelle oder ungeprüft; Gruppen vorsichtig. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "veganes-proteinpulver-erbse-reis-neutral",
       "food_id": "veganes-proteinpulver-erbse-reis-neutral",
       "alpha5_name": "Veganes Proteinpulver (Erbse/Reis, neutral)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": [
-          "Protein",
-          "Erbsenprotein",
-          "Erbsenproteinisolat",
-          "Reisprotein",
-          "Proteinpulver vegan",
-          "Eiweißpulver"
-        ],
+        "search": ["pea protein", "rice protein", "soy protein", "Protein powder"],
         "state_de": "Pulver, neutral",
         "category": "other"
       },
@@ -6635,24 +6539,17 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, neutral. Quell-ID offen (Lauf 40093377661 „kandidaten“ 24.10.2026, BLS 4.0): kein Erbsen-/Reisprotein in BLS 4.0 → Zweitquelle oder ungeprüft (Plan 19.3). Erbse = Hülsenfrucht; ohne Soja. „Reis“ im Namen → höchstens 1 Tag (R9). Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver, neutral. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "veganes-proteinpulver-schoko",
       "food_id": "veganes-proteinpulver-schoko",
       "alpha5_name": "Veganes Proteinpulver (Schoko)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": [
-          "Protein",
-          "Erbsenprotein",
-          "Erbsenproteinisolat",
-          "Reisprotein",
-          "Proteinpulver vegan",
-          "Eiweißpulver"
-        ],
+        "search": ["pea protein", "rice protein", "soy protein", "Protein powder"],
         "state_de": "Pulver, Kakao",
         "category": "other"
       },
@@ -6669,24 +6566,17 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Kakao. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein veganes Proteinpulver mit Kakao; Sojaproteinisolat H011000 ist ungesüßt und ohne Kakao. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver, Kakao. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "veganes-proteinpulver-vanille",
       "food_id": "veganes-proteinpulver-vanille",
       "alpha5_name": "Veganes Proteinpulver (Vanille)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
         "ref": null,
-        "search": [
-          "Protein",
-          "Erbsenprotein",
-          "Erbsenproteinisolat",
-          "Reisprotein",
-          "Proteinpulver vegan",
-          "Eiweißpulver"
-        ],
+        "search": ["pea protein", "rice protein", "soy protein", "Protein powder"],
         "state_de": "Pulver, Vanille",
         "category": "other"
       },
@@ -6703,7 +6593,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Vanille. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein veganes Proteinpulver mit Vanille; Sojaproteinisolat H011000 ist ungesüßt. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver, Vanille. Quell-ID offen (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1; Kandidaten aus dem nächsten Lauf „kandidaten“ dieser Quelle (englische Suchbegriffe)."
     },
     {
       "alpha5_id": "vollkorn-knaeckebrot",
@@ -7164,17 +7054,10 @@
       "food_id": "whey-proteinpulver-neutral",
       "alpha5_name": "Whey-Proteinpulver (neutral)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": [
-          "Molkenprotein",
-          "Molkenproteinkonzentrat",
-          "Molkenproteinisolat",
-          "Molkenpulver",
-          "Eiweißpulver",
-          "Proteinpulver"
-        ],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "173180",
+        "search": ["whey"],
         "state_de": "Pulver",
         "category": "dairy"
       },
@@ -7191,24 +7074,17 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Molkenprotein; Süßmolkenpulver M887000 hat nur einen Bruchteil des Eiweißes. Whey = Molkenprotein; kein Quelleintrag erwartet → Zweitquelle oder ungeprüft. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver. Quell-ID 173180 „Beverages, Protein powder whey based“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): passend (Molkenproteinpulver, markenneutral). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "whey-proteinpulver-schoko",
       "food_id": "whey-proteinpulver-schoko",
       "alpha5_name": "Whey-Proteinpulver (Schoko)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": [
-          "Molkenprotein",
-          "Molkenproteinkonzentrat",
-          "Molkenproteinisolat",
-          "Molkenpulver",
-          "Eiweißpulver",
-          "Proteinpulver"
-        ],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "173180",
+        "search": ["whey"],
         "state_de": "Pulver, Kakao",
         "category": "dairy"
       },
@@ -7225,24 +7101,17 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Kakao. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Molkenprotein; Süßmolkenpulver M887000 hat nur einen Bruchteil des Eiweißes. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver, Kakao. Quell-ID 173180 „Beverages, Protein powder whey based“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Molkenproteinpulver ohne Geschmack als Näherung (Kakao-Anteil gering). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "whey-proteinpulver-vanille",
       "food_id": "whey-proteinpulver-vanille",
       "alpha5_name": "Whey-Proteinpulver (Vanille)",
       "source": {
-        "db": "ch_naehrwertdatenbank",
-        "version": "7.1",
-        "ref": null,
-        "search": [
-          "Molkenprotein",
-          "Molkenproteinkonzentrat",
-          "Molkenproteinisolat",
-          "Molkenpulver",
-          "Eiweißpulver",
-          "Proteinpulver"
-        ],
+        "db": "usda_fdc",
+        "version": "sr-legacy-2018-04",
+        "ref": "173180",
+        "search": ["whey"],
         "state_de": "Pulver, Vanille",
         "category": "dairy"
       },
@@ -7259,7 +7128,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Vanille. Quell-ID offen (Lauf 38367139392 „kandidaten“ 13.10.2026, BLS 4.0, Kandidaten aus der ganzen Datei): nicht in BLS 4.0: kein Molkenprotein; Süßmolkenpulver M887000 hat nur einen Bruchteil des Eiweißes. Zweitquelle: Schweizer Nährwertdatenbank 7.1 (Plan 19.3, Gründer-Entscheidung 13.10.2026) – Quell-ID aus dem Lauf „kandidaten“ dieser Quelle."
+      "reason_de": "Zustand: Pulver, Vanille. Quell-ID 173180 „Beverages, Protein powder whey based“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Molkenproteinpulver ohne Geschmack als Näherung (Aroma ohne Nährwert). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "wildpreiselbeeren-glas",
