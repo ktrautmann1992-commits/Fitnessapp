@@ -58,11 +58,14 @@ const zip = (extra: Record<string, string> = {}) =>
 const USDA = findSource(SOURCES, 'usda_fdc', 'sr-legacy-2018-04');
 
 describe('USDA FoodData Central CSV-ZIP (fdc-csv.ts)', () => {
-  it('Quelle steht in der Allowlist, Format fdc_csv_zip, Prüfsumme noch offen', () => {
+  it('Quelle steht in der Allowlist, Format fdc_csv_zip, Prüfsumme und Spalten festgenagelt', () => {
     expect(USDA?.format).toBe('fdc_csv_zip');
     expect(USDA?.url).toMatch(/^https:\/\/fdc\.nal\.usda\.gov\//);
-    expect(USDA?.originalSha256).toBeNull();
-    expect(USDA?.columnsStatus).toBe('unconfirmed');
+    expect(USDA?.originalSha256).toBe(
+      'b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0',
+    );
+    expect(USDA?.columnsStatus).toBe('confirmed');
+    expect(USDA?.urlStatus).toBe('confirmed');
   });
 
   it('stellt das lange Format in eine Zeile je Lebensmittel um – Werte als Text unverändert, fehlende leer', () => {
