@@ -11836,6 +11836,7 @@
    "kategorie": "vegetarisch",
    "abschnitt": "Abendessen",
    "ernaehrungsformen": [
+    "vegan",
     "vegetarisch",
     "fleisch",
     "ohne-schwein"
@@ -12292,6 +12293,7 @@
    "kategorie": "vegetarisch",
    "abschnitt": "Snack",
    "ernaehrungsformen": [
+    "vegan",
     "vegetarisch",
     "fleisch",
     "ohne-schwein"
@@ -18748,7 +18750,7 @@
     },
     {
      "zutat_id": "eiswuerfel",
-     "menge_g": 0,
+     "menge_g": 100,
      "anzeige": "3–4 Eiswürfel"
     }
    ],
@@ -23764,8 +23766,7 @@
    "kategorie": "fitness-fast-food",
    "abschnitt": "Burger & Hot Dog",
    "ernaehrungsformen": [
-    "fleisch",
-    "ohne-schwein"
+    "fleisch"
    ],
    "zeit_min": 15,
    "portionen": 1,
@@ -30019,7 +30020,7 @@
    ],
    "aufbewahrung": [
     "Lasagne und Kaiserschmarrn in flache Dosen füllen, damit sie schnell abkühlen; Quarkbällchen in eine gut schließende Dose.",
-    "Im Kühlschrank halten Lasagne, Kaiserschmarrn und Quarkbällchen 4 Tage.",
+    "Im Kühlschrank halten Lasagne, Kaiserschmarrn und Quarkbällchen 3 Tage.",
     "Je eine Portion für Freitag einfrieren und am Donnerstagabend in den Kühlschrank legen."
    ],
    "abendessen_hinweis": "Abends kochst du frisch – zum Beispiel ein vegetarisches Gericht aus dem Kapitel „Fertig in 10 Minuten“."
@@ -30090,7 +30091,7 @@
    ],
    "aufbewahrung": [
     "Verwende 5 Dosen fürs Gulasch, 5 fürs Frühstück und 5 kleine Snackdosen mit separatem Dip-Becher.",
-    "Gegartes Fleisch und Eier halten im Kühlschrank (max. 5 °C) nur 3–4 Tage, deshalb ist das Einfrieren hier wichtig.",
+    "Gegartes Fleisch und Eier halten im Kühlschrank (max. 5 °C) nur 1 Tag, deshalb ist das Einfrieren hier wichtig.",
     "Lege die eingefrorenen Portionen jeweils am Vorabend in den Kühlschrank und wärme Gulasch und Frikadellen durchgehend heiß auf."
    ],
    "abendessen_hinweis": "Abends kochst du frisch – zum Beispiel ein Gericht aus dem Kapitel „Fertig in 10 Minuten“."
