@@ -216,7 +216,12 @@ function fakeApi(mainSha: string) {
         blobs.push(Buffer.from((body as { content: string }).content, 'base64').toString('utf8'));
         return { sha: `blob${blobs.length}` } as T;
       }
-      if (path === '/git/trees') return { sha: 'tree' } as T;
+      if (path === '/git/trees') {
+        for (const entry of (body as { tree: { content?: string }[] }).tree) {
+          if (entry.content !== undefined) blobs.push(entry.content);
+        }
+        return { sha: 'tree' } as T;
+      }
       if (path === '/git/commits') return { sha: commitSha } as T;
       if (path === '/git/refs') return {} as T;
       if (path === `/commits/${commitSha}`) {

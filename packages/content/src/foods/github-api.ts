@@ -61,6 +61,12 @@ export interface CommitFile {
   readonly content: Buffer | null;
 }
 
+/** Inhalt als Text, wenn er verlustfrei UTF-8 ist (Rückumwandlung ergibt dieselben Bytes), sonst null. */
+export function utf8Text(content: Buffer): string | null {
+  const text = content.toString('utf8');
+  return Buffer.from(text, 'utf8').equals(content) ? text : null;
+}
+
 /**
  * Legt einen Commit auf `base` mit den Dateien an, erstellt den Branch `branch` darauf und prüft, dass GitHub
  * den Commit als „verified“ von `github-actions[bot]` kennzeichnet (sonst Abbruch).
@@ -93,10 +99,22 @@ export async function createVerifiedCommit(
     );
   }
   const baseCommit = await api.request<{ tree: { sha: string } }>('GET', `/git/commits/${baseSha}`);
-  const tree: { path: string; mode: '100644'; type: 'blob'; sha: string | null }[] = [];
+  // Textdateien (gültiges UTF-8) gehen als `content` direkt in den Baum – ein einziger Aufruf statt einer
+  // Anfrage je Datei. Bei Hunderten Dateien (z. B. alle Rezepte) überschreiten Einzel-Blobs sonst GitHubs
+  // „secondary rate limit“ für inhaltserzeugende Anfragen (HTTP 403, Lauf 41342352367 vom 01.11.2026).
+  // Nur Binärdateien werden weiterhin einzeln als Blob angelegt.
+  type TreeEntry = { path: string; mode: '100644'; type: 'blob' } & (
+    { sha: string | null } | { content: string }
+  );
+  const tree: TreeEntry[] = [];
   for (const file of input.files) {
     if (file.content === null) {
       tree.push({ path: file.path, mode: '100644', type: 'blob', sha: null });
+      continue;
+    }
+    const text = utf8Text(file.content);
+    if (text !== null) {
+      tree.push({ path: file.path, mode: '100644', type: 'blob', content: text });
       continue;
     }
     const blob = await api.request<{ sha: string }>('POST', '/git/blobs', {
