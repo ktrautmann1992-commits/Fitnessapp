@@ -199,6 +199,14 @@ export default function NutritionWeekScreen() {
         </View>
       </View>
       <Heading level={2}>{texts.range(formatDateDe(weekStart), formatDateDe(last))}</Heading>
+      {/* Gerichte entdecken (Wischen, 01.11.2026): Auswahl für die kommende Woche. */}
+      <Button
+        label={t.recipeSwipe.open}
+        accessibilityHint={t.recipeSwipe.openHint}
+        icon="heart"
+        onPress={() => router.push(`/ernaehrung/swipe?woche=${addDays(currentWeek, 7)}` as Href)}
+        testID="nutrition-week-swipe"
+      />
       {/* Etappe Z5 (K10): Hinweise zum Abnehmziel einmal je Woche, nur hier. */}
       <WeightGoalNutritionNotices notices={view.week.targets.weightGoalNotices} />
 

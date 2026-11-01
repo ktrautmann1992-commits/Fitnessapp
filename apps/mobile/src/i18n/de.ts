@@ -21,6 +21,7 @@ import {
 } from './de-dashboard';
 import { deDay } from './de-day';
 import { deEatingOut } from './de-eating-out';
+import { deRecipeSwipe } from './de-recipe-swipe';
 import { deEndurance } from './de-endurance';
 import { deLoop } from './de-loop';
 import { deRacePace } from './de-race-pace';
@@ -1701,6 +1702,7 @@ export const de = {
   customMeals: deCustomMeals,
   /** Auswärts essen – Reiter „Unterwegs“ beim Eintragen (25.10.2026). */
   eatingOut: deEatingOut,
+  recipeSwipe: deRecipeSwipe,
   /** Vorratsschrank (25.10.2026). */
   pantry: dePantry,
   competition: deCompetition,
