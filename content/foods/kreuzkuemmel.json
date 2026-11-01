@@ -1,0 +1,52 @@
+{
+  "id": "kreuzkuemmel",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Kreuzkümmel",
+  "aliases_de": [],
+  "shopping_category": "spices_baking",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 375,
+    "protein_g": 17.81,
+    "carbs_g": 33.74,
+    "sugar_g": 2.25,
+    "fat_g": 22.27,
+    "sat_fat_g": 1.535,
+    "fiber_g": 10.5,
+    "salt_g": 0.42,
+    "alcohol_g": 0
+  },
+  "units": {
+    "tsp_g": 2.1
+  },
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "usda_fdc",
+    "version": "sr-legacy-2018-04",
+    "ref": "170923",
+    "name": "Spices, cumin seed",
+    "category": "spices_sauces",
+    "license": "CC0 1.0",
+    "retrieved_at": "2026-11-01"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-11-01",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
