@@ -4308,6 +4308,33 @@
       "reason_de": "Zustand: Hartkäse. Quell-ID M306400 „Parmesan mind. 30 % Fett i. Tr.“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): genau passend. Parmesan mit tierischem Lab (Plan 5.1.3, N2a B1); gereift → Histamin."
     },
     {
+      "alpha5_id": "hartkaese-vegetarisch",
+      "food_id": "hartkaese-vegetarisch",
+      "alpha5_name": "Vegetarischer Hartkäse (italienische Art)",
+      "source": {
+        "db": "bls",
+        "version": "4.0",
+        "ref": "M306400",
+        "search": ["Parmesan", "Hartkäse"],
+        "state_de": "Hartkäse",
+        "category": "dairy"
+      },
+      "name_de": "Vegetarischer Hartkäse (italienische Art)",
+      "aliases_de": ["Hartkäse mit mikrobiellem Lab"],
+      "shopping_category": "chilled_dairy_eggs",
+      "pantry": false,
+      "units": {},
+      "groups": ["dairy", "histamine", "lactose"],
+      "animal": ["dairy"],
+      "meat_kind": [],
+      "pregnancy_caution": false,
+      "alcohol": false,
+      "max_fridge_days": 3,
+      "freezable": true,
+      "substitutes": [],
+      "reason_de": "Zustand: Hartkäse. Quell-ID M306400 „Parmesan mind. 30 % Fett i. Tr.“ (Lauf „kandidaten“ 12.10.2026, BLS 4.0): UNSICHER – Nährwerte wie Parmesan; vegetarischer Hartkäse italienischer Art (mikrobielles bzw. pflanzliches Lab) ist in BLS nicht getrennt geführt. Ohne tierisches Lab, daher vegetarisch (R6, Import 41347523275); gereift → Histamin."
+    },
+    {
       "alpha5_id": "passierte-tomaten",
       "food_id": "passierte-tomaten",
       "alpha5_name": "Passierte Tomaten",
