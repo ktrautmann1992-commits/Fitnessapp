@@ -1,0 +1,91 @@
+{
+  "id": "casein-quarkcreme-mit-himbeeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Casein-Quarkcreme mit Himbeeren",
+  "description_de": "Dicke Vanille-Quarkcreme mit Casein und warmen Himbeeren – der sättigende Eiweißsnack für den Abend.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "magerquark",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "casein-proteinpulver-vanille",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2/3 Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "himbeeren-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Erwärme die Himbeeren 1 Minute in der Mikrowelle oder lass sie kurz antauen.",
+    "Verrühre Quark, Casein und Milch mit einem Schneebesen zu einer glatten, dicken Creme.",
+    "Gib die Himbeeren samt Saft darüber und ziehe sie leicht marmoriert unter."
+  ],
+  "tip_de": "Casein sättigt lange und eignet sich daher gut vor dem Schlafengehen. Ohne Pulver: 100 g mehr Quark und ein paar Tropfen Vanillearoma.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 215,
+    "protein_g": 35.7,
+    "carbs_g": 12.5,
+    "fat_g": 1.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "493f3558a891db58aefa7a9849d828de6569c32ccd7af843c64d0082e79da567"
+  }
+}

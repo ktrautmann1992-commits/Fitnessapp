@@ -1,0 +1,173 @@
+{
+  "id": "orientalischer-couscous-salat-mit-haehnchen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Orientalischer Couscous-Salat mit Hähnchen",
+  "description_de": "Frischer Couscous-Salat mit Kreuzkümmel-Hähnchen, Kichererbsen, Gurke, Paprika, Petersilie und Feta – kalt genauso gut wie warm.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "couscous-trocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Gurke (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Bund (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "feta",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 70,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "70 ml (kochend)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Übergieße den Couscous mit 70 ml kochendem, leicht gesalzenem Wasser, decke ihn ab und lass ihn 5 Minuten quellen.",
+    "Schneide das Hähnchen in Streifen, würze es mit Kreuzkümmel und Salz und brate es in der Hälfte des Olivenöls bei mittlerer bis hoher Hitze 6–7 Minuten durch.",
+    "Würfle Gurke und Paprika und hacke die Petersilie.",
+    "Lockere den Couscous mit einer Gabel auf und vermische ihn mit Gemüse, Kichererbsen, Zitronensaft und dem restlichen Olivenöl.",
+    "Gib das Hähnchen darauf und zerbröckle den Feta darüber."
+  ],
+  "tip_de": "Für die Lunchbox Hähnchen und Feta getrennt einpacken – so bleibt alles 3 Tage frisch.",
+  "total_minutes": 18,
+  "prep_minutes": 11,
+  "cook_minutes": 7,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 629,
+    "protein_g": 46.2,
+    "carbs_g": 60.9,
+    "fat_g": 21.1
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "poultry", "legumes"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 1,
+        "food_id": "haehnchenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Schneide das Hähnchen in Streifen, würze es mit Kreuzkümmel und Salz und brate es in der Hälfte des Olivenöls bei mittlerer bis hoher Hitze 6–7 Minuten durch.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "07be014914fa885f617a44a9043fac7ea6b7f0140154cc5004e11c522b6e021e"
+  }
+}

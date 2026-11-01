@@ -1,0 +1,166 @@
+{
+  "id": "suess-saure-schweinepfanne-mit-reis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Süß-saure Schweinepfanne mit Reis",
+  "description_de": "Asiatische Wokpfanne mit zarten Schweineschnitzel-Streifen, Paprika, Ananas und Basmatireis.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schweineschnitzel",
+      "amount": 160,
+      "unit": "g",
+      "optional": false,
+      "display_de": "160 g (aus der Oberschale)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ananas-dose-abgetropft",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Ringe (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Stangen (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "reisessig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tomatenmark",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "speisestaerke",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 60,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "60 ml",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis nach Packungsanleitung (ca. 12 Minuten).",
+    "Schneide das Fleisch in dünne Streifen, die Paprika und Ananas in Stücke und die Frühlingszwiebeln in Ringe.",
+    "Verrühre Sojasauce, Reisessig, Tomatenmark, Speisestärke und Wasser zu einer Sauce.",
+    "Erhitze das Öl im Wok oder einer großen Pfanne stark und brate das Fleisch 2–3 Minuten scharf an, dann herausnehmen.",
+    "Brate Paprika und Ingwer 3 Minuten, gib Ananas, Fleisch und Sauce dazu und lass alles 1 Minute andicken.",
+    "Serviere die Pfanne mit dem Reis und bestreue sie mit Frühlingszwiebeln."
+  ],
+  "tip_de": "Mit Hähnchenbrustfilet funktioniert das Rezept genauso.",
+  "total_minutes": 25,
+  "prep_minutes": 7,
+  "cook_minutes": 18,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 638,
+    "protein_g": 44.1,
+    "carbs_g": 80.7,
+    "fat_g": 14.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8dac10a5f508b6d719d84c64ba01df355274e54ab34ff3207fcc98764af79661"
+  }
+}

@@ -1,0 +1,211 @@
+{
+  "id": "paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Paprika-Gulasch vom Schweinefilet mit Kartoffeln und Bohnen",
+  "description_de": "Mageres, kräftig gewürztes Gulasch nach ungarischer Art, das durchgezogen am besten schmeckt.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "schweinefilet",
+      "amount": 800,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Filets (800 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Zwiebeln (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Paprika (400 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-gelb",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Paprika (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomatenmark",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "400 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kochsahne-15",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2½ EL (25 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 1250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1,25 kg festkochend",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gruene-bohnen-tk",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "400 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 2,
+      "unit": "tbsp",
+      "optional": false,
+      "display_de": "2 EL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-geraeuchert",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide das Schweinefilet in 2-cm-Würfel und brate es portionsweise in 1 EL Öl in einem Schmortopf 3 Minuten scharf an; herausnehmen.",
+    "Dünste die gewürfelten Zwiebeln im restlichen Öl 5 Minuten goldgelb, rühre Tomatenmark und Paprikapulver ein und röste beides 1 Minute.",
+    "Gib die Paprikastreifen, passierte Tomaten, Brühe und Kümmel dazu und lass alles zugedeckt 20 Minuten köcheln.",
+    "Koche inzwischen die geschälten, halbierten Kartoffeln 20 Minuten in Salzwasser und gare die Bohnen in den letzten 6 Minuten mit.",
+    "Gib das Fleisch mit der Sahne zurück in den Topf und lass es noch 5 Minuten ziehen, ohne dass es sprudelnd kocht; mit Salz und Pfeffer abschmecken.",
+    "Lass alles abkühlen und verteile Gulasch, Kartoffeln und Bohnen auf 5 Dosen."
+  ],
+  "tip_de": "Gegartes Fleisch hält im Kühlschrank höchstens 3–4 Tage: Friere die Portionen für Donnerstag und Freitag gleich ein (Kartoffeln vorher etwas zerdrücken, dann bleiben sie besser) und lege sie am Vorabend in den Kühlschrank. Zugedeckt 3–4 Minuten bei 600 Watt aufwärmen, bis alles durchgehend heiß ist.",
+  "meal_prep_plan_id": "fleisch",
+  "total_minutes": 35,
+  "prep_minutes": 1,
+  "cook_minutes": 34,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 538,
+    "protein_g": 44.9,
+    "carbs_g": 56.6,
+    "fat_g": 12.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "legumes", "celery", "histamine", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "schweinefilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 1 gart die Zutat durch: „Schneide das Schweinefilet in 2-cm-Würfel und brate es portionsweise in 1 EL Öl in einem Schmortopf 3 Minuten scharf an; herausnehmen.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "48e9b3d07a5adbffcfab57493cf9f011cd500881ebc222522399da82c8c87a55"
+  }
+}

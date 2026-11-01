@@ -1,0 +1,148 @@
+{
+  "id": "saltimbocca-mit-zucchini-tomaten-gemuese",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Saltimbocca mit Zucchini-Tomaten-Gemüse",
+  "description_de": "Italienisch inspiriert: dünne Schweineschnitzel mit Lachsschinken und Salbei, dazu Zucchini, Kirschtomaten und Kartoffeln.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schweineschnitzel",
+      "amount": 170,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 dünne Schnitzel (170 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "lachsschinken",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (20 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "salbei-frisch",
+      "amount": 2,
+      "unit": "piece",
+      "optional": false,
+      "display_de": "2 Blätter",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zucchini (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kirschtomaten",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2–3 kleine (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Kartoffeln in Salzwasser 20 Minuten gar.",
+    "Klopfe die Schnitzel flach, pfeffere sie und belege jedes mit einer Scheibe Lachsschinken und einem Salbeiblatt; mit einem Zahnstocher feststecken.",
+    "Brate die Schnitzel in der Hälfte des Öls zuerst auf der Schinkenseite 2 Minuten, dann auf der anderen Seite 2 Minuten bei mittlerer bis hoher Hitze.",
+    "Brate Zucchinischeiben, halbierte Kirschtomaten und Knoblauch im restlichen Öl 5 Minuten und würze mit Salz und Pfeffer.",
+    "Richte die Saltimbocca mit Gemüse und Kartoffeln an."
+  ],
+  "tip_de": "Ein Schuss Gemüsebrühe in die Bratpfanne ergibt eine schnelle, leichte Sauce.",
+  "total_minutes": 25,
+  "prep_minutes": 1,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 547,
+    "protein_g": 51.8,
+    "carbs_g": 47.7,
+    "fat_g": 15.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["histamine", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "05a5f9158b70ffc9d8b50b962a922c7ec1e86509ad09493a9cef1c4bbfe4d25d"
+  }
+}

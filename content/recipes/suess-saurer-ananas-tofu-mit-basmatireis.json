@@ -1,0 +1,147 @@
+{
+  "id": "suess-saurer-ananas-tofu-mit-basmatireis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Süß-saurer Ananas-Tofu mit Basmatireis",
+  "description_de": "Viel weißer Reis, fruchtige Ananas und nur wenig Öl liefern reichlich Kohlenhydrate bei wenig Fett und Ballaststoffen – ideal zum Auffüllen der Speicher.",
+  "section_de": "Carb-Loading (2 Tage vorher)",
+  "categories": ["wettkampf", "meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 130,
+      "unit": "g",
+      "optional": false,
+      "display_de": "130 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tofu-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "ananas-dose-abgetropft",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g (abgetropft)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "reisessig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zucker",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "speisestaerke",
+      "amount": 6,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (6 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 4,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (4 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 80,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "80 ml",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis nach Packungsanweisung in leicht gesalzenem Wasser in etwa 12 Minuten gar.",
+    "Schneide den Tofu in Würfel und die Paprika in feine Streifen; die Ananas halbierst du in kleine Stücke.",
+    "Brate den Tofu im Öl bei mittlerer bis hoher Hitze 5 Minuten goldbraun, gib Paprika und Ananas dazu und brate alles 2 Minuten weiter.",
+    "Verrühre Sojasauce, Reisessig, Zucker, Stärke und 80 ml Wasser, gieße die Mischung in die Pfanne und lass sie 1 Minute andicken.",
+    "Richte die süß-saure Pfanne auf dem Reis an."
+  ],
+  "tip_de": "Lässt sich gut am Vorabend für den nächsten Carb-Loading-Tag vorkochen. Verträgst du Paprika schlecht, lass sie weg und nimm etwas mehr Ananas.",
+  "tags_de": ["Wettkampf"],
+  "total_minutes": 25,
+  "prep_minutes": 6,
+  "cook_minutes": 19,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 788,
+    "protein_g": 25.3,
+    "carbs_g": 140.7,
+    "fat_g": 12.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "13d4bb1ec14a84bab538d2405e72cd8cf784de07d16eb7cc4063921eae5f102f"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "id": "ahorn-reiskuchen-fuer-die-trikottasche",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Ahorn-Reiskuchen für die Trikottasche",
+  "description_de": "Kompakte, leicht salzige Reiskuchen aus Milchreis und Ahornsirup – weich, gut kaubar und fast ohne Fett, ideal für lange Radtouren.",
+  "section_de": "Während der Einheit",
+  "categories": ["cardio", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": ["waehrend"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "milchreis-rundkornreis",
+      "amount": 55,
+      "unit": "g",
+      "optional": false,
+      "display_de": "55 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 130,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "130 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 0.5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Prise (ca. 0,5 g)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bringe Reis, Wasser und Salz in einem kleinen Topf zum Kochen und lass ihn abgedeckt bei kleiner Hitze 20 Minuten quellen, bis das Wasser aufgenommen ist.",
+    "Rühre Ahornsirup und Zimt unter, sodass ein klebriger Reis entsteht.",
+    "Drücke den Reis auf Backpapier etwa 2 cm dick zu einem Rechteck und lass ihn 10 Minuten abkühlen.",
+    "Schneide ihn in 2 Riegel und wickle jeden einzeln in Backpapier oder Alufolie."
+  ],
+  "tip_de": "Eine Portion (2 Riegel) liefert rund 50 g Kohlenhydrate – gut für eine Stunde bei 30–60 g Kohlenhydraten pro Stunde, am besten aufgeteilt alle 30 Minuten einen Riegel. Mehrere Portionen am Vorabend vorbereiten; im Kühlschrank halten sie 2 Tage.",
+  "tags_de": ["Ausdauer"],
+  "total_minutes": 35,
+  "prep_minutes": 15,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 218,
+    "protein_g": 3.9,
+    "carbs_g": 49.6,
+    "fat_g": 0.3
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": [],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "a455dad1c1a5293bf215ad8a4ec2c60f7b8c6991b8324af574b4e8df2f7becb5"
+  }
+}

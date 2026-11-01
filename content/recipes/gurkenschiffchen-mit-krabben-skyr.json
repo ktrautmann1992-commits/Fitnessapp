@@ -1,0 +1,128 @@
+{
+  "id": "gurkenschiffchen-mit-krabben-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gurkenschiffchen mit Krabben-Skyr",
+  "description_de": "Ausgehöhlte Gurkenhälften gefüllt mit Nordseekrabben in Dill-Skyr, dazu ein Vollkorn-Knäckebrot – frisch, leicht und schnell gemacht.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "gurke",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Gurke (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "nordseekrabben-gekocht-geschaelt",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "dill-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL gehackt (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "vollkorn-knaeckebrot",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (20 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Halbiere die Gurke längs und kratze die Kerne mit einem Teelöffel heraus.",
+    "Verrühre Skyr mit Dill, Zitronensaft, Salz und Pfeffer und hebe die Krabben unter.",
+    "Fülle die Krabbenmasse in die Gurkenhälften und serviere das Knäckebrot dazu."
+  ],
+  "tip_de": "Nordseekrabben gibt es abgepackt im Kühlregal an der Fischtheke. Alternativ schmeckt die Füllung mit Thunfisch im eigenen Saft.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 191,
+    "protein_g": 23,
+    "carbs_g": 18.2,
+    "fat_g": 1.7
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "shellfish"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "69ebee7ab4f550a55a3cc8448f2de8afd4b7d8413b079eb3e63aa22e6c837d62"
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "id": "protein-pizzaschnecken-mit-kochschinken",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Protein-Pizzaschnecken mit Kochschinken",
+  "description_de": "Zwei kleine Pizzaschnecken aus Quark-Öl-Teig mit Tomate, Kochschinken und Käse – warm oder kalt ein Genuss.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (30 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "whey-proteinpulver-neutral",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (2 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (20 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kochschinken",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 ½ Scheiben (30 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gouda-light-gerieben",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 ½ EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 200 °C Ober-/Unterhitze vor.",
+    "Mische Mehl, Whey, Backpulver und Salz, gib Quark, Öl und Milch dazu und knete alles zu einem glatten Teig.",
+    "Rolle den Teig auf etwas Mehl zu einem Rechteck (ca. 15 × 20 cm) aus, bestreiche ihn mit den passierten Tomaten, würze mit Oregano und belege ihn mit Schinken und Käse.",
+    "Rolle den Teig von der langen Seite auf, schneide die Rolle in 2 Stücke und setze sie mit der Schnittfläche nach oben aufs Blech.",
+    "Backe die Schnecken 15–18 Minuten goldbraun."
+  ],
+  "tip_de": "Ideal zum Vorbacken für die Woche – kalt in der Brotdose oder kurz im Ofen aufgewärmt. Ohne Pulver: 10 g mehr Mehl und 20 g mehr Quark.",
+  "total_minutes": 30,
+  "prep_minutes": 12,
+  "cook_minutes": 18,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 278,
+    "protein_g": 26.9,
+    "carbs_g": 25.3,
+    "fat_g": 7.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "histamine"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "5002ddbdff59b75077e81129220157cdef04b5e16af4d99ac5fab6b374aa29c8"
+  }
+}

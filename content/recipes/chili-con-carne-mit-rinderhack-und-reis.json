@@ -1,0 +1,174 @@
+{
+  "id": "chili-con-carne-mit-rinderhack-und-reis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Chili con Carne mit Rinderhack und Reis",
+  "description_de": "Kräftiges mexikanisches Chili mit magerem Rinderhack, Bohnen und Mais – ein Topf, der sich perfekt für mehrere Tage vorkochen lässt.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "rinderhackfleisch-5-fett",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "125 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kidneybohnen-dose-abgetropft",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "mais-dose-abgetropft",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose (200 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle Zwiebel und Paprika.",
+    "Brate das Rinderhack im Olivenöl bei hoher Hitze 4–5 Minuten krümelig an.",
+    "Gib Zwiebel, Paprika und die Gewürze dazu und brate alles 3 Minuten mit.",
+    "Rühre gehackte Tomaten, Kidneybohnen und Mais ein und lass das Chili zugedeckt 20 Minuten bei niedriger Hitze köcheln.",
+    "Koche währenddessen den Reis nach Packungsanweisung.",
+    "Schmecke das Chili mit Salz ab und serviere es mit dem Reis."
+  ],
+  "tip_de": "Gleich die vierfache Menge kochen: Das Chili hält 4 Tage im Kühlschrank und lässt sich portionsweise einfrieren.",
+  "total_minutes": 35,
+  "prep_minutes": 7,
+  "cook_minutes": 28,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 598,
+    "protein_g": 42.5,
+    "carbs_g": 73.6,
+    "fat_g": 13
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["beef", "legumes", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "rinderhackfleisch-5-fett",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Brate das Rinderhack im Olivenöl bei hoher Hitze 4–5 Minuten krümelig an.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ecbc7b663ed072ca58e40e2cd6a49f03ac383e321c12c0bd5194852a23e9c91d"
+  }
+}

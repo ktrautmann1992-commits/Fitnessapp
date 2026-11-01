@@ -1,0 +1,128 @@
+{
+  "id": "brokkoli-kaese-auflauf-mit-eiern",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Brokkoli-Käse-Auflauf mit Eiern",
+  "description_de": "Brokkoli in einem lockeren Guss aus Eiern, Hüttenkäse und Milch, mit Gouda überbacken – ein warmes, sättigendes Abendessen ohne Nudeln.",
+  "section_de": "Abendessen",
+  "categories": ["low-carb"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "brokkoli",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Kopf (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 110,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gouda-light-gerieben",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "muskatnuss-gerieben",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C vor. Gare den Brokkoli in Röschen 4 Minuten in Salzwasser vor und lass ihn abtropfen.",
+    "Verquirle Eier, Hüttenkäse und Milch und würze mit Salz, Pfeffer und Muskat.",
+    "Verteile den Brokkoli in einer kleinen Auflaufform, gieß den Eierguss darüber und streue den Gouda darauf.",
+    "Backe den Auflauf 20 Minuten, bis der Guss gestockt und die Oberfläche goldbraun ist."
+  ],
+  "tip_de": "Mit Kochschinken- oder Putenbruststreifen wird daraus eine Variante für Fleischesser.",
+  "total_minutes": 35,
+  "prep_minutes": 11,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 482,
+    "protein_g": 51.3,
+    "carbs_g": 13.9,
+    "fat_g": 22.7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "eggs", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "b9c5036f223a28c04fcf26aa356e965860a92603711d71158d768e21557f99ec"
+  }
+}

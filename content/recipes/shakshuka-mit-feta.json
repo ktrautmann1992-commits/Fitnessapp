@@ -1,0 +1,157 @@
+{
+  "id": "shakshuka-mit-feta",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Shakshuka mit Feta",
+  "description_de": "Pochierte Eier in würziger Tomaten-Paprika-Sauce mit zerbröseltem Feta – orientalisches Frühstück aus einer Pfanne.",
+  "section_de": "Frühstück",
+  "categories": [],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose (200 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "feta",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "25 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 45,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (45 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle Zwiebel und Paprika klein und brate sie im Olivenöl in einer kleinen Pfanne bei mittlerer Hitze 4 Minuten an.",
+    "Gib Kreuzkümmel und Paprikapulver dazu, röste sie 30 Sekunden mit und lösche mit den gehackten Tomaten ab.",
+    "Lass die Sauce 5 Minuten köcheln und schmecke sie mit Salz und Pfeffer ab.",
+    "Drücke mit einem Löffel drei Mulden in die Sauce, schlage die Eier hinein und lege einen Deckel auf.",
+    "Lass die Eier bei niedriger Hitze 5–7 Minuten stocken, bis das Eiweiß fest und das Eigelb noch weich ist.",
+    "Zerbrösle den Feta darüber und iss die Shakshuka direkt aus der Pfanne mit dem Vollkornbrot."
+  ],
+  "tip_de": "Mit einer Prise Chiliflocken wird es feuriger.",
+  "total_minutes": 20,
+  "prep_minutes": 11,
+  "cook_minutes": 9,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 549,
+    "protein_g": 33.9,
+    "carbs_g": 34.7,
+    "fat_g": 28.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3d370484d938606e5201e87ca8fca26a7de6b1f5f7ee0753a1830732857bc531"
+  }
+}

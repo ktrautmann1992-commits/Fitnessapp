@@ -1,0 +1,137 @@
+{
+  "id": "edamame-gurken-salat-mit-raeuchertofu-und-sesam",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Edamame-Gurken-Salat mit Räuchertofu und Sesam",
+  "description_de": "Frischer, asiatisch angemachter Salat aus Edamame, Gurke und Räuchertofu mit etwas Reis – leicht und trotzdem sättigend.",
+  "section_de": "Abendessen",
+  "categories": ["schnell"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "raeuchertofu",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Packung (100 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Gurke (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "express-reis-beutel-gegart",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "fruehlingszwiebel",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Frühlingszwiebel (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "reisessig",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sesamoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sesam",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Schalt den Wasserkocher ein, gib die Edamame in eine Schüssel, übergieß sie mit dem kochenden Wasser und lass sie 3 Minuten ziehen.",
+    "Währenddessen schneidest du Gurke und Räuchertofu in Würfel und die Frühlingszwiebel in Ringe und verrührst Sojasauce, Reisessig und Sesamöl.",
+    "Gieß die Edamame ab und schreck sie kurz kalt ab; erwärm parallel den Reis 1 Minute in der Mikrowelle.",
+    "Misch alles mit dem Dressing und streu den Sesam darüber."
+  ],
+  "tip_de": "Den restlichen Reis und Tofu im Kühlschrank aufheben – am nächsten Tag reichen sie für eine zweite Portion.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 8,
+  "prep_minutes": 8,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 613,
+    "protein_g": 41.5,
+    "carbs_g": 46.7,
+    "fat_g": 27.6
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "sesame", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "9b3a4801e8943c5cea21e279bfc3190ae9a5c0b299014c3e25087520b4302ab2"
+  }
+}

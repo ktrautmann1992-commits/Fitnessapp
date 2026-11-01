@@ -1,0 +1,91 @@
+{
+  "id": "bananen-proteinshake",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Bananen-Proteinshake",
+  "description_de": "Cremiger Shake aus Milch, Banane und Molkenprotein – schnell getrunken nach dem Training.",
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "milch-1-5",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "banane",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Banane (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schäle die Banane und brich sie in Stücke.",
+    "Gib Milch, Proteinpulver, Banane und Zimt in einen Mixer oder Shaker-Becher mit Mixball.",
+    "Mixe alles 20–30 Sekunden, bis der Shake schaumig ist, und trink ihn direkt."
+  ],
+  "tip_de": "Mit einer gefrorenen Banane wird der Shake besonders kalt und cremig.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 3,
+  "prep_minutes": 3,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 249,
+    "protein_g": 24.2,
+    "carbs_g": 25.6,
+    "fat_g": 4.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "a7f281171a3fa4b0c5cf227c674d0929dfe604317a9f06abfc45fc3afc050e16"
+  }
+}

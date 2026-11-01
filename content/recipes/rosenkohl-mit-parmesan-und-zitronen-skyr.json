@@ -1,0 +1,129 @@
+{
+  "id": "rosenkohl-mit-parmesan-und-zitronen-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rosenkohl mit Parmesan und Zitronen-Skyr",
+  "description_de": "Halbierter Rosenkohl wird in der Heißluft an den Schnittflächen karamellisiert und nussig – mit Parmesan und frischem Zitronen-Skyr selbst für Rosenkohl-Skeptiker.",
+  "section_de": "Beilagen & Gemüse",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "rosenkohl",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g), gepresst",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL gerieben (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize die Heißluftfritteuse 3 Minuten auf 190 °C vor.",
+    "Putze den Rosenkohl, entferne welke Außenblätter und halbiere die Röschen. Mische sie mit Olivenöl, Knoblauch, Salz und Pfeffer.",
+    "Gare den Rosenkohl 12–14 Minuten bei 190 °C in einer Lage und schüttle ihn nach 6 Minuten. Er ist fertig, wenn die Schnittflächen braun sind und sich die Röschen mit einem Messer leicht einstechen lassen.",
+    "Streue den Parmesan darüber und gare alles noch 1–2 Minuten, bis der Käse geschmolzen ist.",
+    "Verrühre Skyr mit Zitronensaft und einer Prise Salz und serviere ihn als Dip dazu."
+  ],
+  "tip_de": "Lose Außenblätter, die beim Putzen abfallen, einfach mitgaren – sie werden zu knusprigen Chips. Passt hervorragend zu Pute oder Fisch.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 20,
+  "prep_minutes": 1,
+  "cook_minutes": 19,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 236,
+    "protein_g": 23.3,
+    "carbs_g": 11.6,
+    "fat_g": 10.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4e0ccaf6e60329ce6ca9a40c1eb6119dc7f9d1547ff1fc59b6ea3b0d9e3006c7"
+  }
+}

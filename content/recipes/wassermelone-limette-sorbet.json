@@ -1,0 +1,111 @@
+{
+  "id": "wassermelone-limette-sorbet",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Wassermelone-Limette-Sorbet",
+  "description_de": "Hellrotes, superleichtes Sorbet aus Wassermelone und Limette mit klarem Fruchtprotein – pure Abkühlung bei Hitze.",
+  "section_de": "Sorbet & Erfrischung",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "wassermelone",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 g Fruchtfleisch, ohne Kerne",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "Saft von ½ Limette (20 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "clear-whey-isolat-fruchtgeschmack",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (30 g), z. B. Wassermelone oder Limette",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Püriere Wassermelone, Limettensaft, Erythrit, Wasser und Salz und mixe das Clear-Whey-Isolat kurz und bei niedriger Stufe unter, damit es nicht zu stark schäumt.",
+    "Lass den Schaum kurz zusammenfallen und gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Wasser oder Limettensaft dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+  ],
+  "tip_de": "Ein paar Minzblätter mitpürieren für extra Frische. Schäumt die Masse stark, 5 Minuten stehen lassen oder den Schaum abschöpfen – so wird das Sorbet gleichmäßiger.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 203,
+    "protein_g": 27.4,
+    "carbs_g": 23.9,
+    "fat_g": 0.7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8992add9fdcb15c9bc5f31e32cee9f93a3af7e5def4ec5a9943f01e0b6739712"
+  }
+}

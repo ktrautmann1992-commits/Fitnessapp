@@ -1,0 +1,186 @@
+{
+  "id": "selbstgemachte-seelachs-fischstaebchen-mit-rosmarinkartoffeln-und-skyr-remoulade",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Selbstgemachte Seelachs-Fischstäbchen mit Rosmarinkartoffeln und Skyr-Remoulade",
+  "description_de": "Knusprige Fischstäbchen aus echtem Seelachsfilet in Panko-Panade, dazu Kartoffelwürfel und eine leichte Remoulade aus Skyr – der Kindheitsklassiker mit über 50 g Eiweiß.",
+  "section_de": "Hauptgerichte",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "seelachsfilet-tk",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g, aufgetaut",
+      "scales": true,
+      "heated": false,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "panko",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "5 EL (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 220,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 kleine Kartoffeln (220 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 6,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ TL (6 g), davon etwas zum Einsprühen",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "rosmarin-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gewuerzgurken-glas",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Gewürzgurke (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "dill-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL gehackt (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 2,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "2 Prisen",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Schneide die Kartoffeln in 1,5 cm große Würfel, mische sie mit 1 TL Öl, Rosmarin und Salz und gare sie 15 Minuten bei 200 °C; nach 7 Minuten schütteln. Herausnehmen und warm stellen.",
+    "Tupfe den aufgetauten Seelachs trocken und schneide ihn in 5–6 fingerdicke Stäbchen. Salze und pfeffere sie leicht.",
+    "Wende die Stäbchen nacheinander in Mehl, verquirltem Ei und Panko und drücke die Panade gut an. Sprühe sie dünn mit dem restlichen Öl ein.",
+    "Lege die Fischstäbchen in einer Lage mit etwas Abstand in den Korb (bei Bedarf auf ein beschwertes Stück Backpapier) und gare sie 8–10 Minuten bei 200 °C. Wende sie nach 5 Minuten vorsichtig mit einer Zange; der Fisch ist gar, wenn er innen weiß ist und sich leicht teilen lässt (ca. 60–63 °C).",
+    "Gib die Kartoffeln für die letzten 2 Minuten wieder dazu, damit sie heiß werden.",
+    "Hacke die Gewürzgurke fein und verrühre sie mit Skyr, Senf, Dill, Zitronensaft, Salz und Pfeffer zur Remoulade."
+  ],
+  "tip_de": "Kabeljau funktioniert genauso. Statt Panko kannst du ungezuckerte Cornflakes zerdrücken – das gibt eine besonders grobe, knusprige Kruste.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 35,
+  "prep_minutes": 1,
+  "cook_minutes": 34,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 661,
+    "protein_g": 62.3,
+    "carbs_g": 67.8,
+    "fat_g": 15
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "fish", "mustard", "sulphites"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "837f46d4ce40e6b1efa46e81244028527121328eb2e673ff810950c68b750029"
+  }
+}

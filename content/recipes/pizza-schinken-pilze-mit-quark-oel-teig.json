@@ -1,0 +1,157 @@
+{
+  "id": "pizza-schinken-pilze-mit-quark-oel-teig",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Pizza Schinken-Pilze mit Quark-Öl-Teig",
+  "description_de": "Der Pizzeria-Klassiker mit magerem Kochschinken, frischen Champignons und Quark-Öl-Boden – herzhaft und schnell gemacht.",
+  "section_de": "Pizza & Flammkuchen",
+  "categories": ["fitness-fast-food"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "weizenmehl-type-405",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "90 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "90 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 gestr. TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kochschinken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Scheiben (60 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "champignons",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Stück (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2/3 Kugel (80 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 250 °C Ober-/Unterhitze (230 °C Umluft) vor und lege ein Blech mit Backpapier bereit.",
+    "Verknete Mehl, Backpulver und Salz mit Magerquark und Olivenöl zu einem glatten Teig und rolle ihn auf dem Backpapier dünn zu einem Kreis von etwa 26 cm aus.",
+    "Würze die passierten Tomaten mit Oregano, Salz und Pfeffer und verstreiche sie auf dem Boden.",
+    "Schneide die Champignons in dünne Scheiben und den Kochschinken in Streifen und verteile beides mit dem zerzupften Mozzarella auf der Pizza.",
+    "Backe die Pizza auf der untersten Schiene 11–13 Minuten, bis der Rand goldbraun ist und die Pilze leicht gebräunt sind."
+  ],
+  "tip_de": "Pilze sehr dünn schneiden, dann geben sie weniger Wasser ab und der Boden bleibt knusprig. Statt Kochschinken passt auch Putenbrust-Aufschnitt.",
+  "tags_de": ["Fitness-Fast-Food"],
+  "total_minutes": 30,
+  "prep_minutes": 17,
+  "cook_minutes": 13,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 677,
+    "protein_g": 49.8,
+    "carbs_g": 73.7,
+    "fat_g": 18.5
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "histamine", "mushrooms"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ecb612d0773e17efacb7f2509f8bf0d5635b87c055d6c7a1ffa6914080d6d5f6"
+  }
+}

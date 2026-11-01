@@ -1,0 +1,112 @@
+{
+  "id": "pistazien-protein-eis-mit-pistazienkernen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Pistazien-Protein-Eis mit Pistazienkernen",
+  "description_de": "Nussig-cremiges Pistazieneis auf Mandeldrink-Basis mit knackigen Kernen – sommerlich wie aus der Eisdiele, aber mit über 30 g Eiweiß.",
+  "section_de": "Protein-Eis mit Mandeldrink",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "mandeldrink-ungesuesst",
+      "amount": 330,
+      "unit": "g",
+      "optional": false,
+      "display_de": "330 ml",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 35,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (35 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "geschmackspulver-zuckerfrei",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g), Sorte Pistazie",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "instant-puddingpulver-zuckerfrei",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (8 g), Sorte Vanille",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pistazienkerne-ungesalzen",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g), grob gehackt",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Mixe Mandeldrink, Proteinpulver, Geschmackspulver, Puddingpulver und Erythrit 30 Sekunden im Mixer, bis keine Klümpchen mehr zu sehen sind.",
+    "Gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Mandeldrink dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
+    "Drück mit einem Löffel eine Mulde in die Mitte, gib die gehackten Pistazien hinein und verteile sie mit der Mix-in-Funktion."
+  ],
+  "tip_de": "Für eine intensivere Farbe und mehr Aroma einen Teil der Pistazien vor dem Einfrieren fein gemahlen mitmixen; die Kerne für das Mix-in dann auf 5 g reduzieren.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 288,
+    "protein_g": 29.8,
+    "carbs_g": 17.2,
+    "fat_g": 10.2
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "tree_nuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "12e620258b4cbed2515f37c8f055bbc3fbbd7b9ee5b5654577e1fadb98fa940d"
+  }
+}

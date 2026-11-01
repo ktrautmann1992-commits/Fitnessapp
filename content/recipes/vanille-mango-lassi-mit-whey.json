@@ -1,0 +1,101 @@
+{
+  "id": "vanille-mango-lassi-mit-whey",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Vanille-Mango-Lassi mit Whey",
+  "description_de": "Indisch inspirierter Joghurt-Drink mit Mango und Whey – flüssig, schnell aufgenommen und mit einer guten Mischung aus Eiweiß und Kohlenhydraten für die Regeneration.",
+  "section_de": "Direkt danach",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "joghurt-1-5",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "mango-tk",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gib Joghurt, Milch und die gefrorene Mango in den Mixer.",
+    "Füge das Whey-Proteinpulver und eine Prise Zimt hinzu.",
+    "Mixe alles etwa 30 Sekunden, bis ein cremiger, kalter Drink entsteht.",
+    "Fülle den Lassi in ein großes Glas und trink ihn direkt."
+  ],
+  "tip_de": "Ohne Pulver: 200 g Skyr natur statt Joghurt und Whey verwenden und 1 TL Honig zugeben. Wer nach hartem Training wenig Appetit hat, verträgt den flüssigen Lassi meist besser als feste Nahrung.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 327,
+    "protein_g": 33.7,
+    "carbs_g": 32.8,
+    "fat_g": 6.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "605663aecb599f59e953d1026db43159dbd4aeb172927786d7769c09111379ea"
+  }
+}

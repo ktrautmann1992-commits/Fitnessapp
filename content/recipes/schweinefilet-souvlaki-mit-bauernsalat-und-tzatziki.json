@@ -1,0 +1,183 @@
+{
+  "id": "schweinefilet-souvlaki-mit-bauernsalat-und-tzatziki",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schweinefilet-Souvlaki mit Bauernsalat und Tzatziki",
+  "description_de": "Griechische Spieße aus mariniertem Schweinefilet mit Zitrone und Oregano, dazu Bulgur, Bauernsalat und Skyr-Tzatziki.",
+  "section_de": "Abendessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schweinefilet",
+      "amount": 170,
+      "unit": "g",
+      "optional": false,
+      "display_de": "170 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "bulgur-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 130,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Gurke (130 g), geteilt",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Tomate (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ rote Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "feta",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "25 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide das Schweinefilet in 3 cm große Würfel und mariniere es mit 5 g Olivenöl, Zitronensaft, der Hälfte des gepressten Knoblauchs, Oregano, Salz und Pfeffer mindestens 10 Minuten.",
+    "Gib den Bulgur mit dem Wasser und einer Prise Salz in einen Topf, bring alles zum Kochen und lass ihn zugedeckt bei niedriger Hitze 10 Minuten quellen.",
+    "Raspel 30 g Gurke, drücke sie aus und verrühre sie mit Skyr, restlichem Knoblauch und Salz zu Tzatziki.",
+    "Stecke das Fleisch auf Spieße und brate es in einer Grillpfanne mit dem restlichen Öl bei mittlerer bis hoher Hitze rundum 6–8 Minuten.",
+    "Schneide restliche Gurke, Tomate und Zwiebel grob, zerbrösle den Feta darüber und serviere den Salat mit Spießen, Bulgur und Tzatziki."
+  ],
+  "tip_de": "Im Sommer die Spieße auf den Grill legen. Statt Bulgur passt ein kleines Vollkorn-Pita.",
+  "total_minutes": 30,
+  "prep_minutes": 12,
+  "cook_minutes": 18,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 602,
+    "protein_g": 57.7,
+    "carbs_g": 46.8,
+    "fat_g": 18.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "histamine", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "60c26e93e23bed124d5f529befb16fdfe2ad9930fa18f10c8eee86a3cc69b199"
+  }
+}

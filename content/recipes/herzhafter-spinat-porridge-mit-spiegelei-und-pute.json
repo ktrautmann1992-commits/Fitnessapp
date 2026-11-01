@@ -1,0 +1,158 @@
+{
+  "id": "herzhafter-spinat-porridge-mit-spiegelei-und-pute",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Herzhafter Spinat-Porridge mit Spiegelei und Pute",
+  "description_de": "Würziger Haferbrei mit Brühe, Spinat und Parmesan, getoppt mit zwei Spiegeleiern und Putenbruststreifen.",
+  "section_de": "Frühstück",
+  "categories": [],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "gemuesebruehe-instantpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Handvoll (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gerieben (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "putenbrustaufschnitt",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Scheiben (60 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bring Wasser mit Gemüsebrühe in einem kleinen Topf zum Kochen, rühre die Haferflocken ein und lass sie bei niedriger Hitze 4–5 Minuten quellen.",
+    "Rühre den Spinat unter, bis er zusammenfällt, und mische den Parmesan unter. Mit Pfeffer abschmecken.",
+    "Brate die Eier parallel im Rapsöl in einer beschichteten Pfanne bei mittlerer Hitze 3–4 Minuten als Spiegeleier.",
+    "Schneide die Putenbrust in Streifen und schwenke sie die letzte Minute kurz mit in der Pfanne.",
+    "Gib den Porridge in eine Schale, lege Spiegeleier und Putenstreifen darauf und bestreue alles mit Chiliflocken."
+  ],
+  "tip_de": "Statt Spinat passen auch Champignons oder Frühlingszwiebeln. Wer es asiatisch mag, nimmt 1 TL Sojasauce statt Brühe.",
+  "total_minutes": 12,
+  "prep_minutes": 3,
+  "cook_minutes": 9,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 499,
+    "protein_g": 40,
+    "carbs_g": 32.4,
+    "fat_g": 21.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "eggs",
+    "poultry",
+    "celery",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "a318b1151b52f0953b30ecb944ab5d1c79e48301ebc9be01bc303dea5f431c26"
+  }
+}

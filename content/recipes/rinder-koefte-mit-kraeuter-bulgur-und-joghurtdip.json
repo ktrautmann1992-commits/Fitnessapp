@@ -1,0 +1,200 @@
+{
+  "id": "rinder-koefte-mit-kraeuter-bulgur-und-joghurtdip",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rinder-Köfte mit Kräuter-Bulgur und Joghurtdip",
+  "description_de": "Saftige, mit Kreuzkümmel gewürzte Hackröllchen vom Rind auf Petersilien-Bulgur mit kühlem Skyr-Dip – orientalisches Meal-Prep-Essen.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "rinderhackfleisch-5-fett",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "bulgur-trocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Bund (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Gurke (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "8 Cherrytomaten (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gemuesebruehe-instantpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 120,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "120 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Übergieße den Bulgur mit 120 ml kochendem Wasser und der Gemüsebrühe und lass ihn abgedeckt 10 Minuten quellen.",
+    "Reibe die Zwiebel fein und verknete sie mit Hackfleisch, der Hälfte der gehackten Petersilie, Kreuzkümmel, Paprikapulver, Salz und Pfeffer.",
+    "Forme daraus 4 längliche Köfte und brate sie in 1 TL Olivenöl bei mittlerer Hitze 8–10 Minuten rundum braun und durch.",
+    "Verrühre Skyr mit der Hälfte der fein geriebenen Gurke, Zitronensaft und Salz zum Dip.",
+    "Lockere den Bulgur mit restlicher Petersilie, dem übrigen Olivenöl, gewürfelter Gurke und halbierten Tomaten auf und serviere ihn mit Köfte und Dip."
+  ],
+  "tip_de": "Die Köfte lassen sich auch im Ofen bei 200 °C Umluft in 15 Minuten garen – praktisch, wenn du mehrere Portionen vorbereitest.",
+  "total_minutes": 30,
+  "prep_minutes": 20,
+  "cook_minutes": 10,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 575,
+    "protein_g": 50.7,
+    "carbs_g": 53.1,
+    "fat_g": 16.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "beef",
+    "celery",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3f39350fcfb58b1e77d66bfc2835acec8d7c490909f9ab3f6e4510818b6a7d7b"
+  }
+}

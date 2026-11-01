@@ -1,6 +1,6 @@
 {
   "id": "puten-caesar-salat-mit-parmesan-skyr-dressing",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Puten-Caesar-Salat mit Parmesan-Skyr-Dressing",
   "description_de": "Der Klassiker ohne Croûtons und schwere Sauce: gebratene Putenbrust auf knackigem Romanasalat mit einem cremigen Dressing aus Skyr, Parmesan und Zitrone.",
@@ -100,7 +100,6 @@
     "Schneide die Pute in Streifen, lege sie auf den Salat und streue den restlichen Parmesan darüber."
   ],
   "tip_de": "Für unterwegs Dressing separat einpacken und erst kurz vor dem Essen untermischen.",
-  "tags_de": ["Low Carb"],
   "total_minutes": 15,
   "prep_minutes": 9,
   "cook_minutes": 6,
@@ -141,6 +140,6 @@
       }
     ],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "d019d257d518c1c49bf349640aba8ecb4c47b55ed8aa0f7242cdea923de32baf"
+    "import_hash": "c6f13308e7d91b5f949ba09730d823a8dfc697a208cdea50a90b9aef2e5d8cc1"
   }
 }

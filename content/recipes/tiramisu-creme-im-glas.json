@@ -1,0 +1,120 @@
+{
+  "id": "tiramisu-creme-im-glas",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Tiramisu-Creme im Glas",
+  "description_de": "Italienischer Klassiker in leicht: Espresso-getränkte Löffelbiskuits unter einer Quark-Skyr-Creme mit Kakao – ganz ohne Mascarpone und Alkohol.",
+  "section_de": "Ohne Backen",
+  "categories": ["schnell", "protein-dessert"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "loeffelbiskuits",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Löffelbiskuits (15 g)",
+      "scales": true,
+      "heated": false,
+      "role": "carb"
+    },
+    {
+      "food_id": "espresso-zubereitet",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Espresso (40 ml), abgekühlt",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "125 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 75,
+      "unit": "g",
+      "optional": false,
+      "display_de": "75 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 ml)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kakaopulver-stark-entoelt",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (3 g) zum Bestäuben",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Brich die Löffelbiskuits in Stücke, leg sie in ein Glas und träufle den abgekühlten Espresso darüber.",
+    "Rühre Magerquark, Skyr, Milch und Erythrit zu einer glatten, cremigen Masse.",
+    "Verteile die Creme über den getränkten Biskuits.",
+    "Bestäube alles durch ein kleines Sieb mit Kakao und stell das Glas 15 Minuten kalt, damit die Biskuits durchziehen."
+  ],
+  "tip_de": "Am besten am Vorabend schichten – über Nacht wird das Tiramisu noch saftiger. Abends lieber entkoffeinierten Espresso nehmen.",
+  "tags_de": ["Unter 10 Minuten", "Dessert"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 209,
+    "protein_g": 25.8,
+    "carbs_g": 21,
+    "fat_g": 1.7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "b81eee6f5c398c3c2497aa54f692e2be0dfe0ec55702bc77b3013dbe48c4fb05"
+  }
+}

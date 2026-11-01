@@ -1,0 +1,147 @@
+{
+  "id": "gefuellte-paprika-mit-hackfleisch",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gefüllte Paprika mit Hackfleisch",
+  "description_de": "Klassiker aus dem Ofen: Paprikaschoten mit Hack-Reis-Füllung in Tomatensauce, mit Mozzarella überbacken.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "hackfleisch-vom-schwein",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g (mager)",
+      "scales": true,
+      "heated": false,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Paprika (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 180 °C Umluft vor und koche den Reis 8 Minuten vor.",
+    "Schneide von den Paprika einen Deckel ab und entferne die Kerne.",
+    "Vermenge Hackfleisch, Reis, gewürfelte Zwiebel, Paprikapulver, Salz und Pfeffer.",
+    "Fülle die Paprika damit, stelle sie in eine kleine Auflaufform und gieß die mit Oregano gewürzten passierten Tomaten außen herum.",
+    "Backe die Paprika 25 Minuten, belege sie dann mit Mozzarella und backe sie weitere 5 Minuten."
+  ],
+  "tip_de": "Statt Schweinehack geht auch gemischtes Hack oder Putenhack.",
+  "total_minutes": 45,
+  "prep_minutes": 7,
+  "cook_minutes": 38,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 616,
+    "protein_g": 39.1,
+    "carbs_g": 53,
+    "fat_g": 26.2
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "histamine", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "25ee072115cbdc87ce5611d4ed3b04346a5beda76383a7d7a8cfcd19823ee975"
+  }
+}

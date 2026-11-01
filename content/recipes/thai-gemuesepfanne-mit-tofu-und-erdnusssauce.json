@@ -1,0 +1,172 @@
+{
+  "id": "thai-gemuesepfanne-mit-tofu-und-erdnusssauce",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Thai-Gemüsepfanne mit Tofu & Erdnusssauce",
+  "description_de": "Knackiges Pfannengemüse mit knusprigem Tofu und cremiger Erdnuss-Ingwer-Sauce – ganz ohne Beilage.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "moehre",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Möhre (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 45,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Tupf den Tofu trocken, würfle ihn und brate ihn im Rapsöl bei hoher Hitze 5–6 Minuten rundum goldbraun; dann herausnehmen.",
+    "Schneide den Brokkoli in kleine Röschen, die Paprika in Streifen und die Möhre in dünne Scheiben.",
+    "Brate das Gemüse in derselben Pfanne 4–5 Minuten bissfest; gib bei Bedarf 1 EL Wasser dazu.",
+    "Verrühre Erdnussmus, Sojasauce, Zitronensaft, Ingwer, gepressten Knoblauch, Chiliflocken und 2 EL Wasser zu einer glatten Sauce.",
+    "Gib Tofu und Sauce zum Gemüse, schwenke alles 1 Minute durch und serviere sofort."
+  ],
+  "tip_de": "An Trainingstagen passt eine kleine Portion Reis oder Mie-Nudeln dazu.",
+  "total_minutes": 18,
+  "prep_minutes": 7,
+  "cook_minutes": 11,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 521,
+    "protein_g": 38.9,
+    "carbs_g": 23.4,
+    "fat_g": 28.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": [
+    "gluten",
+    "legumes",
+    "soy",
+    "peanuts",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "380a14b0552c307b54bda7ef092ea48636762ab08ed0325c8d57e80430664924"
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "id": "krautnudeln-mit-ei-und-huettenkaese",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Krautnudeln mit Ei und Hüttenkäse",
+  "description_de": "Österreichisch inspirierte Pfanne aus gebratenem Weißkohl und Vollkornnudeln, die mit Ei und Hüttenkäse zum günstigen Eiweißgericht wird.",
+  "section_de": "Hauptgericht",
+  "categories": ["spar-kueche"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornnudeln",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "weisskohl",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Becher (100 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Nudeln in Salzwasser nach Packungsangabe bissfest (ca. 10 Minuten) und gieße sie ab.",
+    "Schneide den Weißkohl in feine Streifen und die Zwiebel in Würfel.",
+    "Brate Kohl und Zwiebel im Rapsöl bei mittlerer Hitze 8–10 Minuten, bis der Kohl weich und leicht gebräunt ist; würze mit Kümmel, Salz und Pfeffer.",
+    "Gib die Nudeln dazu, schlage die Eier darüber und rühre 2 Minuten, bis sie gestockt sind.",
+    "Richte die Krautnudeln an und setze den Hüttenkäse obendrauf."
+  ],
+  "tip_de": "Ein Weißkohl reicht für mehrere Gerichte – der Rest hält im Kühlschrank locker zwei Wochen.",
+  "tags_de": ["Spar-Küche"],
+  "total_minutes": 25,
+  "prep_minutes": 5,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 678,
+    "protein_g": 40.8,
+    "carbs_g": 65.5,
+    "fat_g": 26
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "cost_estimate": {
+    "eur_per_serving": 1.6,
+    "as_of": "2026-10-23",
+    "basis": "estimate"
+  },
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "a66b242c360d5730f82189c7c199536146b188fb6acc2e93bfad78905b5c0659"
+  }
+}

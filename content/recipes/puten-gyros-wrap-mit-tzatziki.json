@@ -1,0 +1,156 @@
+{
+  "id": "puten-gyros-wrap-mit-tzatziki",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Puten-Gyros-Wrap mit Tzatziki",
+  "description_de": "Griechisch gewürzte Putenstreifen mit Skyr-Tzatziki, Tomate und Gurke im Vollkorn-Wrap.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "putenbrustfilet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "vollkorn-wrap",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Wraps (120 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomaten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Tomate (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gyrosgewuerz",
+      "amount": 2,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "2 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Putenbrust in dünne Streifen und mische sie mit Gyrosgewürz und 1 TL Öl.",
+    "Raspel die Hälfte der Gurke grob, drücke sie aus und verrühre sie mit Skyr, gepresstem Knoblauch und Salz zum Tzatziki.",
+    "Brate die Putenstreifen im restlichen Öl bei hoher Hitze 5–6 Minuten rundum knusprig.",
+    "Schneide Tomate, restliche Gurke und Zwiebel in feine Streifen.",
+    "Erwärme die Wraps kurz in der Pfanne, bestreiche sie mit Tzatziki, belege sie mit Fleisch und Gemüse und rolle sie auf."
+  ],
+  "tip_de": "Fleisch und Tzatziki getrennt verpacken – so wird der Wrap im Büro nicht matschig.",
+  "total_minutes": 15,
+  "prep_minutes": 9,
+  "cook_minutes": 6,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 673,
+    "protein_g": 57.1,
+    "carbs_g": 67.6,
+    "fat_g": 18.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "poultry",
+    "celery",
+    "mustard",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3d341a1ef4158ecfa2f0c60dbbe4f9aef5297e47eb4a02541c23c45de695de76"
+  }
+}

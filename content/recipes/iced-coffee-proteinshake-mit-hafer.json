@@ -1,0 +1,110 @@
+{
+  "id": "iced-coffee-proteinshake-mit-hafer",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Iced-Coffee-Proteinshake mit Hafer",
+  "description_de": "Kalter Kaffee-Shake mit Haferflocken, Banane und Vanille-Whey – Frühstück und Wachmacher in einem Glas.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "milch-1-5",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 EL (40 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "banane",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Banane (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "instantkaffee",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (2 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "eiswuerfel",
+      "amount": 3,
+      "unit": "piece",
+      "optional": false,
+      "display_de": "3–4 Eiswürfel",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gib Milch, Haferflocken, Instantkaffee und die Banane in Stücken in den Mixer.",
+    "Mix alles ca. 30 Sekunden auf höchster Stufe, bis die Haferflocken fein sind.",
+    "Gib Proteinpulver und Eiswürfel dazu und mix nur noch kurz (10 Sekunden), damit der Shake nicht zu schaumig wird.",
+    "Gieß den Shake in ein großes Glas oder einen To-go-Becher."
+  ],
+  "tip_de": "Zeitsparer: Banane in Stücken einfrieren – dann brauchst du keine Eiswürfel und der Shake wird extra cremig.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 4,
+  "prep_minutes": 4,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 467,
+    "protein_g": 39,
+    "carbs_g": 53.8,
+    "fat_g": 8.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "10e79d8ec335ade4ac5e2b650acaf07ff394998603e1eb1c83147571c49de282"
+  }
+}

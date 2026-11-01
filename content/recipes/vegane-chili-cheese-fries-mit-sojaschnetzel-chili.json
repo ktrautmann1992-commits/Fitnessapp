@@ -1,0 +1,202 @@
+{
+  "id": "vegane-chili-cheese-fries-mit-sojaschnetzel-chili",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Vegane Chili-Cheese-Fries mit Sojaschnetzel-Chili",
+  "description_de": "Knusprige Pommes aus der Heißluftfritteuse unter einem würzigen Sojaschnetzel-Bohnen-Chili und cremiger Hefeflocken-Käsesauce – vegan und richtig sättigend.",
+  "section_de": "Klassiker",
+  "categories": ["fitness-fast-food", "heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2–3 mittelgroße (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-geraeuchert",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sojaschnetzel-trocken",
+      "amount": 45,
+      "unit": "g",
+      "optional": false,
+      "display_de": "45 g (fein)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomatenmark",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kidneybohnen-dose-abgetropft",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "chilipulver",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "hefeflocken",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "speisestaerke",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 gehäufter TL (8 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "senf",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "fruehlingszwiebel",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stange (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Übergieße die Sojaschnetzel mit kochendem Wasser, lass sie 10 Minuten quellen und drücke sie kräftig aus.",
+    "Schneide die Kartoffeln in 1 cm dicke Stäbchen, tupfe sie trocken, mische sie mit Rapsöl, Salz und Rauchpaprika und gare sie in der auf 200 °C vorgeheizten Heißluftfritteuse in einer Lage 18–22 Minuten; schüttle den Korb alle 6 Minuten.",
+    "Dünste die gewürfelte Zwiebel in einer beschichteten Pfanne mit 2 EL Wasser 2 Minuten an, gib Sojaschnetzel und Tomatenmark dazu und röste alles 2 Minuten.",
+    "Füge gehackte Tomaten, Kidneybohnen, Chilipulver, Kreuzkümmel und Salz hinzu und lass das Chili 8 Minuten dicklich einköcheln.",
+    "Verrühre Sojadrink, Hefeflocken, Speisestärke und Senf in einem kleinen Topf und lass alles unter Rühren 1–2 Minuten aufkochen, bis eine cremige Käsesauce entsteht.",
+    "Richte die Pommes an, gib Chili und Käsesauce darüber und bestreue alles mit Frühlingszwiebelringen."
+  ],
+  "tip_de": "Backofen-Alternative: Pommes auf einem Blech mit Backpapier bei 220 °C Ober-/Unterhitze (200 °C Umluft) 25–30 Minuten backen, nach der Hälfte wenden. Das Chili lässt sich gut doppelt kochen und einfrieren.",
+  "tags_de": ["Fitness-Fast-Food", "Heißluftfritteuse"],
+  "total_minutes": 35,
+  "prep_minutes": 1,
+  "cook_minutes": 34,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 654,
+    "protein_g": 46.1,
+    "carbs_g": 81.8,
+    "fat_g": 9.2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "mustard", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "2df3eaad6ef91c7f43480ba27af97d97f831571549797058ff5d3e4a3dbb7756"
+  }
+}

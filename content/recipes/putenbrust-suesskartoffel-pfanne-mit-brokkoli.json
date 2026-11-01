@@ -1,0 +1,146 @@
+{
+  "id": "putenbrust-suesskartoffel-pfanne-mit-brokkoli",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Putenbrust-Süßkartoffel-Pfanne mit Brokkoli",
+  "description_de": "Mageres Putenfleisch mit Süßkartoffel und Brokkoli aus einer Pfanne – eine warme, ausgewogene Mahlzeit mit viel Eiweiß und Kohlenhydraten für die Regeneration.",
+  "section_de": "Bis 2 Stunden danach",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "putenbrustfilet",
+      "amount": 130,
+      "unit": "g",
+      "optional": false,
+      "display_de": "130 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "suesskartoffel",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Süßkartoffel (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 7,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (7 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 45,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schäle die Süßkartoffel, schneide sie in 1–2 cm große Würfel und teile den Brokkoli in kleine Röschen.",
+    "Brate die Süßkartoffelwürfel in 1 TL Öl bei mittlerer Hitze 5 Minuten an, gib 3 EL Wasser dazu und gare sie mit Deckel weitere 5 Minuten.",
+    "Füge den Brokkoli hinzu und lass alles mit Deckel 3–4 Minuten weitergaren.",
+    "Schneide die Putenbrust in Streifen und brate sie in einer zweiten Pfanne im restlichen Öl bei hoher Hitze 4–5 Minuten durch.",
+    "Mische alles, würze mit Paprikapulver, Kreuzkümmel, Salz und Pfeffer."
+  ],
+  "tip_de": "Lässt sich gut für 2–3 Tage vorkochen. Wer direkt nach dem Training schon einen Shake hatte, isst diese Pfanne gut 1–2 Stunden später als richtige Mahlzeit.",
+  "total_minutes": 20,
+  "prep_minutes": 5,
+  "cook_minutes": 15,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 404,
+    "protein_g": 38.2,
+    "carbs_g": 42.7,
+    "fat_g": 8.7
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["poultry"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "putenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 4 gart die Zutat durch: „Schneide die Putenbrust in Streifen und brate sie in einer zweiten Pfanne im restlichen Öl bei hoher Hitze 4–5 Minuten durch.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "87d5b2e58f41472b49e496595e29fda8c726c5a7b6c03ee22c031edc7490b214"
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "id": "orientalische-haehnchen-couscous-pfanne",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Orientalische Hähnchen-Couscous-Pfanne",
+  "description_de": "Hähnchenstreifen mit Zucchini, Paprika und Kichererbsen in Kreuzkümmel und Zimt, dazu Couscous und Minz-Joghurt.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "couscous-trocken",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gemuesebruehe-instantpulver",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (2 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml, kochend",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zucchini (120 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "joghurt-1-5",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 EL (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "minze-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ein paar Blätter (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Übergieße den Couscous in einer Schüssel mit dem kochenden Wasser und der Brühe, decke ihn ab und lass ihn 5 Minuten quellen. Lockere ihn danach mit einer Gabel auf.",
+    "Schneide Hähnchen, Zucchini, Paprika und Zwiebel in mundgerechte Stücke.",
+    "Brate das Hähnchen im Olivenöl bei hoher Hitze 4–5 Minuten an, gib Gemüse und Kichererbsen dazu und brate alles weitere 4 Minuten.",
+    "Würze mit Kreuzkümmel, Zimt, Paprikapulver, Salz und der Hälfte des Zitronensafts und mische den Couscous unter.",
+    "Verrühre Joghurt, gehackte Minze, restlichen Zitronensaft und Salz und serviere den Dip dazu."
+  ],
+  "tip_de": "Schmeckt auch kalt als Salat – ideal für die Lunchbox.",
+  "total_minutes": 18,
+  "prep_minutes": 9,
+  "cook_minutes": 9,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 642,
+    "protein_g": 52.7,
+    "carbs_g": 72.5,
+    "fat_g": 14.1
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "poultry",
+    "legumes",
+    "celery",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 3,
+        "food_id": "haehnchenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 3 gart die Zutat durch: „Brate das Hähnchen im Olivenöl bei hoher Hitze 4–5 Minuten an, gib Gemüse und Kichererbsen dazu und brate alles weitere 4 Minuten.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c2b7bd4c3547a7f57f4b7239c441e8b2491bbeb323bb5d65ec1e5de6777d94b4"
+  }
+}

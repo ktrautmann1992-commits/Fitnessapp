@@ -1,0 +1,173 @@
+{
+  "id": "knoblauch-garnelen-mit-zucchini-nudeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Knoblauch-Garnelen mit Zucchini-Nudeln",
+  "description_de": "Halb Zucchini-Spaghetti, halb Vollkornnudeln mit gebratenen Garnelen, Kirschtomaten, Chili und Parmesan.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "garnelen-tk-roh-geschaelt",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g, aufgetaut",
+      "scales": true,
+      "heated": false,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Zucchini (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "vollkornnudeln",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g Spaghetti",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kirschtomaten",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Zehen (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gerieben (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koch die Spaghetti in Salzwasser nach Packungsanleitung etwa 9–10 Minuten bissfest.",
+    "Schneide die Zucchini mit einem Spiralschneider oder Sparschäler in lange Streifen und halbiere die Kirschtomaten.",
+    "Erhitze das Olivenöl in einer großen Pfanne, brate die trocken getupften Garnelen mit gehacktem Knoblauch und Chili 2–3 Minuten, bis sie rosa sind, und nimm sie heraus.",
+    "Schwenke Tomaten und Zucchini-Nudeln 2 Minuten in der Pfanne, gib Spaghetti und Garnelen dazu und würze mit Zitronensaft, Salz und Pfeffer.",
+    "Serviere alles mit Parmesan und Petersilie bestreut."
+  ],
+  "tip_de": "Zucchini-Nudeln nur kurz schwenken, sonst werden sie wässrig.",
+  "total_minutes": 18,
+  "prep_minutes": 15,
+  "cook_minutes": 3,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 554,
+    "protein_g": 49.1,
+    "carbs_g": 47.2,
+    "fat_g": 17.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "shellfish",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3fed3811d008dfa3f03da0bd6bdce5b886c9c448ffb143c8efa3397413a2326d"
+  }
+}

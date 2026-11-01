@@ -1,0 +1,164 @@
+{
+  "id": "tempeh-gemuesepfanne-mit-cashews",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Tempeh-Gemüsepfanne mit Cashews",
+  "description_de": "Schnelle Asia-Pfanne mit Tempeh, knackigem Gemüse, Ingwer und gerösteten Cashews.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tempeh",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2/3 Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "karotten",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Karotte (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Stangen (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cashewkerne",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sesamoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 cm (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Röste die Cashews in einer trockenen Pfanne 2 Minuten und stell sie beiseite.",
+    "Schneide Tempeh in Würfel, Paprika und Karotte in dünne Streifen, Brokkoli in kleine Röschen und Frühlingszwiebeln in Ringe.",
+    "Brate den Tempeh im Sesamöl bei hoher Hitze 4 Minuten rundum an.",
+    "Gib Brokkoli, Karotte und Paprika dazu und brate alles 5 Minuten unter Rühren bissfest.",
+    "Rühre Ingwer, Knoblauch und Sojasauce unter, brate 1 Minute weiter und streue Frühlingszwiebeln, Cashews und Chili darüber."
+  ],
+  "tip_de": "Wer mehr Kohlenhydrate braucht, serviert die Pfanne mit 50 g Reis.",
+  "total_minutes": 15,
+  "prep_minutes": 6,
+  "cook_minutes": 9,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 552,
+    "protein_g": 40.4,
+    "carbs_g": 36.5,
+    "fat_g": 28.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": [
+    "gluten",
+    "legumes",
+    "soy",
+    "tree_nuts",
+    "sesame",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "34cdf2f91c4fdec11e049e1b6597d71585265e0d08e2e55dbe2dcdbd776c9900"
+  }
+}

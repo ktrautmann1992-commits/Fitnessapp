@@ -1,0 +1,147 @@
+{
+  "id": "fruehstuecks-wrap-mit-ei-schinken-und-spinat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Frühstücks-Wrap mit Ei, Schinken und Spinat",
+  "description_de": "Warmer Wrap im Mexiko-Stil mit Rührei, Kochschinken, Spinat, Mozzarella und Salsa.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorn-wrap",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Wrap (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "kochschinken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (40 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g, gewürfelt",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "tomatensalsa-glas",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verquirle die Eier mit Salz und Pfeffer und schneide den Kochschinken in Streifen.",
+    "Erhitze das Öl in einer Pfanne auf mittlerer Stufe, lass den Spinat darin 1 Minute zusammenfallen.",
+    "Gib Eier und Schinken dazu und lass alles unter Rühren 2–3 Minuten stocken.",
+    "Erwärme den Wrap 30 Sekunden ohne Fett in einer zweiten Pfanne.",
+    "Verteile die Eimasse, den Mozzarella und die Salsa auf dem Wrap, schlag die Seiten ein und roll ihn fest auf."
+  ],
+  "tip_de": "Wer es scharf mag, gibt ein paar Jalapeño-Ringe aus dem Glas dazu.",
+  "total_minutes": 12,
+  "prep_minutes": 12,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 484,
+    "protein_g": 35.5,
+    "carbs_g": 33.4,
+    "fat_g": 22.5
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "eggs",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "85d803c5b5860629c930fdb9252d0dbc3147356b5983f3d5ee400ef4cc42ad30"
+  }
+}

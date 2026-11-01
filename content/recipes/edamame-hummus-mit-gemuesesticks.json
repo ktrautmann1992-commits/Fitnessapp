@@ -1,0 +1,156 @@
+{
+  "id": "edamame-hummus-mit-gemuesesticks",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Edamame-Hummus mit Gemüsesticks",
+  "description_de": "Grüner Hummus aus Edamame und Kichererbsen mit knackigen Sticks für die ganze Woche.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 240,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Dose (240 g abgetropft)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tahin",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojajoghurt-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zitrone (40 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 4,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (4 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 6,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Karotten (400 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Paprika (400 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Gurke (400 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Gare die Edamame 4 Minuten in kochendem Salzwasser und schrecke sie kalt ab.",
+    "Püriere Edamame, Kichererbsen, Tahin, Sojajoghurt, Zitronensaft, Knoblauch, Kreuzkümmel und Salz mit dem Stabmixer cremig; bei Bedarf 2–3 EL kaltes Wasser zugeben.",
+    "Schneide Karotten, Paprika und Gurke in fingerlange Sticks.",
+    "Fülle den Hummus in 5 kleine Gläser und die Sticks in 5 Dosen; lege auf die Sticks ein feuchtes Küchenpapier."
+  ],
+  "tip_de": "Der Hummus hält gut verschlossen 5 Tage im Kühlschrank, die Sticks bleiben mit feuchtem Küchenpapier 4–5 Tage knackig (Gurke am besten erst ab Mittwoch frisch schneiden). Hummus lässt sich portionsweise einfrieren und über Nacht im Kühlschrank auftauen.",
+  "tags_de": ["zum Mitnehmen"],
+  "meal_prep_plan_id": "vegan",
+  "total_minutes": 20,
+  "prep_minutes": 16,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 257,
+    "protein_g": 14.6,
+    "carbs_g": 24.9,
+    "fat_g": 9.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "sesame", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "886992fe2b45099777b9b0110621896c402354f3e061c06bcf7e07a269739363"
+  }
+}
