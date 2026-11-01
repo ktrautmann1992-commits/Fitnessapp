@@ -968,8 +968,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": "170924",
-        "search": ["curry powder"],
+        "ref": "172231",
+        "search": ["turmeric", "curry"],
         "state_de": "Gewürzmischung",
         "category": "spices_sauces"
       },
@@ -989,7 +989,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Gewürzmischung. Quell-ID 170924 „Spices, curry powder“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: Gewürzmischung. Quell-ID 172231 „Spices, turmeric, ground“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Vorige Quell-ID beim Import 41310757920 abgelehnt (170924 „Spices, curry powder“: Zucker größer als verfügbare Kohlenhydrate). Kurkuma als Hauptbestandteil von Currypulver als Näherung; Mengen je Rezept klein. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "datteln-getrocknet-entsteint",
@@ -2993,7 +2993,7 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": "170173",
+        "ref": "170172",
         "search": ["coconut milk"],
         "state_de": "Konserve, fettreduziert",
         "category": "nuts_seeds"
@@ -3011,7 +3011,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Konserve, fettreduziert. Quell-ID 170173 „Nuts, coconut milk, canned (liquid expressed from grated meat and water)“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Kokosmilch aus der Dose in voller Fettstufe – eine fettreduzierte Variante führt SR Legacy nicht; Energie und Fett werden überschätzt. Bei der Katalog-Prüfung beachten. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: Konserve, fettreduziert. Quell-ID 170172 „Nuts, coconut milk, raw (liquid expressed from grated meat and water)“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Vorige Quell-ID beim Import 41310757920 abgelehnt (170173 Dosen-Kokosmilch: Ballaststoffe fehlen). Kokosmilch roh in voller Fettstufe als Näherung – eine fettreduzierte Variante führt SR Legacy nicht; Energie und Fett werden überschätzt. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "kokosraspeln",
@@ -6494,7 +6494,7 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": "173181",
+        "ref": "174276",
         "search": ["soy protein", "pea protein"],
         "state_de": "Pulver",
         "category": "other"
@@ -6512,7 +6512,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID 173181 „Beverages, Protein powder soy based“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Erbsen-/Reisprotein führt SR Legacy nicht; Proteinpulver auf Sojabasis als Näherung (ähnliche Makronährstoffe). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: Pulver. Quell-ID 174276 „Soy protein isolate“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Vorige Quell-ID beim Import 41310757920 abgelehnt (173181 „Beverages, Protein powder soy based“: Zucker größer als verfügbare Kohlenhydrate). Sojaproteinisolat als Näherung für Erbsen-/Reisprotein (ähnliche Makronährstoffe). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "veganes-proteinpulver-erbse-reis-neutral",
@@ -6521,7 +6521,7 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": "173181",
+        "ref": "174276",
         "search": ["soy protein", "pea protein"],
         "state_de": "Pulver, neutral",
         "category": "other"
@@ -6539,7 +6539,7 @@
       "max_fridge_days": 1,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, neutral. Quell-ID 173181 „Beverages, Protein powder soy based“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Erbsen-/Reisprotein führt SR Legacy nicht; Proteinpulver auf Sojabasis als Näherung (ähnliche Makronährstoffe). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: Pulver, neutral. Quell-ID 174276 „Soy protein isolate“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Vorige Quell-ID beim Import 41310757920 abgelehnt (173181 „Beverages, Protein powder soy based“: Zucker größer als verfügbare Kohlenhydrate). Sojaproteinisolat als Näherung für Erbsen-/Reisprotein (ähnliche Makronährstoffe). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "veganes-proteinpulver-schoko",
@@ -6548,7 +6548,7 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": "173181",
+        "ref": "174276",
         "search": ["soy protein", "pea protein"],
         "state_de": "Pulver, Kakao",
         "category": "other"
@@ -6566,7 +6566,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Kakao. Quell-ID 173181 „Beverages, Protein powder soy based“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Erbsen-/Reisprotein führt SR Legacy nicht; Proteinpulver auf Sojabasis als Näherung (Kakao-Anteil gering). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: Pulver, Kakao. Quell-ID 174276 „Soy protein isolate“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Vorige Quell-ID beim Import 41310757920 abgelehnt (173181 „Beverages, Protein powder soy based“: Zucker größer als verfügbare Kohlenhydrate). Sojaproteinisolat als Näherung für Erbsen-/Reisprotein (ähnliche Makronährstoffe). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "veganes-proteinpulver-vanille",
@@ -6575,7 +6575,7 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": "173181",
+        "ref": "174276",
         "search": ["soy protein", "pea protein"],
         "state_de": "Pulver, Vanille",
         "category": "other"
@@ -6593,7 +6593,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, Vanille. Quell-ID 173181 „Beverages, Protein powder soy based“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Erbsen-/Reisprotein führt SR Legacy nicht; Proteinpulver auf Sojabasis als Näherung (Aroma ohne Nährwert). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: Pulver, Vanille. Quell-ID 174276 „Soy protein isolate“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Vorige Quell-ID beim Import 41310757920 abgelehnt (173181 „Beverages, Protein powder soy based“: Zucker größer als verfügbare Kohlenhydrate). Sojaproteinisolat als Näherung für Erbsen-/Reisprotein (ähnliche Makronährstoffe). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "vollkorn-knaeckebrot",
