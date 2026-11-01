@@ -1,5 +1,5 @@
 /**
- * Prüft die Vorschlagsdatei `content/food-mapping/alpha5-zuordnung.json` (Plan 19.3): alle 266 Zutaten der
+ * Prüft die Vorschlagsdatei `content/food-mapping/alpha5-zuordnung.json` (Plan 19.3): alle 267 Zutaten der
  * Gründer-Datei genau einmal, keine Nährwerte, Schema gültig, Vorschläge widersprechen R18 (Pflichtgruppen aus
  * Namen und Quellgruppe) und R9 (Haltbarkeit) nicht.
  */
@@ -79,8 +79,8 @@ function asFood(item: (typeof mapping.items)[number]): Food {
 }
 
 describe('Zuordnung alpha5 → Quelle (Vorschlag, unbestätigt)', () => {
-  it('enthält jede der 266 Zutaten genau einmal, mit dem Namen aus der Gründer-Datei', () => {
-    expect(alpha5.zutaten).toHaveLength(266);
+  it('enthält jede der 267 Zutaten genau einmal, mit dem Namen aus der Gründer-Datei', () => {
+    expect(alpha5.zutaten).toHaveLength(267);
     expect(mapping.items.map((i) => i.alpha5_id)).toEqual(alpha5.zutaten.map((z) => z.id));
     expect(mapping.items.find((i) => i.alpha5_id === 'ei')?.food_id).toBe('huehnerei');
     for (const [index, item] of mapping.items.entries()) {

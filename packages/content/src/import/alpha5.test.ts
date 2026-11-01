@@ -37,7 +37,7 @@ import { APP_SELECTION_PATH, type AppSelection, RECIPE_PHOTO_DIR } from './app-s
 /**
  * Etappe N2c – DoD (docs/PLAN-PHASE-5.md 19.2, K8): Zweitlauf byte-gleich; Schemafehler → Abbruch ohne Schreiben;
  * `published` nie überschrieben; fehlende ID nicht gelöscht; von Hand geänderter Entwurf nicht überschrieben (S5);
- * keine Datei unter `content/foods/` (S3); Zählbericht 306/266/4/4; `heated`-Vorgabe `false` und Annahmen im Bericht.
+ * keine Datei unter `content/foods/` (S3); Zählbericht 306/267/4/4; `heated`-Vorgabe `false` und Annahmen im Bericht.
  *
  * ACHTUNG: Alle Nährwerte hier sind TESTWERTE, keine Quelldaten.
  */
@@ -388,12 +388,12 @@ function recipeOf(output: ReturnType<typeof importAlpha5>, id: string): Recipe {
 describe('Gründer-Datei (echt): Zählbericht und „Katalog fehlt“', () => {
   const data: unknown = JSON.parse(readFileSync(REAL_FILE, 'utf8'));
 
-  it('Schema strikt gültig, 306/266/4/4', () => {
+  it('Schema strikt gültig, 306/267/4/4', () => {
     const file = parseAlpha5File(data);
     const output = importAlpha5({ data, foods: new Map(), existing: NO_FILES });
     expect(output.report.counts).toEqual({
       recipes: 306,
-      ingredients: 266,
+      ingredients: 267,
       mealPrepPlans: 4,
       guides: 4,
     });
@@ -406,7 +406,7 @@ describe('Gründer-Datei (echt): Zählbericht und „Katalog fehlt“', () => {
     expect(output.writes).toEqual([]);
     expect(output.built.recipes).toEqual([]);
     expect(output.built.structureOnly).toHaveLength(306);
-    expect(output.report.missingFoods).toHaveLength(266);
+    expect(output.report.missingFoods).toHaveLength(267);
     // Ohne Katalog keine Allergene, kein heated, keine Rolle.
     for (const recipe of output.built.structureOnly) {
       expect(recipe.declared_allergens).toEqual([]);

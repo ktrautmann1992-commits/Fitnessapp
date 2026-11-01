@@ -4632,6 +4632,17 @@
    }
   },
   {
+   "id": "hartkaese-vegetarisch",
+   "name": "Vegetarischer Hartkäse (italienische Art)",
+   "abteilung": "Kühlregal & Molkerei",
+   "pro_100g": {
+    "kcal": 392,
+    "eiweiss_g": 35.0,
+    "kohlenhydrate_g": 0.0,
+    "fett_g": 28.0
+   }
+  },
+  {
    "id": "passierte-tomaten",
    "name": "Passierte Tomaten",
    "abteilung": "Konserven & Gläser",
@@ -9716,7 +9727,7 @@
      "anzeige": "2 TL (8 g)"
     },
     {
-     "zutat_id": "parmesan",
+     "zutat_id": "hartkaese-vegetarisch",
      "menge_g": 15,
      "anzeige": "15 g, gerieben"
     },
@@ -11520,7 +11531,7 @@
      "anzeige": "60 g"
     },
     {
-     "zutat_id": "parmesan",
+     "zutat_id": "hartkaese-vegetarisch",
      "menge_g": 15,
      "anzeige": "15 g, gerieben"
     },
@@ -12051,7 +12062,7 @@
      "anzeige": "30 g, zarte"
     },
     {
-     "zutat_id": "parmesan",
+     "zutat_id": "hartkaese-vegetarisch",
      "menge_g": 15,
      "anzeige": "15 g, gerieben"
     },
@@ -20720,7 +20731,7 @@
      "anzeige": "½ TL (3 g)"
     },
     {
-     "zutat_id": "parmesan",
+     "zutat_id": "hartkaese-vegetarisch",
      "menge_g": 10,
      "anzeige": "1 EL gerieben (10 g)"
     },
@@ -21241,7 +21252,7 @@
      "anzeige": "1 TL (5 g)"
     },
     {
-     "zutat_id": "parmesan",
+     "zutat_id": "hartkaese-vegetarisch",
      "menge_g": 12,
      "anzeige": "1 EL gerieben (12 g)"
     },
@@ -24770,7 +24781,7 @@
      "anzeige": "1 Zehe (3 g), gepresst"
     },
     {
-     "zutat_id": "parmesan",
+     "zutat_id": "hartkaese-vegetarisch",
      "menge_g": 15,
      "anzeige": "2 EL gerieben (15 g)"
     },
@@ -25514,7 +25525,7 @@
      "anzeige": "1 Ei (Größe M)"
     },
     {
-     "zutat_id": "parmesan",
+     "zutat_id": "hartkaese-vegetarisch",
      "menge_g": 15,
      "anzeige": "1 EL gerieben (15 g)"
     },
