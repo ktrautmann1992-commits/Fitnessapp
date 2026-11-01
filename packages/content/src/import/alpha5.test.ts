@@ -416,7 +416,7 @@ describe('Gründer-Datei (echt): Zählbericht und „Katalog fehlt“', () => {
       expect(recipeSchema.safeParse(recipe).success).toBe(true);
       expect(checkRecipeCategories(recipe)).toEqual([]);
     }
-    expect(output.report.fileCoverage.meatOnly).toBe(32);
+    expect(output.report.fileCoverage.meatOnly).toBe(33); // Hot Dog: Geflügelwürstchen mit Schwein (R8, 01.11.2026)
     expect(output.report.fileCoverage.vegetarianShare).toBeCloseTo(195 / 306, 5);
   });
 
