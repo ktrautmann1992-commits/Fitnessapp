@@ -1,0 +1,52 @@
+{
+  "id": "gyros-gewuerz",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Gyros-Gewürz",
+  "aliases_de": [],
+  "shopping_category": "spices_baking",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 307,
+    "protein_g": 9.59,
+    "carbs_g": 54.29,
+    "sugar_g": 1.8,
+    "fat_g": 7.53,
+    "sat_fat_g": 3.29,
+    "fiber_g": 11.3,
+    "salt_g": 0.0675,
+    "alcohol_g": 0
+  },
+  "units": {
+    "tsp_g": 2.5
+  },
+  "groups": ["celery", "mustard", "onion_garlic"],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "usda_fdc",
+    "version": "sr-legacy-2018-04",
+    "ref": "171331",
+    "name": "Spices, poultry seasoning",
+    "category": "spices_sauces",
+    "license": "CC0 1.0",
+    "retrieved_at": "2026-11-01"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-11-01",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "koriander-frisch",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Koriander (frisch)",
+  "aliases_de": [],
+  "shopping_category": "fruit_vegetables",
+  "pantry": false,
+  "nutrients_per_100g": {
+    "kcal": 23,
+    "protein_g": 2.13,
+    "carbs_g": 0.87,
+    "sugar_g": 0.87,
+    "fat_g": 0.52,
+    "sat_fat_g": 0.014,
+    "fiber_g": 2.8,
+    "salt_g": 0.115,
+    "alcohol_g": 0
+  },
+  "units": {},
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "usda_fdc",
+    "version": "sr-legacy-2018-04",
+    "ref": "169997",
+    "name": "Coriander (cilantro) leaves, raw",
+    "category": "vegetables",
+    "license": "CC0 1.0",
+    "retrieved_at": "2026-11-01"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-11-01",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}

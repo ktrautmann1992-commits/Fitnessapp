@@ -1,0 +1,52 @@
+{
+  "id": "majoran-getrocknet",
+  "version": 1,
+  "status": "draft",
+  "name_de": "Majoran (getrocknet)",
+  "aliases_de": [],
+  "shopping_category": "spices_baking",
+  "pantry": true,
+  "nutrients_per_100g": {
+    "kcal": 271,
+    "protein_g": 12.66,
+    "carbs_g": 20.26,
+    "sugar_g": 4.09,
+    "fat_g": 7.04,
+    "sat_fat_g": 0.529,
+    "fiber_g": 40.3,
+    "salt_g": 0.1925,
+    "alcohol_g": 0
+  },
+  "units": {
+    "tsp_g": 0.6
+  },
+  "groups": [],
+  "animal": [],
+  "meat_kind": [],
+  "pregnancy_caution": false,
+  "alcohol": false,
+  "max_fridge_days": 3,
+  "freezable": true,
+  "substitutes": [],
+  "source": {
+    "db": "usda_fdc",
+    "version": "sr-legacy-2018-04",
+    "ref": "170928",
+    "name": "Spices, marjoram, dried",
+    "category": "spices_sauces",
+    "license": "CC0 1.0",
+    "retrieved_at": "2026-11-01"
+  },
+  "meta": {
+    "origin": "claude_session",
+    "model": "claude-opus-5-5",
+    "batch_id": null,
+    "created_on": "2026-11-01",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "catalog_reviewed_by": null,
+    "catalog_reviewed_at": null
+  }
+}
