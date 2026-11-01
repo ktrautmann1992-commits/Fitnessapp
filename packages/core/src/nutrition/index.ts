@@ -35,6 +35,7 @@ export * from './portion-factor';
 export * from './recipe-nutrients';
 export * from './recipe-preferences';
 export * from './recipe-search';
+export * from './recipe-swipe';
 export * from './replan';
 export * from './revocation';
 export * from './scale';

@@ -9,6 +9,7 @@ import {
   type MealPrepPlan,
   type MealSlotId,
   mealPlanWithOtherSuggestions,
+  placeRecipeSwipePicks,
   refreshedMealPlan,
   removeManualShoppingItem,
   removeRecipeFromShoppingList,
@@ -193,6 +194,17 @@ export interface MealPlanActions {
   undoTraining: (entry: TrainingAdjustmentEntry) => Promise<'undone' | 'failed'>;
   /** Vorschlag „Für vor dem Training wäre X besser – tauschen?“: gegen genau dieses Rezept tauschen. */
   swapToRecipe: (date: string, slot: MealSlotId, recipeId: string) => Promise<MealSwapOutcome>;
+  /**
+   * Gerichte entdecken (Wischen, 01.11.2026): gemochte Rezepte in die Woche legen (Regel in packages/core
+   * `placeRecipeSwipePicks`, je Gericht wie „Rezept tauschen“). Gespeichert wird nur, wenn sich etwas ändert.
+   */
+  placeSwipePicks: (recipeIds: readonly string[]) => Promise<SwipePicksOutcome>;
+}
+
+export interface SwipePicksOutcome {
+  placed: number;
+  alreadyPlanned: number;
+  unplaced: number;
 }
 
 /**
@@ -253,6 +265,15 @@ export function useMealPlanActions(week: NutritionWeekResult | null): MealPlanAc
           .find((d) => d.date === date)
           ?.meals.find((m) => m.slot === slot && !m.isFill);
         return { kind: 'swapped', title: meal?.titleDe ?? '' };
+      },
+      placeSwipePicks: async (recipeIds) => {
+        const result = placeRecipeSwipePicks(plan, recipeIds, input);
+        if (result.placed.length > 0) await save(result.plan);
+        return {
+          placed: result.placed.length,
+          alreadyPlanned: result.alreadyPlanned.length,
+          unplaced: result.unplaced.length,
+        };
       },
       chooseMealPrepPlan: async (mealPrepPlan) => {
         const offer = applyMealPrepPlan(mealPrepPlan, {

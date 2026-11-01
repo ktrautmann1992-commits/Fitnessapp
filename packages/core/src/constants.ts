@@ -2645,6 +2645,23 @@ export const RECIPE_PREFERENCE_RULES = {
 } as const;
 
 /**
+ * Rezepte entdecken – Wochenauswahl per Wischen (Gründer-Wunsch 01.11.2026, docs/PLAN-REZEPT-SWIPE.md) –
+ * PRODUKTENTSCHEIDUNG, keine Schutzgrenze:
+ * - `stackMax`: höchstens so viele Karten je Stapel (ein Durchgang bleibt kurz; danach Zusammenfassung).
+ * - Ein „Mag ich“ wird nur auf Plätze OHNE Trainingsrolle gelegt – die Mahlzeiten vor/nach dem
+ *   Training wählt weiter die Engine nach Verträglichkeit und Nährstoff-Timing (KONZEPT 6.3 Nr. 5).
+ * - `maxPicksPerDay`: höchstens so viele gewählte Gerichte je Tag (verteilt die Auswahl über die Woche).
+ * - `seenMax`: Obergrenze der als „neutral“ gesehenen Rezepte je Woche (Gerätespeicher-Schutz).
+ * Wirkung nur über vorhandene Regeln: „Mag ich“ = Herz (`RECIPE_PREFERENCE_RULES`) + Tausch nach `swapMealRecipe`
+ * (Filter, Planband und Kalorien-Schutzgrenzen unverändert), „Mag ich nicht“ = „Nie wieder“.
+ */
+export const RECIPE_SWIPE_RULES = {
+  stackMax: 30,
+  maxPicksPerDay: 2,
+  seenMax: 500,
+} as const;
+
+/**
  * Meal-Prep-Kochtermine je `mealprep_days` (Plan 6.4, `MEAL_PREP_DAYS`): Tage relativ zum Montag der Woche,
  * −1 = Sonntag davor. 1: So · 2: So, Mi · 3: So, Di, Do · 4: So, Di, Do, Sa · 5: So, Di, Mi, Fr, Sa ·
  * 6: So, Di–Sa · 7: jeden Tag (Mo–So). Ein Termin deckt die Tage bis zum nächsten Termin, höchstens so lange, wie

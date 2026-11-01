@@ -185,6 +185,11 @@ export const STORAGE_KEYS = {
    */
   eatingOutPicks: 'fitnessapp.eating-out-picks.v1',
   /**
+   * Rezepte entdecken (Wischen, 01.11.2026): in der gewählten Woche als „neutral“ gesehene Rezept-IDs – je Konto und
+   * Woche, nur dieses Gerät, kein Gesundheitsdatum (lib/recipe-swipe-seen.ts).
+   */
+  recipeSwipeSeen: 'fitnessapp.recipe-swipe-seen.v1',
+  /**
    * Ausdauer: zuletzt gewählt „Fahrrad“ oder „E-Bike“ (23.10.2026) – je Konto ein Wahrheitswert, nur dieses Gerät,
    * kein Gesundheitsdatum. Vorbelegung beim nächsten Rad-Eintrag bzw. der nächsten Aufzeichnung.
    */
