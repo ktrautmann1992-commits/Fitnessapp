@@ -1,6 +1,6 @@
 {
   "id": "roastbeef-gurken-roellchen-mit-meerrettich-skyr",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Roastbeef-Gurken-Röllchen mit Meerrettich-Skyr",
   "description_de": "Dünne Roastbeefscheiben mit scharfem Meerrettich-Skyr und Gurkenstiften gerollt – ein eleganter Eiweiß-Snack ganz ohne Brot.",
@@ -64,7 +64,7 @@
     "Serviere die restlichen Gurkenstifte dazu."
   ],
   "tip_de": "Die Röllchen lassen sich gut mit einem Zahnstocher fixieren und bis zu einem Tag vorbereiten.",
-  "tags_de": ["Unter 10 Minuten", "Low Carb"],
+  "tags_de": ["Unter 10 Minuten"],
   "total_minutes": 8,
   "prep_minutes": 8,
   "cook_minutes": 0,
@@ -97,6 +97,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "0619d5e421f2aea1af68cb5edb92b66a92f94295a10ae42195352abdc7124541"
+    "import_hash": "54a7402ce3f76c8af95a999d41f715ef48ffd8e340ef60fa45feeb4954f98cb4"
   }
 }

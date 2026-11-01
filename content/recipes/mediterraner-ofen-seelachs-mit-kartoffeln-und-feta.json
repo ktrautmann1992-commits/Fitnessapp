@@ -1,0 +1,174 @@
+{
+  "id": "mediterraner-ofen-seelachs-mit-kartoffeln-und-feta",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Mediterraner Ofen-Seelachs mit Kartoffeln und Feta",
+  "description_de": "Seelachs auf buntem Blechgemüse mit Kartoffelspalten, Oregano und Zitrone, mit Feta überbacken.",
+  "section_de": "Mittagessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "seelachsfilet-tk",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g, aufgetaut",
+      "scales": true,
+      "heated": false,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-gelb",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kirschtomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "feta",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 12,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (12 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 200 °C Umluft vor. Schneide die Kartoffeln in schmale Spalten.",
+    "Mische die Kartoffeln mit 2/3 des Olivenöls, Salz und Oregano und backe sie auf einem Blech mit Backpapier 15 Minuten.",
+    "Schneide Zucchini, Paprika und Zwiebel in Stücke, mische sie mit Kirschtomaten, gehacktem Knoblauch und dem restlichen Öl und verteile sie mit auf dem Blech. Backe alles weitere 10 Minuten.",
+    "Tupfe den Seelachs trocken, würze ihn mit Salz, Pfeffer und Zitronensaft, lege ihn auf das Gemüse und bröckle den Feta darüber.",
+    "Gare alles noch 10–12 Minuten, bis der Fisch innen glasig-weiß ist und sich leicht zerteilen lässt."
+  ],
+  "tip_de": "Statt Seelachs funktioniert auch Kabeljau oder Rotbarsch. Den Fisch über Nacht im Kühlschrank auftauen.",
+  "total_minutes": 40,
+  "prep_minutes": 3,
+  "cook_minutes": 37,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 621,
+    "protein_g": 50.9,
+    "carbs_g": 53,
+    "fat_g": 21.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "fish", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "cd105713babfb61d81e3f3a7780ba4e69ba42f978eb799f98759b7f716762868"
+  }
+}

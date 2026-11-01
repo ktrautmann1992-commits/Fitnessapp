@@ -1,0 +1,110 @@
+{
+  "id": "recovery-milchreis-mit-sauerkirschen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Recovery-Milchreis mit Sauerkirschen",
+  "description_de": "Cremiger Milchreis mit untergerührtem Magerquark und Sauerkirschen – füllt die Kohlenhydratspeicher auf und liefert über 20 g Eiweiß für die Regeneration.",
+  "section_de": "Nach der Einheit",
+  "categories": ["post-workout", "cardio", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "milchreis-rundkornreis",
+      "amount": 55,
+      "unit": "g",
+      "optional": false,
+      "display_de": "55 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sauerkirschen-glas-abgetropft",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bringe die Milch mit einer Prise Salz in einem Topf langsam zum Kochen.",
+    "Rühre den Reis ein und lass ihn bei kleinster Hitze 25 Minuten quellen; rühre dabei gelegentlich um.",
+    "Nimm den Topf vom Herd und rühre den Magerquark unter.",
+    "Gib Sauerkirschen und Zimt darüber und iss den Milchreis warm oder kalt."
+  ],
+  "tip_de": "Am Vortag kochen und kalt aus dem Kühlschrank essen – so steht die Mahlzeit direkt nach dem Training bereit. Trink dazu ein großes Glas Wasser oder Saftschorle.",
+  "tags_de": ["Ausdauer"],
+  "total_minutes": 30,
+  "prep_minutes": 30,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 416,
+    "protein_g": 22.6,
+    "carbs_g": 70.3,
+    "fat_g": 4.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "5df85bccb99ce55b1df6308a1f506a3190f809c9d13fd2e74be3bbc1df3c8a95"
+  }
+}

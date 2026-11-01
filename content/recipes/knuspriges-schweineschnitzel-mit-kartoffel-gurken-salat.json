@@ -1,0 +1,193 @@
+{
+  "id": "knuspriges-schweineschnitzel-mit-kartoffel-gurken-salat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Knuspriges Schweineschnitzel mit Kartoffel-Gurken-Salat",
+  "description_de": "Dünn paniertes Schnitzel, nur mit wenig Öl gebraten, dazu ein süddeutscher Kartoffelsalat mit Gurke und Dill.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schweineschnitzel",
+      "amount": 160,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Schnitzel (160 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Ei, verquirlt (30 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "paniermehl",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (25 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL + 1 TL (15 g), geteilt",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g, festkochend",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Gurke (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gemuesebruehe-instantpulver",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (2 g), in 60 ml heißem Wasser",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "apfelessig",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "dill-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehackt (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zitronenspalte (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koch die Kartoffeln in Salzwasser 20 Minuten gar, pelle sie und schneide sie noch warm in dünne Scheiben.",
+    "Verrühre Brühe, Essig, Senf, 5 g Rapsöl, fein gewürfelte Zwiebel, Salz und Pfeffer, gieße die Marinade über die warmen Kartoffeln und lass sie 10 Minuten ziehen. Hebe dann die Gurkenscheiben und den Dill unter.",
+    "Klopfe das Schnitzel dünn, würze es mit Salz und Pfeffer, zieh es durch das verquirlte Ei und wende es im Paniermehl.",
+    "Brate das Schnitzel im restlichen Rapsöl (10 g) in einer beschichteten Pfanne bei mittlerer Hitze je Seite 2–3 Minuten goldbraun.",
+    "Serviere das Schnitzel mit dem Kartoffelsalat und der Zitronenspalte."
+  ],
+  "tip_de": "Noch fettärmer: Das panierte Schnitzel mit 1 TL Öl beträufeln und bei 220 °C Umluft 12 Minuten im Ofen backen.",
+  "total_minutes": 40,
+  "prep_minutes": 37,
+  "cook_minutes": 3,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 644,
+    "protein_g": 48.2,
+    "carbs_g": 59.1,
+    "fat_g": 22.2
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "eggs", "celery", "mustard", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "913a07da824ae1ee34ef2ec53f7d539a079313b245998350d03f2e3033d25682"
+  }
+}

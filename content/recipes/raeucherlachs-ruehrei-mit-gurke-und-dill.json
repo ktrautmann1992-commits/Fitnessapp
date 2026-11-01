@@ -1,0 +1,122 @@
+{
+  "id": "raeucherlachs-ruehrei-mit-gurke-und-dill",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Räucherlachs-Rührei mit Gurke und Dill",
+  "description_de": "Cremiges Rührei mit Räucherlachs, frischem Dill und knackigen Gurkenscheiben – ein entspanntes Wochenendfrühstück.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "low-carb"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 165,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Eier (M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "eiklar",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "raeucherlachs",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Gurke (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "dill-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehackt",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verquirle Eier und Eiklar mit Pfeffer, Salz brauchst du wegen des Lachses kaum.",
+    "Erhitze das Öl bei niedriger Hitze und schiebe die Eimasse mit einem Pfannenwender langsam zusammen, bis sie gerade so stockt.",
+    "Zupfe den Lachs in Streifen und heb ihn mit dem Dill unter das noch cremige Rührei.",
+    "Schneide die Gurke in Scheiben und serviere sie dazu."
+  ],
+  "tip_de": "Nimm die Pfanne vom Herd, solange das Rührei noch leicht feucht glänzt – es gart auf dem Teller nach.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 429,
+    "protein_g": 41.6,
+    "carbs_g": 4.5,
+    "fat_g": 26.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["eggs", "fish", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "cdd0df1cd3b7361d6b9a53c48f8563d75665e4d85f2f143fcfbf8a9acd0329ec"
+  }
+}

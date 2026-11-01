@@ -1,0 +1,164 @@
+{
+  "id": "halloumi-couscous-salat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Halloumi-Couscous-Salat",
+  "description_de": "Goldbraun gebratener Halloumi auf Couscous mit Kichererbsen, Gurke, Tomaten und viel Petersilie.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "couscous-trocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "halloumi",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Gurke (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "8 Stück (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Bund (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 80,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "80 ml, kochend",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Übergieße den Couscous mit 80 ml kochendem Wasser und einer Prise Salz, decke ihn ab und lass ihn 5 Minuten quellen.",
+    "Würfle Gurke, halbiere die Tomaten, hacke die Petersilie und spüle die Kichererbsen ab.",
+    "Schneide den Halloumi in Scheiben und brate ihn in einer beschichteten Pfanne ohne Fett bei mittlerer bis hoher Hitze je Seite 2 Minuten goldbraun.",
+    "Lockere den Couscous mit einer Gabel auf und vermische ihn mit Gemüse, Kichererbsen, Petersilie, Zitronensaft, Olivenöl, Kreuzkümmel und Pfeffer.",
+    "Lege den warmen Halloumi auf den Salat."
+  ],
+  "tip_de": "Für Meal-Prep den Halloumi getrennt aufbewahren und kurz vor dem Essen in der Pfanne aufwärmen.",
+  "total_minutes": 15,
+  "prep_minutes": 13,
+  "cook_minutes": 2,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 655,
+    "protein_g": 32.4,
+    "carbs_g": 64.4,
+    "fat_g": 28.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f9edb68371176760a57be76a63f5063571adc4a96328fefd084d909a41852ffb"
+  }
+}

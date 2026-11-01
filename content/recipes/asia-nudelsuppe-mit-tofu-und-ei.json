@@ -1,0 +1,185 @@
+{
+  "id": "asia-nudelsuppe-mit-tofu-und-ei",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Asia-Nudelsuppe mit Tofu & Ei",
+  "description_de": "Würzige Brühe mit Mie-Nudeln, Tofu, Pilzen, Spinat und einem wachsweichen Ei – leicht und wärmend.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "mie-nudeln",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Nest (50 g)",
+      "scales": true,
+      "heated": false,
+      "role": "carb"
+    },
+    {
+      "food_id": "champignons",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "moehre",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Möhre (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "fruehlingszwiebel",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stange (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "400 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 daumennagelgroßes Stück (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche das Ei 6,5 Minuten in sprudelndem Wasser, schrecke es kalt ab und pelle es.",
+    "Schneide den Tofu in Würfel und brate ihn im Rapsöl in einem Topf bei hoher Hitze 4 Minuten an.",
+    "Gib geriebenen Ingwer, gehackten Knoblauch, Champignonscheiben und Möhrenstifte dazu und brate alles 2 Minuten mit.",
+    "Gieße mit der Gemüsebrühe und Sojasauce auf, bring sie zum Kochen und gare die Mie-Nudeln darin 4 Minuten.",
+    "Rühre den Spinat unter, fülle die Suppe in eine Schale und lege das halbierte Ei, Frühlingszwiebelringe und Chiliflocken obendrauf."
+  ],
+  "tip_de": "Statt Mie-Nudeln passen auch Reisnudeln.",
+  "total_minutes": 18,
+  "prep_minutes": 3,
+  "cook_minutes": 15,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 589,
+    "protein_g": 41.1,
+    "carbs_g": 48.5,
+    "fat_g": 24.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": [
+    "gluten",
+    "eggs",
+    "legumes",
+    "soy",
+    "celery",
+    "histamine",
+    "mushrooms",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "574cdae0ce8395451517f6d789ffc111b778c34f7e725e5e89453ea03ca5c6e3"
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "id": "gefuellte-paprika-mit-putenhack-und-feta",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gefüllte Paprika mit Putenhack und Feta",
+  "description_de": "Ofenpaprika, gefüllt mit würzigem Putenhack, Couscous und Feta, in Tomatensauce gegart – mediterranes Wohlfühlessen.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "paprika-rot",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Paprika (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "putenhackfleisch",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "couscous-trocken",
+      "amount": 35,
+      "unit": "g",
+      "optional": false,
+      "display_de": "35 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "feta",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose (200 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 40,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "40 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C Ober-/Unterhitze vor und übergieße den Couscous mit 40 ml kochendem Wasser; 5 Minuten quellen lassen.",
+    "Schneide von den Paprika einen Deckel ab und entferne die Kerne.",
+    "Brate Zwiebelwürfel und Putenhack im Olivenöl 5 Minuten krümelig und würze mit Oregano, Paprikapulver, Salz und Pfeffer.",
+    "Mische Hack, Couscous und zwei Drittel des zerbröselten Fetas und fülle die Paprika damit.",
+    "Gieße die gehackten Tomaten in eine kleine Auflaufform, setze die Paprika hinein, streue den restlichen Feta darüber und backe alles 25–30 Minuten, bis die Paprika weich sind."
+  ],
+  "tip_de": "Gleich 3–4 Portionen vorbereiten: Die gefüllten Paprika halten sich 3 Tage im Kühlschrank und schmecken aufgewärmt sehr gut.",
+  "total_minutes": 45,
+  "prep_minutes": 10,
+  "cook_minutes": 35,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 610,
+    "protein_g": 44.9,
+    "carbs_g": 53.5,
+    "fat_g": 22.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "poultry", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 1,
+        "food_id": "putenhackfleisch",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 3 gart die Zutat durch: „Brate Zwiebelwürfel und Putenhack im Olivenöl 5 Minuten krümelig und würze mit Oregano, Paprikapulver, Salz und Pfeffer.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "089c2e7ca2a2e46d001e118059a4e2b14092c7df16bcbfd9636a583748b416da"
+  }
+}

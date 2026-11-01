@@ -1,0 +1,154 @@
+{
+  "id": "falafel-wrap-mit-skyr-joghurtsauce",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Falafel-Wrap mit Skyr-Joghurtsauce",
+  "description_de": "Schneller Streetfood-Wrap mit Falafel aus dem Kühlregal, knackigem Gemüse, Feta und Joghurtsauce.",
+  "section_de": "Mittagessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorn-tortilla",
+      "amount": 65,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Tortilla (65 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "falafel-kuehlregal",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "5 Bällchen (100 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "feta",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "romanasalat",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Blätter (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Tomate (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Erwärme die Falafel in einer Pfanne ohne Fett bei mittlerer Hitze 6–8 Minuten, dabei mehrmals wenden.",
+    "Verrühre den Skyr mit gepresstem Knoblauch, Kreuzkümmel und Salz zu einer Sauce.",
+    "Schneide Salat in Streifen und Tomate sowie Gurke in Würfel.",
+    "Erwärme die Tortilla 20 Sekunden in der Pfanne, bestreich sie mit der Hälfte der Sauce und beleg sie mit Salat, Gemüse, zerdrückten Falafeln und Feta.",
+    "Roll den Wrap fest ein und serviere die restliche Sauce zum Dippen."
+  ],
+  "tip_de": "Statt Feta passt auch Halloumi aus der Pfanne.",
+  "total_minutes": 15,
+  "prep_minutes": 15,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 627,
+    "protein_g": 35.6,
+    "carbs_g": 63.6,
+    "fat_g": 23.8
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "legumes",
+    "sesame",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c8d64bf31425fa0bbf322e43570fe6204dea553e7fd621ac0ccfc0390ca1ace2"
+  }
+}

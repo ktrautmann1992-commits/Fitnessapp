@@ -1,0 +1,164 @@
+{
+  "id": "linsen-bolognese-mit-parmesan",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Linsen-Bolognese mit Parmesan",
+  "description_de": "Herzhafte Bolognese aus roten Linsen und Gemüse zu Vollkornnudeln, mit frisch geriebenem Parmesan.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornnudeln",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rote-linsen-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "moehre",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Möhre (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "15 g, gerieben",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 150,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "150 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle Zwiebel, Möhre und Knoblauch fein und dünste sie im Olivenöl bei mittlerer Hitze 5 Minuten an.",
+    "Gib Linsen, passierte Tomaten, 150 ml Wasser und Oregano dazu und lass alles zugedeckt 15 Minuten köcheln, bis die Linsen weich sind.",
+    "Koche in der Zwischenzeit die Nudeln in Salzwasser nach Packungsangabe (ca. 10 Minuten) bissfest.",
+    "Schmecke die Sauce mit Salz und Pfeffer ab; ist sie zu dick, gib einen Schuss Nudelwasser dazu.",
+    "Richte die Nudeln mit der Linsen-Bolognese an und streue den Parmesan darüber."
+  ],
+  "tip_de": "Die Sauce lässt sich in mehrfacher Menge kochen und portionsweise einfrieren.",
+  "total_minutes": 30,
+  "prep_minutes": 1,
+  "cook_minutes": 29,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 671,
+    "protein_g": 31.8,
+    "carbs_g": 92.3,
+    "fat_g": 15.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "e96efed63645852e787da2b0e2f433cf5a12813f88eb6f50e20613b3a2a425c6"
+  }
+}

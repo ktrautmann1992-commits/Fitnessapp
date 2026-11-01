@@ -1,0 +1,174 @@
+{
+  "id": "griechischer-bauernsalat-mit-kichererbsen-und-ei",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Griechischer Bauernsalat mit Kichererbsen & Ei",
+  "description_de": "Bunter Salat mit Feta, Oliven und Kichererbsen, dazu ein gekochtes Ei – sättigend, frisch und ohne viel Aufwand.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose (150 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "feta",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Gurke (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Tomaten (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ rote Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schwarze-oliven-glas",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6 Oliven (20 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koch das Ei 9 Minuten hart, schreck es kalt ab und pell es.",
+    "Schneide Gurke, Tomaten und Paprika in grobe Stücke und die Zwiebel in feine Ringe.",
+    "Spül die Kichererbsen ab, lass sie abtropfen und gib sie mit Gemüse und Oliven in eine Schüssel.",
+    "Verrühre Olivenöl, Zitronensaft, Oregano, Salz und Pfeffer und mische das Dressing unter den Salat.",
+    "Leg den Feta in Würfeln und das geviertelte Ei obenauf."
+  ],
+  "tip_de": "Für Meal-Prep das Dressing separat transportieren und erst vor dem Essen untermischen.",
+  "total_minutes": 15,
+  "prep_minutes": 15,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 614,
+    "protein_g": 31.5,
+    "carbs_g": 40.2,
+    "fat_g": 34.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "eggs", "legumes", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8dc3b233bd769db93876faa59d9105b62656f5ac83bb0542049577c005695211"
+  }
+}

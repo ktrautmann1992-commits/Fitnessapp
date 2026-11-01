@@ -1,0 +1,100 @@
+{
+  "id": "zimt-casein-quarkcreme-mit-walnuessen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Zimt-Casein-Quarkcreme mit Walnüssen",
+  "description_de": "Dicke Vanille-Quarkcreme mit Casein, Zimt und Walnüssen – sättigt lange und ist ideal als Spätsnack am Abend.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "magerquark",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "125 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "casein-proteinpulver-vanille",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2/3 Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "walnuesse",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Walnusshälften (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "sweet"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Magerquark, Casein und Milch mit einem Schneebesen zu einer glatten, dicken Creme.",
+    "Würze die Creme mit Zimt.",
+    "Hacke die Walnüsse grob und streue sie darüber."
+  ],
+  "tip_de": "Casein wird langsam verdaut und eignet sich deshalb gut vor dem Schlafengehen. Ohne Pulver: 200 g Magerquark und 1 TL Honig nehmen.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 3,
+  "prep_minutes": 3,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 241,
+    "protein_g": 33.5,
+    "carbs_g": 8.9,
+    "fat_g": 7.7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "tree_nuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4e3ac4491a56a3b8b745eba3623b5f22e8148d0e36992f4dae84ed9d12839c30"
+  }
+}

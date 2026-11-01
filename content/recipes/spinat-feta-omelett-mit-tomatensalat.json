@@ -1,6 +1,6 @@
 {
   "id": "spinat-feta-omelett-mit-tomatensalat",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Spinat-Feta-Omelett mit Tomatensalat",
   "description_de": "Fluffiges Omelett aus drei Eiern mit Babyspinat und Feta, dazu ein frischer Tomatensalat – herzhaft, sättigend und fast ohne Kohlenhydrate.",
@@ -91,7 +91,6 @@
     "Halbiere die Tomaten, würze sie mit Salz, Pfeffer und Schnittlauch und serviere sie neben dem zusammengeklappten Omelett."
   ],
   "tip_de": "Wer mehr Eiweiß braucht, ersetzt ein Ei durch 100 g Eiklar – das spart Fett und bringt zusätzlich rund 11 g Eiweiß.",
-  "tags_de": ["Low Carb"],
   "total_minutes": 12,
   "prep_minutes": 12,
   "cook_minutes": 0,
@@ -124,6 +123,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "ea1a028c8d4c810acc812642ac3204bb31bbd906c7c096f56f732b01cca6fc2a"
+    "import_hash": "88f8cda0fb46b4419e749d08306e9b3d16379d5cbd773b4579adf28f0860840a"
   }
 }

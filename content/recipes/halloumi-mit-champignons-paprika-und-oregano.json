@@ -1,0 +1,129 @@
+{
+  "id": "halloumi-mit-champignons-paprika-und-oregano",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Halloumi mit Champignons, Paprika und Oregano",
+  "description_de": "Goldbraun gegrillter Halloumi mit Röstgemüse – als Beilage zu Reis oder Brot oder als leichtes Abendessen mit Salat.",
+  "section_de": "Beilagen & Gemüse",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "halloumi",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "champignons",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine rote Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL knapp (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+    "Halbiere die Champignons, schneide Paprika und Zwiebel in Stücke und mische alles mit Olivenöl, Oregano und Pfeffer. Salz brauchst du nicht, der Halloumi ist salzig genug.",
+    "Gare das Gemüse 6 Minuten bei 200 °C in einer Lage und schüttle es nach 3 Minuten.",
+    "Schneide den Halloumi in 1 cm dicke Scheiben, lege sie auf das Gemüse und gare alles weitere 6–7 Minuten bei 200 °C. Wende den Halloumi nach 4 Minuten, bis er auf beiden Seiten goldbraun ist.",
+    "Beträufle alles mit Zitronensaft und serviere es sofort, solange der Halloumi warm und weich ist."
+  ],
+  "tip_de": "Als Hauptgericht mit 60 g Couscous und einem Skyr-Dip ergänzen. Halloumi wird beim Abkühlen gummiartig – am besten frisch essen.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 20,
+  "prep_minutes": 1,
+  "cook_minutes": 19,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 274,
+    "protein_g": 17.1,
+    "carbs_g": 11.2,
+    "fat_g": 16.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "mushrooms", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "44d74983ff8f87ee2d575d64c503562b22117667701f85bc46c73d93ca90663d"
+  }
+}

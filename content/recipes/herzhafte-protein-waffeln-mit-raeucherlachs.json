@@ -1,0 +1,166 @@
+{
+  "id": "herzhafte-protein-waffeln-mit-raeucherlachs",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Herzhafte Protein-Waffeln mit Räucherlachs",
+  "description_de": "Knusprige Haferwaffeln mit neutralem Whey, belegt mit Räucherlachs, Frischkäse und Gurke – ein Frühstück wie im Café.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 EL (40 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "whey-proteinpulver-neutral",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (50 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "etwas zum Einfetten (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "raeucherlachs",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (50 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "frischkaese-light",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Gurke (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "dill-frisch",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Zweige",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize das Waffeleisen auf mittlerer Stufe vor.",
+    "Püriere Haferflocken, Ei, Proteinpulver, Magerquark, Milch, Backpulver und Salz mit dem Stabmixer zu einem dickflüssigen Teig und lass ihn 3 Minuten quellen.",
+    "Fette das Waffeleisen dünn mit Rapsöl ein und backe aus dem Teig 2 Waffeln je 3–4 Minuten goldbraun.",
+    "Schneide die Gurke in dünne Scheiben.",
+    "Bestreiche die Waffeln mit Frischkäse, lege Räucherlachs und Gurke darauf und garniere mit Dill."
+  ],
+  "tip_de": "Ohne Pulver: Nimm 100 g Magerquark statt 50 g und 10 g mehr Haferflocken. Die Waffeln lassen sich gut einfrieren und im Toaster aufbacken.",
+  "total_minutes": 15,
+  "prep_minutes": 11,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 517,
+    "protein_g": 49,
+    "carbs_g": 31.8,
+    "fat_g": 20.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "fish", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "1a97060fa8b434ec79a5a2aacab0779664dbb83568f045d628e8e92e9f01caca"
+  }
+}

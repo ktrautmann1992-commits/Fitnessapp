@@ -1,0 +1,174 @@
+{
+  "id": "mexikanische-bohnenpfanne-mit-spiegelei",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Mexikanische Bohnenpfanne mit Spiegelei",
+  "description_de": "Schnelle Pfanne aus Kidneybohnen, Mais, Paprika und Tomaten mit zwei Spiegeleiern und Avocado.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kidneybohnen-dose-abgetropft",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mais-dose-abgetropft",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ kleine Avocado (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle Zwiebel und Paprika und brate sie im Rapsöl bei mittlerer Hitze 3 Minuten an.",
+    "Gib Kreuzkümmel, Paprikapulver und Chiliflocken dazu und röste sie kurz mit.",
+    "Füge Bohnen, Mais und gehackte Tomaten hinzu und lass alles 5 Minuten köcheln; mit Salz und Pfeffer abschmecken.",
+    "Drücke zwei Mulden in die Pfanne, schlage die Eier hinein und lass sie mit Deckel bei niedriger Hitze 4–5 Minuten stocken.",
+    "Belege die Pfanne mit Avocadoscheiben und iss direkt."
+  ],
+  "tip_de": "Ein Klecks Skyr obendrauf ersetzt saure Sahne und bringt extra Eiweiß.",
+  "total_minutes": 15,
+  "prep_minutes": 7,
+  "cook_minutes": 8,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 542,
+    "protein_g": 32.6,
+    "carbs_g": 44,
+    "fat_g": 22.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["eggs", "legumes", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8fef8b529b42a44185d377d7b2a9bba47fe5d8f90ce396e5f7a87ee449f50209"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "id": "espresso-eiskaffee-protein-eis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Espresso-Eiskaffee-Protein-Eis",
+  "description_de": "Eiskaffee zum Löffeln: kräftiger Espresso, Vanille und ein Hauch Karamell – erfrischend am Sommernachmittag und mit wenig Fett.",
+  "section_de": "Protein-Eis mit Mandeldrink",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "mandeldrink-ungesuesst",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "espresso-zubereitet",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Espresso (60 ml), abgekühlt",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 35,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (35 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "geschmackspulver-zuckerfrei",
+      "amount": 6,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ TL (6 g), Sorte Karamell",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "instant-puddingpulver-zuckerfrei",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (8 g), Sorte Vanille",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Lass den Espresso vollständig abkühlen und mixe ihn mit Mandeldrink, Proteinpulver, Geschmackspulver, Puddingpulver und Erythrit klümpchenfrei.",
+    "Gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL kalten Espresso oder Mandeldrink dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+  ],
+  "tip_de": "Für Eiskaffee-Feeling eine Kugel in ein Glas kalten Espresso mit Mandeldrink geben. Wer kein Koffein möchte, nimmt entkoffeinierten Espresso.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 214,
+    "protein_g": 27.5,
+    "carbs_g": 13.8,
+    "fat_g": 4.8
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "tree_nuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "93f70eaaca79bd8c76e27fd2fd665123744bda9bd5a3115d9139d3fd240ed0b1"
+  }
+}

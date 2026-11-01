@@ -1,0 +1,101 @@
+{
+  "id": "schoko-protein-energy-balls",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schoko-Protein-Energy-Balls",
+  "description_de": "Kleine Schoko-Kugeln aus Haferflocken, Datteln, Erdnussmus und Whey – ohne Backen, ideal für unterwegs.",
+  "section_de": "Snack",
+  "categories": ["schnell", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "20 g, zarte",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "whey-proteinpulver-schoko",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "datteln-getrocknet-entsteint",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Dattel (10 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 ml)",
+      "scales": true,
+      "role": "carb"
+    }
+  ],
+  "steps_de": [
+    "Hack die Dattel sehr fein oder püriere sie mit der Milch.",
+    "Verknete Haferflocken, Proteinpulver, Erdnussmus und die Dattelmasse zu einem formbaren Teig; ist er zu trocken, gib noch einige Tropfen Milch dazu.",
+    "Forme mit feuchten Händen 3 Kugeln.",
+    "Stell die Kugeln mindestens 10 Minuten kalt, damit sie fest werden."
+  ],
+  "tip_de": "Gleich die 5-fache Menge machen – im Kühlschrank halten die Kugeln 5 Tage. Ohne Pulver: 1 TL Backkakao und 1 EL gemahlene Mandeln mehr.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 227,
+    "protein_g": 17.3,
+    "carbs_g": 21.6,
+    "fat_g": 7.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "peanuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f2c1f4d38718f21a1dd6c8641aab009734a1ddd7cf594da383b8d5240bedab21"
+  }
+}

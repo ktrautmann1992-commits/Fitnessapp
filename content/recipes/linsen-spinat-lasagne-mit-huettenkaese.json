@@ -1,0 +1,220 @@
+{
+  "id": "linsen-spinat-lasagne-mit-huettenkaese",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Linsen-Spinat-Lasagne mit Hüttenkäse",
+  "description_de": "Herzhafte Gemüselasagne mit Linsen-Tomatensauce und einer leichten Hüttenkäse-Schicht statt Béchamel.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "lasagneplatten",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ca. 12 Platten (250 g)",
+      "scales": true,
+      "heated": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rote-linsen-trocken",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 700,
+      "unit": "g",
+      "optional": false,
+      "display_de": "700 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Zwiebeln (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Karotten (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zucchini (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 600,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Becher à 200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Kugeln (250 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Zehen (8 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 2,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "2 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 300,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "300 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 180 °C Umluft vor.",
+    "Würfle Zwiebel, Karotte und Zucchini fein und dünste sie mit Knoblauch im Olivenöl 5 Minuten an.",
+    "Gib Linsen, passierte Tomaten, 300 ml Wasser und Oregano dazu und lass die Sauce 12 Minuten köcheln; mit Salz und Pfeffer würzen.",
+    "Verrühre Hüttenkäse mit Ei, Spinat (grob gehackt), Salz und Pfeffer.",
+    "Schichte in eine große Auflaufform abwechselnd Sauce, Lasagneplatten und Hüttenkäse-Spinat; schließe mit Sauce ab und belege sie mit Mozzarellascheiben.",
+    "Backe die Lasagne 40 Minuten, lass sie 15 Minuten ruhen und schneide sie in 5 Stücke."
+  ],
+  "tip_de": "Hält abgekühlt in Dosen 4 Tage im Kühlschrank; Portion 5 sofort einfrieren und am Vorabend in den Kühlschrank legen. In der Mikrowelle zugedeckt 3–4 Minuten bei 600 Watt aufwärmen, bis sie in der Mitte heiß ist. Eingefroren hält sie bis zu 3 Monate.",
+  "meal_prep_plan_id": "vegetarisch",
+  "total_minutes": 35,
+  "prep_minutes": 1,
+  "cook_minutes": 34,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 628,
+    "protein_g": 46.5,
+    "carbs_g": 71.1,
+    "fat_g": 15.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "eggs",
+    "legumes",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "lasagneplatten",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 6 gart die Zutat durch: „Backe die Lasagne 40 Minuten, lass sie 15 Minuten ruhen und schneide sie in 5 Stücke.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "5066ece60f32ffd00d9b7274e21f245ee4ed679e199ffe908bce3e98d743df46"
+  }
+}

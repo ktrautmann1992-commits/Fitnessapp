@@ -1,0 +1,192 @@
+{
+  "id": "chili-sin-carne-mit-reis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Chili sin Carne mit Reis",
+  "description_de": "Herzhaftes mexikanisches Chili mit Sojaschnetzeln, Kidneybohnen und Mais.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "sojaschnetzel-trocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g (fein)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kidneybohnen-dose-abgetropft",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "mais-dose-abgetropft",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomatenmark",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Übergieße die Sojaschnetzel mit der heißen Gemüsebrühe und lass sie 10 Minuten quellen, dann gut ausdrücken.",
+    "Koche den Reis nach Packungsanleitung, etwa 12 Minuten.",
+    "Würfle Zwiebel, Knoblauch und Paprika und brate sie im Olivenöl 3 Minuten an.",
+    "Gib die Sojaschnetzel dazu und brate sie 4 Minuten kräftig an, dann Tomatenmark und Gewürze 1 Minute mitrösten.",
+    "Füge Tomaten, Kidneybohnen und Mais hinzu und lass das Chili 15 Minuten köcheln.",
+    "Schmecke mit Salz ab und serviere es mit dem Reis."
+  ],
+  "tip_de": "Gleich die vierfache Menge kochen und portionsweise einfrieren.",
+  "total_minutes": 35,
+  "prep_minutes": 1,
+  "cook_minutes": 34,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 666,
+    "protein_g": 39.8,
+    "carbs_g": 88.3,
+    "fat_g": 11.3
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "celery", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "fe323ed9a245dc12cce8ede7e2f32d9ff070c6d85bfe5d86b4334dd12c7a4809"
+  }
+}

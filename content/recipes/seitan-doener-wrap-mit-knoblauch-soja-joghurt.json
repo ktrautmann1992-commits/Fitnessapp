@@ -1,0 +1,155 @@
+{
+  "id": "seitan-doener-wrap-mit-knoblauch-soja-joghurt",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Seitan-Döner-Wrap mit Knoblauch-Soja-Joghurt",
+  "description_de": "Würzig gebratener Seitan im Vollkorn-Wrap mit knackigem Gemüse – eine kleine, sättigende Mahlzeit mit viel pflanzlichem Eiweiß und Kohlenhydraten zum Auffüllen der Speicher.",
+  "section_de": "Bis 2 Stunden danach",
+  "categories": ["post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorn-wrap",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Wrap (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "seitan",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gyrosgewuerz",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sojajoghurt-natur",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (60 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rotkohl",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll, fein gehobelt (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Tomate (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide den Seitan in dünne Streifen und brate ihn im Olivenöl bei hoher Hitze 4–5 Minuten knusprig an; zum Schluss mit Gyrosgewürz würzen.",
+    "Presse den Knoblauch in den Sojajoghurt, salze leicht und verrühre alles.",
+    "Hobel den Rotkohl fein und schneide Tomate und Gurke in Stücke.",
+    "Erwärme den Wrap 20 Sekunden in der trockenen Pfanne.",
+    "Bestreiche den Wrap mit der Sauce, belege ihn mit Gemüse und Seitan und rolle ihn fest ein."
+  ],
+  "tip_de": "Fest in Alufolie oder Butterbrotpapier gewickelt hält der Wrap gekühlt bis zu 4 Stunden – ideal, wenn du nach dem Training noch unterwegs bist.",
+  "tags_de": ["zum Mitnehmen"],
+  "total_minutes": 15,
+  "prep_minutes": 10,
+  "cook_minutes": 5,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 448,
+    "protein_g": 38.2,
+    "carbs_g": 40.5,
+    "fat_g": 13.3
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": [
+    "gluten",
+    "legumes",
+    "soy",
+    "celery",
+    "mustard",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "851c2a03c534fdf1cbf3cdccde107b4cbeaee22829a18f72c611cb467d4aa596"
+  }
+}

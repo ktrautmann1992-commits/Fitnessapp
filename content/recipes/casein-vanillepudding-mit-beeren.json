@@ -1,0 +1,92 @@
+{
+  "id": "casein-vanillepudding-mit-beeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Casein-Vanillepudding mit Beeren",
+  "description_de": "Dicker, cremiger Vanillepudding aus Casein und Milch – der ideale Snack am späten Abend.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "casein-proteinpulver-vanille",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "beeren-mischung-tk",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gib das Casein in eine Schüssel und rühre die Milch nach und nach mit einem Schneebesen ein.",
+    "Rühre 1 Minute kräftig weiter, bis eine dicke, puddingartige Creme entsteht.",
+    "Lass den Pudding 5 Minuten im Kühlschrank nachdicken.",
+    "Toppe ihn mit den angetauten Beeren und einer Prise Zimt."
+  ],
+  "tip_de": "Je weniger Milch, desto fester der Pudding. Ohne Pulver: 200 g Magerquark mit Vanille und etwas Milch cremig rühren.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 201,
+    "protein_g": 29,
+    "carbs_g": 13.2,
+    "fat_g": 2.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "1d1b49294bfc28cb94fe6643df65b8217d1a90cd3f07a6818c8f38fdfb735a65"
+  }
+}

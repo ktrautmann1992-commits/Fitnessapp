@@ -1,6 +1,6 @@
 {
   "id": "schweinefilet-spiesse-mit-paprika-und-kraeuterquark",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Schweinefilet-Spieße mit Paprika und Kräuterquark",
   "description_de": "Zartes Schweinefilet mit Paprika, Zucchini und roter Zwiebel am Spieß, aus Pfanne oder Grill, dazu ein frischer Schnittlauchquark.",
@@ -91,7 +91,6 @@
     "Verrühre den Quark mit Schnittlauch, 2 EL Wasser, Salz und Pfeffer und serviere ihn dazu."
   ],
   "tip_de": "Holzspieße vorher 20 Minuten in Wasser legen, dann verbrennen sie nicht. Ohne Schwein klappt das Rezept genauso mit Hähnchen- oder Putenbrust.",
-  "tags_de": ["Low Carb"],
   "total_minutes": 25,
   "prep_minutes": 13,
   "cook_minutes": 12,
@@ -124,6 +123,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "701050feaa6af831334535a9e493df1710a34331b338271b6f08a2e01a9b1384"
+    "import_hash": "758917d429d0fbeaae885e945057a599d424a153bb2b650f2cec8a956e717ecb"
   }
 }

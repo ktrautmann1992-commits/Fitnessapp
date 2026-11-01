@@ -1,0 +1,149 @@
+{
+  "id": "thunfisch-avocado-toast-mit-ei",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Thunfisch-Avocado-Toast mit Ei",
+  "description_de": "Vollkorntoast mit cremiger Thunfisch-Quark-Creme, Avocado und gekochtem Ei – mediterran, sättigend und blitzschnell.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorntoast",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "thunfisch-dose-im-eigenen-saft-abgetropft",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose, abgetropft (80 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Avocado (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "5 Cherrytomaten (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche das Ei in siedendem Wasser 8 Minuten, schrecke es kalt ab und pelle es.",
+    "Toaste währenddessen die Brotscheiben goldbraun.",
+    "Vermische Thunfisch, Magerquark, Zitronensaft, Salz und Pfeffer mit einer Gabel.",
+    "Zerdrücke die Avocado auf den Toastscheiben und verteile die Thunfischcreme darauf.",
+    "Belege die Toasts mit Eischeiben und halbierten Cherrytomaten und würze mit Chiliflocken."
+  ],
+  "tip_de": "Hart gekochte Eier für mehrere Tage vorkochen – sie halten im Kühlschrank bis zu einer Woche.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 2,
+  "cook_minutes": 8,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 443,
+    "protein_g": 39.4,
+    "carbs_g": 30.7,
+    "fat_g": 16.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "fish", "histamine", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "867fab1c9cd36365fb053ad6e3ad5c222425ea3d4aaa8bebcba9d258560e66fa"
+  }
+}

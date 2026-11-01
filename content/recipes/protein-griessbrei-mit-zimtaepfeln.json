@@ -1,0 +1,118 @@
+{
+  "id": "protein-griessbrei-mit-zimtaepfeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Protein-Grießbrei mit Zimtäpfeln",
+  "description_de": "Cremiger Milchgrieß wie bei Oma, mit Vanille-Whey verfeinert und mit warmen Zimtäpfeln serviert.",
+  "section_de": "Frühstück",
+  "categories": ["pre-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "milch-1-5",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "weichweizengriess",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "apfel",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Apfel (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mandeln",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehobelt (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle den Apfel und dünste ihn mit 2 EL Wasser und dem Zimt in einem kleinen Topf 4–5 Minuten weich.",
+    "Bring parallel die Milch in einem zweiten Topf zum Kochen, streu den Grieß unter Rühren ein und lass ihn bei kleiner Hitze 3 Minuten quellen.",
+    "Nimm den Grießbrei vom Herd, lass ihn 1 Minute abkühlen und rühr das Proteinpulver klümpchenfrei unter.",
+    "Füll den Brei in eine Schale, gib die Zimtäpfel darüber und streu die Mandeln darauf."
+  ],
+  "tip_de": "Ohne Pulver: Grieß mit 200 ml Milch kochen und danach 100 g Magerquark unterrühren.",
+  "total_minutes": 12,
+  "prep_minutes": 4,
+  "cook_minutes": 8,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 518,
+    "protein_g": 34.8,
+    "carbs_g": 67.2,
+    "fat_g": 10.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "tree_nuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "e54b9161a93ef6da82d54a466f91ff10220b3bcc7c5d14ab3fe5249b95572a62"
+  }
+}

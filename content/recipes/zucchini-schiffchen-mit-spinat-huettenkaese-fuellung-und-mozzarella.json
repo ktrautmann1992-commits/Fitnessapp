@@ -1,0 +1,175 @@
+{
+  "id": "zucchini-schiffchen-mit-spinat-huettenkaese-fuellung-und-mozzarella",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Zucchini-Schiffchen mit Spinat-Hüttenkäse-Füllung und Mozzarella",
+  "description_de": "Ausgehöhlte Zucchinihälften mit einer cremigen Füllung aus Spinat, Hüttenkäse, Ei und Parmesan, unter goldbraun überbackenem Mozzarella – viel Eiweiß, wenig Fett.",
+  "section_de": "Hauptgerichte",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "zucchini",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Zucchini (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "blattspinat-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g, aufgetaut und ausgedrückt",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gerieben (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "muskatnuss-gerieben",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6 Cherrytomaten (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Halbiere die Zucchini längs, löse das Innere mit einem Teelöffel heraus (1 cm Rand stehen lassen) und hacke das Fruchtfleisch klein.",
+    "Vermische gehacktes Zucchinifleisch, ausgedrückten Spinat, Hüttenkäse, Ei, Parmesan, gepressten Knoblauch, Muskat, Salz und Pfeffer.",
+    "Heize die Heißluftfritteuse 3 Minuten auf 180 °C vor. Bepinsle die Zucchini außen mit dem Olivenöl, fülle sie und lege sie mit den Cherrytomaten in den Korb.",
+    "Gare die Schiffchen 12 Minuten bei 180 °C, ohne sie zu wenden. Lege dann den zerzupften Mozzarella darauf und backe alles weitere 4–5 Minuten, bis der Käse goldbraun ist und die Füllung fest geworden ist.",
+    "Hebe die Schiffchen vorsichtig mit einem Pfannenwender heraus und iss das Vollkornbrot dazu."
+  ],
+  "tip_de": "Die Füllung wird fester, wenn du den Spinat gründlich ausdrückst. Statt Vollkornbrot passen 150 g Kartoffeln, die du vorher 10 Minuten im Korb garst.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 30,
+  "prep_minutes": 13,
+  "cook_minutes": 17,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 617,
+    "protein_g": 51.4,
+    "carbs_g": 40.4,
+    "fat_g": 25.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "fda4119298a230253168da3eb71e08f64c0c5d328de9e8e229de476a4519583a"
+  }
+}

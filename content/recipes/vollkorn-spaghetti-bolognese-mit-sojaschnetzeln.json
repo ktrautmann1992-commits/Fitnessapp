@@ -1,0 +1,175 @@
+{
+  "id": "vollkorn-spaghetti-bolognese-mit-sojaschnetzeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Vollkorn-Spaghetti Bolognese mit Sojaschnetzeln",
+  "description_de": "Der italienische Klassiker mit herzhafter Sojaschnetzel-Gemüse-Sauce – sättigend und ideal zum Vorkochen.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornspaghetti-trocken",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojaschnetzel-trocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g (feine Schnetzel/Granulat)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 ml, heiß",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "karotten",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Karotte (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "tomatenmark",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "hefeflocken",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Übergieße die Sojaschnetzel mit der heißen Gemüsebrühe und lass sie 10 Minuten quellen, dann gut ausdrücken.",
+    "Würfle Zwiebel und Karotte fein und hacke den Knoblauch.",
+    "Erhitze das Olivenöl in einer Pfanne und brate die Sojaschnetzel 4–5 Minuten bei mittlerer bis hoher Hitze kräftig an.",
+    "Gib Zwiebel, Karotte und Knoblauch dazu, brate 3 Minuten mit und röste dann das Tomatenmark 1 Minute an.",
+    "Lösche mit den passierten Tomaten ab, würze mit Oregano, Salz und Pfeffer und lass die Sauce 10 Minuten offen köcheln.",
+    "Koche währenddessen die Spaghetti nach Packungsanweisung in Salzwasser bissfest (ca. 9 Minuten).",
+    "Serviere die Spaghetti mit der Sauce und streue die Hefeflocken als Parmesan-Ersatz darüber."
+  ],
+  "tip_de": "Die Sauce lässt sich gut in 3- bis 4-facher Menge kochen und portionsweise einfrieren.",
+  "total_minutes": 30,
+  "prep_minutes": 3,
+  "cook_minutes": 27,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 610,
+    "protein_g": 37.4,
+    "carbs_g": 77.2,
+    "fat_g": 11.7
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "celery", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "9b778fa1ef8c0956ba863bf335ad70419d9d9290bc86aa34d364a047b2e2ccd2"
+  }
+}

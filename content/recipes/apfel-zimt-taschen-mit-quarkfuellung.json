@@ -1,0 +1,111 @@
+{
+  "id": "apfel-zimt-taschen-mit-quarkfuellung",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Apfel-Zimt-Taschen mit Quarkfüllung",
+  "description_de": "Knusprig gebackene Vollkorn-Wrap-Taschen mit warmer Apfel-Zimt-Quark-Füllung – schmeckt wie Apfeltasche vom Bäcker, aber mit fast 20 g Eiweiß.",
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorn-wrap",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Vollkorn-Wrap (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "apfel",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Apfel (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL zum Bestreichen (5 ml)",
+      "scales": true,
+      "role": "carb"
+    }
+  ],
+  "steps_de": [
+    "Heize die Heißluftfritteuse 3 Minuten auf 180 °C vor.",
+    "Schneide den Apfel in kleine Würfel und verrühre ihn mit Magerquark, Honig und Zimt.",
+    "Halbiere den Wrap, gib je die Hälfte der Füllung auf eine Seite jeder Hälfte, klappe die andere Seite zu einem Dreieck darüber und drücke die Ränder mit einer Gabel fest. Bestreiche die Oberseite dünn mit Milch.",
+    "Lege die Taschen nebeneinander in den Korb und backe sie 6–8 Minuten bei 180 °C, bis sie goldbraun und knusprig sind. Wende sie nach 4 Minuten, damit beide Seiten Farbe bekommen.",
+    "Lass die Taschen 2 Minuten abkühlen, die Füllung ist sehr heiß. Nach Wunsch mit etwas Zimt bestäuben."
+  ],
+  "tip_de": "Lässt sich die Tasche schlecht verschließen, den Rand mit etwas Milch befeuchten. Statt Apfel schmecken auch TK-Himbeeren oder Birne.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 15,
+  "prep_minutes": 3,
+  "cook_minutes": 12,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 308,
+    "protein_g": 17.8,
+    "carbs_g": 47,
+    "fat_g": 4.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "e419b4e117c54783dce3d6615e4b8404a527893324951f4447747e9c4584c543"
+  }
+}

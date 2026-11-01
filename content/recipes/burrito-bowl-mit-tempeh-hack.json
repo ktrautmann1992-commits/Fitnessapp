@@ -1,0 +1,183 @@
+{
+  "id": "burrito-bowl-mit-tempeh-hack",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Burrito-Bowl mit Tempeh-Hack",
+  "description_de": "Mexikanische Bowl mit rauchig gewürztem, zerbröseltem Tempeh, Reis, schwarzen Bohnen, Mais und Avocado.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tempeh",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprikapulver-geraeuchert",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "schwarze-bohnen-dose-abgetropft",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "mais-dose-abgetropft",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tomaten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Tomate (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Avocado (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "koriander-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis mit der doppelten Menge Salzwasser zugedeckt bei kleiner Hitze ca. 12 Minuten.",
+    "Zerbrösele den Tempeh mit den Fingern in kleine Stücke.",
+    "Erhitze das Rapsöl in einer Pfanne und brate den Tempeh 5–6 Minuten bei mittlerer bis hoher Hitze knusprig.",
+    "Gib Sojasauce, geräuchertes Paprikapulver, Kreuzkümmel und Chiliflocken dazu und brate 1 Minute weiter.",
+    "Erwärme die Bohnen kurz mit in der Pfanne oder in einem kleinen Topf.",
+    "Richte Reis, Tempeh-Hack, Bohnen, Mais, gewürfelte Tomate und Avocado in einer Schale an und beträufle alles mit Limettensaft und Koriander."
+  ],
+  "tip_de": "Wer keinen Koriander mag, nimmt Petersilie oder Frühlingszwiebeln.",
+  "total_minutes": 25,
+  "prep_minutes": 7,
+  "cook_minutes": 18,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 673,
+    "protein_g": 37.8,
+    "carbs_g": 77.5,
+    "fat_g": 24
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "dddac0991d9208d1ffd2a7f89376610b71b0b5601ee7243002c2ac5c252be9d2"
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "id": "kassler-mit-apfel-sauerkraut-und-kartoffelpueree",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kassler mit Apfel-Sauerkraut und Kartoffelpüree",
+  "description_de": "Deftiger Winterklassiker in leicht: mageres Kassler auf mildem Apfel-Sauerkraut mit cremigem Püree.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kassler-mager",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (150 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "sauerkraut",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "apfel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleiner Apfel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g, mehligkochend",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "muskatnuss-gerieben",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schäle die Kartoffeln, schneide sie in Stücke und koch sie in Salzwasser 18–20 Minuten weich.",
+    "Dünste die gewürfelte Zwiebel im Rapsöl 2 Minuten an, gib Sauerkraut, den geriebenen Apfel und das Wasser dazu und lass alles zugedeckt 15 Minuten köcheln.",
+    "Lege das Kassler nach 5 Minuten auf das Sauerkraut und lass es zugedeckt 10 Minuten darin heiß werden.",
+    "Gieße die Kartoffeln ab, stampfe sie mit der warmen Milch zu Püree und würze mit Salz und Muskat.",
+    "Richte Kassler, Sauerkraut und Püree an und gib frisch gemahlenen Pfeffer darüber."
+  ],
+  "tip_de": "Kassler ist bereits gegart und gesalzen – das Sauerkraut daher erst am Ende abschmecken.",
+  "total_minutes": 35,
+  "prep_minutes": 18,
+  "cook_minutes": 17,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 503,
+    "protein_g": 42.2,
+    "carbs_g": 50.2,
+    "fat_g": 13
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "fructose", "histamine", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "d14c4521ff91394fa67da581368b9c680666896df511d66d6d5a0abe3bb22d6e"
+  }
+}

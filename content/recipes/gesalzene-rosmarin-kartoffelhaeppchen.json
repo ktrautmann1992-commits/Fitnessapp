@@ -1,0 +1,83 @@
+{
+  "id": "gesalzene-rosmarin-kartoffelhaeppchen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gesalzene Rosmarin-Kartoffelhäppchen",
+  "description_de": "Kleine Pellkartoffeln mit Salz und Rosmarin – herzhafte Abwechslung zu Süßem, liefern Stärke und Natrium für lange Läufe und Radtouren.",
+  "section_de": "Während der Einheit",
+  "categories": ["cardio"],
+  "meal_types": ["snack"],
+  "training_tags": ["waehrend"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 220,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4–5 kleine Kartoffeln (220 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1.5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ TL (ca. 1,5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rosmarin-getrocknet",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Kartoffeln mit Schale in Salzwasser 15–20 Minuten, bis sie weich sind.",
+    "Lass sie kurz ausdampfen, pelle sie und schneide größere Kartoffeln in mundgerechte Stücke.",
+    "Wälze die noch warmen Stücke in Salz und Rosmarin.",
+    "Lass sie vollständig abkühlen und verpacke sie in einem kleinen Gefrierbeutel."
+  ],
+  "tip_de": "Die Portion liefert rund 34 g Kohlenhydrate – kombiniert mit einem Sportgetränk kommst du gut auf 30–60 g pro Stunde. Am besten auf dem Rad oder bei ruhigen Abschnitten essen; bei sehr langen Einheiten bis 90 g pro Stunde nur, wenn du es im Training geübt hast.",
+  "tags_de": ["Ausdauer", "zum Mitnehmen"],
+  "total_minutes": 25,
+  "prep_minutes": 5,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 156,
+    "protein_g": 4.4,
+    "carbs_g": 32.6,
+    "fat_g": 0.2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": [],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ce37e52654d0d4efed7a0a18adbd0a07dfd30eaa3c38e2e890a4dea9f800fe2d"
+  }
+}

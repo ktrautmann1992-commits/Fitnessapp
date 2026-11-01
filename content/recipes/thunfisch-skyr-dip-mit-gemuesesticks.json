@@ -1,9 +1,9 @@
 {
   "id": "thunfisch-skyr-dip-mit-gemuesesticks",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Thunfisch-Skyr-Dip mit Gemüsesticks",
-  "description_de": "Cremiger, eiweißreicher Dip aus Thunfisch und Skyr mit knackigen Rohkoststicks.",
+  "description_de": "Cremiger Dip aus Thunfisch und Skyr mit knackigen Rohkoststicks.",
   "section_de": "Snack",
   "categories": ["schnell"],
   "meal_types": ["snack"],
@@ -132,6 +132,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "fe4ac326277a5f969132be31d7085c2d5250723ed1426590741e9901bb9654b0"
+    "import_hash": "deb106cac69f45c5ea897f8f5d66c00b424272062081fa122c3e3db18b369963"
   }
 }

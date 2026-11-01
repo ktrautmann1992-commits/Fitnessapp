@@ -1,0 +1,164 @@
+{
+  "id": "spitzkohl-pfanne-mit-raeuchertofu-und-kartoffeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Spitzkohl-Pfanne mit Räuchertofu und Kartoffeln",
+  "description_de": "Deftige deutsche Pfanne mit geschmortem Spitzkohl, rauchigem Tofu und Kartoffeln in leichter Senf-Rahmsauce.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 mittelgroße (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "raeuchertofu",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "spitzkohl",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Spitzkohl (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 50,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "50 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "senf",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "soja-cuisine",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Schäle die Kartoffeln, schneide sie in 1 cm große Würfel und gare sie 8 Minuten in Salzwasser vor, dann abgießen.",
+    "Schneide Räuchertofu in Würfel, Zwiebel in Streifen und Spitzkohl in feine Streifen.",
+    "Erhitze das Rapsöl in einer großen Pfanne und brate Kartoffeln und Tofu bei mittlerer bis hoher Hitze 6 Minuten goldbraun.",
+    "Gib Zwiebel, Spitzkohl und Kümmel dazu, lösche mit 50 ml Wasser ab und lass alles 5 Minuten zugedeckt schmoren.",
+    "Rühre Senf und Soja-Cuisine unter, würze mit Salz und Pfeffer und bestreue alles mit Petersilie."
+  ],
+  "tip_de": "Mit Kartoffeln vom Vortag sparst du dir das Vorkochen und bist in 15 Minuten fertig.",
+  "total_minutes": 25,
+  "prep_minutes": 11,
+  "cook_minutes": 14,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 618,
+    "protein_g": 35.6,
+    "carbs_g": 46.2,
+    "fat_g": 30.3
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "mustard", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "308e69a9f5cfedb97efb1a4f8f624fdbf6c073b4aab23724b26de42581fd73e4"
+  }
+}

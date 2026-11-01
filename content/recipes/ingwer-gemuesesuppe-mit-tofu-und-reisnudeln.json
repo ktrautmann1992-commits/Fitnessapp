@@ -1,0 +1,192 @@
+{
+  "id": "ingwer-gemuesesuppe-mit-tofu-und-reisnudeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Ingwer-Gemüsesuppe mit Tofu und Reisnudeln",
+  "description_de": "Leichte, wärmende Asia-Suppe mit viel Gemüse, Edamame, Tofu und Reisnudeln in einer würzigen Ingwerbrühe.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 500,
+      "unit": "g",
+      "optional": false,
+      "display_de": "500 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 daumennagelgroßes Stück (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 ½ EL (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "karotten",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Karotte (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "champignons",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Stück (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g Röschen",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "tofu-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "reisnudeln-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sesamoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stange (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bring die Gemüsebrühe mit in Scheiben geschnittenem Ingwer, gehacktem Knoblauch und Sojasauce in einem Topf zum Kochen.",
+    "Schneide Karotte in dünne Scheiben, Champignons in Viertel und den Tofu in Würfel.",
+    "Gib Karotte und Brokkoli in die Brühe und lass sie 4 Minuten köcheln.",
+    "Füge Champignons, Edamame, Tofu und Reisnudeln hinzu und lass alles weitere 4–5 Minuten ziehen, bis die Nudeln weich sind.",
+    "Schmecke mit Sesamöl, Limettensaft und Chiliflocken ab und bestreue die Suppe mit Frühlingszwiebelringen."
+  ],
+  "tip_de": "Statt Brokkoli passt auch Pak Choi oder Chinakohl – einfach in den letzten 2 Minuten mitgaren.",
+  "total_minutes": 18,
+  "prep_minutes": 14,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 601,
+    "protein_g": 38.3,
+    "carbs_g": 60,
+    "fat_g": 20.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": [
+    "gluten",
+    "legumes",
+    "soy",
+    "sesame",
+    "celery",
+    "histamine",
+    "mushrooms",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "cd69f7625967f993fb9b101b16ceefa4639ebd0fe54577fca34da581db334181"
+  }
+}

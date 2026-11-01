@@ -1,0 +1,137 @@
+{
+  "id": "knusprige-ofen-tofu-nuggets-mit-senf-dip",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Knusprige Ofen-Tofu-Nuggets mit Senf-Dip",
+  "description_de": "Panierte Tofu-Nuggets aus dem Ofen mit süß-scharfem Senf-Joghurt-Dip.",
+  "section_de": "Snack",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paniermehl",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (15 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojajoghurt-natur",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "sweet"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 220 °C Ober-/Unterhitze vor und lege ein Blech mit Backpapier aus.",
+    "Tupfe den Tofu trocken und schneide ihn in 8 Nugget-Stücke.",
+    "Mische Paniermehl mit Paprikapulver und Salz, ziehe die Tofustücke erst durch den Sojadrink und dann durch die Panade.",
+    "Lege die Nuggets aufs Blech, beträufle sie mit dem Rapsöl und backe sie 18–20 Minuten, nach der Hälfte wenden.",
+    "Verrühre Sojajoghurt, Senf und Ahornsirup zum Dip und serviere ihn zu den Nuggets."
+  ],
+  "tip_de": "In der Heißluftfritteuse werden die Nuggets bei 200 °C in 12 Minuten besonders knusprig.",
+  "total_minutes": 25,
+  "prep_minutes": 5,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 277,
+    "protein_g": 20.5,
+    "carbs_g": 15.2,
+    "fat_g": 14.2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "mustard"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ef41836114b043af84f17bd69cb936ed06ee8dd22c83b2167685d34103762b95"
+  }
+}

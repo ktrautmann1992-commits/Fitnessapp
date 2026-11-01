@@ -1,0 +1,193 @@
+{
+  "id": "haehnchen-gemuese-spiesse-mit-zitronen-bulgur-und-kraeuter-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hähnchen-Gemüse-Spieße mit Zitronen-Bulgur und Kräuter-Skyr",
+  "description_de": "Würzig marinierte Hähnchenwürfel mit Zucchini, Paprika und roter Zwiebel am Spieß, dazu frischer Zitronen-Bulgur – Grillgeschmack ohne Grill.",
+  "section_de": "Hauptgerichte",
+  "categories": ["meal-prep", "heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 160,
+      "unit": "g",
+      "optional": false,
+      "display_de": "160 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Zucchini (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-gelb",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ gelbe Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "bulgur-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 100,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide Hähnchen und Gemüse in 2–3 cm große Stücke, mische sie mit 1 TL Olivenöl, Paprikapulver, Kreuzkümmel, gepresstem Knoblauch, Salz und Pfeffer und stecke alles abwechselnd auf 3–4 kurze Spieße (Holzspieße vorher 10 Minuten wässern).",
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+    "Lege die Spieße nebeneinander in den Korb und gare sie 12–14 Minuten bei 200 °C; nach 7 Minuten einmal wenden. Das Hähnchen ist durch, wenn es innen nicht mehr rosa ist (Kerntemperatur mindestens 74 °C).",
+    "Gib in der Zwischenzeit den Bulgur mit 100 ml Wasser und etwas Salz in einen Topf, lass ihn 1 Minute aufkochen und dann zugedeckt 10 Minuten quellen. Mische ihn mit restlichem Olivenöl, der Hälfte des Zitronensafts und der Hälfte der Petersilie.",
+    "Verrühre Skyr mit restlichem Zitronensaft, restlicher Petersilie, Salz und Pfeffer und serviere den Dip zu Spießen und Bulgur."
+  ],
+  "tip_de": "Passt der Spieß nicht in den Korb, gare Hähnchen und Gemüse einfach lose in einer Lage und schüttel nach der Hälfte der Zeit. Bulgur und Spieße halten sich gekühlt 2 Tage.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 30,
+  "prep_minutes": 1,
+  "cook_minutes": 29,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 534,
+    "protein_g": 55.8,
+    "carbs_g": 48.8,
+    "fat_g": 11.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "poultry", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ecc2bcf33ef9ef83bf1e8e91f7ae94322c322e298a3e3e3358dc84719cf8e765"
+  }
+}

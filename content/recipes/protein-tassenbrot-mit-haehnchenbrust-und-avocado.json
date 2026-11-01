@@ -1,0 +1,149 @@
+{
+  "id": "protein-tassenbrot-mit-haehnchenbrust-und-avocado",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Protein-Tassenbrot mit Hähnchenbrust und Avocado",
+  "description_de": "Warmes Eiweißbrot aus der Mikrowelle in 2 Minuten, belegt mit Hähnchenbrust, Avocado und Tomaten.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (50 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "whey-proteinpulver-neutral",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "haehnchenbrust-aufschnitt",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Scheiben (50 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Avocado (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6 Cherrytomaten (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Ei, Magerquark, Haferflocken, Proteinpulver, Backpulver und Salz in einer großen, mikrowellengeeigneten Tasse zu einem glatten Teig.",
+    "Gare das Brot bei 800 Watt etwa 90 Sekunden in der Mikrowelle, bis es aufgegangen und in der Mitte fest ist.",
+    "Stürze es aus der Tasse, lass es 1 Minute abkühlen und schneide es quer in 2 Scheiben.",
+    "Zerdrücke die Avocado mit Salz und Pfeffer und streiche sie auf die Scheiben.",
+    "Belege das Brot mit der Hähnchenbrust und serviere die halbierten Cherrytomaten dazu."
+  ],
+  "tip_de": "Ohne Pulver: 1 EL mehr Haferflocken und 1 Eiklar zusätzlich verwenden. Für eine knusprige Kruste die Scheiben kurz toasten.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 7,
+  "prep_minutes": 7,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 437,
+    "protein_g": 41.6,
+    "carbs_g": 26.3,
+    "fat_g": 17
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "poultry", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "167fc7a4f3850142118a5d745fb42ca78adbf6f365b9e4222330f9321397d392"
+  }
+}

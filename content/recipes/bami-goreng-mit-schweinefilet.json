@@ -1,0 +1,158 @@
+{
+  "id": "bami-goreng-mit-schweinefilet",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Bami Goreng mit Schweinefilet",
+  "description_de": "Indonesisch inspirierte Wok-Nudeln mit zartem Schweinefilet, knackigem Gemüse und Ei.",
+  "section_de": "Mittagessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "mie-nudeln",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "heated": false,
+      "role": "carb"
+    },
+    {
+      "food_id": "schweinefilet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Karotte (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "chinakohl",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Stangen (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 ½ EL (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "chilipulver",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koch die Mie-Nudeln nach Packungsanleitung 3–4 Minuten, gieße sie ab und spüle sie kurz kalt ab.",
+    "Schneide das Schweinefilet in dünne Streifen, die Karotte in Stifte, den Chinakohl in Streifen und die Frühlingszwiebeln in Ringe. Hacke Knoblauch und Ingwer fein.",
+    "Erhitze die Hälfte des Öls im Wok sehr heiß und brate das Fleisch 2–3 Minuten scharf an. Nimm es heraus.",
+    "Brate Karotte, Knoblauch und Ingwer im restlichen Öl 2 Minuten, gib Chinakohl dazu, schiebe alles an den Rand und stocke das verquirlte Ei darin 1 Minute.",
+    "Gib Nudeln, Fleisch, Sojasauce und Chili dazu, schwenke alles 1–2 Minuten und bestreue es mit Frühlingszwiebeln."
+  ],
+  "tip_de": "Statt Mie-Nudeln geht auch Basmatireis vom Vortag – dann heißt das Gericht Nasi Goreng.",
+  "total_minutes": 18,
+  "prep_minutes": 13,
+  "cook_minutes": 5,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 654,
+    "protein_g": 53.2,
+    "carbs_g": 59.7,
+    "fat_g": 21.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "eggs", "legumes", "soy", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8a71fd00834d33b8f57772f9998947603eb815c6a2f74525691c5ade2fe33694"
+  }
+}
