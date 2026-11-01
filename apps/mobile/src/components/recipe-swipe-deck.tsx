@@ -1,6 +1,6 @@
 import type { RecipeSwipeCard, RecipeSwipeChoice } from '@fitnessapp/core';
 import { brandColors, colors, fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import {
   Animated,
   type GestureResponderEvent,
@@ -40,7 +40,77 @@ const FLY_MS = 220;
 const LIKE_COLOR = colors.light.success;
 const DISLIKE_COLOR = colors.light.danger;
 
-type Decide = (choice: RecipeSwipeChoice) => void;
+interface SwipeLatest {
+  front: RecipeSwipeCard | undefined;
+  onDecide: (card: RecipeSwipeCard, choice: RecipeSwipeChoice) => void;
+  disabled: boolean;
+  windowWidth: number;
+  cardWidth: number;
+  cardHeight: number;
+}
+
+/**
+ * Gesten-Steuerung (außerhalb von React): Flug-Animation, PanResponder, Sperre während des Flugs. Die Komponente
+ * reicht nur die neuesten Werte herein (`update`) und setzt bei neuer Karte zurück (`reset`).
+ */
+function createSwipeControl(pan: Animated.ValueXY, opacity: Animated.Value) {
+  let busy = false;
+  let latest: SwipeLatest | null = null;
+
+  const flyOut = (choice: RecipeSwipeChoice) => {
+    const now = latest;
+    const card = now?.front;
+    if (now === null || card === undefined || busy || now.disabled) return;
+    busy = true;
+    const to =
+      choice === 'like'
+        ? { x: now.windowWidth + now.cardWidth, y: 40 }
+        : choice === 'dislike'
+          ? { x: -(now.windowWidth + now.cardWidth), y: 40 }
+          : { x: 0, y: -(now.cardHeight * 2) };
+    // Abschluss genau einmal: nach der Animation oder spätestens per Zeitgeber (falls die Animation nicht fertig
+    // meldet, z. B. bei angehaltener Uhr im Browser-Test oder im Hintergrund).
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      opacity.setValue(0);
+      (latest ?? now).onDecide(card, choice);
+    };
+    Animated.timing(pan, { toValue: to, duration: FLY_MS, useNativeDriver: false }).start(finish);
+    setTimeout(finish, FLY_MS + 80);
+  };
+
+  const springBack = () =>
+    Animated.spring(pan, { toValue: { x: 0, y: 0 }, friction: 6, useNativeDriver: false }).start();
+
+  const responder = PanResponder.create({
+    onStartShouldSetPanResponder: () => false,
+    onMoveShouldSetPanResponder: (_e: GestureResponderEvent, g: PanResponderGestureState) =>
+      !busy && (Math.abs(g.dx) > 6 || Math.abs(g.dy) > 6),
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderMove: (_e, g) => pan.setValue({ x: g.dx, y: g.dy }),
+    onPanResponderRelease: (_e, g) => {
+      const choice = swipeChoice(g.dx, g.dy);
+      if (choice !== null) flyOut(choice);
+      else springBack();
+    },
+    onPanResponderTerminate: springBack,
+  });
+
+  return {
+    responder,
+    flyOut,
+    update(next: SwipeLatest) {
+      latest = next;
+    },
+    reset() {
+      pan.setValue({ x: 0, y: 0 });
+      opacity.setValue(1);
+      busy = false;
+    },
+  };
+}
 
 export interface RecipeSwipeDeckProps {
   cards: readonly RecipeSwipeCard[];
@@ -62,73 +132,23 @@ export function RecipeSwipeDeck({
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = Math.min(Math.max(windowWidth - 2 * spacing.lg - 16, 240), 360);
   const cardHeight = Math.round(cardWidth * 1.22);
-  const pan = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
-  const opacity = useRef(new Animated.Value(1)).current;
-  const busy = useRef(false);
+  // Animationswerte einmal je Stapel (useState statt Ref: im Render lesbar).
+  const [pan] = useState(() => new Animated.ValueXY({ x: 0, y: 0 }));
+  const [opacity] = useState(() => new Animated.Value(1));
   const front = cards[index];
   const texts = t.recipeSwipe;
+  // Gesten-Steuerung einmal je Stapel; sie hält „läuft gerade“ und die neuesten Werte selbst (kein Ref im Render).
+  const [control] = useState(() => createSwipeControl(pan, opacity));
+
+  // Neueste Werte für Gesten-Rückrufe (PanResponder und Tasten werden nicht je Render neu angelegt).
+  useLayoutEffect(() => {
+    control.update({ front, onDecide, disabled, windowWidth, cardWidth, cardHeight });
+  }, [control, front, onDecide, disabled, windowWidth, cardWidth, cardHeight]);
 
   // Neue vordere Karte: Lage zurücksetzen (erst JETZT, damit die alte Karte nie kurz in die Mitte springt).
   useEffect(() => {
-    pan.setValue({ x: 0, y: 0 });
-    opacity.setValue(1);
-    busy.current = false;
-  }, [front?.recipeId, opacity, pan]);
-
-  const latest = useRef({ front, onDecide, disabled });
-  latest.current = { front, onDecide, disabled };
-
-  const flyOut = useCallback(
-    (choice: RecipeSwipeChoice) => {
-      const card = latest.current.front;
-      if (card === undefined || busy.current || latest.current.disabled) return;
-      busy.current = true;
-      const to =
-        choice === 'like'
-          ? { x: windowWidth + cardWidth, y: 40 }
-          : choice === 'dislike'
-            ? { x: -(windowWidth + cardWidth), y: 40 }
-            : { x: 0, y: -(cardHeight * 2) };
-      // Abschluss genau einmal: nach der Animation oder spätestens per Zeitgeber (falls die Animation nicht fertig
-      // meldet, z. B. bei angehaltener Uhr im Browser-Test oder im Hintergrund).
-      let finished = false;
-      const finish = () => {
-        if (finished) return;
-        finished = true;
-        opacity.setValue(0);
-        latest.current.onDecide(card, choice);
-      };
-      Animated.timing(pan, { toValue: to, duration: FLY_MS, useNativeDriver: false }).start(finish);
-      setTimeout(finish, FLY_MS + 80);
-    },
-    [cardHeight, cardWidth, opacity, pan, windowWidth],
-  );
-
-  const responder = useMemo(
-    () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => false,
-        onMoveShouldSetPanResponder: (_e: GestureResponderEvent, g: PanResponderGestureState) =>
-          !busy.current && (Math.abs(g.dx) > 6 || Math.abs(g.dy) > 6),
-        onPanResponderTerminationRequest: () => false,
-        onPanResponderMove: (_e, g) => pan.setValue({ x: g.dx, y: g.dy }),
-        onPanResponderRelease: (_e, g) => {
-          const choice = swipeChoice(g.dx, g.dy);
-          if (choice !== null) {
-            flyOut(choice);
-            return;
-          }
-          Animated.spring(pan, {
-            toValue: { x: 0, y: 0 },
-            friction: 6,
-            useNativeDriver: false,
-          }).start();
-        },
-        onPanResponderTerminate: () =>
-          Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false }).start(),
-      }),
-    [flyOut, pan],
-  );
+    control.reset();
+  }, [control, front?.recipeId]);
 
   // Pfeiltasten im Browser (nicht in Eingabefeldern).
   useEffect(() => {
@@ -146,13 +166,15 @@ export function RecipeSwipeDeck({
               : null;
       if (choice === null) return;
       event.preventDefault();
-      flyOut(choice);
+      control.flyOut(choice);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [flyOut]);
+  }, [control]);
 
   if (front === undefined) return null;
+  const flyOut = (choice: RecipeSwipeChoice) => control.flyOut(choice);
+  const responder = control.responder;
 
   // Wie weit die vordere Karte schon weg ist (0–1) – die Karten dahinter rücken entsprechend nach.
   const advance = Animated.add(
@@ -411,7 +433,6 @@ function CardFace({ card, showNumbers }: { card: RecipeSwipeCard; showNumbers: b
             {card.mealTypes.map((m) => texts.mealTypes[m]).join(' · ')}
           </Text>
           <Text style={styles.chip}>{texts.minutes(card.totalMinutes)}</Text>
-          {card.isDraft ? <Text style={styles.chip}>{texts.draft}</Text> : null}
         </View>
         {image?.ai_notice_de ? <Text style={styles.aiNotice}>{image.ai_notice_de}</Text> : null}
       </View>
@@ -534,7 +555,15 @@ const styles = StyleSheet.create({
   backCard: { shadowOpacity: 0.12, elevation: 4 },
   // Web: Wischen statt Seiten-Scrollen auf der Karte (Touch im Handy-Browser).
   frontCard: { cursor: 'grab', touchAction: 'none', userSelect: 'none' } as object,
-  shade: { ...StyleSheet.absoluteFillObject, borderRadius: 19, backgroundColor: '#0A0C10' },
+  shade: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 19,
+    backgroundColor: brandColors.schwarz,
+  },
   face: { flex: 1, borderRadius: 19, overflow: 'hidden' },
   photo: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   photoImage: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },

@@ -124,7 +124,6 @@ export interface RecipeSwipeCard {
     readonly carbs_g: number;
     readonly fat_g: number;
   } | null;
-  readonly isDraft: boolean;
 }
 
 export interface RecipeSwipeStackInput {
@@ -211,7 +210,6 @@ export function recipeSwipeStack(input: RecipeSwipeStackInput): RecipeSwipeCard[
         mealTypes: recipe.meal_types,
         totalMinutes: recipeTotalMinutes(recipe),
         perServing: cardNutrients(hit.variant, recipe, input.foods),
-        isDraft: recipe.status === 'draft',
       };
     });
 }

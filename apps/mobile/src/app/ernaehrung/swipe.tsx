@@ -11,7 +11,7 @@ import {
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { ConsentBlockedNotice, DemoBanner } from '@/components/nutrition';
@@ -66,9 +66,10 @@ export default function RecipeSwipeScreen() {
     view.library.kind === 'ready' &&
     seen.loaded &&
     (deck === null || (deck !== 'error' && deck.weekStart !== weekStart));
-  useEffect(() => {
-    if (!ready || app.rows === null || view.week?.kind !== 'ready') return;
-    if (view.library.kind !== 'ready') return;
+  // Stapel einmal je Woche festhalten – als abgeleiteter Zustand im Render (kein Effect): sobald gesetzt, ist
+  // `ready` falsch, Entscheidungen ändern den Stapel also nicht mehr.
+  if (ready && app.rows !== null && view.week?.kind === 'ready' && view.library.kind === 'ready') {
+    let next: { weekStart: string; cards: RecipeSwipeCard[] } | 'error';
     try {
       const stack = recipeSwipeStackForPerson({
         library: view.library.result.library,
@@ -79,16 +80,15 @@ export default function RecipeSwipeScreen() {
         allowDrafts: app.backend.mode === 'local',
         seen: seen.seen,
       });
-      setDeck({ weekStart, cards: stack.kind === 'ok' ? stack.cards : [] });
+      next = { weekStart, cards: stack.kind === 'ok' ? stack.cards : [] };
     } catch {
-      setDeck('error');
+      next = 'error';
     }
+    setDeck(next);
     setIndex(0);
     setHistory([]);
     setApplied(false);
-    // Nur beim ersten Mal je Woche (ready), nicht nach jeder Entscheidung.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, weekStart]);
+  }
 
   const liked = useMemo(
     () => history.filter((d) => d.choice === 'like').map((d) => d.recipeId),
@@ -113,7 +113,8 @@ export default function RecipeSwipeScreen() {
   }
   const rows = app.rows;
   const texts = t.recipeSwipe;
-  const toWeek = () => router.replace(`/ernaehrung/woche?woche=${weekStart}` as Href);
+  // Zurück zum Wochenplan im Verlauf (kein zweiter Wochenplan im Stapel), sonst neu öffnen.
+  const toWeek = () => router.dismissTo(`/ernaehrung/woche?woche=${weekStart}` as Href);
   const footer = (
     <Button
       label={t.nutrition.back}

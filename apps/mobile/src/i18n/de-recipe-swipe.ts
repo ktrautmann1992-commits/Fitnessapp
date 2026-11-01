@@ -33,7 +33,6 @@ export const deRecipeSwipe = {
   perServing: 'je Portion',
   minutes: (n: number) => `${n} Min.`,
   mealTypes: { breakfast: 'Frühstück', main: 'Hauptgericht', snack: 'Snack' },
-  draft: 'Entwurf',
   remaining: (n: number) => (n === 1 ? 'Noch 1 Karte' : `Noch ${n} Karten`),
   liked: (n: number) => (n === 1 ? '1 gemerkt' : `${n} gemerkt`),
   empty:

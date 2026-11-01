@@ -798,6 +798,12 @@ Herz bzw. „Nie wieder“ gilt, bis die Person es zurücknimmt. Beide wirken ü
   Rezept); bleibt beim Widerruf der Gesundheits-Einwilligung bestehen. Privat: nie angezeigt außer der eigenen Vorliebe,
   nie aggregiert, nie Analytics/Logs. Migration `20261025120200_recipe_preferences.sql`, pgTAP `75_recipe_preferences`.
 
+### 6.10b Gerichte entdecken – Wochenauswahl per Wischen (Gratis, ohne KI, privat)
+**Gründer-Wunsch 01.11.2026, Optik freigegeben.** Kartenstapel im Stil von Rezept-Spielkarten (Ernährung → Wochenplan →
+„Gerichte für nächste Woche wischen“): rechts = mag ich (Herz + Einplanen in die kommende Woche), links = mag ich nicht
+(„Nie wieder“, 6.10a), oben = neutral (nur gesehen). Keine eigene Tabelle – wirkt ausschließlich über 6.10a und
+„Rezept tauschen“; Kalorien-Schutzgrenzen, Filter und Planband bleiben unverändert. Details: `docs/PLAN-REZEPT-SWIPE.md`.
+
 ### 6.11 Resteverwertung (Kühlschrank-Suche gratis, automatische Resteplanung Premium)
 - **Kühlschrank-Suche (Gratis):** „Was habe ich da?“ – Zutaten auswählen → Rezepte sortiert nach Übereinstimmung
   (Anteil der vorhandenen Zutaten, gewichtet nach Menge), gefiltert nach Ernährungsform und allen Ausschlüssen.
