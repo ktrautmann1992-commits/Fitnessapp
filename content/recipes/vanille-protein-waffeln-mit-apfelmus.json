@@ -1,0 +1,137 @@
+{
+  "id": "vanille-protein-waffeln-mit-apfelmus",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Vanille-Protein-Waffeln mit Apfelmus",
+  "description_de": "Fluffige Dinkel-Hafer-Waffeln mit Vanille-Protein, dazu fruchtiges Apfelmus und Beeren.",
+  "section_de": "Frühstück",
+  "categories": ["pre-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "20 g (zart)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "apfelmus-ungesuesst",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "beerenmischung-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g, aufgetaut",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize das Waffeleisen auf mittlerer Stufe vor.",
+    "Mische Dinkelmehl, Haferflocken, Proteinpulver, Backpulver und Salz in einer Schüssel.",
+    "Rühre den Sojadrink zügig unter, bis ein dickflüssiger Teig ohne Klümpchen entsteht, und lass ihn 3 Minuten quellen.",
+    "Pinsel das Waffeleisen dünn mit dem Rapsöl ein und backe aus dem Teig 2 Waffeln je ca. 4 Minuten goldbraun.",
+    "Serviere die Waffeln mit Apfelmus und den aufgetauten Beeren."
+  ],
+  "tip_de": "Ohne Proteinpulver: 30 g mehr Dinkelmehl verwenden und 150 g Sojaskyr als Topping dazu – so kommst du trotzdem auf gut 25 g Eiweiß.",
+  "total_minutes": 20,
+  "prep_minutes": 16,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 499,
+    "protein_g": 34.6,
+    "carbs_g": 59.4,
+    "fat_g": 11.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "b23cf12a6a8d7869a13bf645a1e67c69f3fbd8fbbb18352721f604cc64abeb0b"
+  }
+}

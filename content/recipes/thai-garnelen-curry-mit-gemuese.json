@@ -1,0 +1,159 @@
+{
+  "id": "thai-garnelen-curry-mit-gemuese",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Thai-Garnelen-Curry mit Gemüse",
+  "description_de": "Mildes Kokos-Curry mit Garnelen, viel Gemüse, Ingwer und Limette auf etwas Basmatireis – asiatisch und in 18 Minuten fertig.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "garnelen-tk-roh-geschaelt",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g (aufgetaut)",
+      "scales": true,
+      "heated": false,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "asia-gemuesemischung-tk",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kokosmilch-fettreduziert",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 cm Stück (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "currypulver",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Setze den Reis nach Packungsanweisung auf (ca. 12 Minuten).",
+    "Reibe Ingwer und Knoblauch fein und dünste sie im Rapsöl mit dem Currypulver 1 Minute bei mittlerer Hitze an.",
+    "Gib das TK-Gemüse dazu und brate es 4 Minuten bei hoher Hitze.",
+    "Gieße Kokosmilch und Sojasauce an und lass alles 3 Minuten köcheln.",
+    "Gib die Garnelen hinein und gare sie 3–4 Minuten, bis sie rosa und durchgegart sind.",
+    "Schmecke das Curry mit Limettensaft ab und serviere es mit dem Reis."
+  ],
+  "tip_de": "Für noch weniger Kohlenhydrate den Reis weglassen und 100 g Brokkoli mehr ins Curry geben.",
+  "total_minutes": 18,
+  "prep_minutes": 7,
+  "cook_minutes": 11,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 548,
+    "protein_g": 43.2,
+    "carbs_g": 56.6,
+    "fat_g": 15.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "shellfish",
+    "legumes",
+    "soy",
+    "celery",
+    "mustard",
+    "histamine",
+    "mushrooms",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "19da180ca5a1fc2856be69cde4a7196d33d6b35dcd11489e30584dcff312dcc0"
+  }
+}

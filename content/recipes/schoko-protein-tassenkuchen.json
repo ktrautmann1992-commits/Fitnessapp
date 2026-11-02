@@ -1,0 +1,119 @@
+{
+  "id": "schoko-protein-tassenkuchen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schoko-Protein-Tassenkuchen",
+  "description_de": "Saftiger Schoko-Kuchen aus der Tasse, in 2 Minuten in der Mikrowelle gebacken.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "veganes-proteinpulver-schoko",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2/3 Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "backkakao",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "apfelmus-ungesuesst",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Mische Dinkelmehl, Proteinpulver, Backkakao, Backpulver und Salz direkt in einer großen, mikrowellengeeigneten Tasse.",
+    "Rühre Apfelmus und Sojadrink unter, bis ein glatter, dickflüssiger Teig entsteht.",
+    "Gare den Kuchen 60–90 Sekunden bei 800 Watt in der Mikrowelle – die Mitte darf noch leicht feucht sein.",
+    "Lass ihn 1 Minute ruhen und genieße ihn warm direkt aus der Tasse."
+  ],
+  "tip_de": "Ohne Mikrowelle: im Backofen bei 180 °C Ober-/Unterhitze ca. 12 Minuten in einer Muffinform backen.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 203,
+    "protein_g": 19.3,
+    "carbs_g": 21.8,
+    "fat_g": 3.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "daab0b89413850955fe71487328ada6bdfe2848141d0b546abf16fe30a4a57f0"
+  }
+}

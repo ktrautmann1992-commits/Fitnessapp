@@ -1,0 +1,119 @@
+{
+  "id": "seidentofu-schokomousse-mit-himbeeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Seidentofu-Schokomousse mit Himbeeren",
+  "description_de": "Luftig-cremige vegane Mousse aus Seidentofu, Kakao und Datteln mit fruchtigen Himbeeren – Schokogenuss mit über 20 g Eiweiß.",
+  "section_de": "Ohne Backen",
+  "categories": ["schnell", "protein-dessert"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "seidentofu",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "veganes-proteinpulver-schoko",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kakaopulver-stark-entoelt",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (8 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "datteln-getrocknet-entsteint",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Datteln (20 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "himbeeren-tk",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g (aufgetaut)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Lass den Seidentofu gut abtropfen und weiche die Datteln 5 Minuten in heißem Wasser ein, dann abgießen.",
+    "Püriere Seidentofu, Datteln, Proteinpulver, Kakao, Ahornsirup und Salz mit dem Stabmixer etwa 1 Minute, bis die Masse ganz glatt ist.",
+    "Gib die Hälfte der Himbeeren in ein Glas und fülle die Mousse darüber.",
+    "Stell die Mousse mindestens 30 Minuten kalt, damit sie fester wird, und garniere sie mit den restlichen Himbeeren."
+  ],
+  "tip_de": "Ohne Pulver: 1 weiteren EL Kakao und 50 g Sojaskyr natur unterrühren – das Eiweiß sinkt auf etwa 17 g. Je kälter die Mousse, desto fester wird sie.",
+  "tags_de": ["Unter 10 Minuten", "Dessert"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 285,
+    "protein_g": 24.4,
+    "carbs_g": 24.1,
+    "fat_g": 8.2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3e8334a48b243ef7f0b1c0498c4256d6712abe0bbfad1013f844df25de9d037b"
+  }
+}

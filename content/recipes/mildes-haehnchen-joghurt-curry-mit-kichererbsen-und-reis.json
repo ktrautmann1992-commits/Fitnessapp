@@ -1,0 +1,203 @@
+{
+  "id": "mildes-haehnchen-joghurt-curry-mit-kichererbsen-und-reis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Mildes Hähnchen-Joghurt-Curry mit Kichererbsen und Reis",
+  "description_de": "Zartes Hähnchen in einer milden Tomaten-Joghurt-Currysauce mit Kichererbsen und Spinat – Wohlfühlessen für die Mittagspause.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 750,
+      "unit": "g",
+      "optional": false,
+      "display_de": "750 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 240,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Dose (240 g abgetropft)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 große Zwiebeln (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "400 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "joghurt-1-5",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 12,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Zehen (12 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stück (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "speisestaerke",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "currypulver",
+      "amount": 2,
+      "unit": "tbsp",
+      "optional": false,
+      "display_de": "2 EL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kurkuma",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis nach Packungsanleitung, breite ihn zum schnellen Abkühlen auf einem Blech aus.",
+    "Schneide das Hähnchen in mundgerechte Stücke und brate es in 1 EL Öl 5 Minuten rundum an; herausnehmen.",
+    "Dünste Zwiebel, Knoblauch und Ingwer im restlichen Öl 4 Minuten an, röste Currypulver und Kurkuma 1 Minute mit und lösche mit den passierten Tomaten ab.",
+    "Gib Hähnchen und Kichererbsen dazu und lass alles 10 Minuten köcheln, bis das Fleisch durchgegart ist.",
+    "Verrühre Joghurt mit der Stärke, rühre ihn bei kleiner Hitze unter (nicht mehr kochen lassen) und lass den Spinat darin zusammenfallen; mit Salz abschmecken.",
+    "Lass das Curry abkühlen und verteile es mit dem Reis auf 5 Dosen."
+  ],
+  "tip_de": "Gegarter Reis und Hähnchen halten im Kühlschrank höchstens 3–4 Tage: Friere die Portionen für Donnerstag und Freitag sofort ein und lege sie am Vorabend in den Kühlschrank. Zugedeckt 3–4 Minuten bei 600 Watt aufwärmen und umrühren, bis alles dampft. Die Stärke verhindert, dass der Joghurt beim Aufwärmen ausflockt.",
+  "meal_prep_plan_id": "ohne-schwein",
+  "total_minutes": 30,
+  "prep_minutes": 11,
+  "cook_minutes": 19,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 537,
+    "protein_g": 47.7,
+    "carbs_g": 65.1,
+    "fat_g": 8.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "dairy",
+    "lactose",
+    "poultry",
+    "legumes",
+    "celery",
+    "mustard",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "haehnchenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Schneide das Hähnchen in mundgerechte Stücke und brate es in 1 EL Öl 5 Minuten rundum an; herausnehmen.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "cc6e63be4356bc3f3ebec15cb03e3b79462d3780540e5d0f6234f3c3f12c06ac"
+  }
+}

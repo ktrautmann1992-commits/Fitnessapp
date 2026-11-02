@@ -1,0 +1,173 @@
+{
+  "id": "rote-linsen-dal-mit-spinat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rote-Linsen-Dal mit Spinat",
+  "description_de": "Wärmendes Curry aus roten Linsen, Tomaten und Spinat, getoppt mit einem Klecks kühlem Skyr.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "rote-linsen-trocken",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kokosmilch",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 ml",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Handvoll (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 daumennagelgroßes Stück (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 250,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "currypulver",
+      "amount": 2,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "2 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle Zwiebel, Knoblauch und Ingwer fein und dünste sie im Rapsöl bei mittlerer Hitze 3 Minuten glasig.",
+    "Gib das Currypulver dazu und röste es 30 Sekunden unter Rühren mit.",
+    "Füge Linsen, gehackte Tomaten, Kokosmilch und 250 ml Wasser hinzu und lass alles 15–18 Minuten köcheln, bis die Linsen zerfallen.",
+    "Rühre den Spinat unter, lass ihn 1 Minute zusammenfallen und schmecke das Dal mit Salz ab.",
+    "Fülle das Dal in eine Schüssel und gib den Skyr als Klecks obendrauf."
+  ],
+  "tip_de": "Hält sich 3 Tage im Kühlschrank und lässt sich gut einfrieren.",
+  "total_minutes": 30,
+  "prep_minutes": 9,
+  "cook_minutes": 21,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 551,
+    "protein_g": 36.8,
+    "carbs_g": 56.4,
+    "fat_g": 16.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": [
+    "dairy",
+    "lactose",
+    "legumes",
+    "celery",
+    "mustard",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "28d18c14d5d33acec6c77fb0344b5808c871b691de1e5a4180f3991b5446cf2f"
+  }
+}

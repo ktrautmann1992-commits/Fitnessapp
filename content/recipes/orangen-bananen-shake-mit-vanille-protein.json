@@ -1,0 +1,91 @@
+{
+  "id": "orangen-bananen-shake-mit-vanille-protein",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Orangen-Bananen-Shake mit Vanille-Protein",
+  "description_de": "Ein flüssiger Snack aus Saft und Banane, der schnell im Blut ankommt und den Magen kaum belastet – mit etwas Eiweiß obendrauf.",
+  "section_de": "30 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "orangensaft",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "banane",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Banane (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "eiswuerfel",
+      "amount": 2,
+      "unit": "piece",
+      "optional": false,
+      "display_de": "2–3 Eiswürfel",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gib Orangensaft, Banane und Proteinpulver in einen Mixer.",
+    "Füge die Eiswürfel hinzu.",
+    "Mixe alles 20–30 Sekunden cremig und trinke den Shake gleich."
+  ],
+  "tip_de": "Ohne Pulver: einfach weglassen und dafür die ganze Banane nehmen. Wer auf Säure empfindlich reagiert, ersetzt die Hälfte des Safts durch Wasser.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 3,
+  "prep_minutes": 3,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 203,
+    "protein_g": 12.9,
+    "carbs_g": 31.2,
+    "fat_g": 1.4
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "5346f1de978ec2cda06e4575b0d076b325d14dcffb16f6e13f0b3d8a90e1fee9"
+  }
+}

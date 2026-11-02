@@ -1,0 +1,102 @@
+{
+  "id": "aprikose-vanille-protein-eis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Aprikose-Vanille-Protein-Eis",
+  "description_de": "Sanftes Vanilleeis mit reifen Aprikosen – mild, sommerlich-fruchtig und rein pflanzlich.",
+  "section_de": "Protein-Eis mit Mandeldrink",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "mandeldrink-ungesuesst",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 35,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (35 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "aprikosen",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2–3 Aprikosen (100 g), entsteint",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "instant-puddingpulver-zuckerfrei",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (8 g), Sorte Vanille",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Entsteine die Aprikosen und püriere sie mit Mandeldrink, Proteinpulver, Puddingpulver und Erythrit fein.",
+    "Gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Mandeldrink dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+  ],
+  "tip_de": "Außerhalb der Saison abgetropfte Aprikosen aus der Dose nehmen. Für mehr Frische einen Spritzer Zitronensaft mitpürieren.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 8,
+  "prep_minutes": 8,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 236,
+    "protein_g": 27.1,
+    "carbs_g": 18.2,
+    "fat_g": 5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "tree_nuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "d2dd2c663bf5bc9b66411d80176659085f29d665a1e23f6127a7e74273235954"
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "id": "vegane-protein-pizza-mit-raeuchertofu-und-gemuese",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Vegane Protein-Pizza mit Räuchertofu und Gemüse",
+  "description_de": "Ein schneller Teig mit Sojajoghurt und Erbsenprotein, belegt mit rauchigem Tofu, Paprika und Pilzen – vegane Pizza mit ordentlich Eiweiß.",
+  "section_de": "Pizza & Flammkuchen",
+  "categories": ["fitness-fast-food"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "weizenmehl-type-405",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "veganes-proteinpulver-erbse-reis-neutral",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 gestr. TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sojajoghurt-natur",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (60 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "raeuchertofu",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Paprika (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "champignons",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2–3 Stück (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "veganer-reibekaese",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "25 g",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 250 °C Ober-/Unterhitze (230 °C Umluft) vor und lege ein Blech mit Backpapier bereit.",
+    "Mische Mehl, Proteinpulver, Backpulver und Salz, gib Sojajoghurt und Olivenöl dazu und knete alles mit so viel Wasser zu einem glatten, geschmeidigen Teig.",
+    "Rolle den Teig auf dem Backpapier dünn zu einem Kreis von etwa 26 cm aus und bestreiche ihn mit den mit Oregano und Salz gewürzten passierten Tomaten.",
+    "Belege die Pizza mit dem gewürfelten Räuchertofu, Paprikastreifen, Pilzscheiben und Zwiebelringen und streue den veganen Reibekäse darüber.",
+    "Backe die Pizza auf der untersten Schiene 10–12 Minuten, bis der Rand goldbraun ist."
+  ],
+  "tip_de": "Ohne Proteinpulver: Ersetze es durch 25 g Kichererbsenmehl – der Teig wird etwas nussiger und hat dann rund 10 g weniger Eiweiß. Den Räuchertofu vorher kurz in Sojasauce wenden für mehr Würze.",
+  "tags_de": ["Fitness-Fast-Food"],
+  "total_minutes": 30,
+  "prep_minutes": 18,
+  "cook_minutes": 12,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 723,
+    "protein_g": 45.9,
+    "carbs_g": 75,
+    "fat_g": 23.7
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine", "mushrooms", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "eac87683144623a576255128730affaf7cab40f8b4b7c60eb36e74b76fc64815"
+  }
+}

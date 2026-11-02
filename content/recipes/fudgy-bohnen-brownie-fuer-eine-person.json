@@ -1,0 +1,138 @@
+{
+  "id": "fudgy-bohnen-brownie-fuer-eine-person",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Fudgy Bohnen-Brownie für eine Person",
+  "description_de": "Saftiger, schokoladiger Mini-Brownie aus schwarzen Bohnen, Kakao und Datteln – vegan und ohne Mehl.",
+  "section_de": "Aus dem Ofen oder der Mikrowelle",
+  "categories": ["protein-dessert"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schwarze-bohnen-dose-abgetropft",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g (gut abgespült)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kakaopulver-stark-entoelt",
+      "amount": 12,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (12 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "veganes-proteinpulver-schoko",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "datteln-getrocknet-entsteint",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Datteln (20 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (2 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 180 °C Ober-/Unterhitze vor und lege eine kleine ofenfeste Form (ca. 10 × 10 cm) mit Backpapier aus.",
+    "Weiche die Datteln 5 Minuten in heißem Wasser ein und gieße sie ab.",
+    "Püriere Bohnen, Datteln, Kakao, Proteinpulver, Haferflocken, Erythrit, Sojadrink, Backpulver und Salz zu einem dicken, glatten Teig.",
+    "Streich den Teig in die Form und backe den Brownie 18–20 Minuten, bis die Oberfläche fest, das Innere aber noch leicht weich ist.",
+    "Lass ihn 10 Minuten abkühlen, bevor du ihn aus der Form hebst – warm ist er sehr zart."
+  ],
+  "tip_de": "Ohne Pulver: 1 EL Erdnussmus in den Teig und 100 g Sojaskyr natur als Topping dazu (ca. 19 g Eiweiß). Die doppelte Menge hält abgedeckt 3 Tage im Kühlschrank.",
+  "tags_de": ["Dessert"],
+  "total_minutes": 30,
+  "prep_minutes": 10,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 335,
+    "protein_g": 24.7,
+    "carbs_g": 41.6,
+    "fat_g": 4.3
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "21ece46cc9c011f489a1681f2f791b875f87d0d49c7a33986e7f500ab3595d50"
+  }
+}

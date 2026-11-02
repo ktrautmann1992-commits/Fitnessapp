@@ -1,0 +1,161 @@
+{
+  "id": "ohne-schwein",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Leichte Hähnchen-Woche",
+  "description_de": "Protein-Bananenbrot, ein mildes Hähnchen-Curry und Schoko-Haferriegel: ganz ohne Schweinefleisch und gut vorzubereiten. Das Bananenbrot backt, während du das Curry kochst.",
+  "recipe_ids": [
+    "protein-bananenbrot-mit-skyr-und-heidelbeeren",
+    "mildes-haehnchen-joghurt-curry-mit-kichererbsen-und-reis",
+    "schoko-haferriegel-mit-mandeln-und-whey"
+  ],
+  "cook_steps": [
+    {
+      "start_min": 0,
+      "text_de": "Ofen auf 175 °C vorheizen, Kastenform auslegen, Reiswasser aufsetzen."
+    },
+    {
+      "start_min": 5,
+      "text_de": "Haferflocken mahlen, Bananenbrot-Teig anrühren und in die Form füllen."
+    },
+    {
+      "start_min": 15,
+      "text_de": "Bananenbrot in den Ofen schieben (50–55 Min.) und den Reis aufsetzen."
+    },
+    {
+      "start_min": 18,
+      "text_de": "Hähnchen in Stücke schneiden, Zwiebel, Knoblauch und Ingwer hacken."
+    },
+    {
+      "start_min": 30,
+      "text_de": "Gegarten Reis auf einem Blech ausbreiten; Hähnchen anbraten und herausnehmen."
+    },
+    {
+      "start_min": 38,
+      "text_de": "Curry-Basis andünsten, Gewürze rösten, Tomaten, Hähnchen und Kichererbsen zugeben (10 Min. köcheln)."
+    },
+    {
+      "start_min": 42,
+      "text_de": "Datteln und Mandeln hacken und die Riegelmasse verkneten."
+    },
+    {
+      "start_min": 50,
+      "text_de": "Riegelmasse in die Form drücken und in den Kühlschrank stellen."
+    },
+    {
+      "start_min": 52,
+      "text_de": "Joghurt mit Stärke unter das Curry rühren, Spinat zugeben, vom Herd nehmen und abkühlen lassen."
+    },
+    {
+      "start_min": 65,
+      "text_de": "Bananenbrot mit der Stäbchenprobe prüfen und herausnehmen, auf dem Gitter auskühlen lassen."
+    },
+    {
+      "start_min": 70,
+      "text_de": "Curry und Reis auf 5 Dosen verteilen; Skyr und Heidelbeeren in 5 Becher füllen."
+    },
+    {
+      "start_min": 85,
+      "text_de": "Curry-Dosen für Donnerstag und Freitag beschriften und einfrieren."
+    },
+    {
+      "start_min": 110,
+      "text_de": "Riegel in 5 Stücke schneiden und einpacken; abgekühltes Bananenbrot in 10 Scheiben schneiden und portionieren."
+    }
+  ],
+  "storage_plan": [
+    {
+      "recipe_id": "protein-bananenbrot-mit-skyr-und-heidelbeeren",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "protein-bananenbrot-mit-skyr-und-heidelbeeren",
+      "weekday": "tue",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "protein-bananenbrot-mit-skyr-und-heidelbeeren",
+      "weekday": "wed",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "protein-bananenbrot-mit-skyr-und-heidelbeeren",
+      "weekday": "thu",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "protein-bananenbrot-mit-skyr-und-heidelbeeren",
+      "weekday": "fri",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "mildes-haehnchen-joghurt-curry-mit-kichererbsen-und-reis",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "mildes-haehnchen-joghurt-curry-mit-kichererbsen-und-reis",
+      "weekday": "tue",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "mildes-haehnchen-joghurt-curry-mit-kichererbsen-und-reis",
+      "weekday": "wed",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "mildes-haehnchen-joghurt-curry-mit-kichererbsen-und-reis",
+      "weekday": "thu",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "mildes-haehnchen-joghurt-curry-mit-kichererbsen-und-reis",
+      "weekday": "fri",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "schoko-haferriegel-mit-mandeln-und-whey",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "schoko-haferriegel-mit-mandeln-und-whey",
+      "weekday": "tue",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "schoko-haferriegel-mit-mandeln-und-whey",
+      "weekday": "wed",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "schoko-haferriegel-mit-mandeln-und-whey",
+      "weekday": "thu",
+      "method": "freeze"
+    },
+    {
+      "recipe_id": "schoko-haferriegel-mit-mandeln-und-whey",
+      "weekday": "fri",
+      "method": "freeze"
+    }
+  ],
+  "storage_de": [
+    "Packe Curry und Reis in 5 mikrowellengeeignete Dosen, Bananenbrot und Riegel in Backpapier oder kleine Dosen.",
+    "Hähnchen-Curry mit Reis hält im Kühlschrank höchstens 3–4 Tage, Bananenbrot und Riegel 5 Tage.",
+    "Friere die Curry-Portionen für Donnerstag und Freitag direkt ein und lege sie am Vorabend in den Kühlschrank."
+  ],
+  "dinner_hint_de": "Abends kochst du frisch – zum Beispiel ein Gericht ohne Schweinefleisch aus dem Kapitel „Fertig in 10 Minuten“.",
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "95f61cf37e4629741f16dbe5650efb88c3e3eb9a482762be475e569b76b9963c"
+  }
+}

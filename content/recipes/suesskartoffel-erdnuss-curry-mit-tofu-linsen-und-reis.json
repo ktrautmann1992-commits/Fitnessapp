@@ -1,0 +1,212 @@
+{
+  "id": "suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Süßkartoffel-Erdnuss-Curry mit Tofu, Linsen und Reis",
+  "description_de": "Cremiges, mildes Curry mit roten Linsen, Tofu und Spinat, das am zweiten Tag noch besser schmeckt.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 800,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Packungen à 200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rote-linsen-trocken",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "suesskartoffel",
+      "amount": 450,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Süßkartoffel (450 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kokosmilch-fettreduziert",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Dose (400 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Zwiebeln (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 12,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Zehen (12 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 daumengroßes Stück (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "currypulver",
+      "amount": 2,
+      "unit": "tbsp",
+      "optional": false,
+      "display_de": "2 EL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 600,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "600 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis nach Packungsanleitung, breite ihn auf einem Blech aus und lass ihn schnell abkühlen.",
+    "Drücke den Tofu mit Küchenpapier gut aus, schneide ihn in 2-cm-Würfel und brate ihn in 1 EL Öl in einem großen Topf 8 Minuten rundum goldbraun; herausnehmen.",
+    "Dünste Zwiebel, Knoblauch und Ingwer im restlichen Öl 3 Minuten an, gib Currypulver dazu und röste es 1 Minute mit.",
+    "Gib die geschälten Süßkartoffelwürfel, Linsen, Tomaten, Kokosmilch, Erdnussmus und 600 ml Wasser dazu und lass alles zugedeckt 20 Minuten köcheln.",
+    "Rühre Spinat, Tofu und Sojasauce unter, schmecke mit Salz ab und lass das Curry abkühlen.",
+    "Verteile Reis und Curry auf 5 Dosen und stelle sie innerhalb von 2 Stunden in den Kühlschrank."
+  ],
+  "tip_de": "Gegarter Reis hält im Kühlschrank höchstens 3–4 Tage: Friere die Portionen für Donnerstag und Freitag direkt ein und lege sie jeweils am Vorabend in den Kühlschrank. Zugedeckt in der Mikrowelle 3–4 Minuten bei 600 Watt aufwärmen, einmal umrühren, bis alles durchgehend dampft; bei Bedarf einen Schuss Wasser zugeben.",
+  "meal_prep_plan_id": "vegan",
+  "total_minutes": 35,
+  "prep_minutes": 4,
+  "cook_minutes": 31,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 680,
+    "protein_g": 38.1,
+    "carbs_g": 74.8,
+    "fat_g": 24
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": [
+    "gluten",
+    "legumes",
+    "soy",
+    "peanuts",
+    "celery",
+    "mustard",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "b85a083033a28b9b245f9dfe4fabaebf71812e537fb1d26eba195419c861c301"
+  }
+}

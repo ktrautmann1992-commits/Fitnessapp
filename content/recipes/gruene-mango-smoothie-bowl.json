@@ -1,0 +1,128 @@
+{
+  "id": "gruene-mango-smoothie-bowl",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Grüne Mango-Smoothie-Bowl",
+  "description_de": "Cremige, eiskalte Bowl aus Mango, Banane, Spinat und Vanille-Protein mit knusprigem Hafer-Kürbiskern-Topping.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "mango-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "banane",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Banane (120 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojajoghurt-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "25 g (kernig)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kuerbiskerne",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Gib gefrorene Mango, die Hälfte der Banane, Spinat, Sojajoghurt, Proteinpulver und Sojadrink in einen Mixer.",
+    "Püriere alles 30–60 Sekunden zu einer dicken, cremigen Masse – nur so viel Sojadrink nachgeben, dass der Mixer läuft.",
+    "Fülle die Masse in eine Schale.",
+    "Schneide die restliche Banane in Scheiben und verteile sie mit Haferflocken und Kürbiskernen auf der Bowl."
+  ],
+  "tip_de": "Ohne Proteinpulver: Sojajoghurt durch 250 g Sojaskyr ersetzen – die Bowl wird noch cremiger.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 516,
+    "protein_g": 35.2,
+    "carbs_g": 56.6,
+    "fat_g": 13.1
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c05f97ad4bcd71398583f856f2b0574fd372e6d57f2c4fb4f89de625be46a28d"
+  }
+}

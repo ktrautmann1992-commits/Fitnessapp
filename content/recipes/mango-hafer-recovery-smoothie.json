@@ -1,0 +1,110 @@
+{
+  "id": "mango-hafer-recovery-smoothie",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Mango-Hafer-Recovery-Smoothie",
+  "description_de": "Fruchtiger Smoothie aus Banane, Mango, Hafer und Sojadrink mit pflanzlichem Protein – schnell getrunken, füllt Speicher und Flüssigkeit nach dem Ausdauertraining auf.",
+  "section_de": "Nach der Einheit",
+  "categories": ["schnell", "post-workout", "cardio"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "banane",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Banane (120 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mango-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 kleine Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gib Sojadrink, Haferflocken und Proteinpulver in den Mixer.",
+    "Füge Banane, gefrorene Mango und eine kleine Prise Salz hinzu.",
+    "Mixe alles 30–45 Sekunden auf höchster Stufe, bis der Smoothie cremig ist.",
+    "Trink ihn innerhalb der ersten Stunde nach der Einheit."
+  ],
+  "tip_de": "Ohne Pulver: Ersetze es durch 200 g Sojaskyr natur und reduziere den Sojadrink auf 150 ml. In einer gut verschlossenen Thermoflasche bleibt der Smoothie bis zum Ende der Einheit kühl.",
+  "tags_de": ["Unter 10 Minuten", "Ausdauer"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 465,
+    "protein_g": 33.9,
+    "carbs_g": 56.6,
+    "fat_g": 9.6
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c20bc00bce929c7676e2ef1823194bb873a9efba3a2df0d0488692987747df84"
+  }
+}

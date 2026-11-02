@@ -1,0 +1,120 @@
+{
+  "id": "protein-griessbrei-mit-sauerkirschen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Protein-Grießbrei mit Sauerkirschen",
+  "description_de": "Warmer, cremiger Grießbrei wie bei Oma, mit Vanille-Protein aufgepeppt und mit Sauerkirschen und Zimt serviert.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "hartweizengriess",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "sauerkirschen-glas-abgetropft",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bring 250 ml Sojadrink mit einer Prise Salz in einem kleinen Topf bei mittlerer Hitze zum Köcheln.",
+    "Rühre den Grieß mit einem Schneebesen ein und lass ihn unter Rühren 2–3 Minuten bei kleiner Hitze quellen.",
+    "Nimm den Topf vom Herd und verrühre das Proteinpulver mit den restlichen 50 ml Sojadrink, dann unter den Brei rühren.",
+    "Süße mit Ahornsirup und fülle den Grießbrei in eine Schale.",
+    "Verteile die Sauerkirschen darauf und bestäube alles mit Zimt."
+  ],
+  "tip_de": "Ohne Proteinpulver: 150 g Sojaskyr unter den fertigen Brei rühren. Das Pulver nie mitkochen, sonst klumpt es.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 447,
+    "protein_g": 34.2,
+    "carbs_g": 57.1,
+    "fat_g": 7.6
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f262b7c5b863f689960cd254f32775c425e0dbbb5d7fe6b1aafcf37aca0f21d0"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "id": "hot-dog-light-mit-gefluegelwuerstchen-roestzwiebeln-und-gurkenrelish",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Hot Dog mit Geflügelwürstchen, Röstzwiebeln und Gurkenrelish",
   "description_de": "Zwei Hot Dogs mit fettreduzierten Geflügelwürstchen, frischem Gurkenrelish und einer Senf-Skyr-Sauce – Imbiss-Feeling mit deutlich mehr Eiweiß.",
@@ -129,7 +129,7 @@
     "fructose",
     "onion_garlic"
   ],
-  "contains_pork": false,
+  "contains_pork": true,
   "declared_pregnancy_caution": true,
   "meta": {
     "origin": "manual",
@@ -143,6 +143,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "14df8e3ed6f8f5ce8bf70f3bdbf08616f4562566f3ea1e8cb255bc3ca16ac0ef"
+    "import_hash": "cb81fb26f63ff71c1a468747413973f072be5956ffdbd203eb8e9419da98e4a7"
   }
 }
