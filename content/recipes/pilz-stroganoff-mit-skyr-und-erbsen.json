@@ -1,0 +1,155 @@
+{
+  "id": "pilz-stroganoff-mit-skyr-und-erbsen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Pilz-Stroganoff mit Skyr & Erbsen",
+  "description_de": "Würzige Champignonpfanne mit Paprika und cremiger Skyr-Sauce auf einer kleinen Portion Reis.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "champignons",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "erbsen-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koch den Reis nach Packungsangabe (ca. 12 Minuten).",
+    "Schneide die Champignons in Scheiben und die Zwiebel in Würfel.",
+    "Brate die Pilze im Rapsöl bei hoher Hitze 5 Minuten scharf an, gib die Zwiebel dazu und brate sie 2 Minuten mit.",
+    "Bestäube alles mit Paprikapulver, lösche mit der Brühe ab, gib die Erbsen hinein und lass alles 4 Minuten köcheln.",
+    "Nimm die Pfanne vom Herd, rühr den Skyr unter, schmecke mit Salz und Pfeffer ab und serviere das Stroganoff mit Reis und Petersilie."
+  ],
+  "tip_de": "Den Skyr nicht mehr kochen lassen, sonst flockt er aus.",
+  "total_minutes": 25,
+  "prep_minutes": 14,
+  "cook_minutes": 11,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 514,
+    "protein_g": 33.9,
+    "carbs_g": 66.3,
+    "fat_g": 10
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "legumes", "celery", "mushrooms", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "71552efddbd589f645d1ae0101dbdcf0d63c8edd0ebb2fb96c16c2d826704719"
+  }
+}

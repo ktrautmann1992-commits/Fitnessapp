@@ -1,0 +1,129 @@
+{
+  "id": "erdbeer-cheesecake-im-glas",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Erdbeer-Cheesecake im Glas",
+  "description_de": "Cremige Quark-Frischkäse-Schicht auf Dattel-Hafer-Boden mit frischen Erdbeeren – schmeckt wie Käsekuchen, liefert aber reichlich Eiweiß.",
+  "section_de": "Ohne Backen",
+  "categories": ["schnell", "protein-dessert"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "datteln-getrocknet-entsteint",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Datteln (15 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "frischkaese-light",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "erdbeeren",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g (ca. 6 Stück)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Hacke die Datteln sehr fein und knete sie mit den Haferflocken und dem Zimt zu krümeligem Teig.",
+    "Drück die Masse als Boden in ein Glas.",
+    "Rühre Magerquark, Frischkäse, Erythrit und Zitronensaft glatt.",
+    "Schneide die Erdbeeren klein und zerdrück ein Drittel davon mit einer Gabel zu Soße.",
+    "Schichte die Creme auf den Boden, gib Erdbeersoße und Erdbeerstücke darüber und genieß das Dessert sofort oder nach 15 Minuten im Kühlschrank."
+  ],
+  "tip_de": "Außerhalb der Erdbeersaison funktionieren aufgetaute TK-Himbeeren genauso gut. Abgedeckt hält sich das Glas einen Tag im Kühlschrank.",
+  "tags_de": ["Unter 10 Minuten", "Dessert"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 295,
+    "protein_g": 24.2,
+    "carbs_g": 34.6,
+    "fat_g": 5.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "fructose", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "6b262ad0ab37df6f25de767c5d4d05f55a56109866d0c420ec552cb2a9b4f793"
+  }
+}

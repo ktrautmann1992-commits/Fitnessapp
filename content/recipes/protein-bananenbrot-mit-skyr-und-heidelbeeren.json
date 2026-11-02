@@ -1,9 +1,9 @@
 {
   "id": "protein-bananenbrot-mit-skyr-und-heidelbeeren",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Protein-Bananenbrot mit Skyr und Heidelbeeren",
-  "description_de": "Saftiges Bananenbrot aus Haferflocken und Quark ohne Zuckerzusatz, dazu Skyr mit Beeren.",
+  "description_de": "Saftiges Bananenbrot aus Haferflocken und Quark, gesüßt nur mit Banane, dazu Skyr mit Beeren.",
   "section_de": "Frühstück",
   "categories": ["meal-prep"],
   "meal_types": ["breakfast"],
@@ -145,6 +145,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "5f6e20114f2adebcfaa0975983eb14887856bbed001e0abde6b6106f520c7c77"
+    "import_hash": "185df3d076e05043644be5496255275fd60cb1fd6fe986a1d0b65cf4bd75ee2b"
   }
 }

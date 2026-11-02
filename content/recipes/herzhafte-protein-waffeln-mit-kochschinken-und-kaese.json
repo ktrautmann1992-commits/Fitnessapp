@@ -1,0 +1,166 @@
+{
+  "id": "herzhafte-protein-waffeln-mit-kochschinken-und-kaese",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Herzhafte Protein-Waffeln mit Kochschinken und Käse",
+  "description_de": "Knusprige Haferwaffeln mit Quark und Whey im Teig, gefüllt mit Kochschinkenwürfeln und würzigem Gouda.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g, fein gemahlen",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "whey-proteinpulver-neutral",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kochschinken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben, gewürfelt (40 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gouda-light-gerieben",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, in Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Tropfen für das Waffeleisen (2 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kirschtomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize das Waffeleisen vor und mahle die Haferflocken im Mixer fein.",
+    "Verrühre Hafermehl, Whey, Backpulver, Quark, Ei, Salz und Pfeffer zu einem dickflüssigen Teig. Ist er zu fest, gib 1–2 EL Wasser dazu.",
+    "Hebe Kochschinkenwürfel, Gouda und Schnittlauch unter.",
+    "Pinsle das Waffeleisen dünn mit Rapsöl ein und backe aus dem Teig 2 Waffeln je 3–4 Minuten goldbraun.",
+    "Serviere die Waffeln mit den halbierten Kirschtomaten."
+  ],
+  "tip_de": "Ohne Pulver: Nimm 150 g Magerquark und 2 EL mehr Haferflocken. Die Waffeln lassen sich gut einfrieren und im Toaster aufbacken.",
+  "total_minutes": 15,
+  "prep_minutes": 11,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 535,
+    "protein_g": 59.4,
+    "carbs_g": 34.1,
+    "fat_g": 17
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ae64c2835e2a4537d195be14e898872ffdd9bc1b16060bd4b4079a22abf24908"
+  }
+}

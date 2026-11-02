@@ -1,0 +1,147 @@
+{
+  "id": "schweinefilet-mit-senfkartoffeln-und-bohnen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schweinefilet mit Senfkartoffeln und Bohnen",
+  "description_de": "Saftig gebratenes Schweinefilet mit Ofenkartoffeln, grünen Bohnen und einer leichten Senfsauce.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schweinefilet",
+      "amount": 170,
+      "unit": "g",
+      "optional": false,
+      "display_de": "170 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 mittelgroße (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gruene-bohnen-tk",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kochsahne-15",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "senf",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 50,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "50 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C Umluft vor. Viertele die Kartoffeln, mische sie mit der Hälfte des Öls, Paprikapulver und Salz und backe sie 25–30 Minuten auf einem Blech.",
+    "Gare die Bohnen in Salzwasser 8 Minuten und gieß sie ab.",
+    "Schneide das Filet in 3 cm dicke Medaillons, würze sie mit Salz und Pfeffer und brate sie im restlichen Öl pro Seite 3–4 Minuten bei mittlerer Hitze.",
+    "Nimm das Fleisch heraus, lösche die Pfanne mit dem Wasser ab, rühre Senf und Kochsahne ein und lass die Sauce 1 Minute köcheln.",
+    "Richte Fleisch, Kartoffeln und Bohnen an und gieß die Senfsauce darüber."
+  ],
+  "tip_de": "Für Meal-Prep die doppelte Menge machen – Fleisch und Sauce halten sich 3 Tage im Kühlschrank.",
+  "total_minutes": 35,
+  "prep_minutes": 1,
+  "cook_minutes": 34,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 602,
+    "protein_g": 47.6,
+    "carbs_g": 56,
+    "fat_g": 19.1
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "legumes", "mustard"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "12b8934560e4a7b4a52814fb95314e8dc34ac24f66c05bdbcabf6f72c8f71c2c"
+  }
+}

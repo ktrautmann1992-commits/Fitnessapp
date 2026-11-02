@@ -1,0 +1,173 @@
+{
+  "id": "bohnen-quesadilla-mit-skyr-dip",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Bohnen-Quesadilla mit Skyr-Dip",
+  "description_de": "Knusprig gebratene Tortilla gefüllt mit Kidneybohnen, Mais, Paprika und Mozzarella, dazu ein frischer Skyr-Dip.",
+  "section_de": "Mittagessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorn-tortilla",
+      "amount": 65,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Tortilla (65 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kidneybohnen-dose-abgetropft",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "mais-dose-abgetropft",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Avocado (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "romanasalat",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Blätter (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Zerdrücke die Kidneybohnen grob mit einer Gabel und mische sie mit Mais, fein gewürfelter Paprika, Kreuzkümmel, Paprikapulver und Salz.",
+    "Verteile die Füllung auf einer Hälfte der Tortilla, reiße den Mozzarella darüber und klappe die Tortilla zu.",
+    "Brate die Quesadilla in einer Pfanne ohne Fett bei mittlerer Hitze je Seite 3 Minuten, bis sie knusprig ist und der Käse schmilzt.",
+    "Zerdrücke die Avocado mit Zitronensaft, Salz und Pfeffer und rühre sie unter den Skyr.",
+    "Schneide die Quesadilla in Ecken und serviere sie mit dem Dip und dem Salat."
+  ],
+  "tip_de": "Statt Kidneybohnen gehen auch schwarze Bohnen aus der Dose.",
+  "total_minutes": 15,
+  "prep_minutes": 12,
+  "cook_minutes": 3,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 594,
+    "protein_g": 36.9,
+    "carbs_g": 65.7,
+    "fat_g": 16.8
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "49b5b0c13dcb4ee3c2fa4289db76aa8f0e65e101cba081b2945baf39ae0969f7"
+  }
+}

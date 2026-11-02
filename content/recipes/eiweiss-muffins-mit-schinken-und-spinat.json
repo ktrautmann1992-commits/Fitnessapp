@@ -1,0 +1,120 @@
+{
+  "id": "eiweiss-muffins-mit-schinken-und-spinat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Eiweiß-Muffins mit Schinken und Spinat",
+  "description_de": "Herzhafte Ei-Muffins aus dem Ofen mit Kochschinken, Paprika und Spinat – ideal zum Mitnehmen.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "kochschinken",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ Scheiben (30 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Handvoll (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "muskatnuss-gerieben",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 180 °C Ober-/Unterhitze vor und fette 2 Mulden eines Muffinblechs leicht ein oder setze Silikonförmchen ein.",
+    "Würfle Schinken und Paprika, hacke den Spinat grob.",
+    "Verquirle die Eier mit Salz, Pfeffer und Muskat und rühre Schinken und Gemüse unter.",
+    "Fülle die Masse in die Förmchen und backe die Muffins 18–20 Minuten, bis sie gestockt sind."
+  ],
+  "tip_de": "Gleich ein ganzes Blech backen – die Muffins halten sich 4 Tage im Kühlschrank.",
+  "total_minutes": 25,
+  "prep_minutes": 5,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 217,
+    "protein_g": 21.9,
+    "carbs_g": 3.9,
+    "fat_g": 12.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["eggs", "histamine"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f007f2d665505535922ff86a783f604049206ebc996438d9eb6383ade0b328d6"
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "id": "fruehstuecks-burrito-mit-haehnchen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Frühstücks-Burrito mit Hähnchen",
+  "description_de": "Mexikanischer Wrap mit Rührei, gebratenem Hähnchen, Kidneybohnen, Paprika und Salsa – ideal zum Mitnehmen.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorn-tortilla",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Tortilla (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "eiklar",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g (ca. 2 Eiweiß)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kidneybohnen-dose-abgetropft",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Paprika (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salsa-glas",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gouda",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide das Hähnchen in kleine Würfel und die Paprika in Streifen.",
+    "Erhitze das Rapsöl in einer Pfanne bei mittlerer bis hoher Hitze und brate Hähnchen und Paprika mit Paprikapulver und Salz 5–6 Minuten, bis das Fleisch durchgegart ist.",
+    "Verquirle Ei und Eiklar, gib sie mit den Kidneybohnen in die Pfanne und rühre alles 2 Minuten, bis das Ei gestockt ist.",
+    "Erwärme die Tortilla 20 Sekunden in einer trockenen Pfanne.",
+    "Fülle die Tortilla mit der Mischung, gib Salsa und Gouda darüber, schlage die Seiten ein und rolle sie fest auf."
+  ],
+  "tip_de": "Fest in Alufolie gewickelt hält der Burrito 3 Tage im Kühlschrank oder 2 Monate im Gefrierfach – zum Aufwärmen 15 Minuten bei 180 °C in den Ofen.",
+  "total_minutes": 20,
+  "prep_minutes": 14,
+  "cook_minutes": 6,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 523,
+    "protein_g": 41.5,
+    "carbs_g": 40.2,
+    "fat_g": 20.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "eggs",
+    "poultry",
+    "legumes",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 3,
+        "food_id": "haehnchenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Erhitze das Rapsöl in einer Pfanne bei mittlerer bis hoher Hitze und brate Hähnchen und Paprika mit Paprikapulver und Salz 5–6 Minuten, bis das Fleisch durchgegart ist.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "1f2994a53bf8fa4d862dfd6679ed644ba0f2722f59556024ef206a2ced206fd6"
+  }
+}

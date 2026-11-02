@@ -1,0 +1,174 @@
+{
+  "id": "ofengemuese-mit-kichererbsen-und-quark-dip",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Ofengemüse mit Kichererbsen & Quark-Dip",
+  "description_de": "Bunt geröstetes Blechgemüse mit Süßkartoffel und knusprigen Kichererbsen, dazu ein Knoblauch-Kräuterquark.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "suesskartoffel",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Süßkartoffel (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Zucchini (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Stängel (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 220 °C Ober-/Unterhitze vor und lege ein Blech mit Backpapier aus.",
+    "Schneide Süßkartoffel in 2 cm große Würfel, Paprika und Zucchini in Stücke und die Zwiebel in Spalten.",
+    "Vermische Gemüse und trocken getupfte Kichererbsen mit Olivenöl, Paprikapulver, Kreuzkümmel und Salz und verteile alles auf dem Blech.",
+    "Röste das Gemüse 25 Minuten, nach der Hälfte der Zeit einmal wenden.",
+    "Verrühre währenddessen den Quark mit gepresstem Knoblauch, gehackter Petersilie, Salz, Pfeffer und 1–2 EL Wasser.",
+    "Serviere das Ofengemüse mit dem Quark-Dip."
+  ],
+  "tip_de": "Ein Spritzer Zitronensaft über dem fertigen Gemüse macht es frischer.",
+  "total_minutes": 35,
+  "prep_minutes": 35,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 576,
+    "protein_g": 34.4,
+    "carbs_g": 72.2,
+    "fat_g": 15.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "legumes", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "394ad658b119f851d376dd25b4218b81da257c6f6bf0be8bd6e28c73cb748269"
+  }
+}

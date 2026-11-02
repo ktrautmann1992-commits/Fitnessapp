@@ -1,0 +1,119 @@
+{
+  "id": "schoko-smoothie-bowl-mit-banane",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schoko-Smoothie-Bowl mit Banane",
+  "description_de": "Dicke, eiskalte Schoko-Bowl aus gefrorener Banane, Skyr und Whey – wie Softeis zum Frühstück.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "banane",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Banane, in Scheiben gefroren (120 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "whey-proteinpulver-schoko",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "25 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "beeren-mischung-tk",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Gib die gefrorenen Bananenscheiben, Skyr, Proteinpulver und Milch in einen leistungsstarken Mixer.",
+    "Mixe alles 30–60 Sekunden zu einer dicken, cremigen Masse; bei Bedarf einen Schuss Milch nachgießen.",
+    "Füll die Bowl in eine Schüssel.",
+    "Toppe sie mit Haferflocken und den angetauten Beeren und träufle das Erdnussmus darüber."
+  ],
+  "tip_de": "Bananen in Scheiben einfrieren, dann hast du immer eine Basis parat. Ohne Pulver: 250 g Skyr und 1 TL Backkakao.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 518,
+    "protein_g": 45.9,
+    "carbs_g": 56.8,
+    "fat_g": 10.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "peanuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "030ee55d58efed7e65993cfd582f774ca2edf6f06ba38d007c21584ce678a042"
+  }
+}

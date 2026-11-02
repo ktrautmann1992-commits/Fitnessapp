@@ -1,0 +1,167 @@
+{
+  "id": "ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Ofen-Kaiserschmarrn vom Blech mit Apfelmus und Skyr",
+  "description_de": "Fluffiger Protein-Kaiserschmarrn aus dem Ofen statt aus der Pfanne – mit Quark im Teig und Skyr dazu.",
+  "section_de": "Frühstück",
+  "categories": ["meal-prep"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 360,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 500,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Packungen à 250 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rosinen",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "apfelmus-ungesuesst",
+      "amount": 500,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Glas (500 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 500,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Becher (500 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C Ober-/Unterhitze vor und lege ein Backblech mit Backpapier aus; pinsle es mit dem Öl ein.",
+    "Trenne die Eier und schlage das Eiweiß mit der Prise Salz steif.",
+    "Verrühre Eigelb, Quark, Milch, Mehl, Haferflocken, Backpulver und Zimt zu einem glatten Teig und hebe den Eischnee vorsichtig unter.",
+    "Streiche den Teig auf das Blech, streue die Rosinen darüber und backe ihn 15–18 Minuten, bis er goldbraun ist.",
+    "Zerreiße den Schmarrn mit zwei Gabeln in Stücke, lass ihn abkühlen und verteile ihn auf 5 Dosen.",
+    "Fülle Apfelmus und Skyr (je 100 g pro Portion) in kleine separate Becher."
+  ],
+  "tip_de": "Hält im Kühlschrank 4 Tage; die Freitagsportion einfrieren und am Donnerstagabend in den Kühlschrank legen. Morgens 1–2 Minuten in der Mikrowelle bei 600 Watt oder kurz in der Pfanne aufwärmen – oder kalt mit Apfelmus und Skyr essen.",
+  "meal_prep_plan_id": "vegetarisch",
+  "total_minutes": 15,
+  "prep_minutes": 1,
+  "cook_minutes": 14,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 527,
+    "protein_g": 40.5,
+    "carbs_g": 61.1,
+    "fat_g": 12
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "sulphites", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "066dd062d2a9e6d881d001082add97ffd2d8f80e1a8c2a16cff195c01503d76e"
+  }
+}

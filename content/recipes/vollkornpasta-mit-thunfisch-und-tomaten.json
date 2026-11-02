@@ -1,0 +1,157 @@
+{
+  "id": "vollkornpasta-mit-thunfisch-und-tomaten",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Vollkornpasta mit Thunfisch und Tomaten",
+  "description_de": "Mediterrane Pasta mit Thunfisch, geschmorten Cherrytomaten, Zucchini, Rucola und Parmesan – schneller als jeder Lieferdienst.",
+  "section_de": "Mittagessen",
+  "categories": ["pre-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornnudeln",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "90 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "thunfisch-dose-im-eigenen-saft-abgetropft",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Dose, abgetropft (120 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zucchini (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gerieben (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rucola",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Nudeln in reichlich Salzwasser nach Packungsanweisung (ca. 10 Minuten) bissfest.",
+    "Würfle die Zucchini, halbiere die Cherrytomaten und hacke den Knoblauch.",
+    "Brate Zucchini und Knoblauch im Olivenöl bei mittlerer Hitze 3 Minuten, gib dann die Tomaten dazu und schmore alles 3 Minuten weiter.",
+    "Rühre den Thunfisch und den Oregano unter und erwärme ihn 1 Minute.",
+    "Gieße die Nudeln ab, schwenke sie in der Sauce und würze mit Salz und Pfeffer.",
+    "Serviere die Pasta mit Rucola und Parmesan."
+  ],
+  "tip_de": "Ein Schuss Nudelwasser macht die Sauce sämiger, ganz ohne Sahne.",
+  "total_minutes": 18,
+  "prep_minutes": 2,
+  "cook_minutes": 16,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 644,
+    "protein_g": 49.1,
+    "carbs_g": 67.6,
+    "fat_g": 17.2
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "fish", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "394a830a50730639dc2f483a260c193b6777a5f34b5b7ab1d8ad92629c4714f0"
+  }
+}

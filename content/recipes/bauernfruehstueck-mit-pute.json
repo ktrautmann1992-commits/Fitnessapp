@@ -1,0 +1,166 @@
+{
+  "id": "bauernfruehstueck-mit-pute",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Bauernfrühstück mit Pute",
+  "description_de": "Herzhafte Bratkartoffeln mit Ei, Putenbrust und Zwiebeln aus einer Pfanne – deftig, sättigend und ganz ohne Speck.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 mittelgroße Pellkartoffeln, gekocht (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "eiklar",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g (ca. 2 Eiklar)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "putenbrust-aufschnitt",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Scheiben (60 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Gurke (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die gekochten Kartoffeln in Scheiben, die Zwiebel in Würfel und die Putenbrust in Streifen.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne bei mittlerer bis hoher Hitze und brate die Kartoffeln 8–10 Minuten goldbraun, dabei gelegentlich wenden.",
+    "Gib Zwiebeln und Putenbrust dazu und brate alles weitere 2 Minuten.",
+    "Verquirle Eier und Eiklar mit Salz, Pfeffer und Paprikapulver, gieße die Mischung über die Kartoffeln und lass sie bei mittlerer Hitze 3 Minuten stocken.",
+    "Bestreue das Bauernfrühstück mit Schnittlauch und serviere die Gurke in Scheiben dazu."
+  ],
+  "tip_de": "Koche am Vorabend ein paar Kartoffeln mehr – mit Pellkartoffeln vom Vortag werden die Bratkartoffeln besonders knusprig.",
+  "total_minutes": 20,
+  "prep_minutes": 8,
+  "cook_minutes": 12,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 495,
+    "protein_g": 39.5,
+    "carbs_g": 35.6,
+    "fat_g": 20.7
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["eggs", "poultry", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 3,
+        "food_id": "putenbrust-aufschnitt",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 3 gart die Zutat durch: „Gib Zwiebeln und Putenbrust dazu und brate alles weitere 2 Minuten.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "2ed2245d7fa9b777e5afb20e24d67265e6de214b07accaf0b6334250cbfa140e"
+  }
+}

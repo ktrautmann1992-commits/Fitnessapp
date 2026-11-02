@@ -1,0 +1,138 @@
+{
+  "id": "senfeier-mit-brokkoli",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Senfeier mit Brokkoli",
+  "description_de": "Der norddeutsche Klassiker in leichter Version: wachsweiche Eier in einer leichten Senfsauce, dazu Brokkoli statt Kartoffeln.",
+  "section_de": "Mittagessen",
+  "categories": ["low-carb"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 220,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Eier (M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "senf",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (20 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "speisestaerke",
+      "amount": 4,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (4 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Kopf (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "dill-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gehackt",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Eier 7–8 Minuten wachsweich, schrecke sie kalt ab und pelle sie.",
+    "Gare den Brokkoli in Röschen in wenig Salzwasser 5 Minuten bissfest.",
+    "Bring Brühe und Milch zum Köcheln, rühre die Stärke mit 1 EL kaltem Wasser an und binde damit die Sauce.",
+    "Rühre den Senf ein, schmecke mit Salz, Pfeffer und Dill ab und lass die Sauce nicht mehr kochen.",
+    "Halbiere die Eier, lege sie in die Sauce und serviere den Brokkoli dazu."
+  ],
+  "tip_de": "Für eine noch leichtere Sauce die Milch durch Brühe ersetzen und zum Schluss 2 EL Skyr unterrühren.",
+  "total_minutes": 20,
+  "prep_minutes": 7,
+  "cook_minutes": 13,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 469,
+    "protein_g": 42,
+    "carbs_g": 17.9,
+    "fat_g": 23.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "eggs", "celery", "mustard", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c577ad790667b0a0da66bcd2f5dbbd05c4c17e1712cf0885bd2f0b5dc1b4dacb"
+  }
+}

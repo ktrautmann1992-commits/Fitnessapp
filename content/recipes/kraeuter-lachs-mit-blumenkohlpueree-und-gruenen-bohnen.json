@@ -1,0 +1,136 @@
+{
+  "id": "kraeuter-lachs-mit-blumenkohlpueree-und-gruenen-bohnen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kräuter-Lachs mit Blumenkohlpüree und grünen Bohnen",
+  "description_de": "Saftiger Ofenlachs mit Zitrone und Dill auf cremigem Blumenkohlpüree, dazu knackige grüne Bohnen – wie Lachs mit Kartoffelpüree, nur viel leichter.",
+  "section_de": "Abendessen",
+  "categories": ["low-carb"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "lachsfilet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "blumenkohl",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Kopf (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gruene-bohnen-tk",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "10 g, gerieben",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "dill-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gehackt",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "muskatnuss-gerieben",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C vor. Lege den Lachs in eine kleine Form, beträufle ihn mit Zitronensaft, würze mit Salz, Pfeffer und Dill und gare ihn 15 Minuten.",
+    "Gare den Blumenkohl in Röschen in Salzwasser 12 Minuten weich und lass ihn gut abtropfen.",
+    "Püriere den Blumenkohl mit warmer Milch und Parmesan cremig und würze mit Salz und Muskat.",
+    "Gare die Bohnen 6–8 Minuten in Salzwasser und serviere alles zusammen."
+  ],
+  "tip_de": "Gut abtropfen lassen ist das Geheimnis für ein cremiges, nicht wässriges Blumenkohlpüree.",
+  "total_minutes": 30,
+  "prep_minutes": 1,
+  "cook_minutes": 29,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 486,
+    "protein_g": 44,
+    "carbs_g": 17.2,
+    "fat_g": 24.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "fish", "legumes", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "lachsfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 1 gart die Zutat durch: „Heize den Ofen auf 200 °C vor. Lege den Lachs in eine kleine Form, beträufle ihn mit Zitronensaft, würze mit Salz, Pfeffer und Dill und gare ihn 15 Minuten.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3b63168ac9449069debb7b50323ebd2665fe50f3b0ad4aed91efb720115f824b"
+  }
+}

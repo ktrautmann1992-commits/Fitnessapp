@@ -1,0 +1,138 @@
+{
+  "id": "kichererbsen-avocado-stulle-mit-raeuchertofu",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kichererbsen-Avocado-Stulle mit Räuchertofu",
+  "description_de": "Herzhaftes Vollkornbrot mit zerdrückten Kichererbsen, Avocado und knusprigem Räuchertofu.",
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornbrot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Avocado (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "raeuchertofu",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomaten",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Tomate (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Zerdrücke Kichererbsen und Avocado mit einer Gabel und schmecke mit Zitronensaft, Salz und Pfeffer ab.",
+    "Schneide den Räuchertofu in dünne Scheiben und brate ihn in einer Pfanne ohne Öl 2 Minuten pro Seite knusprig.",
+    "Toaste das Brot nach Belieben.",
+    "Bestreiche das Brot mit der Kichererbsen-Avocado-Creme und belege es mit Tofu und Tomatenscheiben.",
+    "Würze mit Chiliflocken."
+  ],
+  "tip_de": "Die Kichererbsencreme hält sich mit etwas mehr Zitronensaft 2 Tage im Kühlschrank.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 8,
+  "cook_minutes": 2,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 516,
+    "protein_g": 28.2,
+    "carbs_g": 52.4,
+    "fat_g": 18.4
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4bb4ee00ccb41191d16d0ce4bb54cb7db3e6d285e4c82e9a12b79e80b2042010"
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "id": "seelachs-mit-gurken-dill-salat-und-petersilienkartoffeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Seelachs mit Gurken-Dill-Salat und Petersilienkartoffeln",
+  "description_de": "Goldbraun gebratenes Seelachsfilet mit Kartoffeln und einem frischen Gurkensalat mit Joghurt-Dill-Dressing – ein leichter deutscher Abendteller.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "seelachsfilet-tk",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Filets (200 g)",
+      "scales": true,
+      "heated": false,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 kleine Kartoffeln (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2/3 Gurke (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "joghurt-1-5",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 EL (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "dill-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Taue den Seelachs vorher im Kühlschrank auf oder nach Packungsangabe; tupfe ihn trocken.",
+    "Schäle die Kartoffeln, viertele sie und koche sie in Salzwasser 15–18 Minuten weich.",
+    "Hoble die Gurke in dünne Scheiben und vermenge sie mit Joghurt, Senf, der Hälfte des Zitronensafts, Dill, Salz und Pfeffer.",
+    "Würze den Fisch mit Salz und Pfeffer und brate ihn im Rapsöl bei mittlerer Hitze 3–4 Minuten pro Seite goldbraun; mit dem restlichen Zitronensaft beträufeln.",
+    "Schwenke die abgegossenen Kartoffeln in der Petersilie und serviere sie mit Fisch und Gurkensalat."
+  ],
+  "tip_de": "Seelachs ist günstig und mager – statt Seelachs passt auch Kabeljau oder Alaska-Seelachs aus der Tiefkühltruhe.",
+  "total_minutes": 25,
+  "prep_minutes": 3,
+  "cook_minutes": 22,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 500,
+    "protein_g": 46.2,
+    "carbs_g": 45.2,
+    "fat_g": 14
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "fish", "mustard"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4bdf6ad9cea6855d0438fe0e14f25a5c3efc3f3d9da0d36328793a3cad2800ac"
+  }
+}

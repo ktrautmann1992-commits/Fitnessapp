@@ -1,0 +1,191 @@
+{
+  "id": "shakshuka-mit-tofu-und-weissen-bohnen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Shakshuka mit Tofu und weißen Bohnen",
+  "description_de": "Würzige Tomaten-Paprika-Pfanne nach orientalischer Art, in der Tofuscheiben und weiße Bohnen sanft garen.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ große Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 400,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Dose (400 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "weisse-bohnen-dose-abgetropft",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "tofu-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kurkuma",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Scheibe (40 g)",
+      "scales": true,
+      "role": "carb"
+    }
+  ],
+  "steps_de": [
+    "Würfle Zwiebel und Paprika, hacke den Knoblauch.",
+    "Erhitze das Olivenöl in einer Pfanne und dünste Zwiebel und Paprika 5 Minuten bei mittlerer Hitze, dann Knoblauch, Kreuzkümmel, Paprikapulver und Chiliflocken 1 Minute mitrösten.",
+    "Gib gehackte Tomaten und Bohnen dazu, würze mit Salz und Pfeffer und lass alles 8 Minuten offen einköcheln.",
+    "Schneide den Tofu in 4 dicke Scheiben, bestreue sie mit Kurkuma und Salz, drücke sie in die Sauce und lass sie zugedeckt 5 Minuten ziehen.",
+    "Bestreue die Shakshuka mit Petersilie und serviere sie direkt aus der Pfanne mit dem Brot."
+  ],
+  "tip_de": "Ein Klecks Sojajoghurt mit Zitrone obendrauf rundet die Schärfe ab.",
+  "total_minutes": 25,
+  "prep_minutes": 20,
+  "cook_minutes": 5,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 615,
+    "protein_g": 37.8,
+    "carbs_g": 59.6,
+    "fat_g": 21.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "be2b8dbc214ef0bc695dfedfa545a0bdc66a6bb82da811eb2246e95a35c5e4a5"
+  }
+}

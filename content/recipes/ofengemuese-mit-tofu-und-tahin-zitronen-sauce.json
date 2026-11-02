@@ -1,0 +1,164 @@
+{
+  "id": "ofengemuese-mit-tofu-und-tahin-zitronen-sauce",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Ofengemüse mit Tofu und Tahin-Zitronen-Sauce",
+  "description_de": "Buntes Blechgemüse mit Süßkartoffel, Kichererbsen und knusprigem Tofu, beträufelt mit Sesamsauce.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "suesskartoffel",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Süßkartoffel (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2/3 Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "tahin",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 22,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1–2 EL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 200 °C Ober-/Unterhitze vor.",
+    "Schneide Süßkartoffel und Tofu in Würfel, Paprika in Streifen und teile den Brokkoli in Röschen.",
+    "Vermische alles mit den Kichererbsen, Olivenöl, Paprikapulver, Kreuzkümmel und Salz auf einem Backblech.",
+    "Backe das Blech 25–30 Minuten, nach der Hälfte der Zeit einmal wenden.",
+    "Verrühre Tahin, Zitronensaft und 1–2 EL Wasser zu einer glatten Sauce und träufle sie über das Gemüse."
+  ],
+  "tip_de": "Gleich zwei Bleche backen – das Gemüse schmeckt am nächsten Tag auch kalt als Salat.",
+  "total_minutes": 40,
+  "prep_minutes": 10,
+  "cook_minutes": 30,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 662,
+    "protein_g": 37.5,
+    "carbs_g": 59.8,
+    "fat_g": 28.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "sesame"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "a23adda9404f869d751440bc669c304367d7d08f47e229abd1f917e7462609da"
+  }
+}

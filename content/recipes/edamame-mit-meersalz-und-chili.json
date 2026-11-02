@@ -1,0 +1,100 @@
+{
+  "id": "edamame-mit-meersalz-und-chili",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Edamame mit Meersalz & Chili",
+  "description_de": "Warme Edamame, nur mit Salz, Chili und Zitrone gewürzt – pflanzliches Eiweiß in 8 Minuten.",
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise grobes Meersalz",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bring Wasser in einem kleinen Topf zum Kochen und gare die Edamame darin 4–5 Minuten.",
+    "Gieß sie ab und lass sie kurz abdampfen.",
+    "Schwenke die Edamame mit Sojasauce, Zitronensaft, Chiliflocken und Meersalz durch und iss sie warm."
+  ],
+  "tip_de": "Edamame gibt es tiefgekühlt in den meisten Supermärkten – auch in der Schote, dann 250 g nehmen.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 8,
+  "prep_minutes": 3,
+  "cook_minutes": 5,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 160,
+    "protein_g": 14.8,
+    "carbs_g": 7.6,
+    "fat_g": 7.2
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "329425f4e039755f5e991cd6d8ddb0b18b3c575e79500cade08d90f30e644e1d"
+  }
+}

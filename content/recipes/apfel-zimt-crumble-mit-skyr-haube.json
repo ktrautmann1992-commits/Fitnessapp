@@ -1,0 +1,129 @@
+{
+  "id": "apfel-zimt-crumble-mit-skyr-haube",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Apfel-Zimt-Crumble mit Skyr-Haube",
+  "description_de": "Warme Zimtäpfel unter knusprigen Hafer-Mandel-Streuseln, serviert mit kühlem Skyr – Herbstdessert mit viel Eiweiß.",
+  "section_de": "Aus dem Ofen oder der Mikrowelle",
+  "categories": ["protein-dessert"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "apfel",
+      "amount": 130,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Apfel (130 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "mandeln",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 4,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (4 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 6,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (6 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 200 °C Ober-/Unterhitze vor.",
+    "Schneide den Apfel in kleine Würfel, mische ihn mit Zitronensaft und der Hälfte des Zimts und gib ihn in eine kleine Auflaufform.",
+    "Verknete Haferflocken, gehackte Mandeln, Rapsöl, Ahornsirup und restlichen Zimt mit den Fingern zu Streuseln und verteile sie über den Äpfeln.",
+    "Backe den Crumble 18–20 Minuten, bis die Streusel goldbraun sind und die Äpfel weich.",
+    "Lass ihn kurz abkühlen und serviere ihn mit dem kalten Skyr."
+  ],
+  "tip_de": "Schneller geht es in der Mikrowelle: Äpfel 3 Minuten bei 800 Watt garen und die Streusel in einer Pfanne ohne Fett 3 Minuten rösten.",
+  "tags_de": ["Dessert"],
+  "total_minutes": 30,
+  "prep_minutes": 10,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 339,
+    "protein_g": 21.3,
+    "carbs_g": 38,
+    "fat_g": 10.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "tree_nuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "7ecfe19c6048bdc6b0af6bd9b5052de4e4997c24c2cbfb02740d85a44e52c2d5"
+  }
+}

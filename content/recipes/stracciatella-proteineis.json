@@ -1,0 +1,101 @@
+{
+  "id": "stracciatella-proteineis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Stracciatella-Proteineis",
+  "description_de": "Cremiges Vanille-Quarkeis mit feinen Zartbitter-Raspeln, das in etwa 3 Stunden im Gefrierfach ohne Eismaschine fest wird – über 30 g Eiweiß bei wenig Kalorien.",
+  "section_de": "Gefroren",
+  "categories": ["schnell", "meal-prep", "protein-dessert"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "magerquark",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zartbitterschokolade-70",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Stück (10 g), fein geraspelt",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Rühre Magerquark, Milch, Proteinpulver und Erythrit mit dem Schneebesen glatt und cremig.",
+    "Hebe die geraspelte Schokolade unter und füll die Masse in eine kleine Gefrierdose.",
+    "Stell die Dose ins Gefrierfach und rühre in der ersten Stunde alle 30 Minuten kräftig durch, damit sich keine großen Eiskristalle bilden.",
+    "Lass das Eis insgesamt etwa 3 Stunden frieren und vor dem Servieren 10 Minuten antauen, dann lässt es sich gut portionieren."
+  ],
+  "tip_de": "Gefrierzeit: etwa 3 Stunden; wird es über Nacht steinhart, 15–20 Minuten antauen lassen. Alternativ in Eis-am-Stiel-Formen füllen. Ohne Pulver: 50 g Skyr natur zusätzlich und etwas Vanille statt Whey (ca. 25 g Eiweiß).",
+  "tags_de": ["Unter 10 Minuten", "Dessert"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 244,
+    "protein_g": 32.2,
+    "carbs_g": 13.4,
+    "fat_g": 6.2
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "d49e5b15514dd135f322468d864f08a1e7454c283746dc3ad1a0f66822177ba8"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "id": "pfirsich-eistee-sorbet",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Pfirsich-Eistee-Sorbet",
+  "description_de": "Eistee zum Löffeln: schwarzer Tee, saftige Pfirsiche und Zitrone ergeben ein leichtes, fruchtiges Sorbet.",
+  "section_de": "Sorbet & Erfrischung",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schwarzer-tee-aufgebrueht",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 ml, kräftig aufgebrüht und abgekühlt",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfirsich",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Pfirsiche (200 g), entsteint",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "clear-whey-isolat-fruchtgeschmack",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (30 g), z. B. Pfirsich-Eistee",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (15 g)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Brüh den Tee kräftig auf, lass ihn vollständig abkühlen und püriere ihn mit Pfirsichen, Zitronensaft und Erythrit; das Clear-Whey-Isolat zum Schluss kurz untermixen.",
+    "Gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL kalten Tee dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+  ],
+  "tip_de": "Mit grünem Tee wird es milder, mit Pfirsichen aus der Dose (abgetropft) gelingt es auch außerhalb der Saison. Tee ruhig abends aufbrühen und über Nacht im Kühlschrank abkühlen lassen.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 194,
+    "protein_g": 27.1,
+    "carbs_g": 19.1,
+    "fat_g": 0.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "36c545d3fa11aa2cfe7a88aafad8b4db5085c2578f2aad76efbb14447f491666"
+  }
+}

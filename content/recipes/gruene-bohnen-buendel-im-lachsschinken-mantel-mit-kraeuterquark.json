@@ -1,0 +1,129 @@
+{
+  "id": "gruene-bohnen-buendel-im-lachsschinken-mantel-mit-kraeuterquark",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Grüne-Bohnen-Bündel im Lachsschinken-Mantel mit Kräuterquark",
+  "description_de": "Kleine Bohnenbündel, umwickelt mit magerem Lachsschinken, der in der Heißluft knusprig wird – eine knusprige Gemüsebeilage zu Kartoffeln, Fisch oder Fleisch.",
+  "section_de": "Beilagen & Gemüse",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "gruene-bohnen-tk",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g, aufgetaut",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "lachsschinken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Scheiben (40 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Röllchen (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zehe (2 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Tupfe die aufgetauten Bohnen trocken, teile sie in 4 Bündel und wickle um jedes Bündel eine Scheibe Lachsschinken. Bestreiche die Bündel dünn mit Olivenöl und pfeffere sie.",
+    "Heize die Heißluftfritteuse 3 Minuten auf 190 °C vor.",
+    "Lege die Bündel mit der Schinken-Naht nach unten nebeneinander in den Korb und gare sie 8–10 Minuten bei 190 °C; nach 5 Minuten vorsichtig mit einer Zange wenden.",
+    "Verrühre Magerquark mit Schnittlauch, fein geriebenem Knoblauch, 1–2 EL Wasser, Salz und Pfeffer und serviere den Kräuterquark dazu."
+  ],
+  "tip_de": "Mit frischen Bohnen die Bündel vorher 4 Minuten in Salzwasser blanchieren. Lachsschinken ist schon salzig – die Bohnen deshalb nicht zusätzlich salzen.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 20,
+  "prep_minutes": 5,
+  "cook_minutes": 15,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 192,
+    "protein_g": 22.5,
+    "carbs_g": 14.3,
+    "fat_g": 4.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "legumes", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c563933894f9a7682101f400077b8269dc221eca7a3c83762f2580fb7bde3dfc"
+  }
+}

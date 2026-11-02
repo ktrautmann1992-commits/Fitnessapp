@@ -1,0 +1,167 @@
+{
+  "id": "shakshuka-mit-putenbrust",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Shakshuka mit Putenbrust",
+  "description_de": "Orientalisch gewürzte Tomaten-Paprika-Pfanne mit pochierten Eiern und angebratener Putenbrust.",
+  "section_de": "Frühstück",
+  "categories": [],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "putenbrustfilet",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose (200 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gehackt (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide Zwiebel, Paprika und Putenbrust in kleine Würfel.",
+    "Erhitze das Olivenöl in einer kleinen Pfanne und brate die Putenwürfel 3 Minuten bei mittlerer bis hoher Hitze an.",
+    "Gib Zwiebel und Paprika dazu und brate sie 3 Minuten mit, dann Kreuzkümmel und Paprikapulver kurz anrösten.",
+    "Gieß die Tomaten an, würze mit Salz und Pfeffer und lass alles 5 Minuten einköcheln.",
+    "Drücke zwei Mulden in die Sauce, schlag die Eier hinein und lass sie mit Deckel bei kleiner Hitze 6–8 Minuten stocken.",
+    "Bestreue die Shakshuka mit Petersilie und iss das Brot dazu."
+  ],
+  "tip_de": "Am Wochenende ideal als Brunch – die Sauce lässt sich auch am Vortag vorkochen.",
+  "total_minutes": 25,
+  "prep_minutes": 19,
+  "cook_minutes": 6,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 519,
+    "protein_g": 42.8,
+    "carbs_g": 40.4,
+    "fat_g": 18.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "eggs", "poultry", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8e01a299fd78fa08a4e57da74c7f842ca0940cb189413da14c2232d3f3fb98d6"
+  }
+}

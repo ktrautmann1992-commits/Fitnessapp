@@ -1,0 +1,157 @@
+{
+  "id": "protein-pizza-margherita-mit-quark-oel-teig",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Protein-Pizza Margherita mit Quark-Öl-Teig",
+  "description_de": "Dünne, knusprige Margherita mit einem schnellen Teig ohne Hefe, bei der Magerquark im Boden und leichter Mozzarella für reichlich Eiweiß sorgen.",
+  "section_de": "Pizza & Flammkuchen",
+  "categories": ["fitness-fast-food"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "weizenmehl-type-405",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "90 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "90 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 gestr. TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Kugel (125 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "5 Stück (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "basilikum",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll Blätter (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 250 °C Ober-/Unterhitze (230 °C Umluft) vor und lege ein Blech mit Backpapier bereit.",
+    "Verknete Mehl, Backpulver und Salz mit Magerquark und Olivenöl zu einem glatten, nicht klebenden Teig; ist er zu trocken, gib 1–2 EL Wasser dazu.",
+    "Rolle den Teig auf dem Backpapier dünn zu einem Kreis von etwa 26 cm aus.",
+    "Würze die passierten Tomaten mit Oregano, Salz und Pfeffer und streiche sie auf den Boden; verteile den zerzupften Mozzarella und die halbierten Cherrytomaten darauf.",
+    "Backe die Pizza auf der untersten Schiene 10–12 Minuten, bis der Rand goldbraun und der Käse geschmolzen ist.",
+    "Belege die Pizza nach dem Backen mit frischem Basilikum."
+  ],
+  "tip_de": "Der Quark-Öl-Teig lässt sich vorbereiten: in Frischhaltefolie hält er sich 1 Tag im Kühlschrank. Für extra Knusprigkeit den Boden 4 Minuten ohne Belag vorbacken.",
+  "tags_de": ["Fitness-Fast-Food"],
+  "total_minutes": 30,
+  "prep_minutes": 18,
+  "cook_minutes": 12,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 682,
+    "protein_g": 44.7,
+    "carbs_g": 75.6,
+    "fat_g": 20.7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "7391e7ddb5055bce345be3ef2844e768b18b631b2c29ee701a8984edeb3cd98c"
+  }
+}

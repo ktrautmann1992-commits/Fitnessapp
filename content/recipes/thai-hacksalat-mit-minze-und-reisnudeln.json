@@ -1,0 +1,182 @@
+{
+  "id": "thai-hacksalat-mit-minze-und-reisnudeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Thai-Hacksalat mit Minze und Reisnudeln",
+  "description_de": "Lauwarmes, mageres Schweinehack mit Limette, Chili und frischer Minze auf knackigem Salat und Reisnudeln – inspiriert vom thailändischen Larb.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schweinehackfleisch-mager",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "reisnudeln-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Gurke (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "karotte",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Karotte (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ rote Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salatmix",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Handvoll (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "minze-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Handvoll (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Limette (20 g Saft)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Übergieße die Reisnudeln mit kochendem Wasser und lass sie nach Packungsangabe 5–8 Minuten ziehen. Gieße sie ab und spüle sie kalt ab.",
+    "Verrühre Limettensaft, Sojasauce, Honig und Chiliflocken zu einem Dressing.",
+    "Brate das Hack mit dem gehackten Knoblauch im Rapsöl bei hoher Hitze 5–6 Minuten krümelig und lösche es mit der Hälfte des Dressings ab.",
+    "Schneide Gurke und Karotte in feine Streifen, die Zwiebel in Ringe und zupfe die Minze.",
+    "Verteile Salat, Gemüse und Reisnudeln auf einem Teller, gib das warme Hack darauf, beträufle alles mit dem restlichen Dressing und streue die Minze darüber."
+  ],
+  "tip_de": "Mit 1 EL gehackten, gerösteten Erdnüssen wird es noch authentischer (+60 kcal).",
+  "total_minutes": 18,
+  "prep_minutes": 12,
+  "cook_minutes": 6,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 538,
+    "protein_g": 37.6,
+    "carbs_g": 55.1,
+    "fat_g": 17.2
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "legumes",
+    "soy",
+    "fructose",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4a97d370bd6aee24eb6d3fde0a03a77c2ef4bba487ce31018204503ce52e4b10"
+  }
+}

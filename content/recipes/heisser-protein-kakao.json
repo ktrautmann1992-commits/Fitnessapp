@@ -1,0 +1,82 @@
+{
+  "id": "heisser-protein-kakao",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Heißer Protein-Kakao",
+  "description_de": "Cremiger heißer Kakao aus der Mikrowelle mit Schoko-Whey – schmeckt wie Trinkschokolade, liefert aber reichlich Eiweiß.",
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "milch-1-5",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "whey-proteinpulver-schoko",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2/3 Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kakaopulver-stark-entoelt",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühr Proteinpulver und Kakao in einer kleinen Schale mit 2 EL der kalten Milch zu einer glatten Paste.",
+    "Erwärm die restliche Milch in einer großen Tasse ca. 2 Minuten bei 800 Watt in der Mikrowelle – heiß, aber nicht kochend.",
+    "Rühr die Paste mit einem Schneebesen oder Milchaufschäumer in die heiße Milch, bis keine Klümpchen mehr da sind."
+  ],
+  "tip_de": "Die Milch nicht kochen lassen: Whey flockt bei zu großer Hitze aus. Mit einem Milchaufschäumer wird der Kakao in 20 Sekunden schaumig.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 4,
+  "prep_minutes": 4,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 210,
+    "protein_g": 24.5,
+    "carbs_g": 14.6,
+    "fat_g": 5.4
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "7fdea10581873f86ce502e1827818a2c66259fabd399fc31b2da0d8cde293809"
+  }
+}

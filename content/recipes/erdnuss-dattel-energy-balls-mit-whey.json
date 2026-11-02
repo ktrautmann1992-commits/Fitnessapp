@@ -1,0 +1,110 @@
+{
+  "id": "erdnuss-dattel-energy-balls-mit-whey",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Erdnuss-Dattel-Energy-Balls mit Whey",
+  "description_de": "Drei saftige Kugeln aus Hafer, Datteln, Erdnussmus und Vanille-Whey – ohne Backen, perfekt für unterwegs.",
+  "section_de": "Snack",
+  "categories": ["schnell", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "datteln-getrocknet-entsteint",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Datteln, entsteint (15 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Hacke die Datteln sehr fein oder zerkleinere sie im Mixer.",
+    "Verknete Datteln, Haferflocken, Whey, Erdnussmus, Zimt und Milch zu einer formbaren Masse. Ist sie zu trocken, gib tropfenweise mehr Milch dazu.",
+    "Forme mit feuchten Händen 3 Kugeln.",
+    "Stelle sie 10 Minuten in den Kühlschrank oder iss sie sofort."
+  ],
+  "tip_de": "Gleich die fünffache Menge machen: Im Kühlschrank halten die Balls 5 Tage. Ohne Pulver: 1 EL Magerquark und 1 EL mehr Hafer verwenden.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 241,
+    "protein_g": 17.4,
+    "carbs_g": 24.6,
+    "fat_g": 7.4
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "peanuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "04e5d4970c70d32e97eb21cce32015e4cf7da411ca38b3b77061a4ae4be70767"
+  }
+}

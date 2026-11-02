@@ -1,0 +1,157 @@
+{
+  "id": "vegetarisch",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Veggie-Wohlfühl-Woche",
+  "description_de": "Ofen-Kaiserschmarrn, eine Linsen-Lasagne und fluffige Ofen-Quarkbällchen: vegetarischer Genuss, der satt macht. Der Ofen läuft fast durchgehend, du schnippelst parallel.",
+  "recipe_ids": [
+    "ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr",
+    "linsen-spinat-lasagne-mit-huettenkaese",
+    "ofen-quarkbaellchen-mit-zimt"
+  ],
+  "cook_steps": [
+    {
+      "start_min": 0,
+      "text_de": "Ofen auf 180 °C Ober-/Unterhitze vorheizen; Zwiebel, Karotte, Zucchini und Knoblauch für die Lasagne fein würfeln."
+    },
+    {
+      "start_min": 10,
+      "text_de": "Gemüse andünsten, Linsen, Tomaten und Wasser zugeben und 12 Minuten köcheln lassen."
+    },
+    {
+      "start_min": 12,
+      "text_de": "Quarkbällchen-Teig anrühren, 20 Bällchen aufs Blech setzen und 15–18 Minuten backen."
+    },
+    {
+      "start_min": 22,
+      "text_de": "Hüttenkäse mit Ei und gehacktem Spinat verrühren, Mozzarella in Scheiben schneiden."
+    },
+    {
+      "start_min": 30,
+      "text_de": "Quarkbällchen herausnehmen und in Zimt wälzen; Ofen auf 180 °C Umluft umstellen."
+    },
+    {
+      "start_min": 32,
+      "text_de": "Lasagne schichten und 40 Minuten backen."
+    },
+    {
+      "start_min": 45,
+      "text_de": "Eier für den Kaiserschmarrn trennen, Eiweiß steif schlagen und den Teig anrühren."
+    },
+    {
+      "start_min": 60,
+      "text_de": "Apfelmus und Skyr in je 5 kleine Becher portionieren, Quarkbällchen in Dosen packen."
+    },
+    {
+      "start_min": 72,
+      "text_de": "Lasagne herausnehmen und ruhen lassen; Ofen auf 200 °C hochdrehen und den Kaiserschmarrn-Teig aufs Blech streichen."
+    },
+    {
+      "start_min": 77,
+      "text_de": "Kaiserschmarrn 15–18 Minuten backen, inzwischen die Küche aufräumen."
+    },
+    {
+      "start_min": 95,
+      "text_de": "Lasagne in 5 Stücke schneiden und in Dosen füllen; Kaiserschmarrn zerreißen und abkühlen lassen."
+    },
+    {
+      "start_min": 105,
+      "text_de": "Kaiserschmarrn portionieren, Freitagsportionen von Lasagne, Schmarrn und Quarkbällchen einfrieren, Rest in den Kühlschrank."
+    }
+  ],
+  "storage_plan": [
+    {
+      "recipe_id": "ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr",
+      "weekday": "tue",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr",
+      "weekday": "wed",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr",
+      "weekday": "thu",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "ofen-kaiserschmarrn-vom-blech-mit-apfelmus-und-skyr",
+      "weekday": "fri",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "linsen-spinat-lasagne-mit-huettenkaese",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "linsen-spinat-lasagne-mit-huettenkaese",
+      "weekday": "tue",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "linsen-spinat-lasagne-mit-huettenkaese",
+      "weekday": "wed",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "linsen-spinat-lasagne-mit-huettenkaese",
+      "weekday": "thu",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "linsen-spinat-lasagne-mit-huettenkaese",
+      "weekday": "fri",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "ofen-quarkbaellchen-mit-zimt",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "ofen-quarkbaellchen-mit-zimt",
+      "weekday": "tue",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "ofen-quarkbaellchen-mit-zimt",
+      "weekday": "wed",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "ofen-quarkbaellchen-mit-zimt",
+      "weekday": "thu",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "ofen-quarkbaellchen-mit-zimt",
+      "weekday": "fri",
+      "method": "fresh"
+    }
+  ],
+  "storage_de": [
+    "Lasagne und Kaiserschmarrn in flache Dosen füllen, damit sie schnell abkühlen; Quarkbällchen in eine gut schließende Dose.",
+    "Im Kühlschrank halten Lasagne, Kaiserschmarrn und Quarkbällchen 4 Tage.",
+    "Je eine Portion für Freitag einfrieren und am Donnerstagabend in den Kühlschrank legen."
+  ],
+  "dinner_hint_de": "Abends kochst du frisch – zum Beispiel ein vegetarisches Gericht aus dem Kapitel „Fertig in 10 Minuten“.",
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "e3b26d9c534588dd511fe2738fafda852c0c86fc4d349aebedab1d60e475a4a4"
+  }
+}

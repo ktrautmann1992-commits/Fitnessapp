@@ -1,0 +1,144 @@
+{
+  "id": "hackbaellchen-in-tomatensauce-mit-vollkornnudeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hackbällchen in Tomatensauce mit Vollkornnudeln",
+  "description_de": "Saftige Bällchen aus magerem Schweinehack mit Haferflocken als Bindung, in einer einfachen Tomatensauce – Familienklassiker zum kleinen Preis.",
+  "section_de": "Hauptgericht",
+  "categories": ["meal-prep", "spar-kueche"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "schweinehackfleisch-mager",
+      "amount": 110,
+      "unit": "g",
+      "optional": false,
+      "display_de": "110 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (15 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "vollkornnudeln",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle die Zwiebel sehr fein und verknete die Hälfte davon mit Hackfleisch, Haferflocken, Salz und Pfeffer; forme 6 kleine Bällchen.",
+    "Koche die Nudeln in Salzwasser nach Packungsangabe bissfest (ca. 10 Minuten).",
+    "Brate die Bällchen im Rapsöl bei mittlerer Hitze rundherum 5 Minuten an, gib die restliche Zwiebel dazu und dünste sie 1 Minute mit.",
+    "Gieße die passierten Tomaten an, würze mit Oregano und lass alles zugedeckt 8 Minuten köcheln, bis die Bällchen durchgegart sind.",
+    "Serviere die Hackbällchen mit Sauce über den Nudeln."
+  ],
+  "tip_de": "Schweinehack gibt es oft im 1-kg-Pack günstiger: Bällchen auf Vorrat formen und roh einfrieren.",
+  "tags_de": ["Spar-Küche"],
+  "total_minutes": 25,
+  "prep_minutes": 2,
+  "cook_minutes": 23,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 605,
+    "protein_g": 38.1,
+    "carbs_g": 70,
+    "fat_g": 16.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "histamine", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "cost_estimate": {
+    "eur_per_serving": 1.54,
+    "as_of": "2026-10-23",
+    "basis": "estimate"
+  },
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3d0e7fef24b40c13b3c79e0c3caa7c691633c50301ca05c618c5f2d32f0e8128"
+  }
+}

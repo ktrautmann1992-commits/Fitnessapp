@@ -1,0 +1,96 @@
+{
+  "id": "apfel-zimt-quark-mit-haferflocken",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Apfel-Zimt-Quark mit Haferflocken",
+  "description_de": "Frischer Quark-Snack mit geriebenem Apfel und Haferflocken, der für unter 1 € rund 20 g Eiweiß liefert.",
+  "section_de": "Snack",
+  "categories": ["schnell", "spar-kueche"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "magerquark",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "apfel",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleiner Apfel (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (15 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Reibe den Apfel mit Schale grob.",
+    "Verrühre den Magerquark mit 1–2 EL Wasser cremig.",
+    "Hebe den Apfel unter, bestreue alles mit Haferflocken und Zimt."
+  ],
+  "tip_de": "Saisonale Äpfel aus der Region sind im Herbst am günstigsten – leicht schrumpelige taugen hier bestens.",
+  "tags_de": ["Unter 10 Minuten", "Spar-Küche"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 210,
+    "protein_g": 20.3,
+    "carbs_g": 26.8,
+    "fat_g": 1.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "cost_estimate": {
+    "eur_per_serving": 0.69,
+    "as_of": "2026-10-23",
+    "basis": "estimate"
+  },
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4a4d2bd54b4ce783507988386105eca055d36798ab4748b7c9ec61d608393c9c"
+  }
+}

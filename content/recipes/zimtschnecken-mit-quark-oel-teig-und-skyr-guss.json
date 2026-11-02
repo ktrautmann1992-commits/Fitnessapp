@@ -1,0 +1,129 @@
+{
+  "id": "zimtschnecken-mit-quark-oel-teig-und-skyr-guss",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Zimtschnecken mit Quark-Öl-Teig und Skyr-Guss",
+  "description_de": "Drei kleine, fluffige Zimtschnecken aus schnellem Quark-Öl-Teig ohne Hefe, mit einem cremigen Skyr-Guss statt Zuckerglasur.",
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "magerquark",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 ml)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 12,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (12 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "protein"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Magerquark, Milch, 1 TL Rapsöl und die Hälfte des Erythrits, gib Mehl und Backpulver dazu und knete alles zu einem glatten Teig.",
+    "Rolle den Teig auf etwas Mehl zu einem Rechteck von etwa 15 × 20 cm aus, bestreiche ihn mit dem restlichen Öl und bestreue ihn mit Zimt und dem übrigen Erythrit (1 TL zurückbehalten).",
+    "Rolle den Teig von der langen Seite auf, schneide die Rolle in 3 Stücke und setze sie mit der Schnittfläche nach oben in Silikonförmchen.",
+    "Heize die Heißluftfritteuse 3 Minuten auf 170 °C vor und backe die Schnecken 10–12 Minuten bei 170 °C, ohne sie zu wenden. Werden sie oben zu dunkel, nach 8 Minuten locker mit Alufolie abdecken; sie sind fertig, wenn ein Holzstäbchen trocken herauskommt.",
+    "Verrühre Skyr mit dem restlichen Erythrit und gib den Guss auf die lauwarmen Schnecken."
+  ],
+  "tip_de": "Die Schnecken lassen sich ohne Guss gut mitnehmen; den Skyr dann in einem kleinen Glas extra einpacken. Wer mehr Eiweiß will, rührt 10 g Whey-Proteinpulver (Vanille) in den Guss.",
+  "tags_de": ["Heißluftfritteuse", "zum Mitnehmen"],
+  "total_minutes": 25,
+  "prep_minutes": 2,
+  "cook_minutes": 23,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 309,
+    "protein_g": 16.4,
+    "carbs_g": 40,
+    "fat_g": 9.2
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "7ff24a7e9c54ac518863ed971f89f2f4fd78527de1bcaff0db7f03f26e9de371"
+  }
+}

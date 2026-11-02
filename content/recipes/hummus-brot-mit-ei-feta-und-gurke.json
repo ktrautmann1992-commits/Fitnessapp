@@ -1,0 +1,138 @@
+{
+  "id": "hummus-brot-mit-ei-feta-und-gurke",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hummus-Brot mit Ei, Feta & Gurke",
+  "description_de": "Orientalisch angehauchtes Frühstücksbrot mit cremigem Hummus, wachsweichen Eiern und frischem Gemüse.",
+  "section_de": "Frühstück",
+  "categories": [],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornbrot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1–2 Scheiben (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "hummus",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "feta",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "25 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Gurke (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Tomate (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koch die Eier in sprudelndem Wasser 7 Minuten wachsweich, schreck sie kalt ab und pell sie.",
+    "Röste das Brot nach Wunsch und bestreich es dick mit Hummus.",
+    "Schneide Gurke und Tomate in Scheiben und leg sie auf das Brot.",
+    "Halbiere die Eier, setz sie obenauf und zerbröckle den Feta darüber.",
+    "Würze alles mit Paprikapulver und Pfeffer."
+  ],
+  "tip_de": "Eier am Vorabend kochen – dann ist das Frühstück in 3 Minuten fertig.",
+  "total_minutes": 12,
+  "prep_minutes": 12,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 539,
+    "protein_g": 29.3,
+    "carbs_g": 41.6,
+    "fat_g": 26.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "eggs",
+    "legumes",
+    "sesame",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "0aabad845c87a9dd37c205c9b471b2ddecc64b4077adf92e724e6f45c5b87bc7"
+  }
+}

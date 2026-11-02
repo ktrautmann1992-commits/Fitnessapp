@@ -1,0 +1,157 @@
+{
+  "id": "protein-quarkbroetchen-mit-lachsschinken",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Protein-Quarkbrötchen mit Lachsschinken",
+  "description_de": "Zwei saftige, selbst gebackene Eiweißbrötchen aus Quark, Haferkleie und Leinsamen, belegt mit Lachsschinken und Gurke.",
+  "section_de": "Frühstück",
+  "categories": ["meal-prep"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "magerquark",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (30 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "haferkleie",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "leinsamen-geschrotet",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "whey-proteinpulver-neutral",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 4,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (4 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "frischkaese-light",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "lachsschinken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Scheiben (40 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g, in Scheiben",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 180 °C Ober-/Unterhitze vor und lege ein Blech mit Backpapier aus.",
+    "Verrühre Quark und Ei, mische Mehl, Haferkleie, Leinsamen, Whey, Backpulver und Salz unter und knete alles zu einem weichen Teig.",
+    "Forme mit feuchten Händen 2 Brötchen, setze sie aufs Blech und schneide sie oben kreuzweise ein.",
+    "Backe die Brötchen 22–25 Minuten goldbraun und lass sie kurz abkühlen.",
+    "Halbiere die Brötchen, bestreiche sie mit Frischkäse und belege sie mit Lachsschinken und Gurkenscheiben."
+  ],
+  "tip_de": "Back gleich die vierfache Menge und friere die Brötchen ein. Ohne Pulver: 15 g mehr Mehl und 50 g mehr Quark verwenden.",
+  "total_minutes": 35,
+  "prep_minutes": 10,
+  "cook_minutes": 25,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 505,
+    "protein_g": 50,
+    "carbs_g": 39.3,
+    "fat_g": 14.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "2bc5024f3bfbdfee2d074b64f7860e3e63eae58936152e6be8eb59e6eed4f1ed"
+  }
+}

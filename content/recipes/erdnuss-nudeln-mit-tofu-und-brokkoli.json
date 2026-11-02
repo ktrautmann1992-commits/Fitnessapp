@@ -1,0 +1,172 @@
+{
+  "id": "erdnuss-nudeln-mit-tofu-und-brokkoli",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Erdnuss-Nudeln mit Tofu und Brokkoli",
+  "description_de": "Schnelle Asia-Nudeln in cremiger Erdnuss-Ingwer-Sauce mit knusprigem Tofu und Brokkoli.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornspaghetti-trocken",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tofu-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g Röschen",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 gehäufter EL (20 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 52,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3–4 EL Nudelwasser",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stange (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Koche die Spaghetti in Salzwasser nach Packungsanweisung (ca. 9 Minuten) und gib in den letzten 3 Minuten den Brokkoli mit in den Topf.",
+    "Schneide den Tofu in Würfel und brate ihn im Rapsöl bei hoher Hitze 6–7 Minuten rundum knusprig.",
+    "Verrühre Erdnussmus, Sojasauce, Limettensaft, Ingwer, Knoblauch und 3–4 EL Nudelwasser zu einer glatten Sauce.",
+    "Gieße Nudeln und Brokkoli ab und schwenke sie mit Sauce und Tofu in der Pfanne.",
+    "Bestreue alles mit Frühlingszwiebelringen und Chiliflocken."
+  ],
+  "tip_de": "Schmeckt auch kalt als Nudelsalat – dann einen extra Spritzer Limette dazugeben.",
+  "total_minutes": 18,
+  "prep_minutes": 1,
+  "cook_minutes": 17,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 673,
+    "protein_g": 41.3,
+    "carbs_g": 57.5,
+    "fat_g": 28.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": [
+    "gluten",
+    "legumes",
+    "soy",
+    "peanuts",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "507cba595df003a0340b0c836072a74d8553cd4281fe844eda6db765beb49fa7"
+  }
+}

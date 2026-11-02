@@ -1,0 +1,110 @@
+{
+  "id": "langlauf-toast-mit-banane-honig-und-quark",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Langlauf-Toast mit Banane, Honig und Quark",
+  "description_de": "Helles Toastbrot, Banane und Honig liefern viele leicht verdauliche Kohlenhydrate, der Quark etwas Eiweiß – ideal 2–3 Stunden vor dem langen Lauf.",
+  "section_de": "Vor langen Einheiten",
+  "categories": ["schnell", "pre-workout", "cardio"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "toastbrot-weizen",
+      "amount": 75,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Scheiben Toastbrot (75 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "banane",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Banane (120 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "honig",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (20 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Toaste die Brotscheiben goldbraun.",
+    "Verrühre den Magerquark mit einer Prise Salz und Zimt glatt.",
+    "Bestreiche die Toasts mit dem Quark und belege sie mit Bananenscheiben.",
+    "Träufle den Honig darüber und iss in Ruhe – trink dazu ein großes Glas Wasser."
+  ],
+  "tip_de": "Iss den Toast 2–3 Stunden vor dem Start. Ist dein Magen empfindlich, nimm statt Quark nur eine dünne Schicht – das Fett bleibt so ohnehin minimal.",
+  "tags_de": ["Unter 10 Minuten", "Ausdauer"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 438,
+    "protein_g": 19.4,
+    "carbs_g": 79.2,
+    "fat_g": 3.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "e6b90444d7f819dc8ccdb413ac12c882892a2a5f74f3139d289b47075243e0a4"
+  }
+}

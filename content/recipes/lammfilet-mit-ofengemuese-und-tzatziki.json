@@ -1,0 +1,175 @@
+{
+  "id": "lammfilet-mit-ofengemuese-und-tzatziki",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Lammfilet mit Ofengemüse und Tzatziki",
+  "description_de": "Rosa gebratenes Lammfilet auf mediterranem Ofengemüse mit Bulgur und frischem Skyr-Tzatziki.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "lammfilet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zucchini (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Paprika (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "bulgur-trocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stück (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 80,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "80 ml",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C Ober-/Unterhitze vor.",
+    "Schneide Zucchini, Paprika und Zwiebel in grobe Stücke, vermische sie mit 2 TL Olivenöl, Oregano und Salz und röste sie auf einem Blech 25 Minuten.",
+    "Koche den Bulgur in 80 ml Salzwasser 10 Minuten und lass ihn zugedeckt quellen.",
+    "Raspel die Gurke, drücke sie aus und verrühre sie mit Skyr, gepresstem Knoblauch, Salz und Pfeffer zu Tzatziki.",
+    "Brate das Lammfilet im restlichen Öl bei hoher Hitze rundum 6–8 Minuten an, sodass es innen rosa bleibt, und lass es 3 Minuten ruhen.",
+    "Schneide das Lamm in Scheiben und serviere es auf Ofengemüse und Bulgur mit dem Tzatziki."
+  ],
+  "tip_de": "Lammlachse oder Lammhüfte funktionieren genauso – einfach 1–2 Minuten länger braten.",
+  "total_minutes": 35,
+  "prep_minutes": 14,
+  "cook_minutes": 21,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 572,
+    "protein_g": 51.4,
+    "carbs_g": 48.9,
+    "fat_g": 17.5
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "lamb", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "9cf6e4c79b7a63221b1086cdfa5260d7936cbb6626af891aa9e29a18c08bd253"
+  }
+}

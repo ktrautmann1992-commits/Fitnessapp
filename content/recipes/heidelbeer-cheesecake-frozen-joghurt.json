@@ -1,0 +1,122 @@
+{
+  "id": "heidelbeer-cheesecake-frozen-joghurt",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Heidelbeer-Cheesecake-Frozen-Joghurt",
+  "description_de": "Cremiger Skyr-Frischkäse-Frozen-Joghurt mit Heidelbeeren und Keksbröseln – schmeckt wie Käsekuchen, nur eiskalt.",
+  "section_de": "Frozen Joghurt",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "skyr-natur",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "frischkaese-light",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "geschmackspulver-zuckerfrei",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g), Sorte Käsekuchen",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "heidelbeeren",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "butterkekse",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Kekse (10 g), zerbröselt",
+      "scales": true,
+      "heated": false,
+      "role": "carb"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Skyr, Frischkäse, Milch, Geschmackspulver und Erythrit mit dem Schneebesen oder Mixer ganz glatt.",
+    "Füll die Masse in den Gefrierbecher und streich sie glatt. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Milch dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
+    "Gib Heidelbeeren und Keksbrösel in eine Mulde in der Mitte und arbeite sie mit der Mix-in-Funktion unter."
+  ],
+  "tip_de": "Mit TK-Heidelbeeren funktioniert es genauso. Wer es fruchtiger mag, rührt die Hälfte der Beeren schon vor dem Einfrieren püriert unter.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 8,
+  "prep_minutes": 8,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 338,
+    "protein_g": 34.5,
+    "carbs_g": 32.4,
+    "fat_g": 7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "282837c2ba8b23e034e10355a986d999a4433117aa0a298c65756329eaed66df"
+  }
+}

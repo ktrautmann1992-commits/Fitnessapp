@@ -1,0 +1,183 @@
+{
+  "id": "burrito-bowl-mit-schweinehack-und-bohnen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Burrito-Bowl mit Schweinehack und Bohnen",
+  "description_de": "Mexikanische Bowl mit würzigem, magerem Schweinehack, Reis, Bohnen, Mais, Salsa und Limetten-Joghurt.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "schweinehackfleisch-mager",
+      "amount": 130,
+      "unit": "g",
+      "optional": false,
+      "display_de": "130 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "kidneybohnen-dose-abgetropft",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "mais-dose-abgetropft",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomatensalsa-glas",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salatmix",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "joghurt-1-5",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "chilipulver",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koch den Reis nach Packungsanleitung in etwa 12–15 Minuten gar.",
+    "Erhitze das Rapsöl in einer Pfanne und brate das Hackfleisch bei hoher Hitze 5–6 Minuten krümelig. Würze es mit Kreuzkümmel, Paprikapulver, Chili und Salz.",
+    "Gib die gewürfelte Paprika und die Bohnen dazu und brate alles 2–3 Minuten weiter.",
+    "Verrühre den Joghurt mit dem Limettensaft und einer Prise Salz.",
+    "Richte Reis, Hack-Bohnen-Mischung, Mais, Salat und Salsa nebeneinander in einer Schale an und gib den Limetten-Joghurt darüber."
+  ],
+  "tip_de": "Für Meal-Prep Reis und Hack getrennt von Salat und Joghurt aufbewahren – so bleibt alles 3 Tage frisch.",
+  "total_minutes": 25,
+  "prep_minutes": 16,
+  "cook_minutes": 9,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 609,
+    "protein_g": 40.8,
+    "carbs_g": 72.8,
+    "fat_g": 15.3
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "legumes", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "6794fe768263b53723a5410ccebde2641c5beb5f9de250d2aed286de166e2c6b"
+  }
+}

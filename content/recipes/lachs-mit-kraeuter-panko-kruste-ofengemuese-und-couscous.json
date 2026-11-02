@@ -1,0 +1,193 @@
+{
+  "id": "lachs-mit-kraeuter-panko-kruste-ofengemuese-und-couscous",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Lachs mit Kräuter-Panko-Kruste, Ofengemüse und Couscous",
+  "description_de": "Saftiger Lachs unter einer knusprigen Senf-Kräuter-Kruste, dazu geröstete Zucchini und Paprika – die Kruste wird in der Heißluft goldbraun, ohne dass du extra Fett brauchst.",
+  "section_de": "Hauptgerichte",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "lachsfilet",
+      "amount": 130,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Lachsfilet ohne Haut (130 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "panko",
+      "amount": 12,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (12 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zucchini (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "couscous-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 70,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "70 ml kochendes Wasser",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "dill-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL gehackt (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+    "Schneide Zucchini und Paprika in 2 cm große Stücke, mische sie mit dem Olivenöl, Salz und Pfeffer und gare sie 8 Minuten bei 200 °C in einer Lage; nach 4 Minuten einmal schütteln.",
+    "Bestreiche den Lachs oben mit Senf, vermische Panko, Petersilie und 1 TL Zitronensaft und drücke die Mischung fest auf die Senfschicht.",
+    "Schiebe das Gemüse an den Rand, lege den Lachs mit der Kruste nach oben in die Mitte und gare alles bei 180 °C weitere 8–10 Minuten, ohne den Lachs zu wenden. Er ist fertig, wenn er sich leicht zerpflücken lässt (Kerntemperatur ca. 60–63 °C).",
+    "Übergieße in der Zwischenzeit den Couscous mit 70 ml kochendem Wasser, decke ihn 5 Minuten ab und lockere ihn mit einer Gabel auf.",
+    "Verrühre Skyr mit Dill, restlichem Zitronensaft, Salz und Pfeffer und serviere den Dip zu Lachs, Gemüse und Couscous."
+  ],
+  "tip_de": "Wenn die Kruste zu schnell bräunt, lege für die letzten Minuten ein kleines Stück Alufolie locker darüber. Statt Couscous passt auch Express-Reis.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 25,
+  "prep_minutes": 3,
+  "cook_minutes": 22,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 653,
+    "protein_g": 46.1,
+    "carbs_g": 58.9,
+    "fat_g": 25
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "fish", "mustard"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "lachsfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 4 gart die Zutat durch: „Schiebe das Gemüse an den Rand, lege den Lachs mit der Kruste nach oben in die Mitte und gare alles bei 180 °C weitere 8–10 Minuten, ohne den Lachs zu wenden. Er ist fertig, wenn er sich leicht zerpf…“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "bbbcc675a6bb73346d5f818d9937498a2069c8922ef0433c097aded36e573abd"
+  }
+}

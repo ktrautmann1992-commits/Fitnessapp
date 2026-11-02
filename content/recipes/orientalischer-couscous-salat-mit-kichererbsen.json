@@ -1,0 +1,173 @@
+{
+  "id": "orientalischer-couscous-salat-mit-kichererbsen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Orientalischer Couscous-Salat mit Kichererbsen",
+  "description_de": "Frischer Couscous-Salat mit Kichererbsen, Räuchertofu, Gurke und viel Petersilie.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "couscous-trocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 ml (heiß)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "raeuchertofu",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Gurke (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6 Stück (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Bund (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Übergieße den Couscous mit der heißen Brühe, decke ihn ab und lass ihn 5 Minuten quellen.",
+    "Würfle Gurke, Räuchertofu und Zwiebel, halbiere die Tomaten und hacke die Petersilie.",
+    "Lockere den Couscous mit einer Gabel auf.",
+    "Verrühre Olivenöl, Zitronensaft, Kreuzkümmel, Salz und Pfeffer zu einem Dressing.",
+    "Vermische Couscous, Kichererbsen, Gemüse, Tofu und Dressing gründlich."
+  ],
+  "tip_de": "Hält sich 3 Tage im Kühlschrank und ist ideal für die Lunchbox.",
+  "total_minutes": 15,
+  "prep_minutes": 15,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 647,
+    "protein_g": 33.6,
+    "carbs_g": 77.3,
+    "fat_g": 20.6
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "celery", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "225680eec81e2d2c4d1b0c2c04bbb042a4ae851902143bc4d2d909ad3714223a"
+  }
+}

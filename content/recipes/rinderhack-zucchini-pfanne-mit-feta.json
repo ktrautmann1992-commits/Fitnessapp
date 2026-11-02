@@ -1,0 +1,138 @@
+{
+  "id": "rinderhack-zucchini-pfanne-mit-feta",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rinderhack-Zucchini-Pfanne mit Feta",
+  "description_de": "Würziges Rinderhack mit Zucchini, Paprika und Tomaten aus einer Pfanne, mit zerbröseltem Feta – sättigend, schnell und ohne Beilage.",
+  "section_de": "Abendessen",
+  "categories": ["low-carb"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "rinderhackfleisch-5-fett",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "180 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Zucchini (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "feta",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle Zwiebel, Zucchini und Paprika.",
+    "Brate das Hack im Öl krümelig an, gib die Zwiebel dazu und würze mit Paprikapulver, Salz und Pfeffer.",
+    "Gib Zucchini und Paprika dazu und brate alles 5 Minuten weiter.",
+    "Rühre die Tomaten und den Oregano ein und lass alles 5 Minuten köcheln.",
+    "Zerbrösle den Feta darüber und serviere die Pfanne heiß."
+  ],
+  "tip_de": "Mit Putenhack wird die Pfanne noch magerer – die Würzung bleibt gleich.",
+  "total_minutes": 20,
+  "prep_minutes": 10,
+  "cook_minutes": 10,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 466,
+    "protein_g": 50.1,
+    "carbs_g": 17,
+    "fat_g": 21.5
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["dairy", "lactose", "beef", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "515ba24038c328b181c0ece8160bd9fafe582dae65758c1767867ba1fd804a2b"
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "id": "tofu-scramble-mit-champignons-und-avocado",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Tofu-Scramble mit Champignons und Avocado",
+  "description_de": "Würziges Rührei aus Tofu mit gebratenen Champignons, Spinat und Avocado – rein pflanzlich und mit über 30 g Eiweiß.",
+  "section_de": "Frühstück",
+  "categories": ["low-carb"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "champignons",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Avocado (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "hefeflocken",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kurkuma",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Champignons in Scheiben und brate sie im Öl 3–4 Minuten goldbraun an.",
+    "Zerbrösle den Tofu mit den Fingern in die Pfanne, bestreue ihn mit Kurkuma und Hefeflocken und brate alles 3 Minuten unter Rühren.",
+    "Heb den Spinat unter, bis er zusammenfällt, und schmecke mit Salz und Pfeffer ab.",
+    "Richte das Scramble an und lege die Avocado in Scheiben dazu."
+  ],
+  "tip_de": "Eine Prise Kala Namak (schwefliges Salz) statt normalem Salz gibt dem Tofu einen typischen Ei-Geschmack.",
+  "total_minutes": 12,
+  "prep_minutes": 5,
+  "cook_minutes": 7,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 452,
+    "protein_g": 35.6,
+    "carbs_g": 6.5,
+    "fat_g": 29.7
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "histamine", "mushrooms"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f9cdf398db053b66a7f52028871e08bffd77e99281c8cc9a1ebdebbe5d2e69a1"
+  }
+}

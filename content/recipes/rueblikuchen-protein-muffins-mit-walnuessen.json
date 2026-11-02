@@ -1,0 +1,139 @@
+{
+  "id": "rueblikuchen-protein-muffins-mit-walnuessen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Rüblikuchen-Protein-Muffins mit Walnüssen",
+  "description_de": "Zwei saftige Karotten-Muffins mit Zimt und Walnusskernen, die in Silikonförmchen in der Heißluftfritteuse backen – kein großer Ofen nötig, perfekt zum Mitnehmen.",
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "moehre",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Möhre (50 g), fein gerieben",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (2 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "walnuesse",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Walnusshälften (5 g), gehackt",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Ei, Magerquark und Erythrit glatt. Mische Mehl, Proteinpulver, Backpulver und Zimt und rühre die Mischung kurz unter.",
+    "Hebe die geriebene Möhre unter und verteile den Teig auf 2 Silikon-Muffinförmchen. Streue die gehackten Walnüsse darüber.",
+    "Stelle die Förmchen in den Korb, ohne vorzuheizen, und backe die Muffins 12–14 Minuten bei 160 °C. Wenden ist nicht nötig.",
+    "Mache die Stäbchenprobe: Bleibt kein Teig mehr kleben, sind die Muffins fertig; sonst 2 Minuten weiterbacken. Werden sie oben zu dunkel, lege ein Stück Alufolie locker darüber.",
+    "Lass die Muffins 5 Minuten in den Förmchen abkühlen, bevor du sie herauslöst."
+  ],
+  "tip_de": "Ohne Proteinpulver: 15 g Mehl mehr und 40 g Magerquark zusätzlich – dann etwa 8 g weniger Eiweiß. Die Muffins halten gut verpackt 2 Tage im Kühlschrank.",
+  "tags_de": ["Heißluftfritteuse", "zum Mitnehmen"],
+  "total_minutes": 25,
+  "prep_minutes": 11,
+  "cook_minutes": 14,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 300,
+    "protein_g": 29.5,
+    "carbs_g": 22.2,
+    "fat_g": 10.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "tree_nuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "e7ab835c4953d81fe098dec744013c71fb77ecd5047b474e6425bcafa0a476bb"
+  }
+}

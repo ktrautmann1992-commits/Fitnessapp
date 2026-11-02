@@ -1,0 +1,161 @@
+{
+  "id": "fleisch",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Deftige Protein-Woche",
+  "description_de": "Blech-Omelett mit Schinken, ein mageres Schweinefilet-Gulasch und Mini-Frikadellen: herzhaft, deftig und sättigend. Ofen und Herd arbeiten parallel, damit du nach rund 2 Stunden fertig bist.",
+  "recipe_ids": [
+    "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot",
+    "paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen",
+    "mini-frikadellen-mit-honig-senf-skyr-dip"
+  ],
+  "cook_steps": [
+    {
+      "start_min": 0,
+      "text_de": "Ofen auf 180 °C Umluft vorheizen, Kartoffeln schälen und halbieren."
+    },
+    {
+      "start_min": 10,
+      "text_de": "Paprika und Schinken fürs Omelett würfeln, Frühlingszwiebeln schneiden, Eier verquirlen."
+    },
+    {
+      "start_min": 20,
+      "text_de": "Blech-Omelett in den Ofen schieben (20–25 Min.)."
+    },
+    {
+      "start_min": 22,
+      "text_de": "Schweinefilet würfeln, Zwiebeln und Paprika für das Gulasch schneiden."
+    },
+    {
+      "start_min": 35,
+      "text_de": "Fleisch im Schmortopf portionsweise scharf anbraten und herausnehmen."
+    },
+    {
+      "start_min": 45,
+      "text_de": "Omelett herausnehmen und abkühlen lassen, Ofen auf 200 °C hochdrehen; Zwiebeln, Tomatenmark und Paprika anrösten, Tomaten und Brühe zugeben (20 Min. köcheln)."
+    },
+    {
+      "start_min": 50,
+      "text_de": "Kartoffeln in Salzwasser aufsetzen (20 Min.); Frikadellenmasse verkneten und 20 Bällchen formen."
+    },
+    {
+      "start_min": 62,
+      "text_de": "Frikadellen 15–18 Minuten backen; Bohnen zu den Kartoffeln geben."
+    },
+    {
+      "start_min": 70,
+      "text_de": "Fleisch und Sahne ins Gulasch geben, 5 Minuten ziehen lassen; Kartoffeln und Bohnen abgießen."
+    },
+    {
+      "start_min": 75,
+      "text_de": "Honig-Senf-Skyr-Dip anrühren und Gurkensticks schneiden."
+    },
+    {
+      "start_min": 82,
+      "text_de": "Frikadellen herausnehmen; Omelett in 10 Stücke schneiden."
+    },
+    {
+      "start_min": 90,
+      "text_de": "Alles in Dosen portionieren, sobald es lauwarm ist."
+    },
+    {
+      "start_min": 105,
+      "text_de": "Gulasch-, Omelett- und Frikadellenportionen für Donnerstag und Freitag beschriften und einfrieren, den Rest kühlen."
+    }
+  ],
+  "storage_plan": [
+    {
+      "recipe_id": "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot",
+      "weekday": "tue",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot",
+      "weekday": "wed",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot",
+      "weekday": "thu",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot",
+      "weekday": "fri",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen",
+      "weekday": "tue",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen",
+      "weekday": "wed",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen",
+      "weekday": "thu",
+      "method": "freeze"
+    },
+    {
+      "recipe_id": "paprika-gulasch-vom-schweinefilet-mit-kartoffeln-und-bohnen",
+      "weekday": "fri",
+      "method": "freeze"
+    },
+    {
+      "recipe_id": "mini-frikadellen-mit-honig-senf-skyr-dip",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "mini-frikadellen-mit-honig-senf-skyr-dip",
+      "weekday": "tue",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "mini-frikadellen-mit-honig-senf-skyr-dip",
+      "weekday": "wed",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "mini-frikadellen-mit-honig-senf-skyr-dip",
+      "weekday": "thu",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "mini-frikadellen-mit-honig-senf-skyr-dip",
+      "weekday": "fri",
+      "method": "fresh"
+    }
+  ],
+  "storage_de": [
+    "Verwende 5 Dosen fürs Gulasch, 5 fürs Frühstück und 5 kleine Snackdosen mit separatem Dip-Becher.",
+    "Gegartes Fleisch und Eier halten im Kühlschrank (max. 5 °C) nur 3–4 Tage, deshalb ist das Einfrieren hier wichtig.",
+    "Lege die eingefrorenen Portionen jeweils am Vorabend in den Kühlschrank und wärme Gulasch und Frikadellen durchgehend heiß auf."
+  ],
+  "dinner_hint_de": "Abends kochst du frisch – zum Beispiel ein Gericht aus dem Kapitel „Fertig in 10 Minuten“.",
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "c5144984c9e23d4af9920e6b73a3b33abaec56ae01143c0a043b4751cca34c12"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "id": "erdbeer-basilikum-frozen-joghurt",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Erdbeer-Basilikum-Frozen-Joghurt",
+  "description_de": "Frische Erdbeeren treffen auf einen Hauch Basilikum – ein überraschend erfrischender Frozen Joghurt für heiße Tage.",
+  "section_de": "Frozen Joghurt",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "skyr-natur",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "erdbeeren",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "basilikum",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4–5 Blätter (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "geschmackspulver-zuckerfrei",
+      "amount": 6,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ TL (6 g), Sorte Erdbeere",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Püriere Erdbeeren, Basilikum, Zitronensaft, Geschmackspulver und Erythrit fein und rühre das Püree unter den Skyr.",
+    "Füll die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Milch oder Wasser dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+  ],
+  "tip_de": "Basilikum vorsichtig dosieren und vorher probieren – alternativ Minze nehmen. Mit TK-Erdbeeren (angetaut) gelingt es das ganze Jahr.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 7,
+  "prep_minutes": 7,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 228,
+    "protein_g": 28.9,
+    "carbs_g": 23,
+    "fat_g": 1.2
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "64fc46156816a9f5262ee82896810e171908b787b5cc6dfc339f11cfb40e865e"
+  }
+}

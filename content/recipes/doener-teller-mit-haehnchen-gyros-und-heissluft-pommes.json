@@ -1,0 +1,202 @@
+{
+  "id": "doener-teller-mit-haehnchen-gyros-und-heissluft-pommes",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Döner-Teller mit Hähnchen-Gyros und Heißluft-Pommes",
+  "description_de": "Würziges Hähnchen-Gyros mit knackigem Salat, Knoblauch-Skyr-Sauce und knusprigen Pommes aus der Heißluftfritteuse – der Imbiss-Teller ohne Fettbad.",
+  "section_de": "Klassiker",
+  "categories": ["fitness-fast-food", "heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kartoffeln",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 mittelgroße (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 4,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 knapper TL (4 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 170,
+      "unit": "g",
+      "optional": false,
+      "display_de": "170 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gyrosgewuerz",
+      "amount": 2,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "2 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "romanasalat",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rotkohl",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Tomate (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Kartoffeln mit Schale in 1 cm dicke Stäbchen, wässere sie 10 Minuten, tupfe sie gründlich trocken und vermenge sie mit Rapsöl, Salz und Paprikapulver.",
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor und gare die Pommes in einer Lage 18–22 Minuten; schüttle den Korb alle 6 Minuten durch.",
+    "Schneide das Hähnchen in dünne Streifen, mische es mit Gyrosgewürz und brate es im Olivenöl in einer heißen Pfanne 5–6 Minuten scharf an, bis es rundum gebräunt und vollständig durchgegart ist (keine rosa Stellen).",
+    "Verrühre Skyr mit gepresstem Knoblauch, Zitronensaft und Salz zur Sauce.",
+    "Schneide Salat und Rotkohl in feine Streifen, Tomate und Gurke in Scheiben und die Zwiebel in Ringe.",
+    "Richte Salat, Gyros und Pommes auf einem Teller an und gib die Knoblauch-Skyr-Sauce darüber."
+  ],
+  "tip_de": "Backofen-Alternative für die Pommes: auf einem Blech mit Backpapier bei 220 °C Ober-/Unterhitze (200 °C Umluft) 25–30 Minuten backen, nach der Hälfte wenden. Den Rotkohl mit einer Prise Salz kurz durchkneten, dann wird er zarter.",
+  "tags_de": ["Fitness-Fast-Food", "Heißluftfritteuse"],
+  "total_minutes": 35,
+  "prep_minutes": 1,
+  "cook_minutes": 34,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 566,
+    "protein_g": 59.2,
+    "carbs_g": 50.9,
+    "fat_g": 12.1
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "dairy",
+    "lactose",
+    "poultry",
+    "celery",
+    "mustard",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "6e8836b4db9dcc58a4475375b5e951a407a29417a084201fbbb29f3da6595c53"
+  }
+}

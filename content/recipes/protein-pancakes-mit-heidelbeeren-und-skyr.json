@@ -1,0 +1,129 @@
+{
+  "id": "protein-pancakes-mit-heidelbeeren-und-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Protein-Pancakes mit Heidelbeeren & Skyr",
+  "description_de": "Fluffige Haferpancakes mit Vanille-Whey, getoppt mit kühlem Skyr und frischen Heidelbeeren.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "heidelbeeren",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Mahl die Haferflocken im Mixer oder mit dem Pürierstab kurz zu grobem Mehl.",
+    "Verrühre Hafermehl, Ei, Proteinpulver, Backpulver und Milch zu einem dickflüssigen Teig und lass ihn 2 Minuten quellen.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne bei mittlerer Hitze und streiche es mit Küchenpapier dünn aus.",
+    "Gib pro Pancake 2 EL Teig in die Pfanne und brate sie 1–2 Minuten, bis sich Bläschen bilden; dann wenden und 1 Minute fertig braten.",
+    "Staple die Pancakes auf einem Teller und toppe sie mit Skyr und Heidelbeeren."
+  ],
+  "tip_de": "Ohne Pulver: 100 g Magerquark in den Teig rühren und 1 EL Haferflocken mehr nehmen.",
+  "total_minutes": 15,
+  "prep_minutes": 13,
+  "cook_minutes": 2,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 492,
+    "protein_g": 45.9,
+    "carbs_g": 40.2,
+    "fat_g": 14.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "342d35c38e76b47b60b8ecb5e4856c0084e21567b3c98d16abf8081ccf734209"
+  }
+}

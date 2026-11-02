@@ -1,0 +1,128 @@
+{
+  "id": "gnocchi-in-tomatensauce-mit-parmesan",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gnocchi in Tomatensauce mit Parmesan",
+  "description_de": "Kartoffel-Gnocchi in leichter Tomatensauce – viel leicht verdauliche Stärke und nur wenig Fett, ein klassisches Carbo-Essen vor dem langen Sonntagslauf.",
+  "section_de": "Vor langen Einheiten",
+  "categories": ["pre-workout", "cardio"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "gnocchi-kuehlregal",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gerieben (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "basilikum",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ein paar Blätter",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 kräftige Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bringe reichlich Salzwasser zum Kochen und gare die Gnocchi darin 2–3 Minuten, bis sie oben schwimmen.",
+    "Erhitze parallel Olivenöl in einer Pfanne, gib die passierten Tomaten mit Oregano, Salz und Pfeffer dazu und lass sie 5 Minuten köcheln.",
+    "Hebe die Gnocchi mit einer Schaumkelle direkt in die Sauce und schwenke sie kurz durch.",
+    "Bestreue alles mit Parmesan und Basilikum."
+  ],
+  "tip_de": "Am Vorabend oder 3 Stunden vor dem Lauf essen. Die Sauce darf ruhig gut gesalzen sein – das hilft, Flüssigkeit zu halten.",
+  "tags_de": ["Ausdauer"],
+  "total_minutes": 12,
+  "prep_minutes": 4,
+  "cook_minutes": 8,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 490,
+    "protein_g": 14.8,
+    "carbs_g": 88.5,
+    "fat_g": 7.4
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "2682e9f4bdaa35c6bf541de7bbc8fb89cc9d24ac8ef4a7935eb271326098502b"
+  }
+}

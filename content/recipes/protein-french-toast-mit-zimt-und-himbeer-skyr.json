@@ -1,0 +1,120 @@
+{
+  "id": "protein-french-toast-mit-zimt-und-himbeer-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Protein-French-Toast mit Zimt und Himbeer-Skyr",
+  "description_de": "Vollkorntoast in Zimt-Eiermilch getränkt und in der Heißluft goldbraun gebacken, mit Himbeer-Skyr – ein warmes Frühstück oder ein süßer Snack mit viel Eiweiß.",
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorntoast",
+      "amount": 56,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (56 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ein paar Sprühstöße (2 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "himbeeren-tk",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g, aufgetaut",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Verquirle Ei, Milch und Zimt in einem tiefen Teller und lege die Toastscheiben je 30 Sekunden pro Seite hinein, bis sie die Mischung aufgesogen haben.",
+    "Heize die Heißluftfritteuse 2 Minuten auf 180 °C vor und sprühe den Korb dünn mit Rapsöl ein.",
+    "Lege die Scheiben nebeneinander in den Korb und backe sie 7–8 Minuten bei 180 °C; nach 4 Minuten wenden. Sie sind fertig, wenn sie außen goldbraun und in der Mitte nicht mehr flüssig sind.",
+    "Zerdrücke die Himbeeren mit einer Gabel, verrühre sie mit dem Skyr und gib die Mischung auf den warmen French Toast."
+  ],
+  "tip_de": "Ohne Backpapier wird die Unterseite knuspriger. Wer es süßer mag, süßt den Skyr mit etwas Erythrit oder 1 TL Honig.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 15,
+  "prep_minutes": 3,
+  "cook_minutes": 12,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 327,
+    "protein_g": 23.4,
+    "carbs_g": 31.5,
+    "fat_g": 10.7
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "e7d3d63ceb644da12763cbfc81140e031c0fbef9572880777f7a19c199db6135"
+  }
+}

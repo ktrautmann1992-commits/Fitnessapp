@@ -1,8 +1,8 @@
 {
   "id": "rindfleisch-burger-light-mit-vollkornbroetchen-und-coleslaw",
-  "version": 1,
+  "version": 2,
   "status": "draft",
-  "title_de": "Rindfleisch-Burger light mit Vollkornbrötchen und Coleslaw",
+  "title_de": "Rindfleisch-Burger mit Vollkornbrötchen und Coleslaw",
   "description_de": "Saftiges Patty aus magerem Rinderhack mit hausgemachter Burgersauce aus Skyr und einem frischen Krautsalat – voller Burger-Genuss mit wenig Fett.",
   "section_de": "Burger & Hot Dog",
   "categories": ["fitness-fast-food"],
@@ -198,6 +198,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "c40b93b63873e90adf9f4d7df9d83680e18caab03580d36b72435eaceef6b634"
+    "import_hash": "2ae04d1a4c94d661d955c8f95522d6efb1b80ac46d492e1a36a60080ae795c2b"
   }
 }

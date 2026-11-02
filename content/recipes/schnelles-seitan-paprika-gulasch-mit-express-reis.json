@@ -1,0 +1,128 @@
+{
+  "id": "schnelles-seitan-paprika-gulasch-mit-express-reis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schnelles Seitan-Paprika-Gulasch mit Express-Reis",
+  "description_de": "Ungarisch gewürzte Seitan-Streifen mit Paprika in Tomatensauce, dazu Reis aus dem Express-Beutel.",
+  "section_de": "Mittagessen",
+  "categories": ["schnell", "meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "seitan",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "express-reis-beutel-gegart",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Beutel (125 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Paprika (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Stell die Pfanne mit dem Öl auf hohe Hitze; während sie heiß wird, schneidest du Paprika und Seitan in Streifen.",
+    "Brate Seitan und Paprika 4 Minuten kräftig an und bestäube sie mit Paprikapulver.",
+    "Gieß die passierten Tomaten an, würz mit Salz und Pfeffer und lass alles 2 Minuten köcheln.",
+    "Erwärm in der Zwischenzeit den Express-Reis nach Packungsangabe in der Mikrowelle (ca. 1–2 Minuten) und serviere ihn zum Gulasch."
+  ],
+  "tip_de": "Gleich die doppelte Menge machen: Das Gulasch hält sich 2 Tage im Kühlschrank und schmeckt aufgewärmt sogar besser.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 4,
+  "cook_minutes": 6,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 545,
+    "protein_g": 43.1,
+    "carbs_g": 60.6,
+    "fat_g": 13.7
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f867b274c11e3d63c10804727fd70c189cf1c466cde7a28ac302e44647c58881"
+  }
+}

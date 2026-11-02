@@ -1,0 +1,175 @@
+{
+  "id": "knuspriger-chicken-burger-aus-der-heissluftfritteuse",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Knuspriger Chicken-Burger aus der Heißluftfritteuse",
+  "description_de": "Hähnchenbrust in einer krossen Cornflakes-Panade, mit wenig Öl in der Heißluftfritteuse gegart – schmeckt wie frittiert, hat aber nur einen Bruchteil des Fetts.",
+  "section_de": "Burger & Hot Dog",
+  "categories": ["fitness-fast-food", "heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Filet (150 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g (für Panade und Sauce)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "senf",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "cornflakes-ungezuckert",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Sprühstöße (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "vollkornbroetchen",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 großes Brötchen (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "blattsalat",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Blätter (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Schneide das Hähnchenbrustfilet waagerecht auf, sodass ein flaches Schnitzel von ca. 1,5 cm Dicke entsteht, und würze es mit Salz, Pfeffer und Paprikapulver.",
+    "Verrühre 30 g Skyr mit 1 TL Senf, bestreiche das Fleisch damit rundherum und wälze es in den grob zerdrückten Cornflakes; drücke die Panade gut an.",
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor, lege das Schnitzel in den Korb, besprühe es mit Rapsöl und gare es 12–14 Minuten; wende es nach 7 Minuten und besprühe die zweite Seite ebenfalls.",
+    "Prüfe die Garstufe: Das Fleisch muss innen durchgegart sein (Kerntemperatur mindestens 74 °C, kein rosa Fleischsaft).",
+    "Verrühre den restlichen Skyr mit Honig und restlichem Senf zur Honig-Senf-Sauce und röste das Brötchen in den letzten 2 Minuten mit in der Heißluftfritteuse.",
+    "Belege das Brötchen mit Sauce, Salat, Tomate und dem knusprigen Hähnchen."
+  ],
+  "tip_de": "Backofen-Alternative: auf einem Gitter mit Backpapier bei 220 °C Ober-/Unterhitze (200 °C Umluft) 18–20 Minuten backen, nach der Hälfte wenden. Statt Cornflakes funktioniert auch Panko.",
+  "tags_de": ["Fitness-Fast-Food", "Heißluftfritteuse"],
+  "total_minutes": 25,
+  "prep_minutes": 1,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 572,
+    "protein_g": 53.7,
+    "carbs_g": 67.3,
+    "fat_g": 8.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "poultry",
+    "mustard",
+    "fructose",
+    "histamine"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "fcfda03e073f165f12fe5c25bfcb5c17bdbd20355e8bde88640bd6cb44b7d0c0"
+  }
+}

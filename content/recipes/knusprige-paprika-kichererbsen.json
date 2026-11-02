@@ -1,0 +1,101 @@
+{
+  "id": "knusprige-paprika-kichererbsen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Knusprige Paprika-Kichererbsen",
+  "description_de": "Im Ofen geröstete Kichererbsen mit Paprika – die herzhafte Alternative zu Chips.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 160,
+      "unit": "g",
+      "optional": false,
+      "display_de": "160 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 200 °C Umluft vor.",
+    "Spüle die Kichererbsen ab und tupfe sie mit einem Küchentuch sehr gründlich trocken.",
+    "Vermische sie mit Olivenöl, Paprikapulver, Kreuzkümmel und Salz.",
+    "Verteile sie auf einem Backblech mit Backpapier und röste sie 25–30 Minuten, dabei einmal schütteln.",
+    "Lass die Kichererbsen auf dem Blech abkühlen, damit sie knusprig werden."
+  ],
+  "tip_de": "In einem offenen Glas bleiben sie 2–3 Tage knusprig.",
+  "total_minutes": 35,
+  "prep_minutes": 35,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 236,
+    "protein_g": 11.2,
+    "carbs_g": 25.6,
+    "fat_g": 9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "cef8ffbddd7701dff9217dcb537592d29083f063336771e6660d66543abe2350"
+  }
+}

@@ -1,9 +1,9 @@
 {
   "id": "gefuellte-eier-mit-senf-skyr-und-gurke",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Gefüllte Eier mit Senf-Skyr und Gurke",
-  "description_de": "Hart gekochte Eier mit einer cremigen Füllung aus Eigelb, Skyr und Senf, bestäubt mit Paprika – Partyklassiker als proteinreicher Snack.",
+  "description_de": "Hart gekochte Eier mit einer cremigen Füllung aus Eigelb, Skyr und Senf, bestäubt mit Paprika – Partyklassiker als herzhafter Snack.",
   "section_de": "Snack",
   "categories": ["low-carb"],
   "meal_types": ["snack"],
@@ -73,7 +73,6 @@
     "Schneide die Gurke in Scheiben und serviere sie dazu."
   ],
   "tip_de": "Mit einem Gefrierbeutel, bei dem du eine Ecke abschneidest, lässt sich die Creme sauber einfüllen.",
-  "tags_de": ["Low Carb"],
   "total_minutes": 15,
   "prep_minutes": 5,
   "cook_minutes": 10,
@@ -114,6 +113,6 @@
       }
     ],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "f20d038d369370c143e33cd3751a2e3b3fc3986557a74e3f22402de3465e5db3"
+    "import_hash": "4c19bf6d3dd10ccc7bc1c7a12831a721143610769c9537c55658bb51ed73d8eb"
   }
 }

@@ -1,0 +1,137 @@
+{
+  "id": "suesskartoffel-wuerfel-mit-feta-und-limetten-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Süßkartoffel-Würfel mit Feta und Limetten-Skyr",
+  "description_de": "Rauchig gewürzte Süßkartoffelwürfel, außen gebräunt und innen weich, mit zerbröseltem Feta, Frühlingszwiebeln und einem frischen Limetten-Skyr.",
+  "section_de": "Beilagen & Gemüse",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "suesskartoffel",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Süßkartoffel (180 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-geraeuchert",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "feta",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Frühlingszwiebel (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+    "Schäle die Süßkartoffel, schneide sie in 2 cm große Würfel und mische sie mit Rapsöl, geräuchertem Paprikapulver und Salz.",
+    "Gare die Würfel in einer Lage 14–16 Minuten bei 200 °C und schüttel den Korb alle 5 Minuten, damit sie rundum bräunen. Sie sind fertig, wenn sie sich mit einem Messer leicht einstechen lassen.",
+    "Verrühre Skyr mit Limettensaft, Salz und Pfeffer. Gib die heißen Würfel in eine Schale, zerbrösele den Feta darüber, streue die Frühlingszwiebelringe darauf und serviere den Limetten-Skyr dazu."
+  ],
+  "tip_de": "Gleich große Würfel garen gleichmäßig – kleine Ecken verbrennen sonst schneller. Als Hauptgericht mit 100 g Hähnchenbrust oder einem Spiegelei ergänzen.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 25,
+  "prep_minutes": 4,
+  "cook_minutes": 21,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 322,
+    "protein_g": 14.6,
+    "carbs_g": 39.4,
+    "fat_g": 11.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "e846e65f0e0d2f174079eb80a188253fe8082496440b753496a7fee0f8a0f430"
+  }
+}

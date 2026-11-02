@@ -1,0 +1,139 @@
+{
+  "id": "american-protein-pancakes-mit-knuspriger-putenbrust",
+  "version": 1,
+  "status": "draft",
+  "title_de": "American Protein-Pancakes mit knuspriger Putenbrust",
+  "description_de": "Fluffige Bananen-Vanille-Pancakes mit Beeren und kross gebratener Putenbrust – der süß-salzige Diner-Klassiker ohne Schwein.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 EL (40 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "banane",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Banane (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "putenbrust-aufschnitt",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Scheiben (40 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "beerenmischung-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Lass die Beeren antauen oder erwärme sie 1 Minute in einem kleinen Topf.",
+    "Püriere Haferflocken, Banane, Ei, Proteinpulver, Milch und Backpulver zu einem glatten Teig.",
+    "Erhitze eine beschichtete Pfanne mit dem Rapsöl bei mittlerer Hitze und backe 4–5 kleine Pancakes je 1–2 Minuten pro Seite, bis sie goldbraun sind.",
+    "Brate die Putenbrustscheiben anschließend in derselben Pfanne ohne zusätzliches Fett 1–2 Minuten pro Seite knusprig.",
+    "Staple die Pancakes, gib die Beeren darüber und serviere die knusprige Putenbrust daneben."
+  ],
+  "tip_de": "Ohne Pulver: 80 g Magerquark in den Teig rühren. Wer es süßer mag, gibt 1 TL Honig über die Beeren.",
+  "total_minutes": 15,
+  "prep_minutes": 11,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 513,
+    "protein_g": 43.3,
+    "carbs_g": 47.8,
+    "fat_g": 14.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "poultry"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "31550d406340704e5a1756835b50fdf85b23281c0793a7f29aa1bd4fcf25f2ef"
+  }
+}

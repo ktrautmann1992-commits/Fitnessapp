@@ -1,0 +1,191 @@
+{
+  "id": "fajita-salat-mit-haehnchen-und-tortilla-chips",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Fajita-Salat mit Hähnchen und Tortilla-Chips",
+  "description_de": "Knackiger Romanasalat mit scharf gebratenen Hähnchen- und Paprikastreifen, Bohnen, Mais, Avocado und selbst gebackenen Tortilla-Chips.",
+  "section_de": "Abendessen",
+  "categories": ["post-workout"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 160,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 großes Filet (160 g)",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Paprika (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "romanasalatherzen",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Salatherz (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "schwarze-bohnen-dose-abgetropft",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (60 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "mais-dose-abgetropft",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Avocado (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "vollkorn-tortilla",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Tortilla (30 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salsa-glas",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C Umluft vor, schneide die Tortilla in Dreiecke und backe sie auf einem Blech 5–6 Minuten knusprig.",
+    "Schneide Hähnchen, Paprika und Zwiebel in Streifen und würze das Hähnchen mit Paprikapulver, Kreuzkümmel und Salz.",
+    "Brate Hähnchen und Gemüse im Rapsöl bei hoher Hitze 6–7 Minuten, bis das Fleisch durchgegart ist.",
+    "Verrühre Salsa und Limettensaft zum Dressing.",
+    "Schneide den Salat in Streifen, verteile ihn mit Bohnen, Mais und Avocadowürfeln auf einem Teller, gib die warme Fajita-Pfanne darauf, beträufle alles mit Dressing und streue die Chips darüber."
+  ],
+  "tip_de": "Statt Tortilla-Chips aus dem Ofen funktioniert auch eine Reiswaffel, grob zerbröselt.",
+  "total_minutes": 18,
+  "prep_minutes": 5,
+  "cook_minutes": 13,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 597,
+    "protein_g": 50.7,
+    "carbs_g": 47.4,
+    "fat_g": 19.9
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "poultry", "legumes", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "haehnchenbrustfilet",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 3 gart die Zutat durch: „Brate Hähnchen und Gemüse im Rapsöl bei hoher Hitze 6–7 Minuten, bis das Fleisch durchgegart ist.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "b256bdfaace3eb8a294711d99e287f91c1365ff228199b004de9198809895752"
+  }
+}

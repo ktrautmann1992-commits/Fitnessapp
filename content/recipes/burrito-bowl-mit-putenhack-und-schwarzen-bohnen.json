@@ -1,0 +1,182 @@
+{
+  "id": "burrito-bowl-mit-putenhack-und-schwarzen-bohnen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Burrito-Bowl mit Putenhack und schwarzen Bohnen",
+  "description_de": "Mexikanisch gewürztes Putenhack mit Reis, schwarzen Bohnen, Mais, Paprika, Salsa und Avocado – alles, was einen Burrito ausmacht, ohne Tortilla.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "putenhackfleisch",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "schwarze-bohnen-dose-abgetropft",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (60 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "mais-dose-abgetropft",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (40 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salsa-glas",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "avocado",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Avocado (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 100,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis mit 100 ml Wasser und einer Prise Salz zugedeckt 12–15 Minuten bei kleiner Hitze.",
+    "Brate das Putenhack im Rapsöl bei hoher Hitze 5–6 Minuten krümelig, bis es durchgegart ist, und würze es mit Kreuzkümmel, Paprikapulver und Salz.",
+    "Gib Bohnen und Mais für die letzten 2 Minuten mit in die Pfanne, damit sie warm werden.",
+    "Würfle Paprika und Avocado und beträufle die Avocado mit Limettensaft.",
+    "Richte Reis, Hackmischung, Paprika, Avocado und Salsa nebeneinander in einer Schüssel an."
+  ],
+  "tip_de": "Für Meal-Prep die Avocado erst vor dem Essen aufschneiden. Mit Rinderhack (5 % Fett) schmeckt die Bowl genauso gut.",
+  "total_minutes": 18,
+  "prep_minutes": 1,
+  "cook_minutes": 17,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 631,
+    "protein_g": 41.9,
+    "carbs_g": 64.3,
+    "fat_g": 20.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["poultry", "legumes", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "putenhackfleisch",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Brate das Putenhack im Rapsöl bei hoher Hitze 5–6 Minuten krümelig, bis es durchgegart ist, und würze es mit Kreuzkümmel, Paprikapulver und Salz.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "a521940650bf3da747e7f8b84d31fcbaf3bf788d46e43567abc3d51df9e84736"
+  }
+}

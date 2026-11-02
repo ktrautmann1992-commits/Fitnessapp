@@ -1,0 +1,137 @@
+{
+  "id": "spaghetti-pomodoro-mit-parmesan",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Spaghetti Pomodoro mit Parmesan",
+  "description_de": "Eine große Portion helle Pasta mit schlichter Tomatensauce bringt über 100 g Kohlenhydrate bei wenig Fett und ist für die meisten Sportler gut verträglich.",
+  "section_de": "Carb-Loading (2 Tage vorher)",
+  "categories": ["wettkampf"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "spaghetti-trocken",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 12,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gerieben (12 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "basilikum",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ein paar Blätter (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zucker",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Prise (2 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Spaghetti in reichlich Salzwasser nach Packungsanweisung bissfest, etwa 9–10 Minuten.",
+    "Erhitze das Olivenöl in einem kleinen Topf, gib die passierten Tomaten, Oregano und eine Prise Zucker dazu.",
+    "Lass die Sauce bei kleiner Hitze 8 Minuten köcheln und schmecke sie mit Salz und Pfeffer ab.",
+    "Gieße die Nudeln ab, vermische sie mit der Sauce und bestreue sie mit Parmesan und Basilikum."
+  ],
+  "tip_de": "Verzichte vor dem Rennen auf Zwiebeln und Knoblauch in der Sauce, wenn sie dir schwer im Magen liegen. Für eine vegane Variante lässt du den Parmesan weg.",
+  "tags_de": ["Wettkampf"],
+  "total_minutes": 20,
+  "prep_minutes": 2,
+  "cook_minutes": 18,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 680,
+    "protein_g": 24.9,
+    "carbs_g": 116.5,
+    "fat_g": 11
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "eaf5158481f6699f6142b9c56d203242c201b71dac30c3ec25f58f21230a84e6"
+  }
+}

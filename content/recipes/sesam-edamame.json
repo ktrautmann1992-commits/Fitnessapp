@@ -1,0 +1,91 @@
+{
+  "id": "sesam-edamame",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Sesam-Edamame",
+  "description_de": "Warme Edamame mit einem Spritzer Sojasauce und geröstetem Sesam.",
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "edamame-tk-geschaelt",
+      "amount": 130,
+      "unit": "g",
+      "optional": false,
+      "display_de": "130 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sesam",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (3 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gare die Edamame 4 Minuten in kochendem Wasser und gieße sie ab.",
+    "Röste den Sesam 1–2 Minuten in einer trockenen Pfanne, bis er duftet.",
+    "Vermische die Edamame mit Sojasauce, Sesam und Chiliflocken."
+  ],
+  "tip_de": "Schmeckt auch kalt aus der Dose als Snack fürs Büro.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 8,
+  "prep_minutes": 4,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 190,
+    "protein_g": 16.5,
+    "carbs_g": 8.3,
+    "fat_g": 9.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "sesame", "histamine", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "03878abf0b87886bb0097f1bfa4f08888fe2390d9e2b105cc07501692606f0d6"
+  }
+}

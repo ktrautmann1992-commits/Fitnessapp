@@ -1,0 +1,143 @@
+{
+  "id": "haehnchenschenkel-reispfanne-mit-erbsen-und-moehren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hähnchenschenkel-Reispfanne mit Erbsen und Möhren",
+  "description_de": "Würzige Reispfanne mit saftigem Hähnchenschenkelfleisch, das deutlich günstiger als Brustfilet ist, plus TK-Erbsen und Möhren.",
+  "section_de": "Hauptgericht",
+  "categories": ["meal-prep", "spar-kueche"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haehnchenschenkelfilet-ohne-haut",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "langkornreis-trocken",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erbsen-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "moehre",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Möhre (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche den Reis in der doppelten Menge Salzwasser zugedeckt 15 Minuten bei kleiner Hitze.",
+    "Schneide das Hähnchenfleisch in mundgerechte Stücke und die Möhre in dünne Scheiben.",
+    "Brate das Hähnchen im Rapsöl bei hoher Hitze 5–6 Minuten rundherum an, bis es durchgegart ist, und würze mit Paprikapulver und Pfeffer.",
+    "Gib Möhren und Erbsen dazu und brate sie 3 Minuten mit.",
+    "Rühre den Reis und die Sojasauce unter und brate alles noch 2 Minuten."
+  ],
+  "tip_de": "Ganze Hähnchenschenkel sind noch günstiger: selbst auslösen und die Knochen für Brühe auskochen.",
+  "tags_de": ["Spar-Küche"],
+  "total_minutes": 25,
+  "prep_minutes": 1,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 584,
+    "protein_g": 35.9,
+    "carbs_g": 73.3,
+    "fat_g": 14.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "poultry", "legumes", "soy", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "cost_estimate": {
+    "eur_per_serving": 1.79,
+    "as_of": "2026-10-23",
+    "basis": "estimate"
+  },
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "haehnchenschenkelfilet-ohne-haut",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 3 gart die Zutat durch: „Brate das Hähnchen im Rapsöl bei hoher Hitze 5–6 Minuten rundherum an, bis es durchgegart ist, und würze mit Paprikapulver und Pfeffer.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "6de636e8727124f4c7f740268fa185b86de86bd0a3f864f3f5f022a7f1ef6de0"
+  }
+}

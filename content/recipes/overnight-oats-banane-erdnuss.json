@@ -1,0 +1,119 @@
+{
+  "id": "overnight-oats-banane-erdnuss",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Overnight Oats Banane-Erdnuss",
+  "description_de": "Über Nacht durchgezogene Haferflocken mit Skyr, Chia und Banane – morgens nur noch aus dem Kühlschrank nehmen.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "meal-prep"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "chiasamen",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "banane",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Banane (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Haferflocken, Chiasamen, Skyr, Milch und Zimt in einem Schraubglas oder einer Dose.",
+    "Zerdrücke die Hälfte der Banane mit einer Gabel und rühre sie unter.",
+    "Verschließe das Glas und stelle es über Nacht (mindestens 6 Stunden) in den Kühlschrank.",
+    "Schneide morgens die restliche Banane in Scheiben, lege sie auf die Oats und gib das Erdnussmus darüber."
+  ],
+  "tip_de": "Hält sich gut 2 Tage im Kühlschrank – gleich zwei Gläser vorbereiten.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 530,
+    "protein_g": 32,
+    "carbs_g": 62.2,
+    "fat_g": 13.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "peanuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "7b4a70f383b24c999fd18b5546ab0adc43956ffd4a9932dac0b3bdc0f1b7e5d4"
+  }
+}

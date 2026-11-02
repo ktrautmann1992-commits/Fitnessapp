@@ -1,0 +1,129 @@
+{
+  "id": "ofenlachs-mit-brokkoli-und-suesskartoffel",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Ofenlachs mit Brokkoli und Süßkartoffel",
+  "description_de": "Lachsfilet mit Zitrone vom Blech, dazu geröstete Süßkartoffelspalten und Brokkoli – ein Blech, kaum Abwasch.",
+  "section_de": "Abendessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "lachsfilet",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Filet (125 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "suesskartoffel",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Süßkartoffel (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C Ober-/Unterhitze vor.",
+    "Schneide die Süßkartoffel in Spalten, vermische sie mit dem Olivenöl, Paprikapulver und Salz und backe sie auf einem Blech mit Backpapier 10 Minuten.",
+    "Teile den Brokkoli in Röschen und lege ihn zusammen mit dem Lachs auf das Blech; den Lachs mit Zitronensaft, Salz und Pfeffer würzen.",
+    "Backe alles weitere 12–15 Minuten, bis der Lachs innen gerade glasig-rosa ist.",
+    "Richte Lachs, Süßkartoffel und Brokkoli auf einem Teller an."
+  ],
+  "tip_de": "Ein Klecks Skyr mit Zitrone und Dill passt hervorragend als leichter Dip.",
+  "total_minutes": 30,
+  "prep_minutes": 5,
+  "cook_minutes": 25,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 537,
+    "protein_g": 35.8,
+    "carbs_g": 45.6,
+    "fat_g": 22.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["fish"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "469c563cd2bc7323c5ed6dcb5325bc49ef6423ef1af0671a90de2c071abe2bb4"
+  }
+}

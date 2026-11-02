@@ -1,0 +1,156 @@
+{
+  "id": "protein-mac-und-cheese-mit-huettenkaese-sauce",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Protein-Mac-&-Cheese mit Hüttenkäse-Sauce",
+  "description_de": "Cremige Käsenudeln, bei denen pürierter Hüttenkäse die Sahnesauce ersetzt – Comfort Food mit viel Eiweiß und Brokkoli als Extra.",
+  "section_de": "Klassiker",
+  "categories": ["fitness-fast-food"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "makkaroni-trocken",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "90 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "brokkoli",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g Röschen",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "speisestaerke",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "gouda-light-gerieben",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "muskatnuss-gerieben",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Makkaroni in Salzwasser nach Packungsangabe bissfest (ca. 9–10 Minuten) und gib die Brokkoliröschen für die letzten 4 Minuten mit in den Topf.",
+    "Püriere Hüttenkäse, Milch, Speisestärke und Senf mit dem Stabmixer ganz glatt.",
+    "Gieße Nudeln und Brokkoli ab, gib sie zurück in den Topf und rühre bei kleiner Hitze die Hüttenkäse-Creme und den Gouda unter.",
+    "Lass alles unter Rühren 2–3 Minuten sanft erhitzen, bis die Sauce bindet und der Käse geschmolzen ist; nicht kochen lassen.",
+    "Schmecke mit Paprikapulver, Muskat, Salz und Pfeffer ab und serviere sofort."
+  ],
+  "tip_de": "Für eine Kruste wie aus dem Diner: in eine kleine Auflaufform füllen und 5 Minuten bei 220 °C Oberhitze/Grill überbacken. Wer mag, gibt eine Prise geräuchertes Paprikapulver für ein rauchiges Aroma dazu.",
+  "tags_de": ["Fitness-Fast-Food"],
+  "total_minutes": 20,
+  "prep_minutes": 3,
+  "cook_minutes": 17,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 641,
+    "protein_g": 45.1,
+    "carbs_g": 78.9,
+    "fat_g": 14.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "mustard", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "9b7f73d96bdb0a6b402e389c41c6fcbaeeacb535258d61fa364c97a040d9026d"
+  }
+}

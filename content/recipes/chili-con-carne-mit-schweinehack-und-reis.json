@@ -1,0 +1,182 @@
+{
+  "id": "chili-con-carne-mit-schweinehack-und-reis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Chili con Carne mit Schweinehack und Reis",
+  "description_de": "Würziges Chili mit Schweinehack, Kidneybohnen und Mais – perfekt zum Vorkochen.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "hackfleisch-vom-schwein",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g (mager)",
+      "scales": true,
+      "heated": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kidneybohnen-dose-abgetropft",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "mais-dose-abgetropft",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose (200 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomatenmark",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "chilipulver",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle Zwiebel, Knoblauch und Paprika.",
+    "Brate das Hackfleisch ohne zusätzliches Fett in einem Topf bei hoher Hitze 5 Minuten krümelig an.",
+    "Gib Zwiebel, Knoblauch und Paprika dazu, brate sie 3 Minuten mit und röste dann Tomatenmark und Gewürze 1 Minute an.",
+    "Gieß die Tomaten an, gib Bohnen und Mais dazu und lass das Chili 20 Minuten bei kleiner Hitze köcheln.",
+    "Koche währenddessen den Reis nach Packungsanleitung und serviere ihn zum Chili."
+  ],
+  "tip_de": "Das Chili schmeckt am zweiten Tag noch besser und lässt sich portionsweise einfrieren.",
+  "total_minutes": 40,
+  "prep_minutes": 12,
+  "cook_minutes": 28,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 704,
+    "protein_g": 41.3,
+    "carbs_g": 77.9,
+    "fat_g": 22.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["legumes", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 0,
+        "food_id": "hackfleisch-vom-schwein",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Brate das Hackfleisch ohne zusätzliches Fett in einem Topf bei hoher Hitze 5 Minuten krümelig an.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "ed5ba8daee7c56cda0052201c6c7ae75b960705ab0d52cc44be50f5cbff783c2"
+  }
+}

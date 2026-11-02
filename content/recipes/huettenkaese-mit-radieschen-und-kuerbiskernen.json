@@ -1,0 +1,100 @@
+{
+  "id": "huettenkaese-mit-radieschen-und-kuerbiskernen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hüttenkäse mit Radieschen und Kürbiskernen",
+  "description_de": "Körniger Frischkäse mit knackigen Radieschen, Schnittlauch und gerösteten Kürbiskernen – herzhaft, frisch und mit über 25 g Eiweiß.",
+  "section_de": "Snack",
+  "categories": ["schnell", "low-carb"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huettenkaese",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "radieschen",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6 Radieschen (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kuerbiskerne",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "schnittlauch-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, in Röllchen",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Radieschen in feine Scheiben.",
+    "Röste die Kürbiskerne kurz in einer trockenen Pfanne, bis sie duften.",
+    "Gib den Hüttenkäse in eine Schale, verteile Radieschen, Schnittlauch und Kürbiskerne darauf und pfeffere alles."
+  ],
+  "tip_de": "Passt auch ins Büro: Hüttenkäse im Becher lassen und die Toppings in einer kleinen Dose mitnehmen.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 268,
+    "protein_g": 28.8,
+    "carbs_g": 7.5,
+    "fat_g": 13.4
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "be0d8550609a843b51657c5d1f80f5df9f34e450105a21abcba5d1f9ad5046f4"
+  }
+}

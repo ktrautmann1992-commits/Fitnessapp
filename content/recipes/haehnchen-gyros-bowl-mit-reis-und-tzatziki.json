@@ -1,0 +1,164 @@
+{
+  "id": "haehnchen-gyros-bowl-mit-reis-und-tzatziki",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hähnchen-Gyros-Bowl mit Reis und Tzatziki",
+  "description_de": "Würzige Gyros-Streifen vom Hähnchen mit Reis, Tomaten-Gurken-Salat und frischem Skyr-Tzatziki – Griechenland in der Schüssel.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Filet (150 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Gurke (120 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "8 Cherrytomaten (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ rote Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gyros-gewuerz",
+      "amount": 2,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "2 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 120,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "120 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bringe den Reis mit 120 ml Wasser und einer Prise Salz zum Kochen und lass ihn zugedeckt bei kleiner Hitze 12–15 Minuten quellen.",
+    "Schneide das Hähnchen in dünne Streifen und vermische es mit Gyros-Gewürz und 1 TL Olivenöl.",
+    "Raspel die Hälfte der Gurke, drücke sie aus und verrühre sie mit Skyr, gepresstem Knoblauch und Salz zu Tzatziki.",
+    "Brate die Hähnchenstreifen in einer heißen Pfanne 5–6 Minuten, bis sie rundum gebräunt und durchgegart sind.",
+    "Würfle die restliche Gurke, Tomaten und Zwiebel, mische sie mit dem übrigen Olivenöl und richte alles mit Reis und Tzatziki in einer Schüssel an."
+  ],
+  "tip_de": "Für Meal-Prep Tzatziki separat aufbewahren – so bleibt es frisch und der Salat wird nicht wässrig.",
+  "total_minutes": 25,
+  "prep_minutes": 4,
+  "cook_minutes": 21,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 573,
+    "protein_g": 53,
+    "carbs_g": 59.3,
+    "fat_g": 13
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "dairy",
+    "lactose",
+    "poultry",
+    "celery",
+    "mustard",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "67ba08c54b984102d20d49eebd86af06e8e86e3d73c3df4829da705e0db90a9d"
+  }
+}

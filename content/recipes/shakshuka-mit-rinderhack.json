@@ -1,0 +1,166 @@
+{
+  "id": "shakshuka-mit-rinderhack",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Shakshuka mit Rinderhack",
+  "description_de": "Orientalisch gewürzte Tomaten-Paprika-Sauce mit Rinderhack, in der zwei Eier sanft garen – dazu Vollkornbrot zum Dippen.",
+  "section_de": "Frühstück",
+  "categories": [],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "rinderhackfleisch-5-fett",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "heated": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gehackte-tomaten-dose",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Dose (200 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Scheibe (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Würfle Zwiebel und Paprika klein.",
+    "Erhitze das Olivenöl in einer kleinen Pfanne bei mittlerer Hitze und brate das Rinderhack 3–4 Minuten krümelig an.",
+    "Gib Zwiebel und Paprika dazu und dünste alles 4 Minuten, dann Kreuzkümmel und Paprikapulver kurz mitrösten.",
+    "Rühre die gehackten Tomaten ein, würze mit Salz und Pfeffer und lass die Sauce 5 Minuten köcheln.",
+    "Drücke zwei Mulden in die Sauce, schlage die Eier hinein und gare sie mit Deckel bei niedriger Hitze 6–8 Minuten, bis das Eiweiß fest ist.",
+    "Serviere die Shakshuka direkt aus der Pfanne mit dem Vollkornbrot."
+  ],
+  "tip_de": "Die Hack-Tomaten-Sauce lässt sich für 3 Tage vorkochen – morgens nur aufwärmen und die Eier darin garen.",
+  "total_minutes": 25,
+  "prep_minutes": 4,
+  "cook_minutes": 21,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 487,
+    "protein_g": 35.6,
+    "carbs_g": 36.2,
+    "fat_g": 20.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "eggs", "beef", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [
+      {
+        "ingredient_index": 1,
+        "food_id": "rinderhackfleisch-5-fett",
+        "field": "heated",
+        "value": true,
+        "reason_de": "Schritt 2 gart die Zutat durch: „Erhitze das Olivenöl in einer kleinen Pfanne bei mittlerer Hitze und brate das Rinderhack 3–4 Minuten krümelig an.“"
+      }
+    ],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4a2c21e427167838a9ef57fa1d08b50b51986330a1cf55a7081bf6bdff877159"
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "id": "schoko-haferriegel-mit-mandeln-und-whey",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schoko-Haferriegel mit Mandeln und Whey",
+  "description_de": "Saftige No-Bake-Riegel aus Hafer, Erdnussmus und Schoko-Protein, die im Kühlschrank fest werden.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "whey-proteinpulver-schoko",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Messlöffel (90 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2½ EL (50 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "datteln-getrocknet-entsteint",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ca. 6 Datteln (60 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "mandeln",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (20 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "backkakao",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Hacke Datteln und Mandeln fein (am einfachsten im Zerkleinerer).",
+    "Verknete Haferflocken, Proteinpulver, Kakao, Salz, Erdnussmus, Datteln und Mandeln mit der Milch zu einer formbaren Masse; ist sie zu trocken, gib esslöffelweise Milch dazu.",
+    "Drücke die Masse in eine mit Backpapier ausgelegte kleine Form (ca. 15 × 20 cm) fest.",
+    "Stelle die Form mindestens 1 Stunde in den Kühlschrank und schneide die Masse dann in 5 Riegel.",
+    "Wickle jeden Riegel einzeln in Backpapier oder lege ihn in eine kleine Dose."
+  ],
+  "tip_de": "Halten im Kühlschrank 5–6 Tage und lassen sich einzeln einfrieren (bis 2 Monate, 15 Minuten antauen lassen). Ohne Pulver: Whey durch 60 g Haferflocken und 80 g Magerquark ersetzen und die Riegel nur 3 Tage aufbewahren – dann etwa 7 g weniger Eiweiß pro Riegel.",
+  "meal_prep_plan_id": "ohne-schwein",
+  "total_minutes": 15,
+  "prep_minutes": 15,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 294,
+    "protein_g": 21.7,
+    "carbs_g": 26.5,
+    "fat_g": 10.6
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "legumes",
+    "peanuts",
+    "tree_nuts",
+    "fructose"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "977f8bbe051067e5408b29582e7a888502b23727c843811fb686d791f17ec474"
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "id": "blech-omelett-mit-kochschinken-paprika-und-vollkornbrot",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Blech-Omelett mit Kochschinken, Paprika und Vollkornbrot",
+  "description_de": "Ein ganzes Blech herzhaftes Ofen-Omelett, das sich in Stücke schneiden und kalt oder warm aufs Brot legen lässt.",
+  "section_de": "Frühstück",
+  "categories": ["meal-prep"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 5,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 600,
+      "unit": "g",
+      "optional": false,
+      "display_de": "10 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "eiklar",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g (aus dem Tetrapak)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "kochschinken",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Paprika (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Bund (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gouda-light-gerieben",
+      "amount": 75,
+      "unit": "g",
+      "optional": false,
+      "display_de": "75 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 500,
+      "unit": "g",
+      "optional": false,
+      "display_de": "10 Scheiben (500 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 6,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 180 °C Umluft vor und lege ein tiefes Backblech oder eine große Auflaufform mit Backpapier aus.",
+    "Würfle Paprika und Schinken, schneide die Frühlingszwiebeln in Ringe und verteile alles auf dem Blech.",
+    "Verquirle Eier, Eiklar, Milch, Salz, Pfeffer und Paprikapulver und gieße die Masse darüber; streue den Gouda obenauf.",
+    "Backe das Omelett 20–25 Minuten, bis es in der Mitte fest ist, und lass es abkühlen.",
+    "Schneide es in 10 Stücke und packe je 2 Stücke mit 2 Scheiben Vollkornbrot in eine Dose."
+  ],
+  "tip_de": "Gegarte Eier mit Schinken halten im Kühlschrank 3–4 Tage: Friere die Portionen für Donnerstag und Freitag ein und lege sie am Vorabend in den Kühlschrank. Kalt essen oder 1 Minute bei 600 Watt aufwärmen. Das Brot separat lagern oder einfrieren und morgens toasten, damit es nicht durchweicht.",
+  "tags_de": ["zum Mitnehmen"],
+  "meal_prep_plan_id": "fleisch",
+  "total_minutes": 15,
+  "prep_minutes": 1,
+  "cook_minutes": 14,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 536,
+    "protein_g": 42.8,
+    "carbs_g": 47.2,
+    "fat_g": 17.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "histamine", "onion_garlic"],
+  "contains_pork": true,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "36fc7cc4c69a3881ab5de40626326b54d3ea20c6bd1134b8290c9bdda2c8915d"
+  }
+}

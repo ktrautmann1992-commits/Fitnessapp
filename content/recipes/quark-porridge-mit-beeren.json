@@ -1,9 +1,9 @@
 {
   "id": "quark-porridge-mit-beeren",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Quark-Porridge mit Beeren",
-  "description_de": "Cremiger Haferbrei, in den zum Schluss Magerquark gerührt wird – warm, sättigend und richtig eiweißreich.",
+  "description_de": "Cremiger Haferbrei, in den zum Schluss Magerquark gerührt wird – warm, cremig und sättigend.",
   "section_de": "Frühstück",
   "categories": ["schnell", "pre-workout"],
   "meal_types": ["breakfast"],
@@ -68,7 +68,7 @@
   "steps_de": [
     "Gib Haferflocken und Milch in einen kleinen Topf und bring alles bei mittlerer Hitze unter Rühren zum Köcheln.",
     "Lass den Brei 3–4 Minuten leise köcheln, bis er schön sämig ist, und nimm den Topf dann vom Herd.",
-    "Rühre den Magerquark und den Zimt unter, damit das Porridge cremig und eiweißreich wird.",
+    "Rühre den Magerquark und den Zimt unter, damit das Porridge schön cremig wird.",
     "Erwärme die TK-Beeren kurz in der Mikrowelle (ca. 1 Minute) oder lass sie antauen.",
     "Fülle das Porridge in eine Schüssel und toppe es mit den Beeren und den gehackten Mandeln."
   ],
@@ -106,6 +106,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "5f60d3bc11ea1ff458f79691f2a848e033dae43cb1ae08bc394188cbcf68895a"
+    "import_hash": "af80a31e42c64f3ef05f4effd989b3898fe342d09c3d1b80b8667785d3b769e8"
   }
 }

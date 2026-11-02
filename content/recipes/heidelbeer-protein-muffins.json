@@ -1,0 +1,120 @@
+{
+  "id": "heidelbeer-protein-muffins",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Heidelbeer-Protein-Muffins",
+  "description_de": "Saftige Quark-Muffins mit Vanille-Whey und Heidelbeeren – süß, saftig und gut zum Mitnehmen.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "dinkelmehl-type-630",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Ei (30 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "whey-proteinpulver-vanille",
+      "amount": 12,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (12 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (2 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "heidelbeeren",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Heiz den Backofen auf 180 °C Ober-/Unterhitze vor und setz 2 Papierförmchen in ein Muffinblech.",
+    "Verrühre Magerquark, Ei und Honig glatt.",
+    "Mische Mehl, Proteinpulver und Backpulver und rühr die Mischung kurz unter die Quarkmasse.",
+    "Heb die Heidelbeeren vorsichtig unter und füll den Teig in die Förmchen.",
+    "Backe die Muffins 18–20 Minuten, bis an einem Holzstäbchen kein Teig mehr klebt."
+  ],
+  "tip_de": "Angaben gelten für 2 Muffins – für ein ganzes Blech einfach mit 6 multiplizieren. Ohne Pulver: 30 g Quark und 10 g Mehl mehr.",
+  "total_minutes": 30,
+  "prep_minutes": 10,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 260,
+    "protein_g": 23.5,
+    "carbs_g": 30.9,
+    "fat_g": 4.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3185d0cd39233dda53141cf1dc01b75db747cdfd57742be6daec9b37366cb7d4"
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "id": "tomaten-thunfisch-pasta-mit-rucola",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Tomaten-Thunfisch-Pasta mit Rucola",
+  "description_de": "Mediterrane Vollkornpasta mit schneller Tomatensauce, Thunfisch, Rucola und Parmesan.",
+  "section_de": "Mittagessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkornnudeln",
+      "amount": 90,
+      "unit": "g",
+      "optional": false,
+      "display_de": "90 g (trocken)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "thunfisch-im-eigenen-saft-abgetropft",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Dose (120 g abgetropft)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gerieben (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rucola",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koche die Nudeln in reichlich Salzwasser nach Packungsanleitung bissfest (ca. 10 Minuten).",
+    "Würfle Zwiebel und Knoblauch und dünste sie im Olivenöl 2 Minuten glasig.",
+    "Gib passierte Tomaten und Oregano dazu und lass die Sauce 5 Minuten köcheln.",
+    "Zupfe den Thunfisch grob, rühre ihn unter und würze mit Salz und Pfeffer.",
+    "Mische die abgegossenen Nudeln mit der Sauce und serviere sie mit Rucola und Parmesan."
+  ],
+  "tip_de": "Ein Spritzer Zitronensaft und ein paar Kapern machen die Sauce noch frischer.",
+  "total_minutes": 15,
+  "prep_minutes": 1,
+  "cook_minutes": 14,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 614,
+    "protein_g": 48.9,
+    "carbs_g": 66.8,
+    "fat_g": 14.6
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "fish", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c5aef0763af88462ba2c8461e3447c7066ac4b4c90328abcf0881b4bf48410a2"
+  }
+}

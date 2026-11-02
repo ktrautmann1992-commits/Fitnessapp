@@ -1,0 +1,164 @@
+{
+  "id": "tempeh-gyros-wrap-mit-soja-tzatziki",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Tempeh-Gyros-Wrap mit Soja-Tzatziki",
+  "description_de": "Würzig gebratener Tempeh im Gyros-Stil mit Rotkohl, Tomate und knoblauchigem Tzatziki.",
+  "section_de": "Mittagessen",
+  "categories": [],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorn-wrap",
+      "amount": 65,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Wrap (65 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "tempeh",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sojajoghurt-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomaten",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Tomate (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rotkohl",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g (fein gehobelt)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide den Tempeh in dünne Streifen und brate ihn im Olivenöl 5 Minuten bei mittlerer Hitze goldbraun.",
+    "Würze ihn in der Pfanne mit Paprikapulver, Oregano, Kreuzkümmel und Salz.",
+    "Rasple die Gurke, drücke sie aus und verrühre sie mit Sojajoghurt, gepresstem Knoblauch und Salz zu Tzatziki.",
+    "Erwärme den Wrap kurz in der trockenen Pfanne.",
+    "Bestreiche den Wrap mit Tzatziki, belege ihn mit Tempeh, Rotkohl und Tomatenwürfeln und roll ihn auf."
+  ],
+  "tip_de": "Statt Tempeh funktioniert auch Seitan in Streifen.",
+  "total_minutes": 15,
+  "prep_minutes": 10,
+  "cook_minutes": 5,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 553,
+    "protein_g": 34.3,
+    "carbs_g": 48.5,
+    "fat_g": 25.1
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4d79d1648f2366f5c71e6e62eadaa359acc8d1521fb5b1c3e975e30a81364812"
+  }
+}

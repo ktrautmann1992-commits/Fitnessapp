@@ -1,6 +1,6 @@
 {
   "id": "eismaschine",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Eis selbst machen",
   "sections": [
@@ -19,7 +19,7 @@
     {
       "heading_de": "Das passende Programm wählen",
       "body_de": [
-        "Eis mit wenig Fett und Zucker ist im gefrorenen Zustand sehr fest. Wähle dafür das Programm für leichtes Eis bzw. das Programm, das dein Gerät für fett- und zuckerarme Massen vorsieht. Beachte immer die Anleitung deines eigenen Geräts."
+        "Eis mit wenig Fett und Zucker ist im gefrorenen Zustand sehr fest. Wähle dafür das Programm für leichtes Eis bzw. das Programm, das dein Gerät für Massen mit wenig Fett und Zucker vorsieht. Beachte immer die Anleitung deines eigenen Geräts."
       ]
     },
     {
@@ -57,6 +57,6 @@
     "reviewed_at": null,
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
-    "import_hash": "19672b57c9e0a7eaadcc4c83fe3a9b4ba17b02b3bcdc6281252aadce6ddcc6d9"
+    "import_hash": "2e0702f2954158b8fc9effc3d561002a4ed2dde8875f08c711c135e6829e503a"
   }
 }

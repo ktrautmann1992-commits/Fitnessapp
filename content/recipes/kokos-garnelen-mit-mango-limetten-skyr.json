@@ -1,0 +1,149 @@
+{
+  "id": "kokos-garnelen-mit-mango-limetten-skyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kokos-Garnelen mit Mango-Limetten-Skyr",
+  "description_de": "Garnelen in einer knusprigen Kokos-Panko-Hülle mit fruchtigem Mango-Dip – ein Snack, der nach Urlaub schmeckt.",
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "garnelen-tk-roh-geschaelt",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g, aufgetaut",
+      "scales": true,
+      "heated": false,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "eiklar",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Eiklar (30 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "kokosraspeln",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "panko",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (10 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ein paar Sprühstöße (2 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "mango-tk",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g, aufgetaut",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "chiliflocken",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Tupfe die aufgetauten Garnelen gründlich trocken. Verquirle das Eiklar mit einer Prise Salz und mische Kokosraspeln und Panko auf einem Teller.",
+    "Ziehe jede Garnele durch das Eiklar und dann durch die Kokos-Panko-Mischung; leicht andrücken.",
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Lege die Garnelen in einer Lage in den Korb und besprühe sie dünn mit Rapsöl.",
+    "Gare sie 6–8 Minuten bei 200 °C und wende sie nach 4 Minuten. Sie sind fertig, wenn sie rundum rosa und innen nicht mehr glasig sind (Kerntemperatur ca. 63 °C).",
+    "Püriere oder zerdrücke die Mango mit Skyr, Limettensaft und Chiliflocken und serviere den Dip zu den heißen Garnelen."
+  ],
+  "tip_de": "Kokosraspeln bräunen schnell – ab Minute 5 lieber einmal nachsehen. Statt Garnelen klappt es auch mit Hähnchenbrust-Streifen (10–12 Minuten, Kerntemperatur mindestens 74 °C).",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 20,
+  "prep_minutes": 8,
+  "cook_minutes": 12,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 303,
+    "protein_g": 36,
+    "carbs_g": 16.6,
+    "fat_g": 10
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "shellfish", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3c7ba97f909019a5f49c08f994c074e59959248ac61464b4f58ac53823102eff"
+  }
+}

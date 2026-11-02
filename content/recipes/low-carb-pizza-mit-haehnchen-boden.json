@@ -1,0 +1,185 @@
+{
+  "id": "low-carb-pizza-mit-haehnchen-boden",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Pizza mit Hähnchen-Boden",
+  "description_de": "Ein Boden aus fein gehackter Hähnchenbrust, Ei und Parmesan ersetzt den Teig – das liefert enorm viel Eiweiß bei wenig Kohlenhydraten.",
+  "section_de": "Pizza & Flammkuchen",
+  "categories": ["fitness-fast-food"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "180 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "huehnerei",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Ei (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "parmesan",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "15 g, fein gerieben",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "haferkleie",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (15 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Kugel (60 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Zwiebel (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mais-dose-abgetropft",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rucola",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 200 °C Ober-/Unterhitze (180 °C Umluft) vor und lege ein Blech mit Backpapier bereit.",
+    "Hacke das Hähnchenbrustfilet im Zerkleinerer sehr fein und verrühre es mit Ei, Parmesan, Haferkleie, Salz, Pfeffer und der Hälfte des Oreganos zu einer streichfähigen Masse.",
+    "Streiche die Masse mit einem nassen Löffel etwa 0,5 cm dick zu einem Kreis von ca. 24 cm auf das Backpapier.",
+    "Backe den Boden 15 Minuten, bis er fest und an den Rändern leicht gebräunt ist.",
+    "Bestreiche den Boden mit den gewürzten passierten Tomaten, belege ihn mit Paprikastreifen, Zwiebelringen, Mais und Mozzarella und backe ihn weitere 8–10 Minuten.",
+    "Verteile den Rucola auf der heißen Pizza und schneide sie in Stücke."
+  ],
+  "tip_de": "Den Boden immer vollständig vorbacken – rohes Geflügel muss komplett durchgaren, bevor der Belag draufkommt. Bretter und Messer nach dem rohen Hähnchen gründlich heiß abwaschen.",
+  "tags_de": ["Fitness-Fast-Food"],
+  "total_minutes": 40,
+  "prep_minutes": 15,
+  "cook_minutes": 25,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 581,
+    "protein_g": 72.7,
+    "carbs_g": 25.4,
+    "fat_g": 19.7
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "dairy",
+    "lactose",
+    "eggs",
+    "poultry",
+    "histamine",
+    "onion_garlic"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "1cc9f0f3765b17a969e557a30ae5f646ca0db6cc5d37c7d711c1aa7c93d82409"
+  }
+}

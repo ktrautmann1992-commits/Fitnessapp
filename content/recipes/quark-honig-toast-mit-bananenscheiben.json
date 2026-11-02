@@ -1,0 +1,101 @@
+{
+  "id": "quark-honig-toast-mit-bananenscheiben",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Quark-Honig-Toast mit Bananenscheiben",
+  "description_de": "Heller Toast mit Honig und Banane liefert schnell verfügbare Kohlenhydrate, der Magerquark liefert Eiweiß, ohne den Magen zu belasten.",
+  "section_de": "60–90 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "toastbrot-weizen",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (50 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "125 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "honig",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "banane",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Banane (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Röste die Toastscheiben goldbraun.",
+    "Verrühre den Magerquark mit der Hälfte des Honigs und dem Zimt.",
+    "Streiche die Quarkcreme auf die Toasts und belege sie mit Bananenscheiben.",
+    "Träufle den restlichen Honig darüber."
+  ],
+  "tip_de": "Wer empfindlich reagiert, nimmt lieber 100 g Quark und isst das Ganze eher 90 als 60 Minuten vor dem Training.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 318,
+    "protein_g": 19.7,
+    "carbs_g": 52.4,
+    "fat_g": 2.1
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "547f2a69f049aa9be60617525a53f759d3494958717fe44d1d5b3043a34e3a49"
+  }
+}

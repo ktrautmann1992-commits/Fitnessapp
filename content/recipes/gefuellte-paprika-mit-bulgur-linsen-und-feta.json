@@ -1,0 +1,165 @@
+{
+  "id": "gefuellte-paprika-mit-bulgur-linsen-und-feta",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gefüllte Paprika mit Bulgur, Linsen & Feta",
+  "description_de": "Ofen-Paprika mit würziger Füllung aus Bulgur, roten Linsen und Feta, dazu ein Skyr-Dip.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "paprika-rot",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Paprika (300 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "bulgur-trocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rote-linsen-trocken",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "feta",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 150,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "150 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heiz den Backofen auf 200 °C Ober-/Unterhitze vor.",
+    "Würfle die Zwiebel und dünste sie im Olivenöl 3 Minuten an. Gib Bulgur, Linsen, Kreuzkümmel, Paprikapulver und 150 ml Wasser dazu und lass alles zugedeckt 10 Minuten quellen.",
+    "Schneide von den Paprika einen Deckel ab und entferne die Kerne.",
+    "Zerbröckle zwei Drittel des Fetas unter die Füllung, schmecke mit Salz ab und füll die Paprika damit.",
+    "Gieß die passierten Tomaten in eine Auflaufform, setz die Paprika hinein, streu den restlichen Feta darüber und backe alles 25–30 Minuten.",
+    "Serviere die Paprika mit dem Skyr als kühlem Dip."
+  ],
+  "tip_de": "Gleich 4 Paprika füllen – aufgewärmt schmecken sie am nächsten Tag noch besser.",
+  "total_minutes": 50,
+  "prep_minutes": 7,
+  "cook_minutes": 43,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 675,
+    "protein_g": 37.6,
+    "carbs_g": 80.9,
+    "fat_g": 19.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8f1d7675793e323c89b96953cbd5f6d8d4de4c5453bb93ffe376da589f03b7ca"
+  }
+}

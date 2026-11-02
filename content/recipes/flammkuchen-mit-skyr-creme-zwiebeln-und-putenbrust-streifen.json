@@ -1,0 +1,166 @@
+{
+  "id": "flammkuchen-mit-skyr-creme-zwiebeln-und-putenbrust-streifen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Flammkuchen mit Skyr-Creme, Zwiebeln und Putenbrust-Streifen",
+  "description_de": "Hauchdünner Boden mit cremigem Skyr statt Crème fraîche und mageren Putenbrust-Streifen statt Speck – der Elsässer Klassiker in leicht.",
+  "section_de": "Pizza & Flammkuchen",
+  "categories": ["fitness-fast-food"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "weizenmehl-type-405",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 6,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ TL (6 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 4,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 knapper TL (4 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "skyr-natur",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "muskatnuss-gerieben",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Zwiebel (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "putenbrust-aufschnitt",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Scheiben (80 g)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "gouda-light-gerieben",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "20 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "fruehlingszwiebel",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stange (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 250 °C Ober-/Unterhitze (230 °C Umluft) vor und lege ein Blech mit Backpapier bereit.",
+    "Verknete Mehl, Backpulver und Salz mit Magerquark und Olivenöl zu einem glatten Teig und rolle ihn auf dem Backpapier sehr dünn zu einem Oval von etwa 25 × 30 cm aus.",
+    "Verrühre den Skyr mit Salz, Pfeffer und Muskat und streiche ihn bis knapp an den Rand auf den Teig.",
+    "Schneide die Zwiebel in feine Ringe und den Putenbrust-Aufschnitt in Streifen, verteile beides auf der Creme und streue den Gouda darüber.",
+    "Backe den Flammkuchen auf der untersten Schiene 10–12 Minuten, bis der Rand knusprig und braun ist, und bestreue ihn mit Frühlingszwiebelringen."
+  ],
+  "tip_de": "Je dünner der Teig, desto echter das Flammkuchen-Gefühl. Wer es rauchig mag, würzt die Skyr-Creme mit einer Prise geräuchertem Paprikapulver.",
+  "tags_de": ["Fitness-Fast-Food"],
+  "total_minutes": 25,
+  "prep_minutes": 13,
+  "cook_minutes": 12,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 616,
+    "protein_g": 53.4,
+    "carbs_g": 70.2,
+    "fat_g": 12
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": ["gluten", "dairy", "lactose", "poultry", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "769fd4c96514e0f894ef3b98660814b546e7bed5808d1436c54fb5849acd7a24"
+  }
+}

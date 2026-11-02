@@ -1,0 +1,147 @@
+{
+  "id": "gemuese-frittata-mit-feta",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Gemüse-Frittata mit Feta",
+  "description_de": "Saftiges Ofen-Omelett mit Zucchini, Paprika, Kartoffel und Feta – mediterran und gemüsereich.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "zucchini",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zucchini (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Zwiebel (40 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1–2 Kartoffeln (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "feta",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 200 °C Ober-/Unterhitze vor.",
+    "Schneide die Kartoffel in dünne Scheiben, Zucchini, Paprika und Zwiebel in kleine Würfel.",
+    "Brate Kartoffelscheiben im Olivenöl in einer ofenfesten Pfanne 5 Minuten an, gib das restliche Gemüse dazu und brate es 3 Minuten mit.",
+    "Verquirle die Eier mit Oregano, Salz und Pfeffer, gieße sie über das Gemüse und zerbrösle den Feta darüber.",
+    "Lass die Frittata 1 Minute auf dem Herd anstocken und backe sie dann 10–12 Minuten im Ofen, bis sie in der Mitte fest ist."
+  ],
+  "tip_de": "Schmeckt am nächsten Tag auch kalt – ideal für die Lunchbox.",
+  "total_minutes": 25,
+  "prep_minutes": 5,
+  "cook_minutes": 20,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 582,
+    "protein_g": 36,
+    "carbs_g": 35.3,
+    "fat_g": 31.9
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "eggs", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "e81a3c38d06f21190c48b28f3499dc50fd3911ed2de220267e1173e07d245de3"
+  }
+}

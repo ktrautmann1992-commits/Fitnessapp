@@ -1,0 +1,136 @@
+{
+  "id": "knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Knusper-Tofu auf Asia-Krautsalat mit Erdnussdressing",
+  "description_de": "Knusprig gebratener Tofu auf einem knackigen Salat aus Weißkohl, Rotkohl und Gurke mit cremigem Erdnuss-Limetten-Dressing.",
+  "section_de": "Mittagessen",
+  "categories": ["low-carb"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "weisskohl",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rotkohl",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Gurke (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sesamoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "koriander-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, gehackt",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Drücke den Tofu mit Küchenpapier trocken, schneide ihn in Würfel und brate ihn im Sesamöl 8 Minuten rundum knusprig.",
+    "Hobel Weiß- und Rotkohl in feine Streifen, schneide die Gurke in Stifte und knete den Kohl mit einer Prise Salz kurz durch.",
+    "Verrühre Erdnussmus, Sojasauce, Limettensaft und 2 EL warmes Wasser zu einem glatten Dressing.",
+    "Mische Salat und Dressing, verteile den Tofu darauf und bestreue alles mit Koriander."
+  ],
+  "tip_de": "Der Krautsalat hält sich ohne Tofu 2 Tage im Kühlschrank und schmeckt am zweiten Tag sogar noch besser.",
+  "total_minutes": 20,
+  "prep_minutes": 12,
+  "cook_minutes": 8,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 461,
+    "protein_g": 34,
+    "carbs_g": 15.6,
+    "fat_g": 28.2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "peanuts", "sesame", "histamine"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "6537221185c53f0488397f714dcac7dc56116b2f03f29fc399823b1252d64fe2"
+  }
+}

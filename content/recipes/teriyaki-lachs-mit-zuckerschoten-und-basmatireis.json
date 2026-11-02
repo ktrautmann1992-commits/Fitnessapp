@@ -1,6 +1,6 @@
 {
   "id": "teriyaki-lachs-mit-zuckerschoten-und-basmatireis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Teriyaki-Lachs mit Zuckerschoten und Basmatireis",
   "description_de": "Lachs in einer selbst angerührten Teriyaki-Glasur aus Sojasauce, Honig und Ingwer, die in der Heißluft leicht karamellisiert – dazu knackige Zuckerschoten und Paprika.",
@@ -67,8 +67,8 @@
     },
     {
       "food_id": "wasser",
-      "amount": 2,
-      "unit": "tbsp",
+      "amount": 30,
+      "unit": "g",
       "optional": false,
       "display_de": "2 EL",
       "scales": true,
@@ -179,6 +179,6 @@
       }
     ],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "0359260b5ea0f1a97b8d53ca7ba0848741329643a1aa5e01bffa1eded8bb2a86"
+    "import_hash": "b478d95416880eefe5736e5852d699c5387cc0338761fd7f5ed03682c7d61c0e"
   }
 }

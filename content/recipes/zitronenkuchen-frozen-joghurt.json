@@ -1,0 +1,131 @@
+{
+  "id": "zitronenkuchen-frozen-joghurt",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Zitronenkuchen-Frozen-Joghurt",
+  "description_de": "Spritzig-cremiger Frozen Joghurt mit Zitronenabrieb und Keksstückchen – erinnert an saftigen Zitronenkuchen und erfrischt trotzdem.",
+  "section_de": "Frozen Joghurt",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "skyr-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "magerquark",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "milch-1-5",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronenschale-bio-abgerieben",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL Abrieb (2 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "geschmackspulver-zuckerfrei",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g), Sorte Zitronenkuchen",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "butterkekse",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Kekse (10 g), grob zerbröselt",
+      "scales": true,
+      "heated": false,
+      "role": "carb"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Skyr, Magerquark, Milch, Zitronensaft, Zitronenabrieb, Geschmackspulver und Erythrit, bis die Masse ganz glatt ist.",
+    "Füll die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Milch dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
+    "Gib die Keksbrösel in eine Mulde in der Mitte und verteile sie mit der Mix-in-Funktion."
+  ],
+  "tip_de": "Nur unbehandelte Zitronen abreiben. Mit 1 EL Instant-Puddingpulver mit Süßungsmitteln (Vanille) wird die Konsistenz noch cremiger.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 8,
+  "prep_minutes": 8,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 285,
+    "protein_g": 33,
+    "carbs_g": 28.7,
+    "fat_g": 3.5
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["gluten", "dairy", "lactose", "eggs"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "af67c49e6ec118f37eaca5d6aeb96a603fd51a7654be90061e4166f39f50cf4b"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "id": "zimt-griessbrei-mit-banane-und-ahornsirup",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Zimt-Grießbrei mit Banane und Ahornsirup",
+  "description_de": "Warmer Grießbrei ist weich, ballaststoffarm und schnell verdaulich und bringt zusammen mit Banane und Ahornsirup viele Kohlenhydrate für den Start.",
+  "section_de": "Renntag-Frühstück (3 Std. vorher)",
+  "categories": ["schnell", "pre-workout", "wettkampf"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "weichweizengriess",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "banane",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Banane (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (20 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bring den Sojadrink mit einer Prise Salz in einem Topf langsam zum Kochen.",
+    "Rühre den Grieß mit dem Schneebesen ein und lass ihn bei kleiner Hitze 3–4 Minuten unter Rühren quellen.",
+    "Nimm den Topf vom Herd und rühre den Ahornsirup unter.",
+    "Gib die Banane in Scheiben darauf und bestäube alles mit etwas Zimt."
+  ],
+  "tip_de": "Iss den Brei etwa 3 Stunden vor dem Start. Unterwegs im Hotel klappt er auch mit Instant-Grieß und heißem Wasser aus dem Wasserkocher.",
+  "tags_de": ["Unter 10 Minuten", "Wettkampf"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 458,
+    "protein_g": 16.4,
+    "carbs_g": 83.2,
+    "fat_g": 5.3
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8eecd010b6639dc456089bed39d35640cbcb5378abe278bf14461a3dc8cad78a"
+  }
+}

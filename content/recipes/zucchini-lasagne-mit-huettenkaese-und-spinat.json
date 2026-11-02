@@ -1,0 +1,137 @@
+{
+  "id": "zucchini-lasagne-mit-huettenkaese-und-spinat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Zucchini-Lasagne mit Hüttenkäse und Spinat",
+  "description_de": "Lasagne, bei der Zucchinischeiben die Nudelplatten ersetzen: mit Tomatensauce, Hüttenkäse, Spinat und überbackenem Mozzarella.",
+  "section_de": "Mittagessen",
+  "categories": ["low-carb"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "zucchini",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 große Zucchini (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "huettenkaese",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "mozzarella-light",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "oregano-getrocknet",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Ofen auf 200 °C Ober-/Unterhitze vor. Schneide die Zucchini längs in dünne Scheiben, salze sie und lass sie 10 Minuten Wasser ziehen, dann trocken tupfen.",
+    "Würze die passierten Tomaten mit gepresstem Knoblauch, Oregano, Salz und Pfeffer.",
+    "Schichte in einer kleinen Auflaufform Zucchini, Tomatensauce, Spinat und Hüttenkäse zweimal übereinander und schließe mit Zucchini und Sauce ab.",
+    "Belege alles mit Mozzarella in Stücken und backe die Lasagne 25 Minuten, bis sie goldbraun ist."
+  ],
+  "tip_de": "Das Salzen der Zucchini ist wichtig – sonst wird die Lasagne wässrig. Lässt sich gut für den nächsten Tag vorbereiten.",
+  "tags_de": ["Vorbereiten"],
+  "total_minutes": 40,
+  "prep_minutes": 15,
+  "cook_minutes": 25,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 333,
+    "protein_g": 36.5,
+    "carbs_g": 15.3,
+    "fat_g": 13.3
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": ["dairy", "lactose", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "543ef5fb1daaf81389da6d3b50a1a168bf6a0ead553f8fa794e4cc6034ac1f98"
+  }
+}

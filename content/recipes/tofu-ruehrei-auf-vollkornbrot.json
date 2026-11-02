@@ -1,0 +1,155 @@
+{
+  "id": "tofu-ruehrei-auf-vollkornbrot",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Tofu-Rührei auf Vollkornbrot",
+  "description_de": "Würziges Rührei aus zerbröseltem Tofu mit Kurkuma und Spinat auf kräftigem Vollkornbrot mit Tomaten.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stange (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Handvoll (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "hefeflocken",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kurkuma",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "vollkornbrot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 kleine Scheiben (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "cherrytomaten",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6–7 Stück (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Tupfe den Tofu trocken und zerbrösele ihn mit einer Gabel grob.",
+    "Erhitze das Rapsöl in einer Pfanne auf mittlerer Stufe und brate die in Ringe geschnittene Frühlingszwiebel 1 Minute an.",
+    "Gib Tofu, Kurkuma und Paprikapulver dazu und brate alles 4–5 Minuten unter Rühren, bis der Tofu leicht gebräunt ist.",
+    "Rühre Spinat und Hefeflocken unter, lass den Spinat 1 Minute zusammenfallen und würze mit Salz und Pfeffer.",
+    "Toaste das Brot, verteile das Tofu-Rührei darauf und serviere es mit den halbierten Cherrytomaten."
+  ],
+  "tip_de": "Eine Prise Kala Namak (Schwefelsalz) zum Schluss sorgt für echten Ei-Geschmack.",
+  "total_minutes": 15,
+  "prep_minutes": 10,
+  "cook_minutes": 5,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 524,
+    "protein_g": 36.4,
+    "carbs_g": 41,
+    "fat_g": 21.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "a8b9b1373519146e974d81af8283e4d19461220b2957ee5508a9c17453cb962b"
+  }
+}
