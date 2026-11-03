@@ -1,6 +1,6 @@
 {
   "id": "vegetarisch",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Veggie-Wohlfühl-Woche",
   "description_de": "Ofen-Kaiserschmarrn, eine Linsen-Lasagne und fluffige Ofen-Quarkbällchen: vegetarischer Genuss, der satt macht. Der Ofen läuft fast durchgehend, du schnippelst parallel.",
@@ -138,7 +138,7 @@
   ],
   "storage_de": [
     "Lasagne und Kaiserschmarrn in flache Dosen füllen, damit sie schnell abkühlen; Quarkbällchen in eine gut schließende Dose.",
-    "Im Kühlschrank halten Lasagne, Kaiserschmarrn und Quarkbällchen 4 Tage.",
+    "Im Kühlschrank halten Lasagne, Kaiserschmarrn und Quarkbällchen 3 Tage.",
     "Je eine Portion für Freitag einfrieren und am Donnerstagabend in den Kühlschrank legen."
   ],
   "dinner_hint_de": "Abends kochst du frisch – zum Beispiel ein vegetarisches Gericht aus dem Kapitel „Fertig in 10 Minuten“.",
@@ -152,6 +152,6 @@
     "reviewed_at": null,
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
-    "import_hash": "e3b26d9c534588dd511fe2738fafda852c0c86fc4d349aebedab1d60e475a4a4"
+    "import_hash": "5709cd40d12d45bbc3d83301f0571c61c6baa4d6f4afcc2b11a921006f29b82d"
   }
 }

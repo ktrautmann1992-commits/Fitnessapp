@@ -1,6 +1,6 @@
 {
   "id": "iced-coffee-proteinshake-mit-hafer",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Iced-Coffee-Proteinshake mit Hafer",
   "description_de": "Kalter Kaffee-Shake mit Haferflocken, Banane und Vanille-Whey – Frühstück und Wachmacher in einem Glas.",
@@ -57,8 +57,8 @@
     },
     {
       "food_id": "eiswuerfel",
-      "amount": 3,
-      "unit": "piece",
+      "amount": 100,
+      "unit": "g",
       "optional": false,
       "display_de": "3–4 Eiswürfel",
       "scales": true,
@@ -105,6 +105,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "10e79d8ec335ade4ac5e2b650acaf07ff394998603e1eb1c83147571c49de282"
+    "import_hash": "6f278b8139f43811e6f8a7109ead8734fb1e8e388b36e15bd0d21b527d38eb9a"
   }
 }

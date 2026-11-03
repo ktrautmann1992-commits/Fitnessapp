@@ -1,0 +1,110 @@
+{
+  "id": "vanille-dattel-energy-balls",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Vanille-Dattel-Energy-Balls",
+  "description_de": "Saftige Protein-Kugeln aus Hafer, Datteln, Erdnussmus und Vanille-Protein – der perfekte Snack für unterwegs.",
+  "section_de": "Snack",
+  "categories": ["schnell", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "25 g (zart)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "datteln-getrocknet-entsteint",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Datteln (20 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 ml)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Weiche die Datteln 5 Minuten in heißem Wasser ein und lass sie abtropfen.",
+    "Zerkleinere Datteln, Haferflocken, Proteinpulver, Erdnussmus, Zimt und Sojadrink im Mixer zu einer klebrigen Masse.",
+    "Ist die Masse zu trocken, gib teelöffelweise Sojadrink dazu; ist sie zu feucht, etwas mehr Haferflocken.",
+    "Forme mit feuchten Händen 3 Kugeln – sofort essen oder für mehr Festigkeit kurz kalt stellen."
+  ],
+  "tip_de": "Gleich die 5-fache Menge machen: Im Kühlschrank halten die Balls eine Woche. Ohne Pulver einfach mit 10 g gemahlenen Kürbiskernen und mehr Hafer arbeiten.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 272,
+    "protein_g": 17.8,
+    "carbs_g": 30.4,
+    "fat_g": 8
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "peanuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "30ce0da69b65ede984957bcfdce58bad9a19b267a2a098cdb0511273da8dd0af"
+  }
+}

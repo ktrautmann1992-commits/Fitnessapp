@@ -1,0 +1,91 @@
+{
+  "id": "schoko-bananen-proteinshake",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schoko-Bananen-Proteinshake",
+  "description_de": "Cremiger Shake mit Sojadrink, Banane und veganem Proteinpulver für die schnelle Regeneration.",
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "veganes-proteinpulver",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "banane",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Banane (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "backkakao",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gib alle Zutaten in einen Mixer oder hohen Becher.",
+    "Mixe alles 30 Sekunden cremig.",
+    "Gieße den Shake in ein Glas und trink ihn direkt."
+  ],
+  "tip_de": "Mit einer gefrorenen Banane wird der Shake besonders kalt und dick.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 3,
+  "prep_minutes": 3,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 244,
+    "protein_g": 28.3,
+    "carbs_g": 15.8,
+    "fat_g": 6.8
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "f5abdbe2a184f6e13303c8af73c0b5b95a75e0bf273b9e1376b4fa20b8945315"
+  }
+}

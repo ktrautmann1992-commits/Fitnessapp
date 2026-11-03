@@ -1,0 +1,142 @@
+{
+  "id": "kichererbsen-kartoffel-curry-mit-spinat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kichererbsen-Kartoffel-Curry mit Spinat",
+  "description_de": "Würziges Curry aus Dosen-Kichererbsen, Kartoffeln und TK-Spinat, das mit einer Handvoll Linsen auf über 30 g pflanzliches Eiweiß kommt.",
+  "section_de": "Hauptgericht",
+  "categories": ["meal-prep", "spar-kueche"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g (ca. ¾ Dose)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kartoffeln",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 mittelgroße (200 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "blattspinat-tk",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "rote-linsen-trocken",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "currypulver",
+      "amount": 2,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "2 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schäle die Kartoffeln und schneide sie in kleine Würfel; würfle die Zwiebel.",
+    "Brate Zwiebel und Currypulver im Rapsöl 1–2 Minuten an, bis es duftet.",
+    "Gib Kartoffeln, Linsen, passierte Tomaten und 150 ml Wasser dazu und lass alles zugedeckt 15 Minuten köcheln.",
+    "Rühre Kichererbsen und den gefrorenen Spinat unter und lass das Curry weitere 5 Minuten köcheln, bis alles heiß ist; mit Salz abschmecken."
+  ],
+  "tip_de": "Wer mehr Hunger hat, serviert 50 g gekochten Reis dazu – kostet nur ein paar Cent extra.",
+  "tags_de": ["Spar-Küche"],
+  "total_minutes": 25,
+  "prep_minutes": 3,
+  "cook_minutes": 22,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 612,
+    "protein_g": 31.5,
+    "carbs_g": 86.5,
+    "fat_g": 11.6
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "celery", "mustard", "histamine", "onion_garlic", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "cost_estimate": {
+    "eur_per_serving": 1.73,
+    "as_of": "2026-10-23",
+    "basis": "estimate"
+  },
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "14419f86d5f650a4a8fba58a37bc6fabafab553219c347cada3f3a9296b6aed2"
+  }
+}

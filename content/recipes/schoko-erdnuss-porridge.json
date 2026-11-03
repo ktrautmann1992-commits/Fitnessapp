@@ -1,0 +1,119 @@
+{
+  "id": "schoko-erdnuss-porridge",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schoko-Erdnuss-Porridge",
+  "description_de": "Warmer Proteinbrei mit Kakao, Banane und Erdnussmus – schmeckt wie Nachtisch.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "veganes-proteinpulver",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "backkakao",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "banane",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Banane (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bring Haferflocken, Sojadrink, Kakao und eine Prise Salz in einem Topf unter Rühren zum Kochen.",
+    "Lass den Brei bei kleiner Hitze 3–4 Minuten köcheln, bis er cremig ist.",
+    "Nimm den Topf vom Herd und rühre das Proteinpulver klümpchenfrei unter.",
+    "Schneide die Banane in Scheiben und verteile sie mit dem Erdnussmus auf dem Porridge."
+  ],
+  "tip_de": "Proteinpulver erst nach dem Kochen einrühren, sonst wird es klumpig.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 6,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 516,
+    "protein_g": 35.6,
+    "carbs_g": 52.1,
+    "fat_g": 16.1
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "peanuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "e2182d04b6aee6ee740450cdeeaf92c6f421e73b0b80d092273b0f1b3131e299"
+  }
+}

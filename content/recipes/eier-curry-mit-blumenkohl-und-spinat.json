@@ -1,0 +1,183 @@
+{
+  "id": "eier-curry-mit-blumenkohl-und-spinat",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Eier-Curry mit Blumenkohl & Spinat",
+  "description_de": "Indisches Egg Curry mit Blumenkohl in würziger Tomaten-Joghurt-Sauce und einer kleinen Portion Reis.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "huehnerei",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 Eier (Größe M)",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "blumenkohl",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zwiebel",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zwiebel (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL, gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "passierte-tomaten",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 ml",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "joghurt-1-5",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Handvoll (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "currypulver",
+      "amount": 2,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "2 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Koch den Reis nach Packungsangabe und parallel die Eier 9 Minuten hart; schreck sie ab und pell sie.",
+    "Würfle Zwiebel, Knoblauch und Ingwer fein und dünste sie im Rapsöl 3 Minuten an. Gib Currypulver und Kreuzkümmel dazu und röste sie 30 Sekunden mit.",
+    "Gib den Blumenkohl in kleinen Röschen und die passierten Tomaten dazu und lass alles zugedeckt 10 Minuten köcheln.",
+    "Ritze die Eier mehrmals ein, leg sie mit dem Spinat in die Sauce und lass alles 2 Minuten ziehen.",
+    "Nimm den Topf vom Herd, rühr den Joghurt unter, schmecke mit Salz ab und serviere das Curry mit dem Reis."
+  ],
+  "tip_de": "Statt Reis kannst du für ein noch leichteres Abendessen mehr Blumenkohl nehmen.",
+  "total_minutes": 30,
+  "prep_minutes": 17,
+  "cook_minutes": 13,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 598,
+    "protein_g": 37.4,
+    "carbs_g": 52.1,
+    "fat_g": 24.8
+  },
+  "declared_diet": "vegetarian",
+  "declared_allergens": [
+    "dairy",
+    "lactose",
+    "eggs",
+    "celery",
+    "mustard",
+    "histamine",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4467362d75a123fe3bb90a0612acf789453785f047ac048df7d41c193d13da41"
+  }
+}

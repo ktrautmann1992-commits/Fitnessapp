@@ -1,0 +1,112 @@
+{
+  "id": "kokos-ananas-eis-im-pina-colada-stil",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kokos-Ananas-Eis im Piña-Colada-Stil",
+  "description_de": "Tropisch-frisches Eis mit Ananas und Kokos, das nach Strandurlaub schmeckt – vegan und alkoholfrei.",
+  "section_de": "Protein-Eis mit Mandeldrink",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "mandeldrink-ungesuesst",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 35,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (35 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "ananas-dose-abgetropft",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "geschmackspulver-zuckerfrei",
+      "amount": 6,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ TL (6 g), Sorte Kokos",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kokosraspeln",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (5 g), leicht geröstet",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Püriere Mandeldrink, Ananas, Proteinpulver, Geschmackspulver und Erythrit im Mixer, bis die Masse ganz glatt ist.",
+    "Gieß die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Mandeldrink dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
+    "Streu die Kokosraspeln in eine Mulde in der Mitte und verteile sie mit der Mix-in-Funktion."
+  ],
+  "tip_de": "Ein paar Ananasstückchen zurückbehalten und als Mix-in verwenden – das sorgt für fruchtige Stückchen im Eis. Statt Mandeldrink geht auch Kokosdrink.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 7,
+  "prep_minutes": 7,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 266,
+    "protein_g": 27,
+    "carbs_g": 19.1,
+    "fat_g": 8.2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "tree_nuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "9f45a360d34415b513820bb0d6edad8a5e2e50593ae6a6cef44658bbf0fc6c8b"
+  }
+}

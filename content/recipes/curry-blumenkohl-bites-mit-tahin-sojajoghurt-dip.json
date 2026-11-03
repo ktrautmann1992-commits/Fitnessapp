@@ -1,0 +1,147 @@
+{
+  "id": "curry-blumenkohl-bites-mit-tahin-sojajoghurt-dip",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Curry-Blumenkohl-Bites mit Tahin-Sojajoghurt-Dip",
+  "description_de": "Blumenkohlröschen im würzigen Kichererbsenmehl-Mantel werden knusprig wie frittiert, brauchen aber nur einen Teelöffel Öl – mit cremigem Sesam-Dip.",
+  "section_de": "Beilagen & Gemüse",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "blumenkohl",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Blumenkohl (250 g Röschen)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kichererbsenmehl",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (30 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 40,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "40 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "currypulver",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-geraeuchert",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 4,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (4 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojajoghurt-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "tahin",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL gehäuft (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 2,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "2 Prisen",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+    "Verrühre Kichererbsenmehl, Wasser, Currypulver, Paprikapulver, Öl und Salz zu einem dickflüssigen Teig.",
+    "Teile den Blumenkohl in kleine, etwa gleich große Röschen und wende sie im Teig, bis sie rundum dünn überzogen sind. Lass überschüssigen Teig abtropfen.",
+    "Lege die Röschen in einer Lage auf ein passend zugeschnittenes Stück Backpapier in den Korb und gare sie 14–16 Minuten bei 200 °C. Wende sie nach 8 Minuten; dann kannst du das Backpapier entfernen, damit die Unterseite knusprig wird.",
+    "Verrühre Sojajoghurt mit Tahin, Zitronensaft und einer Prise Salz und serviere den Dip zu den heißen Bites."
+  ],
+  "tip_de": "Die Röschen nicht zu groß lassen, sonst sind sie außen braun und innen noch hart. Wer es schärfer mag, gibt eine Prise Chiliflocken in den Teig.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 25,
+  "prep_minutes": 1,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 311,
+    "protein_g": 17.1,
+    "carbs_g": 21.2,
+    "fat_g": 13.6
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "sesame", "celery", "mustard", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "94fb83233f0220f88b307b74d0f7b712f55a5ef4a7b76fcf7f57bdb592ae97a6"
+  }
+}

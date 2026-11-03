@@ -1,0 +1,127 @@
+{
+  "id": "kokos-tofu-curry-mit-blumenkohlreis",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kokos-Tofu-Curry mit Blumenkohlreis",
+  "description_de": "Mildes gelbes Curry mit Tofu, Paprika und Spinat in Kokosmilch, serviert auf Blumenkohlreis statt Basmati – vegan und angenehm leicht.",
+  "section_de": "Abendessen",
+  "categories": ["low-carb"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "tofu-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "blumenkohl",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Kopf (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kokosmilch-fettreduziert",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "babyspinat",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Handvoll (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 daumennagelgroßes Stück",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "currypulver",
+      "amount": 2,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "2 TL",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Raspel den Blumenkohl auf der groben Reibe zu „Reis“ und schneide Tofu und Paprika in Würfel.",
+    "Brate den Tofu im Öl 5 Minuten goldbraun, gib Paprika, geriebenen Ingwer und Currypulver dazu und röste alles 1 Minute.",
+    "Lösche mit Kokosmilch und 50 ml Wasser ab und lass das Curry 5 Minuten köcheln. Heb den Spinat unter.",
+    "Gare den Blumenkohlreis in einer zweiten Pfanne ohne Fett 4–5 Minuten, salze ihn und serviere das Curry darauf."
+  ],
+  "tip_de": "Blumenkohlreis gibt es auch tiefgekühlt – das spart das Raspeln.",
+  "total_minutes": 25,
+  "prep_minutes": 10,
+  "cook_minutes": 15,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 489,
+    "protein_g": 35,
+    "carbs_g": 17.4,
+    "fat_g": 29
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "celery", "mustard", "histamine", "spicy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "16f0bfb0e7963d63088edbfcb815a411d94808c4970e8d10c9463f7087469d56"
+  }
+}

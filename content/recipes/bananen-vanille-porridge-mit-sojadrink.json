@@ -1,0 +1,106 @@
+{
+  "id": "bananen-vanille-porridge-mit-sojadrink",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Bananen-Vanille-Porridge mit Sojadrink",
+  "description_de": "Cremiger Haferbrei aus Eigenmarken-Haferflocken, der mit Sojadrink und einem Messlöffel Proteinpulver lange satt macht und kaum mehr als einen Euro kostet.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "spar-kueche"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "banane",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Banane (100 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Bring die Haferflocken mit 200 ml Sojadrink in einem kleinen Topf bei mittlerer Hitze unter Rühren zum Köcheln.",
+    "Lass den Brei 3–4 Minuten sanft quellen, bis er cremig ist, und nimm ihn dann vom Herd.",
+    "Verrühre das Proteinpulver mit dem restlichen Sojadrink glatt und rühre es unter den etwas abgekühlten Brei.",
+    "Schneide die Banane in Scheiben, gib sie auf das Porridge und bestreue alles mit Zimt."
+  ],
+  "tip_de": "Ohne Pulver: Rühr 2 EL Erdnussmus und 150 g Sojaskyr natur unter – etwas teurer, aber ähnlich sättigend. Überreife Bananen gibt es oft reduziert, die sind hier ideal.",
+  "tags_de": ["Unter 10 Minuten", "Spar-Küche"],
+  "total_minutes": 8,
+  "prep_minutes": 8,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 512,
+    "protein_g": 33.2,
+    "carbs_g": 64.2,
+    "fat_g": 10.8
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "cost_estimate": {
+    "eur_per_serving": 1.17,
+    "as_of": "2026-10-23",
+    "basis": "estimate"
+  },
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "aed5b01ef83239cbed0297da6d36e95dbce1ad26f3b87840df4954dc6e48396f"
+  }
+}

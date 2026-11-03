@@ -1,6 +1,6 @@
 {
   "id": "fleisch",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Deftige Protein-Woche",
   "description_de": "Blech-Omelett mit Schinken, ein mageres Schweinefilet-Gulasch und Mini-Frikadellen: herzhaft, deftig und sättigend. Ofen und Herd arbeiten parallel, damit du nach rund 2 Stunden fertig bist.",
@@ -142,7 +142,7 @@
   ],
   "storage_de": [
     "Verwende 5 Dosen fürs Gulasch, 5 fürs Frühstück und 5 kleine Snackdosen mit separatem Dip-Becher.",
-    "Gegartes Fleisch und Eier halten im Kühlschrank (max. 5 °C) nur 3–4 Tage, deshalb ist das Einfrieren hier wichtig.",
+    "Gegartes Fleisch und Eier halten im Kühlschrank (max. 5 °C) nur 1 Tag, deshalb ist das Einfrieren hier wichtig.",
     "Lege die eingefrorenen Portionen jeweils am Vorabend in den Kühlschrank und wärme Gulasch und Frikadellen durchgehend heiß auf."
   ],
   "dinner_hint_de": "Abends kochst du frisch – zum Beispiel ein Gericht aus dem Kapitel „Fertig in 10 Minuten“.",
@@ -156,6 +156,6 @@
     "reviewed_at": null,
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
-    "import_hash": "c5144984c9e23d4af9920e6b73a3b33abaec56ae01143c0a043b4751cca34c12"
+    "import_hash": "95b371235f284cd112600d0d390099809288128c8bdea7f9550a22f34ed4aa93"
   }
 }

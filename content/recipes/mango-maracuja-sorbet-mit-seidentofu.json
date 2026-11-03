@@ -1,0 +1,120 @@
+{
+  "id": "mango-maracuja-sorbet-mit-seidentofu",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Mango-Maracuja-Sorbet mit Seidentofu",
+  "description_de": "Leuchtend gelbes, exotisch-frisches Sorbet aus Mango und Maracuja, das durch Seidentofu cremig wird – vegan und erfrischend.",
+  "section_de": "Sorbet & Erfrischung",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "mango-tk",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g, angetaut",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "maracuja",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Maracuja, ausgelöffelt (30 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "seidentofu",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "veganes-proteinpulver-erbse-reis-neutral",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2/3 Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "30 ml",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Püriere Mango, Seidentofu, Proteinpulver, Limettensaft, Erythrit und Wasser sehr fein und rühre das Maracuja-Fruchtfleisch mit den Kernen unter.",
+    "Füll die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Wasser oder Limettensaft dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+  ],
+  "tip_de": "Wer die Kerne nicht mag, streicht die Maracuja durch ein Sieb. Mit frischer, sehr reifer Mango wird das Sorbet noch aromatischer.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 7,
+  "prep_minutes": 7,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 308,
+    "protein_g": 28,
+    "carbs_g": 29.1,
+    "fat_g": 7.9
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "80870140d2c0a8c1d08e2ee337dc5b6dc08269b67960559eb7f88429662a150e"
+  }
+}

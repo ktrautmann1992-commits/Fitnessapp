@@ -1,0 +1,102 @@
+{
+  "id": "schoko-proteinpudding",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Schoko-Proteinpudding",
+  "description_de": "Selbst gekochter Schokopudding mit Schoko-Protein – cremig, schnell gemacht und mit Beeren getoppt.",
+  "section_de": "Snack",
+  "categories": ["schnell", "meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "250 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "speisestaerke",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 ½ EL (15 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "veganes-proteinpulver-schoko",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (25 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "beerenmischung-tk",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre die Speisestärke mit 50 ml kaltem Sojadrink glatt.",
+    "Bring den restlichen Sojadrink mit einer Prise Salz in einem kleinen Topf zum Kochen.",
+    "Rühre die angerührte Stärke ein und lass alles unter ständigem Rühren 1 Minute aufkochen, bis es eindickt.",
+    "Nimm den Topf vom Herd, lass ihn 1 Minute abkühlen und rühre das Proteinpulver mit dem Schneebesen klümpchenfrei unter.",
+    "Fülle den Pudding in ein Glas und toppe ihn mit Beeren – warm genießen oder für eine festere Konsistenz 30 Minuten kalt stellen."
+  ],
+  "tip_de": "Ohne Proteinpulver: 1 EL Backkakao und 1 TL Ahornsirup mitkochen und den Pudding mit 100 g Sojaskyr verrühren.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 10,
+  "prep_minutes": 10,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 251,
+    "protein_g": 26.3,
+    "carbs_g": 20.5,
+    "fat_g": 6.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8515459ad3024581de7dbc9ef7a88181dd41d7178ac828715ae517e5b7d9fc62"
+  }
+}

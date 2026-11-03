@@ -1,0 +1,121 @@
+{
+  "id": "kirsch-schoko-eis-mit-zartbitterstueckchen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kirsch-Schoko-Eis mit Zartbitterstückchen",
+  "description_de": "Dunkles Schokoeis mit saftigen Kirschen und Schokostückchen – vegan, schön fruchtig und ideal als kühler Abschluss eines heißen Tages.",
+  "section_de": "Protein-Eis mit Mandeldrink",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "mandeldrink-ungesuesst",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 ml",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "veganes-proteinpulver-schoko",
+      "amount": 35,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (35 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "kakaopulver-stark-entoelt",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (15 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "johannisbrotkernmehl",
+      "amount": 1,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Prise (1 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "suesskirschen-tk-entsteint",
+      "amount": 40,
+      "unit": "g",
+      "optional": false,
+      "display_de": "40 g, angetaut und halbiert",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zartbitterschokolade-70",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ Stück (8 g), gehackt",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Mixe Mandeldrink, Proteinpulver, Kakao, Erythrit und Johannisbrotkernmehl gründlich, bis die Masse glatt ist.",
+    "Gieß die Schokomasse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Mandeldrink dazu und lass sie einmal nachdrehen, bis sie cremig ist.",
+    "Gib Kirschen und Schokolade in eine Mulde in der Mitte und arbeite sie mit der Mix-in-Funktion unter."
+  ],
+  "tip_de": "Statt Süßkirschen passen abgetropfte Sauerkirschen aus dem Glas – das Eis wird dann etwas säuerlicher. Zartbitterschokolade auf die Zutatenliste prüfen, wenn es streng vegan sein soll.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 7,
+  "prep_minutes": 7,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 261,
+    "protein_g": 27.9,
+    "carbs_g": 12.3,
+    "fat_g": 9.8
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "tree_nuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "dfd73bbbe9a16a16c0a02e5065f1da74dad94ab419a3426736c00c292cf562cf"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "id": "mango-reispudding-mit-vanille-protein",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Mango-Reispudding mit Vanille-Protein",
+  "description_de": "Cremiger Reispudding aus Express-Reis, der mit leicht verdaulicher Stärke und Mango die Speicher füllt und dabei kaum Fett und Ballaststoffe mitbringt.",
+  "section_de": "60–90 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "express-reis-beutel-gegart",
+      "amount": 125,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Beutel Express-Reis (125 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "mango-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gib den Reis mit 120 ml Sojadrink in einen kleinen Topf und lass ihn bei mittlerer Hitze unter Rühren 3 Minuten cremig köcheln.",
+    "Nimm den Topf vom Herd und lass den Reis 1 Minute abkühlen.",
+    "Verrühre das Proteinpulver mit dem restlichen Sojadrink glatt und rühre es unter den Reis.",
+    "Taue die Mango kurz in der Mikrowelle an (ca. 1 Minute bei 600 Watt), gib sie auf den Pudding und bestreue alles mit Zimt."
+  ],
+  "tip_de": "Ohne Pulver: Nimm 150 g Sojaskyr natur statt Proteinpulver und lass dafür den Sojadrink zur Hälfte weg. Lauwarm oder kalt aus der Dose mitgenommen gut verträglich.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 6,
+  "prep_minutes": 3,
+  "cook_minutes": 3,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 361,
+    "protein_g": 24,
+    "carbs_g": 52.5,
+    "fat_g": 6
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "07836bbeb9f29b6e0730bae006f624639a4284b2b11bbbca2259839f8b67e20d"
+  }
+}

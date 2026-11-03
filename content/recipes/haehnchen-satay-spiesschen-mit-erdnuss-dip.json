@@ -1,0 +1,149 @@
+{
+  "id": "haehnchen-satay-spiesschen-mit-erdnuss-dip",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Hähnchen-Satay-Spießchen mit Erdnuss-Dip",
+  "description_de": "Kleine Hähnchenspieße mit Curry-Marinade und cremigem Erdnuss-Limetten-Dip, dazu Gurkensticks.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haehnchenbrustfilet",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "sojasauce",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g), geteilt",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "currypulver",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 2,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Tropfen (2 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 12,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (12 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "limettensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "honig",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ TL (3 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL, warm",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g, in Sticks",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Schneide das Hähnchen in lange, dünne Streifen und mariniere es mit der Hälfte der Sojasauce und dem Currypulver 5 Minuten.",
+    "Fädle die Streifen wellenförmig auf 3–4 kleine Holzspieße.",
+    "Brate die Spieße in einer mit Rapsöl ausgepinselten Pfanne bei mittlerer bis hoher Hitze je Seite 3 Minuten, bis sie durchgegart sind.",
+    "Verrühre Erdnussmus, restliche Sojasauce, Limettensaft, Honig und warmes Wasser zu einem glatten Dip.",
+    "Serviere die Spieße mit dem Dip und den Gurkensticks."
+  ],
+  "tip_de": "Die Spieße schmecken auch kalt und lassen sich 3 Tage im Kühlschrank aufbewahren.",
+  "total_minutes": 20,
+  "prep_minutes": 17,
+  "cook_minutes": 3,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 1,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 223,
+    "protein_g": 28,
+    "carbs_g": 5.9,
+    "fat_g": 9.4
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "gluten",
+    "poultry",
+    "legumes",
+    "soy",
+    "peanuts",
+    "celery",
+    "mustard",
+    "fructose",
+    "histamine",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "9673844e15ede2bdbccd8278631635091bfdd2797eee70b61470f20ff1bd1dc9"
+  }
+}

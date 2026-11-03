@@ -1,0 +1,202 @@
+{
+  "id": "tandoori-putenbrust-mit-paprika-zwiebel-gemuese-und-minz-joghurt",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Tandoori-Putenbrust mit Paprika-Zwiebel-Gemüse und Minz-Joghurt",
+  "description_de": "In Joghurt und Currygewürzen marinierte Putenstreifen bekommen in der Heißluft leichte Röstspuren und bleiben dabei zart – orientalisch, mager und schnell gemacht.",
+  "section_de": "Hauptgerichte",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "putenbrustfilet",
+      "amount": 170,
+      "unit": "g",
+      "optional": false,
+      "display_de": "170 g",
+      "scales": true,
+      "heated": false,
+      "role": "protein"
+    },
+    {
+      "food_id": "joghurt-1-5",
+      "amount": 130,
+      "unit": "g",
+      "optional": false,
+      "display_de": "130 g (50 g für die Marinade, 80 g für den Dip)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "currypulver",
+      "amount": 2,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "2 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g), gepresst",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ingwer",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL gerieben (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "paprika-gelb",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine gelbe Paprika (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ rote Zwiebel (60 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 7,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (7 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "basmatireis-trocken",
+      "amount": 65,
+      "unit": "g",
+      "optional": false,
+      "display_de": "65 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "minze-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "einige Blätter (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 2,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "2 Prisen",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Putenbrust in 2 cm breite Streifen. Verrühre 50 g Joghurt mit Currypulver, Paprikapulver, Kreuzkümmel, Knoblauch, Ingwer, 1 TL Zitronensaft, 1 TL Öl und Salz und mariniere das Fleisch darin mindestens 10 Minuten (gern auch über Nacht im Kühlschrank).",
+    "Koche den Basmatireis nach Packungsanleitung (ca. 12 Minuten).",
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Mische Paprika- und Zwiebelstücke mit dem restlichen Öl und etwas Salz und gare sie 5 Minuten bei 200 °C.",
+    "Streife überschüssige Marinade ab, lege die Putenstreifen in einer Lage auf das Gemüse und gare alles weitere 10–12 Minuten bei 200 °C. Wende das Fleisch nach 6 Minuten und schüttle das Gemüse kurz durch.",
+    "Prüfe, ob die Pute vollständig durchgegart ist (Kerntemperatur mindestens 74 °C, innen nicht mehr rosa).",
+    "Verrühre 80 g Joghurt mit fein gehackter Minze, geraspelter Gurke, restlichem Zitronensaft und Salz und serviere den Dip zu Fleisch, Gemüse und Reis."
+  ],
+  "tip_de": "Die Marinade funktioniert auch mit Hähnchenbrust. Leicht dunkle Röststellen gehören zum Tandoori-Stil – wird es zu dunkel, die Temperatur auf 190 °C senken.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 30,
+  "prep_minutes": 1,
+  "cook_minutes": 29,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 612,
+    "protein_g": 53,
+    "carbs_g": 71.1,
+    "fat_g": 11.8
+  },
+  "declared_diet": "omnivore",
+  "declared_allergens": [
+    "dairy",
+    "lactose",
+    "poultry",
+    "celery",
+    "mustard",
+    "onion_garlic",
+    "spicy"
+  ],
+  "contains_pork": false,
+  "declared_pregnancy_caution": true,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "34a136463432ba7ea720197d84d0c8a220436f33457658db55182649b4b9b2be"
+  }
+}
