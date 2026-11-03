@@ -11,7 +11,7 @@ void main('content-collect', async () => {
   const client = apiClientFromEnv();
   const result = await runCollect({
     repoRoot,
-    tools: systemTools(repoRoot),
+    tools: systemTools(repoRoot, process.env.BOT_PR_TOKEN),
     now: () => new Date(),
     ...(client ? { client } : {}),
   });

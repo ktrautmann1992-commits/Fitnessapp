@@ -32,9 +32,8 @@ import { z } from 'zod';
 import { FOODS_FOLDER, loadNutritionCatalog } from '../foods/catalog-loader';
 import {
   createVerifiedCommit,
-  dispatchWorkflow,
   type GitHubApi,
-  openPullRequest,
+  openPullRequestWithChecks,
 } from '../foods/github-api';
 import { loadNutritionContentFiles } from '../validate';
 import { BASE_BRANCH, isoDateBerlin, zodMessage } from './config';
@@ -67,6 +66,8 @@ export type CatalogReviewInput = z.input<typeof catalogReviewInputSchema>;
 /** Zusätzlich zu `ReviewDeps`: GitHub-API (verifizierter Commit) und Lauf-ID (Branch-Name). */
 export interface CatalogReviewDeps extends ReviewDeps {
   readonly api?: GitHubApi;
+  /** GitHub-API mit BOT_PR_TOKEN – nur für den Pull Request (docs/SETUP.md Teil P). */
+  readonly prApi?: GitHubApi;
   readonly runId?: string;
 }
 
@@ -255,31 +256,26 @@ export async function runCatalogReview(
     message: `Katalog geprüft durch ${input.reviewer}: ${reviewed.length} Lebensmittel (content-review #${deps.runId})`,
     files: commitFiles,
   });
-  const prUrl = await openPullRequest(deps.api, {
-    base: BASE_BRANCH,
-    branch,
-    title: `Katalog geprüft: ${reviewed.length} Lebensmittel (${input.reviewer})`,
-    body: truncateBody(
-      [
-        report,
-        '',
-        PHONE_TEST_SECTION,
-        '',
-        '---',
-        'Automatisch erstellt von content-review (Art „katalog“). Dieser Workflow öffnet nur Pull Requests und genehmigt nie.',
-      ].join('\n'),
-    ),
-  });
-  const warnings: string[] = [];
-  for (const workflow of CATALOG_CHECK_WORKFLOWS) {
-    try {
-      await dispatchWorkflow(deps.api, workflow, branch);
-    } catch (error) {
-      warnings.push(
-        `${workflow} konnte nicht gestartet werden (${(error as Error).message}). Bitte Actions → ${workflow} → Run workflow, Branch ${branch}.`,
-      );
-    }
-  }
+  const { prUrl, warnings } = await openPullRequestWithChecks(
+    deps.api,
+    deps.prApi,
+    {
+      base: BASE_BRANCH,
+      branch,
+      title: `Katalog geprüft: ${reviewed.length} Lebensmittel (${input.reviewer})`,
+      body: truncateBody(
+        [
+          report,
+          '',
+          PHONE_TEST_SECTION,
+          '',
+          '---',
+          'Automatisch erstellt von content-review (Art „katalog“). Dieser Workflow öffnet nur Pull Requests und genehmigt nie.',
+        ].join('\n'),
+      ),
+    },
+    CATALOG_CHECK_WORKFLOWS,
+  );
   return {
     exitCode: 0,
     prUrl,

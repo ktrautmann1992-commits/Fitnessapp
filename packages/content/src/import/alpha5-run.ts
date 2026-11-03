@@ -26,10 +26,9 @@ import { ALPHA5_SEED_PATH } from '../foods/foods-import';
 import {
   type CommitFile,
   createVerifiedCommit,
-  dispatchWorkflow,
   type GitHubApi,
-  openPullRequest,
   openPullRequestsWithPrefix,
+  openPullRequestWithChecks,
 } from '../foods/github-api';
 import { formatJson } from '../pipeline/files';
 import { PHONE_TEST_SECTION, truncateBody } from '../pipeline/pull-request';
@@ -68,6 +67,8 @@ export interface Alpha5RunDeps {
   /** Commit, aus dem gerechnet wurde (`GITHUB_SHA`) – Basis des Import-Commits (Wächter N2c, S4). */
   readonly baseSha?: string;
   readonly api?: GitHubApi;
+  /** GitHub-API mit BOT_PR_TOKEN – nur für den Pull Request (docs/SETUP.md Teil P). */
+  readonly prApi?: GitHubApi;
 }
 
 export interface Alpha5RunResult {
@@ -559,19 +560,18 @@ export async function runAlpha5Import(
       '**Danach:** Entwürfe fachlich prüfen und freigeben (Sammelfreigabe je Kategorie ab Etappe N2d). Annahmen „erhitzt“ bei der Freigabe bestätigen.',
     ].join('\n'),
   );
-  const prUrl = await openPullRequest(deps.api, {
-    base: 'main',
-    branch,
-    title: `Rezepte als Entwurf: alpha5-rezepte.json ${output.report.version} (alpha5-import #${deps.runId})`,
-    body,
-  });
-  let ciNote: string;
-  try {
-    await dispatchWorkflow(deps.api, 'ci.yml', branch);
-    ciNote = 'ci gestartet.';
-  } catch (error) {
-    ciNote = `ci konnte nicht gestartet werden (${(error as Error).message}) – bitte Actions → ci → Run workflow, Branch ${branch}.`;
-  }
+  const { prUrl, notes, warnings } = await openPullRequestWithChecks(
+    deps.api,
+    deps.prApi,
+    {
+      base: 'main',
+      branch,
+      title: `Rezepte als Entwurf: alpha5-rezepte.json ${output.report.version} (alpha5-import #${deps.runId})`,
+      body,
+    },
+    ['ci.yml'],
+  );
+  const ciNote = [...warnings.map((w) => `⚠️ ${w}`), ...notes].join(' ');
   return {
     exitCode: 0,
     markdown: `${reportMd}\n**Pull Request:** ${prUrl}\n\n${ciNote}\n`,

@@ -7,7 +7,7 @@
  * GITHUB_TOKEN, GITHUB_REPOSITORY und GITHUB_RUN_ID (verifizierter Commit über die GitHub-API).
  */
 import { main, repoRootOrFail, writeReport } from './cli';
-import { githubApi } from './foods/github-api';
+import { githubApi, prApiFromEnv } from './foods/github-api';
 import { runContentReview } from './pipeline/review-ids';
 import { systemTools } from './pipeline/tools';
 
@@ -15,11 +15,13 @@ void main('content-review', async () => {
   const repoRoot = repoRootOrFail();
   const token = process.env.GITHUB_TOKEN?.trim();
   const repository = process.env.GITHUB_REPOSITORY?.trim();
+  const prApi = prApiFromEnv(process.env, repository);
   const deps = {
     repoRoot,
-    tools: systemTools(repoRoot),
+    tools: systemTools(repoRoot, process.env.BOT_PR_TOKEN),
     now: () => new Date(),
     ...(token && repository ? { api: githubApi(token, repository) } : {}),
+    ...(prApi ? { prApi } : {}),
     ...(process.env.GITHUB_RUN_ID ? { runId: process.env.GITHUB_RUN_ID } : {}),
   };
   const result = await runContentReview(

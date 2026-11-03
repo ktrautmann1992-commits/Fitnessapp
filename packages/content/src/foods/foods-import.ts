@@ -19,9 +19,8 @@ import { serializeCsv } from './csv';
 import {
   type CommitFile,
   createVerifiedCommit,
-  dispatchWorkflow,
   type GitHubApi,
-  openPullRequest,
+  openPullRequestWithChecks,
 } from './github-api';
 import {
   type Alpha5Per100g,
@@ -83,6 +82,8 @@ export interface FoodsImportDeps {
   download(def: SourceDefinition): Promise<FetchedOriginal>;
   /** GitHub-API (nur Modus „import“). */
   readonly api?: GitHubApi;
+  /** GitHub-API mit BOT_PR_TOKEN – nur für den Pull Request (docs/SETUP.md Teil P). */
+  readonly prApi?: GitHubApi;
   /** Allowlist (Standard: sources.ts). */
   readonly sources?: readonly SourceDefinition[];
 }
@@ -657,25 +658,19 @@ async function commitAndOpen(
       '**Danach:** Lebensmittel mit der Checkliste prüfen (docs/PLAN-PHASE-5.md 5.1.1 d) – markierte Zuordnungen („Zuordnung prüfen“) zuerst.',
     ].join('\n'),
   );
-  const prUrl = await openPullRequest(api, {
-    base: 'main',
-    branch,
-    title: `Lebensmittel: ${def.title} (foods-import #${deps.runId})`,
-    body,
-  });
-  // Pull Requests mit dem GITHUB_TOKEN starten keine Workflows – beide Prüf-Workflows ausdrücklich starten
-  // (ci mit sources-integrity und sources-integrity-main mit dem Code von main; Wächter N2b, GB1).
-  const notes: string[] = [];
-  for (const workflow of CHECK_WORKFLOWS) {
-    try {
-      await dispatchWorkflow(api, workflow, branch);
-      notes.push(`${workflow} gestartet.`);
-    } catch (error) {
-      notes.push(
-        `${workflow} konnte nicht gestartet werden (${(error as Error).message}) – bitte Actions → ${workflow.replace(/\.yml$/, '')} → Run workflow, Branch ${branch}.`,
-      );
-    }
-  }
-  const ciNote = notes.join(' ');
+  // Pull Requests mit dem GITHUB_TOKEN starten keine Workflows ohne „Approve and run“ – mit BOT_PR_TOKEN laufen ci
+  // und sources-integrity-main von selbst, sonst beide Prüf-Workflows ausdrücklich starten (Wächter N2b, GB1).
+  const { prUrl, notes, warnings } = await openPullRequestWithChecks(
+    api,
+    deps.prApi,
+    {
+      base: 'main',
+      branch,
+      title: `Lebensmittel: ${def.title} (foods-import #${deps.runId})`,
+      body,
+    },
+    CHECK_WORKFLOWS,
+  );
+  const ciNote = [...warnings.map((w) => `⚠️ ${w}`), ...notes].join(' ');
   return { prUrl, markdown: `${reportMd}\n\n**Pull Request:** ${prUrl}\n\n${ciNote}\n` };
 }
