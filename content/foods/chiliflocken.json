@@ -1,20 +1,20 @@
 {
   "id": "chiliflocken",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "name_de": "Chiliflocken",
   "aliases_de": [],
   "shopping_category": "spices_baking",
   "pantry": true,
   "nutrients_per_100g": {
-    "kcal": 318,
-    "protein_g": 12.01,
-    "carbs_g": 29.43,
-    "sugar_g": 10.34,
-    "fat_g": 17.27,
-    "sat_fat_g": 3.26,
-    "fiber_g": 27.2,
-    "salt_g": 0.075,
+    "kcal": 282,
+    "protein_g": 13.46,
+    "carbs_g": 14.9,
+    "sugar_g": 7.19,
+    "fat_g": 14.28,
+    "sat_fat_g": 2.462,
+    "fiber_g": 34.8,
+    "salt_g": 7.1675,
     "alcohol_g": 0
   },
   "units": {
@@ -31,11 +31,11 @@
   "source": {
     "db": "usda_fdc",
     "version": "sr-legacy-2018-04",
-    "ref": "170932",
-    "name": "Spices, pepper, red or cayenne",
+    "ref": "171319",
+    "name": "Spices, chili powder",
     "category": "spices_sauces",
     "license": "CC0 1.0",
-    "retrieved_at": "2026-11-01"
+    "retrieved_at": "2026-11-03"
   },
   "meta": {
     "origin": "claude_session",
