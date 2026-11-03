@@ -59,6 +59,24 @@ const ALPHA5_MAPPED = new Set(
     ) as { items: { food_id: string }[] }
   ).items.map((item) => item.food_id),
 );
+/**
+ * Test-Katalog: echter Katalog, die genannten Lebensmittel als ungeprüfter Entwurf (Stand „noch nicht
+ * katalog-geprüft“ nachstellen – unabhängig davon, was die Katalog-Prüfung schon freigegeben hat).
+ */
+function catalogWithDrafts(...ids: string[]): Map<string, Food> {
+  const map = new Map(CATALOG);
+  for (const id of ids) {
+    const food = map.get(id);
+    if (food === undefined) throw new Error(`${id} fehlt im Katalog`);
+    map.set(id, {
+      ...food,
+      status: 'draft',
+      meta: { ...food.meta, catalog_reviewed_by: null, catalog_reviewed_at: null },
+    });
+  }
+  return map;
+}
+
 /** Test-Katalog: echter Katalog ohne die genannten Lebensmittel (Stand „wartet auf Import“ nachstellen). */
 function catalogWithout(...ids: string[]): Map<string, Food> {
   const map = new Map(CATALOG);
@@ -455,22 +473,23 @@ describe('Auswahlliste', () => {
       reviewed_by: 'Test',
       reviewed_at: '2026-10-25',
     };
-    // Schweineschnitzel und Paniermehl sind noch Katalog-Entwürfe (ungeprüft).
-    expect(eatingOutCatalog({ foods: CATALOG, allowDrafts: false, dishes: [schnitzel] })).toEqual(
+    // Schweineschnitzel und Paniermehl als Katalog-Entwürfe (ungeprüft) nachgestellt.
+    const catalog = catalogWithDrafts('schweineschnitzel', 'paniermehl');
+    expect(eatingOutCatalog({ foods: catalog, allowDrafts: false, dishes: [schnitzel] })).toEqual(
       [],
     );
-    const view = eatingOutDishView(schnitzel, CATALOG, false);
+    const view = eatingOutDishView(schnitzel, catalog, false);
     expect(view.kind === 'unavailable' && view.missingFoods).toEqual([
       'schweineschnitzel',
       'paniermehl',
     ]);
-    expect(eatingOutDishView(schnitzel, CATALOG, true).kind).toBe('ok');
-    const status = eatingOutContentStatus(CATALOG);
+    expect(eatingOutDishView(schnitzel, catalog, true).kind).toBe('ok');
+    const status = eatingOutContentStatus(catalog);
     expect(
       status.unreviewedFoods.find((f) => f.foodId === 'schweineschnitzel')?.dishes,
     ).toBeGreaterThanOrEqual(4);
     expect(status.computable.length).toBeLessThan(
-      eatingOutContentStatus(CATALOG, undefined, true).computable.length,
+      eatingOutContentStatus(catalog, undefined, true).computable.length,
     );
   });
 
