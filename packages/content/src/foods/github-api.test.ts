@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { BOT_LOGIN, createVerifiedCommit, type GitHubApi, utf8Text } from './github-api';
+import {
+  BOT_LOGIN,
+  BOT_PR_TOKEN_HINT,
+  createVerifiedCommit,
+  type GitHubApi,
+  openPullRequestWithChecks,
+  prApiFromEnv,
+  utf8Text,
+} from './github-api';
 
 function fakeApi() {
   const calls: { method: string; path: string; body?: unknown }[] = [];
@@ -62,5 +70,63 @@ describe('createVerifiedCommit', () => {
     expect(utf8Text(Buffer.from([0xff, 0xd8, 0xff]))).toBeNull();
     // BOM bleibt erhalten (Bytes identisch).
     expect(utf8Text(Buffer.from('﻿a', 'utf8'))).toBe('﻿a');
+  });
+});
+
+describe('openPullRequestWithChecks (BOT_PR_TOKEN, docs/SETUP.md Teil P)', () => {
+  function recorder(options: { failPulls?: boolean } = {}) {
+    const calls: { method: string; path: string; body?: unknown }[] = [];
+    const api: GitHubApi = {
+      request<T>(method: string, path: string, body?: unknown): Promise<T> {
+        calls.push({ method, path, ...(body === undefined ? {} : { body }) });
+        if (path === '/pulls') {
+          return options.failPulls
+            ? Promise.reject(new Error('GitHub-API POST /pulls: HTTP 401 Bad credentials'))
+            : Promise.resolve({ html_url: 'https://github.com/o/r/pull/7' } as T);
+        }
+        return Promise.resolve(undefined as T);
+      },
+    };
+    return { api, calls };
+  }
+  const input = { base: 'main', branch: 'foods-import/1', title: 'T', body: 'B' };
+  const workflows = ['ci.yml', 'sources-integrity-main.yml'];
+
+  it('mit Token: Pull Request über den Token, kein workflow_dispatch (Checks starten von selbst)', async () => {
+    const bot = recorder();
+    const pr = recorder();
+    const result = await openPullRequestWithChecks(bot.api, pr.api, input, workflows);
+    expect(result.prUrl).toBe('https://github.com/o/r/pull/7');
+    expect(pr.calls.map((c) => c.path)).toEqual(['/pulls']);
+    expect(bot.calls).toEqual([]);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it('ohne Token: Pull Request mit GITHUB_TOKEN und beide Workflows per workflow_dispatch', async () => {
+    const bot = recorder();
+    const result = await openPullRequestWithChecks(bot.api, undefined, input, workflows);
+    expect(bot.calls.map((c) => c.path)).toEqual([
+      '/pulls',
+      '/actions/workflows/ci.yml/dispatches',
+      '/actions/workflows/sources-integrity-main.yml/dispatches',
+    ]);
+    expect(result.notes).toContain(BOT_PR_TOKEN_HINT);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it('Token abgelehnt (z. B. abgelaufen): Rückfall auf GITHUB_TOKEN mit Warnung, nichts bricht', async () => {
+    const bot = recorder();
+    const pr = recorder({ failPulls: true });
+    const result = await openPullRequestWithChecks(bot.api, pr.api, input, workflows);
+    expect(result.prUrl).toBe('https://github.com/o/r/pull/7');
+    expect(bot.calls.filter((c) => c.path.endsWith('/dispatches'))).toHaveLength(2);
+    expect(result.warnings.join(' ')).toContain('BOT_PR_TOKEN wurde abgelehnt');
+  });
+
+  it('prApiFromEnv: nur mit nicht leerem Token und Repository', () => {
+    expect(prApiFromEnv({}, 'o/r')).toBeUndefined();
+    expect(prApiFromEnv({ BOT_PR_TOKEN: '  ' }, 'o/r')).toBeUndefined();
+    expect(prApiFromEnv({ BOT_PR_TOKEN: 'x' }, undefined)).toBeUndefined();
+    expect(prApiFromEnv({ BOT_PR_TOKEN: 'x' }, 'o/r')).toBeDefined();
   });
 });

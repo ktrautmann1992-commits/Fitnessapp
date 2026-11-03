@@ -17,7 +17,13 @@ import { dryRunResults } from './dry-run';
 import { contentPath, loadLibrary, PIPELINE_FOLDERS, writeJsonFile } from './files';
 import { findKind, type LibraryContext, type PipelineContentKind } from './kinds';
 import { actualCostUsd, formatUsd } from './pricing';
-import { commitPushAndOpenPr, issuesFor, PHONE_TEST_SECTION, runPrChecks } from './pull-request';
+import {
+  commitPushAndOpenPr,
+  createPrAndStartCi,
+  issuesFor,
+  PHONE_TEST_SECTION,
+  runPrChecks,
+} from './pull-request';
 import type { ContentApiClient } from './requests';
 import { type BatchResult, NOT_SAVED_DE, processResults } from './results';
 import { ensureGitIdentity, type PipelineTools } from './tools';
@@ -132,10 +138,9 @@ function repairMissingPr(branch: string, record: BatchRecord, tools: PipelineToo
     };
   }
   const kind = findKind(record.kind);
-  const url = tools
-    .gh([
-      'pr',
-      'create',
+  const { url, ciWarning } = createPrAndStartCi(
+    tools,
+    [
       '--base',
       BASE_BRANCH,
       '--head',
@@ -151,14 +156,10 @@ function repairMissingPr(branch: string, record: BatchRecord, tools: PipelineToo
         '',
         PHONE_TEST_SECTION,
       ].join('\n'),
-    ])
-    .trim();
-  let ciNote = '';
-  try {
-    tools.gh(['workflow', 'run', 'ci.yml', '--ref', branch]);
-  } catch {
-    ciNote = ' ⚠️ ci bitte von Hand starten.';
-  }
+    ],
+    branch,
+  );
+  const ciNote = ciWarning === null ? '' : ` ⚠️ ${ciWarning}`;
   return {
     branch,
     status: 'pr_opened',

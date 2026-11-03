@@ -3,8 +3,9 @@
  * (docs/PLAN-PHASE-2.md Abschnitte 4 und 7):
  * 1. `content:validate` über ALLE Inhalte (mit Versionsregel gegen origin/main),
  * 2. Prettier-Prüfung der geänderten Dateien, 3. Typprüfung von packages/content.
- * Nur wenn alles grün ist: Commit, Push, Pull Request (gh pr create) und danach `ci` ausdrücklich starten
- * (Pull Requests mit dem GITHUB_TOKEN starten ci nicht von selbst). Workflows genehmigen NIE Pull Requests.
+ * Nur wenn alles grün ist: Commit, Push, Pull Request (gh pr create) – mit BOT_PR_TOKEN startet ci von selbst, sonst
+ * wird `ci` ausdrücklich gestartet (Pull Requests mit dem GITHUB_TOKEN brauchen „Approve and run“). Workflows
+ * genehmigen NIE Pull Requests.
  */
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -100,20 +101,53 @@ export interface OpenPrResult {
   readonly ciWarning: string | null;
 }
 
+/**
+ * `gh pr create` mit den Argumenten `createArgs` (ohne „pr create“) und danach dafür sorgen, dass ci läuft
+ * (docs/SETUP.md Teil P):
+ * - Mit BOT_PR_TOKEN (`tools.ghPr`): Pull Request im Namen der Token-Person – ci startet von selbst (pull_request),
+ *   ohne „Approve and run“; kein zusätzlicher Start per workflow_dispatch (sonst doppelte Läufe).
+ * - Ohne Token oder wenn er abgelehnt wird: Pull Request mit dem GITHUB_TOKEN und ci per workflow_dispatch starten.
+ * Commit und Push laufen immer vorher mit dem GITHUB_TOKEN des Workflows.
+ */
+export function createPrAndStartCi(
+  tools: PipelineTools,
+  createArgs: readonly string[],
+  branch: string,
+): OpenPrResult {
+  const warnings: string[] = [];
+  if (tools.ghPr !== undefined) {
+    try {
+      const url = tools.ghPr(['pr', 'create', ...createArgs]).trim();
+      return { url, ciWarning: null };
+    } catch (error) {
+      warnings.push(
+        `BOT_PR_TOKEN wurde abgelehnt (${(error as Error).message}) – Pull Request mit dem GITHUB_TOKEN geöffnet. Token prüfen bzw. erneuern: docs/SETUP.md Teil P.`,
+      );
+    }
+  }
+  const url = tools.gh(['pr', 'create', ...createArgs]).trim();
+  try {
+    tools.gh(['workflow', 'run', 'ci.yml', '--ref', branch]);
+  } catch (error) {
+    warnings.push(
+      `ci konnte nicht gestartet werden (${(error as Error).message}). Bitte in Actions → ci → Run workflow den Branch ${branch} wählen.`,
+    );
+  }
+  return { url, ciWarning: warnings.length === 0 ? null : warnings.join(' ') };
+}
+
 /** Commit, Push, Pull Request, ci starten. */
 export function commitPushAndOpenPr(tools: PipelineTools, input: OpenPrInput): OpenPrResult {
   tools.git(['add', '--', ...input.paths]);
   tools.git(['commit', '-m', input.commitMessage]);
   tools.git(['push', 'origin', `HEAD:refs/heads/${input.branch}`]);
   const dir = mkdtempSync(join(tmpdir(), 'content-pr-'));
-  let url: string;
   try {
     const bodyFile = join(dir, 'body.md');
     writeFileSync(bodyFile, truncateBody(input.body));
-    url = tools
-      .gh([
-        'pr',
-        'create',
+    return createPrAndStartCi(
+      tools,
+      [
         '--base',
         BASE_BRANCH,
         '--head',
@@ -122,16 +156,10 @@ export function commitPushAndOpenPr(tools: PipelineTools, input: OpenPrInput): O
         input.title,
         '--body-file',
         bodyFile,
-      ])
-      .trim();
+      ],
+      input.branch,
+    );
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
-  let ciWarning: string | null = null;
-  try {
-    tools.gh(['workflow', 'run', 'ci.yml', '--ref', input.branch]);
-  } catch (error) {
-    ciWarning = `ci konnte nicht gestartet werden (${(error as Error).message}). Bitte in Actions → ci → Run workflow den Branch ${input.branch} wählen.`;
-  }
-  return { url, ciWarning };
 }

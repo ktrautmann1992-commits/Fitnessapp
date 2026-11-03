@@ -173,6 +173,23 @@ function deps(dir: string, api: FakeApi, extra: Partial<FoodsImportDeps> = {}): 
 }
 
 describe('foods-import (Ende zu Ende, Test-Quelle)', () => {
+  it('Modus import mit BOT_PR_TOKEN: Commit mit GITHUB_TOKEN, Pull Request mit dem Token, kein workflow_dispatch', async () => {
+    const dir = workdir();
+    const api = fakeApi();
+    const prApi = fakeApi();
+    const result = await runFoodsImport(
+      { source: 'bls', version: '4.0', mode: 'import' },
+      deps(dir, api, { prApi }),
+    );
+    expect(result.exitCode).toBe(0);
+    // Verifizierter Bot-Commit weiterhin über den GITHUB_TOKEN (sources-integrity verlangt github-actions[bot]).
+    expect(api.calls.some((c) => c.path === '/git/commits')).toBe(true);
+    expect(api.calls.some((c) => c.path === '/pulls')).toBe(false);
+    expect(prApi.calls.map((c) => c.path)).toEqual(['/pulls']);
+    expect(api.calls.some((c) => c.path.endsWith('/dispatches'))).toBe(false);
+    expect(result.markdown).toContain('Pull Request mit BOT_PR_TOKEN geöffnet');
+  });
+
   it('Modus import: Auszug, SOURCE.json, Lebensmittel; Commit über API auf foods-import/<run-id>; PR', async () => {
     const dir = workdir();
     const api = fakeApi();

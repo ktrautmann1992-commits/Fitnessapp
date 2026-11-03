@@ -75,4 +75,8 @@ jobs:
           VERSION: ${{ inputs.version }}
           MODUS: ${{ inputs.modus }}
           GITHUB_TOKEN: ${{ github.token }}
+          # Nur für den Pull Request (docs/SETUP.md Teil P): Pull Requests dieses Tokens starten die Pflicht-Checks
+          # ohne „Approve and run“. Fehlt das Secret, geht alles wie bisher mit dem GITHUB_TOKEN. Commits bleiben beim
+          # GITHUB_TOKEN (verifiziert, github-actions[bot]).
+          BOT_PR_TOKEN: ${{ secrets.BOT_PR_TOKEN }}
         run: pnpm --filter @fitnessapp/content foods:import --source "$QUELLE" --version "$VERSION" --mode "$MODUS"

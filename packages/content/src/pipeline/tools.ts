@@ -10,14 +10,25 @@ export interface PipelineTools {
   git(args: readonly string[]): string;
   /** gh-Befehl im Repository; liefert stdout, wirft bei Fehlern. */
   gh(args: readonly string[]): string;
+  /**
+   * gh-Befehl mit dem Token BOT_PR_TOKEN (nur für `gh pr create`, docs/SETUP.md Teil P); fehlt, wenn kein Token
+   * hinterlegt ist. Pull Requests dieses Tokens starten die Pflicht-Checks ohne „Approve and run“.
+   */
+  ghPr?: (args: readonly string[]) => string;
   /** Typprüfung des Pakets packages/content; wirft bei Fehlern. */
   typecheck(): void;
 }
 
-function run(command: string, args: readonly string[], cwd: string): string {
+function run(
+  command: string,
+  args: readonly string[],
+  cwd: string,
+  env?: NodeJS.ProcessEnv,
+): string {
   try {
     return execFileSync(command, [...args], {
       cwd,
+      ...(env === undefined ? {} : { env }),
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe'],
       maxBuffer: 64 * 1024 * 1024,
@@ -30,10 +41,16 @@ function run(command: string, args: readonly string[], cwd: string): string {
   }
 }
 
-export function systemTools(repoRoot: string): PipelineTools {
+/** `prToken` = BOT_PR_TOKEN (leer/undefined = kein `ghPr`, Pull Requests wie bisher mit dem GITHUB_TOKEN). */
+export function systemTools(repoRoot: string, prToken?: string): PipelineTools {
+  const token = prToken?.trim();
   return {
     git: (args) => run('git', args, repoRoot),
     gh: (args) => run('gh', args, repoRoot),
+    // gh liest GH_TOKEN vor GITHUB_TOKEN; der Token steht nur in der Umgebung dieses einen Aufrufs.
+    ...(token
+      ? { ghPr: (args) => run('gh', args, repoRoot, { ...process.env, GH_TOKEN: token }) }
+      : {}),
     typecheck: () => {
       run('pnpm', ['--filter', '@fitnessapp/content', 'typecheck'], repoRoot);
     },

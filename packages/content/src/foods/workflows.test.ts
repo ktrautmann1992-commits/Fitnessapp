@@ -58,11 +58,11 @@ describe('sources-integrity-main.yml', () => {
 describe('alpha5-import.yml (Etappe N2c, Plan 19.2)', () => {
   const wf = read('.github/workflows/alpha5-import.yml');
 
-  it('nur manuell, nur auf main, Actions gepinnt, keine Secrets außer dem GITHUB_TOKEN', () => {
+  it('nur manuell, nur auf main, Actions gepinnt, keine Secrets außer GITHUB_TOKEN und BOT_PR_TOKEN', () => {
     expect(wf).toMatch(/^on:\n {2}workflow_dispatch:/m);
     expect(wf).not.toMatch(/^ {2}(push|pull_request|pull_request_target|schedule):/m);
     expect(wf).toContain("if: github.ref != 'refs/heads/main'");
-    expect(wf).not.toContain('secrets.');
+    expect(wf.match(/secrets\.\w+/g) ?? []).toEqual(['secrets.BOT_PR_TOKEN']);
     for (const line of wf.split('\n').filter((l) => l.includes('uses:'))) {
       expect(line).toMatch(/@[0-9a-f]{40} # v\d+/);
     }
@@ -76,5 +76,20 @@ describe('alpha5-import.yml (Etappe N2c, Plan 19.2)', () => {
     const run = read('packages/content/src/import/alpha5-run.ts');
     expect(run).toContain('ALPHA5_TARGET_DIRS.some');
     expect(run).toContain('expectedBaseSha: deps.baseSha');
+  });
+});
+
+describe('BOT_PR_TOKEN in den Workflows, die Pull Requests öffnen (docs/SETUP.md Teil P)', () => {
+  const files = ['foods-import', 'alpha5-import', 'content-review', 'content-collect'];
+
+  it.each(files)('%s: Token nur als BOT_PR_TOKEN in der Umgebung, Actions gepinnt', (name) => {
+    const wf = read(`.github/workflows/${name}.yml`);
+    expect(wf).toContain('BOT_PR_TOKEN: ${{ secrets.BOT_PR_TOKEN }}');
+    // Commits bleiben beim GITHUB_TOKEN (verifiziert, github-actions[bot]) – nie mit dem Token der Person.
+    expect(wf).not.toMatch(/(GITHUB_TOKEN|GH_TOKEN):\s*\$\{\{\s*secrets\.BOT_PR_TOKEN/);
+    expect(wf).not.toMatch(/token:\s*\$\{\{\s*secrets\.BOT_PR_TOKEN/);
+    for (const line of wf.split('\n').filter((l) => l.includes('uses:'))) {
+      expect(line).toMatch(/@[0-9a-f]{40} # v\d+/);
+    }
   });
 });

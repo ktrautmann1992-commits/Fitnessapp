@@ -43,6 +43,7 @@ Sie werden nicht rot.
 | `APPLE_TEAM_TYPE` (optional)           | selbst (D2)   | GitHub **Variable**, nur `INDIVIDUAL` bei Einzelperson-Konto               | nein    |
 | Google-Dienstkonto (JSON)              | Google (D2 G) | nur auf expo.dev → Credentials → Android (D2 G4)                           | **JA**  |
 | `GEMINI_API_KEY`                       | Google (E)    | GitHub Secret (B)                                                          | **JA**  |
+| `BOT_PR_TOKEN` (empfohlen)             | GitHub (P)    | GitHub Secret (B, P)                                                       | **JA**  |
 | `ANTHROPIC_API_KEY`                    | –             | wird nicht mehr gebraucht (E6) – darf gelöscht werden                      | **JA**  |
 | `CONTENT_MODEL` (optional)             | selbst (E5)   | GitHub **Variable** (E5), leer = Standard je Art (Flash-Lite bzw. Flash)   | nein    |
 | `CONTENT_EFFORT` (optional)            | selbst (E5)   | GitHub **Variable** (E5), leer = Standard je Art (`low` bzw. `medium`)     | nein    |
@@ -482,6 +483,8 @@ Nötig für `content-collect` und `content-review`. Handy-Browser, ggf. „Deskt
 2. Links **Actions → General**.
 3. Ganz unten bei **Workflow permissions**: **Read and write permissions** wählen.
 4. Den Haken **Allow GitHub Actions to create and approve pull requests** setzen → **Save**.
+5. Empfohlen: zusätzlich das Secret `BOT_PR_TOKEN` einrichten (Teil P) – sonst muss jeder Pull Request eines
+   Workflows erst mit **„Approve and run“** freigeschaltet werden, bevor die Pflicht-Checks laufen.
 
 > **Wichtig:** Unsere Workflows **öffnen** nur Pull Requests – sie **genehmigen nie** einen. Die Freigabe ist
 > immer der **Merge durch einen Menschen**. Schaltet ihr später Pflicht-Genehmigungen ein, darf eine Bot-Genehmigung
@@ -735,17 +738,18 @@ Die Liste „bestätigte Datenunterschiede“ (`content/food-mapping/bestaetigte
    Ein Check erscheint erst in der Auswahl, wenn er einmal gelaufen ist (nach dem Merge dieser Etappe beim
    nächsten Pull Request). Fehlt einer, später nachtragen. **Nicht** als Pflicht eintragen:
    `Migrationen + RLS-Tests (pgTAP)` – dieser Check läuft nur, wenn sich `supabase/` ändert, und würde andere
-   Pull Requests sonst blockieren. Pull Requests von `foods-import` starten wegen einer GitHub-Regel
-   (Pull Requests mit dem Workflow-Schlüssel lösen keine Workflows aus) keine Checks von selbst – `foods-import`
-   startet deshalb `ci` **und** `sources-integrity-main` ausdrücklich für den Branch `foods-import/<Lauf-ID>`.
-   Die Checks hängen dann am Kopf-Commit des Pull Requests und erfüllen die Pflicht. Fehlt einer („Expected –
-   Waiting for status“), unter **Actions → sources-integrity-main** bzw. **ci → Run workflow** den Branch
-   `foods-import/<Lauf-ID>` wählen.
+   Pull Requests sonst blockieren. Mit dem Secret `BOT_PR_TOKEN` (Teil P) öffnet `foods-import` den Pull Request mit
+   diesem Schlüssel, und alle Checks starten von selbst. Ohne das Secret öffnet er ihn mit dem Workflow-Schlüssel –
+   dann warten die Checks im Pull Request auf **„Approve and run“** (GitHub-Regel); `foods-import` startet `ci`
+   **und** `sources-integrity-main` zusätzlich selbst für den Branch `foods-import/<Lauf-ID>`. Fehlt einer
+   („Expected – Waiting for status“), unter **Actions → sources-integrity-main** bzw. **ci → Run workflow** den
+   Branch `foods-import/<Lauf-ID>` wählen.
 
 6. **Block force pushes** anhaken → **Create**.
 7. **Pull Request von `foods-import` freigeben** – das macht **immer ein Gründer selbst** in der GitHub-App bzw.
    im Handy-Browser, **nie eine Claude-Sitzung**: Pull Request öffnen → **Files changed** → **Review changes** →
-   **Approve** → **Submit review** → **Merge pull request**.
+   **Approve** → **Submit review** → **Merge pull request**. (Mit `BOT_PR_TOKEN` steht der Pull Request unter eurem
+   Namen – dann gibt es kein „Approve“, nach grünen Checks direkt **Merge pull request**; Teil P.)
 
 > **Regel für Claude-Sitzungen:** Claude gibt keine Pull Requests frei (kein „Approve“), merged keine
 > Pull Requests von `foods-import/*`, keine Bestätigungs-Pull-Requests „Bestätigte Datenunterschiede“ (J3
@@ -1018,6 +1022,60 @@ bindet `expo-camera` die Google-Bibliothek `play-services-code-scanner` ein. Den
 Google-Scan-Oberfläche haben wir abgeschaltet, ganz entfernen lässt sich die Bibliothek nicht. Klärt mit der
 Rechtsprüfung, ob dabei Nutzungs- oder Diagnosedaten an Google gehen, und passt Datenschutzerklärung,
 App-Store-Datenschutzangaben und Play-Store-„Datensicherheit“ an (docs/PLAN-E4.md, Nachtrag Wächter E4b, M2).
+
+---
+
+## Teil P – Bot-Pull-Requests ohne „Approve and run“ (Secret `BOT_PR_TOKEN`)
+
+**Problem:** `foods-import`, `alpha5-import`, `content-review` und `content-collect` öffnen Pull Requests. Ohne eigenes
+Secret tun sie das mit dem Workflow-Schlüssel (`GITHUB_TOKEN`). GitHub startet die Pflicht-Checks
+(`Lint, Typen, Tests, Build`, `sources-integrity`) für solche Pull Requests nur nach einem Tipp auf **„Approve and
+run“** – bis dahin blockiert der wartende Lauf den Merge, auch wenn der Workflow `ci` schon selbst gestartet hat.
+
+**Lösung:** Ein fein-granularer Schlüssel („Fine-grained token“) eures GitHub-Kontos, der **nur** Pull Requests in
+diesem einen Repository öffnen darf. Die Workflows öffnen den Pull Request dann damit, und GitHub startet die
+Pflicht-Checks wie bei euren eigenen Pull Requests automatisch. Commits macht weiterhin der Workflow selbst
+(verifiziert, `github-actions[bot]` – das verlangt `sources-integrity`). Fehlt das Secret oder ist der Schlüssel
+abgelaufen, läuft alles wie bisher (dann wieder mit „Approve and run“); der Lauf schreibt das in seine Summary.
+
+### P1 – Schlüssel anlegen (Handy-Browser, ggf. „Desktop-Website anfordern“)
+
+1. **github.com** → oben rechts euer **Profilbild** → **Settings**.
+2. Links ganz unten **Developer settings** → **Personal access tokens** → **Fine-grained tokens** →
+   **Generate new token**.
+3. **Token name:** `BOT_PR_TOKEN Fitnessapp`. **Resource owner:** euer Konto (`ktrautmann1992-commits`).
+4. **Expiration:** **Custom** → ein Datum in **1 Jahr** wählen und das Datum im Kalender notieren (P3).
+5. **Repository access:** **Only select repositories** → `Fitnessapp` auswählen.
+6. **Permissions** → **Repository permissions** (bzw. **Add permissions**):
+   - **Pull requests:** **Read and write**
+   - **Contents:** **Read-only**
+   - (**Metadata: Read-only** setzt GitHub selbst.) **Sonst nichts** – vor allem nicht Contents „Read and write“,
+     Actions, Administration oder Workflows. Mit diesen Rechten kann der Schlüssel Pull Requests öffnen, aber
+     **nichts pushen und nichts mergen**.
+7. Ganz unten **Generate token** → den angezeigten Schlüssel (beginnt mit `github_pat_`) **kopieren**. Er wird nur
+   einmal angezeigt. Nicht in einen Chat einfügen.
+
+### P2 – Als Secret eintragen
+
+1. **github.com** → Repository **Fitnessapp** → **Settings** → links **Secrets and variables** → **Actions**.
+2. **New repository secret** → **Name:** `BOT_PR_TOKEN` → bei **Secret** den Schlüssel einfügen → **Add secret**.
+3. Prüfen: beim nächsten Lauf (z. B. **Actions → alpha5-import → Run workflow**, Branch **main**) steht in der Summary
+   „Pull Request mit BOT_PR_TOKEN geöffnet – die Pflicht-Checks starten von selbst“. Im Pull Request laufen die
+   Checks ohne „Approve and run“ an. Der Pull Request erscheint jetzt unter **eurem** Namen, nicht als
+   `github-actions[bot]`.
+
+### P3 – Erneuern (einmal im Jahr)
+
+Steht in einer Summary „BOT_PR_TOKEN wurde abgelehnt“ oder ist das Datum aus P1 Schritt 4 erreicht:
+**Settings → Developer settings → Personal access tokens → Fine-grained tokens** → Schlüssel antippen →
+**Regenerate token** → neuen Schlüssel kopieren → wie in P2 unter **Secrets and variables → Actions** bei
+`BOT_PR_TOKEN` auf **Update** tippen und einfügen. Bis dahin geht alles weiter, nur wieder mit „Approve and run“.
+
+> **Wichtig:** Weil der Pull Request jetzt unter eurem Namen läuft, könnt ihr ihn **nicht selbst „Approve“-n**
+> (GitHub verbietet das für eigene Pull Requests). Das ist heute kein Problem: die Regel `main schützen` verlangt
+> 0 Freigaben und keine Code-Owner-Freigabe – **Merge pull request** reicht. Wollt ihr später „Require review from
+> Code Owners“ einschalten, vorher Claude fragen (dann braucht es statt des Schlüssels eine GitHub-App).
+> Freigabe bleibt immer der **Merge durch einen Menschen**; die Workflows genehmigen und mergen nie.
 
 ---
 

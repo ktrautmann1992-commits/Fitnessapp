@@ -4,7 +4,7 @@
  * (docs/PLAN-PHASE-5.md 19.2).
  */
 import { main, repoRootOrFail, writeReport } from './cli';
-import { githubApi } from './foods/github-api';
+import { githubApi, prApiFromEnv } from './foods/github-api';
 import { ALPHA5_MODES, type Alpha5Mode, runAlpha5Import } from './import/alpha5-run';
 
 function modeArg(): Alpha5Mode {
@@ -22,12 +22,14 @@ function modeArg(): Alpha5Mode {
 void main('content:import-alpha5', async () => {
   const token = process.env.GITHUB_TOKEN?.trim();
   const repository = process.env.GITHUB_REPOSITORY?.trim();
+  const prApi = prApiFromEnv(process.env, repository);
   const result = await runAlpha5Import(modeArg(), {
     repoRoot: repoRootOrFail(),
     runId: process.env.GITHUB_RUN_ID ?? '0',
     refName: process.env.GITHUB_REF_NAME ?? '',
     ...(process.env.GITHUB_SHA ? { baseSha: process.env.GITHUB_SHA } : {}),
     ...(token && repository ? { api: githubApi(token, repository) } : {}),
+    ...(prApi ? { prApi } : {}),
   });
   writeReport(result.markdown);
   return result.exitCode;

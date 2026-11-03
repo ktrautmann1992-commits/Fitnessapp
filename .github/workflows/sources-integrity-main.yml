@@ -11,8 +11,8 @@ name: sources-integrity-main
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
-  # Pull Requests von foods-import (und content-review Art „katalog“) öffnet der Workflow mit dem GITHUB_TOKEN – solche Ereignisse starten KEINE
-  # Workflows (auch nicht pull_request_target). foods-import startet diesen Workflow deshalb per workflow_dispatch
+  # Ohne Secret BOT_PR_TOKEN öffnen foods-import (und content-review Art „katalog“) Pull Requests mit dem GITHUB_TOKEN – solche
+  # Ereignisse starten keine Workflows ohne „Approve and run“. foods-import startet diesen Workflow dann per workflow_dispatch
   # auf dem Branch foods-import/<Lauf-ID>; der Check-Lauf hängt dann am Kopf-Commit des PRs (Wächter N2b, GB1).
   workflow_dispatch:
 

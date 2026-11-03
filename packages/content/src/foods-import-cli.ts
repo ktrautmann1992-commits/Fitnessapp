@@ -5,7 +5,7 @@
 import { main, repoRootOrFail, writeReport } from './cli';
 import { fetchSourceOriginal } from './foods/download';
 import { runFoodsImport } from './foods/foods-import';
-import { githubApi } from './foods/github-api';
+import { githubApi, prApiFromEnv } from './foods/github-api';
 
 function arg(name: string): string {
   const index = process.argv.indexOf(`--${name}`);
@@ -23,6 +23,7 @@ void main('foods-import', async () => {
   }
   const token = process.env.GITHUB_TOKEN?.trim();
   const repository = process.env.GITHUB_REPOSITORY?.trim();
+  const prApi = prApiFromEnv(process.env, repository);
   const result = await runFoodsImport(
     { source: arg('source'), version: arg('version'), mode },
     {
@@ -33,6 +34,7 @@ void main('foods-import', async () => {
       download: (def) =>
         fetchSourceOriginal(def, undefined, { describePages: mode === 'kandidaten' }),
       ...(token && repository ? { api: githubApi(token, repository) } : {}),
+      ...(prApi ? { prApi } : {}),
     },
   );
   if (result.log !== undefined) {

@@ -202,6 +202,63 @@ export async function openPullRequest(
   return pr.html_url;
 }
 
+/** Hinweis, wenn der Pull Request mit dem GITHUB_TOKEN geöffnet wurde (docs/SETUP.md Teil P). */
+export const BOT_PR_TOKEN_HINT =
+  'Ohne GitHub-Secret BOT_PR_TOKEN wartet der Pflicht-Check im Pull Request ggf. auf „Approve and run“ – einmalig einrichten: docs/SETUP.md Teil P.';
+
+/**
+ * Öffnet den Pull Request und sorgt dafür, dass die Pflicht-Checks laufen (docs/SETUP.md Teil P). `notes` sind
+ * Hinweise, `warnings` Probleme (Token abgelehnt, Workflow nicht gestartet).
+ * - Mit `prApi` (fein-granularer Token BOT_PR_TOKEN): Pull Request im Namen der Token-Person. GitHub startet
+ *   ci (pull_request) und sources-integrity-main (pull_request_target) dann selbst und ohne „Approve and run“;
+ *   `checkWorkflows` werden NICHT zusätzlich gestartet (sonst doppelte Läufe).
+ * - Ohne `prApi` oder wenn der Token abgelehnt wird: wie bisher mit dem GITHUB_TOKEN (`api`) und danach jeden
+ *   Workflow aus `checkWorkflows` per workflow_dispatch auf dem Branch starten.
+ * Commits entstehen immer vorher mit dem GITHUB_TOKEN (verifiziert, github-actions[bot]) – nie mit `prApi`.
+ */
+export async function openPullRequestWithChecks(
+  api: GitHubApi,
+  prApi: GitHubApi | undefined,
+  input: { base: string; branch: string; title: string; body: string },
+  checkWorkflows: readonly string[],
+): Promise<{ prUrl: string; notes: string[]; warnings: string[] }> {
+  const notes: string[] = [];
+  const warnings: string[] = [];
+  if (prApi !== undefined) {
+    try {
+      const prUrl = await openPullRequest(prApi, input);
+      notes.push('Pull Request mit BOT_PR_TOKEN geöffnet – die Pflicht-Checks starten von selbst.');
+      return { prUrl, notes, warnings };
+    } catch (error) {
+      warnings.push(
+        `BOT_PR_TOKEN wurde abgelehnt (${(error as Error).message}) – weiter mit dem GITHUB_TOKEN. Token prüfen bzw. erneuern: docs/SETUP.md Teil P.`,
+      );
+    }
+  }
+  const prUrl = await openPullRequest(api, input);
+  for (const workflow of checkWorkflows) {
+    try {
+      await dispatchWorkflow(api, workflow, input.branch);
+      notes.push(`${workflow} gestartet.`);
+    } catch (error) {
+      warnings.push(
+        `${workflow} konnte nicht gestartet werden (${(error as Error).message}) – bitte Actions → ${workflow.replace(/\.yml$/, '')} → Run workflow, Branch ${input.branch}.`,
+      );
+    }
+  }
+  notes.push(BOT_PR_TOKEN_HINT);
+  return { prUrl, notes, warnings };
+}
+
+/** Client für Pull Requests mit BOT_PR_TOKEN; undefined, wenn kein Token hinterlegt ist. */
+export function prApiFromEnv(
+  env: Readonly<Record<string, string | undefined>>,
+  repository: string | undefined,
+): GitHubApi | undefined {
+  const token = env.BOT_PR_TOKEN?.trim();
+  return token && repository ? githubApi(token, repository) : undefined;
+}
+
 /** Startet einen Workflow (z. B. ci.yml) für einen Branch – PRs mit GITHUB_TOKEN starten ci nicht von selbst. */
 export async function dispatchWorkflow(
   api: GitHubApi,
