@@ -209,6 +209,7 @@ export const SHOPPING_BUY_UNITS: Readonly<Record<string, ShoppingBuyUnit>> = {
   gouda: pack('Packung', 'Gouda', [150, 400]),
   halloumi: pack('Packung', 'Halloumi', [225]),
   'harzer-kaese': pack('Packung', 'Harzer Käse', [200]),
+  'hartkaese-vegetarisch': pack('Stück', 'Vegetarischer Hartkäse', [150]),
   huehnerei: pack('Packung', 'Eier', [6, 10], { measure: 'pcs', gPerUnit: 60 }),
   huettenkaese: pack('Becher', 'Hüttenkäse', [200]),
   'joghurt-1-5': pack('Becher', 'Joghurt 1,5 %', [150, 500]),
