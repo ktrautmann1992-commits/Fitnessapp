@@ -802,8 +802,8 @@
       "source": {
         "db": "usda_fdc",
         "version": "sr-legacy-2018-04",
-        "ref": "170932",
-        "search": ["pepper, red", "cayenne"],
+        "ref": "171319",
+        "search": ["chili powder", "chili"],
         "state_de": "getrocknet",
         "category": "spices_sauces"
       },
@@ -822,7 +822,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: getrocknet. Quell-ID 170932 „Spices, pepper, red or cayenne“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: getrockneter roter Chili (Cayenne); Flocken sind dasselbe Produkt grob zerkleinert. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: getrocknet. Quell-ID 171319 „Spices, chili powder“ (Lauf 41208228261 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER – Chiligewürz als Näherung; der vorige Eintrag 170932 (Cayenne) fiel bei der Katalog-Prüfung durch (R4: Energie passt nicht zu den Makros). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
     },
     {
       "alpha5_id": "chilipulver",
@@ -4681,10 +4681,10 @@
       "food_id": "reisessig",
       "alpha5_name": "Reisessig",
       "source": {
-        "db": "usda_fdc",
-        "version": "sr-legacy-2018-04",
-        "ref": "172237",
-        "search": ["vinegar"],
+        "db": "bls",
+        "version": "4.0",
+        "ref": "R123100",
+        "search": ["Essig", "Apfelessig"],
         "state_de": "Essig",
         "category": "spices_sauces"
       },
@@ -4701,7 +4701,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Essig. Quell-ID 172237 „Vinegar, distilled“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Reisessig führt SR Legacy nicht; Branntweinessig als Näherung (ungesüßt, Nährwerte vernachlässigbar). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: Essig. Quell-ID R123100 „Apfelessig“ (BLS 4.0, wie Zutat apfelessig): UNSICHER – Reisessig führt keine der drei Quellen; Apfelessig als Näherung (ungesüßt, Nährwerte vernachlässigbar). Der vorige USDA-Eintrag 172237 fiel bei der Katalog-Prüfung durch (R4: Essigsäure nicht als organische Säure angegeben)."
     },
     {
       "alpha5_id": "reisnudeln-trocken",
