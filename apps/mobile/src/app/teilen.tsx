@@ -7,10 +7,19 @@ import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { LiveRegion } from '@/components/calendar';
 import { Screen } from '@/components/screen';
 import { StoryCardView } from '@/components/story-card';
-import { Body, Button, Checkbox, FieldError, LoadingState, Notice } from '@/components/ui';
+import {
+  Body,
+  Button,
+  Checkbox,
+  ChoiceList,
+  FieldError,
+  LoadingState,
+  Notice,
+} from '@/components/ui';
 import { storyForLog, storyForRoute } from '@/data/story-input';
 import { t } from '@/i18n';
 import { decodeRouteParam } from '@/lib/route-param';
+import { STORY_THEMES, type StoryTheme } from '@/lib/story-layout';
 import { shareStory } from '@/lib/story-share';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
@@ -35,6 +44,7 @@ export default function ShareStoryScreen() {
   const view = useRef<View>(null);
   const [showLine, setShowLine] = useState(true);
   const [showDate, setShowDate] = useState(true);
+  const [theme, setTheme] = useState<StoryTheme>('neon');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [live, setLive] = useState({ text: '', version: 0 });
@@ -87,7 +97,7 @@ export default function ShareStoryScreen() {
     setBusy(true);
     setError(undefined);
     try {
-      const result = await shareStory(card, view, { title: S.title, download });
+      const result = await shareStory(card, view, { title: S.title, download, theme });
       const text = result === 'downloaded' ? S.downloaded : result === 'shared' ? S.shared : '';
       if (text) setLive((c) => ({ text, version: c.version + 1 }));
     } catch (caught) {
@@ -101,6 +111,17 @@ export default function ShareStoryScreen() {
     <Screen area="ausdauer" icon="run" title={S.title} footer={back} testID="story">
       <LiveRegion text={live.text} version={live.version} />
       <Body muted>{S.intro}</Body>
+      <ChoiceList<StoryTheme>
+        label={S.themeLabel}
+        horizontal
+        options={STORY_THEMES.map((value) => ({
+          value,
+          label: S.themes[value],
+          testID: `story-theme-${value}`,
+        }))}
+        value={theme}
+        onChange={setTheme}
+      />
       {hasLine ? (
         <Checkbox
           label={S.showLine}
@@ -111,7 +132,7 @@ export default function ShareStoryScreen() {
       ) : null}
       <Checkbox label={S.showDate} checked={showDate} onChange={setShowDate} testID="story-date" />
       <View style={styles.preview}>
-        <StoryCardView ref={view} card={card} width={previewWidth} />
+        <StoryCardView ref={view} card={card} width={previewWidth} theme={theme} />
       </View>
       {card.kind === 'endurance' && card.lineState === 'too_short' ? (
         <Body muted testID="story-too-short">

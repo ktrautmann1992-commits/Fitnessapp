@@ -125,6 +125,10 @@ test('Demo-Aufzeichnung → speichern → Auswertung → Liste/Summen → Story-
   await page.getByTestId('story-date').click();
   await expect(page.getByTestId('story-card')).not.toContainText('22.10.2026');
   await page.getByTestId('story-line').click();
+  // Design wählbar: Auswahl wechselt, Inhalt bleibt.
+  await page.getByTestId('story-theme-energie').click();
+  await expect(page.getByTestId('story-theme-energie')).toHaveAttribute('aria-checked', 'true');
+  await expect(page.getByTestId('story-card')).toContainText('Ø-Pace');
   await page.evaluate(() => {
     const w = window as unknown as { __shared: { name: string; type: string; size: number }[] };
     w.__shared = [];

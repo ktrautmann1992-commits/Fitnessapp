@@ -333,6 +333,8 @@ export const deEndurance = {
     moreExercises: (n: number) => `und ${n} weitere`,
     brand: 'Alpha5',
     footer: 'Trainiert mit Alpha5',
+    themeLabel: 'Design',
+    themes: { neon: 'Neon', topo: 'Topo', energie: 'Energie' },
   },
   /**
    * „Meine Strecken“ (25.10.2026): gleiche Strecke wiedererkennen, Strecken-Seite mit Verlauf. Neutral (W-G16):

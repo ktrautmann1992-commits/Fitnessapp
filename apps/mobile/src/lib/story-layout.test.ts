@@ -1,7 +1,17 @@
 import { enduranceStoryCard, strengthStoryCard } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
-import { splitValue, STORY_H, STORY_W, storyLayout } from './story-layout';
+import {
+  contourPaths,
+  estimateWidth,
+  splitValue,
+  STORY_H,
+  STORY_PALETTES,
+  STORY_THEMES,
+  STORY_W,
+  storyLayout,
+  type StoryTheme,
+} from './story-layout';
 
 const line = Array.from({ length: 101 }, (_, i) => ({
   lat: 50.9 + i * 0.0002,
@@ -111,5 +121,44 @@ describe('Story-Bild: Aufbau (gleich für App und Browser)', () => {
     expect(splitValue('ca. 28 m')).toEqual({ number: 'ca. 28', unit: 'm' });
     expect(splitValue('30:30')).toEqual({ number: '30:30', unit: '' });
     expect(splitValue('7')).toEqual({ number: '7', unit: '' });
+  });
+});
+
+describe('Story-Bild: Designs', () => {
+  const card = enduranceStoryCard(
+    {
+      sport: 'run',
+      startedAt: null,
+      day: '2026-10-19',
+      durationS: 1830,
+      movingS: 1800,
+      distanceM: 6000,
+      elevationM: 45,
+      points: line,
+    },
+    { showLine: true, showDate: true },
+  );
+
+  it('alle Designs: gleicher Inhalt, nur die Gestaltung ändert sich', () => {
+    const front = (theme: StoryTheme) =>
+      storyLayout(card, theme)
+        .texts.filter((x) => x.layer === 'front')
+        .map((x) => x.text);
+    for (const theme of STORY_THEMES) {
+      expect(front(theme)).toEqual(front('neon'));
+      expect(storyLayout(card, theme).palette).toBe(STORY_PALETTES[theme]);
+    }
+  });
+
+  it('Neon/Energie: riesige Zahl hinten, passt ins Bild; Topo: Höhenlinien statt Zahl', () => {
+    for (const theme of ['neon', 'energie'] as const) {
+      const ghost = storyLayout(card, theme).texts.filter((x) => x.layer === 'back');
+      expect(ghost.map((x) => x.text)).toEqual(['6,00']);
+      expect(estimateWidth('6,00', ghost[0]?.size ?? 0)).toBeLessThanOrEqual(1040);
+    }
+    const topo = storyLayout(card, 'topo');
+    expect(topo.texts.some((x) => x.layer === 'back')).toBe(false);
+    expect(topo.decor.length).toBeGreaterThan(10);
+    expect(contourPaths()).toEqual(contourPaths());
   });
 });

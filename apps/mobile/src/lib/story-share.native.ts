@@ -5,7 +5,7 @@ import type { RefObject } from 'react';
 import type { View } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 
-import { STORY_H, STORY_W } from './story-layout';
+import { STORY_H, STORY_W, type StoryTheme } from './story-layout';
 
 /**
  * Story-Bild auf iPhone/Android (Etappe E6): Ansicht (StoryCardView) mit react-native-view-shot als PNG 1080 × 1920
@@ -29,7 +29,7 @@ function removeFile(uri: string | null): void {
 export async function shareStory(
   _card: StoryCard,
   view: RefObject<View | null>,
-  options: { title: string; download: boolean },
+  options: { title: string; download: boolean; theme: StoryTheme },
 ): Promise<StoryShareResult> {
   if (!view.current) throw new Error('story_failed');
   removeFile(previousUri);

@@ -16,32 +16,127 @@ import { formatDateDe } from './format';
  * (1080 × 1920). Dieselbe Rechnung für die Vorschau/Aufnahme in der App (react-native-view-shot) und das Canvas im
  * Browser – beide zeigen genau den Inhalt der Positivliste aus packages/core. Rein.
  *
- * Gestaltung (04.11.2026): Farbverlauf mit Leuchtpunkt hinter der Strecke, Ringe oben rechts, große Hauptzahl
- * (Distanz, bei Kraft Volumen bzw. Zeit), leuchtende Strecke mit Start-/Zielpunkt und Werte-Kacheln.
+ * Gestaltung (04.11.2026): drei wählbare Designs (Neon, Topo, Energie) mit Farbverlauf, Leuchtpunkten, Schmuck-
+ * Linien, großer Hauptzahl (Distanz, bei Kraft Volumen bzw. Zeit), Strecke mit Start-/Zielpunkt und Werte-Kacheln.
  */
 
 export const STORY_W = STORY_CARD.widthPx;
 export const STORY_H = STORY_CARD.heightPx;
 export const STORY_PAD = 80;
 
-/** Farben des Bilds (aus den Marken-Farben). */
-export const STORY_COLORS = {
-  bgTop: brandColors.schwarz,
-  bgBottom: '#0B1A4A',
-  glow: brandColors.blau,
-  ring: brandColors.weiss,
-  lineFrom: brandColors.himmel,
-  lineTo: brandColors.blau,
-  start: brandColors.weiss,
-  end: brandColors.signal,
-  tile: brandColors.graphit,
-  tileBorder: brandColors.graphitHell,
-  strong: brandColors.weiss,
-  muted: brandColors.grauDunkel,
-  accent: brandColors.himmel,
-} as const;
+/** Wählbare Designs des Bilds (04.11.2026): gleicher Inhalt, andere Gestaltung. */
+export const STORY_THEMES = ['neon', 'topo', 'energie'] as const;
+export type StoryTheme = (typeof STORY_THEMES)[number];
 
-export type StoryTone = 'strong' | 'muted' | 'accent';
+export interface StoryGlow {
+  /** Mittelpunkt relativ zur Bildgröße (0–1). */
+  readonly fx: number;
+  readonly fy: number;
+  readonly r: number;
+  readonly color: string;
+  readonly opacity: number;
+}
+
+/** Farben und Schmuck eines Designs (Text-Farben dürfen rgba sein, alles andere #RRGGBB + Deckkraft). */
+export interface StoryPalette {
+  readonly bg: readonly [string, string];
+  readonly glows: readonly StoryGlow[];
+  readonly logo: string;
+  readonly strong: string;
+  readonly muted: string;
+  readonly accent: string;
+  readonly ghost: string;
+  readonly lineFrom: string;
+  readonly lineTo: string;
+  readonly lineGlow: string;
+  readonly start: string;
+  readonly startRing: string;
+  readonly end: string;
+  readonly tile: string;
+  readonly tileOpacity: number;
+  readonly tileBorder: string;
+  readonly tileBorderOpacity: number;
+  readonly decor: string;
+  readonly decorOpacity: number;
+  readonly decorWidth: number;
+}
+
+export const STORY_PALETTES: Readonly<Record<StoryTheme, StoryPalette>> = {
+  // Neon-Nachtlauf: dunkel, leuchtende blaue Strecke, riesige Zahl im Hintergrund, Ringe oben rechts.
+  neon: {
+    bg: [brandColors.schwarz, '#0B1A4A'],
+    glows: [{ fx: 0.55, fy: 0.57, r: 640, color: brandColors.blau, opacity: 0.4 }],
+    logo: brandColors.blau,
+    strong: brandColors.weiss,
+    muted: brandColors.grauDunkel,
+    accent: brandColors.himmel,
+    ghost: 'rgba(141, 176, 255, 0.10)',
+    lineFrom: brandColors.himmel,
+    lineTo: brandColors.blau,
+    lineGlow: brandColors.blau,
+    start: brandColors.weiss,
+    startRing: brandColors.blau,
+    end: brandColors.signal,
+    tile: brandColors.graphit,
+    tileOpacity: 0.72,
+    tileBorder: brandColors.himmel,
+    tileBorderOpacity: 0.22,
+    decor: brandColors.weiss,
+    decorOpacity: 0.07,
+    decorWidth: 3,
+  },
+  // Topografie: Höhenlinien als Muster (keine Karte, kein Ort), weiße Strecke, ruhig und edel.
+  topo: {
+    bg: ['#0B1A4A', brandColors.schwarz],
+    glows: [{ fx: 0.5, fy: 0.55, r: 560, color: brandColors.himmel, opacity: 0.12 }],
+    logo: brandColors.himmel,
+    strong: brandColors.weiss,
+    muted: 'rgba(227, 235, 255, 0.72)',
+    accent: brandColors.himmel,
+    ghost: 'rgba(0, 0, 0, 0)',
+    lineFrom: brandColors.weiss,
+    lineTo: brandColors.eisblau,
+    lineGlow: brandColors.himmel,
+    start: brandColors.weiss,
+    startRing: brandColors.himmel,
+    end: brandColors.signal,
+    tile: brandColors.schwarz,
+    tileOpacity: 0.35,
+    tileBorder: brandColors.himmel,
+    tileBorderOpacity: 0.35,
+    decor: brandColors.himmel,
+    decorOpacity: 0.16,
+    decorWidth: 2,
+  },
+  // Energie: kräftiger Verlauf Blau → Violett mit orangem Licht, alles in Weiß.
+  energie: {
+    bg: [brandColors.blau, '#5B21B6'],
+    glows: [
+      { fx: 0.95, fy: 0.85, r: 900, color: brandColors.signal, opacity: 0.6 },
+      { fx: 0.05, fy: 0.1, r: 700, color: brandColors.himmel, opacity: 0.45 },
+    ],
+    logo: brandColors.weiss,
+    strong: brandColors.weiss,
+    muted: 'rgba(255, 255, 255, 0.8)',
+    accent: brandColors.weiss,
+    ghost: 'rgba(255, 255, 255, 0.10)',
+    lineFrom: brandColors.weiss,
+    lineTo: brandColors.weiss,
+    lineGlow: brandColors.schwarz,
+    start: brandColors.blau,
+    startRing: brandColors.weiss,
+    end: brandColors.signal,
+    tile: brandColors.weiss,
+    tileOpacity: 0.16,
+    tileBorder: brandColors.weiss,
+    tileBorderOpacity: 0.4,
+    decor: brandColors.weiss,
+    decorOpacity: 0,
+    decorWidth: 0,
+  },
+};
+
+export type StoryTone = 'strong' | 'muted' | 'accent' | 'ghost';
 
 export interface StoryText {
   readonly text: string;
@@ -57,6 +152,8 @@ export interface StoryText {
   readonly upper: boolean;
   /** Höchstbreite (Text wird darin gehalten). */
   readonly maxWidth: number;
+  /** `back`: hinter Strecke und Kacheln (riesige Zahl im Hintergrund). */
+  readonly layer: 'back' | 'front';
 }
 
 export interface StoryBox {
@@ -80,10 +177,12 @@ export interface StoryLayout {
   readonly lineBox: { x: number; y: number; width: number; height: number };
   readonly lineStart: StoryPoint | null;
   readonly lineEnd: StoryPoint | null;
-  /** Leuchtpunkt hinter Strecke bzw. Übungen. */
-  readonly glow: { x: number; y: number; r: number };
-  /** Ringe oben rechts (Mittelpunkt + Radien). */
-  readonly rings: { x: number; y: number; radii: readonly number[] };
+  readonly theme: StoryTheme;
+  readonly palette: StoryPalette;
+  /** Leuchtpunkte (Bild-Pixel). */
+  readonly glows: readonly { x: number; y: number; r: number; color: string; opacity: number }[];
+  /** Schmuck-Linien (Ringe bzw. Höhenlinien) als SVG-Pfade. */
+  readonly decor: readonly string[];
   /** Werte-Kacheln (gleiche Reihenfolge wie die Werte). */
   readonly tiles: readonly StoryBox[];
 }
@@ -115,6 +214,7 @@ function text(
     align: 'left',
     upper: false,
     maxWidth: STORY_W - partial.x - 40,
+    layer: 'front',
     ...partial,
   };
 }
@@ -142,7 +242,41 @@ function heroStat(card: StoryCard): StoryStat | undefined {
   return card.stats[0];
 }
 
-export function storyLayout(card: StoryCard): StoryLayout {
+/** Kreis als SVG-Pfad. */
+function circlePath(cx: number, cy: number, r: number): string {
+  return `M${cx - r} ${cy}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`;
+}
+
+/**
+ * Höhenlinien als reines Muster (deterministisch, kein Bezug zur echten Strecke oder zum Ort): gewellte, ineinander
+ * liegende Ringe um zwei feste Mittelpunkte.
+ */
+export function contourPaths(): string[] {
+  const out: string[] = [];
+  const centers = [
+    { x: 260, y: 520, phase: 0.7 },
+    { x: 880, y: 1500, phase: 2.1 },
+  ];
+  for (const c of centers) {
+    for (let r = 70; r <= 1100; r += 64) {
+      const pts: string[] = [];
+      for (let i = 0; i < 90; i++) {
+        const a = (i / 90) * Math.PI * 2;
+        const k = 1 + 0.09 * Math.sin(3 * a + c.phase + r / 300) + 0.05 * Math.sin(5 * a - r / 170);
+        pts.push(
+          `${Math.round(c.x + Math.cos(a) * r * k)} ${Math.round(c.y + Math.sin(a) * r * k * 0.82)}`,
+        );
+      }
+      out.push(`M${pts.join('L')}Z`);
+    }
+  }
+  return out;
+}
+
+const CONTOURS = contourPaths();
+
+export function storyLayout(card: StoryCard, theme: StoryTheme = 'neon'): StoryLayout {
+  const palette = STORY_PALETTES[theme];
   const texts: StoryText[] = [];
   const title =
     card.kind === 'endurance'
@@ -301,6 +435,30 @@ export function storyLayout(card: StoryCard): StoryLayout {
     }),
   );
 
+  // Riesige Zahl im Hintergrund (Neon/Energie), angepasst an die Bildbreite.
+  if (hero && theme !== 'topo') {
+    const { number } = splitValue(hero.value);
+    const size = Math.min(460, Math.floor(1000 / (estimateWidth(number, 1) || 1)));
+    texts.push(
+      text({
+        text: number,
+        x: 40,
+        y: lineBox.y + lineBox.height / 2 + size * 0.36,
+        size,
+        bold: true,
+        tone: 'ghost',
+        maxWidth: STORY_W - 40,
+        layer: 'back',
+      }),
+    );
+  }
+
+  const decor =
+    theme === 'neon'
+      ? [260, 380, 500].map((r) => circlePath(STORY_W + 40, -40, r))
+      : theme === 'topo'
+        ? CONTOURS
+        : [];
   return {
     logo: { x: STORY_PAD, y: 110, width: 180 },
     texts,
@@ -308,8 +466,16 @@ export function storyLayout(card: StoryCard): StoryLayout {
     lineBox,
     lineStart,
     lineEnd,
-    glow: { x: STORY_W * 0.55, y: lineBox.y + lineBox.height / 2, r: 620 },
-    rings: { x: STORY_W + 40, y: -40, radii: [260, 380, 500] },
+    theme,
+    palette,
+    glows: palette.glows.map((g) => ({
+      x: g.fx * STORY_W,
+      y: g.fy * STORY_H,
+      r: g.r,
+      color: g.color,
+      opacity: g.opacity,
+    })),
+    decor,
     tiles,
   };
 }
