@@ -1,7 +1,7 @@
 import { enduranceStoryCard, strengthStoryCard } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
-import { STORY_H, STORY_W, storyLayout } from './story-layout';
+import { splitValue, STORY_H, STORY_W, storyLayout } from './story-layout';
 
 const line = Array.from({ length: 101 }, (_, i) => ({
   lat: 50.9 + i * 0.0002,
@@ -26,10 +26,33 @@ describe('Story-Bild: Aufbau (gleich für App und Browser)', () => {
     const layout = storyLayout(card);
     const texts = layout.texts.map((x) => x.text);
     expect(texts).toEqual(
-      expect.arrayContaining(['Lauf', '19.10.2026', 'Distanz', '6,00 km', 'Ø-Pace', '5:00 min/km']),
+      expect.arrayContaining([
+        'Lauf',
+        '19.10.2026',
+        'km · Distanz',
+        '6,00',
+        'Ø-Pace',
+        '5:00',
+        'min/km',
+      ]),
     );
     expect(texts.join(' ')).not.toMatch(/05:30|07:30/);
     expect(layout.linePath.startsWith('M')).toBe(true);
+    expect(layout.lineStart).not.toBeNull();
+    expect(layout.lineEnd).not.toBeNull();
+    // Werte-Kacheln überlappen sich nicht und bleiben im Bild.
+    for (const [i, a] of layout.tiles.entries()) {
+      expect(a.x + a.width).toBeLessThanOrEqual(STORY_W);
+      expect(a.y + a.height).toBeLessThanOrEqual(STORY_H);
+      for (const b of layout.tiles.slice(i + 1)) {
+        const apart =
+          a.x + a.width <= b.x ||
+          b.x + b.width <= a.x ||
+          a.y + a.height <= b.y ||
+          b.y + b.height <= a.y;
+        expect(apart).toBe(true);
+      }
+    }
     for (const t of layout.texts) {
       expect(t.x).toBeGreaterThanOrEqual(0);
       expect(t.y).toBeLessThanOrEqual(STORY_H);
@@ -71,8 +94,22 @@ describe('Story-Bild: Aufbau (gleich für App und Browser)', () => {
     );
     const texts = storyLayout(strength).texts.map((x) => x.text);
     expect(texts).toEqual(
-      expect.arrayContaining(['Ganzkörper A', 'Übung 5', 'und 2 weitere', '1.400 kg']),
+      expect.arrayContaining([
+        'Ganzkörper A',
+        'Übung 5',
+        'und 2 weitere',
+        '1.400',
+        'kg · Volumen (Zusatzlast)',
+      ]),
     );
     expect(texts).not.toContain('Übung 6');
+  });
+
+  it('Zahl und Einheit werden getrennt', () => {
+    expect(splitValue('5,48 km')).toEqual({ number: '5,48', unit: 'km' });
+    expect(splitValue('5:34 min/km')).toEqual({ number: '5:34', unit: 'min/km' });
+    expect(splitValue('ca. 28 m')).toEqual({ number: 'ca. 28', unit: 'm' });
+    expect(splitValue('30:30')).toEqual({ number: '30:30', unit: '' });
+    expect(splitValue('7')).toEqual({ number: '7', unit: '' });
   });
 });

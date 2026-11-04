@@ -204,7 +204,7 @@ test('Eintrag ohne GPS erscheint in „Meine Läufe“; Kachel auf der Übersich
   await page.goto('/ausdauer');
   await page.getByRole('button', { name: /^Radfahrt, 22\.10\.2026/ }).click();
   await page.getByTestId('log-share').click();
-  await expect(page.getByTestId('story-card')).toContainText('18,00 km');
+  await expect(page.getByTestId('story-card')).toContainText('18,00');
   await expect(page.getByTestId('story-line')).toHaveCount(0);
 });
 
