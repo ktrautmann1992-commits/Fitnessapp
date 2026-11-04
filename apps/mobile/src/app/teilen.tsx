@@ -1,4 +1,4 @@
-import type { StoryCard } from '@fitnessapp/core';
+import { STORY_CARD, type StoryCard } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useRef, useState } from 'react';
@@ -7,11 +7,22 @@ import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { LiveRegion } from '@/components/calendar';
 import { Screen } from '@/components/screen';
 import { StoryCardView } from '@/components/story-card';
-import { Body, Button, Checkbox, FieldError, LoadingState, Notice } from '@/components/ui';
+import {
+  Body,
+  Button,
+  Checkbox,
+  ChoiceList,
+  FieldError,
+  LoadingState,
+  Notice,
+  TextField,
+} from '@/components/ui';
 import { storyForLog, storyForRoute } from '@/data/story-input';
 import { t } from '@/i18n';
 import { decodeRouteParam } from '@/lib/route-param';
+import { STORY_THEMES, type StoryTheme } from '@/lib/story-layout';
 import { shareStory } from '@/lib/story-share';
+import { useStoryPrefs } from '@/lib/story-prefs';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useTrackedRoutes } from '@/state/use-tracked-routes';
@@ -35,11 +46,19 @@ export default function ShareStoryScreen() {
   const view = useRef<View>(null);
   const [showLine, setShowLine] = useState(true);
   const [showDate, setShowDate] = useState(true);
+  const storyPrefs = useStoryPrefs(app.session?.userId ?? null);
+  // Bis die Person selbst wählt: gemerktes Standard-Design, Uhrzeit-Schalter und Name.
+  const [picked, setPicked] = useState<StoryTheme | null>(null);
+  const [showTimePicked, setShowTimePicked] = useState<boolean | null>(null);
+  const [name, setName] = useState<string | null>(null);
+  const theme = picked ?? storyPrefs.prefs.theme;
+  const showTime = showTimePicked ?? storyPrefs.prefs.showTime;
+  const ownerName = name ?? storyPrefs.prefs.name;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [live, setLive] = useState({ text: '', version: 0 });
 
-  if (app.status.kind === 'loading' || state.kind === 'loading') {
+  if (app.status.kind === 'loading' || state.kind === 'loading' || !storyPrefs.loaded) {
     return (
       <Screen>
         <LoadingState />
@@ -57,7 +76,7 @@ export default function ShareStoryScreen() {
   }
   const routes = state.kind === 'ready' ? state.result.routes : [];
   const pending = state.kind === 'ready' ? state.result.pending : [];
-  const options = { showLine, showDate };
+  const options = { showLine, showDate, showTime, ownerName };
   const card: StoryCard | null = routeId
     ? storyForRoute(routeId, routes, pending, options)
     : logId
@@ -86,8 +105,11 @@ export default function ShareStoryScreen() {
     if (!card) return;
     setBusy(true);
     setError(undefined);
+    // Name und Uhrzeit-Schalter für das nächste Mal merken (nur dieses Gerät).
+    if (name !== null || showTimePicked !== null)
+      storyPrefs.save({ name: ownerName.trim(), showTime });
     try {
-      const result = await shareStory(card, view, { title: S.title, download });
+      const result = await shareStory(card, view, { title: S.title, download, theme });
       const text = result === 'downloaded' ? S.downloaded : result === 'shared' ? S.shared : '';
       if (text) setLive((c) => ({ text, version: c.version + 1 }));
     } catch (caught) {
@@ -101,6 +123,41 @@ export default function ShareStoryScreen() {
     <Screen area="ausdauer" icon="run" title={S.title} footer={back} testID="story">
       <LiveRegion text={live.text} version={live.version} />
       <Body muted>{S.intro}</Body>
+      <ChoiceList<StoryTheme>
+        label={S.themeLabel}
+        horizontal
+        options={STORY_THEMES.map((value) => ({
+          value,
+          label: S.themes[value],
+          testID: `story-theme-${value}`,
+        }))}
+        value={theme}
+        onChange={setPicked}
+      />
+      {theme === storyPrefs.prefs.theme ? (
+        <Body muted testID="story-theme-default">
+          {S.themeIsDefault}
+        </Body>
+      ) : (
+        <Button
+          label={S.themeDefault}
+          variant="secondary"
+          onPress={() => {
+            storyPrefs.save({ theme });
+            setLive((c) => ({ text: S.themeSaved, version: c.version + 1 }));
+          }}
+          testID="story-theme-save"
+        />
+      )}
+      <TextField
+        label={S.nameLabel}
+        hint={S.nameHint}
+        value={ownerName}
+        onChangeText={setName}
+        maxLength={STORY_CARD.maxNameLength}
+        autoComplete="off"
+        testID="story-name"
+      />
       {hasLine ? (
         <Checkbox
           label={S.showLine}
@@ -110,8 +167,16 @@ export default function ShareStoryScreen() {
         />
       ) : null}
       <Checkbox label={S.showDate} checked={showDate} onChange={setShowDate} testID="story-date" />
+      {showDate ? (
+        <Checkbox
+          label={S.showTime}
+          checked={showTime}
+          onChange={setShowTimePicked}
+          testID="story-time"
+        />
+      ) : null}
       <View style={styles.preview}>
-        <StoryCardView ref={view} card={card} width={previewWidth} />
+        <StoryCardView ref={view} card={card} width={previewWidth} theme={theme} />
       </View>
       {card.kind === 'endurance' && card.lineState === 'too_short' ? (
         <Body muted testID="story-too-short">

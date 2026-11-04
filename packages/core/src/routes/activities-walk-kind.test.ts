@@ -111,7 +111,18 @@ describe('Story-Bild: Art der Geh-Einheit', () => {
   it('keine Gesundheitsdaten: nur Felder der Positivliste (Art ist kein Gesundheitsdatum)', () => {
     const card = enduranceStoryCard({ ...base, walkKind: 'mountain_hike' }, on);
     expect(Object.keys(card).sort()).toEqual(
-      ['date', 'eBike', 'kind', 'line', 'lineState', 'sport', 'stats', 'walkKind'].sort(),
+      [
+        'date',
+        'eBike',
+        'kind',
+        'line',
+        'lineState',
+        'ownerName',
+        'sport',
+        'stats',
+        'time',
+        'walkKind',
+      ].sort(),
     );
   });
 });

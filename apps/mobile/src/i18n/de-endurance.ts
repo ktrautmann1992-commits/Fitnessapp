@@ -307,7 +307,7 @@ export const deEndurance = {
   story: {
     title: 'Als Bild teilen',
     intro:
-      'Das Bild entsteht nur auf deinem Gerät. Anfang und Ende der Strecke (je 200 m) werden abgeschnitten, damit dein Start- und Zielort nicht erkennbar ist. Keine Gesundheitsdaten, keine Uhrzeit.',
+      'Das Bild entsteht nur auf deinem Gerät. Anfang und Ende der Strecke (je 200 m) werden abgeschnitten, damit dein Start- und Zielort nicht erkennbar ist. Keine Gesundheitsdaten; Uhrzeit und Name nur, wenn du sie einschaltest bzw. einträgst.',
     showLine: 'Strecke zeigen',
     showDate: 'Datum zeigen',
     lineTooShort: 'Strecke zu kurz für die Linie',
@@ -332,6 +332,20 @@ export const deEndurance = {
     },
     moreExercises: (n: number) => `und ${n} weitere`,
     brand: 'Alpha5',
+    footer: 'Trainiert mit Alpha5',
+    themeLabel: 'Design',
+    themeDefault: 'Als Standard festlegen',
+    themeIsDefault: 'Dein Standard-Design – ist beim nächsten Teilen voreingestellt.',
+    themeSaved: 'Standard-Design gespeichert.',
+    showTime: 'Uhrzeit zeigen',
+    nameLabel: 'Dein Name im Bild (freiwillig)',
+    nameHint:
+      'Zum Beispiel „Karsten“ – dann steht oben „Karstens Lauf“. Wird nur auf diesem Gerät gemerkt.',
+    /** Deutscher Genitiv ohne Apostroph („Karstens“), bei s/ß/x/z am Ende mit Apostroph („Klaus’“). */
+    ownerTitle: (name: string, title: string) =>
+      `${/[sßxz]$/i.test(name) ? `${name}’` : `${name}s`} ${title}`,
+    dateTime: (date: string, time: string) => `${date} · ${time} Uhr`,
+    themes: { neon: 'Neon', topo: 'Topo', energie: 'Energie' },
   },
   /**
    * „Meine Strecken“ (25.10.2026): gleiche Strecke wiedererkennen, Strecken-Seite mit Verlauf. Neutral (W-G16):

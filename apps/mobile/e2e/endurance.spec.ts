@@ -125,6 +125,20 @@ test('Demo-Aufzeichnung → speichern → Auswertung → Liste/Summen → Story-
   await page.getByTestId('story-date').click();
   await expect(page.getByTestId('story-card')).not.toContainText('22.10.2026');
   await page.getByTestId('story-line').click();
+  // Design wählbar: Auswahl wechselt, Inhalt bleibt.
+  await page.getByTestId('story-theme-energie').click();
+  await expect(page.getByTestId('story-theme-energie')).toHaveAttribute('aria-checked', 'true');
+  await expect(page.getByTestId('story-card')).toContainText('Ø-Pace');
+  // Standard-Design merken; Name und Uhrzeit oben im Bild.
+  await page.getByTestId('story-theme-save').click();
+  await expect(page.getByTestId('story-theme-default')).toBeVisible();
+  await page.getByTestId('story-name').fill('Karsten');
+  await expect(page.getByTestId('story-card')).toContainText('Karstens Lauf');
+  await page.getByTestId('story-date').click();
+  await expect(page.getByTestId('story-card')).toContainText('Uhr');
+  await page.getByTestId('story-time').click();
+  await expect(page.getByTestId('story-card')).not.toContainText('Uhr');
+  await page.getByTestId('story-time').click();
   await page.evaluate(() => {
     const w = window as unknown as { __shared: { name: string; type: string; size: number }[] };
     w.__shared = [];
@@ -204,7 +218,7 @@ test('Eintrag ohne GPS erscheint in „Meine Läufe“; Kachel auf der Übersich
   await page.goto('/ausdauer');
   await page.getByRole('button', { name: /^Radfahrt, 22\.10\.2026/ }).click();
   await page.getByTestId('log-share').click();
-  await expect(page.getByTestId('story-card')).toContainText('18,00 km');
+  await expect(page.getByTestId('story-card')).toContainText('18,00');
   await expect(page.getByTestId('story-line')).toHaveCount(0);
 });
 

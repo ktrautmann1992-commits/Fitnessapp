@@ -8,6 +8,7 @@ import {
   groupedNumber,
   STORY_CARD_FIELDS,
   STORY_STAT_KEYS,
+  storyOwnerName,
   strengthStoryCard,
   type StrengthStoryExercise,
 } from './story-card';
@@ -185,6 +186,8 @@ describe('Story-Bild Kraft', () => {
       kind: 'strength',
       title: 'Ganzkörper A',
       date: '2026-10-20',
+      time: null,
+      ownerName: null,
       stats: [
         { key: 'duration', value: '52:30' },
         { key: 'exercises', value: '3' },
@@ -249,5 +252,67 @@ describe('Story-Bild E-Bike', () => {
     expect(card.stats.find((s) => s.key === 'speed')?.value).toBe('25,0 km/h');
     expect(enduranceStoryCard(ride, on).eBike).toBe(false);
     expect(enduranceStoryCard({ ...ride, sport: 'run', eBike: true }, on).eBike).toBe(false);
+  });
+});
+
+describe('Story-Bild: Uhrzeit und Name (Gründer-Entscheidung 04.11.2026)', () => {
+  const input = {
+    sport: 'run' as const,
+    startedAt: '2026-10-19T05:30:00Z',
+    day: '2026-10-19',
+    durationS: 1_830,
+    movingS: 1_800,
+    distanceM: 6_000,
+    elevationM: 45,
+    points: route,
+  };
+
+  it('Uhrzeit nur mit Schalter und Datum, in Berlin-Zeit; ohne Beginn keine Uhrzeit', () => {
+    expect(enduranceStoryCard(input, on).time).toBeNull();
+    expect(enduranceStoryCard(input, { ...on, showTime: true }).time).toBe('07:30');
+    expect(
+      enduranceStoryCard(input, { showLine: true, showDate: false, showTime: true }).time,
+    ).toBeNull();
+    expect(
+      enduranceStoryCard({ ...input, startedAt: null }, { ...on, showTime: true }).time,
+    ).toBeNull();
+    // Sommerzeit: 05:30 UTC im Juli = 07:30, im Januar = 06:30.
+    expect(
+      enduranceStoryCard({ ...input, startedAt: '2026-01-10T05:30:00Z' }, { ...on, showTime: true })
+        .time,
+    ).toBe('06:30');
+  });
+
+  it('Name: nur selbst eingetragen, getrimmt, gekürzt, ohne Steuerzeichen; leer → kein Name', () => {
+    expect(enduranceStoryCard(input, on).ownerName).toBeNull();
+    expect(enduranceStoryCard(input, { ...on, ownerName: '   ' }).ownerName).toBeNull();
+    expect(enduranceStoryCard(input, { ...on, ownerName: '  Karsten \n ' }).ownerName).toBe(
+      'Karsten',
+    );
+    const long = enduranceStoryCard(input, { ...on, ownerName: 'A'.repeat(60) }).ownerName;
+    expect(long?.length).toBe(STORY_CARD.maxNameLength);
+    expect(storyOwnerName('Kar\u0007sten')).toBe('Karsten');
+    const strength = strengthStoryCard(
+      {
+        nameDe: 'Ganzkörper A',
+        performedOn: '2026-10-20',
+        startedAt: '2026-10-20T16:00:00Z',
+        finishedAt: '2026-10-20T17:00:00Z',
+        exercises: [],
+      },
+      { ...on, showTime: true, ownerName: 'Lena' },
+    );
+    expect(strength).toMatchObject({ time: '18:00', ownerName: 'Lena' });
+  });
+
+  it('auch mit Uhrzeit und Name nur Felder der Positivliste', () => {
+    const card = enduranceStoryCard({ ...input, ...SECRET } as typeof input, {
+      ...on,
+      showTime: true,
+      ownerName: 'Karsten',
+    });
+    const allowed = new Set<string>([...STORY_CARD_FIELDS, 'key', 'value', 'lat', 'lng']);
+    for (const key of deepKeys(card)) expect(allowed.has(key), key).toBe(true);
+    expect(JSON.stringify(card)).not.toContain('user-geheim');
   });
 });
