@@ -1,4 +1,9 @@
-import { ROUTE_PRIVACY_TRIM, STORY_CARD, TRACKED_ROUTE_LIMITS } from '../constants';
+import {
+  AGE_CHECK_TIME_ZONE,
+  ROUTE_PRIVACY_TRIM,
+  STORY_CARD,
+  TRACKED_ROUTE_LIMITS,
+} from '../constants';
 import { isoDateInTimeZone } from '../dates';
 import type { EnduranceModality, WalkKind } from '../enums';
 import { type HikeKind, isHikeKind } from '../hiking/walk-kind';
@@ -10,6 +15,9 @@ import { privacyTrim } from '../routes/privacy-trim';
  * Story-Bild einer einzelnen Einheit (Etappe E6, CLAUDE.md „Teilen-Ausnahme“, docs/PLAN-EINKAUFEN-AUSDAUER.md 8):
  * FESTE POSITIVLISTE – nur die Felder unten gelangen ins Bild. Nie: Puls, Körpergewicht, Körperdaten, Zyklus,
  * Gesundheits-Check, kcal, Ziele/Wunschgewicht, Uhrzeit, Ortsnamen, Notizen, App-Link mit Kennung.
+ * Gründer-Entscheidung 04.11.2026: zusätzlich auf Wunsch die UHRZEIT des Beginns und ein selbst eingetragener NAME
+ * („Karstens Lauf“) – beides nur, wenn die Person es im Teilen-Bildschirm einschaltet bzw. einträgt (kein
+ * Gesundheitsdatum; der Name kommt nie aus dem Konto, sondern nur aus diesem Feld).
  * Ausdauer: Linie nach privacyTrim (keine Kartenkacheln, EA-4), Sportart (beim Rad ggf. „E-Bike“), Datum ohne Uhrzeit, Gesamt-/Bewegungszeit,
  * Distanz, Ø-Pace bzw. km/h, Höhenmeter mit „ca.“. Kraft: Name der Einheit, Datum, Dauer, Anzahl Übungen (bis 5
  * Namen), Sätze, Volumen NUR aus Zusatzlast (Gewichtsübungen; Körpergewicht wird nie eingerechnet – sonst wäre das
@@ -25,6 +33,9 @@ export const STORY_CARD_FIELDS = [
   'walkKind',
   'title',
   'date',
+  // 04.11.2026: Uhrzeit (nur mit „Uhrzeit zeigen“) und selbst eingetragener Name (nur wenn ausgefüllt).
+  'time',
+  'ownerName',
   'stats',
   'exerciseNames',
   'moreExercises',
@@ -62,6 +73,9 @@ export interface EnduranceStoryCard {
   /** Nur beim Gehen als Wanderung/Bergwanderung gesetzt (sonst fehlt das Feld). */
   readonly walkKind?: HikeKind;
   readonly date: string | null;
+  /** „07:30“ (Europe/Berlin) – nur mit „Uhrzeit zeigen“ und bekanntem Beginn. */
+  readonly time: string | null;
+  readonly ownerName: string | null;
   readonly stats: readonly StoryStat[];
   readonly line: readonly LatLng[] | null;
   readonly lineState: StoryLineState;
@@ -71,6 +85,8 @@ export interface StrengthStoryCard {
   readonly kind: 'strength';
   readonly title: string;
   readonly date: string | null;
+  readonly time: string | null;
+  readonly ownerName: string | null;
   readonly stats: readonly StoryStat[];
   readonly exerciseNames: readonly string[];
   readonly moreExercises: number;
@@ -83,6 +99,36 @@ export interface StoryOptions {
   readonly showLine: boolean;
   /** „Datum zeigen“ (Standard an). */
   readonly showDate: boolean;
+  /** „Uhrzeit zeigen“ (fehlt = aus). Nur zusammen mit dem Datum. */
+  readonly showTime?: boolean;
+  /** Selbst eingetragener Name für „… Lauf“ (fehlt/leer = ohne Namen). */
+  readonly ownerName?: string | null;
+}
+
+/** Name fürs Bild: getrimmt, ohne Steuerzeichen, höchstens STORY_CARD.maxNameLength Zeichen; leer → null. */
+export function storyOwnerName(raw: string | null | undefined): string | null {
+  if (typeof raw !== 'string') return null;
+  const clean = raw
+    .replace(/\p{Cc}/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!clean) return null;
+  return [...clean].slice(0, STORY_CARD.maxNameLength).join('').trim();
+}
+
+/** Uhrzeit „HH:MM“ eines Zeitstempels in Europe/Berlin; ungültig → null. */
+export function storyTime(timestamp: string | null): string | null {
+  if (!timestamp) return null;
+  const time = Date.parse(timestamp);
+  if (Number.isNaN(time)) return null;
+  const parts = new Intl.DateTimeFormat('de-DE', {
+    timeZone: AGE_CHECK_TIME_ZONE,
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date(time));
+  const part = (type: 'hour' | 'minute') => parts.find((p) => p.type === type)?.value ?? '';
+  return `${part('hour')}:${part('minute')}`;
 }
 
 const comma = (text: string) => text.replace('.', ',');
@@ -158,6 +204,8 @@ export function enduranceStoryCard(
         ? isoDateInTimeZone(input.startedAt)
         : input.day
       : null,
+    time: options.showDate && options.showTime ? storyTime(input.startedAt) : null,
+    ownerName: storyOwnerName(options.ownerName),
     stats,
     line: line ? line.map((p) => ({ lat: p.lat, lng: p.lng })) : null,
     lineState,
@@ -233,6 +281,8 @@ export function strengthStoryCard(
     kind: 'strength',
     title: input.nameDe,
     date: options.showDate ? input.performedOn : null,
+    time: options.showDate && options.showTime ? storyTime(input.startedAt) : null,
+    ownerName: storyOwnerName(options.ownerName),
     stats,
     exerciseNames: names.slice(0, STORY_CARD.maxExerciseNames),
     moreExercises: Math.max(0, names.length - STORY_CARD.maxExerciseNames),

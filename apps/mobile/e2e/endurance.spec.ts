@@ -129,6 +129,16 @@ test('Demo-Aufzeichnung → speichern → Auswertung → Liste/Summen → Story-
   await page.getByTestId('story-theme-energie').click();
   await expect(page.getByTestId('story-theme-energie')).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByTestId('story-card')).toContainText('Ø-Pace');
+  // Standard-Design merken; Name und Uhrzeit oben im Bild.
+  await page.getByTestId('story-theme-save').click();
+  await expect(page.getByTestId('story-theme-default')).toBeVisible();
+  await page.getByTestId('story-name').fill('Karsten');
+  await expect(page.getByTestId('story-card')).toContainText('Karstens Lauf');
+  await page.getByTestId('story-date').click();
+  await expect(page.getByTestId('story-card')).toContainText('Uhr');
+  await page.getByTestId('story-time').click();
+  await expect(page.getByTestId('story-card')).not.toContainText('Uhr');
+  await page.getByTestId('story-time').click();
   await page.evaluate(() => {
     const w = window as unknown as { __shared: { name: string; type: string; size: number }[] };
     w.__shared = [];

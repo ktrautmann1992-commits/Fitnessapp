@@ -288,6 +288,12 @@ Umfang = „Offen für S1 App“ in `docs/PLAN-PHASE-10.md` (Umsetzungsstand S1 
 
 ## 8. Etappe E6 – Story-Bild teilen (nach Merge von PR #119)
 
+> **Nachtrag 04.11.2026 (Gründer-Entscheidung):** Drei wählbare Designs (Neon, Topo, Energie); das gewählte
+> Standard-Design ist beim nächsten Teilen voreingestellt (je Konto, nur dieses Gerät, `STORAGE_KEYS.storyPrefs`).
+> Logo immer in Markenblau auf dunkler Plakette wie das App-Icon. Oben optional „Karstens Lauf“ (Name nur selbst
+> eingetragen, max. 24 Zeichen) und **Uhrzeit** des Beginns (Schalter „Uhrzeit zeigen“, Europe/Berlin) – beides
+> zusätzlich in der Positivliste (`time`, `ownerName`). Weiterhin keine Gesundheitsdaten, Privatzone unverändert.
+
 **Inhalt (feste Positivliste, `packages/core/src/share/story-card.ts`):**
 
 - **Ausdauer:** Strecken-Linie nach `privacyTrim`, Sportart, Datum (ohne Uhrzeit), Gesamt-/Bewegungszeit, Distanz,

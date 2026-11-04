@@ -4605,6 +4605,8 @@ export const STORY_CARD = {
   widthPx: 1080,
   heightPx: 1920,
   maxExerciseNames: 5,
+  /** Höchstlänge des selbst eingetragenen Namens („… Lauf“), Produktentscheidung 04.11.2026. */
+  maxNameLength: 24,
 } as const;
 
 // ---------------------------------------------------------------------------------------------------------

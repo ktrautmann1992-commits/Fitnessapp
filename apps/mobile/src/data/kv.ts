@@ -195,6 +195,11 @@ export const STORAGE_KEYS = {
    */
   bikeChoice: 'fitnessapp.bike-choice.v1',
   /**
+   * Teilen-Bild (04.11.2026): je Konto Standard-Design, „Uhrzeit zeigen“ und der selbst eingetragene Name fürs Bild –
+   * nur dieses Gerät, kein Gesundheitsdatum (lib/story-prefs.ts).
+   */
+  storyPrefs: 'fitnessapp.story-prefs.v1',
+  /**
    * Widget auf dem Startbildschirm (docs/PLAN-WIDGET.md, 25.10.2026): Schalter an/aus (true/false, Standard aus) – nur
    * dieses Gerät, keine Nutzerdaten. Abmelden, Konto löschen und „Testdaten löschen“ setzen ihn zurück.
    */

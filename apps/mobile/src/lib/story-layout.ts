@@ -41,7 +41,6 @@ export interface StoryGlow {
 export interface StoryPalette {
   readonly bg: readonly [string, string];
   readonly glows: readonly StoryGlow[];
-  readonly logo: string;
   readonly strong: string;
   readonly muted: string;
   readonly accent: string;
@@ -66,7 +65,6 @@ export const STORY_PALETTES: Readonly<Record<StoryTheme, StoryPalette>> = {
   neon: {
     bg: [brandColors.schwarz, '#0B1A4A'],
     glows: [{ fx: 0.55, fy: 0.57, r: 640, color: brandColors.blau, opacity: 0.4 }],
-    logo: brandColors.blau,
     strong: brandColors.weiss,
     muted: brandColors.grauDunkel,
     accent: brandColors.himmel,
@@ -89,7 +87,6 @@ export const STORY_PALETTES: Readonly<Record<StoryTheme, StoryPalette>> = {
   topo: {
     bg: ['#0B1A4A', brandColors.schwarz],
     glows: [{ fx: 0.5, fy: 0.55, r: 560, color: brandColors.himmel, opacity: 0.12 }],
-    logo: brandColors.himmel,
     strong: brandColors.weiss,
     muted: 'rgba(227, 235, 255, 0.72)',
     accent: brandColors.himmel,
@@ -115,7 +112,6 @@ export const STORY_PALETTES: Readonly<Record<StoryTheme, StoryPalette>> = {
       { fx: 0.95, fy: 0.85, r: 900, color: brandColors.signal, opacity: 0.6 },
       { fx: 0.05, fy: 0.1, r: 700, color: brandColors.himmel, opacity: 0.45 },
     ],
-    logo: brandColors.weiss,
     strong: brandColors.weiss,
     muted: 'rgba(255, 255, 255, 0.8)',
     accent: brandColors.weiss,
@@ -170,7 +166,9 @@ export interface StoryPoint {
 }
 
 export interface StoryLayout {
+  /** Logo „α5“ (immer Markenblau, nie umgefärbt) auf einer dunklen Plakette wie das App-Icon. */
   readonly logo: { x: number; y: number; width: number };
+  readonly badge: StoryBox;
   readonly texts: readonly StoryText[];
   /** SVG-Pfad der Linie in Bild-Pixeln ('' = keine). */
   readonly linePath: string;
@@ -203,6 +201,16 @@ export function hexAlpha(hex: string, alpha: number): string {
 }
 
 const S = t.endurance.story;
+
+/** Plakette mit Logo oben links (wie das App-Icon: dunkel mit blauem Schein, Logo in Markenblau). */
+const BADGE: StoryBox = { x: STORY_PAD, y: 92, width: 196, height: 196, radius: 44 };
+const LOGO_W = 150;
+/** Farben der Plakette (Verlauf innen → außen) und des Logos – in allen Designs gleich (docs/DESIGN.md „Logo“). */
+export const STORY_BADGE = {
+  inner: '#13245C',
+  outer: brandColors.schwarz,
+  logo: brandColors.blau,
+} as const;
 const INNER = STORY_W - 2 * STORY_PAD;
 
 function text(
@@ -286,20 +294,29 @@ export function storyLayout(card: StoryCard, theme: StoryTheme = 'neon'): StoryL
           ? t.endurance.hiking.nouns[card.walkKind]
           : t.endurance.sportNouns[card.sport]
       : card.title;
-  // Titel immer zuerst (Tests lesen texts[0]).
+  // Titel immer zuerst (Tests lesen texts[0]); mit Namen „Karstens Lauf“.
   texts.push(
-    text({ text: title, x: STORY_PAD, y: 400, size: 54, bold: true, tone: 'accent', upper: true }),
+    text({
+      text: card.ownerName ? S.ownerTitle(card.ownerName, title) : title,
+      x: STORY_PAD,
+      y: 400,
+      size: 54,
+      bold: true,
+      tone: 'accent',
+      upper: true,
+      maxWidth: INNER,
+    }),
   );
   if (card.date) {
     texts.push(
       text({
-        text: formatDateDe(card.date),
+        text: card.time ? S.dateTime(formatDateDe(card.date), card.time) : formatDateDe(card.date),
         x: STORY_W - STORY_PAD,
-        y: 190,
+        y: 205,
         size: 40,
         tone: 'muted',
         align: 'right',
-        maxWidth: 400,
+        maxWidth: 560,
       }),
     );
   }
@@ -460,7 +477,12 @@ export function storyLayout(card: StoryCard, theme: StoryTheme = 'neon'): StoryL
         ? CONTOURS
         : [];
   return {
-    logo: { x: STORY_PAD, y: 110, width: 180 },
+    logo: {
+      x: BADGE.x + (BADGE.width - LOGO_W) / 2,
+      y: BADGE.y + (BADGE.height - LOGO_W * (697 / 1133)) / 2,
+      width: LOGO_W,
+    },
+    badge: BADGE,
     texts,
     linePath,
     lineBox,

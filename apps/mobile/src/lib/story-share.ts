@@ -7,6 +7,7 @@ import { MARK_ALPHA, MARK_FIVE } from '@/components/brand';
 
 import {
   hexAlpha,
+  STORY_BADGE,
   STORY_H,
   STORY_LINE,
   STORY_W,
@@ -78,10 +79,24 @@ export function drawStory(
     for (const d of layout.decor) ctx.stroke(new Path2D(d));
   }
   drawTexts(ctx, layout, 'back');
+  const b = layout.badge;
+  const badge = ctx.createRadialGradient(
+    b.x + b.width / 2,
+    b.y + b.height / 2,
+    0,
+    b.x + b.width / 2,
+    b.y + b.height / 2,
+    b.width * 0.7,
+  );
+  badge.addColorStop(0, STORY_BADGE.inner);
+  badge.addColorStop(1, STORY_BADGE.outer);
+  roundRect(ctx, b);
+  ctx.fillStyle = badge;
+  ctx.fill();
   ctx.save();
   ctx.translate(layout.logo.x, layout.logo.y);
   ctx.scale(layout.logo.width / 1133, layout.logo.width / 1133);
-  ctx.fillStyle = P.logo;
+  ctx.fillStyle = STORY_BADGE.logo;
   ctx.fill(new Path2D(MARK_ALPHA));
   ctx.fill(new Path2D(MARK_FIVE));
   ctx.restore();

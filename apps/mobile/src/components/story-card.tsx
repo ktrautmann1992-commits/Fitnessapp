@@ -16,6 +16,7 @@ import { MARK_ALPHA, MARK_FIVE } from '@/components/brand';
 import { Text } from '@/components/text';
 import { t } from '@/i18n';
 import {
+  STORY_BADGE,
   STORY_H,
   STORY_LINE,
   STORY_W,
@@ -115,9 +116,27 @@ export const StoryCardView = forwardRef<
             <Stop offset="0" stopColor={P.lineFrom} />
             <Stop offset="1" stopColor={P.lineTo} />
           </LinearGradient>
+          <RadialGradient
+            id={`story-badge-${theme}`}
+            cx={layout.badge.x + layout.badge.width / 2}
+            cy={layout.badge.y + layout.badge.height / 2}
+            r={layout.badge.width * 0.7}
+            gradientUnits="userSpaceOnUse"
+          >
+            <Stop offset="0" stopColor={STORY_BADGE.inner} />
+            <Stop offset="1" stopColor={STORY_BADGE.outer} />
+          </RadialGradient>
         </Defs>
-        <Path transform={logo} fill={P.logo} d={MARK_ALPHA} />
-        <Path transform={logo} fill={P.logo} d={MARK_FIVE} />
+        <Rect
+          x={layout.badge.x}
+          y={layout.badge.y}
+          width={layout.badge.width}
+          height={layout.badge.height}
+          rx={layout.badge.radius}
+          fill={`url(#story-badge-${theme})`}
+        />
+        <Path transform={logo} fill={STORY_BADGE.logo} d={MARK_ALPHA} />
+        <Path transform={logo} fill={STORY_BADGE.logo} d={MARK_FIVE} />
         {layout.linePath ? (
           <>
             {STORY_LINE.glow.map((halo) => (
