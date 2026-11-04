@@ -1,6 +1,6 @@
 {
   "id": "reisessig",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "name_de": "Reisessig",
   "aliases_de": [],
@@ -8,14 +8,16 @@
   "pantry": true,
   "nutrients_per_100g": {
     "kcal": 18,
-    "protein_g": 0,
-    "carbs_g": 0.04,
-    "sugar_g": 0.04,
+    "protein_g": 0.2,
+    "carbs_g": 0.147,
+    "sugar_g": 0.147,
     "fat_g": 0,
     "sat_fat_g": 0,
     "fiber_g": 0,
-    "salt_g": 0.005,
-    "alcohol_g": 0
+    "salt_g": 0.045,
+    "organic_acids_g": 5.48,
+    "alcohol_g": 0.097,
+    "polyols_g": null
   },
   "units": {},
   "groups": [],
@@ -27,13 +29,13 @@
   "freezable": true,
   "substitutes": [],
   "source": {
-    "db": "usda_fdc",
-    "version": "sr-legacy-2018-04",
-    "ref": "172237",
-    "name": "Vinegar, distilled",
+    "db": "bls",
+    "version": "4.0",
+    "ref": "R123100",
+    "name": "Apfelessig",
     "category": "spices_sauces",
-    "license": "CC0 1.0",
-    "retrieved_at": "2026-11-01"
+    "license": "CC BY 4.0",
+    "retrieved_at": "2026-10-27"
   },
   "meta": {
     "origin": "claude_session",
