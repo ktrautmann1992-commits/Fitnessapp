@@ -1,6 +1,6 @@
 {
   "id": "tofu-scramble-mit-champignons-und-avocado",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Tofu-Scramble mit Champignons und Avocado",
   "description_de": "Würziges Rührei aus Tofu mit gebratenen Champignons, Spinat und Avocado – rein pflanzlich und mit über 30 g Eiweiß.",
@@ -110,10 +110,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 452,
-    "protein_g": 35.6,
-    "carbs_g": 6.5,
-    "fat_g": 29.7
+    "kcal": 427,
+    "protein_g": 41,
+    "carbs_g": 6.8,
+    "fat_g": 24.6
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "histamine", "mushrooms"],
@@ -131,6 +131,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "f9cdf398db053b66a7f52028871e08bffd77e99281c8cc9a1ebdebbe5d2e69a1"
+    "import_hash": "fd9bbd64ce63abd1cb14919e1aa52230186575ac3b36a6b2ffad878cf8526d90"
   }
 }

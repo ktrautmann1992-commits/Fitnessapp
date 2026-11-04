@@ -1,6 +1,6 @@
 {
   "id": "mango-reispudding-mit-vanille-protein",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Mango-Reispudding mit Vanille-Protein",
   "description_de": "Cremiger Reispudding aus Express-Reis, der mit leicht verdaulicher Stärke und Mango die Speicher füllt und dabei kaum Fett und Ballaststoffe mitbringt.",
@@ -75,10 +75,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 361,
-    "protein_g": 24,
-    "carbs_g": 52.5,
-    "fat_g": 6
+    "kcal": 308,
+    "protein_g": 27.2,
+    "carbs_g": 41.5,
+    "fat_g": 3.4
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy"],
@@ -96,6 +96,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "07836bbeb9f29b6e0730bae006f624639a4284b2b11bbbca2259839f8b67e20d"
+    "import_hash": "7edd03f9ee5f302e21e04da9970ca5130351d2dd41341066014dde856d115d01"
   }
 }

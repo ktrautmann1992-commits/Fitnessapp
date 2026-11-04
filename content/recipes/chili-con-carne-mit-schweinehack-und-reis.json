@@ -1,6 +1,6 @@
 {
   "id": "chili-con-carne-mit-schweinehack-und-reis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Chili con Carne mit Schweinehack und Reis",
   "description_de": "Würziges Chili mit Schweinehack, Kidneybohnen und Mais – perfekt zum Vorkochen.",
@@ -148,10 +148,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 704,
-    "protein_g": 41.3,
-    "carbs_g": 77.9,
-    "fat_g": 22.8
+    "kcal": 783,
+    "protein_g": 40.4,
+    "carbs_g": 75.5,
+    "fat_g": 30.3
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["legumes", "histamine", "onion_garlic", "spicy"],
@@ -177,6 +177,6 @@
       }
     ],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "ed5ba8daee7c56cda0052201c6c7ae75b960705ab0d52cc44be50f5cbff783c2"
+    "import_hash": "351a310f5fd68f3c0f41dadeaf01dddbab1af40237cf922b5f087506b29e7499"
   }
 }

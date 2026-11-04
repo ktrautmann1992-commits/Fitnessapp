@@ -1,6 +1,6 @@
 {
   "id": "bananen-vanille-porridge-mit-sojadrink",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Bananen-Vanille-Porridge mit Sojadrink",
   "description_de": "Cremiger Haferbrei aus Eigenmarken-Haferflocken, der mit Sojadrink und einem Messlöffel Proteinpulver lange satt macht und kaum mehr als einen Euro kostet.",
@@ -75,10 +75,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 512,
-    "protein_g": 33.2,
-    "carbs_g": 64.2,
-    "fat_g": 10.8
+    "kcal": 466,
+    "protein_g": 36.3,
+    "carbs_g": 54.5,
+    "fat_g": 9
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy"],
@@ -101,6 +101,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "aed5b01ef83239cbed0297da6d36e95dbce1ad26f3b87840df4954dc6e48396f"
+    "import_hash": "8a620dcd18f7f571508ba9a898dc2cd0196e69c91846bde6fccc696259785c4e"
   }
 }

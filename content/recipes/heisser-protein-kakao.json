@@ -1,6 +1,6 @@
 {
   "id": "heisser-protein-kakao",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Heißer Protein-Kakao",
   "description_de": "Cremiger heißer Kakao aus der Mikrowelle mit Schoko-Whey – schmeckt wie Trinkschokolade, liefert aber reichlich Eiweiß.",
@@ -56,10 +56,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 210,
-    "protein_g": 24.5,
-    "carbs_g": 14.6,
-    "fat_g": 5.4
+    "kcal": 196,
+    "protein_g": 25.6,
+    "carbs_g": 10.9,
+    "fat_g": 4.7
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose"],
@@ -77,6 +77,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "7fdea10581873f86ce502e1827818a2c66259fabd399fc31b2da0d8cde293809"
+    "import_hash": "e24e4fba615b33a99fe540d680ddcba15f55592aec725df16a1c253e96c58286"
   }
 }

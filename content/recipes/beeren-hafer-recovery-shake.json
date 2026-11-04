@@ -1,6 +1,6 @@
 {
   "id": "beeren-hafer-recovery-shake",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Beeren-Hafer-Recovery-Shake",
   "description_de": "Cremiger Sojadrink-Shake mit veganem Protein, Beeren und Hafer – liefert direkt nach dem Training schnell verfügbares Eiweiß und Kohlenhydrate zum Auffüllen.",
@@ -75,10 +75,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 353,
-    "protein_g": 34.9,
-    "carbs_g": 29.5,
-    "fat_g": 8.8
+    "kcal": 332,
+    "protein_g": 39.6,
+    "carbs_g": 25.2,
+    "fat_g": 6.6
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy"],
@@ -96,6 +96,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "0bb7f39ba65cce11f856da48dd664bf74ceb68615ce7fc2335d14f7b27c46e49"
+    "import_hash": "619d8f474ff695c40709afb8bc8c42f53100c919233e6ed16a14f2be680dc986"
   }
 }

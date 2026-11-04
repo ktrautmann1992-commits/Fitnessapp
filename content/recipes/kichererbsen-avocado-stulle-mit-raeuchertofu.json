@@ -1,6 +1,6 @@
 {
   "id": "kichererbsen-avocado-stulle-mit-raeuchertofu",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Kichererbsen-Avocado-Stulle mit Räuchertofu",
   "description_de": "Herzhaftes Vollkornbrot mit zerdrückten Kichererbsen, Avocado und knusprigem Räuchertofu.",
@@ -112,10 +112,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 516,
-    "protein_g": 28.2,
-    "carbs_g": 52.4,
-    "fat_g": 18.4
+    "kcal": 480,
+    "protein_g": 27,
+    "carbs_g": 49,
+    "fat_g": 14.4
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "histamine", "spicy"],
@@ -133,6 +133,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "4bb4ee00ccb41191d16d0ce4bb54cb7db3e6d285e4c82e9a12b79e80b2042010"
+    "import_hash": "21ede2c9f73c93b57f446e8831b8c101fec54aad2f083fc0225d8716cfe18212"
   }
 }

@@ -1,6 +1,6 @@
 {
   "id": "rote-linsen-dal-mit-spinat",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Rote-Linsen-Dal mit Spinat",
   "description_de": "Wärmendes Curry aus roten Linsen, Tomaten und Spinat, getoppt mit einem Klecks kühlem Skyr.",
@@ -138,10 +138,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 551,
-    "protein_g": 36.8,
-    "carbs_g": 56.4,
-    "fat_g": 16.3
+    "kcal": 573,
+    "protein_g": 37.4,
+    "carbs_g": 53.3,
+    "fat_g": 19.4
   },
   "declared_diet": "vegetarian",
   "declared_allergens": [
@@ -168,6 +168,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "28d18c14d5d33acec6c77fb0344b5808c871b691de1e5a4180f3991b5446cf2f"
+    "import_hash": "5f0c8abcef6f4e3576bd67978ddb31b29cd31e70957b72c6de4c15fa70b988ea"
   }
 }

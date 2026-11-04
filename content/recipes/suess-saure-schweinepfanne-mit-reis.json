@@ -1,6 +1,6 @@
 {
   "id": "suess-saure-schweinepfanne-mit-reis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Süß-saure Schweinepfanne mit Reis",
   "description_de": "Asiatische Wokpfanne mit zarten Schweineschnitzel-Streifen, Paprika, Ananas und Basmatireis.",
@@ -81,7 +81,7 @@
       "optional": false,
       "display_de": "2 TL (10 g)",
       "scales": true,
-      "role": "carb"
+      "role": "protein"
     },
     {
       "food_id": "tomatenmark",
@@ -161,6 +161,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "8dac10a5f508b6d719d84c64ba01df355274e54ab34ff3207fcc98764af79661"
+    "import_hash": "075e5b57fadf95a47bf64f4d3cb1ad9a23849eee0d1a6cc7a049b6a7038f885f"
   }
 }

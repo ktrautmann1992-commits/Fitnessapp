@@ -1,6 +1,6 @@
 {
   "id": "gnocchi-in-tomatensauce-mit-parmesan",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Gnocchi in Tomatensauce mit Parmesan",
   "description_de": "Kartoffel-Gnocchi in leichter Tomatensauce – viel leicht verdauliche Stärke und nur wenig Fett, ein klassisches Carbo-Essen vor dem langen Sonntagslauf.",
@@ -38,7 +38,7 @@
       "role": "fat"
     },
     {
-      "food_id": "parmesan",
+      "food_id": "hartkaese-vegetarisch",
       "amount": 10,
       "unit": "g",
       "optional": false,
@@ -123,6 +123,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "2682e9f4bdaa35c6bf541de7bbc8fb89cc9d24ac8ef4a7935eb271326098502b"
+    "import_hash": "512dc2b574c7facb3944e582a2cfee423685e7fdde817277c2e1ad5981b56bee"
   }
 }

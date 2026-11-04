@@ -1,6 +1,6 @@
 {
   "id": "kraeuter-lachs-mit-blumenkohlpueree-und-gruenen-bohnen",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Kräuter-Lachs mit Blumenkohlpüree und grünen Bohnen",
   "description_de": "Saftiger Ofenlachs mit Zitrone und Dill auf cremigem Blumenkohlpüree, dazu knackige grüne Bohnen – wie Lachs mit Kartoffelpüree, nur viel leichter.",
@@ -102,10 +102,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 486,
-    "protein_g": 44,
-    "carbs_g": 17.2,
-    "fat_g": 24.9
+    "kcal": 485,
+    "protein_g": 45.5,
+    "carbs_g": 23.9,
+    "fat_g": 21.8
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["dairy", "lactose", "fish", "legumes", "histamine"],
@@ -131,6 +131,6 @@
       }
     ],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "3b63168ac9449069debb7b50323ebd2665fe50f3b0ad4aed91efb720115f824b"
+    "import_hash": "4aa4a92c1b05bdabff37de5641964d861031dd5d264412370755987f09c60c6c"
   }
 }

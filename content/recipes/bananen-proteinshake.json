@@ -1,6 +1,6 @@
 {
   "id": "bananen-proteinshake",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Bananen-Proteinshake",
   "description_de": "Cremiger Shake aus Milch, Banane und Molkenprotein – schnell getrunken nach dem Training.",
@@ -65,10 +65,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 249,
-    "protein_g": 24.2,
-    "carbs_g": 25.6,
-    "fat_g": 4.9
+    "kcal": 229,
+    "protein_g": 25.2,
+    "carbs_g": 20.1,
+    "fat_g": 4.4
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose"],
@@ -86,6 +86,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "a7f281171a3fa4b0c5cf227c674d0929dfe604317a9f06abfc45fc3afc050e16"
+    "import_hash": "4eb398f782f91f9a04b11bd448bd311a1915d294a523dbaf89b318e59afd0b9c"
   }
 }

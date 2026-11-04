@@ -1,6 +1,6 @@
 {
   "id": "schoko-protein-tassenkuchen",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Schoko-Protein-Tassenkuchen",
   "description_de": "Saftiger Schoko-Kuchen aus der Tasse, in 2 Minuten in der Mikrowelle gebacken.",
@@ -93,10 +93,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 203,
-    "protein_g": 19.3,
-    "carbs_g": 21.8,
-    "fat_g": 3.9
+    "kcal": 197,
+    "protein_g": 23.5,
+    "carbs_g": 19.2,
+    "fat_g": 2.9
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "fructose"],
@@ -114,6 +114,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "daab0b89413850955fe71487328ada6bdfe2848141d0b546abf16fe30a4a57f0"
+    "import_hash": "3c2dd7c722768923880b450c5d4bdf9fbd495e5b43bcdab342e3f684ec8a4084"
   }
 }

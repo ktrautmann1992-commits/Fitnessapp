@@ -1,6 +1,6 @@
 {
   "id": "gemuesesticks-mit-weissem-bohnen-dip",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Gemüsesticks mit weißem Bohnen-Dip",
   "description_de": "Cremiger Dip aus weißen Bohnen, Tahin und Zitrone mit knackigen Karotten- und Gurkensticks.",
@@ -110,10 +110,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 215,
-    "protein_g": 12.9,
-    "carbs_g": 26.4,
-    "fat_g": 4
+    "kcal": 251,
+    "protein_g": 15.9,
+    "carbs_g": 28.7,
+    "fat_g": 4.3
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "sesame", "onion_garlic"],
@@ -131,6 +131,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "cff2bbfdd8020236564e81906bbce710dfd81a79cb7ef777184408c53f3e2ea6"
+    "import_hash": "9df3e24494471fb5182854d3a048d9fc075af7a8e9b3a98092380e863033b26f"
   }
 }

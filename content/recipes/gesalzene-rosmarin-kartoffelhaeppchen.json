@@ -1,6 +1,6 @@
 {
   "id": "gesalzene-rosmarin-kartoffelhaeppchen",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Gesalzene Rosmarin-Kartoffelhäppchen",
   "description_de": "Kleine Pellkartoffeln mit Salz und Rosmarin – herzhafte Abwechslung zu Süßem, liefern Stärke und Natrium für lange Läufe und Radtouren.",
@@ -57,10 +57,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 156,
-    "protein_g": 4.4,
-    "carbs_g": 32.6,
-    "fat_g": 0.2
+    "kcal": 184,
+    "protein_g": 4.3,
+    "carbs_g": 39.5,
+    "fat_g": 0.3
   },
   "declared_diet": "vegan",
   "declared_allergens": [],
@@ -78,6 +78,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "ce37e52654d0d4efed7a0a18adbd0a07dfd30eaa3c38e2e890a4dea9f800fe2d"
+    "import_hash": "85120c55d9adf8ed3072b99c30f902ed95d042f4f789ed35250d8c0c29c4b3bb"
   }
 }

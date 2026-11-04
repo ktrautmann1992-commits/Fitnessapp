@@ -1,6 +1,6 @@
 {
   "id": "asia-nudelsuppe-mit-tofu-und-ei",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Asia-Nudelsuppe mit Tofu & Ei",
   "description_de": "Würzige Brühe mit Mie-Nudeln, Tofu, Pilzen, Spinat und einem wachsweichen Ei – leicht und wärmend.",
@@ -149,10 +149,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 589,
-    "protein_g": 41.1,
-    "carbs_g": 48.5,
-    "fat_g": 24.5
+    "kcal": 571,
+    "protein_g": 46,
+    "carbs_g": 44.7,
+    "fat_g": 21.2
   },
   "declared_diet": "vegetarian",
   "declared_allergens": [
@@ -180,6 +180,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "574cdae0ce8395451517f6d789ffc111b778c34f7e725e5e89453ea03ca5c6e3"
+    "import_hash": "df7e26b87313f4cbf369017f9857ff4936753d4987d2981a1fb5f6b5c62489e3"
   }
 }

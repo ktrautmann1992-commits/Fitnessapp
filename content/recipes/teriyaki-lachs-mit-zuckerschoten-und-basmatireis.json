@@ -1,6 +1,6 @@
 {
   "id": "teriyaki-lachs-mit-zuckerschoten-und-basmatireis",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Teriyaki-Lachs mit Zuckerschoten und Basmatireis",
   "description_de": "Lachs in einer selbst angerührten Teriyaki-Glasur aus Sojasauce, Honig und Ingwer, die in der Heißluft leicht karamellisiert – dazu knackige Zuckerschoten und Paprika.",
@@ -141,10 +141,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 652,
-    "protein_g": 38.1,
-    "carbs_g": 69,
-    "fat_g": 24.5
+    "kcal": 619,
+    "protein_g": 38.9,
+    "carbs_g": 64.4,
+    "fat_g": 21.1
   },
   "declared_diet": "omnivore",
   "declared_allergens": [
@@ -179,6 +179,6 @@
       }
     ],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "b478d95416880eefe5736e5852d699c5387cc0338761fd7f5ed03682c7d61c0e"
+    "import_hash": "4881d792d98075223b5b6f1a7d8de48c5448c12e9c33cf7166ef43a4ef2d705c"
   }
 }

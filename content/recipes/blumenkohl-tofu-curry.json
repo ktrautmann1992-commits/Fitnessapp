@@ -1,6 +1,6 @@
 {
   "id": "blumenkohl-tofu-curry",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Blumenkohl-Tofu-Curry",
   "description_de": "Leichtes Kokos-Curry mit Blumenkohl, Zucchini, Edamame und Tofu auf wenig Reis.",
@@ -148,10 +148,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 652,
-    "protein_g": 41,
-    "carbs_g": 48.4,
-    "fat_g": 31
+    "kcal": 822,
+    "protein_g": 48.1,
+    "carbs_g": 53.9,
+    "fat_g": 44.4
   },
   "declared_diet": "vegan",
   "declared_allergens": [
@@ -177,6 +177,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "0d8b1f31e5001df73558f2060b2c63487166b8b81ce06a0e3b2359a4a8bb890c"
+    "import_hash": "4f37f56194e298836535b98dd40de61de355d0c23dda8c44c031eb59f1629b93"
   }
 }

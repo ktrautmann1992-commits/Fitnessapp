@@ -1,6 +1,6 @@
 {
   "id": "selbstgemachte-seelachs-fischstaebchen-mit-rosmarinkartoffeln-und-skyr-remoulade",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Selbstgemachte Seelachs-Fischstäbchen mit Rosmarinkartoffeln und Skyr-Remoulade",
   "description_de": "Knusprige Fischstäbchen aus echtem Seelachsfilet in Panko-Panade, dazu Kartoffelwürfel und eine leichte Remoulade aus Skyr – der Kindheitsklassiker mit über 50 g Eiweiß.",
@@ -160,10 +160,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 661,
-    "protein_g": 62.3,
-    "carbs_g": 67.8,
-    "fat_g": 15
+    "kcal": 733,
+    "protein_g": 64.7,
+    "carbs_g": 71.6,
+    "fat_g": 18.9
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "fish", "mustard", "sulphites"],
@@ -181,6 +181,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "837f46d4ce40e6b1efa46e81244028527121328eb2e673ff810950c68b750029"
+    "import_hash": "7590bb46726da6351fe542e964e7f5eaaaba94cfa85619896a1735a36f767055"
   }
 }

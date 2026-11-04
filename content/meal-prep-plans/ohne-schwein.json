@@ -1,6 +1,6 @@
 {
   "id": "ohne-schwein",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Leichte Hähnchen-Woche",
   "description_de": "Protein-Bananenbrot, ein mildes Hähnchen-Curry und Schoko-Haferriegel: ganz ohne Schweinefleisch und gut vorzubereiten. Das Bananenbrot backt, während du das Curry kochst.",
@@ -142,8 +142,8 @@
   ],
   "storage_de": [
     "Packe Curry und Reis in 5 mikrowellengeeignete Dosen, Bananenbrot und Riegel in Backpapier oder kleine Dosen.",
-    "Hähnchen-Curry mit Reis hält im Kühlschrank höchstens 3–4 Tage, Bananenbrot und Riegel 5 Tage.",
-    "Friere die Curry-Portionen für Donnerstag und Freitag direkt ein und lege sie am Vorabend in den Kühlschrank."
+    "Im Kühlschrank halten Hähnchen-Curry mit Reis, Bananenbrot und Riegel höchstens 1 Tag – alles für die folgenden Tage portionsweise einfrieren.",
+    "Friere die Portionen für Dienstag bis Freitag direkt ein und lege sie jeweils am Vorabend in den Kühlschrank."
   ],
   "dinner_hint_de": "Abends kochst du frisch – zum Beispiel ein Gericht ohne Schweinefleisch aus dem Kapitel „Fertig in 10 Minuten“.",
   "meta": {
@@ -156,6 +156,6 @@
     "reviewed_at": null,
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
-    "import_hash": "95f61cf37e4629741f16dbe5650efb88c3e3eb9a482762be475e569b76b9963c"
+    "import_hash": "1405965768e44618808d3c452aff138abc4657ed5e167c95227cd00ffa041682"
   }
 }

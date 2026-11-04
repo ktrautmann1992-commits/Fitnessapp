@@ -1,6 +1,6 @@
 {
   "id": "saltimbocca-mit-zucchini-tomaten-gemuese",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Saltimbocca mit Zucchini-Tomaten-Gemüse",
   "description_de": "Italienisch inspiriert: dünne Schweineschnitzel mit Lachsschinken und Salbei, dazu Zucchini, Kirschtomaten und Kartoffeln.",
@@ -122,10 +122,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 547,
+    "kcal": 585,
     "protein_g": 51.8,
-    "carbs_g": 47.7,
-    "fat_g": 15.3
+    "carbs_g": 56.2,
+    "fat_g": 14.7
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["histamine", "onion_garlic"],
@@ -143,6 +143,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "05a5f9158b70ffc9d8b50b962a922c7ec1e86509ad09493a9cef1c4bbfe4d25d"
+    "import_hash": "121089bfeaac5cf8af854ee9ed3fec71b9edea4a79eb87052a263bb8ea5f4ed5"
   }
 }

@@ -1,6 +1,6 @@
 {
   "id": "thai-hacksalat-mit-minze-und-reisnudeln",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Thai-Hacksalat mit Minze und Reisnudeln",
   "description_de": "Lauwarmes, mageres Schweinehack mit Limette, Chili und frischer Minze auf knackigem Salat und Reisnudeln – inspiriert vom thailändischen Larb.",
@@ -148,10 +148,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 538,
-    "protein_g": 37.6,
-    "carbs_g": 55.1,
-    "fat_g": 17.2
+    "kcal": 512,
+    "protein_g": 41.1,
+    "carbs_g": 54.1,
+    "fat_g": 12.5
   },
   "declared_diet": "omnivore",
   "declared_allergens": [
@@ -177,6 +177,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "4a97d370bd6aee24eb6d3fde0a03a77c2ef4bba487ce31018204503ce52e4b10"
+    "import_hash": "38a2dae46d1a5a7e6177d49231df403f2a59f2df584c054c75497f41065a86f8"
   }
 }

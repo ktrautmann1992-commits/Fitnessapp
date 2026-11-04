@@ -1,6 +1,6 @@
 {
   "id": "tiramisu-creme-im-glas",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Tiramisu-Creme im Glas",
   "description_de": "Italienischer Klassiker in leicht: Espresso-getränkte Löffelbiskuits unter einer Quark-Skyr-Creme mit Kakao – ganz ohne Mascarpone und Alkohol.",
@@ -95,9 +95,9 @@
   "equipment_de": [],
   "declared_per_serving": {
     "kcal": 209,
-    "protein_g": 25.8,
-    "carbs_g": 21,
-    "fat_g": 1.7
+    "protein_g": 26.1,
+    "carbs_g": 28.9,
+    "fat_g": 2.5
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["gluten", "dairy", "lactose", "eggs"],
@@ -115,6 +115,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "b81eee6f5c398c3c2497aa54f692e2be0dfe0ec55702bc77b3013dbe48c4fb05"
+    "import_hash": "924593f10477684e2ec05731505907e54a3522b8458116c2f2df7bf109cfdd90"
   }
 }

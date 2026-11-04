@@ -1,6 +1,6 @@
 {
   "id": "schoko-himbeer-baked-oats-aus-dem-foermchen",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Schoko-Himbeer-Baked-Oats aus dem Förmchen",
   "description_de": "Saftig-schokoladiger Haferkuchen mit Himbeeren für eine Person, der in der Heißluftfritteuse in 15 Minuten fertig ist – ideal als warmer Snack nach dem Training.",
@@ -85,10 +85,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 295,
-    "protein_g": 20.3,
-    "carbs_g": 36.3,
-    "fat_g": 5.9
+    "kcal": 274,
+    "protein_g": 22.8,
+    "carbs_g": 31.1,
+    "fat_g": 4.8
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy"],
@@ -106,6 +106,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "0e4045f11836f0f91240a775d174e7b801f47a090f2a283ab61837862c90892e"
+    "import_hash": "0949d13cae88ebccee5f05ee8812248c84c856f38692f034a7da3f59ffe98b9b"
   }
 }

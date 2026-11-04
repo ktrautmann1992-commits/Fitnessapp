@@ -1,6 +1,6 @@
 {
   "id": "sesam-edamame",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Sesam-Edamame",
   "description_de": "Warme Edamame mit einem Spritzer Sojasauce und geröstetem Sesam.",
@@ -65,10 +65,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 190,
-    "protein_g": 16.5,
-    "carbs_g": 8.3,
-    "fat_g": 9.5
+    "kcal": 212,
+    "protein_g": 17.9,
+    "carbs_g": 8.5,
+    "fat_g": 10.5
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "sesame", "histamine", "spicy"],
@@ -86,6 +86,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "03878abf0b87886bb0097f1bfa4f08888fe2390d9e2b105cc07501692606f0d6"
+    "import_hash": "a4abc77837794074179c0d8c97939b071602b375636b5dd92e1c270d1a15f88f"
   }
 }

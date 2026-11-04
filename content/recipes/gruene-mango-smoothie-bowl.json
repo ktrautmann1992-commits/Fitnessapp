@@ -1,6 +1,6 @@
 {
   "id": "gruene-mango-smoothie-bowl",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Grüne Mango-Smoothie-Bowl",
   "description_de": "Cremige, eiskalte Bowl aus Mango, Banane, Spinat und Vanille-Protein mit knusprigem Hafer-Kürbiskern-Topping.",
@@ -102,10 +102,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 516,
-    "protein_g": 35.2,
-    "carbs_g": 56.6,
-    "fat_g": 13.1
+    "kcal": 471,
+    "protein_g": 39.7,
+    "carbs_g": 45.6,
+    "fat_g": 12.8
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "histamine"],
@@ -123,6 +123,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "c05f97ad4bcd71398583f856f2b0574fd372e6d57f2c4fb4f89de625be46a28d"
+    "import_hash": "30c053b8afd809de9afc031e075d9b07891962bac12a68710c9a4e763a099f5a"
   }
 }

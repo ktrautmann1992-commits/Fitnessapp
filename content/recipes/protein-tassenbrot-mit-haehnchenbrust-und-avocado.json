@@ -1,6 +1,6 @@
 {
   "id": "protein-tassenbrot-mit-haehnchenbrust-und-avocado",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Protein-Tassenbrot mit Hähnchenbrust und Avocado",
   "description_de": "Warmes Eiweißbrot aus der Mikrowelle in 2 Minuten, belegt mit Hähnchenbrust, Avocado und Tomaten.",
@@ -123,10 +123,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 437,
-    "protein_g": 41.6,
-    "carbs_g": 26.3,
-    "fat_g": 17
+    "kcal": 417,
+    "protein_g": 44.1,
+    "carbs_g": 22.7,
+    "fat_g": 14.7
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "poultry", "histamine"],
@@ -144,6 +144,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "167fc7a4f3850142118a5d745fb42ca78adbf6f365b9e4222330f9321397d392"
+    "import_hash": "a0dcb16ccf3c9d674ce2364c337ac0ea5c740105f21aa857171ace0b413271b5"
   }
 }

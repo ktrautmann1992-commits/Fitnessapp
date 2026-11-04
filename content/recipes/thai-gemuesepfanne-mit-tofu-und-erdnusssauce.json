@@ -1,6 +1,6 @@
 {
   "id": "thai-gemuesepfanne-mit-tofu-und-erdnusssauce",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Thai-Gemüsepfanne mit Tofu & Erdnusssauce",
   "description_de": "Knackiges Pfannengemüse mit knusprigem Tofu und cremiger Erdnuss-Ingwer-Sauce – ganz ohne Beilage.",
@@ -138,10 +138,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 521,
-    "protein_g": 38.9,
-    "carbs_g": 23.4,
-    "fat_g": 28.6
+    "kcal": 508,
+    "protein_g": 43.8,
+    "carbs_g": 17.9,
+    "fat_g": 25.4
   },
   "declared_diet": "vegan",
   "declared_allergens": [
@@ -167,6 +167,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "eb78b8620f754f25361848bc6fb3bcdc55f05fde9ccb2582cb98a609db323627"
+    "import_hash": "75bbe7159637ad107b69b4ac5ee74add904905a7707d7df0c48c7e5c0d3a0710"
   }
 }

@@ -1,6 +1,6 @@
 {
   "id": "schoko-bananen-proteinshake",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Schoko-Bananen-Proteinshake",
   "description_de": "Cremiger Shake mit Sojadrink, Banane und veganem Proteinpulver für die schnelle Regeneration.",
@@ -65,10 +65,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 244,
-    "protein_g": 28.3,
-    "carbs_g": 15.8,
-    "fat_g": 6.8
+    "kcal": 217,
+    "protein_g": 31.6,
+    "carbs_g": 10.9,
+    "fat_g": 4.9
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy"],
@@ -86,6 +86,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "f5abdbe2a184f6e13303c8af73c0b5b95a75e0bf273b9e1376b4fa20b8945315"
+    "import_hash": "a5a9349f0706615cd449993594938d5c912ba6c6beeb3d8ae41654113ae399ad"
   }
 }

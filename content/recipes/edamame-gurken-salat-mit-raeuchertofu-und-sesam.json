@@ -1,6 +1,6 @@
 {
   "id": "edamame-gurken-salat-mit-raeuchertofu-und-sesam",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Edamame-Gurken-Salat mit Räuchertofu und Sesam",
   "description_de": "Frischer, asiatisch angemachter Salat aus Edamame, Gurke und Räuchertofu mit etwas Reis – leicht und trotzdem sättigend.",
@@ -71,7 +71,7 @@
       "optional": false,
       "display_de": "2 TL (10 g)",
       "scales": true,
-      "role": "carb"
+      "role": "protein"
     },
     {
       "food_id": "sesamoel",
@@ -111,10 +111,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 613,
-    "protein_g": 41.5,
-    "carbs_g": 46.7,
-    "fat_g": 27.6
+    "kcal": 564,
+    "protein_g": 42.2,
+    "carbs_g": 38.4,
+    "fat_g": 24.2
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "sesame", "histamine", "onion_garlic"],
@@ -132,6 +132,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "9b3a4801e8943c5cea21e279bfc3190ae9a5c0b299014c3e25087520b4302ab2"
+    "import_hash": "9e5515d924c7f29e266843e9eef57bb90f76ceb89051933fcce8215d04150aa8"
   }
 }

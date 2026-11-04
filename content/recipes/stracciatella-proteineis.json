@@ -1,6 +1,6 @@
 {
   "id": "stracciatella-proteineis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Stracciatella-Proteineis",
   "description_de": "Cremiges Vanille-Quarkeis mit feinen Zartbitter-Raspeln, das in etwa 3 Stunden im Gefrierfach ohne Eismaschine fest wird – über 30 g Eiweiß bei wenig Kalorien.",
@@ -75,10 +75,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 244,
-    "protein_g": 32.2,
-    "carbs_g": 13.4,
-    "fat_g": 6.2
+    "kcal": 234,
+    "protein_g": 32.5,
+    "carbs_g": 21.7,
+    "fat_g": 5.6
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose"],
@@ -96,6 +96,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "d49e5b15514dd135f322468d864f08a1e7454c283746dc3ad1a0f66822177ba8"
+    "import_hash": "4655a166e3ddfc1603a14b1e6359a098eec0b937ea95bc20976a3579919fa366"
   }
 }

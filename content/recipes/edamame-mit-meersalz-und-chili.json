@@ -1,6 +1,6 @@
 {
   "id": "edamame-mit-meersalz-und-chili",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Edamame mit Meersalz & Chili",
   "description_de": "Warme Edamame, nur mit Salz, Chili und Zitrone gewürzt – pflanzliches Eiweiß in 8 Minuten.",
@@ -74,10 +74,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 160,
-    "protein_g": 14.8,
-    "carbs_g": 7.6,
-    "fat_g": 7.2
+    "kcal": 182,
+    "protein_g": 16,
+    "carbs_g": 7.9,
+    "fat_g": 8.3
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "histamine", "spicy"],
@@ -95,6 +95,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "5d01791703b94dd83a8bc7577beb6f21db6cc03b2ff16a3e8e27735144edc9fc"
+    "import_hash": "445c43167134ea4cfe274e631b52d74f70c90119a000a030d626998f6fb86b8f"
   }
 }

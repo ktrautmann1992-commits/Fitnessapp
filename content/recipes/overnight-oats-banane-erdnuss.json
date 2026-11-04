@@ -1,6 +1,6 @@
 {
   "id": "overnight-oats-banane-erdnuss",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Overnight Oats Banane-Erdnuss",
   "description_de": "Über Nacht durchgezogene Haferflocken mit Skyr, Chia und Banane – morgens nur noch aus dem Kühlschrank nehmen.",
@@ -93,10 +93,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 530,
-    "protein_g": 32,
-    "carbs_g": 62.2,
-    "fat_g": 13.6
+    "kcal": 504,
+    "protein_g": 32.1,
+    "carbs_g": 52.8,
+    "fat_g": 14.8
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "peanuts"],
@@ -114,6 +114,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "7b4a70f383b24c999fd18b5546ab0adc43956ffd4a9932dac0b3bdc0f1b7e5d4"
+    "import_hash": "d2c1d702d34a911b11c9a3bae4ec7c4681123c9662d967ea355486bafe20b88f"
   }
 }

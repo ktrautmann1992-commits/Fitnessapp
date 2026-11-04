@@ -1,6 +1,6 @@
 {
   "id": "englische-bohnen-tofu-pfanne-auf-toast",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Englische Bohnen-Tofu-Pfanne auf Toast",
   "description_de": "Herzhaftes Frühstück nach britischem Vorbild mit weißen Bohnen in Tomatensauce und gebratenem Tofu, das günstig und rein pflanzlich viel Eiweiß liefert.",
@@ -111,10 +111,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 530,
-    "protein_g": 33.3,
-    "carbs_g": 56.5,
-    "fat_g": 15.8
+    "kcal": 593,
+    "protein_g": 39.9,
+    "carbs_g": 62.9,
+    "fat_g": 14
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "histamine", "onion_garlic"],
@@ -137,6 +137,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "bf588de268683f19baa31663f3c7d2182f248bca7c414f497d36ba8c05cb2adb"
+    "import_hash": "7ed6995dd6bf0fd2eee16f7c1c23c39ffbbcf44d0528c115e018bb82516cd4a9"
   }
 }

@@ -1,6 +1,6 @@
 {
   "id": "rinder-koefte-mit-kraeuter-bulgur-und-joghurtdip",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Rinder-Köfte mit Kräuter-Bulgur und Joghurtdip",
   "description_de": "Saftige, mit Kreuzkümmel gewürzte Hackröllchen vom Rind auf Petersilien-Bulgur mit kühlem Skyr-Dip – orientalisches Meal-Prep-Essen.",
@@ -166,10 +166,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 575,
-    "protein_g": 50.7,
-    "carbs_g": 53.1,
-    "fat_g": 16.6
+    "kcal": 644,
+    "protein_g": 50.4,
+    "carbs_g": 52.9,
+    "fat_g": 23.4
   },
   "declared_diet": "omnivore",
   "declared_allergens": [
@@ -195,6 +195,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "3f39350fcfb58b1e77d66bfc2835acec8d7c490909f9ab3f6e4510818b6a7d7b"
+    "import_hash": "c027c341402ef96b909d31d66d48ac70695f9d139b499bffc617ecab0dced68e"
   }
 }
