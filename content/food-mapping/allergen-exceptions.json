@@ -1,0 +1,8 @@
+[
+  {
+    "food_id": "hartkaese-vegetarisch",
+    "rule": "animal_rennet",
+    "reason": "Eigener Katalogeintrag für vegetarischen Hartkäse italienischer Art mit mikrobiellem Lab. Die Wort-Regel greift nur, weil die Nährwert-Quelle „Parmesan“ heißt; Original-Parmesan bleibt mit tierischem Lab im Katalog (parmesan).",
+    "source": "Nährwerte: BLS 4.0 M306400 (Parmesan). Lab-Art: im Handel als „vegetarisch“ gekennzeichnete Hartkäse italienischer Art (mikrobielles Lab, Zutatenliste der Packung)."
+  }
+]
