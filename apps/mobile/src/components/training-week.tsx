@@ -962,20 +962,6 @@ function OpenBlock({
         title={W.sheet.title(weekdayShort(day.date), open.name_de)}
         meta={meta.join(' · ')}
       />
-      {/* Nährstoff-Timing: Uhrzeit an der Einheit (Essen rund ums Training richtet sich danach). */}
-      {movable && sessionRow !== null && day.date >= today ? (
-        <SessionTimeBlock
-          sessionId={open.sessionId}
-          startTime={sessionRow.start_time}
-          trainingTime={rows.nutritionSetup?.training_time ?? null}
-          onMessage={setTimeMessage}
-        />
-      ) : null}
-      {timeMessage ? (
-        <Notice tone={timeMessage.tone} testID="session-time-message">
-          {timeMessage.text}
-        </Notice>
-      ) : null}
       {open.missed && movable ? (
         <Notice tone="info" testID="plan-missed">
           {t.plan.missed}
@@ -1018,6 +1004,20 @@ function OpenBlock({
             ) : null}
           </>
         )
+      ) : null}
+      {/* Nährstoff-Timing: Uhrzeit an der Einheit – NACH „Jetzt starten“ (erster Knopf, 06.11.2026). */}
+      {movable && sessionRow !== null && day.date >= today ? (
+        <SessionTimeBlock
+          sessionId={open.sessionId}
+          startTime={sessionRow.start_time}
+          trainingTime={rows.nutritionSetup?.training_time ?? null}
+          onMessage={setTimeMessage}
+        />
+      ) : null}
+      {timeMessage ? (
+        <Notice tone={timeMessage.tone} testID="session-time-message">
+          {timeMessage.text}
+        </Notice>
       ) : null}
       {movable && targets.length > 0 ? (
         <View style={styles.block}>

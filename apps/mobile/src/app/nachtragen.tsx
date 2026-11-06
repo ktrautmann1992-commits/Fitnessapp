@@ -2,14 +2,14 @@ import {
   ENDURANCE_MODALITIES,
   type EnduranceModality,
   type PlannedSessionKind,
-  SESSION_LOG_LIMITS,
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LiveRegion } from '@/components/calendar';
+import { FreeExercisePicker, useFreeExerciseSelection } from '@/components/free-exercise-picker';
 import { Screen } from '@/components/screen';
 import {
   Body,
@@ -20,12 +20,8 @@ import {
   Heading,
   LoadingState,
   Notice,
-  OptionButton,
-  TextField,
 } from '@/components/ui';
-import { backfillDayFromRows, freeExerciseCandidates } from '@/data/backfill';
-import { newId } from '@/data/create-backend';
-import { createFreeDraft } from '@/data/workout-draft';
+import { backfillDayFromRows } from '@/data/backfill';
 import { startKind } from '@/data/workout-session';
 import { activePlan } from '@/data/training-plan';
 import { t } from '@/i18n';
@@ -34,6 +30,7 @@ import { dayLabel } from '@/lib/plan-format';
 import { isoDateParam } from '@/lib/route-param';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { useStartFreeSession } from '@/state/use-start-free';
 
 /**
  * „+ Einheit“ aus dem Kalender (docs/PLAN-AUSWERTUNG.md 4, Etappe A1b): für einen Tag (heute bis 14 Tage zurück)
@@ -50,22 +47,15 @@ export default function BackfillScreen() {
   const date = isoDateParam(params.date) ?? today;
   const [kind, setKind] = useState<PlannedSessionKind | null>(null);
   const [modality, setModality] = useState<EnduranceModality>('run');
-  const [query, setQuery] = useState('');
-  const [selected, setSelected] = useState<string[]>([]);
-  const [error, setError] = useState<string>();
-  const [busy, setBusy] = useState(false);
   const [live, setLive] = useState({ text: '', version: 0 });
   const announce = (text: string) => setLive((current) => ({ text, version: current.version + 1 }));
+  const { selected, toggle, error, setError, exercisesOf } = useFreeExerciseSelection(announce);
+  const freeStart = useStartFreeSession();
 
   const { ensureLibrary, library } = app;
   useEffect(() => {
     if (kind === 'strength') void ensureLibrary();
   }, [ensureLibrary, kind]);
-  const lib = library.kind === 'ready' ? library.library : null;
-  const candidates = useMemo(
-    () => (lib ? freeExerciseCandidates(lib.exercises, query, selected) : null),
-    [lib, query, selected],
-  );
 
   if (app.status.kind === 'loading') {
     return (
@@ -84,7 +74,6 @@ export default function BackfillScreen() {
     return <Redirect href={route as Href} />;
   }
   const rows = app.rows;
-  const ownerUserId = app.session.userId;
   const day = backfillDayFromRows(rows, date, today);
   const back = (
     <Button
@@ -93,59 +82,19 @@ export default function BackfillScreen() {
       onPress={() => (router.canGoBack() ? router.back() : router.replace('/kalender' as Href))}
     />
   );
-  const max = SESSION_LOG_LIMITS.exercisesPerSession.max;
-
-  function toggle(id: string, name: string) {
-    setError(undefined);
-    if (selected.includes(id)) {
-      setSelected((current) => current.filter((x) => x !== id));
-      announce(t.backfill.selected(selected.length - 1));
-      return;
-    }
-    if (selected.length >= max) {
-      const text = t.backfill.maxReached(max);
-      setError(text);
-      announce(text);
-      return;
-    }
-    setSelected((current) => [...current, id]);
-    announce(`${name}: ${t.backfill.selected(selected.length + 1)}`);
-  }
-
   async function startFree() {
     if (!kind) return;
-    const exercises =
-      kind === 'strength' && lib
-        ? selected.flatMap((id) => {
-            const exercise = lib.exercises.get(id);
-            return exercise ? [exercise] : [];
-          })
-        : [];
+    const exercises = kind === 'strength' ? exercisesOf(library) : [];
     if (kind === 'strength' && exercises.length === 0) {
       setError(t.backfill.chooseExercise);
       announce(t.backfill.chooseExercise);
       return;
     }
-    setBusy(true);
     setError(undefined);
-    try {
-      const draft = createFreeDraft({
-        ownerUserId,
-        kind,
-        modality,
-        exercises,
-        performedOn: date,
-        today,
-        now: new Date().toISOString(),
-        newId,
-      });
-      await app.saveDraft(draft);
-      router.replace(`/workout/${draft.key}` as Href);
-    } catch {
+    const ok = await freeStart.start({ kind, modality, exercises, performedOn: date });
+    if (!ok) {
       setError(t.backfill.saveFailed);
       announce(t.backfill.saveFailed);
-    } finally {
-      setBusy(false);
     }
   }
 
@@ -242,43 +191,7 @@ export default function BackfillScreen() {
                 />
               ) : null}
               {kind === 'strength' ? (
-                library.kind === 'missing' ? (
-                  <Notice tone="warning" testID="backfill-library-missing">
-                    {t.backfill.libraryMissing}
-                  </Notice>
-                ) : !candidates ? (
-                  <LoadingState label={t.backfill.libraryLoading} />
-                ) : (
-                  <View style={styles.section}>
-                    <TextField
-                      label={t.backfill.searchLabel}
-                      hint={t.backfill.searchHint}
-                      value={query}
-                      onChangeText={setQuery}
-                      testID="backfill-search"
-                    />
-                    <Body testID="backfill-selected">{t.backfill.selected(selected.length)}</Body>
-                    {candidates.items.length === 0 ? (
-                      <Body muted>{t.backfill.noResults}</Body>
-                    ) : null}
-                    {candidates.items.map((exercise) => {
-                      const isSelected = selected.includes(exercise.id);
-                      return (
-                        <OptionButton
-                          key={exercise.id}
-                          role="checkbox"
-                          label={exercise.name_de}
-                          selected={isSelected}
-                          accessibilityLabel={t.backfill.pickA11y(exercise.name_de, isSelected)}
-                          onPress={() => toggle(exercise.id, exercise.name_de)}
-                        />
-                      );
-                    })}
-                    {candidates.more > 0 ? (
-                      <Body muted>{t.backfill.moreResults(candidates.more)}</Body>
-                    ) : null}
-                  </View>
-                )
+                <FreeExercisePicker library={library} selected={selected} onToggle={toggle} />
               ) : null}
               <FieldError message={error} testID="backfill-error" />
               {kind !== null ? (
@@ -288,7 +201,7 @@ export default function BackfillScreen() {
                       ? t.backfill.startStrength(selected.length)
                       : t.backfill.startEndurance
                   }
-                  loading={busy}
+                  loading={freeStart.busy}
                   disabled={kind === 'strength' && library.kind === 'missing'}
                   onPress={() => void startFree()}
                   testID="backfill-start"
