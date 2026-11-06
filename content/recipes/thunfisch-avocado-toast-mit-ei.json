@@ -1,11 +1,9 @@
 {
   "id": "thunfisch-avocado-toast-mit-ei",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Thunfisch-Avocado-Toast mit Ei",
   "description_de": "Vollkorntoast mit cremiger Thunfisch-Quark-Creme, Avocado und gekochtem Ei – mediterran, sättigend und blitzschnell.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -112,6 +110,8 @@
   ],
   "tip_de": "Hart gekochte Eier für mehrere Tage vorkochen – sie halten im Kühlschrank bis zu einer Woche.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 10,
   "prep_minutes": 2,
   "cook_minutes": 8,
@@ -138,12 +138,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "867fab1c9cd36365fb053ad6e3ad5c222425ea3d4aaa8bebcba9d258560e66fa",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "867fab1c9cd36365fb053ad6e3ad5c222425ea3d4aaa8bebcba9d258560e66fa"
+    "import_assumptions_confirmed_by": null
   }
 }

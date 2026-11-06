@@ -1,11 +1,9 @@
 {
   "id": "zimt-griessbrei-mit-banane-und-ahornsirup",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Zimt-Grießbrei mit Banane und Ahornsirup",
   "description_de": "Warmer Grießbrei ist weich, ballaststoffarm und schnell verdaulich und bringt zusammen mit Banane und Ahornsirup viele Kohlenhydrate für den Start.",
-  "section_de": "Renntag-Frühstück (3 Std. vorher)",
-  "categories": ["schnell", "pre-workout", "wettkampf"],
   "meal_types": ["breakfast"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -73,6 +71,8 @@
   ],
   "tip_de": "Iss den Brei etwa 3 Stunden vor dem Start. Unterwegs im Hotel klappt er auch mit Instant-Grieß und heißem Wasser aus dem Wasserkocher.",
   "tags_de": ["Unter 10 Minuten", "Wettkampf"],
+  "section_de": "Renntag-Frühstück (3 Std. vorher)",
+  "categories": ["schnell", "pre-workout", "wettkampf"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -99,12 +99,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "8eecd010b6639dc456089bed39d35640cbcb5378abe278bf14461a3dc8cad78a",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8eecd010b6639dc456089bed39d35640cbcb5378abe278bf14461a3dc8cad78a"
+    "import_assumptions_confirmed_by": null
   }
 }

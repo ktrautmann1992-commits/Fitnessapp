@@ -1,11 +1,9 @@
 {
   "id": "zucchini-schiffchen-mit-spinat-huettenkaese-fuellung-und-mozzarella",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Zucchini-Schiffchen mit Spinat-Hüttenkäse-Füllung und Mozzarella",
   "description_de": "Ausgehöhlte Zucchinihälften mit einer cremigen Füllung aus Spinat, Hüttenkäse, Ei und Parmesan, unter goldbraun überbackenem Mozzarella – viel Eiweiß, wenig Fett.",
-  "section_de": "Hauptgerichte",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -138,6 +136,8 @@
   ],
   "tip_de": "Die Füllung wird fester, wenn du den Spinat gründlich ausdrückst. Statt Vollkornbrot passen 150 g Kartoffeln, die du vorher 10 Minuten im Korb garst.",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Hauptgerichte",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 30,
   "prep_minutes": 13,
   "cook_minutes": 17,
@@ -164,12 +164,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "5cb4ebaabf52649de58cd325b163aaaacc79ca5d5d70bf17401be80c20db3186",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "5cb4ebaabf52649de58cd325b163aaaacc79ca5d5d70bf17401be80c20db3186"
+    "import_assumptions_confirmed_by": null
   }
 }

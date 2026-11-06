@@ -1,11 +1,9 @@
 {
   "id": "tofu-scramble-mit-champignons-und-avocado",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Tofu-Scramble mit Champignons und Avocado",
   "description_de": "Würziges Rührei aus Tofu mit gebratenen Champignons, Spinat und Avocado – rein pflanzlich und mit über 30 g Eiweiß.",
-  "section_de": "Frühstück",
-  "categories": ["low-carb"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -99,6 +97,8 @@
     "Richte das Scramble an und lege die Avocado in Scheiben dazu."
   ],
   "tip_de": "Eine Prise Kala Namak (schwefliges Salz) statt normalem Salz gibt dem Tofu einen typischen Ei-Geschmack.",
+  "section_de": "Frühstück",
+  "categories": ["low-carb"],
   "total_minutes": 12,
   "prep_minutes": 5,
   "cook_minutes": 7,
@@ -125,12 +125,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "fd9bbd64ce63abd1cb14919e1aa52230186575ac3b36a6b2ffad878cf8526d90",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "fd9bbd64ce63abd1cb14919e1aa52230186575ac3b36a6b2ffad878cf8526d90"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "schoko-erdnuss-porridge",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Schoko-Erdnuss-Porridge",
   "description_de": "Warmer Proteinbrei mit Kakao, Banane und Erdnussmus – schmeckt wie Nachtisch.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "pre-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -82,6 +80,8 @@
   ],
   "tip_de": "Proteinpulver erst nach dem Kochen einrühren, sonst wird es klumpig.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "pre-workout"],
   "total_minutes": 10,
   "prep_minutes": 6,
   "cook_minutes": 4,
@@ -108,12 +108,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "1b880f442abb1682263d2559d8ccfd1778b48cdc76e6a228599bca5cc86c8e5d",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "1b880f442abb1682263d2559d8ccfd1778b48cdc76e6a228599bca5cc86c8e5d"
+    "import_assumptions_confirmed_by": null
   }
 }

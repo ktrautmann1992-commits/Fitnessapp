@@ -1,11 +1,9 @@
 {
   "id": "vollkorn-spaghetti-bolognese-mit-sojaschnetzeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Vollkorn-Spaghetti Bolognese mit Sojaschnetzeln",
   "description_de": "Der italienische Klassiker mit herzhafter Sojaschnetzel-Gemüse-Sauce – sättigend und ideal zum Vorkochen.",
-  "section_de": "Mittagessen",
-  "categories": ["post-workout", "meal-prep"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -138,6 +136,8 @@
     "Serviere die Spaghetti mit der Sauce und streue die Hefeflocken als Parmesan-Ersatz darüber."
   ],
   "tip_de": "Die Sauce lässt sich gut in 3- bis 4-facher Menge kochen und portionsweise einfrieren.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
   "total_minutes": 30,
   "prep_minutes": 3,
   "cook_minutes": 27,
@@ -164,12 +164,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "9b778fa1ef8c0956ba863bf335ad70419d9d9290bc86aa34d364a047b2e2ccd2",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "9b778fa1ef8c0956ba863bf335ad70419d9d9290bc86aa34d364a047b2e2ccd2"
+    "import_assumptions_confirmed_by": null
   }
 }

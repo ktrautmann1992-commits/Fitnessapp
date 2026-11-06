@@ -1,11 +1,9 @@
 {
   "id": "schweinefilet-souvlaki-mit-bauernsalat-und-tzatziki",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Schweinefilet-Souvlaki mit Bauernsalat und Tzatziki",
   "description_de": "Griechische Spieße aus mariniertem Schweinefilet mit Zitrone und Oregano, dazu Bulgur, Bauernsalat und Skyr-Tzatziki.",
-  "section_de": "Abendessen",
-  "categories": ["post-workout"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -146,6 +144,8 @@
     "Schneide restliche Gurke, Tomate und Zwiebel grob, zerbrösle den Feta darüber und serviere den Salat mit Spießen, Bulgur und Tzatziki."
   ],
   "tip_de": "Im Sommer die Spieße auf den Grill legen. Statt Bulgur passt ein kleines Vollkorn-Pita.",
+  "section_de": "Abendessen",
+  "categories": ["post-workout"],
   "total_minutes": 30,
   "prep_minutes": 12,
   "cook_minutes": 18,
@@ -172,12 +172,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "60c26e93e23bed124d5f529befb16fdfe2ad9930fa18f10c8eee86a3cc69b199",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "60c26e93e23bed124d5f529befb16fdfe2ad9930fa18f10c8eee86a3cc69b199"
+    "import_assumptions_confirmed_by": null
   }
 }

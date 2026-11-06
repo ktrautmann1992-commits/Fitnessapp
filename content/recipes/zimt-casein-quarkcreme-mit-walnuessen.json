@@ -1,11 +1,9 @@
 {
   "id": "zimt-casein-quarkcreme-mit-walnuessen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Zimt-Casein-Quarkcreme mit Walnüssen",
   "description_de": "Dicke Vanille-Quarkcreme mit Casein, Zimt und Walnüssen – sättigt lange und ist ideal als Spätsnack am Abend.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -63,6 +61,8 @@
   ],
   "tip_de": "Casein wird langsam verdaut und eignet sich deshalb gut vor dem Schlafengehen. Ohne Pulver: 200 g Magerquark und 1 TL Honig nehmen.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 3,
   "prep_minutes": 3,
   "cook_minutes": 0,
@@ -89,12 +89,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "4e3ac4491a56a3b8b745eba3623b5f22e8148d0e36992f4dae84ed9d12839c30",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "4e3ac4491a56a3b8b745eba3623b5f22e8148d0e36992f4dae84ed9d12839c30"
+    "import_assumptions_confirmed_by": null
   }
 }

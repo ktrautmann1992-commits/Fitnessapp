@@ -1,11 +1,9 @@
 {
   "id": "schoko-protein-tassenkuchen",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Schoko-Protein-Tassenkuchen",
   "description_de": "Saftiger Schoko-Kuchen aus der Tasse, in 2 Minuten in der Mikrowelle gebacken.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -82,6 +80,8 @@
   ],
   "tip_de": "Ohne Mikrowelle: im Backofen bei 180 °C Ober-/Unterhitze ca. 12 Minuten in einer Muffinform backen.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -108,12 +108,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "3c2dd7c722768923880b450c5d4bdf9fbd495e5b43bcdab342e3f684ec8a4084",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "3c2dd7c722768923880b450c5d4bdf9fbd495e5b43bcdab342e3f684ec8a4084"
+    "import_assumptions_confirmed_by": null
   }
 }

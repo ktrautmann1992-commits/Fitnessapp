@@ -1,11 +1,9 @@
 {
   "id": "spaghetti-pomodoro-mit-parmesan",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Spaghetti Pomodoro mit Parmesan",
   "description_de": "Eine große Portion helle Pasta mit schlichter Tomatensauce bringt über 100 g Kohlenhydrate bei wenig Fett und ist für die meisten Sportler gut verträglich.",
-  "section_de": "Carb-Loading (2 Tage vorher)",
-  "categories": ["wettkampf"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -100,6 +98,8 @@
   ],
   "tip_de": "Verzichte vor dem Rennen auf Zwiebeln und Knoblauch in der Sauce, wenn sie dir schwer im Magen liegen. Für eine vegane Variante lässt du den Parmesan weg.",
   "tags_de": ["Wettkampf"],
+  "section_de": "Carb-Loading (2 Tage vorher)",
+  "categories": ["wettkampf"],
   "total_minutes": 20,
   "prep_minutes": 2,
   "cook_minutes": 18,
@@ -126,12 +126,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "b697e19979308480423c501acc819571a4420003e1ea97f959d292fbd1a8b676",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "b697e19979308480423c501acc819571a4420003e1ea97f959d292fbd1a8b676"
+    "import_assumptions_confirmed_by": null
   }
 }

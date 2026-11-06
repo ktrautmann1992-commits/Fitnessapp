@@ -1,11 +1,9 @@
 {
   "id": "raeuchertofu-sticks-mit-paprika-und-tahin-dip",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Räuchertofu-Sticks mit Paprika und Tahin-Dip",
   "description_de": "Rauchige Tofustreifen und knackige Paprika zum Dippen in einen cremigen Sesam-Zitronen-Dip – ein herzhafter veganer Snack in 5 Minuten.",
-  "section_de": "Snack",
-  "categories": ["schnell", "low-carb"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -63,6 +61,8 @@
   ],
   "tip_de": "Der Dip dickt beim Rühren erst an – einfach esslöffelweise Wasser zugeben, bis er cremig ist.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell", "low-carb"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -89,12 +89,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "28904ac76282dc85c41fb07172aea2405f8c96e2c9f899b5a4bca92a9474d4a9",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "28904ac76282dc85c41fb07172aea2405f8c96e2c9f899b5a4bca92a9474d4a9"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "shakshuka-mit-rinderhack",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Shakshuka mit Rinderhack",
   "description_de": "Orientalisch gewürzte Tomaten-Paprika-Sauce mit Rinderhack, in der zwei Eier sanft garen – dazu Vollkornbrot zum Dippen.",
-  "section_de": "Frühstück",
-  "categories": [],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -121,6 +119,8 @@
     "Serviere die Shakshuka direkt aus der Pfanne mit dem Vollkornbrot."
   ],
   "tip_de": "Die Hack-Tomaten-Sauce lässt sich für 3 Tage vorkochen – morgens nur aufwärmen und die Eier darin garen.",
+  "section_de": "Frühstück",
+  "categories": [],
   "total_minutes": 25,
   "prep_minutes": 4,
   "cook_minutes": 21,
@@ -147,10 +147,11 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "4a2c21e427167838a9ef57fa1d08b50b51986330a1cf55a7081bf6bdff877159",
     "import_assumptions": [
       {
         "ingredient_index": 1,
@@ -160,7 +161,7 @@
         "reason_de": "Schritt 2 gart die Zutat durch: „Erhitze das Olivenöl in einer kleinen Pfanne bei mittlerer Hitze und brate das Rinderhack 3–4 Minuten krümelig an.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "4a2c21e427167838a9ef57fa1d08b50b51986330a1cf55a7081bf6bdff877159"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "6ab1ebadafb836bb"
   }
 }

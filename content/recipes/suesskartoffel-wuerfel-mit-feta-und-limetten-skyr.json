@@ -1,11 +1,9 @@
 {
   "id": "suesskartoffel-wuerfel-mit-feta-und-limetten-skyr",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Süßkartoffel-Würfel mit Feta und Limetten-Skyr",
   "description_de": "Rauchig gewürzte Süßkartoffelwürfel, außen gebräunt und innen weich, mit zerbröseltem Feta, Frühlingszwiebeln und einem frischen Limetten-Skyr.",
-  "section_de": "Beilagen & Gemüse",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -100,6 +98,8 @@
   ],
   "tip_de": "Gleich große Würfel garen gleichmäßig – kleine Ecken verbrennen sonst schneller. Als Hauptgericht mit 100 g Hähnchenbrust oder einem Spiegelei ergänzen.",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Beilagen & Gemüse",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 25,
   "prep_minutes": 4,
   "cook_minutes": 21,
@@ -126,12 +126,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "8303cbf1fb7a0a8c0eb66b88fbf8299d07856e732e1d8ae25e656cc8a96b6592",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8303cbf1fb7a0a8c0eb66b88fbf8299d07856e732e1d8ae25e656cc8a96b6592"
+    "import_assumptions_confirmed_by": null
   }
 }
