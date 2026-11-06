@@ -43,10 +43,10 @@ const deps = (r: TempRepo, tools = fakeTools(r.root)) => ({
 });
 
 const ALL_IDS =
-  'creatine, protein_powder, vitamin_d, omega3, caffeine, bcaa, glutamine, l_carnitine, cla, fat_burner, testo_booster, pre_workout, hmb, ashwagandha, collagen, multivitamin, iron, melatonin';
+  'creatine, protein_powder, vitamin_d, omega3, caffeine, beta_alanine, eaa, electrolytes, zinc, magnesium, bcaa, glutamine, l_carnitine, cla, fat_burner, testo_booster, pre_workout, hmb, ashwagandha, collagen, multivitamin, iron, melatonin';
 
 describe('content-review Art „ids“ mit Supplementen (SU3)', () => {
-  it('alle 18 per ID → ein Pull Request, Status published, Prüfer und Datum, Version bleibt', async () => {
+  it('alle 23 per ID → ein Pull Request, Status published, Prüfer und Datum, Version bleibt', async () => {
     repo = setup();
     const tools = fakeTools(repo.root);
     const result = await runContentReview({ ...INPUT, ids: ALL_IDS }, deps(repo, tools));
@@ -66,7 +66,7 @@ describe('content-review Art „ids“ mit Supplementen (SU3)', () => {
     }
     const body = tools.prBodies[0] ?? '';
     expect(body).toContain('## Freigabe Supplemente per ID');
-    expect(body).toContain('18 Supplemente · 18 werden freigegeben · 0 übersprungen.');
+    expect(body).toContain('23 Supplemente · 23 werden freigegeben · 0 übersprungen.');
     expect(body).toContain('`creatine_performance`');
     expect(body).toContain('Testphase – noch nicht fachlich geprüft');
     expect(body).toContain('So testest du es am Handy');
@@ -75,7 +75,7 @@ describe('content-review Art „ids“ mit Supplementen (SU3)', () => {
 
   it('Stichwort „supplemente“ = alle im Entwurf; mit Häkchen „fachlich geprüft“', async () => {
     repo = setup();
-    expect(draftSupplementIds(repo.root)).toHaveLength(18);
+    expect(draftSupplementIds(repo.root)).toHaveLength(23);
     const tools = fakeTools(repo.root);
     const result = await runContentReview(
       { ...INPUT, ids: 'Supplemente', expertReviewed: 'true', confirmAssumptions: 'true' },

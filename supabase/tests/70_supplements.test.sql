@@ -53,7 +53,8 @@ select is((select attgenerated::text from pg_attribute
            where attrelid = 'public.supplements'::regclass and attname = 'expert_reviewed'), 's',
   'expert_reviewed wird aus data berechnet (nicht beschreibbar)');
 select is(enum_range(null::public.supplement_id)::text[],
-  array['creatine', 'caffeine', 'protein_powder', 'vitamin_d', 'omega3'], 'Aufzählung supplement_id = SUPPLEMENT_IDS');
+  array['creatine', 'caffeine', 'protein_powder', 'vitamin_d', 'omega3',
+        'beta_alanine', 'eaa', 'electrolytes', 'zinc', 'magnesium'], 'Aufzählung supplement_id = SUPPLEMENT_IDS');
 select throws_ok($$ insert into public.supplements (id, version, status, name_de, evidence_level, category, data)
     values ('entwurf_x', 1, 'draft', 'Entwurf', 'a', 'sport', '{}') $$,
   '23514', null, 'Entwürfe nie in der Datenbank (CHECK)');

@@ -18,12 +18,17 @@ import {
   statusLabel,
   statusTone,
   SupplementRow,
+  SupplementVisibilityCard,
 } from '@/components/supplements';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { t } from '@/i18n';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
-import { useSupplementLibrary, useSupplements } from '@/state/use-supplements';
+import {
+  useSupplementLibrary,
+  useSupplements,
+  useSupplementsVisibility,
+} from '@/state/use-supplements';
 
 const SUPP = t.supplements;
 
@@ -42,6 +47,7 @@ export default function SupplementsScreen() {
   const app = useApp();
   const library = useSupplementLibrary();
   const view = useSupplements();
+  const visibility = useSupplementsVisibility(view);
   const [showC, setShowC] = useState(false);
   const [testNote, setTestNote] = useState(false);
 
@@ -70,6 +76,25 @@ export default function SupplementsScreen() {
     />
   );
   const open = (id: string) => router.push(`/supplemente/${encodeURIComponent(id)}` as Href);
+
+  // Ausgeblendet (06.11.2026): nur kurze Erklärung und der Schalter – keine Einordnung, keine Karten.
+  if (!visibility.loaded) {
+    return (
+      <Screen area="ernaehrung" icon="pill" title={SUPP.title} footer={back} testID="supplements">
+        <LoadingState />
+      </Screen>
+    );
+  }
+  if (!visibility.visible) {
+    return (
+      <Screen area="ernaehrung" icon="pill" title={SUPP.title} footer={back} testID="supplements">
+        <Notice title={SUPP.visibility.offTitle} titleAsHeader testID="supplements-hidden">
+          <Body>{SUPP.visibility.offText}</Body>
+        </Notice>
+        <SupplementVisibilityCard value={false} onChange={visibility.setVisible} />
+      </Screen>
+    );
+  }
 
   const header = (
     <>

@@ -19,6 +19,7 @@ import {
   fillSupplementPlaceholders,
   renderSupplementNotice,
   SUPPLEMENT_MANDATORY_SENTENCES_DE,
+  supplementLimitText,
   type SupplementNoticeKey,
 } from './notices';
 import { type SupplementTiming, supplementTiming } from './schedule';
@@ -224,13 +225,15 @@ export interface SupplementDetail {
   readonly choiceOutdated: boolean;
 }
 
-function fillHowTo(template: string | null, dose: string | null): string | null {
+function fillHowTo(template: string | null, dose: string | null, id: string): string | null {
   if (template === null) return null;
   if (template.includes('{dose}') && dose === null) return null;
+  const limit = supplementLimitText(id);
   try {
     return fillSupplementPlaceholders(template, {
       ...defaultPlaceholderValues(),
       ...(dose === null ? {} : { dose }),
+      ...(limit === null ? {} : { limit }),
     });
   } catch {
     return null;
@@ -281,7 +284,7 @@ export function supplementDetail(
       doseText: null,
       doseGeneral: false,
       timing: null,
-      howToDe: info.status === 'safety_info' ? fillHowTo(entry.how_to_de, null) : null,
+      howToDe: info.status === 'safety_info' ? fillHowTo(entry.how_to_de, null, id) : null,
       claims: [],
       notices: info.notices.map(render),
       reasonDe: null,
@@ -327,7 +330,11 @@ export function supplementDetail(
     doseText: dose?.text ?? null,
     doseGeneral: dose?.general ?? false,
     timing: dose === null ? null : supplementTiming(id),
-    howToDe: fillHowTo(entry.how_to_de, dose?.text ?? null),
+    // Ohne Einordnung „Nicht für dich“/„ab 18“ keine Anwendung – auch nicht ohne `{dose}` (Zink, Magnesium).
+    howToDe:
+      item.status === 'excluded' || item.status === 'adult_only'
+        ? null
+        : fillHowTo(entry.how_to_de, dose?.text ?? null, id),
     claims,
     notices: item.notices.map((key) => renderSupplementNotice(key)),
     reasonDe: null,

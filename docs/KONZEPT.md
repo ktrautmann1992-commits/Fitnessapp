@@ -930,6 +930,9 @@ Herz bzw. „Nie wieder“ gilt, bis die Person es zurücknimmt. Beide wirken ü
 - Umsetzung: `docs/PLAN-PHASE-6.md`. Texte liegen als Inhalte unter `content/supplements/<id>.json` (Name,
   Beschreibung, Anwendung mit Platzhaltern, IDs zugelassener Angaben, Quellen mit DOI/PMID, Grund bei „Nicht
   empfohlen“; Prüfregeln SK1–SK7). Dosis, Gegenanzeigen, Zeitpunkte und Pflichthinweise stehen nur im Core.
+- Seit 06.11.2026 (`docs/PLAN-SUPPLEMENTE-TRAINING.md`): Beta-Alanin, EAA, Elektrolyte, Zink, Magnesium (alle Stufe B,
+  Zink/Magnesium nie „passt“), Zeitpunkte rund um die Einheit („Supplemente heute“) und der Schalter
+  „Nahrungsergänzungsmittel anzeigen“ (Standard aus).
 
 ## 8. Zyklus-Modul (opt-in)
 - Zyklusstart, Länge, Symptome, Energie, Schlaf – täglich in Sekunden erfassbar

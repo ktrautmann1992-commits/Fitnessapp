@@ -18,7 +18,7 @@ describe('Beispiel-Empfehlungen Supplemente (CI-Zusammenfassung, Plan 6 Etappe S
     expect(row('Anna')).toContain('20 µg (800 IE) (Richtwert)');
     expect(row('Ben')).toContain('ab 18');
     expect(row('Clara')).toContain('nur BfR-Hinweis');
-    expect(row('Clara').match(/nicht für dich/g)).toHaveLength(4);
+    expect(row('Clara').match(/nicht für dich/g)).toHaveLength(9);
     expect(row('Emma')).toContain('≤ 120 mg/Einnahme, ≤ 220 mg/Tag, abends nicht');
     expect(row('Emma')).toContain('pflanzlich');
     expect(row('Felix')).toContain('Doping-Hinweis');

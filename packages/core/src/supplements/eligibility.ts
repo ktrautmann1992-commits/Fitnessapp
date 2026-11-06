@@ -48,6 +48,12 @@ export const SUPPLEMENT_EVIDENCE: Readonly<Record<RatedSupplementId, 'a' | 'b' |
   protein_powder: 'a',
   vitamin_d: 'b',
   omega3: 'b',
+  // 06.11.2026: alle fünf Stufe B – „passt“ nur unter Bedingung bzw. nie (Zink, Magnesium).
+  beta_alanine: 'b',
+  eaa: 'b',
+  electrolytes: 'b',
+  zinc: 'b',
+  magnesium: 'b',
 };
 
 /** Kategorien (Plan 3.2, 7.1; `diet_season` statt „Nährstofflücke“, Wächter K11). */
@@ -57,6 +63,11 @@ export const SUPPLEMENT_CATEGORIES = {
   vitamin_d: 'diet_season',
   omega3: 'diet_season',
   caffeine: 'safety_info',
+  beta_alanine: 'sport',
+  eaa: 'food',
+  electrolytes: 'sport',
+  zinc: 'diet_season',
+  magnesium: 'diet_season',
 } as const;
 
 /** Grund-Schlüssel (intern, für Tests und Erklärungen – der Bildschirm nennt nie den medizinischen Grund). */
@@ -79,6 +90,10 @@ export const SUPPLEMENT_REASONS = [
   'no_nutrition_targets',
   'info_by_rule',
   'no_weight',
+  // 06.11.2026
+  'not_plant_based',
+  'no_long_sessions',
+  'no_interval_sessions',
 ] as const;
 export type SupplementReason = (typeof SUPPLEMENT_REASONS)[number];
 
@@ -217,6 +232,42 @@ const FLAG_RULES: Readonly<
     medical_clearance: 'info_only',
     heart_rhythm: 'info_only',
   },
+  // 06.11.2026 (docs/PLAN-SUPPLEMENTE-TRAINING.md): streng – im Zweifel ärztlich abklären.
+  beta_alanine: {
+    pregnancy: 'excluded',
+    breastfeeding: 'excluded',
+    medication: 'excluded',
+    medical_clearance: 'excluded',
+    kidney: 'excluded',
+  },
+  eaa: {
+    pregnancy: 'excluded',
+    breastfeeding: 'excluded',
+    kidney: 'excluded',
+  },
+  // Natrium: Bluthochdruck-, Herz- und Nierenmedikamente, Herzrhythmus, Nieren → ärztlich abklären.
+  electrolytes: {
+    pregnancy: 'excluded',
+    breastfeeding: 'excluded',
+    medication: 'excluded',
+    medical_clearance: 'excluded',
+    kidney: 'excluded',
+    heart_rhythm: 'excluded',
+  },
+  // Wechselwirkungen mit Medikamenten (z. B. Antibiotika, Osteoporose-Mittel), Nieren.
+  zinc: {
+    pregnancy: 'excluded',
+    breastfeeding: 'excluded',
+    medication: 'excluded',
+    kidney: 'excluded',
+  },
+  magnesium: {
+    pregnancy: 'excluded',
+    breastfeeding: 'excluded',
+    medication: 'excluded',
+    kidney: 'excluded',
+    heart_rhythm: 'excluded',
+  },
 };
 
 /** Unter 18 (Tabelle 3.3): Kreatin „ab 18“, alles andere nur Info. */
@@ -225,6 +276,11 @@ const MINOR_STATUS: Readonly<Record<RatedSupplementId, SupplementStatus>> = {
   protein_powder: 'info_only',
   vitamin_d: 'info_only',
   omega3: 'info_only',
+  beta_alanine: 'adult_only',
+  eaa: 'info_only',
+  electrolytes: 'info_only',
+  zinc: 'info_only',
+  magnesium: 'info_only',
 };
 
 function goalFitsCreatine(inputs: SupplementInputs): boolean {
@@ -265,6 +321,29 @@ function positiveCondition(id: RatedSupplementId, context: Context): Candidate<S
       return avoidsFish(inputs)
         ? { status: 'recommended', reason: 'eats_fish' }
         : { status: 'info_only', reason: 'eats_fish' };
+    case 'beta_alanine':
+      // Nur bei kurzen, sehr intensiven Belastungen untersucht (Trexler 2015) → nur mit Intervallen im Plan.
+      return !SUPPLEMENT_RULES.betaAlanine.needsIntervals || inputs.hasIntervalSessions
+        ? { status: 'recommended', reason: 'no_interval_sessions' }
+        : { status: 'info_only', reason: 'no_interval_sessions' };
+    case 'eaa': {
+      // Wie Proteinpulver (Eiweiß-Lücke), zusätzlich nur bei veganer Ernährung (Plan: Essen und Shake zuerst).
+      if (!inputs.hasNutritionTargets)
+        return { status: 'info_only', reason: 'no_nutrition_targets' };
+      if (inputs.proteinGap === null) return { status: 'info_only', reason: 'no_protein_data' };
+      if (!inputs.proteinGap) return { status: 'info_only', reason: 'no_protein_gap' };
+      return !SUPPLEMENT_RULES.eaa.plantBasedOnly || inputs.dietType === 'vegan'
+        ? { status: 'recommended', reason: 'not_plant_based' }
+        : { status: 'info_only', reason: 'not_plant_based' };
+    }
+    case 'electrolytes':
+      return inputs.hasLongSessions === true
+        ? { status: 'recommended', reason: 'no_long_sessions' }
+        : { status: 'info_only', reason: 'no_long_sessions' };
+    case 'zinc':
+    case 'magnesium':
+      // Nie „passt“ – nur Info: sinnvoll nur bei ärztlich festgestelltem Bedarf (Blutwerte).
+      return { status: 'info_only', reason: 'info_by_rule' };
   }
 }
 
@@ -329,6 +408,25 @@ function rateSupplement(id: RatedSupplementId, context: Context): RatedSupplemen
         break;
       case 'omega3':
         if (avoidsFish(inputs)) notices.push('omega3_algae');
+        break;
+      case 'beta_alanine':
+        notices.push('beta_alanine_split', 'beta_alanine_tingling');
+        if (doping) notices.push('doping');
+        break;
+      case 'eaa':
+        notices.push('eaa_food_first');
+        if (doping) notices.push('doping');
+        break;
+      case 'electrolytes':
+        notices.push('electrolytes_long_sessions', 'electrolytes_drink', 'electrolytes_doctor');
+        if (doping) notices.push('doping');
+        break;
+      case 'zinc':
+        notices.push('blood_test', 'zinc_upper_limit', 'mineral_medication');
+        if (inputs.dietType !== 'omnivore') notices.push('zinc_plant');
+        break;
+      case 'magnesium':
+        notices.push('blood_test', 'magnesium_upper_limit', 'mineral_medication');
         break;
     }
   }

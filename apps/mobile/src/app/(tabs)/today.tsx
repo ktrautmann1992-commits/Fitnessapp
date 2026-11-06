@@ -16,6 +16,7 @@ import { Redirect, useFocusEffect, useLocalSearchParams, useRouter, type Href } 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
+import { TodaySupplementTiming } from '@/components/supplement-timing';
 import { CycleTodayCard } from '@/components/cycle-entry';
 import { RecoveryTodayCard } from '@/components/recovery';
 import {
@@ -1050,6 +1051,8 @@ export default function TodayScreen() {
         onStart={(id) => router.push(`/workout/${id}` as Href)}
         onView={(logId) => router.push(`/log/${logId}` as Href)}
       />
+      {/* Supplemente rund um die Einheit (06.11.2026) – nur an Trainingstagen und nur, wenn eingeschaltet. */}
+      <TodaySupplementTiming today={today} />
 
       {/* Einheit des gewählten Tages mit Übungen (Tauschen einzelner Übungen, Vorgaben) – Standard: heute. */}
       <View testID="today-detail" style={styles.detail}>

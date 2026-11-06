@@ -170,6 +170,11 @@ export const STORAGE_KEYS = {
    */
   trainingMealPrefs: 'fitnessapp.training-meal-prefs.v1',
   /**
+   * „Nahrungsergänzungsmittel anzeigen“ (06.11.2026, docs/PLAN-SUPPLEMENTE-TRAINING.md): an/aus oder noch nicht
+   * gewählt – nur dieses Gerät, keine Nutzerdaten (lib/supplement-prefs.ts).
+   */
+  supplementPrefs: 'fitnessapp.supplement-prefs.v1',
+  /**
    * Erinnerungen an Training, Essen und Trinken (docs/PLAN-ERINNERUNGEN.md, 29.10.2026): an/aus, Vorlauf, Essenszeiten,
    * Trink-Zeitfenster – nur dieses Gerät, keine Nutzerdaten (lib/reminder-prefs.ts). Abmelden setzt sie zurück.
    */

@@ -7,6 +7,33 @@
  */
 export const deSupplements = {
   title: 'Supplemente',
+  /** „Nahrungsergänzungsmittel anzeigen“ (06.11.2026, docs/PLAN-SUPPLEMENTE-TRAINING.md). */
+  visibility: {
+    title: 'Nahrungsergänzungsmittel anzeigen',
+    subtitle: 'Empfehlungen und Einnahmezeiten passend zu deinem Training – markenunabhängig',
+    offTitle: 'Supplemente sind ausgeblendet',
+    offText:
+      'Du siehst gerade keine Nahrungsergänzungsmittel – keine Karten auf „Heute“ und unter „Ernährung“. Schalte sie hier ein, wenn du sie sehen möchtest. Du kannst das jederzeit in den Einstellungen ändern.',
+    on: 'An',
+    off: 'Aus',
+  },
+  /** Zeitpunkte rund um die Einheit auf „Heute“ (06.11.2026). */
+  timingCard: {
+    title: 'Supplemente heute',
+    subtitle: (start: string | null) =>
+      start ? `Passend zu deiner Einheit um ${start}` : 'Passend zu deiner Einheit heute',
+    slots: {
+      no_caffeine: 'Koffein',
+      before: 'Vorher',
+      during: 'Während',
+      after: 'Danach',
+      with_meals: 'Zu den Mahlzeiten',
+      any_time: 'Uhrzeit egal',
+    },
+    caffeine: 'Koffein',
+    more: 'Mehr zu Supplementen',
+    hint: 'Nur Hinweise zum Zeitpunkt – kein Muss. Bei Vorerkrankungen, Medikamenten, in Schwangerschaft und Stillzeit vorher ärztlich abklären.',
+  },
   /** Knopf in „Ernährung“ und Kachel unter „Mehr → Essen“. */
   open: 'Supplemente',
   moreDetail: 'gute Studienlage',
@@ -71,11 +98,16 @@ export const deSupplements = {
     after_training: 'Nach dem Training',
     before_training: 'Vor dem Training',
     before_sleep: 'Vor dem Schlafen',
+    spread_with_meals: 'Über den Tag verteilt zu den Mahlzeiten',
+    around_training: 'Kurz vor oder nach dem Training',
+    during_long_training: 'Während langer Einheiten',
   },
   dose: (dose: string) => `Menge: ${dose}`,
   doseGeneral: (dose: string) => `Allgemeiner Richtwert: ${dose} am Tag`,
   dosePerDay: (dose: string) => `Menge: ${dose} am Tag`,
   dosePerServing: (dose: string) => `Menge: eine Portion mit ${dose} Eiweiß`,
+  dosePerServingPlain: (dose: string) => `Menge: ${dose} je Portion`,
+  dosePerHourSodium: (dose: string) => `Menge: ${dose} Natrium je Stunde`,
   taking: 'Nehme ich',
   declined: 'Nicht für mich',
   caffeineStatus: {

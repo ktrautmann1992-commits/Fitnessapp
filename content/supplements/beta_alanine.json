@@ -1,0 +1,48 @@
+{
+  "id": "beta_alanine",
+  "version": 1,
+  "status": "published",
+  "name_de": "Beta-Alanin",
+  "evidence_level": "b",
+  "category": "sport",
+  "summary_de": "Beta-Alanin ist eine Aminosäure, die dein Körper selbst bildet. Zusammen mit Histidin entsteht daraus Carnosin, das vor allem in den Muskeln vorkommt. Über Fleisch und Fisch nimmst du es auch mit dem Essen auf.",
+  "how_to_de": "Nimm {dose} am Tag, aufgeteilt in mehrere Portionen von höchstens {limit} zu den Mahlzeiten. Es kommt auf die regelmäßige Einnahme über mehrere Wochen an, die Uhrzeit ist egal.",
+  "claim_ids": [],
+  "sources": [
+    {
+      "authors": "Trexler ET, Smith-Ryan AE, Stout JR et al.",
+      "year": 2015,
+      "title": "International society of sports nutrition position stand: Beta-Alanine",
+      "journal": "J Int Soc Sports Nutr 12:30",
+      "doi": "10.1186/s12970-015-0090-y",
+      "pmid": "26175657"
+    },
+    {
+      "authors": "Saunders B, Elliott-Sale K, Artioli GG et al.",
+      "year": 2017,
+      "title": "Beta-alanine supplementation to improve exercise capacity and performance: a systematic review and meta-analysis",
+      "journal": "Br J Sports Med 51(8):658–669",
+      "doi": "10.1136/bjsports-2016-096396",
+      "pmid": "27797728"
+    },
+    {
+      "authors": "Maughan RJ, Burke LM, Dvorak J et al.",
+      "year": 2018,
+      "title": "IOC consensus statement: dietary supplements and the high-performance athlete",
+      "journal": "Br J Sports Med 52(7):439–455",
+      "doi": "10.1136/bjsports-2018-099027",
+      "pmid": null
+    }
+  ],
+  "not_recommended_reason_de": null,
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude (Sitzung)",
+    "batch_id": null,
+    "created_on": "2026-11-06",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
+    "review_note": null
+  }
+}

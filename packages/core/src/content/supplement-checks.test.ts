@@ -217,7 +217,7 @@ describe('SK2 – ID bekannt, keine Doppelung, Kategorie', () => {
   });
 
   it('unbekannte ID (auch Probelauf-ID) → SK2, sonst nichts Zusätzliches', () => {
-    expect(rules(creatine({ id: 'beta_alanine' }))).toContain('SK2');
+    expect(rules(creatine({ id: 'nitrate' }))).toContain('SK2');
     expect(rules(bcaa({ id: 'probelauf-bcaa' }))).toEqual(['SK2']);
   });
 

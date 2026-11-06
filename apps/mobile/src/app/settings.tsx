@@ -32,6 +32,8 @@ import { useToday } from '@/lib/use-today';
 import { planTitleText } from '@/lib/plan-title';
 import { useApp } from '@/state/app-state';
 import { WidgetSettings } from '@/widget/widget-settings';
+import { SupplementVisibilityCard } from '@/components/supplements';
+import { useSupplements, useSupplementsVisibility } from '@/state/use-supplements';
 import { healthConsentStatus, lastMeasurementDate } from '@/state/flow';
 
 /**
@@ -470,26 +472,10 @@ export default function SettingsScreen() {
             </>
           ) : null}
 
-          {/* Phase 6 SU4: Supplemente – „Meine Supplements“ und Supplement-Check ändern. */}
+          {/* Phase 6 SU4: Supplemente – „Meine Supplements“ und Supplement-Check ändern. 06.11.2026: Schalter
+              „Nahrungsergänzungsmittel anzeigen“ (Standard aus); die Links nur, wenn der Bereich an ist. */}
           <SectionLabel>{t.supplements.title}</SectionLabel>
-          <ListGroup>
-            <ListRow
-              icon="pill"
-              label={t.supplements.mine.title}
-              onPress={() => router.push('/supplemente' as Href)}
-              testID="settings-supplements"
-              last={healthStatus !== 'valid'}
-            />
-            {healthStatus === 'valid' ? (
-              <ListRow
-                icon="edit"
-                label={t.supplements.check.redo}
-                onPress={() => router.push('/supplemente/check' as Href)}
-                testID="settings-supplement-check"
-                last
-              />
-            ) : null}
-          </ListGroup>
+          <SupplementSettings healthValid={healthStatus === 'valid'} />
         </>
       ) : null}
 
@@ -704,5 +690,41 @@ export default function SettingsScreen() {
         testID={dialog ? `dialog-${dialog}` : undefined}
       />
     </Screen>
+  );
+}
+
+/** Supplemente in den Einstellungen: Schalter und – nur wenn an – „Meine Supplements“ und Supplement-Check. */
+function SupplementSettings({ healthValid }: { healthValid: boolean }) {
+  const router = useRouter();
+  const visibility = useSupplementsVisibility(useSupplements());
+  if (!visibility.loaded) return null;
+  return (
+    <>
+      <SupplementVisibilityCard
+        value={visibility.visible}
+        onChange={visibility.setVisible}
+        testID="settings-supplements-visibility"
+      />
+      {visibility.visible ? (
+        <ListGroup>
+          <ListRow
+            icon="pill"
+            label={t.supplements.mine.title}
+            onPress={() => router.push('/supplemente' as Href)}
+            testID="settings-supplements"
+            last={!healthValid}
+          />
+          {healthValid ? (
+            <ListRow
+              icon="edit"
+              label={t.supplements.check.redo}
+              onPress={() => router.push('/supplemente/check' as Href)}
+              testID="settings-supplement-check"
+              last
+            />
+          ) : null}
+        </ListGroup>
+      ) : null}
+    </>
   );
 }

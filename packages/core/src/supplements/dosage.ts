@@ -16,12 +16,12 @@ export interface SupplementDose {
   readonly min: number;
   readonly max: number;
   readonly unit: SupplementDoseUnit;
-  readonly per: 'day' | 'serving';
+  readonly per: 'day' | 'serving' | 'hour';
   /** true = allgemeiner Richtwert (keine persönliche Dosis), z. B. Vitamin D. */
   readonly general: boolean;
 }
 
-const range = (min: number, max: number, unit: SupplementDoseUnit, per: 'day' | 'serving') => ({
+const range = (min: number, max: number, unit: SupplementDoseUnit, per: SupplementDose['per']) => ({
   min,
   max,
   unit,
@@ -35,6 +35,10 @@ const range = (min: number, max: number, unit: SupplementDoseUnit, per: 'day' | 
  * - Proteinpulver (`recommended`): 20–30 g Eiweiß je Portion (mit `proteinServingG` auf das Tagesziel begrenzen).
  * - Vitamin D (`info_only`): allgemeiner Richtwert 20 µg (800 IE) täglich.
  * - Omega-3 (`recommended`): 250–500 mg EPA+DHA täglich.
+ * - Beta-Alanin (`recommended`): 3,2–6,4 g am Tag (in Teildosen, Hinweis `beta_alanine_split`).
+ * - EAA (`recommended`): 10–15 g je Portion.
+ * - Elektrolyte (`recommended`): 300–600 mg Natrium je Stunde einer langen Einheit.
+ * - Zink, Magnesium: nie eine Menge (nur Info mit Höchstmenge im Hinweis).
  */
 export function supplementDose(item: RatedSupplementResult): SupplementDose | null {
   if (item.id === 'vitamin_d') {
@@ -56,6 +60,21 @@ export function supplementDose(item: RatedSupplementResult): SupplementDose | nu
       const { min, max } = SUPPLEMENT_RULES.omega3.epaDhaMgPerDay;
       return range(min, max, 'mg', 'day');
     }
+    case 'beta_alanine': {
+      const { min, max } = SUPPLEMENT_RULES.betaAlanine.dailyG;
+      return range(min, max, 'g', 'day');
+    }
+    case 'eaa': {
+      const { min, max } = SUPPLEMENT_RULES.eaa.servingG;
+      return range(min, max, 'g', 'serving');
+    }
+    case 'electrolytes': {
+      const { min, max } = SUPPLEMENT_RULES.electrolytes.sodiumMgPerHour;
+      return range(min, max, 'mg', 'hour');
+    }
+    case 'zinc':
+    case 'magnesium':
+      return null;
   }
 }
 

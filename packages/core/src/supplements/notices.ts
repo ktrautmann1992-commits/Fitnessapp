@@ -38,6 +38,18 @@ export const SUPPLEMENT_NOTICE_KEYS = [
   'caffeine_test_new',
   'caffeine_pregnancy',
   'caffeine_excluded',
+  // 06.11.2026 (docs/PLAN-SUPPLEMENTE-TRAINING.md)
+  'beta_alanine_split',
+  'beta_alanine_tingling',
+  'eaa_food_first',
+  'electrolytes_long_sessions',
+  'electrolytes_drink',
+  'electrolytes_doctor',
+  'blood_test',
+  'zinc_upper_limit',
+  'zinc_plant',
+  'magnesium_upper_limit',
+  'mineral_medication',
 ] as const;
 export type SupplementNoticeKey = (typeof SUPPLEMENT_NOTICE_KEYS)[number];
 
@@ -50,6 +62,10 @@ export const SUPPLEMENT_PLACEHOLDERS = [
   'gain',
   'time',
   'age',
+  /** Höchstmenge je Hinweis (Zink, Magnesium, Beta-Alanin je Portion) – `noticeLimitText`. */
+  'limit',
+  /** Mindestdauer einer langen Einheit (Elektrolyte). */
+  'minutes',
 ] as const;
 export type SupplementPlaceholder = (typeof SUPPLEMENT_PLACEHOLDERS)[number];
 
@@ -83,7 +99,57 @@ export const SUPPLEMENT_NOTICE_TEXTS_DE: Readonly<Record<SupplementNoticeKey, st
   caffeine_test_new: 'Probiere nichts Neues an einem wichtigen Tag.',
   caffeine_pregnancy: 'In Schwangerschaft und Stillzeit höchstens {daily} Koffein am Tag.',
   caffeine_excluded: 'Bei deinen Angaben: Koffein vorher ärztlich abklären.',
+  beta_alanine_split:
+    'Verteile die Menge über den Tag, höchstens {limit} auf einmal, am besten zu den Mahlzeiten.',
+  beta_alanine_tingling:
+    'Ein Kribbeln auf der Haut kurz nach der Einnahme ist häufig und harmlos. Kleinere Portionen machen es seltener.',
+  eaa_food_first:
+    'Zuerst zählen Eiweiß aus dem Essen und ein Eiweiß-Shake. EAA sind nur eine Ergänzung dazu.',
+  electrolytes_long_sessions:
+    'Gedacht für Einheiten ab {minutes} oder wenn du stark schwitzt, zum Beispiel bei Hitze.',
+  electrolytes_drink: 'Trinke nach Durst – nicht mehr, als du ausschwitzt.',
+  electrolytes_doctor:
+    'Wenn du wenig Salz essen sollst oder Medikamente nimmst: vorher ärztlich abklären, ob zusätzliches Salz für dich passt.',
+  blood_test: 'Lass deine Blutwerte ärztlich prüfen.',
+  zinc_upper_limit:
+    'Aus Ergänzungen und Essen zusammen höchstens {limit} am Tag – auch ein Multivitamin zählt mit.',
+  zinc_plant:
+    'Bei pflanzlicher Ernährung nimmt dein Körper Zink oft schlechter auf. Vollkorn, Hülsenfrüchte und Nüsse liefern Zink.',
+  magnesium_upper_limit:
+    'Aus Ergänzungen höchstens {limit} am Tag. Größere Mengen können zu Durchfall führen.',
+  mineral_medication:
+    'Zink und Magnesium können die Aufnahme mancher Medikamente stören, zum Beispiel bestimmter Antibiotika oder Mittel für die Knochen. Frag in der Apotheke nach dem richtigen Abstand.',
 };
+
+/** Höchstmenge zum Platzhalter `{limit}` in der Anwendung (Inhalt) je Supplement, `null` = keine. */
+export function supplementLimitText(id: string): string | null {
+  switch (id) {
+    case 'beta_alanine':
+      return noticeLimitText('beta_alanine_split');
+    case 'zinc':
+      return noticeLimitText('zinc_upper_limit');
+    case 'magnesium':
+      return noticeLimitText('magnesium_upper_limit');
+    default:
+      return null;
+  }
+}
+
+/**
+ * Höchstmenge zum Platzhalter `{limit}` je Hinweis (aus `SUPPLEMENT_RULES`), `null` = Hinweis ohne `{limit}`.
+ */
+export function noticeLimitText(key: SupplementNoticeKey): string | null {
+  switch (key) {
+    case 'beta_alanine_split':
+      return `${formatGermanNumber(SUPPLEMENT_RULES.betaAlanine.maxSingleDoseG)} g`;
+    case 'zinc_upper_limit':
+      return `${formatGermanNumber(SUPPLEMENT_RULES.zinc.supplementMaxMg)} mg`;
+    case 'magnesium_upper_limit':
+      return `${formatGermanNumber(SUPPLEMENT_RULES.magnesium.supplementMaxMg)} mg`;
+    default:
+      return null;
+  }
+}
 
 /**
  * Pflichtsätze auf jeder Detailseite (Plan 3.8 Nr. 4, Art. 10 Abs. 2 VO (EG) 1924/2006 – juristisch prüfen, ob das
@@ -108,7 +174,7 @@ export function formatClockTime(minutes: number): string {
 
 /** Feste Werte für die Platzhalter (außer `{dose}`, das je Person gerechnet wird). */
 export function defaultPlaceholderValues(): Readonly<
-  Record<Exclude<SupplementPlaceholder, 'dose'>, string>
+  Record<Exclude<SupplementPlaceholder, 'dose' | 'limit'>, string>
 > {
   const gain = SUPPLEMENT_RULES.creatine.weightGainKg;
   const cups = CAFFEINE_LIMITS.generalCups;
@@ -119,6 +185,7 @@ export function defaultPlaceholderValues(): Readonly<
     cup: `${formatGermanNumber(CAFFEINE_LIMITS.cupFilterCoffeeMg)} mg`,
     time: formatClockTime(CAFFEINE_LIMITS.latestTrainingStartMinutes),
     age: formatGermanNumber(SUPPLEMENT_RULES.adultFromAge),
+    minutes: `${formatGermanNumber(SUPPLEMENT_RULES.electrolytes.minSessionMinutes)} Minuten`,
   };
 }
 
@@ -153,8 +220,10 @@ export function renderSupplementNotice(
       : values.dailyMg !== undefined && values.dailyMg < CAFFEINE_LIMITS.dailyMaxMg
         ? `${formatGermanNumber(values.dailyMg)} mg`
         : defaults.daily;
+  const limit = noticeLimitText(key);
   return fillSupplementPlaceholders(SUPPLEMENT_NOTICE_TEXTS_DE[key], {
     ...defaults,
+    ...(limit === null ? {} : { limit }),
     daily,
     ...(values.dose === undefined ? {} : { dose: values.dose }),
   });

@@ -15,6 +15,10 @@ export const SUPPLEMENT_TIMINGS = [
   'after_training',
   'before_sleep',
   'daily_with_meal',
+  // 06.11.2026 (docs/PLAN-SUPPLEMENTE-TRAINING.md)
+  'spread_with_meals',
+  'around_training',
+  'during_long_training',
 ] as const;
 export type SupplementTiming = (typeof SUPPLEMENT_TIMINGS)[number];
 
@@ -62,7 +66,28 @@ export function supplementScheduleAllowed(item: RatedSupplementResult): boolean 
  * Bedarf). Koffein bekommt nie einen Zeitpunkt (B2.3).
  */
 export function supplementTiming(id: RatedSupplementId): SupplementTiming {
-  return id === 'protein_powder' ? 'after_training' : 'daily_with_meal';
+  switch (id) {
+    case 'protein_powder':
+      return 'after_training';
+    case 'beta_alanine':
+      return 'spread_with_meals';
+    case 'eaa':
+      return 'around_training';
+    case 'electrolytes':
+      return 'during_long_training';
+    default:
+      return 'daily_with_meal';
+  }
+}
+
+/** Nur an Trainingstagen (an Ruhetagen deckt das Essen den Bedarf bzw. es gibt keine lange Einheit). */
+export function isTrainingOnlyTiming(timing: SupplementTiming): boolean {
+  return (
+    timing === 'after_training' ||
+    timing === 'before_training' ||
+    timing === 'around_training' ||
+    timing === 'during_long_training'
+  );
 }
 
 /**
@@ -87,7 +112,7 @@ export function supplementSchedule(
     date: day.date,
     entries: active.flatMap((item): ScheduleEntry[] => {
       const timing = supplementTiming(item.id);
-      if (timing === 'after_training') {
+      if (isTrainingOnlyTiming(timing)) {
         return day.hasTraining ? [{ supplementId: item.id, timing }] : [];
       }
       return [{ supplementId: item.id, timing }];

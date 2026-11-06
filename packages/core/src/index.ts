@@ -68,6 +68,7 @@ export * from './supplements/text-rules';
 export * from './supplements/user-data';
 export * from './supplements/profile-inputs';
 export * from './supplements/overview';
+export * from './supplements/training-timing';
 // Gewichtstrend, Monatsrückblick, Trainings im Handy-Kalender (docs/PLAN-TREND-RUECKBLICK-KALENDER.md).
 export * from './review';
 // Sportarten Stufe 1 · Etappe W: Wandern/Bergwandern (docs/PLAN-SPORTARTEN-STUFE-1.md 2.2).

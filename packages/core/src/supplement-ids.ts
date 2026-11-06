@@ -12,6 +12,12 @@ export const SUPPLEMENT_IDS = [
   'protein_powder',
   'vitamin_d',
   'omega3',
+  // Gründer-Entscheidung 06.11.2026 (docs/PLAN-SUPPLEMENTE-TRAINING.md): fünf weitere Einträge.
+  'beta_alanine',
+  'eaa',
+  'electrolytes',
+  'zinc',
+  'magnesium',
 ] as const;
 
 export type SupplementId = (typeof SUPPLEMENT_IDS)[number];
@@ -25,4 +31,9 @@ export const RATED_SUPPLEMENT_IDS = [
   'protein_powder',
   'vitamin_d',
   'omega3',
+  'beta_alanine',
+  'eaa',
+  'electrolytes',
+  'zinc',
+  'magnesium',
 ] as const satisfies readonly RatedSupplementId[];

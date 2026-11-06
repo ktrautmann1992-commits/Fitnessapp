@@ -1,0 +1,40 @@
+{
+  "id": "zinc",
+  "version": 1,
+  "status": "published",
+  "name_de": "Zink",
+  "evidence_level": "b",
+  "category": "diet_season",
+  "summary_de": "Zink ist ein Spurenelement. Es steckt in Fleisch, Käse, Vollkorn, Hülsenfrüchten und Nüssen. Bei abwechslungsreicher Ernährung bekommst du meist genug.",
+  "how_to_de": "Nur wenn deine Ärztin oder dein Arzt nach einem Bluttest dazu rät. Aus Ergänzungen und Essen zusammen höchstens {limit} am Tag.",
+  "claim_ids": [],
+  "sources": [
+    {
+      "authors": "EFSA Panel on Dietetic Products, Nutrition and Allergies (NDA)",
+      "year": 2014,
+      "title": "Scientific Opinion on Dietary Reference Values for zinc",
+      "journal": "EFSA Journal 12(10):3844",
+      "doi": "10.2903/j.efsa.2014.3844",
+      "pmid": null
+    },
+    {
+      "authors": "Maughan RJ, Burke LM, Dvorak J et al.",
+      "year": 2018,
+      "title": "IOC consensus statement: dietary supplements and the high-performance athlete",
+      "journal": "Br J Sports Med 52(7):439–455",
+      "doi": "10.1136/bjsports-2018-099027",
+      "pmid": null
+    }
+  ],
+  "not_recommended_reason_de": null,
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude (Sitzung)",
+    "batch_id": null,
+    "created_on": "2026-11-06",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
+    "review_note": null
+  }
+}
