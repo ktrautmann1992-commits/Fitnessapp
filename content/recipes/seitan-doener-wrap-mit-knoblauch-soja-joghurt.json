@@ -1,11 +1,9 @@
 {
   "id": "seitan-doener-wrap-mit-knoblauch-soja-joghurt",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Seitan-Döner-Wrap mit Knoblauch-Soja-Joghurt",
   "description_de": "Würzig gebratener Seitan im Vollkorn-Wrap mit knackigem Gemüse – eine kleine, sättigende Mahlzeit mit viel pflanzlichem Eiweiß und Kohlenhydraten zum Auffüllen der Speicher.",
-  "section_de": "Bis 2 Stunden danach",
-  "categories": ["post-workout"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -110,6 +108,8 @@
   ],
   "tip_de": "Fest in Alufolie oder Butterbrotpapier gewickelt hält der Wrap gekühlt bis zu 4 Stunden – ideal, wenn du nach dem Training noch unterwegs bist.",
   "tags_de": ["zum Mitnehmen"],
+  "section_de": "Bis 2 Stunden danach",
+  "categories": ["post-workout"],
   "total_minutes": 15,
   "prep_minutes": 10,
   "cook_minutes": 5,
@@ -144,12 +144,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "3eb7291ef0c832aa688cb05fa218e1cea731479963f65f48b90fc9963a8d1598",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "3eb7291ef0c832aa688cb05fa218e1cea731479963f65f48b90fc9963a8d1598"
+    "import_assumptions_confirmed_by": null
   }
 }

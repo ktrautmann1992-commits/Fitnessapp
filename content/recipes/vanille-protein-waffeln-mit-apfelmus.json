@@ -1,11 +1,9 @@
 {
   "id": "vanille-protein-waffeln-mit-apfelmus",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Vanille-Protein-Waffeln mit Apfelmus",
   "description_de": "Fluffige Dinkel-Hafer-Waffeln mit Vanille-Protein, dazu fruchtiges Apfelmus und Beeren.",
-  "section_de": "Frühstück",
-  "categories": ["pre-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -100,6 +98,8 @@
     "Serviere die Waffeln mit Apfelmus und den aufgetauten Beeren."
   ],
   "tip_de": "Ohne Proteinpulver: 30 g mehr Dinkelmehl verwenden und 150 g Sojaskyr als Topping dazu – so kommst du trotzdem auf gut 25 g Eiweiß.",
+  "section_de": "Frühstück",
+  "categories": ["pre-workout"],
   "total_minutes": 20,
   "prep_minutes": 16,
   "cook_minutes": 4,
@@ -126,12 +126,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "b23cf12a6a8d7869a13bf645a1e67c69f3fbd8fbbb18352721f604cc64abeb0b",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "b23cf12a6a8d7869a13bf645a1e67c69f3fbd8fbbb18352721f604cc64abeb0b"
+    "import_assumptions_confirmed_by": null
   }
 }

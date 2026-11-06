@@ -1,11 +1,9 @@
 {
   "id": "shakshuka-mit-tofu-und-weissen-bohnen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Shakshuka mit Tofu und weißen Bohnen",
   "description_de": "Würzige Tomaten-Paprika-Pfanne nach orientalischer Art, in der Tofuscheiben und weiße Bohnen sanft garen.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -154,6 +152,8 @@
     "Bestreue die Shakshuka mit Petersilie und serviere sie direkt aus der Pfanne mit dem Brot."
   ],
   "tip_de": "Ein Klecks Sojajoghurt mit Zitrone obendrauf rundet die Schärfe ab.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 25,
   "prep_minutes": 20,
   "cook_minutes": 5,
@@ -180,12 +180,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "be2b8dbc214ef0bc695dfedfa545a0bdc66a6bb82da811eb2246e95a35c5e4a5",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "be2b8dbc214ef0bc695dfedfa545a0bdc66a6bb82da811eb2246e95a35c5e4a5"
+    "import_assumptions_confirmed_by": null
   }
 }

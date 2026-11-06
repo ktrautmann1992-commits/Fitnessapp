@@ -1,11 +1,9 @@
 {
   "id": "rindfleisch-burger-light-mit-vollkornbroetchen-und-coleslaw",
   "version": 3,
-  "status": "draft",
+  "status": "published",
   "title_de": "Rindfleisch-Burger mit Vollkornbrötchen und Coleslaw",
   "description_de": "Saftiges Patty aus magerem Rinderhack mit hausgemachter Burgersauce aus Skyr und einem frischen Krautsalat – voller Burger-Genuss mit wenig Fett.",
-  "section_de": "Burger & Hot Dog",
-  "categories": ["fitness-fast-food"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -157,6 +155,8 @@
   ],
   "tip_de": "Drücke mit dem Daumen eine kleine Mulde in die Mitte des Pattys – so wölbt es sich beim Braten nicht. Hackfleisch immer vollständig durchgaren.",
   "tags_de": ["Fitness-Fast-Food"],
+  "section_de": "Burger & Hot Dog",
+  "categories": ["fitness-fast-food"],
   "total_minutes": 25,
   "prep_minutes": 21,
   "cook_minutes": 4,
@@ -192,12 +192,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "7476d275fd0532633908d145503bbcc6d3b4a7a4069d06b4912d1e847d48ce80",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "7476d275fd0532633908d145503bbcc6d3b4a7a4069d06b4912d1e847d48ce80"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "tempeh-gemuesepfanne-mit-cashews",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Tempeh-Gemüsepfanne mit Cashews",
   "description_de": "Schnelle Asia-Pfanne mit Tempeh, knackigem Gemüse, Ingwer und gerösteten Cashews.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -118,6 +116,8 @@
     "Rühre Ingwer, Knoblauch und Sojasauce unter, brate 1 Minute weiter und streue Frühlingszwiebeln, Cashews und Chili darüber."
   ],
   "tip_de": "Wer mehr Kohlenhydrate braucht, serviert die Pfanne mit 50 g Reis.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 15,
   "prep_minutes": 6,
   "cook_minutes": 9,
@@ -153,12 +153,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "f8e7848141e60bcb11ec92f4d5bce4ba2ad3b084e6ae265bd24d5f4abe95a285",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "f8e7848141e60bcb11ec92f4d5bce4ba2ad3b084e6ae265bd24d5f4abe95a285"
+    "import_assumptions_confirmed_by": null
   }
 }

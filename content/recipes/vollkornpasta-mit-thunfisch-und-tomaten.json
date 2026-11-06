@@ -1,11 +1,9 @@
 {
   "id": "vollkornpasta-mit-thunfisch-und-tomaten",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Vollkornpasta mit Thunfisch und Tomaten",
   "description_de": "Mediterrane Pasta mit Thunfisch, geschmorten Cherrytomaten, Zucchini, Rucola und Parmesan – schneller als jeder Lieferdienst.",
-  "section_de": "Mittagessen",
-  "categories": ["pre-workout"],
   "meal_types": ["main"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -120,6 +118,8 @@
     "Serviere die Pasta mit Rucola und Parmesan."
   ],
   "tip_de": "Ein Schuss Nudelwasser macht die Sauce sämiger, ganz ohne Sahne.",
+  "section_de": "Mittagessen",
+  "categories": ["pre-workout"],
   "total_minutes": 18,
   "prep_minutes": 2,
   "cook_minutes": 16,
@@ -146,12 +146,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "394a830a50730639dc2f483a260c193b6777a5f34b5b7ab1d8ad92629c4714f0",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "394a830a50730639dc2f483a260c193b6777a5f34b5b7ab1d8ad92629c4714f0"
+    "import_assumptions_confirmed_by": null
   }
 }

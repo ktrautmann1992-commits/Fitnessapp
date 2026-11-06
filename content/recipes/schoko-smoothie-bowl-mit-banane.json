@@ -1,11 +1,9 @@
 {
   "id": "schoko-smoothie-bowl-mit-banane",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Schoko-Smoothie-Bowl mit Banane",
   "description_de": "Dicke, eiskalte Schoko-Bowl aus gefrorener Banane, Skyr und Whey – wie Softeis zum Frühstück.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -82,6 +80,8 @@
   ],
   "tip_de": "Bananen in Scheiben einfrieren, dann hast du immer eine Basis parat. Ohne Pulver: 250 g Skyr und 1 TL Backkakao.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -108,12 +108,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "a54931e892899e61f81356123dd6a07b8d54984bd0389804d97fbab29fec33f3",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "a54931e892899e61f81356123dd6a07b8d54984bd0389804d97fbab29fec33f3"
+    "import_assumptions_confirmed_by": null
   }
 }

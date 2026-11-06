@@ -1,11 +1,9 @@
 {
   "id": "rinderhack-zucchini-pfanne-mit-feta",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Rinderhack-Zucchini-Pfanne mit Feta",
   "description_de": "Würziges Rinderhack mit Zucchini, Paprika und Tomaten aus einer Pfanne, mit zerbröseltem Feta – sättigend, schnell und ohne Beilage.",
-  "section_de": "Abendessen",
-  "categories": ["low-carb"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -101,6 +99,8 @@
     "Zerbrösle den Feta darüber und serviere die Pfanne heiß."
   ],
   "tip_de": "Mit Putenhack wird die Pfanne noch magerer – die Würzung bleibt gleich.",
+  "section_de": "Abendessen",
+  "categories": ["low-carb"],
   "total_minutes": 20,
   "prep_minutes": 10,
   "cook_minutes": 10,
@@ -127,12 +127,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "aee0dc1d952eb88f347b4d971ac16c05b537ffd78afb4555d5705537439af74d",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "aee0dc1d952eb88f347b4d971ac16c05b537ffd78afb4555d5705537439af74d"
+    "import_assumptions_confirmed_by": null
   }
 }

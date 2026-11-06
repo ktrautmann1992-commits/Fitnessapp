@@ -1,11 +1,9 @@
 {
   "id": "skyr-bowl-mit-himbeeren-walnuessen-und-leinsamen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Skyr-Bowl mit Himbeeren, Walnüssen und Leinsamen",
   "description_de": "Cremiger Skyr mit Himbeeren, knackigen Walnüssen und Leinsamen – ein schnelles Eiweißfrühstück ohne Haferflocken.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "low-carb"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -63,6 +61,8 @@
   ],
   "tip_de": "Gefrorene Himbeeren am Vorabend in den Kühlschrank stellen – morgens sind sie aufgetaut und saftig.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "low-carb"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -89,12 +89,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "63cdc8c704f19fbf36f1e4f49d768c163a9604c971c1254ea4c09824fc9ea8a0",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "63cdc8c704f19fbf36f1e4f49d768c163a9604c971c1254ea4c09824fc9ea8a0"
+    "import_assumptions_confirmed_by": null
   }
 }

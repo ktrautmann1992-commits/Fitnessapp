@@ -1,11 +1,9 @@
 {
   "id": "schnelles-seitan-paprika-gulasch-mit-express-reis",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Schnelles Seitan-Paprika-Gulasch mit Express-Reis",
   "description_de": "Ungarisch gewürzte Seitan-Streifen mit Paprika in Tomatensauce, dazu Reis aus dem Express-Beutel.",
-  "section_de": "Mittagessen",
-  "categories": ["schnell", "meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -91,6 +89,8 @@
   ],
   "tip_de": "Gleich die doppelte Menge machen: Das Gulasch hält sich 2 Tage im Kühlschrank und schmeckt aufgewärmt sogar besser.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Mittagessen",
+  "categories": ["schnell", "meal-prep"],
   "total_minutes": 10,
   "prep_minutes": 4,
   "cook_minutes": 6,
@@ -117,12 +117,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "54619ec83bbea1b467343d43655a7b92be3164637dbfc746c97ef175b550a6c3",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "54619ec83bbea1b467343d43655a7b92be3164637dbfc746c97ef175b550a6c3"
+    "import_assumptions_confirmed_by": null
   }
 }

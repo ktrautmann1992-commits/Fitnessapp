@@ -1,11 +1,9 @@
 {
   "id": "shakshuka-mit-putenbrust",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Shakshuka mit Putenbrust",
   "description_de": "Orientalisch gewürzte Tomaten-Paprika-Pfanne mit pochierten Eiern und angebratener Putenbrust.",
-  "section_de": "Frühstück",
-  "categories": [],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -130,6 +128,8 @@
     "Bestreue die Shakshuka mit Petersilie und iss das Brot dazu."
   ],
   "tip_de": "Am Wochenende ideal als Brunch – die Sauce lässt sich auch am Vortag vorkochen.",
+  "section_de": "Frühstück",
+  "categories": [],
   "total_minutes": 25,
   "prep_minutes": 19,
   "cook_minutes": 6,
@@ -156,12 +156,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "8e01a299fd78fa08a4e57da74c7f842ca0940cb189413da14c2232d3f3fb98d6",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8e01a299fd78fa08a4e57da74c7f842ca0940cb189413da14c2232d3f3fb98d6"
+    "import_assumptions_confirmed_by": null
   }
 }

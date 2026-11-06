@@ -1,11 +1,9 @@
 {
   "id": "zucchini-lasagne-mit-huettenkaese-und-spinat",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Zucchini-Lasagne mit Hüttenkäse und Spinat",
   "description_de": "Lasagne, bei der Zucchinischeiben die Nudelplatten ersetzen: mit Tomatensauce, Hüttenkäse, Spinat und überbackenem Mozzarella.",
-  "section_de": "Mittagessen",
-  "categories": ["low-carb"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -100,6 +98,8 @@
   ],
   "tip_de": "Das Salzen der Zucchini ist wichtig – sonst wird die Lasagne wässrig. Lässt sich gut für den nächsten Tag vorbereiten.",
   "tags_de": ["Vorbereiten"],
+  "section_de": "Mittagessen",
+  "categories": ["low-carb"],
   "total_minutes": 40,
   "prep_minutes": 15,
   "cook_minutes": 25,
@@ -126,12 +126,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "543ef5fb1daaf81389da6d3b50a1a168bf6a0ead553f8fa794e4cc6034ac1f98",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "543ef5fb1daaf81389da6d3b50a1a168bf6a0ead553f8fa794e4cc6034ac1f98"
+    "import_assumptions_confirmed_by": null
   }
 }

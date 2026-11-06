@@ -1,11 +1,9 @@
 {
   "id": "tempeh-gyros-wrap-mit-soja-tzatziki",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Tempeh-Gyros-Wrap mit Soja-Tzatziki",
   "description_de": "Würzig gebratener Tempeh im Gyros-Stil mit Rotkohl, Tomate und knoblauchigem Tzatziki.",
-  "section_de": "Mittagessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -127,6 +125,8 @@
     "Bestreiche den Wrap mit Tzatziki, belege ihn mit Tempeh, Rotkohl und Tomatenwürfeln und roll ihn auf."
   ],
   "tip_de": "Statt Tempeh funktioniert auch Seitan in Streifen.",
+  "section_de": "Mittagessen",
+  "categories": [],
   "total_minutes": 15,
   "prep_minutes": 10,
   "cook_minutes": 5,
@@ -153,12 +153,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "1f88507c9e6b37e02c44625181acedaffb41c29023c117ae204db6880b943ddc",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "1f88507c9e6b37e02c44625181acedaffb41c29023c117ae204db6880b943ddc"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "tomaten-gnocchi-mit-raeuchertofu-wuerfeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Tomaten-Gnocchi mit Räuchertofu-Würfeln",
   "description_de": "Weiche Gnocchi in leichter Tomatensauce bringen viel leicht verdauliche Stärke, kleine Räuchertofu-Würfel ergänzen pflanzliches Eiweiß.",
-  "section_de": "60–90 Min. vorher",
-  "categories": ["pre-workout"],
   "meal_types": ["snack"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -72,6 +70,8 @@
     "Gieße die Gnocchi ab und schwenke sie in der Sauce."
   ],
   "tip_de": "Ohne Öl angebraten liegt das Gericht leicht im Magen. Wer vor dem Training wenig Appetit hat, nimmt 130 g Gnocchi.",
+  "section_de": "60–90 Min. vorher",
+  "categories": ["pre-workout"],
   "total_minutes": 12,
   "prep_minutes": 6,
   "cook_minutes": 6,
@@ -98,12 +98,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "b3cfdb8e7a0990351a0c3ca5d6f916678b47d17c89453f8a02ea3bdf070722f0",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "b3cfdb8e7a0990351a0c3ca5d6f916678b47d17c89453f8a02ea3bdf070722f0"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "thai-gemuesepfanne-mit-tofu-und-erdnusssauce",
   "version": 3,
-  "status": "draft",
+  "status": "published",
   "title_de": "Thai-Gemüsepfanne mit Tofu & Erdnusssauce",
   "description_de": "Knackiges Pfannengemüse mit knusprigem Tofu und cremiger Erdnuss-Ingwer-Sauce – ganz ohne Beilage.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -127,6 +125,8 @@
     "Gib Tofu und Sauce zum Gemüse, schwenke alles 1 Minute durch und serviere sofort."
   ],
   "tip_de": "An Trainingstagen passt eine kleine Portion Reis oder Mie-Nudeln dazu.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 18,
   "prep_minutes": 7,
   "cook_minutes": 11,
@@ -161,12 +161,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "75bbe7159637ad107b69b4ac5ee74add904905a7707d7df0c48c7e5c0d3a0710",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "75bbe7159637ad107b69b4ac5ee74add904905a7707d7df0c48c7e5c0d3a0710"
+    "import_assumptions_confirmed_by": null
   }
 }
