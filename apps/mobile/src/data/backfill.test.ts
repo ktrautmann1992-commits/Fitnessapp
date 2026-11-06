@@ -594,3 +594,54 @@ describe('Wächter S1: Bibliothek ändert sich nach dem Anlegen des Entwurfs', (
     expect(refreshFreeDraft(planned, s.library.exercises, NOW).draft).toBe(planned);
   });
 });
+
+describe('Tagesziel: erledigte geplante Ausdauer zählt mit der tatsächlichen Dauer (06.11.2026)', () => {
+  it('geplant 66 min, gelaufen 162 min → 162 min; ohne Eintrag bleibt die geplante Dauer', async () => {
+    const s = await setup();
+    const base = s.rows.plannedSessions.find((p) => p.scheduled_on >= MONDAY);
+    if (!base) throw new Error('Keine geplante Einheit');
+    const done = {
+      ...base,
+      id: randomUUID(),
+      scheduled_on: MONDAY,
+      kind: 'endurance' as const,
+      endurance_modality: 'run' as const,
+      estimated_minutes: 66,
+      status: 'completed' as const,
+    };
+    const open = { ...done, id: randomUUID(), status: 'planned' as const };
+    const logBase = s.rows.sessionLogs[0];
+    const logId = randomUUID();
+    const rows: UserRows = {
+      ...s.rows,
+      plannedSessions: [...s.rows.plannedSessions, done, open],
+      sessionLogs: [
+        ...s.rows.sessionLogs,
+        {
+          ...(logBase ?? ({} as UserRows['sessionLogs'][number])),
+          id: logId,
+          planned_session_id: done.id,
+          kind: 'endurance',
+          status: 'completed',
+          is_free: false,
+          performed_on: MONDAY,
+        } as UserRows['sessionLogs'][number],
+      ],
+      cardioLogs: [
+        ...s.rows.cardioLogs,
+        {
+          ...(s.rows.cardioLogs[0] ?? ({} as UserRows['cardioLogs'][number])),
+          session_log_id: logId,
+          modality: 'run',
+          duration_s: 9720,
+          distance_m: 23881,
+        } as UserRows['cardioLogs'][number],
+      ],
+    };
+    const inputs = nutritionInputsFromRows(rows, VERSIONS, MONDAY, MONDAY);
+    const minutesOf = (id: string) =>
+      (inputs?.sessions ?? []).find((x) => x.sessionId === id)?.minutes;
+    expect(minutesOf(done.id)).toBe(162);
+    expect(minutesOf(open.id)).toBe(66);
+  });
+});
