@@ -1,11 +1,9 @@
 {
   "id": "puten-gyros-wrap-mit-tzatziki",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Puten-Gyros-Wrap mit Tzatziki",
   "description_de": "Griechisch gewürzte Putenstreifen mit Skyr-Tzatziki, Tomate und Gurke im Vollkorn-Wrap.",
-  "section_de": "Mittagessen",
-  "categories": ["post-workout"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -110,6 +108,8 @@
     "Erwärme die Wraps kurz in der Pfanne, bestreiche sie mit Tzatziki, belege sie mit Fleisch und Gemüse und rolle sie auf."
   ],
   "tip_de": "Fleisch und Tzatziki getrennt verpacken – so wird der Wrap im Büro nicht matschig.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
   "total_minutes": 15,
   "prep_minutes": 9,
   "cook_minutes": 6,
@@ -145,12 +145,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "3d341a1ef4158ecfa2f0c60dbbe4f9aef5297e47eb4a02541c23c45de695de76",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "3d341a1ef4158ecfa2f0c60dbbe4f9aef5297e47eb4a02541c23c45de695de76"
+    "import_assumptions_confirmed_by": null
   }
 }

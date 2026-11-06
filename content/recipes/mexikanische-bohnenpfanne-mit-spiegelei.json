@@ -1,11 +1,9 @@
 {
   "id": "mexikanische-bohnenpfanne-mit-spiegelei",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Mexikanische Bohnenpfanne mit Spiegelei",
   "description_de": "Schnelle Pfanne aus Kidneybohnen, Mais, Paprika und Tomaten mit zwei Spiegeleiern und Avocado.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -137,6 +135,8 @@
     "Belege die Pfanne mit Avocadoscheiben und iss direkt."
   ],
   "tip_de": "Ein Klecks Skyr obendrauf ersetzt saure Sahne und bringt extra Eiweiß.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 15,
   "prep_minutes": 7,
   "cook_minutes": 8,
@@ -163,12 +163,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "8fef8b529b42a44185d377d7b2a9bba47fe5d8f90ce396e5f7a87ee449f50209",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8fef8b529b42a44185d377d7b2a9bba47fe5d8f90ce396e5f7a87ee449f50209"
+    "import_assumptions_confirmed_by": null
   }
 }

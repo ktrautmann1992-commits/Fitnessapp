@@ -1,11 +1,9 @@
 {
   "id": "protein-griessbrei-mit-zimtaepfeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Protein-Grießbrei mit Zimtäpfeln",
   "description_de": "Cremiger Milchgrieß wie bei Oma, mit Vanille-Whey verfeinert und mit warmen Zimtäpfeln serviert.",
-  "section_de": "Frühstück",
-  "categories": ["pre-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -81,6 +79,8 @@
     "Füll den Brei in eine Schale, gib die Zimtäpfel darüber und streu die Mandeln darauf."
   ],
   "tip_de": "Ohne Pulver: Grieß mit 200 ml Milch kochen und danach 100 g Magerquark unterrühren.",
+  "section_de": "Frühstück",
+  "categories": ["pre-workout"],
   "total_minutes": 12,
   "prep_minutes": 4,
   "cook_minutes": 8,
@@ -107,12 +107,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "e54b9161a93ef6da82d54a466f91ff10220b3bcc7c5d14ab3fe5249b95572a62",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "e54b9161a93ef6da82d54a466f91ff10220b3bcc7c5d14ab3fe5249b95572a62"
+    "import_assumptions_confirmed_by": null
   }
 }

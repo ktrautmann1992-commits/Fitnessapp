@@ -1,11 +1,9 @@
 {
   "id": "kraeuter-schweinefilet-medaillons-mit-knoblauch-kartoffeln-und-honig-moehren",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kräuter-Schweinefilet-Medaillons mit Knoblauch-Kartoffeln und Honig-Möhren",
   "description_de": "Mageres Schweinefilet mit Rosmarin-Kruste, außen gebräunt und innen saftig, dazu knusprige Kartoffelwürfel, glasierte Möhren und Schnittlauchquark – ein Sonntagsessen aus einem Korb.",
-  "section_de": "Hauptgerichte",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -129,6 +127,8 @@
   ],
   "tip_de": "Ein Fleischthermometer nimmt das Raten ab: Medaillons gleich dick schneiden, dann garen sie gleichmäßig. Statt Schweinefilet passen auch Putenbrust-Medaillons (dann Kerntemperatur mindestens 74 °C).",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Hauptgerichte",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 35,
   "prep_minutes": 1,
   "cook_minutes": 34,
@@ -155,12 +155,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "c9516af4522a75aeb6f39f22ea954d242779591e4619110683d9763a84524e82",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "c9516af4522a75aeb6f39f22ea954d242779591e4619110683d9763a84524e82"
+    "import_assumptions_confirmed_by": null
   }
 }

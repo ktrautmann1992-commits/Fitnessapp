@@ -1,11 +1,9 @@
 {
   "id": "linsen-bolognese-mit-parmesan",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Linsen-Bolognese mit Parmesan",
   "description_de": "Herzhafte Bolognese aus roten Linsen und Gemüse zu Vollkornnudeln, mit frisch geriebenem Parmesan.",
-  "section_de": "Mittagessen",
-  "categories": ["post-workout", "meal-prep"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -127,6 +125,8 @@
     "Richte die Nudeln mit der Linsen-Bolognese an und streue den Parmesan darüber."
   ],
   "tip_de": "Die Sauce lässt sich in mehrfacher Menge kochen und portionsweise einfrieren.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
   "total_minutes": 30,
   "prep_minutes": 1,
   "cook_minutes": 29,
@@ -153,12 +153,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "951199921b1de3a3d61dd7312d2bb792f1339ec8ffa69adc07c7301d11bc6327",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "951199921b1de3a3d61dd7312d2bb792f1339ec8ffa69adc07c7301d11bc6327"
+    "import_assumptions_confirmed_by": null
   }
 }

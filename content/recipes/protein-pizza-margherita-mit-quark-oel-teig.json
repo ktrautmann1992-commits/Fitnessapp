@@ -1,11 +1,9 @@
 {
   "id": "protein-pizza-margherita-mit-quark-oel-teig",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Protein-Pizza Margherita mit Quark-Öl-Teig",
   "description_de": "Dünne, knusprige Margherita mit einem schnellen Teig ohne Hefe, bei der Magerquark im Boden und leichter Mozzarella für reichlich Eiweiß sorgen.",
-  "section_de": "Pizza & Flammkuchen",
-  "categories": ["fitness-fast-food"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -120,6 +118,8 @@
   ],
   "tip_de": "Der Quark-Öl-Teig lässt sich vorbereiten: in Frischhaltefolie hält er sich 1 Tag im Kühlschrank. Für extra Knusprigkeit den Boden 4 Minuten ohne Belag vorbacken.",
   "tags_de": ["Fitness-Fast-Food"],
+  "section_de": "Pizza & Flammkuchen",
+  "categories": ["fitness-fast-food"],
   "total_minutes": 30,
   "prep_minutes": 18,
   "cook_minutes": 12,
@@ -146,12 +146,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "7391e7ddb5055bce345be3ef2844e768b18b631b2c29ee701a8984edeb3cd98c",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "7391e7ddb5055bce345be3ef2844e768b18b631b2c29ee701a8984edeb3cd98c"
+    "import_assumptions_confirmed_by": null
   }
 }

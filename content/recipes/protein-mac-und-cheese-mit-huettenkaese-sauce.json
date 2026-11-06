@@ -1,11 +1,9 @@
 {
   "id": "protein-mac-und-cheese-mit-huettenkaese-sauce",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Protein-Mac-&-Cheese mit Hüttenkäse-Sauce",
   "description_de": "Cremige Käsenudeln, bei denen pürierter Hüttenkäse die Sahnesauce ersetzt – Comfort Food mit viel Eiweiß und Brokkoli als Extra.",
-  "section_de": "Klassiker",
-  "categories": ["fitness-fast-food"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -119,6 +117,8 @@
   ],
   "tip_de": "Für eine Kruste wie aus dem Diner: in eine kleine Auflaufform füllen und 5 Minuten bei 220 °C Oberhitze/Grill überbacken. Wer mag, gibt eine Prise geräuchertes Paprikapulver für ein rauchiges Aroma dazu.",
   "tags_de": ["Fitness-Fast-Food"],
+  "section_de": "Klassiker",
+  "categories": ["fitness-fast-food"],
   "total_minutes": 20,
   "prep_minutes": 3,
   "cook_minutes": 17,
@@ -145,12 +145,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "9b7f73d96bdb0a6b402e389c41c6fcbaeeacb535258d61fa364c97a040d9026d",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "9b7f73d96bdb0a6b402e389c41c6fcbaeeacb535258d61fa364c97a040d9026d"
+    "import_assumptions_confirmed_by": null
   }
 }

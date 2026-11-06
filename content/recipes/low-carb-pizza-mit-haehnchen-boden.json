@@ -1,11 +1,9 @@
 {
   "id": "low-carb-pizza-mit-haehnchen-boden",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Pizza mit Hähnchen-Boden",
   "description_de": "Ein Boden aus fein gehackter Hähnchenbrust, Ei und Parmesan ersetzt den Teig – das liefert enorm viel Eiweiß bei wenig Kohlenhydraten.",
-  "section_de": "Pizza & Flammkuchen",
-  "categories": ["fitness-fast-food"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -140,6 +138,8 @@
   ],
   "tip_de": "Den Boden immer vollständig vorbacken – rohes Geflügel muss komplett durchgaren, bevor der Belag draufkommt. Bretter und Messer nach dem rohen Hähnchen gründlich heiß abwaschen.",
   "tags_de": ["Fitness-Fast-Food"],
+  "section_de": "Pizza & Flammkuchen",
+  "categories": ["fitness-fast-food"],
   "total_minutes": 40,
   "prep_minutes": 15,
   "cook_minutes": 25,
@@ -174,12 +174,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "1cc9f0f3765b17a969e557a30ae5f646ca0db6cc5d37c7d711c1aa7c93d82409",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "1cc9f0f3765b17a969e557a30ae5f646ca0db6cc5d37c7d711c1aa7c93d82409"
+    "import_assumptions_confirmed_by": null
   }
 }

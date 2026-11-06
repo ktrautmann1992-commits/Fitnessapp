@@ -1,11 +1,9 @@
 {
   "id": "mediterraner-ofen-seelachs-mit-kartoffeln-und-feta",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Mediterraner Ofen-Seelachs mit Kartoffeln und Feta",
   "description_de": "Seelachs auf buntem Blechgemüse mit Kartoffelspalten, Oregano und Zitrone, mit Feta überbacken.",
-  "section_de": "Mittagessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -137,6 +135,8 @@
     "Gare alles noch 10–12 Minuten, bis der Fisch innen glasig-weiß ist und sich leicht zerteilen lässt."
   ],
   "tip_de": "Statt Seelachs funktioniert auch Kabeljau oder Rotbarsch. Den Fisch über Nacht im Kühlschrank auftauen.",
+  "section_de": "Mittagessen",
+  "categories": [],
   "total_minutes": 40,
   "prep_minutes": 3,
   "cook_minutes": 37,
@@ -163,12 +163,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "6650cdb496f2cdb577f494393b32bf38291f5b5eee14ea3921c3b7c5cf77ae1c",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "6650cdb496f2cdb577f494393b32bf38291f5b5eee14ea3921c3b7c5cf77ae1c"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "putenbrust-suesskartoffel-pfanne-mit-brokkoli",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Putenbrust-Süßkartoffel-Pfanne mit Brokkoli",
   "description_de": "Mageres Putenfleisch mit Süßkartoffel und Brokkoli aus einer Pfanne – eine warme, ausgewogene Mahlzeit mit viel Eiweiß und Kohlenhydraten für die Regeneration.",
-  "section_de": "Bis 2 Stunden danach",
-  "categories": ["post-workout", "meal-prep"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -101,6 +99,8 @@
     "Mische alles, würze mit Paprikapulver, Kreuzkümmel, Salz und Pfeffer."
   ],
   "tip_de": "Lässt sich gut für 2–3 Tage vorkochen. Wer direkt nach dem Training schon einen Shake hatte, isst diese Pfanne gut 1–2 Stunden später als richtige Mahlzeit.",
+  "section_de": "Bis 2 Stunden danach",
+  "categories": ["post-workout", "meal-prep"],
   "total_minutes": 20,
   "prep_minutes": 5,
   "cook_minutes": 15,
@@ -120,17 +120,18 @@
   "declared_diet": "omnivore",
   "declared_allergens": ["poultry"],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "4b198cd6a883bdc3486ce0a2f29a777a0747eff2282a744b5ef1d2550dd130ce",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -140,7 +141,7 @@
         "reason_de": "Schritt 4 gart die Zutat durch: „Schneide die Putenbrust in Streifen und brate sie in einer zweiten Pfanne im restlichen Öl bei hoher Hitze 4–5 Minuten durch.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "4b198cd6a883bdc3486ce0a2f29a777a0747eff2282a744b5ef1d2550dd130ce"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "faf30a7a62150274"
   }
 }

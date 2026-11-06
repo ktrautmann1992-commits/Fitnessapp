@@ -1,11 +1,9 @@
 {
   "id": "lachs-mit-kraeuter-panko-kruste-ofengemuese-und-couscous",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Lachs mit Kräuter-Panko-Kruste, Ofengemüse und Couscous",
   "description_de": "Saftiger Lachs unter einer knusprigen Senf-Kräuter-Kruste, dazu geröstete Zucchini und Paprika – die Kruste wird in der Heißluft goldbraun, ohne dass du extra Fett brauchst.",
-  "section_de": "Hauptgerichte",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -148,6 +146,8 @@
   ],
   "tip_de": "Wenn die Kruste zu schnell bräunt, lege für die letzten Minuten ein kleines Stück Alufolie locker darüber. Statt Couscous passt auch Express-Reis.",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Hauptgerichte",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 25,
   "prep_minutes": 3,
   "cook_minutes": 22,
@@ -167,17 +167,18 @@
   "declared_diet": "omnivore",
   "declared_allergens": ["gluten", "dairy", "lactose", "fish", "mustard"],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "bbbcc675a6bb73346d5f818d9937498a2069c8922ef0433c097aded36e573abd",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -187,7 +188,7 @@
         "reason_de": "Schritt 4 gart die Zutat durch: „Schiebe das Gemüse an den Rand, lege den Lachs mit der Kruste nach oben in die Mitte und gare alles bei 180 °C weitere 8–10 Minuten, ohne den Lachs zu wenden. Er ist fertig, wenn er sich leicht zerpf…“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "bbbcc675a6bb73346d5f818d9937498a2069c8922ef0433c097aded36e573abd"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "2c920356a3877a4b"
   }
 }

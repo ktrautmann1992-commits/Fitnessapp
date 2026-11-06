@@ -1,11 +1,9 @@
 {
   "id": "protein-bananenbrot-mit-skyr-und-heidelbeeren",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Protein-Bananenbrot mit Skyr und Heidelbeeren",
   "description_de": "Saftiges Bananenbrot aus Haferflocken und Quark, gesüßt nur mit Banane, dazu Skyr mit Beeren.",
-  "section_de": "Frühstück",
-  "categories": ["meal-prep"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 5,
@@ -113,6 +111,8 @@
   "tip_de": "Das Bananenbrot hält gut verpackt 4–5 Tage im Kühlschrank und lässt sich scheibenweise einfrieren (bis 2 Monate); einzelne Scheiben kannst du direkt toasten. Skyr mit Beeren hält bis zum Mindesthaltbarkeitsdatum des Skyrs.",
   "tags_de": ["zum Mitnehmen"],
   "meal_prep_plan_id": "ohne-schwein",
+  "section_de": "Frühstück",
+  "categories": ["meal-prep"],
   "total_minutes": 15,
   "prep_minutes": 1,
   "cook_minutes": 14,
@@ -139,12 +139,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "185df3d076e05043644be5496255275fd60cb1fd6fe986a1d0b65cf4bd75ee2b",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "185df3d076e05043644be5496255275fd60cb1fd6fe986a1d0b65cf4bd75ee2b"
+    "import_assumptions_confirmed_by": null
   }
 }

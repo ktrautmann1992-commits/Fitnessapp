@@ -1,11 +1,9 @@
 {
   "id": "kichererbsen-avocado-stulle-mit-raeuchertofu",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kichererbsen-Avocado-Stulle mit Räuchertofu",
   "description_de": "Herzhaftes Vollkornbrot mit zerdrückten Kichererbsen, Avocado und knusprigem Räuchertofu.",
-  "section_de": "Frühstück",
-  "categories": ["schnell"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -101,6 +99,8 @@
   ],
   "tip_de": "Die Kichererbsencreme hält sich mit etwas mehr Zitronensaft 2 Tage im Kühlschrank.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
   "total_minutes": 10,
   "prep_minutes": 8,
   "cook_minutes": 2,
@@ -127,12 +127,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "21ede2c9f73c93b57f446e8831b8c101fec54aad2f083fc0225d8716cfe18212",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "21ede2c9f73c93b57f446e8831b8c101fec54aad2f083fc0225d8716cfe18212"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "ingwer-gemuesesuppe-mit-tofu-und-reisnudeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Ingwer-Gemüsesuppe mit Tofu und Reisnudeln",
   "description_de": "Leichte, wärmende Asia-Suppe mit viel Gemüse, Edamame, Tofu und Reisnudeln in einer würzigen Ingwerbrühe.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -145,6 +143,8 @@
     "Schmecke mit Sesamöl, Limettensaft und Chiliflocken ab und bestreue die Suppe mit Frühlingszwiebelringen."
   ],
   "tip_de": "Statt Brokkoli passt auch Pak Choi oder Chinakohl – einfach in den letzten 2 Minuten mitgaren.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 18,
   "prep_minutes": 14,
   "cook_minutes": 4,
@@ -181,12 +181,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "cd69f7625967f993fb9b101b16ceefa4639ebd0fe54577fca34da581db334181",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "cd69f7625967f993fb9b101b16ceefa4639ebd0fe54577fca34da581db334181"
+    "import_assumptions_confirmed_by": null
   }
 }

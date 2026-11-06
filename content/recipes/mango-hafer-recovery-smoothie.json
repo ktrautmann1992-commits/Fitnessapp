@@ -1,11 +1,9 @@
 {
   "id": "mango-hafer-recovery-smoothie",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Mango-Hafer-Recovery-Smoothie",
   "description_de": "Fruchtiger Smoothie aus Banane, Mango, Hafer und Sojadrink mit pflanzlichem Protein – schnell getrunken, füllt Speicher und Flüssigkeit nach dem Ausdauertraining auf.",
-  "section_de": "Nach der Einheit",
-  "categories": ["schnell", "post-workout", "cardio"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -73,6 +71,8 @@
   ],
   "tip_de": "Ohne Pulver: Ersetze es durch 200 g Sojaskyr natur und reduziere den Sojadrink auf 150 ml. In einer gut verschlossenen Thermoflasche bleibt der Smoothie bis zum Ende der Einheit kühl.",
   "tags_de": ["Unter 10 Minuten", "Ausdauer"],
+  "section_de": "Nach der Einheit",
+  "categories": ["schnell", "post-workout", "cardio"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -99,12 +99,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "1244b366060851ef658b0c039105f9774fb9639d10c583318635adbe643cd7da",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "1244b366060851ef658b0c039105f9774fb9639d10c583318635adbe643cd7da"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "kichererbsen-kartoffel-curry-mit-spinat",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kichererbsen-Kartoffel-Curry mit Spinat",
   "description_de": "Würziges Curry aus Dosen-Kichererbsen, Kartoffeln und TK-Spinat, das mit einer Handvoll Linsen auf über 30 g pflanzliches Eiweiß kommt.",
-  "section_de": "Hauptgericht",
-  "categories": ["meal-prep", "spar-kueche"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -100,6 +98,8 @@
   ],
   "tip_de": "Wer mehr Hunger hat, serviert 50 g gekochten Reis dazu – kostet nur ein paar Cent extra.",
   "tags_de": ["Spar-Küche"],
+  "section_de": "Hauptgericht",
+  "categories": ["meal-prep", "spar-kueche"],
   "total_minutes": 25,
   "prep_minutes": 3,
   "cook_minutes": 22,
@@ -131,12 +131,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "aad201885333f2f7e6fa608e87ac3d349a646d445f3e2bafb04d1dd6df5d61de",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "aad201885333f2f7e6fa608e87ac3d349a646d445f3e2bafb04d1dd6df5d61de"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "linsen-kartoffel-eintopf-mit-moehren-und-majoran",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Linsen-Kartoffel-Eintopf mit Möhren und Majoran",
   "description_de": "Deftiger Eintopf aus roten Linsen, Kartoffeln und Möhren, der für rund einen Euro pro Portion satt macht und sich hervorragend vorkochen lässt.",
-  "section_de": "Hauptgericht",
-  "categories": ["meal-prep", "spar-kueche"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -100,6 +98,8 @@
   ],
   "tip_de": "Gleich die vierfache Menge kochen: Der Eintopf hält im Kühlschrank 4 Tage und lässt sich gut portionsweise einfrieren.",
   "tags_de": ["Spar-Küche"],
+  "section_de": "Hauptgericht",
+  "categories": ["meal-prep", "spar-kueche"],
   "total_minutes": 30,
   "prep_minutes": 6,
   "cook_minutes": 24,
@@ -131,12 +131,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "61bde43f6a511ae7d2fc9aeaa0da225fc4fa28fe7960e784a37d034829efd794",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "61bde43f6a511ae7d2fc9aeaa0da225fc4fa28fe7960e784a37d034829efd794"
+    "import_assumptions_confirmed_by": null
   }
 }

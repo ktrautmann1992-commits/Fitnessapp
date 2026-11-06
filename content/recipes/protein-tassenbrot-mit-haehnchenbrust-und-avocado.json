@@ -1,11 +1,9 @@
 {
   "id": "protein-tassenbrot-mit-haehnchenbrust-und-avocado",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Protein-Tassenbrot mit Hähnchenbrust und Avocado",
   "description_de": "Warmes Eiweißbrot aus der Mikrowelle in 2 Minuten, belegt mit Hähnchenbrust, Avocado und Tomaten.",
-  "section_de": "Frühstück",
-  "categories": ["schnell"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -112,6 +110,8 @@
   ],
   "tip_de": "Ohne Pulver: 1 EL mehr Haferflocken und 1 Eiklar zusätzlich verwenden. Für eine knusprige Kruste die Scheiben kurz toasten.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
   "total_minutes": 7,
   "prep_minutes": 7,
   "cook_minutes": 0,
@@ -138,12 +138,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "a0dcb16ccf3c9d674ce2364c337ac0ea5c740105f21aa857171ace0b413271b5",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "a0dcb16ccf3c9d674ce2364c337ac0ea5c740105f21aa857171ace0b413271b5"
+    "import_assumptions_confirmed_by": null
   }
 }

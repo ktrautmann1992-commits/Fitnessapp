@@ -1,11 +1,9 @@
 {
   "id": "protein-pancakes-mit-heidelbeeren-und-skyr",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Protein-Pancakes mit Heidelbeeren & Skyr",
   "description_de": "Fluffige Haferpancakes mit Vanille-Whey, getoppt mit kühlem Skyr und frischen Heidelbeeren.",
-  "section_de": "Frühstück",
-  "categories": ["post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -92,6 +90,8 @@
     "Staple die Pancakes auf einem Teller und toppe sie mit Skyr und Heidelbeeren."
   ],
   "tip_de": "Ohne Pulver: 100 g Magerquark in den Teig rühren und 1 EL Haferflocken mehr nehmen.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
   "total_minutes": 15,
   "prep_minutes": 13,
   "cook_minutes": 2,
@@ -118,12 +118,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "342d35c38e76b47b60b8ecb5e4856c0084e21567b3c98d16abf8081ccf734209",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "342d35c38e76b47b60b8ecb5e4856c0084e21567b3c98d16abf8081ccf734209"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "paprika-haehnchenschenkel-mit-kartoffelspalten-und-schnittlauchquark",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Paprika-Hähnchenschenkel mit Kartoffelspalten und Schnittlauchquark",
   "description_de": "Würzig marinierte Hähnchenschenkel und knusprige Kartoffelspalten garen nacheinander im selben Korb – saftig, rauchig und mit wenig Abwasch.",
-  "section_de": "Hauptgerichte",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -139,6 +137,8 @@
   ],
   "tip_de": "Hähnchenschenkel bleiben saftiger als Brust; mit Hähnchenbrust verkürzt sich die Garzeit um 2–3 Minuten, Kerntemperatur trotzdem prüfen.",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Hauptgerichte",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 40,
   "prep_minutes": 1,
   "cook_minutes": 39,
@@ -158,17 +158,18 @@
   "declared_diet": "omnivore",
   "declared_allergens": ["dairy", "lactose", "poultry", "onion_garlic"],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "eadf10ec4d728292399904cccf07e151119371ed879a6475bdd4a8f66a871c19",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -178,7 +179,7 @@
         "reason_de": "Schritt 4 gart die Zutat durch: „Gib Paprika- und Zwiebelstücke dazu, lege die Hähnchenschenkel obenauf und gare alles bei 190 °C weitere 14–16 Minuten. Wende das Fleisch nach 8 Minuten und schüttle dabei das Gemüse kurz durch.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "eadf10ec4d728292399904cccf07e151119371ed879a6475bdd4a8f66a871c19"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "641e16bb25f0a017"
   }
 }

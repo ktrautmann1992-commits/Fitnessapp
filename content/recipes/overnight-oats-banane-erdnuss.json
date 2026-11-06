@@ -1,11 +1,9 @@
 {
   "id": "overnight-oats-banane-erdnuss",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Overnight Oats Banane-Erdnuss",
   "description_de": "Über Nacht durchgezogene Haferflocken mit Skyr, Chia und Banane – morgens nur noch aus dem Kühlschrank nehmen.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "meal-prep"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -82,6 +80,8 @@
   ],
   "tip_de": "Hält sich gut 2 Tage im Kühlschrank – gleich zwei Gläser vorbereiten.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "meal-prep"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -108,12 +108,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "d2c1d702d34a911b11c9a3bae4ec7c4681123c9662d967ea355486bafe20b88f",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "d2c1d702d34a911b11c9a3bae4ec7c4681123c9662d967ea355486bafe20b88f"
+    "import_assumptions_confirmed_by": null
   }
 }
