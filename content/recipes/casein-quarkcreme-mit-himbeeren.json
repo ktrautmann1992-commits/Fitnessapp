@@ -1,11 +1,9 @@
 {
   "id": "casein-quarkcreme-mit-himbeeren",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Casein-Quarkcreme mit Himbeeren",
   "description_de": "Dicke Vanille-Quarkcreme mit Casein und warmen Himbeeren – der sättigende Eiweißsnack für den Abend.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -54,6 +52,8 @@
   ],
   "tip_de": "Casein sättigt lange und eignet sich daher gut vor dem Schlafengehen. Ohne Pulver: 100 g mehr Quark und ein paar Tropfen Vanillearoma.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -80,12 +80,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "493f3558a891db58aefa7a9849d828de6569c32ccd7af843c64d0082e79da567",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "493f3558a891db58aefa7a9849d828de6569c32ccd7af843c64d0082e79da567"
+    "import_assumptions_confirmed_by": null
   }
 }

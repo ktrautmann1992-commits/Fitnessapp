@@ -1,11 +1,9 @@
 {
   "id": "gurkenschiffchen-mit-krabben-skyr",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gurkenschiffchen mit Krabben-Skyr",
   "description_de": "Ausgehöhlte Gurkenhälften gefüllt mit Nordseekrabben in Dill-Skyr, dazu ein Vollkorn-Knäckebrot – frisch, leicht und schnell gemacht.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -91,6 +89,8 @@
   ],
   "tip_de": "Nordseekrabben gibt es abgepackt im Kühlregal an der Fischtheke. Alternativ schmeckt die Füllung mit Thunfisch im eigenen Saft.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -117,12 +117,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "69ebee7ab4f550a55a3cc8448f2de8afd4b7d8413b079eb3e63aa22e6c837d62",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "69ebee7ab4f550a55a3cc8448f2de8afd4b7d8413b079eb3e63aa22e6c837d62"
+    "import_assumptions_confirmed_by": null
   }
 }

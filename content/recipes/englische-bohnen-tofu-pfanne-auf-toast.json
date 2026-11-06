@@ -1,11 +1,9 @@
 {
   "id": "englische-bohnen-tofu-pfanne-auf-toast",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Englische Bohnen-Tofu-Pfanne auf Toast",
   "description_de": "Herzhaftes Frühstück nach britischem Vorbild mit weißen Bohnen in Tomatensauce und gebratenem Tofu, das günstig und rein pflanzlich viel Eiweiß liefert.",
-  "section_de": "Frühstück",
-  "categories": ["spar-kueche"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -100,6 +98,8 @@
   ],
   "tip_de": "Den Rest Bohnen und Tofu am nächsten Tag in einen Salat oder eine Suppe geben – so wird nichts weggeworfen.",
   "tags_de": ["Spar-Küche"],
+  "section_de": "Frühstück",
+  "categories": ["spar-kueche"],
   "total_minutes": 15,
   "prep_minutes": 6,
   "cook_minutes": 9,
@@ -131,12 +131,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "7ed6995dd6bf0fd2eee16f7c1c23c39ffbbcf44d0528c115e018bb82516cd4a9",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "7ed6995dd6bf0fd2eee16f7c1c23c39ffbbcf44d0528c115e018bb82516cd4a9"
+    "import_assumptions_confirmed_by": null
   }
 }

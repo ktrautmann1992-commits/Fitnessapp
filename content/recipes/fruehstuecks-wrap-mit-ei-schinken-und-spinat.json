@@ -1,11 +1,9 @@
 {
   "id": "fruehstuecks-wrap-mit-ei-schinken-und-spinat",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Frühstücks-Wrap mit Ei, Schinken und Spinat",
   "description_de": "Warmer Wrap im Mexiko-Stil mit Rührei, Kochschinken, Spinat, Mozzarella und Salsa.",
-  "section_de": "Frühstück",
-  "categories": ["post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -102,6 +100,8 @@
     "Verteile die Eimasse, den Mozzarella und die Salsa auf dem Wrap, schlag die Seiten ein und roll ihn fest auf."
   ],
   "tip_de": "Wer es scharf mag, gibt ein paar Jalapeño-Ringe aus dem Glas dazu.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
   "total_minutes": 12,
   "prep_minutes": 12,
   "cook_minutes": 0,
@@ -136,12 +136,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "85d803c5b5860629c930fdb9252d0dbc3147356b5983f3d5ee400ef4cc42ad30",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "85d803c5b5860629c930fdb9252d0dbc3147356b5983f3d5ee400ef4cc42ad30"
+    "import_assumptions_confirmed_by": null
   }
 }

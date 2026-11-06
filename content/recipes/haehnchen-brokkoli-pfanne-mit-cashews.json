@@ -1,11 +1,9 @@
 {
   "id": "haehnchen-brokkoli-pfanne-mit-cashews",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Hähnchen-Brokkoli-Pfanne mit Cashews",
   "description_de": "Saftiges Hähnchen mit viel Brokkoli und Paprika in Soja-Ingwer-Sauce, getoppt mit gerösteten Cashews – Asia-Pfanne ganz ohne Reis.",
-  "section_de": "Mittagessen",
-  "categories": ["low-carb"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -92,6 +90,8 @@
     "Gib Hähnchen und Sojasauce zurück, schwenke alles 1 Minute durch und streue die Cashews darüber."
   ],
   "tip_de": "Wer mehr Volumen möchte, gibt 150 g Blumenkohl, fein gehackt wie Reis, mit in die Pfanne – das sättigt ohne viele Kohlenhydrate.",
+  "section_de": "Mittagessen",
+  "categories": ["low-carb"],
   "total_minutes": 20,
   "prep_minutes": 11,
   "cook_minutes": 9,
@@ -119,17 +119,18 @@
     "onion_garlic"
   ],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "08d1b3a35efe58ec556ed72c00114d50d54d79e650828aae1de32332defae649",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -139,7 +140,7 @@
         "reason_de": "Schritt 3 gart die Zutat durch: „Brate das Hähnchen im Öl bei hoher Hitze 4–5 Minuten rundum an und nimm es heraus.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "08d1b3a35efe58ec556ed72c00114d50d54d79e650828aae1de32332defae649"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "b6f24bd78ef96447"
   }
 }

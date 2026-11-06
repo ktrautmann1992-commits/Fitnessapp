@@ -1,11 +1,9 @@
 {
   "id": "chili-con-carne-mit-schweinehack-und-reis",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Chili con Carne mit Schweinehack und Reis",
   "description_de": "Würziges Chili mit Schweinehack, Kidneybohnen und Mais – perfekt zum Vorkochen.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -137,6 +135,8 @@
     "Koche währenddessen den Reis nach Packungsanleitung und serviere ihn zum Chili."
   ],
   "tip_de": "Das Chili schmeckt am zweiten Tag noch besser und lässt sich portionsweise einfrieren.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
   "total_minutes": 40,
   "prep_minutes": 12,
   "cook_minutes": 28,
@@ -156,17 +156,18 @@
   "declared_diet": "omnivore",
   "declared_allergens": ["legumes", "histamine", "onion_garlic", "spicy"],
   "contains_pork": true,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "351a310f5fd68f3c0f41dadeaf01dddbab1af40237cf922b5f087506b29e7499",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -176,7 +177,7 @@
         "reason_de": "Schritt 2 gart die Zutat durch: „Brate das Hackfleisch ohne zusätzliches Fett in einem Topf bei hoher Hitze 5 Minuten krümelig an.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "351a310f5fd68f3c0f41dadeaf01dddbab1af40237cf922b5f087506b29e7499"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "a97767014d65d20a"
   }
 }

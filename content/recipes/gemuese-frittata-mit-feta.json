@@ -1,11 +1,9 @@
 {
   "id": "gemuese-frittata-mit-feta",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gemüse-Frittata mit Feta",
   "description_de": "Saftiges Ofen-Omelett mit Zucchini, Paprika, Kartoffel und Feta – mediterran und gemüsereich.",
-  "section_de": "Abendessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -110,6 +108,8 @@
     "Lass die Frittata 1 Minute auf dem Herd anstocken und backe sie dann 10–12 Minuten im Ofen, bis sie in der Mitte fest ist."
   ],
   "tip_de": "Schmeckt am nächsten Tag auch kalt – ideal für die Lunchbox.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 5,
   "cook_minutes": 20,
@@ -136,12 +136,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "e81a3c38d06f21190c48b28f3499dc50fd3911ed2de220267e1173e07d245de3",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "e81a3c38d06f21190c48b28f3499dc50fd3911ed2de220267e1173e07d245de3"
+    "import_assumptions_confirmed_by": null
   }
 }

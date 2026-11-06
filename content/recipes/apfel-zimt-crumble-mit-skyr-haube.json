@@ -1,11 +1,9 @@
 {
   "id": "apfel-zimt-crumble-mit-skyr-haube",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Apfel-Zimt-Crumble mit Skyr-Haube",
   "description_de": "Warme Zimtäpfel unter knusprigen Hafer-Mandel-Streuseln, serviert mit kühlem Skyr – Herbstdessert mit viel Eiweiß.",
-  "section_de": "Aus dem Ofen oder der Mikrowelle",
-  "categories": ["protein-dessert"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -92,6 +90,8 @@
   ],
   "tip_de": "Schneller geht es in der Mikrowelle: Äpfel 3 Minuten bei 800 Watt garen und die Streusel in einer Pfanne ohne Fett 3 Minuten rösten.",
   "tags_de": ["Dessert"],
+  "section_de": "Aus dem Ofen oder der Mikrowelle",
+  "categories": ["protein-dessert"],
   "total_minutes": 30,
   "prep_minutes": 10,
   "cook_minutes": 20,
@@ -118,12 +118,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "7ecfe19c6048bdc6b0af6bd9b5052de4e4997c24c2cbfb02740d85a44e52c2d5",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "7ecfe19c6048bdc6b0af6bd9b5052de4e4997c24c2cbfb02740d85a44e52c2d5"
+    "import_assumptions_confirmed_by": null
   }
 }

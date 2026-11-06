@@ -1,11 +1,9 @@
 {
   "id": "haehnchen-satay-spiesschen-mit-erdnuss-dip",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Hähnchen-Satay-Spießchen mit Erdnuss-Dip",
   "description_de": "Kleine Hähnchenspieße mit Curry-Marinade und cremigem Erdnuss-Limetten-Dip, dazu Gurkensticks.",
-  "section_de": "Snack",
-  "categories": ["meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -101,6 +99,8 @@
     "Serviere die Spieße mit dem Dip und den Gurkensticks."
   ],
   "tip_de": "Die Spieße schmecken auch kalt und lassen sich 3 Tage im Kühlschrank aufbewahren.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
   "total_minutes": 20,
   "prep_minutes": 17,
   "cook_minutes": 3,
@@ -138,12 +138,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "9673844e15ede2bdbccd8278631635091bfdd2797eee70b61470f20ff1bd1dc9",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "9673844e15ede2bdbccd8278631635091bfdd2797eee70b61470f20ff1bd1dc9"
+    "import_assumptions_confirmed_by": null
   }
 }

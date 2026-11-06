@@ -1,11 +1,9 @@
 {
   "id": "burrito-bowl-mit-tempeh-hack",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Burrito-Bowl mit Tempeh-Hack",
   "description_de": "Mexikanische Bowl mit rauchig gewürztem, zerbröseltem Tempeh, Reis, schwarzen Bohnen, Mais und Avocado.",
-  "section_de": "Mittagessen",
-  "categories": ["post-workout", "meal-prep"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -146,6 +144,8 @@
     "Richte Reis, Tempeh-Hack, Bohnen, Mais, gewürfelte Tomate und Avocado in einer Schale an und beträufle alles mit Limettensaft und Koriander."
   ],
   "tip_de": "Wer keinen Koriander mag, nimmt Petersilie oder Frühlingszwiebeln.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout", "meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 7,
   "cook_minutes": 18,
@@ -172,12 +172,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "a545c18309f97a63091b83f3a746216b966e1270b02598b269d58985852a0450",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "a545c18309f97a63091b83f3a746216b966e1270b02598b269d58985852a0450"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "eiweiss-muffins-mit-schinken-und-spinat",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Eiweiß-Muffins mit Schinken und Spinat",
   "description_de": "Herzhafte Ei-Muffins aus dem Ofen mit Kochschinken, Paprika und Spinat – ideal zum Mitnehmen.",
-  "section_de": "Snack",
-  "categories": ["meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -83,6 +81,8 @@
     "Fülle die Masse in die Förmchen und backe die Muffins 18–20 Minuten, bis sie gestockt sind."
   ],
   "tip_de": "Gleich ein ganzes Blech backen – die Muffins halten sich 4 Tage im Kühlschrank.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 5,
   "cook_minutes": 20,
@@ -109,12 +109,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "f007f2d665505535922ff86a783f604049206ebc996438d9eb6383ade0b328d6",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "f007f2d665505535922ff86a783f604049206ebc996438d9eb6383ade0b328d6"
+    "import_assumptions_confirmed_by": null
   }
 }

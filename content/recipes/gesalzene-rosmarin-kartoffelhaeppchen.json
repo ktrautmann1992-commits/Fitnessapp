@@ -1,11 +1,9 @@
 {
   "id": "gesalzene-rosmarin-kartoffelhaeppchen",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gesalzene Rosmarin-Kartoffelhäppchen",
   "description_de": "Kleine Pellkartoffeln mit Salz und Rosmarin – herzhafte Abwechslung zu Süßem, liefern Stärke und Natrium für lange Läufe und Radtouren.",
-  "section_de": "Während der Einheit",
-  "categories": ["cardio"],
   "meal_types": ["snack"],
   "training_tags": ["waehrend"],
   "servings": 1,
@@ -46,6 +44,8 @@
   ],
   "tip_de": "Die Portion liefert rund 34 g Kohlenhydrate – kombiniert mit einem Sportgetränk kommst du gut auf 30–60 g pro Stunde. Am besten auf dem Rad oder bei ruhigen Abschnitten essen; bei sehr langen Einheiten bis 90 g pro Stunde nur, wenn du es im Training geübt hast.",
   "tags_de": ["Ausdauer", "zum Mitnehmen"],
+  "section_de": "Während der Einheit",
+  "categories": ["cardio"],
   "total_minutes": 25,
   "prep_minutes": 5,
   "cook_minutes": 20,
@@ -72,12 +72,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "85120c55d9adf8ed3072b99c30f902ed95d042f4f789ed35250d8c0c29c4b3bb",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "85120c55d9adf8ed3072b99c30f902ed95d042f4f789ed35250d8c0c29c4b3bb"
+    "import_assumptions_confirmed_by": null
   }
 }

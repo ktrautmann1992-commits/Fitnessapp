@@ -1,11 +1,9 @@
 {
   "id": "hackbaellchen-in-tomatensauce-mit-vollkornnudeln",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Hackbällchen in Tomatensauce mit Vollkornnudeln",
   "description_de": "Saftige Bällchen aus magerem Schweinehack mit Haferflocken als Bindung, in einer einfachen Tomatensauce – Familienklassiker zum kleinen Preis.",
-  "section_de": "Hauptgericht",
-  "categories": ["meal-prep", "spar-kueche"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -102,6 +100,8 @@
   ],
   "tip_de": "Schweinehack gibt es oft im 1-kg-Pack günstiger: Bällchen auf Vorrat formen und roh einfrieren.",
   "tags_de": ["Spar-Küche"],
+  "section_de": "Hauptgericht",
+  "categories": ["meal-prep", "spar-kueche"],
   "total_minutes": 25,
   "prep_minutes": 2,
   "cook_minutes": 23,
@@ -133,12 +133,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "5440b3170875ef2e5ca0ff86d8f7b1fc293fa962c4d33816bbee2dc3a626b655",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "5440b3170875ef2e5ca0ff86d8f7b1fc293fa962c4d33816bbee2dc3a626b655"
+    "import_assumptions_confirmed_by": null
   }
 }

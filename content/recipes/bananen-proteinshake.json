@@ -1,11 +1,9 @@
 {
   "id": "bananen-proteinshake",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Bananen-Proteinshake",
   "description_de": "Cremiger Shake aus Milch, Banane und Molkenprotein – schnell getrunken nach dem Training.",
-  "section_de": "Snack",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -54,6 +52,8 @@
   ],
   "tip_de": "Mit einer gefrorenen Banane wird der Shake besonders kalt und cremig.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 3,
   "prep_minutes": 3,
   "cook_minutes": 0,
@@ -80,12 +80,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "4eb398f782f91f9a04b11bd448bd311a1915d294a523dbaf89b318e59afd0b9c",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "4eb398f782f91f9a04b11bd448bd311a1915d294a523dbaf89b318e59afd0b9c"
+    "import_assumptions_confirmed_by": null
   }
 }

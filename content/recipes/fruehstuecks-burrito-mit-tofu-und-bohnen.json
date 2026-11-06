@@ -1,11 +1,9 @@
 {
   "id": "fruehstuecks-burrito-mit-tofu-und-bohnen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Frühstücks-Burrito mit Tofu und Bohnen",
   "description_de": "Würziger Tofu-Scramble mit schwarzen Bohnen und Paprika im Vollkorn-Wrap.",
-  "section_de": "Frühstück",
-  "categories": ["meal-prep"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -100,6 +98,8 @@
     "Fülle den Wrap mit der Tofu-Bohnen-Mischung, schlag die Seiten ein und roll ihn fest auf."
   ],
   "tip_de": "In Alufolie gewickelt hält sich der Burrito 3 Tage im Kühlschrank – zum Aufwärmen 10 Minuten bei 180 °C in den Ofen.",
+  "section_de": "Frühstück",
+  "categories": ["meal-prep"],
   "total_minutes": 15,
   "prep_minutes": 8,
   "cook_minutes": 7,
@@ -126,12 +126,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "c54702e3b2e2862d5ca6285927643c96e128fa88abed88ecdcd5b94f89822e0d",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "c54702e3b2e2862d5ca6285927643c96e128fa88abed88ecdcd5b94f89822e0d"
+    "import_assumptions_confirmed_by": null
   }
 }

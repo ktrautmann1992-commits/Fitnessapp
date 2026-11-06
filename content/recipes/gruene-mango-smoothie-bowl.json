@@ -1,11 +1,9 @@
 {
   "id": "gruene-mango-smoothie-bowl",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Grüne Mango-Smoothie-Bowl",
   "description_de": "Cremige, eiskalte Bowl aus Mango, Banane, Spinat und Vanille-Protein mit knusprigem Hafer-Kürbiskern-Topping.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -91,6 +89,8 @@
   ],
   "tip_de": "Ohne Proteinpulver: Sojajoghurt durch 250 g Sojaskyr ersetzen – die Bowl wird noch cremiger.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -117,12 +117,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "30c053b8afd809de9afc031e075d9b07891962bac12a68710c9a4e763a099f5a",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "30c053b8afd809de9afc031e075d9b07891962bac12a68710c9a4e763a099f5a"
+    "import_assumptions_confirmed_by": null
   }
 }

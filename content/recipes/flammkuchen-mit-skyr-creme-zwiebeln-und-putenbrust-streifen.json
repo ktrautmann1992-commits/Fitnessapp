@@ -1,11 +1,9 @@
 {
   "id": "flammkuchen-mit-skyr-creme-zwiebeln-und-putenbrust-streifen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Flammkuchen mit Skyr-Creme, Zwiebeln und Putenbrust-Streifen",
   "description_de": "Hauchdünner Boden mit cremigem Skyr statt Crème fraîche und mageren Putenbrust-Streifen statt Speck – der Elsässer Klassiker in leicht.",
-  "section_de": "Pizza & Flammkuchen",
-  "categories": ["fitness-fast-food"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -129,6 +127,8 @@
   ],
   "tip_de": "Je dünner der Teig, desto echter das Flammkuchen-Gefühl. Wer es rauchig mag, würzt die Skyr-Creme mit einer Prise geräuchertem Paprikapulver.",
   "tags_de": ["Fitness-Fast-Food"],
+  "section_de": "Pizza & Flammkuchen",
+  "categories": ["fitness-fast-food"],
   "total_minutes": 25,
   "prep_minutes": 13,
   "cook_minutes": 12,
@@ -155,12 +155,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "769fd4c96514e0f894ef3b98660814b546e7bed5808d1436c54fb5849acd7a24",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "769fd4c96514e0f894ef3b98660814b546e7bed5808d1436c54fb5849acd7a24"
+    "import_assumptions_confirmed_by": null
   }
 }

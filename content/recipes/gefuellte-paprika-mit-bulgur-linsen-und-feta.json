@@ -1,11 +1,9 @@
 {
   "id": "gefuellte-paprika-mit-bulgur-linsen-und-feta",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gefüllte Paprika mit Bulgur, Linsen & Feta",
   "description_de": "Ofen-Paprika mit würziger Füllung aus Bulgur, roten Linsen und Feta, dazu ein Skyr-Dip.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -128,6 +126,8 @@
     "Serviere die Paprika mit dem Skyr als kühlem Dip."
   ],
   "tip_de": "Gleich 4 Paprika füllen – aufgewärmt schmecken sie am nächsten Tag noch besser.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
   "total_minutes": 50,
   "prep_minutes": 7,
   "cook_minutes": 43,
@@ -154,12 +154,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "8f1d7675793e323c89b96953cbd5f6d8d4de4c5453bb93ffe376da589f03b7ca",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8f1d7675793e323c89b96953cbd5f6d8d4de4c5453bb93ffe376da589f03b7ca"
+    "import_assumptions_confirmed_by": null
   }
 }

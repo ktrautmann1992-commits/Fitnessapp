@@ -1,11 +1,9 @@
 {
   "id": "bananen-pancake-bites-mit-heidelbeer-skyr",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Bananen-Pancake-Bites mit Heidelbeer-Skyr",
   "description_de": "Kleine, fluffige Pancake-Happen aus Banane, Ei und Hafer aus der Mini-Muffinform – zum Dippen in Heidelbeer-Skyr.",
-  "section_de": "Aus dem Ofen oder der Mikrowelle",
-  "categories": ["protein-dessert"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -94,6 +92,8 @@
   ],
   "tip_de": "Die Bites lassen sich gut auf Vorrat backen und einfrieren; kurz in der Mikrowelle oder im Toaster aufwärmen. Für unterwegs Dip und Bites getrennt einpacken.",
   "tags_de": ["Dessert", "zum Mitnehmen"],
+  "section_de": "Aus dem Ofen oder der Mikrowelle",
+  "categories": ["protein-dessert"],
   "total_minutes": 25,
   "prep_minutes": 11,
   "cook_minutes": 14,
@@ -120,12 +120,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "351700ff7404618adb796aac02ab9b3ac2a73b714dc985753be6ed946f9c2a3d",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "351700ff7404618adb796aac02ab9b3ac2a73b714dc985753be6ed946f9c2a3d"
+    "import_assumptions_confirmed_by": null
   }
 }
