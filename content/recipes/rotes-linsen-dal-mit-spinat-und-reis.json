@@ -1,6 +1,6 @@
 {
   "id": "rotes-linsen-dal-mit-spinat-und-reis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Rotes Linsen-Dal mit Spinat und Reis",
   "description_de": "Cremiges indisches Linsencurry mit Kokosmilch, Erbsen und Spinat.",
@@ -157,10 +157,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 674,
-    "protein_g": 31.1,
-    "carbs_g": 97.5,
-    "fat_g": 13.4
+    "kcal": 797,
+    "protein_g": 33.9,
+    "carbs_g": 97,
+    "fat_g": 27.1
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "celery", "mustard", "histamine", "onion_garlic", "spicy"],
@@ -178,6 +178,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "1a02c994e8269ade076014c8b8aedaacf4f076b463445b7846e63baae88625e7"
+    "import_hash": "ebe0f033d86c39100ab8813e6395345cad40db93cb07a042511d0a90151c0e8d"
   }
 }

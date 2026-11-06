@@ -1,6 +1,6 @@
 {
   "id": "kichererbsen-kartoffel-curry-mit-spinat",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Kichererbsen-Kartoffel-Curry mit Spinat",
   "description_de": "Würziges Curry aus Dosen-Kichererbsen, Kartoffeln und TK-Spinat, das mit einer Handvoll Linsen auf über 30 g pflanzliches Eiweiß kommt.",
@@ -111,10 +111,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 612,
-    "protein_g": 31.5,
-    "carbs_g": 86.5,
-    "fat_g": 11.6
+    "kcal": 686,
+    "protein_g": 32.8,
+    "carbs_g": 93.6,
+    "fat_g": 12.1
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "celery", "mustard", "histamine", "onion_garlic", "spicy"],
@@ -137,6 +137,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "14419f86d5f650a4a8fba58a37bc6fabafab553219c347cada3f3a9296b6aed2"
+    "import_hash": "aad201885333f2f7e6fa608e87ac3d349a646d445f3e2bafb04d1dd6df5d61de"
   }
 }

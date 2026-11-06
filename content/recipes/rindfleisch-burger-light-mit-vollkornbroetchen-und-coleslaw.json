@@ -1,6 +1,6 @@
 {
   "id": "rindfleisch-burger-light-mit-vollkornbroetchen-und-coleslaw",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Rindfleisch-Burger mit Vollkornbrötchen und Coleslaw",
   "description_de": "Saftiges Patty aus magerem Rinderhack mit hausgemachter Burgersauce aus Skyr und einem frischen Krautsalat – voller Burger-Genuss mit wenig Fett.",
@@ -168,10 +168,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 565,
-    "protein_g": 57.6,
-    "carbs_g": 49.3,
-    "fat_g": 13.9
+    "kcal": 655,
+    "protein_g": 56.8,
+    "carbs_g": 54,
+    "fat_g": 19.4
   },
   "declared_diet": "omnivore",
   "declared_allergens": [
@@ -198,6 +198,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "2ae04d1a4c94d661d955c8f95522d6efb1b80ac46d492e1a36a60080ae795c2b"
+    "import_hash": "7476d275fd0532633908d145503bbcc6d3b4a7a4069d06b4912d1e847d48ce80"
   }
 }

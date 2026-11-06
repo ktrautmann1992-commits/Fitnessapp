@@ -1,6 +1,6 @@
 {
   "id": "gefuellte-paprika-mit-hackfleisch",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Gefüllte Paprika mit Hackfleisch",
   "description_de": "Klassiker aus dem Ofen: Paprikaschoten mit Hack-Reis-Füllung in Tomatensauce, mit Mozzarella überbacken.",
@@ -121,10 +121,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 616,
-    "protein_g": 39.1,
-    "carbs_g": 53,
-    "fat_g": 26.2
+    "kcal": 684,
+    "protein_g": 38.1,
+    "carbs_g": 53.1,
+    "fat_g": 31.3
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["dairy", "lactose", "histamine", "onion_garlic"],
@@ -142,6 +142,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "25ee072115cbdc87ce5611d4ed3b04346a5beda76383a7d7a8cfcd19823ee975"
+    "import_hash": "236febbafb088410a27b0b0c1e4dd19645fbaeedc4c7c25eb70551e5effe3ae8"
   }
 }

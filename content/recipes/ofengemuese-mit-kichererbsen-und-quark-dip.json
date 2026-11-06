@@ -1,6 +1,6 @@
 {
   "id": "ofengemuese-mit-kichererbsen-und-quark-dip",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Ofengemüse mit Kichererbsen & Quark-Dip",
   "description_de": "Bunt geröstetes Blechgemüse mit Süßkartoffel und knusprigen Kichererbsen, dazu ein Knoblauch-Kräuterquark.",
@@ -148,10 +148,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 576,
-    "protein_g": 34.4,
-    "carbs_g": 72.2,
-    "fat_g": 15.3
+    "kcal": 665,
+    "protein_g": 35.3,
+    "carbs_g": 80.3,
+    "fat_g": 16.3
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose", "legumes", "onion_garlic"],
@@ -169,6 +169,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "394ad658b119f851d376dd25b4218b81da257c6f6bf0be8bd6e28c73cb748269"
+    "import_hash": "062fdd6e6ae9b3eaa33026380ca84580a5910482d4b92b1febc5b683d8644513"
   }
 }

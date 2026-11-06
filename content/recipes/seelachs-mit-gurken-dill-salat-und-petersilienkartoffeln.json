@@ -1,6 +1,6 @@
 {
   "id": "seelachs-mit-gurken-dill-salat-und-petersilienkartoffeln",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Seelachs mit Gurken-Dill-Salat und Petersilienkartoffeln",
   "description_de": "Goldbraun gebratenes Seelachsfilet mit Kartoffeln und einem frischen Gurkensalat mit Joghurt-Dill-Dressing – ein leichter deutscher Abendteller.",
@@ -130,10 +130,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 500,
-    "protein_g": 46.2,
-    "carbs_g": 45.2,
-    "fat_g": 14
+    "kcal": 591,
+    "protein_g": 50.4,
+    "carbs_g": 54.4,
+    "fat_g": 17.2
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["dairy", "lactose", "fish", "mustard"],
@@ -151,6 +151,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "4bdf6ad9cea6855d0438fe0e14f25a5c3efc3f3d9da0d36328793a3cad2800ac"
+    "import_hash": "2f3a5dc1f4d0ee9c4816324af4ea1f5c46994972ca2d840dc3bc9e3e44100ac1"
   }
 }

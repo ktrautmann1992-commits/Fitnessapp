@@ -1,6 +1,6 @@
 {
   "id": "suess-saurer-ananas-tofu-mit-basmatireis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Süß-saurer Ananas-Tofu mit Basmatireis",
   "description_de": "Viel weißer Reis, fruchtige Ananas und nur wenig Öl liefern reichlich Kohlenhydrate bei wenig Fett und Ballaststoffen – ideal zum Auffüllen der Speicher.",
@@ -62,7 +62,7 @@
       "optional": false,
       "display_de": "2 TL (10 g)",
       "scales": true,
-      "role": "carb"
+      "role": "protein"
     },
     {
       "food_id": "zucker",
@@ -142,6 +142,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "13d4bb1ec14a84bab538d2405e72cd8cf784de07d16eb7cc4063921eae5f102f"
+    "import_hash": "4d627b275f389394d97b411ba19039a0b4d4b2074f141d99682dc8be627702f7"
   }
 }

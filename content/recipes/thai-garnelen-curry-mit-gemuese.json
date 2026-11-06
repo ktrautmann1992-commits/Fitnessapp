@@ -1,6 +1,6 @@
 {
   "id": "thai-garnelen-curry-mit-gemuese",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Thai-Garnelen-Curry mit Gemüse",
   "description_de": "Mildes Kokos-Curry mit Garnelen, viel Gemüse, Ingwer und Limette auf etwas Basmatireis – asiatisch und in 18 Minuten fertig.",
@@ -122,10 +122,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 548,
-    "protein_g": 43.2,
-    "carbs_g": 56.6,
-    "fat_g": 15.3
+    "kcal": 725,
+    "protein_g": 50,
+    "carbs_g": 53.2,
+    "fat_g": 33.1
   },
   "declared_diet": "omnivore",
   "declared_allergens": [
@@ -154,6 +154,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "19da180ca5a1fc2856be69cde4a7196d33d6b35dcd11489e30584dcff312dcc0"
+    "import_hash": "571866d7006fe91f32fa0c54b5481f6664e5b6525b9a4ad348f0d4a8b3cedc65"
   }
 }

@@ -1,6 +1,6 @@
 {
   "id": "seitan-geschnetzeltes-mit-champignons-und-kartoffeln",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Seitan-Geschnetzeltes mit Champignons und Kartoffeln",
   "description_de": "Deutscher Klassiker in vegan: Seitanstreifen in cremiger Pilz-Senf-Sauce mit Pellkartoffeln.",
@@ -139,10 +139,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 545,
-    "protein_g": 49.1,
-    "carbs_g": 49.5,
-    "fat_g": 14.6
+    "kcal": 688,
+    "protein_g": 57,
+    "carbs_g": 61.4,
+    "fat_g": 22
   },
   "declared_diet": "vegan",
   "declared_allergens": [
@@ -168,6 +168,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "5dc473f704047fcc4cb4002fa030a9bf228e6ee40bdc612648d289e7f087929a"
+    "import_hash": "29a4b4005d69e95c0b7ac418eea0578361018d12d36787c1394c7f840fc9383e"
   }
 }

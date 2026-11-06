@@ -1,6 +1,6 @@
 {
   "id": "curry-blumenkohl-bites-mit-tahin-sojajoghurt-dip",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Curry-Blumenkohl-Bites mit Tahin-Sojajoghurt-Dip",
   "description_de": "Blumenkohlröschen im würzigen Kichererbsenmehl-Mantel werden knusprig wie frittiert, brauchen aber nur einen Teelöffel Öl – mit cremigem Sesam-Dip.",
@@ -121,10 +121,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 311,
-    "protein_g": 17.1,
-    "carbs_g": 21.2,
-    "fat_g": 13.6
+    "kcal": 324,
+    "protein_g": 18.1,
+    "carbs_g": 27,
+    "fat_g": 13.8
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "sesame", "celery", "mustard", "spicy"],
@@ -142,6 +142,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "94fb83233f0220f88b307b74d0f7b712f55a5ef4a7b76fcf7f57bdb592ae97a6"
+    "import_hash": "075bd56e1bd8c4fb5e043a82c17097c1176ebf3ae21080f224417968a87c97b7"
   }
 }

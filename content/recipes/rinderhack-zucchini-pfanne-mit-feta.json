@@ -1,6 +1,6 @@
 {
   "id": "rinderhack-zucchini-pfanne-mit-feta",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Rinderhack-Zucchini-Pfanne mit Feta",
   "description_de": "Würziges Rinderhack mit Zucchini, Paprika und Tomaten aus einer Pfanne, mit zerbröseltem Feta – sättigend, schnell und ohne Beilage.",
@@ -112,10 +112,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 466,
-    "protein_g": 50.1,
-    "carbs_g": 17,
-    "fat_g": 21.5
+    "kcal": 541,
+    "protein_g": 48.2,
+    "carbs_g": 19,
+    "fat_g": 28.3
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["dairy", "lactose", "beef", "histamine", "onion_garlic"],
@@ -133,6 +133,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "515ba24038c328b181c0ece8160bd9fafe582dae65758c1767867ba1fd804a2b"
+    "import_hash": "aee0dc1d952eb88f347b4d971ac16c05b537ffd78afb4555d5705537439af74d"
   }
 }

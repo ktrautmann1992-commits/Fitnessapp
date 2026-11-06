@@ -1,6 +1,6 @@
 {
   "id": "raeuchertofu-sticks-mit-paprika-und-tahin-dip",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Räuchertofu-Sticks mit Paprika und Tahin-Dip",
   "description_de": "Rauchige Tofustreifen und knackige Paprika zum Dippen in einen cremigen Sesam-Zitronen-Dip – ein herzhafter veganer Snack in 5 Minuten.",
@@ -74,10 +74,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 255,
-    "protein_g": 19.7,
-    "carbs_g": 8.1,
-    "fat_g": 15.2
+    "kcal": 205,
+    "protein_g": 18.2,
+    "carbs_g": 5.1,
+    "fat_g": 11.4
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "sesame"],
@@ -95,6 +95,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "04d5304ba54da6896d152009d8dcee319857044e857da873da81059b3b88cdb7"
+    "import_hash": "28904ac76282dc85c41fb07172aea2405f8c96e2c9f899b5a4bca92a9474d4a9"
   }
 }

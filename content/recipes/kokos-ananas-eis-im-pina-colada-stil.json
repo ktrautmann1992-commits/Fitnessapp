@@ -1,6 +1,6 @@
 {
   "id": "kokos-ananas-eis-im-pina-colada-stil",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Kokos-Ananas-Eis im Piña-Colada-Stil",
   "description_de": "Tropisch-frisches Eis mit Ananas und Kokos, das nach Strandurlaub schmeckt – vegan und alkoholfrei.",
@@ -86,10 +86,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 266,
-    "protein_g": 27,
-    "carbs_g": 19.1,
-    "fat_g": 8.2
+    "kcal": 243,
+    "protein_g": 34,
+    "carbs_g": 18.2,
+    "fat_g": 9.7
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "tree_nuts"],
@@ -107,6 +107,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "9f45a360d34415b513820bb0d6edad8a5e2e50593ae6a6cef44658bbf0fc6c8b"
+    "import_hash": "6b5f5b8b5cabcef62e3ca8db8f54e7a10767bf12aab31787bbeb12e26d266f86"
   }
 }

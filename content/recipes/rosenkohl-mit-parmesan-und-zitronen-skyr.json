@@ -1,6 +1,6 @@
 {
   "id": "rosenkohl-mit-parmesan-und-zitronen-skyr",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Rosenkohl mit Parmesan und Zitronen-Skyr",
   "description_de": "Halbierter Rosenkohl wird in der Heißluft an den Schnittflächen karamellisiert und nussig – mit Parmesan und frischem Zitronen-Skyr selbst für Rosenkohl-Skeptiker.",
@@ -38,7 +38,7 @@
       "role": "vegetable"
     },
     {
-      "food_id": "parmesan",
+      "food_id": "hartkaese-vegetarisch",
       "amount": 15,
       "unit": "g",
       "optional": false,
@@ -103,10 +103,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 236,
-    "protein_g": 23.3,
-    "carbs_g": 11.6,
-    "fat_g": 10.1
+    "kcal": 248,
+    "protein_g": 22.9,
+    "carbs_g": 8,
+    "fat_g": 10.5
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose", "histamine", "onion_garlic"],
@@ -124,6 +124,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "4e0ccaf6e60329ce6ca9a40c1eb6119dc7f9d1547ff1fc59b6ea3b0d9e3006c7"
+    "import_hash": "b2f87f26e498bcdaa91602702ad847f6997a31cf08aedc6c0b4007285f298efd"
   }
 }

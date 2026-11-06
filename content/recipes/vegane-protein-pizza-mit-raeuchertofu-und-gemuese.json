@@ -1,6 +1,6 @@
 {
   "id": "vegane-protein-pizza-mit-raeuchertofu-und-gemuese",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Vegane Protein-Pizza mit Räuchertofu und Gemüse",
   "description_de": "Ein schneller Teig mit Sojajoghurt und Erbsenprotein, belegt mit rauchigem Tofu, Paprika und Pilzen – vegane Pizza mit ordentlich Eiweiß.",
@@ -157,10 +157,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 723,
-    "protein_g": 45.9,
-    "carbs_g": 75,
-    "fat_g": 23.7
+    "kcal": 673,
+    "protein_g": 47.7,
+    "carbs_g": 73,
+    "fat_g": 19.8
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "histamine", "mushrooms", "onion_garlic"],
@@ -178,6 +178,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "eac87683144623a576255128730affaf7cab40f8b4b7c60eb36e74b76fc64815"
+    "import_hash": "df63f1edbf933b8998e80915ca5be9ffb1c339f7dc6c2fe75207e95e13766218"
   }
 }

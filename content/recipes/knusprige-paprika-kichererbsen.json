@@ -1,6 +1,6 @@
 {
   "id": "knusprige-paprika-kichererbsen",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Knusprige Paprika-Kichererbsen",
   "description_de": "Im Ofen geröstete Kichererbsen mit Paprika – die herzhafte Alternative zu Chips.",
@@ -75,10 +75,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 236,
-    "protein_g": 11.2,
-    "carbs_g": 25.6,
-    "fat_g": 9
+    "kcal": 275,
+    "protein_g": 12.5,
+    "carbs_g": 26,
+    "fat_g": 9.8
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes"],
@@ -96,6 +96,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "cef8ffbddd7701dff9217dcb537592d29083f063336771e6660d66543abe2350"
+    "import_hash": "98b4ad30ef0cdde07fc27c4b60c9a1656428e8d1d7b695c72de614bbea2813b1"
   }
 }

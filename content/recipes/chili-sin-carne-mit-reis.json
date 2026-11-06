@@ -1,6 +1,6 @@
 {
   "id": "chili-sin-carne-mit-reis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Chili sin Carne mit Reis",
   "description_de": "Herzhaftes mexikanisches Chili mit Sojaschnetzeln, Kidneybohnen und Mais.",
@@ -166,10 +166,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 666,
-    "protein_g": 39.8,
-    "carbs_g": 88.3,
-    "fat_g": 11.3
+    "kcal": 710,
+    "protein_g": 41.5,
+    "carbs_g": 85.8,
+    "fat_g": 14.9
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "celery", "histamine", "onion_garlic", "spicy"],
@@ -187,6 +187,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "fe323ed9a245dc12cce8ede7e2f32d9ff070c6d85bfe5d86b4334dd12c7a4809"
+    "import_hash": "91a1f411749be5f96539430b794793580e494ede3daefc4fbddb37355aaf53a3"
   }
 }

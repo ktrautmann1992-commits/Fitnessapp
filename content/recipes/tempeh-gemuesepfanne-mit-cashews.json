@@ -1,6 +1,6 @@
 {
   "id": "tempeh-gemuesepfanne-mit-cashews",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Tempeh-Gemüsepfanne mit Cashews",
   "description_de": "Schnelle Asia-Pfanne mit Tempeh, knackigem Gemüse, Ingwer und gerösteten Cashews.",
@@ -129,10 +129,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 552,
-    "protein_g": 40.4,
-    "carbs_g": 36.5,
-    "fat_g": 28.9
+    "kcal": 507,
+    "protein_g": 38.3,
+    "carbs_g": 30.9,
+    "fat_g": 20.7
   },
   "declared_diet": "vegan",
   "declared_allergens": [
@@ -159,6 +159,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "34cdf2f91c4fdec11e049e1b6597d71585265e0d08e2e55dbe2dcdbd776c9900"
+    "import_hash": "f8e7848141e60bcb11ec92f4d5bce4ba2ad3b084e6ae265bd24d5f4abe95a285"
   }
 }

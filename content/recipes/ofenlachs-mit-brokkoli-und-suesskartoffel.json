@@ -1,6 +1,6 @@
 {
   "id": "ofenlachs-mit-brokkoli-und-suesskartoffel",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Ofenlachs mit Brokkoli und Süßkartoffel",
   "description_de": "Lachsfilet mit Zitrone vom Blech, dazu geröstete Süßkartoffelspalten und Brokkoli – ein Blech, kaum Abwasch.",
@@ -103,10 +103,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 537,
-    "protein_g": 35.8,
-    "carbs_g": 45.6,
-    "fat_g": 22.4
+    "kcal": 587,
+    "protein_g": 35.7,
+    "carbs_g": 55.8,
+    "fat_g": 21.6
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["fish"],
@@ -124,6 +124,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "469c563cd2bc7323c5ed6dcb5325bc49ef6423ef1af0671a90de2c071abe2bb4"
+    "import_hash": "2f00294f902a270612f989256d9959953d9d8087304cfdb4a65cd436f063be05"
   }
 }

@@ -1,6 +1,6 @@
 {
   "id": "burrito-bowl-mit-schweinehack-und-bohnen",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Burrito-Bowl mit Schweinehack und Bohnen",
   "description_de": "Mexikanische Bowl mit würzigem, magerem Schweinehack, Reis, Bohnen, Mais, Salsa und Limetten-Joghurt.",
@@ -157,10 +157,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 609,
-    "protein_g": 40.8,
-    "carbs_g": 72.8,
-    "fat_g": 15.3
+    "kcal": 606,
+    "protein_g": 45,
+    "carbs_g": 71.8,
+    "fat_g": 11.9
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["dairy", "lactose", "legumes", "histamine", "onion_garlic", "spicy"],
@@ -178,6 +178,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "6794fe768263b53723a5410ccebde2641c5beb5f9de250d2aed286de166e2c6b"
+    "import_hash": "0661420becca5856e392bdaaf46b7119acc3eb954efbb31b2ee21ef82192d6ab"
   }
 }

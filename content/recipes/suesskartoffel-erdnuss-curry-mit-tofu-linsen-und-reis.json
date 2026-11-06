@@ -1,6 +1,6 @@
 {
   "id": "suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Süßkartoffel-Erdnuss-Curry mit Tofu, Linsen und Reis",
   "description_de": "Cremiges, mildes Curry mit roten Linsen, Tofu und Spinat, das am zweiten Tag noch besser schmeckt.",
@@ -176,10 +176,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 680,
-    "protein_g": 38.1,
-    "carbs_g": 74.8,
-    "fat_g": 24
+    "kcal": 772,
+    "protein_g": 43.5,
+    "carbs_g": 76.6,
+    "fat_g": 29.8
   },
   "declared_diet": "vegan",
   "declared_allergens": [
@@ -207,6 +207,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "b85a083033a28b9b245f9dfe4fabaebf71812e537fb1d26eba195419c861c301"
+    "import_hash": "06f94fbc72fd231519e426e0aa28797fd3a2986f6cf5ee4411933562e303f734"
   }
 }

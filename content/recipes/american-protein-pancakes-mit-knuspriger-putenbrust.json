@@ -1,6 +1,6 @@
 {
   "id": "american-protein-pancakes-mit-knuspriger-putenbrust",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "American Protein-Pancakes mit knuspriger Putenbrust",
   "description_de": "Fluffige Bananen-Vanille-Pancakes mit Beeren und kross gebratener Putenbrust – der süß-salzige Diner-Klassiker ohne Schwein.",
@@ -113,10 +113,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 513,
-    "protein_g": 43.3,
-    "carbs_g": 47.8,
-    "fat_g": 14.4
+    "kcal": 489,
+    "protein_g": 46,
+    "carbs_g": 40.7,
+    "fat_g": 13
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["gluten", "dairy", "lactose", "eggs", "poultry"],
@@ -134,6 +134,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "31550d406340704e5a1756835b50fdf85b23281c0793a7f29aa1bd4fcf25f2ef"
+    "import_hash": "a2dc0feb9b9d7a66e73a36bf44426abd4146153a2fd0fbaa01818474820e74ac"
   }
 }

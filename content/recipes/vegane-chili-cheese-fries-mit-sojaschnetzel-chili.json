@@ -1,6 +1,6 @@
 {
   "id": "vegane-chili-cheese-fries-mit-sojaschnetzel-chili",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Vegane Chili-Cheese-Fries mit Sojaschnetzel-Chili",
   "description_de": "Knusprige Pommes aus der Heißluftfritteuse unter einem würzigen Sojaschnetzel-Bohnen-Chili und cremiger Hefeflocken-Käsesauce – vegan und richtig sättigend.",
@@ -176,10 +176,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 654,
-    "protein_g": 46.1,
-    "carbs_g": 81.8,
-    "fat_g": 9.2
+    "kcal": 720,
+    "protein_g": 47.2,
+    "carbs_g": 89.8,
+    "fat_g": 12.2
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "mustard", "histamine", "onion_garlic", "spicy"],
@@ -197,6 +197,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "2df3eaad6ef91c7f43480ba27af97d97f831571549797058ff5d3e4a3dbb7756"
+    "import_hash": "8ccb013dcf72900e0b9ce188795d2c13deaf8cdd29348ad9cf41df3cf2df9aa3"
   }
 }

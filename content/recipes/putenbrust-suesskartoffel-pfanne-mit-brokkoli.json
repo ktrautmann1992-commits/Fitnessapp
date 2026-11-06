@@ -1,6 +1,6 @@
 {
   "id": "putenbrust-suesskartoffel-pfanne-mit-brokkoli",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Putenbrust-Süßkartoffel-Pfanne mit Brokkoli",
   "description_de": "Mageres Putenfleisch mit Süßkartoffel und Brokkoli aus einer Pfanne – eine warme, ausgewogene Mahlzeit mit viel Eiweiß und Kohlenhydraten für die Regeneration.",
@@ -112,10 +112,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 404,
-    "protein_g": 38.2,
-    "carbs_g": 42.7,
-    "fat_g": 8.7
+    "kcal": 486,
+    "protein_g": 38.8,
+    "carbs_g": 54.1,
+    "fat_g": 10.6
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["poultry"],
@@ -141,6 +141,6 @@
       }
     ],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "87d5b2e58f41472b49e496595e29fda8c726c5a7b6c03ee22c031edc7490b214"
+    "import_hash": "4b198cd6a883bdc3486ce0a2f29a777a0747eff2282a744b5ef1d2550dd130ce"
   }
 }

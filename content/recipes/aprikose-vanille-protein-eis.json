@@ -1,6 +1,6 @@
 {
   "id": "aprikose-vanille-protein-eis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Aprikose-Vanille-Protein-Eis",
   "description_de": "Sanftes Vanilleeis mit reifen Aprikosen – mild, sommerlich-fruchtig und rein pflanzlich.",
@@ -76,10 +76,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 236,
-    "protein_g": 27.1,
-    "carbs_g": 18.2,
-    "fat_g": 5
+    "kcal": 247,
+    "protein_g": 33.9,
+    "carbs_g": 25.5,
+    "fat_g": 6.7
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "tree_nuts", "fructose"],
@@ -97,6 +97,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "d2dd2c663bf5bc9b66411d80176659085f29d665a1e23f6127a7e74273235954"
+    "import_hash": "b3a1147bb385040982821c64ef82d4bcf08a105b06560d3d43f699cd3e31ba1f"
   }
 }

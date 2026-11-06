@@ -1,6 +1,6 @@
 {
   "id": "suesskartoffel-wuerfel-mit-feta-und-limetten-skyr",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Süßkartoffel-Würfel mit Feta und Limetten-Skyr",
   "description_de": "Rauchig gewürzte Süßkartoffelwürfel, außen gebräunt und innen weich, mit zerbröseltem Feta, Frühlingszwiebeln und einem frischen Limetten-Skyr.",
@@ -111,10 +111,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 322,
-    "protein_g": 14.6,
-    "carbs_g": 39.4,
-    "fat_g": 11.9
+    "kcal": 394,
+    "protein_g": 14.4,
+    "carbs_g": 48.4,
+    "fat_g": 14
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose", "onion_garlic"],
@@ -132,6 +132,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "e846e65f0e0d2f174079eb80a188253fe8082496440b753496a7fee0f8a0f430"
+    "import_hash": "8303cbf1fb7a0a8c0eb66b88fbf8299d07856e732e1d8ae25e656cc8a96b6592"
   }
 }

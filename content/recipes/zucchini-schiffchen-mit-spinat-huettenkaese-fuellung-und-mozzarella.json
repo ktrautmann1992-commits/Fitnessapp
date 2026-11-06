@@ -1,6 +1,6 @@
 {
   "id": "zucchini-schiffchen-mit-spinat-huettenkaese-fuellung-und-mozzarella",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Zucchini-Schiffchen mit Spinat-Hüttenkäse-Füllung und Mozzarella",
   "description_de": "Ausgehöhlte Zucchinihälften mit einer cremigen Füllung aus Spinat, Hüttenkäse, Ei und Parmesan, unter goldbraun überbackenem Mozzarella – viel Eiweiß, wenig Fett.",
@@ -48,7 +48,7 @@
       "role": "protein"
     },
     {
-      "food_id": "parmesan",
+      "food_id": "hartkaese-vegetarisch",
       "amount": 15,
       "unit": "g",
       "optional": false,
@@ -170,6 +170,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "fda4119298a230253168da3eb71e08f64c0c5d328de9e8e229de476a4519583a"
+    "import_hash": "5cb4ebaabf52649de58cd325b163aaaacc79ca5d5d70bf17401be80c20db3186"
   }
 }

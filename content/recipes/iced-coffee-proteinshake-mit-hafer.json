@@ -1,6 +1,6 @@
 {
   "id": "iced-coffee-proteinshake-mit-hafer",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Iced-Coffee-Proteinshake mit Hafer",
   "description_de": "Kalter Kaffee-Shake mit Haferflocken, Banane und Vanille-Whey – Frühstück und Wachmacher in einem Glas.",
@@ -84,10 +84,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 467,
-    "protein_g": 39,
-    "carbs_g": 53.8,
-    "fat_g": 8.9
+    "kcal": 427,
+    "protein_g": 40.4,
+    "carbs_g": 43.5,
+    "fat_g": 8
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["gluten", "dairy", "lactose"],
@@ -105,6 +105,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "6f278b8139f43811e6f8a7109ead8734fb1e8e388b36e15bd0d21b527d38eb9a"
+    "import_hash": "9f4ecc42f41a085a83c86772e539145b2a12b4920b0e1223e2551095d728bcb5"
   }
 }

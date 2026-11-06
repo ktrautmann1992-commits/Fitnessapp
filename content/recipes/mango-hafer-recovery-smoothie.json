@@ -1,6 +1,6 @@
 {
   "id": "mango-hafer-recovery-smoothie",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Mango-Hafer-Recovery-Smoothie",
   "description_de": "Fruchtiger Smoothie aus Banane, Mango, Hafer und Sojadrink mit pflanzlichem Protein – schnell getrunken, füllt Speicher und Flüssigkeit nach dem Ausdauertraining auf.",
@@ -84,10 +84,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 465,
-    "protein_g": 33.9,
-    "carbs_g": 56.6,
-    "fat_g": 9.6
+    "kcal": 421,
+    "protein_g": 37.8,
+    "carbs_g": 45.9,
+    "fat_g": 7.6
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy"],
@@ -105,6 +105,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "c20bc00bce929c7676e2ef1823194bb873a9efba3a2df0d0488692987747df84"
+    "import_hash": "1244b366060851ef658b0c039105f9774fb9639d10c583318635adbe643cd7da"
   }
 }

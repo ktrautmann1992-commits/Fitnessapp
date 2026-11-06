@@ -1,6 +1,6 @@
 {
   "id": "mediterraner-ofen-seelachs-mit-kartoffeln-und-feta",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Mediterraner Ofen-Seelachs mit Kartoffeln und Feta",
   "description_de": "Seelachs auf buntem Blechgemüse mit Kartoffelspalten, Oregano und Zitrone, mit Feta überbacken.",
@@ -148,10 +148,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 621,
-    "protein_g": 50.9,
-    "carbs_g": 53,
-    "fat_g": 21.8
+    "kcal": 700,
+    "protein_g": 52.3,
+    "carbs_g": 59.2,
+    "fat_g": 25
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["dairy", "lactose", "fish", "histamine", "onion_garlic"],
@@ -169,6 +169,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "cd105713babfb61d81e3f3a7780ba4e69ba42f978eb799f98759b7f716762868"
+    "import_hash": "6650cdb496f2cdb577f494393b32bf38291f5b5eee14ea3921c3b7c5cf77ae1c"
   }
 }

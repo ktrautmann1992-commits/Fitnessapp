@@ -1,6 +1,6 @@
 {
   "id": "espresso-eiskaffee-protein-eis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Espresso-Eiskaffee-Protein-Eis",
   "description_de": "Eiskaffee zum Löffeln: kräftiger Espresso, Vanille und ein Hauch Karamell – erfrischend am Sommernachmittag und mit wenig Fett.",
@@ -85,10 +85,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 214,
-    "protein_g": 27.5,
-    "carbs_g": 13.8,
-    "fat_g": 4.8
+    "kcal": 212,
+    "protein_g": 29.8,
+    "carbs_g": 24.4,
+    "fat_g": 5.9
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose", "tree_nuts"],
@@ -106,6 +106,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "93f70eaaca79bd8c76e27fd2fd665123744bda9bd5a3115d9139d3fd240ed0b1"
+    "import_hash": "8db10dd31fe0131fd521743f2767489cf8cf9deac82c9254d927a767795a1a3f"
   }
 }

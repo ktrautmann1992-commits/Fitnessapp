@@ -1,6 +1,6 @@
 {
   "id": "kokos-tofu-curry-mit-blumenkohlreis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Kokos-Tofu-Curry mit Blumenkohlreis",
   "description_de": "Mildes gelbes Curry mit Tofu, Paprika und Spinat in Kokosmilch, serviert auf Blumenkohlreis statt Basmati – vegan und angenehm leicht.",
@@ -101,10 +101,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 489,
-    "protein_g": 35,
-    "carbs_g": 17.4,
-    "fat_g": 29
+    "kcal": 651,
+    "protein_g": 42.3,
+    "carbs_g": 24.5,
+    "fat_g": 41.4
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "celery", "mustard", "histamine", "spicy"],
@@ -122,6 +122,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "16f0bfb0e7963d63088edbfcb815a411d94808c4970e8d10c9463f7087469d56"
+    "import_hash": "b507ee4e3bd527e90704f2e39f8a275917a633b4dc6d31aee4ffccc66ef67ac0"
   }
 }

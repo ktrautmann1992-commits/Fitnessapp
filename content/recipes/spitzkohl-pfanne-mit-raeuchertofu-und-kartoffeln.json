@@ -1,6 +1,6 @@
 {
   "id": "spitzkohl-pfanne-mit-raeuchertofu-und-kartoffeln",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Spitzkohl-Pfanne mit Räuchertofu und Kartoffeln",
   "description_de": "Deftige deutsche Pfanne mit geschmortem Spitzkohl, rauchigem Tofu und Kartoffeln in leichter Senf-Rahmsauce.",
@@ -138,10 +138,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 618,
-    "protein_g": 35.6,
-    "carbs_g": 46.2,
-    "fat_g": 30.3
+    "kcal": 588,
+    "protein_g": 32.4,
+    "carbs_g": 51.3,
+    "fat_g": 24.8
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "mustard", "onion_garlic"],
@@ -159,6 +159,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "308e69a9f5cfedb97efb1a4f8f624fdbf6c073b4aab23724b26de42581fd73e4"
+    "import_hash": "ea7c71a4df65a05beb1f58d7143df60ad5a932975941a3268cbd6d702ad27db9"
   }
 }

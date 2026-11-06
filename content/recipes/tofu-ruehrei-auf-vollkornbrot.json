@@ -1,6 +1,6 @@
 {
   "id": "tofu-ruehrei-auf-vollkornbrot",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Tofu-Rührei auf Vollkornbrot",
   "description_de": "Würziges Rührei aus zerbröseltem Tofu mit Kurkuma und Spinat auf kräftigem Vollkornbrot mit Tomaten.",
@@ -129,10 +129,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 524,
-    "protein_g": 36.4,
-    "carbs_g": 41,
-    "fat_g": 21.9
+    "kcal": 500,
+    "protein_g": 41.4,
+    "carbs_g": 36,
+    "fat_g": 17.7
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "histamine", "onion_garlic"],
@@ -150,6 +150,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "a8b9b1373519146e974d81af8283e4d19461220b2957ee5508a9c17453cb962b"
+    "import_hash": "e30d4fdac991f6f7ddbcad780e59314aa64266eca3065139151763a2d0bf1ae6"
   }
 }

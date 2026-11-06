@@ -1,6 +1,6 @@
 {
   "id": "erdbeer-basilikum-frozen-joghurt",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Erdbeer-Basilikum-Frozen-Joghurt",
   "description_de": "Frische Erdbeeren treffen auf einen Hauch Basilikum – ein überraschend erfrischender Frozen Joghurt für heiße Tage.",
@@ -85,10 +85,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 228,
-    "protein_g": 28.9,
-    "carbs_g": 23,
-    "fat_g": 1.2
+    "kcal": 221,
+    "protein_g": 27.3,
+    "carbs_g": 33,
+    "fat_g": 2.7
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose", "histamine"],
@@ -106,6 +106,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "64fc46156816a9f5262ee82896810e171908b787b5cc6dfc339f11cfb40e865e"
+    "import_hash": "69532d28154cb61030d915a63c0fefe19cfb3b0039d534f05c2d2a218798639b"
   }
 }

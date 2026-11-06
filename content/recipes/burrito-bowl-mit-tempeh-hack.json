@@ -1,6 +1,6 @@
 {
   "id": "burrito-bowl-mit-tempeh-hack",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Burrito-Bowl mit Tempeh-Hack",
   "description_de": "Mexikanische Bowl mit rauchig gewürztem, zerbröseltem Tempeh, Reis, schwarzen Bohnen, Mais und Avocado.",
@@ -157,10 +157,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 673,
-    "protein_g": 37.8,
-    "carbs_g": 77.5,
-    "fat_g": 24
+    "kcal": 660,
+    "protein_g": 38,
+    "carbs_g": 76.2,
+    "fat_g": 17.1
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "histamine", "spicy"],
@@ -178,6 +178,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "dddac0991d9208d1ffd2a7f89376610b71b0b5601ee7243002c2ac5c252be9d2"
+    "import_hash": "a545c18309f97a63091b83f3a746216b966e1270b02598b269d58985852a0450"
   }
 }

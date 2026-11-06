@@ -1,6 +1,6 @@
 {
   "id": "wassermelone-limette-sorbet",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Wassermelone-Limette-Sorbet",
   "description_de": "Hellrotes, superleichtes Sorbet aus Wassermelone und Limette mit klarem Fruchtprotein – pure Abkühlung bei Hitze.",
@@ -85,10 +85,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 203,
-    "protein_g": 27.4,
-    "carbs_g": 23.9,
-    "fat_g": 0.7
+    "kcal": 218,
+    "protein_g": 19.3,
+    "carbs_g": 39.9,
+    "fat_g": 1.6
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose", "fructose"],
@@ -106,6 +106,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "8992add9fdcb15c9bc5f31e32cee9f93a3af7e5def4ec5a9943f01e0b6739712"
+    "import_hash": "245619f747c4fed113ec9ac876481420e278397c58b711bfa7f4961a17a052ed"
   }
 }

@@ -1,6 +1,6 @@
 {
   "id": "chili-con-carne-mit-rinderhack-und-reis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Chili con Carne mit Rinderhack und Reis",
   "description_de": "Kräftiges mexikanisches Chili mit magerem Rinderhack, Bohnen und Mais – ein Topf, der sich perfekt für mehrere Tage vorkochen lässt.",
@@ -140,10 +140,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 598,
-    "protein_g": 42.5,
-    "carbs_g": 73.6,
-    "fat_g": 13
+    "kcal": 662,
+    "protein_g": 42.6,
+    "carbs_g": 71.6,
+    "fat_g": 18.5
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["beef", "legumes", "histamine", "onion_garlic", "spicy"],
@@ -169,6 +169,6 @@
       }
     ],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "ecbc7b663ed072ca58e40e2cd6a49f03ac383e321c12c0bd5194852a23e9c91d"
+    "import_hash": "8222a5106b06985f178a8e41599040e2e2fa78c71d0994da192e2fff807223d9"
   }
 }

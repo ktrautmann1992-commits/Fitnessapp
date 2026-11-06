@@ -1,6 +1,6 @@
 {
   "id": "kassler-bauernfruehstueck-mit-ei",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Kassler-Bauernfrühstück mit Ei",
   "description_de": "Deftige Bratkartoffeln mit magerem Kassler und Ei aus der Pfanne – der Klassiker für Hungrige.",
@@ -113,10 +113,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 487,
-    "protein_g": 36.5,
-    "carbs_g": 32.9,
-    "fat_g": 22.7
+    "kcal": 506,
+    "protein_g": 38.1,
+    "carbs_g": 39.3,
+    "fat_g": 21
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["eggs", "onion_garlic"],
@@ -142,6 +142,6 @@
       }
     ],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "f17294e7b76b8c5f312a7afca96a94af95b12c81152d913d77bd93c6ff35d368"
+    "import_hash": "95a16168e655c2e4377d05445a7a396a3c6de818f94adedc688cfb774614a0ac"
   }
 }

@@ -1,6 +1,6 @@
 {
   "id": "pistazien-protein-eis-mit-pistazienkernen",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Pistazien-Protein-Eis mit Pistazienkernen",
   "description_de": "Nussig-cremiges Pistazieneis auf Mandeldrink-Basis mit knackigen Kernen – sommerlich wie aus der Eisdiele, aber mit über 30 g Eiweiß.",
@@ -86,10 +86,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 288,
-    "protein_g": 29.8,
-    "carbs_g": 17.2,
-    "fat_g": 10.2
+    "kcal": 290,
+    "protein_g": 32.3,
+    "carbs_g": 27.3,
+    "fat_g": 12.8
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose", "tree_nuts"],
@@ -107,6 +107,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "12e620258b4cbed2515f37c8f055bbc3fbbd7b9ee5b5654577e1fadb98fa940d"
+    "import_hash": "ea9f3d2224ca233cbf9d8c5fbf0e564b0a585a2e9d090eb5e64a5c2e6e4466cf"
   }
 }

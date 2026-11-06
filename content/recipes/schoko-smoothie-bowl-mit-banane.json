@@ -1,6 +1,6 @@
 {
   "id": "schoko-smoothie-bowl-mit-banane",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Schoko-Smoothie-Bowl mit Banane",
   "description_de": "Dicke, eiskalte Schoko-Bowl aus gefrorener Banane, Skyr und Whey – wie Softeis zum Frühstück.",
@@ -93,10 +93,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 518,
-    "protein_g": 45.9,
-    "carbs_g": 56.8,
-    "fat_g": 10.1
+    "kcal": 493,
+    "protein_g": 46.3,
+    "carbs_g": 46.8,
+    "fat_g": 10.2
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["gluten", "dairy", "lactose", "legumes", "peanuts"],
@@ -114,6 +114,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "030ee55d58efed7e65993cfd582f774ca2edf6f06ba38d007c21584ce678a042"
+    "import_hash": "a54931e892899e61f81356123dd6a07b8d54984bd0389804d97fbab29fec33f3"
   }
 }

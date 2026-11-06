@@ -1,6 +1,6 @@
 {
   "id": "hackbaellchen-in-tomatensauce-mit-vollkornnudeln",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Hackbällchen in Tomatensauce mit Vollkornnudeln",
   "description_de": "Saftige Bällchen aus magerem Schweinehack mit Haferflocken als Bindung, in einer einfachen Tomatensauce – Familienklassiker zum kleinen Preis.",
@@ -113,10 +113,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 605,
-    "protein_g": 38.1,
-    "carbs_g": 70,
-    "fat_g": 16.8
+    "kcal": 598,
+    "protein_g": 40.9,
+    "carbs_g": 69.1,
+    "fat_g": 13.3
   },
   "declared_diet": "omnivore",
   "declared_allergens": ["gluten", "histamine", "onion_garlic"],
@@ -139,6 +139,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "3d0e7fef24b40c13b3c79e0c3caa7c691633c50301ca05c618c5f2d32f0e8128"
+    "import_hash": "5440b3170875ef2e5ca0ff86d8f7b1fc293fa962c4d33816bbee2dc3a626b655"
   }
 }

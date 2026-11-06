@@ -1,6 +1,6 @@
 {
   "id": "schnelles-seitan-paprika-gulasch-mit-express-reis",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Schnelles Seitan-Paprika-Gulasch mit Express-Reis",
   "description_de": "Ungarisch gewürzte Seitan-Streifen mit Paprika in Tomatensauce, dazu Reis aus dem Express-Beutel.",
@@ -102,10 +102,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 545,
-    "protein_g": 43.1,
-    "carbs_g": 60.6,
-    "fat_g": 13.7
+    "kcal": 615,
+    "protein_g": 50.1,
+    "carbs_g": 52,
+    "fat_g": 20
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "histamine"],
@@ -123,6 +123,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "f867b274c11e3d63c10804727fd70c189cf1c466cde7a28ac302e44647c58881"
+    "import_hash": "54619ec83bbea1b467343d43655a7b92be3164637dbfc746c97ef175b550a6c3"
   }
 }

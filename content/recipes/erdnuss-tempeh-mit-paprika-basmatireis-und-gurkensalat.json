@@ -1,6 +1,6 @@
 {
   "id": "erdnuss-tempeh-mit-paprika-basmatireis-und-gurkensalat",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Erdnuss-Tempeh mit Paprika, Basmatireis und Gurkensalat",
   "description_de": "Tempeh-Scheiben in einer Erdnuss-Limetten-Marinade werden in der Heißluft rundum knusprig – dazu Reis und ein frischer, säuerlicher Gurkensalat.",
@@ -107,7 +107,7 @@
       "optional": false,
       "display_de": "1 TL (5 ml)",
       "scales": true,
-      "role": "carb"
+      "role": "protein"
     },
     {
       "food_id": "sesam",
@@ -148,10 +148,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 645,
-    "protein_g": 39.3,
-    "carbs_g": 70.3,
-    "fat_g": 25.1
+    "kcal": 596,
+    "protein_g": 38.3,
+    "carbs_g": 65.8,
+    "fat_g": 15.6
   },
   "declared_diet": "vegan",
   "declared_allergens": [
@@ -178,6 +178,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "54964cf357c6617e731144e7d0765d51a9e56b3b6984bf84deb1e24b334d5edf"
+    "import_hash": "6a3a122c454fa34b0a8eb56a463ece39198598f3446a68e6785b119db8331112"
   }
 }

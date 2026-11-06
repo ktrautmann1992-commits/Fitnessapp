@@ -1,6 +1,6 @@
 {
   "id": "hot-dog-light-mit-gefluegelwuerstchen-roestzwiebeln-und-gurkenrelish",
-  "version": 3,
+  "version": 4,
   "status": "draft",
   "title_de": "Hot Dog mit Geflügelwürstchen, Röstzwiebeln und Gurkenrelish",
   "description_de": "Zwei Hot Dogs mit fettreduzierten Geflügelwürstchen, frischem Gurkenrelish und einer Senf-Skyr-Sauce – Imbiss-Feeling mit deutlich mehr Eiweiß.",
@@ -113,10 +113,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 616,
-    "protein_g": 38.1,
-    "carbs_g": 72.1,
-    "fat_g": 19.1
+    "kcal": 695,
+    "protein_g": 36.6,
+    "carbs_g": 75.2,
+    "fat_g": 25.3
   },
   "declared_diet": "omnivore",
   "declared_allergens": [
@@ -143,6 +143,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "cb81fb26f63ff71c1a468747413973f072be5956ffdbd203eb8e9419da98e4a7"
+    "import_hash": "466e8327a8901d0e8f1877eaf674fc8db3bc0d7bad1b600dea9e40bbb28c05fd"
   }
 }

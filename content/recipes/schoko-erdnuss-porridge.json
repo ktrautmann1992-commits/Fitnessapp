@@ -1,6 +1,6 @@
 {
   "id": "schoko-erdnuss-porridge",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Schoko-Erdnuss-Porridge",
   "description_de": "Warmer Proteinbrei mit Kakao, Banane und Erdnussmus – schmeckt wie Nachtisch.",
@@ -93,10 +93,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 516,
-    "protein_g": 35.6,
-    "carbs_g": 52.1,
-    "fat_g": 16.1
+    "kcal": 478,
+    "protein_g": 38.5,
+    "carbs_g": 44,
+    "fat_g": 14.1
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "peanuts"],
@@ -114,6 +114,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "e2182d04b6aee6ee740450cdeeaf92c6f421e73b0b80d092273b0f1b3131e299"
+    "import_hash": "1b880f442abb1682263d2559d8ccfd1778b48cdc76e6a228599bca5cc86c8e5d"
   }
 }

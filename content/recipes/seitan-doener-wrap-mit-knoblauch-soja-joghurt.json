@@ -1,6 +1,6 @@
 {
   "id": "seitan-doener-wrap-mit-knoblauch-soja-joghurt",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Seitan-Döner-Wrap mit Knoblauch-Soja-Joghurt",
   "description_de": "Würzig gebratener Seitan im Vollkorn-Wrap mit knackigem Gemüse – eine kleine, sättigende Mahlzeit mit viel pflanzlichem Eiweiß und Kohlenhydraten zum Auffüllen der Speicher.",
@@ -121,10 +121,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 448,
-    "protein_g": 38.2,
-    "carbs_g": 40.5,
-    "fat_g": 13.3
+    "kcal": 529,
+    "protein_g": 43.9,
+    "carbs_g": 38.7,
+    "fat_g": 20.4
   },
   "declared_diet": "vegan",
   "declared_allergens": [
@@ -150,6 +150,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "851c2a03c534fdf1cbf3cdccde107b4cbeaee22829a18f72c611cb467d4aa596"
+    "import_hash": "3eb7291ef0c832aa688cb05fa218e1cea731479963f65f48b90fc9963a8d1598"
   }
 }

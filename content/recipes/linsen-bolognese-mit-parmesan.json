@@ -1,6 +1,6 @@
 {
   "id": "linsen-bolognese-mit-parmesan",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Linsen-Bolognese mit Parmesan",
   "description_de": "Herzhafte Bolognese aus roten Linsen und Gemüse zu Vollkornnudeln, mit frisch geriebenem Parmesan.",
@@ -74,7 +74,7 @@
       "role": "fat"
     },
     {
-      "food_id": "parmesan",
+      "food_id": "hartkaese-vegetarisch",
       "amount": 15,
       "unit": "g",
       "optional": false,
@@ -159,6 +159,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "e96efed63645852e787da2b0e2f433cf5a12813f88eb6f50e20613b3a2a425c6"
+    "import_hash": "951199921b1de3a3d61dd7312d2bb792f1339ec8ffa69adc07c7301d11bc6327"
   }
 }

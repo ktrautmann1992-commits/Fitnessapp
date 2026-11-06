@@ -1,6 +1,6 @@
 {
   "id": "knusper-tofu-auf-asia-krautsalat-mit-erdnussdressing",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Knusper-Tofu auf Asia-Krautsalat mit Erdnussdressing",
   "description_de": "Knusprig gebratener Tofu auf einem knackigen Salat aus Weißkohl, Rotkohl und Gurke mit cremigem Erdnuss-Limetten-Dressing.",
@@ -110,10 +110,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 461,
-    "protein_g": 34,
-    "carbs_g": 15.6,
-    "fat_g": 28.2
+    "kcal": 457,
+    "protein_g": 40.1,
+    "carbs_g": 12.9,
+    "fat_g": 24.4
   },
   "declared_diet": "vegan",
   "declared_allergens": ["gluten", "legumes", "soy", "peanuts", "sesame", "histamine"],
@@ -131,6 +131,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "6537221185c53f0488397f714dcac7dc56116b2f03f29fc399823b1252d64fe2"
+    "import_hash": "11ebf5bcadb448f26192f6cf69f058c64d9153622ad7995d114c75815560b558"
   }
 }
