@@ -1,11 +1,9 @@
 {
   "id": "mini-frikadellen-mit-honig-senf-skyr-dip",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Mini-Frikadellen mit Honig-Senf-Skyr-Dip",
   "description_de": "Kleine, magere Frikadellen aus dem Ofen mit cremigem Dip und Gurkensticks – der herzhafte Snack für die Bürodose.",
-  "section_de": "Snack",
-  "categories": ["meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 5,
@@ -122,6 +120,8 @@
   "tip_de": "Gegartes Hackfleisch hält im Kühlschrank 3 Tage: Friere 8 Frikadellen für Donnerstag und Freitag ein und lege sie am Vorabend in den Kühlschrank. Schmecken kalt oder 1 Minute bei 600 Watt aufgewärmt; Dip und Gurke bleiben getrennt frisch.",
   "tags_de": ["zum Mitnehmen"],
   "meal_prep_plan_id": "fleisch",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
   "total_minutes": 20,
   "prep_minutes": 2,
   "cook_minutes": 18,
@@ -156,12 +156,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "c23d6bfa5f9306f953db3b29cba52c7f8b5dfd9c308ea17d27e958e69452a9ec",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "c23d6bfa5f9306f953db3b29cba52c7f8b5dfd9c308ea17d27e958e69452a9ec"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "hot-dog-light-mit-gefluegelwuerstchen-roestzwiebeln-und-gurkenrelish",
   "version": 4,
-  "status": "draft",
+  "status": "published",
   "title_de": "Hot Dog mit Geflügelwürstchen, Röstzwiebeln und Gurkenrelish",
   "description_de": "Zwei Hot Dogs mit fettreduzierten Geflügelwürstchen, frischem Gurkenrelish und einer Senf-Skyr-Sauce – Imbiss-Feeling mit deutlich mehr Eiweiß.",
-  "section_de": "Burger & Hot Dog",
-  "categories": ["fitness-fast-food"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -102,6 +100,8 @@
   ],
   "tip_de": "Achte auf die Zutatenliste: Manche Geflügelwürstchen enthalten Schweinespeck oder stecken in Schweinedarm. Für ohne Schwein Würstchen ohne Haut, im Schafsaitling oder Alginat-/Kunstdarm wählen.",
   "tags_de": ["Fitness-Fast-Food"],
+  "section_de": "Burger & Hot Dog",
+  "categories": ["fitness-fast-food"],
   "total_minutes": 15,
   "prep_minutes": 9,
   "cook_minutes": 6,
@@ -137,12 +137,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "466e8327a8901d0e8f1877eaf674fc8db3bc0d7bad1b600dea9e40bbb28c05fd",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "466e8327a8901d0e8f1877eaf674fc8db3bc0d7bad1b600dea9e40bbb28c05fd"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "kokos-garnelen-mit-mango-limetten-skyr",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kokos-Garnelen mit Mango-Limetten-Skyr",
   "description_de": "Garnelen in einer knusprigen Kokos-Panko-Hülle mit fruchtigem Mango-Dip – ein Snack, der nach Urlaub schmeckt.",
-  "section_de": "Snacks & Süßes",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -112,6 +110,8 @@
   ],
   "tip_de": "Kokosraspeln bräunen schnell – ab Minute 5 lieber einmal nachsehen. Statt Garnelen klappt es auch mit Hähnchenbrust-Streifen (10–12 Minuten, Kerntemperatur mindestens 74 °C).",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 20,
   "prep_minutes": 8,
   "cook_minutes": 12,
@@ -138,12 +138,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "3c7ba97f909019a5f49c08f994c074e59959248ac61464b4f58ac53823102eff",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "3c7ba97f909019a5f49c08f994c074e59959248ac61464b4f58ac53823102eff"
+    "import_assumptions_confirmed_by": null
   }
 }

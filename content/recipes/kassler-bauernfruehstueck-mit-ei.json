@@ -1,11 +1,9 @@
 {
   "id": "kassler-bauernfruehstueck-mit-ei",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kassler-Bauernfrühstück mit Ei",
   "description_de": "Deftige Bratkartoffeln mit magerem Kassler und Ei aus der Pfanne – der Klassiker für Hungrige.",
-  "section_de": "Frühstück",
-  "categories": ["post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -102,6 +100,8 @@
     "Bestreue das Bauernfrühstück mit Schnittlauch und serviere es sofort."
   ],
   "tip_de": "Koch abends ein paar Kartoffeln mehr – dann steht das Frühstück morgens in 15 Minuten. Dazu passt eine Gewürzgurke.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
   "total_minutes": 20,
   "prep_minutes": 9,
   "cook_minutes": 11,
@@ -128,10 +128,11 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "95a16168e655c2e4377d05445a7a396a3c6de818f94adedc688cfb774614a0ac",
     "import_assumptions": [
       {
         "ingredient_index": 1,
@@ -141,7 +142,7 @@
         "reason_de": "Schritt 3 gart die Zutat durch: „Gib Zwiebel und Kassler dazu und brate alles 2–3 Minuten weiter.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "95a16168e655c2e4377d05445a7a396a3c6de818f94adedc688cfb774614a0ac"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "baa95b83b5d0a74a"
   }
 }

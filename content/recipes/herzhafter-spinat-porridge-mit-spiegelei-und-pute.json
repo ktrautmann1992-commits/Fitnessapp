@@ -1,11 +1,9 @@
 {
   "id": "herzhafter-spinat-porridge-mit-spiegelei-und-pute",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Herzhafter Spinat-Porridge mit Spiegelei und Pute",
   "description_de": "Würziger Haferbrei mit Brühe, Spinat und Parmesan, getoppt mit zwei Spiegeleiern und Putenbruststreifen.",
-  "section_de": "Frühstück",
-  "categories": [],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -111,6 +109,8 @@
     "Gib den Porridge in eine Schale, lege Spiegeleier und Putenstreifen darauf und bestreue alles mit Chiliflocken."
   ],
   "tip_de": "Statt Spinat passen auch Champignons oder Frühlingszwiebeln. Wer es asiatisch mag, nimmt 1 TL Sojasauce statt Brühe.",
+  "section_de": "Frühstück",
+  "categories": [],
   "total_minutes": 12,
   "prep_minutes": 3,
   "cook_minutes": 9,
@@ -147,12 +147,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "a318b1151b52f0953b30ecb944ab5d1c79e48301ebc9be01bc303dea5f431c26",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "a318b1151b52f0953b30ecb944ab5d1c79e48301ebc9be01bc303dea5f431c26"
+    "import_assumptions_confirmed_by": null
   }
 }

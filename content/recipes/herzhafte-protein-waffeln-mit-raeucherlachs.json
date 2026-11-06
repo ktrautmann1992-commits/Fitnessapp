@@ -1,11 +1,9 @@
 {
   "id": "herzhafte-protein-waffeln-mit-raeucherlachs",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Herzhafte Protein-Waffeln mit Räucherlachs",
   "description_de": "Knusprige Haferwaffeln mit neutralem Whey, belegt mit Räucherlachs, Frischkäse und Gurke – ein Frühstück wie im Café.",
-  "section_de": "Frühstück",
-  "categories": ["post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -129,6 +127,8 @@
     "Bestreiche die Waffeln mit Frischkäse, lege Räucherlachs und Gurke darauf und garniere mit Dill."
   ],
   "tip_de": "Ohne Pulver: Nimm 100 g Magerquark statt 50 g und 10 g mehr Haferflocken. Die Waffeln lassen sich gut einfrieren und im Toaster aufbacken.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
   "total_minutes": 15,
   "prep_minutes": 11,
   "cook_minutes": 4,
@@ -155,12 +155,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "1a97060fa8b434ec79a5a2aacab0779664dbb83568f045d628e8e92e9f01caca",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "1a97060fa8b434ec79a5a2aacab0779664dbb83568f045d628e8e92e9f01caca"
+    "import_assumptions_confirmed_by": null
   }
 }

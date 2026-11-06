@@ -1,11 +1,9 @@
 {
   "id": "knoblauch-garnelen-mit-zucchini-nudeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Knoblauch-Garnelen mit Zucchini-Nudeln",
   "description_de": "Halb Zucchini-Spaghetti, halb Vollkornnudeln mit gebratenen Garnelen, Kirschtomaten, Chili und Parmesan.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -128,6 +126,8 @@
     "Serviere alles mit Parmesan und Petersilie bestreut."
   ],
   "tip_de": "Zucchini-Nudeln nur kurz schwenken, sonst werden sie wässrig.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 18,
   "prep_minutes": 15,
   "cook_minutes": 3,
@@ -162,12 +162,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "3fed3811d008dfa3f03da0bd6bdce5b886c9c448ffb143c8efa3397413a2326d",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "3fed3811d008dfa3f03da0bd6bdce5b886c9c448ffb143c8efa3397413a2326d"
+    "import_assumptions_confirmed_by": null
   }
 }

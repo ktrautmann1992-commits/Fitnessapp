@@ -1,11 +1,9 @@
 {
   "id": "knuspriges-schweineschnitzel-mit-kartoffel-gurken-salat",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Knuspriges Schweineschnitzel mit Kartoffel-Gurken-Salat",
   "description_de": "Dünn paniertes Schnitzel, nur mit wenig Öl gebraten, dazu ein süddeutscher Kartoffelsalat mit Gurke und Dill.",
-  "section_de": "Mittagessen",
-  "categories": ["post-workout"],
   "meal_types": ["main"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -156,6 +154,8 @@
     "Serviere das Schnitzel mit dem Kartoffelsalat und der Zitronenspalte."
   ],
   "tip_de": "Noch fettärmer: Das panierte Schnitzel mit 1 TL Öl beträufeln und bei 220 °C Umluft 12 Minuten im Ofen backen.",
+  "section_de": "Mittagessen",
+  "categories": ["post-workout"],
   "total_minutes": 40,
   "prep_minutes": 37,
   "cook_minutes": 3,
@@ -182,12 +182,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "913a07da824ae1ee34ef2ec53f7d539a079313b245998350d03f2e3033d25682",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "913a07da824ae1ee34ef2ec53f7d539a079313b245998350d03f2e3033d25682"
+    "import_assumptions_confirmed_by": null
   }
 }

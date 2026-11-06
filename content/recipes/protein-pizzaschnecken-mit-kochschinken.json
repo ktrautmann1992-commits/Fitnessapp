@@ -1,11 +1,9 @@
 {
   "id": "protein-pizzaschnecken-mit-kochschinken",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Protein-Pizzaschnecken mit Kochschinken",
   "description_de": "Zwei kleine Pizzaschnecken aus Quark-Öl-Teig mit Tomate, Kochschinken und Käse – warm oder kalt ein Genuss.",
-  "section_de": "Snack",
-  "categories": ["meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -119,6 +117,8 @@
     "Backe die Schnecken 15–18 Minuten goldbraun."
   ],
   "tip_de": "Ideal zum Vorbacken für die Woche – kalt in der Brotdose oder kurz im Ofen aufgewärmt. Ohne Pulver: 10 g mehr Mehl und 20 g mehr Quark.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
   "total_minutes": 30,
   "prep_minutes": 12,
   "cook_minutes": 18,
@@ -145,12 +145,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "5002ddbdff59b75077e81129220157cdef04b5e16af4d99ac5fab6b374aa29c8",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "5002ddbdff59b75077e81129220157cdef04b5e16af4d99ac5fab6b374aa29c8"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "protein-french-toast-mit-zimt-und-himbeer-skyr",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Protein-French-Toast mit Zimt und Himbeer-Skyr",
   "description_de": "Vollkorntoast in Zimt-Eiermilch getränkt und in der Heißluft goldbraun gebacken, mit Himbeer-Skyr – ein warmes Frühstück oder ein süßer Snack mit viel Eiweiß.",
-  "section_de": "Snacks & Süßes",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -83,6 +81,8 @@
   ],
   "tip_de": "Ohne Backpapier wird die Unterseite knuspriger. Wer es süßer mag, süßt den Skyr mit etwas Erythrit oder 1 TL Honig.",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 15,
   "prep_minutes": 3,
   "cook_minutes": 12,
@@ -109,12 +109,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "e7d3d63ceb644da12763cbfc81140e031c0fbef9572880777f7a19c199db6135",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "e7d3d63ceb644da12763cbfc81140e031c0fbef9572880777f7a19c199db6135"
+    "import_assumptions_confirmed_by": null
   }
 }

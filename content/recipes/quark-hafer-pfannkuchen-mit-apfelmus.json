@@ -1,11 +1,9 @@
 {
   "id": "quark-hafer-pfannkuchen-mit-apfelmus",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Quark-Hafer-Pfannkuchen mit Apfelmus",
   "description_de": "Fluffige Pfannkuchen aus Haferflocken, Magerquark und Eiern, die ohne Mehl und Pulver auf über 35 g Eiweiß kommen.",
-  "section_de": "Frühstück",
-  "categories": ["spar-kueche"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -74,6 +72,8 @@
   ],
   "tip_de": "Statt Apfelmus passt ein geriebener Apfel mit Zimt. Die Pfannkuchen lassen sich am Vorabend backen und kalt mitnehmen.",
   "tags_de": ["Spar-Küche"],
+  "section_de": "Frühstück",
+  "categories": ["spar-kueche"],
   "total_minutes": 15,
   "prep_minutes": 12,
   "cook_minutes": 3,
@@ -105,12 +105,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "83b868778721fd26ee2fcd5cd6e62d578276be09728943537db232ab49f347db",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "83b868778721fd26ee2fcd5cd6e62d578276be09728943537db232ab49f347db"
+    "import_assumptions_confirmed_by": null
   }
 }

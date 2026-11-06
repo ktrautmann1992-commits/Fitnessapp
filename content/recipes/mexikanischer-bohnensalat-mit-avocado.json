@@ -1,11 +1,9 @@
 {
   "id": "mexikanischer-bohnensalat-mit-avocado",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Mexikanischer Bohnensalat mit Avocado",
   "description_de": "Bunter Salat mit schwarzen Bohnen, Edamame, Mais und Avocado in Limetten-Dressing.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -127,6 +125,8 @@
     "Vermische alle Zutaten mit dem Dressing und lass den Salat 5 Minuten durchziehen."
   ],
   "tip_de": "Für Meal-Prep die Avocado erst kurz vor dem Essen dazugeben.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 15,
   "prep_minutes": 15,
   "cook_minutes": 0,
@@ -153,12 +153,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "bc7f4c68fb007b7be8d21491b707cdaef5604ed6b1d576ce1a9b2f82ad53c4c0",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "bc7f4c68fb007b7be8d21491b707cdaef5604ed6b1d576ce1a9b2f82ad53c4c0"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "quark-porridge-mit-beeren",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Quark-Porridge mit Beeren",
   "description_de": "Cremiger Haferbrei, in den zum Schluss Magerquark gerührt wird – warm, cremig und sättigend.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "pre-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -74,6 +72,8 @@
   ],
   "tip_de": "Den Quark erst nach dem Kochen einrühren – so flockt er nicht aus.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "pre-workout"],
   "total_minutes": 10,
   "prep_minutes": 6,
   "cook_minutes": 4,
@@ -100,12 +100,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "af80a31e42c64f3ef05f4effd989b3898fe342d09c3d1b80b8667785d3b769e8",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "af80a31e42c64f3ef05f4effd989b3898fe342d09c3d1b80b8667785d3b769e8"
+    "import_assumptions_confirmed_by": null
   }
 }

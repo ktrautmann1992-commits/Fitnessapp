@@ -1,11 +1,9 @@
 {
   "id": "mildes-haehnchen-joghurt-curry-mit-kichererbsen-und-reis",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Mildes Hähnchen-Joghurt-Curry mit Kichererbsen und Reis",
   "description_de": "Zartes Hähnchen in einer milden Tomaten-Joghurt-Currysauce mit Kichererbsen und Spinat – Wohlfühlessen für die Mittagspause.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 5,
@@ -148,6 +146,8 @@
   ],
   "tip_de": "Gegarter Reis und Hähnchen halten im Kühlschrank höchstens 3–4 Tage: Friere die Portionen für Donnerstag und Freitag sofort ein und lege sie am Vorabend in den Kühlschrank. Zugedeckt 3–4 Minuten bei 600 Watt aufwärmen und umrühren, bis alles dampft. Die Stärke verhindert, dass der Joghurt beim Aufwärmen ausflockt.",
   "meal_prep_plan_id": "ohne-schwein",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
   "total_minutes": 30,
   "prep_minutes": 11,
   "cook_minutes": 19,
@@ -177,17 +177,18 @@
     "spicy"
   ],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "cc6e63be4356bc3f3ebec15cb03e3b79462d3780540e5d0f6234f3c3f12c06ac",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -197,7 +198,7 @@
         "reason_de": "Schritt 2 gart die Zutat durch: „Schneide das Hähnchen in mundgerechte Stücke und brate es in 1 EL Öl 5 Minuten rundum an; herausnehmen.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "cc6e63be4356bc3f3ebec15cb03e3b79462d3780540e5d0f6234f3c3f12c06ac"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "b7fc255fa056ece7"
   }
 }

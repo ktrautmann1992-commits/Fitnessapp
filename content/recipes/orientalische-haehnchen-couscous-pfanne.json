@@ -1,11 +1,9 @@
 {
   "id": "orientalische-haehnchen-couscous-pfanne",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Orientalische Hähnchen-Couscous-Pfanne",
   "description_de": "Hähnchenstreifen mit Zucchini, Paprika und Kichererbsen in Kreuzkümmel und Zimt, dazu Couscous und Minz-Joghurt.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -164,6 +162,8 @@
     "Verrühre Joghurt, gehackte Minze, restlichen Zitronensaft und Salz und serviere den Dip dazu."
   ],
   "tip_de": "Schmeckt auch kalt als Salat – ideal für die Lunchbox.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
   "total_minutes": 18,
   "prep_minutes": 9,
   "cook_minutes": 9,
@@ -191,17 +191,18 @@
     "onion_garlic"
   ],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "c2b7bd4c3547a7f57f4b7239c441e8b2491bbeb323bb5d65ec1e5de6777d94b4",
     "import_assumptions": [
       {
         "ingredient_index": 3,
@@ -211,7 +212,7 @@
         "reason_de": "Schritt 3 gart die Zutat durch: „Brate das Hähnchen im Olivenöl bei hoher Hitze 4–5 Minuten an, gib Gemüse und Kichererbsen dazu und brate alles weitere 4 Minuten.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "c2b7bd4c3547a7f57f4b7239c441e8b2491bbeb323bb5d65ec1e5de6777d94b4"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "680a82a4df3d3070"
   }
 }

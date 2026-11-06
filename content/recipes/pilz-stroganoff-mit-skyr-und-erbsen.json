@@ -1,11 +1,9 @@
 {
   "id": "pilz-stroganoff-mit-skyr-und-erbsen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Pilz-Stroganoff mit Skyr & Erbsen",
   "description_de": "Würzige Champignonpfanne mit Paprika und cremiger Skyr-Sauce auf einer kleinen Portion Reis.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -118,6 +116,8 @@
     "Nimm die Pfanne vom Herd, rühr den Skyr unter, schmecke mit Salz und Pfeffer ab und serviere das Stroganoff mit Reis und Petersilie."
   ],
   "tip_de": "Den Skyr nicht mehr kochen lassen, sonst flockt er aus.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 25,
   "prep_minutes": 14,
   "cook_minutes": 11,
@@ -144,12 +144,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "71552efddbd589f645d1ae0101dbdcf0d63c8edd0ebb2fb96c16c2d826704719",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "71552efddbd589f645d1ae0101dbdcf0d63c8edd0ebb2fb96c16c2d826704719"
+    "import_assumptions_confirmed_by": null
   }
 }

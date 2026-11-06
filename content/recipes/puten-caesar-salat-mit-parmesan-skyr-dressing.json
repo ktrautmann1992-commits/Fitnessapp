@@ -1,11 +1,9 @@
 {
   "id": "puten-caesar-salat-mit-parmesan-skyr-dressing",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Puten-Caesar-Salat mit Parmesan-Skyr-Dressing",
   "description_de": "Der Klassiker ohne Croûtons und schwere Sauce: gebratene Putenbrust auf knackigem Romanasalat mit einem cremigen Dressing aus Skyr, Parmesan und Zitrone.",
-  "section_de": "Mittagessen",
-  "categories": ["low-carb"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -100,6 +98,8 @@
     "Schneide die Pute in Streifen, lege sie auf den Salat und streue den restlichen Parmesan darüber."
   ],
   "tip_de": "Für unterwegs Dressing separat einpacken und erst kurz vor dem Essen untermischen.",
+  "section_de": "Mittagessen",
+  "categories": ["low-carb"],
   "total_minutes": 15,
   "prep_minutes": 9,
   "cook_minutes": 6,
@@ -119,17 +119,18 @@
   "declared_diet": "omnivore",
   "declared_allergens": ["dairy", "lactose", "poultry", "mustard", "histamine", "onion_garlic"],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "c6f13308e7d91b5f949ba09730d823a8dfc697a208cdea50a90b9aef2e5d8cc1",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -139,7 +140,7 @@
         "reason_de": "Schritt 1 gart die Zutat durch: „Brate die Putenbrust im Öl bei mittlerer Hitze 5–6 Minuten pro Seite, salze und pfeffere sie und lass sie kurz ruhen.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "c6f13308e7d91b5f949ba09730d823a8dfc697a208cdea50a90b9aef2e5d8cc1"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "72f515b76d4b6e27"
   }
 }

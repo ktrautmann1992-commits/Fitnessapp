@@ -1,11 +1,9 @@
 {
   "id": "ofenlachs-mit-brokkoli-und-suesskartoffel",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Ofenlachs mit Brokkoli und Süßkartoffel",
   "description_de": "Lachsfilet mit Zitrone vom Blech, dazu geröstete Süßkartoffelspalten und Brokkoli – ein Blech, kaum Abwasch.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -92,6 +90,8 @@
     "Richte Lachs, Süßkartoffel und Brokkoli auf einem Teller an."
   ],
   "tip_de": "Ein Klecks Skyr mit Zitrone und Dill passt hervorragend als leichter Dip.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 30,
   "prep_minutes": 5,
   "cook_minutes": 25,
@@ -118,12 +118,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "2f00294f902a270612f989256d9959953d9d8087304cfdb4a65cd436f063be05",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "2f00294f902a270612f989256d9959953d9d8087304cfdb4a65cd436f063be05"
+    "import_assumptions_confirmed_by": null
   }
 }
