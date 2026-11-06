@@ -24,7 +24,7 @@ fünf „Nicht für dich – bitte ärztlich abklären“; Medikamente → Beta-
 Beta-Alanin, Elektrolyte; Herzrhythmus → Elektrolyte, Magnesium. Feste Hinweise (`notices.ts`): Kribbeln harmlos,
 Teildosen, „Trinke nach Durst“, Salz/Medikamente ärztlich abklären, Wechselwirkung mit Antibiotika und
 Knochen-Mitteln (Apotheke fragen), Blutwerte prüfen, Höchstmengen. Datenbank: Aufzählung `supplement_id` und
-`seed_supplements` kennen die neuen IDs (Migrationen `20261106120000`/`20261106120100`, RLS unverändert).
+`seed_supplements` kennen die neuen IDs (Migrationen `20261106130000`/`20261106130100`, RLS unverändert).
 
 ## 2. Zeitpunkte rund um die Einheit (`supplements/training-timing.ts`)
 
