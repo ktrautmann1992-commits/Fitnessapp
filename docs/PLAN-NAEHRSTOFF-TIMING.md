@@ -70,6 +70,24 @@ Auswahl passender Gerichte. Ein Regressionstest stellt sicher, dass die Tagessum
 - Spontane oder von der Uhr importierte Einheiten: nur die Mahlzeit **danach** wird angepasst.
 - Zwei Einheiten am Tag: zwei Fenster, dazwischen eine Auffüll-Mahlzeit.
 
+### 6a. Nach dem Training: „Das solltest du jetzt essen“ (Gründer-Wunsch 06.11.2026)
+
+- Nach **jeder** erledigten Einheit – geplant, spontan/frei oder von der Uhr (Health Connect) – zählt der **echte
+  Beginn** laut Tagebuch (`session_logs.started_at`, Europe/Berlin): `completedSessionStartMinutes`
+  (`plan/session-time.ts`); ohne Beginn bzw. Beginn an einem anderen Tag die geplante Uhrzeit, sonst wie bisher ohne
+  Uhrzeit. Freie Einheiten bekommen ihn über `freeSessionNutritionSessions` (optionales Feld `started_at`).
+- Damit stimmen die Rollen des Tages (Mahlzeit danach) und der bestehende Ablauf passt den gespeicherten Plan an
+  (`resolveMealPlanWeekWithTraining`, Rückmeldung mit „Rückgängig“). **Nur Kommendes ändert sich:** gegessene
+  Mahlzeiten und heute schon vergangene Plätze (Standard-Uhrzeit vor „jetzt“, `TrainingMealProtection.now`,
+  `mealSlotPassed`) bleiben mit Rezept und Portion. Energie, Makros und Schutzgrenzen ändern sich dadurch nicht (nur
+  Rollen/Zeitfenster; Strukturtest in `post-workout.test.ts`).
+- Karte **„Nach dem Training: Das solltest du jetzt essen“** (`postWorkoutMealNow`, `nutrition/post-workout.ts`): heute,
+  bis `POST_WORKOUT_WINDOW_MIN` (180 min, PRODUKTENTSCHEIDUNG) nach dem Ende der zuletzt erledigten Einheit mit Uhrzeit,
+  solange in diesem Platz nichts eingetragen ist. Zeigt das Gericht aus dem (angepassten) Plan, Eiweiß-Richtwert
+  (0,4 g/kg) und Kohlenhydrate des Platzes – Gramm nur wie in der Zeitleiste (Kalorienzahlen an, Körpergewicht, ab 18).
+  Ohne Mahlzeit bis 2 h danach: Snack-Vorschlag aus dem Bestand. Zu sehen auf dem Fertig-Bildschirm eines Workouts,
+  in „Ernährung“ (heute), auf „Heute“ und im Tagebuch-Eintrag. Keine Gesundheitsdaten in Logs.
+
 ## 7. Zeitplan „Essen rund ums Training“ – echte Mahlzeiten
 
 Tagesansicht **Ernährung** (optional Kachel auf **Heute**) zeigt an Trainingstagen eine Zeitleiste:
@@ -163,5 +181,9 @@ bis 21:00    Mahlzeit nach dem Training – Lachs mit Kartoffeln · ca. 30 g Eiw
   als Snack-Rezepte (Banane vor dem Training, Reiswaffeln mit Honig, Datteln, Skyr natur, Ein Glas Milch, Skyr mit
   Banane), Prüfregel R22T (gelb: Markierung vor/nach Training passt nicht zu den Nährwerten), KONZEPT 6.3a,
   HANDY-ANLEITUNG Teil 9n. Keine neuen Schema-Felder → kein eigener Inhalts-Branch nötig.
-- **Offen:** Kachel auf „Heute“ (optional, nicht gebaut); Fachprüfung aller Werte (docs/VOR-VEROEFFENTLICHUNG.md); im
+- **Essen nach dem Training (umgesetzt 06.11.2026, Branch `claude/essen-nach-training`):** Abschnitt 6a; Tests
+  `post-workout.test.ts`, `session-time.test.ts`, `free-session.test.ts`, `dates.test.ts`, App
+  `naehrstoff-timing.test.ts`, e2e `essen-nach-training.spec.ts`. Offen: manuell eingetragene freie Einheiten ohne
+  Beginn (kein Timer) bekommen keine Uhrzeit und damit keine Karte.
+- **Offen:** Kachel „Essen rund ums Training“ auf „Heute“ (optional, nicht gebaut – dort nur die Karte nach dem Training); Fachprüfung aller Werte (docs/VOR-VEROEFFENTLICHUNG.md); im
   Supabase-Modus gibt es „Rückgängig“ nur, wenn der vollständige Plan auf dem Gerät liegt (sonst wird still angepasst).

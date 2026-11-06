@@ -56,3 +56,4 @@ export * from './hydration';
 export * from './training-meal-targets';
 export * from './training-replan';
 export * from './training-timeline';
+export * from './post-workout';

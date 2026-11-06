@@ -5,12 +5,14 @@ import {
   type TimelineExtra,
   type TimelineMeal,
   type TrainingAdaptation,
+  type PostWorkoutMealNow,
   type TrainingTimingNotice,
 } from '@fitnessapp/core';
 
 import { t } from '@/i18n';
 
 import { portionText } from './food-log-format';
+import { slotLabel } from './nutrition-format';
 
 /**
  * Anzeige der Zeitleiste „Essen rund ums Training“ (Nährstoff-Timing 2, Abschnitt 7) – nur Texte, keine Regeln (die
@@ -18,6 +20,7 @@ import { portionText } from './food-log-format';
  * Rein und getestet (training-timeline-format.test.ts).
  */
 const T = t.trainingMeals;
+const MINUTES_PER_DAY = 24 * 60;
 
 /** Portion auf Viertel gerundet: „1 Portion“, „1½ Portionen“, „¾ Portion“. */
 export function portionLabel(factor: number): string {
@@ -121,4 +124,35 @@ export function adjustmentLines(
 /** Uhrzeit der Einheit für den Training-Reiter: „18:30“ bzw. „ca. 17:30 (Standard)“. */
 export function sessionTimeText(minutes: number, approx: boolean): string {
   return T.time.value(clockLabel(minutes), approx);
+}
+
+/**
+ * Texte der Karte „Nach dem Training: Das solltest du jetzt essen“ (06.11.2026). Gramm nur, wenn core sie liefert
+ * (`proteinG`/`carbsG` ≠ null) – sonst ein allgemeiner Satz. Keine Gesundheitsdaten.
+ */
+export function postWorkoutNowLines(
+  now: Pick<
+    PostWorkoutMealNow,
+    'slot' | 'endMinutes' | 'untilMinutes' | 'minutesSinceEnd' | 'proteinG' | 'carbsG'
+  >,
+): { when: string; intro: string; targets: string; targetsA11y: string } {
+  const until = clockLabel(now.untilMinutes);
+  const grams = now.proteinG !== null && now.carbsG !== null;
+  const late = now.untilMinutes > MINUTES_PER_DAY - 1;
+  const just = now.minutesSinceEnd < 1;
+  const end = clockLabel(now.endMinutes);
+  return {
+    when: late
+      ? just
+        ? T.postNow.justFinishedLate
+        : T.postNow.finishedLate(end)
+      : just
+        ? T.postNow.justFinished(until)
+        : T.postNow.finished(end, until),
+    intro: now.slot === null ? T.postNow.snackOnly : T.postNow.slot(slotLabel(now.slot)),
+    targets: grams ? T.postNow.targets(now.proteinG ?? 0, now.carbsG ?? 0) : T.postNow.general,
+    targetsA11y: grams
+      ? T.postNow.targetsA11y(now.proteinG ?? 0, now.carbsG ?? 0)
+      : T.postNow.general,
+  };
 }

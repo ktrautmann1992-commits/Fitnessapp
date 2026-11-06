@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 import { isoDateSchema } from '../age';
-import { SESSION_START_TIME } from '../constants';
-import { isoWeekday } from '../dates';
+import { AGE_CHECK_TIME_ZONE, SESSION_START_TIME } from '../constants';
+import { isoWeekday, wallClockInTimeZone } from '../dates';
 
 /**
  * Uhrzeit einer geplanten Einheit (docs/PLAN-NAEHRSTOFF-TIMING.md Abschnitt 6, Etappe T0/T1). In der Datenbank als
@@ -47,6 +47,39 @@ export function clockLabel(minutes: number): string {
   return minutesToStartTime(
     Math.min(Math.max(Math.round(minutes), 0), SESSION_START_TIME.maxMinutes),
   );
+}
+
+/**
+ * Essen nach dem Training (Gründer-Wunsch 06.11.2026, docs/PLAN-NAEHRSTOFF-TIMING.md 6a): tatsächlicher Beginn einer
+ * ERLEDIGTEN Einheit in Minuten nach Mitternacht (Europe/Berlin, Sommerzeit inklusive) für die Ernährungs-Engine.
+ * Reihenfolge: Beginn laut Tagebuch (`session_logs.started_at`, auch Smartwatch-Übernahmen) – nur, wenn er auf den Tag
+ * der Einheit fällt (Beginn am Vortag kurz vor Mitternacht o. Ä. zählt nicht als Uhrzeit dieses Tages); sonst die
+ * geplante Uhrzeit (`planned_sessions.start_time`); sonst null (Engine wie bisher mit „Trainingszeit“).
+ * Ergebnis innerhalb SESSION_START_TIME (00:00–23:59). Ändert nur Zeitfenster/Rollen – nie Energie oder Grenzen.
+ */
+export function completedSessionStartMinutes(
+  input: {
+    /** Kalendertag der Einheit (geplant: `scheduled_on`, frei: `performed_on`). */
+    readonly day: string;
+    readonly startedAt?: string | null;
+    readonly plannedStartTime?: string | null;
+  },
+  timeZone: string = AGE_CHECK_TIME_ZONE,
+): number | null {
+  if (input.startedAt !== null && input.startedAt !== undefined) {
+    try {
+      const wall = wallClockInTimeZone(input.startedAt, timeZone);
+      if (wall.date === input.day) {
+        return Math.min(
+          Math.max(wall.minutes, SESSION_START_TIME.minMinutes),
+          SESSION_START_TIME.maxMinutes,
+        );
+      }
+    } catch {
+      // Unlesbarer Zeitstempel: wie ohne Beginn.
+    }
+  }
+  return startTimeToMinutes(input.plannedStartTime);
 }
 
 /**

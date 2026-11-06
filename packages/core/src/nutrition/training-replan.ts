@@ -1,5 +1,5 @@
 import { isoDateSchema } from '../age';
-import { NUTRIENT_TIMING, PORTION_SCALE_LIMITS } from '../constants';
+import { MEAL_SLOT_TIMES, NUTRIENT_TIMING, PORTION_SCALE_LIMITS } from '../constants';
 import { type FilteredRecipe, mealTypeForSlot } from './filter';
 import {
   assembleWeek,
@@ -49,6 +49,12 @@ type PlanInput = Omit<MealPlanInput, 'existingPlan' | 'variant'>;
 export interface TrainingMealProtection {
   /** Als gegessen eingetragene Plan-Mahlzeiten (Ernährungstagebuch, Quelle Plan) als `datum|platz`. */
   readonly eaten: ReadonlySet<string>;
+  /**
+   * Essen nach dem Training (06.11.2026): Jetzt (Tag, Minuten nach Mitternacht, Europe/Berlin). Plätze HEUTE, deren
+   * Standard-Uhrzeit schon vorbei ist, gelten als vergangen und werden nie automatisch getauscht (Portion bleibt) – eine
+   * nachträglich eingetragene bzw. von der Uhr übernommene Einheit ändert nur, was noch kommt. Fehlt es: wie bisher.
+   */
+  readonly now?: { readonly date: string; readonly minutes: number };
 }
 
 export const NO_TRAINING_PROTECTION: TrainingMealProtection = { eaten: new Set() };
@@ -82,6 +88,18 @@ export interface TrainingAdaptation {
 }
 
 const slotKey = (date: string, slot: string) => `${date}|${slot}`;
+
+/** Liegt der Platz heute schon in der Vergangenheit (Standard-Uhrzeit vor „jetzt“)? Ohne `now` nie. */
+export function mealSlotPassed(
+  date: string,
+  slot: string,
+  protection: Pick<TrainingMealProtection, 'now'>,
+): boolean {
+  const now = protection.now;
+  if (now === undefined || date !== now.date) return false;
+  const time = (MEAL_SLOT_TIMES as Record<string, number | undefined>)[slot];
+  return time !== undefined && time < now.minutes;
+}
 
 /** Tage ab heute, an denen die gespeicherten Rollen nicht mehr zu den Tageszielen passen (gleiche Plätze). */
 export function trainingRoleMismatchDays(
@@ -127,6 +145,7 @@ export function mealProtected(
 ): boolean {
   return (
     protection.eaten.has(slotKey(date, meal.slot)) ||
+    mealSlotPassed(date, meal.slot, protection) ||
     meal.chosen === true ||
     meal.shared === true ||
     (meal.ingredientSwaps?.length ?? 0) > 0 ||
@@ -209,7 +228,9 @@ export function adaptMealPlanToTraining(
       if (variant === null) return null;
       const slot = info.slot;
       const role = info.role;
-      const eaten = protection.eaten.has(slotKey(date, slot));
+      // Gegessen bzw. heute schon vorbei: Portion bleibt genau, wie sie war.
+      const eaten =
+        protection.eaten.has(slotKey(date, slot)) || mealSlotPassed(date, slot, protection);
       const keep = (v: FilteredRecipe, extra: Partial<SelectedMeal> = {}): SelectedMeal => ({
         slot,
         role,

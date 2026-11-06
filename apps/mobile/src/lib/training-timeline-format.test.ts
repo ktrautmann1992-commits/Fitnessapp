@@ -2,6 +2,7 @@ import type { TimelineEntry } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
 import {
+  postWorkoutNowLines,
   adjustmentLines,
   entryA11y,
   entryWindow,
@@ -136,5 +137,50 @@ describe('Zeitleiste „Essen rund ums Training“ – Texte', () => {
     ]);
     expect(sessionTimeText(1110, false)).toBe('18:30');
     expect(sessionTimeText(1050, true)).toBe('ca. 17:30 (Standard)');
+  });
+});
+
+describe('Karte „Nach dem Training“ – Texte', () => {
+  const base = {
+    slot: 'lunch' as const,
+    endMinutes: 11 * 60,
+    untilMinutes: 13 * 60,
+    minutesSinceEnd: 20,
+    proteinG: 32,
+    carbsG: 70,
+  };
+
+  it('mit Gramm: Ende, „bis“, Platz und Richtwert für diese Mahlzeit', () => {
+    expect(postWorkoutNowLines(base)).toEqual({
+      when: 'Training beendet um 11:00 – am besten bis 13:00 essen.',
+      intro: 'Aus deinem Essensplan – Mittagessen:',
+      targets: 'Richtwert für diese Mahlzeit: ca. 32 g Eiweiß · 70 g Kohlenhydrate',
+      targetsA11y:
+        'Richtwert für diese Mahlzeit: ungefähr 32 Gramm Eiweiß und 70 Gramm Kohlenhydrate',
+    });
+  });
+
+  it('gerade fertig, ohne Gramm, nur Snack-Vorschlag', () => {
+    const lines = postWorkoutNowLines({
+      ...base,
+      slot: null,
+      minutesSinceEnd: 0,
+      proteinG: null,
+      carbsG: null,
+    });
+    expect(lines.when).toBe('Gut gemacht! Am besten bis 13:00 essen.');
+    expect(lines.intro).toContain('Snack');
+    expect(lines.targets).not.toMatch(/\d+ g/);
+    expect(lines.targets).toBe(lines.targetsA11y);
+  });
+
+  it('spät am Abend (Fenster endet nach Mitternacht): „bald“ statt Uhrzeit', () => {
+    expect(postWorkoutNowLines({ ...base, endMinutes: 23 * 60, untilMinutes: 25 * 60 }).when).toBe(
+      'Training beendet um 23:00 – am besten bald etwas essen.',
+    );
+    expect(
+      postWorkoutNowLines({ ...base, endMinutes: 1450, untilMinutes: 1570, minutesSinceEnd: 0 })
+        .when,
+    ).toBe('Gut gemacht! Am besten bald etwas essen.');
   });
 });

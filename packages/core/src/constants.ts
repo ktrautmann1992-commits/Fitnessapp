@@ -6795,6 +6795,17 @@ export const NUTRIENT_TIMING = {
 } as const;
 
 /**
+ * „Nach dem Training: Das solltest du jetzt essen“ (Gründer-Wunsch 06.11.2026, docs/PLAN-NAEHRSTOFF-TIMING.md 6a):
+ * Die Karte erscheint bis `POST_WORKOUT_WINDOW_MIN` (180 min) nach dem Ende der zuletzt erledigten Einheit, solange die
+ * Mahlzeit „nach dem Training“ noch nicht als gegessen eingetragen ist. PRODUKTENTSCHEIDUNG: etwas länger als das
+ * Fenster der Mahlzeit danach (NUTRIENT_TIMING.postWithinMinutes, 2 h), damit die Karte nicht verschwindet, während
+ * jemand noch kocht; angelehnt an Kerksick CM et al. (2017), ISSN Position Stand „Nutrient timing“, J Int Soc Sports
+ * Nutr 14:33 (Eiweiß/Kohlenhydrate in den ersten Stunden nach dem Training, „anabolic window“ eher breit). Ändert keine
+ * Mengen und keine Grenzen. VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const POST_WORKOUT_WINDOW_MIN = 180;
+
+/**
  * Markierungen vor/nach dem Training nach Nährwerten (Nährstoff-Timing T3, Regel R22T, nur gelber Hinweis):
  * „nach dem Training“ ab `postMinProteinEnergyShare` (15 %) der Energie aus Eiweiß. PRODUKTENTSCHEIDUNG – angelehnt an
  * Kerksick CM et al. (2017), J Int Soc Sports Nutr 14:33 (Eiweiß und Kohlenhydrate nach dem Training). VOR LIVEGANG

@@ -30,6 +30,7 @@ import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-route
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { PostWorkoutMealGate } from '@/components/post-workout-meal';
 import { LiveRegion } from '@/components/calendar';
 import { FlowPlayer } from '@/components/flow-player';
 import { ConfirmDialog, Screen } from '@/components/screen';
@@ -353,6 +354,8 @@ export default function WorkoutTimerScreen() {
             {t.workouts.finish.saved}
           </Notice>
         ) : null}
+        {/* Nach dem Training (06.11.2026): „Das solltest du jetzt essen“. */}
+        {done ? <PostWorkoutMealGate /> : null}
         <FieldError
           message={save.kind === 'error' ? save.message : undefined}
           testID="workout-save-error"

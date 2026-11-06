@@ -17,6 +17,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { CycleTodayCard } from '@/components/cycle-entry';
+import { PostWorkoutMealGate } from '@/components/post-workout-meal';
 import { RecoveryTodayCard } from '@/components/recovery';
 import {
   recoveryChoiceFor,
@@ -591,6 +592,7 @@ export default function TodayScreen() {
         {competitionLink}
         <NoticeStack items={noticeItems} testID="today-notices" />
         {header}
+        <PostWorkoutMealGate />
         <Card>
           <Heading level={2}>{t.plan.emptyTitle}</Heading>
           <Body muted>
@@ -989,6 +991,8 @@ export default function TodayScreen() {
       {header}
       {/* Live-Anpassung (Phase 4b, 8.1): offener Vorschlag „Weniger Trainingstage?“ oben. */}
       <FewerDaysCard today={today} />
+      {/* Nach dem Training (06.11.2026): „Das solltest du jetzt essen“ – nur bis 3 h nach einer erledigten Einheit. */}
+      <PostWorkoutMealGate />
       {/* Phase 9: neutraler Kurzweg zum Tages-Check (ohne Zyklus-Wort, nur bei aktivem Modul, K7). */}
       <CycleTodayCard />
       {/* Trainings-Modi: „Reise-Modus bis …“ / „Schon-Modus bis …“ (docs/PLAN-TRAINING-MODI.md 6). */}
