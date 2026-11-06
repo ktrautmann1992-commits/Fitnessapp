@@ -2,8 +2,10 @@ import {
   type DailyMetricRow,
   dailyMetricImportSchema,
   FREE_SESSION,
+  type EnduranceModality,
   groupModality,
   type HeartRateSummaryRow,
+  mergedCardioValues,
   removeSessionLog,
   type WearableConnectionRow,
   type WearableDataType,
@@ -143,6 +145,52 @@ function upsertHeartRate(
 }
 
 /**
+ * Uhr gewinnt bei Distanz und Zeit (06.11.2026, mergedCardioValues): GPS-Eintrag nach dem Zusammenführen mit der Uhr
+ * bekommt Distanz und Dauer der Uhr (wie import_wearable_batch/resolve_wearable_duplicate, *_uhr_distanz.sql).
+ * Beginn/Ende des Eintrags (Aufzeichnung) und die Strecke bleiben. Geändert → Revision + 1.
+ */
+function takeWatchCardio(
+  sessionLogs: SessionLogRow[],
+  cardioLogs: CardioLogRow[],
+  logId: string,
+  modality: EnduranceModality | null,
+  watch: { durationS: number | null; distanceM: number | null },
+  ctx: Pick<WearableContext, 'newId' | 'now'>,
+): { sessionLogs: SessionLogRow[]; cardioLogs: CardioLogRow[] } {
+  const log = sessionLogs.find((l) => l.id === logId);
+  const cardio = cardioLogs.find((c) => c.session_log_id === logId && c.modality === modality);
+  if (!log || !cardio || modality === null) return { sessionLogs, cardioLogs };
+  const next = mergedCardioValues({
+    logSource: log.source,
+    modality,
+    app: { durationS: cardio.duration_s, distanceM: cardio.distance_m },
+    watch,
+  });
+  if (
+    !next.fromWatch ||
+    (next.durationS === cardio.duration_s && next.distanceM === cardio.distance_m)
+  ) {
+    return { sessionLogs, cardioLogs };
+  }
+  return {
+    sessionLogs: sessionLogs.map((l) =>
+      l === log
+        ? {
+            ...l,
+            revision: l.revision + 1,
+            last_write_id: ctx.newId(),
+            client_updated_at: ctx.now,
+            updated_at: ctx.now,
+          }
+        : l,
+    ),
+    cardioLogs: cardioLogs.map((c) =>
+      c === cardio ? { ...c, duration_s: next.durationS, distance_m: next.distanceM } : c,
+    ),
+  };
+}
+
+/**
  * import_wearable_batch im Testmodus. Einwilligungen prüft der Aufrufer (wie die Datenbank: sonst
  * `consent_required`). Ungültige Einheiten/Tage werden übersprungen und gezählt.
  */
@@ -211,6 +259,16 @@ export function applyWearableImport(
             ? { ...c, duration_s: s.duration_s, distance_m: s.distance_m ?? c.distance_m }
             : c,
         );
+      } else {
+        // In einen GPS-Eintrag eingegangen: Distanz und Dauer der Uhr gewinnen (sonst bleibt der Eintrag).
+        ({ sessionLogs, cardioLogs } = takeWatchCardio(
+          sessionLogs,
+          cardioLogs,
+          existing.session_log_id,
+          modality,
+          { durationS: s.duration_s, distanceM: s.distance_m },
+          ctx,
+        ));
       }
       if (s.heart_rate) {
         heartRates = upsertHeartRate(
@@ -254,6 +312,14 @@ export function applyWearableImport(
           imported_at: ctx.now,
           updated_at: ctx.now,
         });
+        ({ sessionLogs, cardioLogs } = takeWatchCardio(
+          sessionLogs,
+          cardioLogs,
+          target.id,
+          modality,
+          { durationS: s.duration_s, distanceM: s.distance_m },
+          ctx,
+        ));
         result.merged += 1;
       }
     }
@@ -381,7 +447,7 @@ export function applyWearableResolve(
   rows: UserRows,
   sessionLogId: string,
   merge: boolean,
-  ctx: Pick<WearableContext, 'userId' | 'now'>,
+  ctx: Pick<WearableContext, 'userId' | 'now' | 'newId'>,
 ): { store: LocalWearableStore; rows: UserRows } | 'not_found' | 'invalid' {
   const entry = store.sessions.find(
     (w) =>
@@ -409,6 +475,18 @@ export function applyWearableResolve(
   ) {
     return 'invalid';
   }
+  // Distanz und Dauer der Uhr (aus dem übernommenen Eintrag) gewinnen bei einem GPS-Eintrag.
+  const watchCardio = rows.cardioLogs.find((c) => c.session_log_id === sessionLogId) ?? null;
+  const taken = watchCardio
+    ? takeWatchCardio(
+        rows.sessionLogs,
+        rows.cardioLogs,
+        target,
+        watchCardio.modality,
+        { durationS: watchCardio.duration_s, distanceM: watchCardio.distance_m },
+        { newId: ctx.newId, now: ctx.now },
+      )
+    : rows;
   return {
     store: {
       ...store,
@@ -423,7 +501,10 @@ export function applyWearableResolve(
           : w,
       ),
     },
-    rows: removeSessionLog(rows, sessionLogId),
+    rows: removeSessionLog(
+      { ...rows, sessionLogs: taken.sessionLogs, cardioLogs: taken.cardioLogs },
+      sessionLogId,
+    ),
   };
 }
 

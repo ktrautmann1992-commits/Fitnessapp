@@ -17,6 +17,7 @@ import {
   splitInsights,
   type TrackedRouteRow,
   usesSpeed,
+  watchCardioForRoute,
 } from '@fitnessapp/core';
 import { spacing } from '@fitnessapp/ui';
 import { useRouter, type Href } from 'expo-router';
@@ -137,6 +138,18 @@ export function RouteInsights({
         })
       : null;
   const watchKcal = watch && wearableSession ? (wearableSession.kcal ?? null) : null;
+  // Uhr gewinnt bei Distanz und Zeit (06.11.2026): App-Aufzeichnung mit Uhr-Einheit zusammengeführt → Kopf-Karte
+  // zeigt Distanz, Zeit und Tempo laut Eintrag (= Uhr); Karte, Kilometerzeiten und Höhenmeter bleiben von der Strecke.
+  const watchCardio = logId
+    ? watchCardioForRoute({
+        logSource: app.rows.sessionLogs.find((l) => l.id === logId)?.source ?? null,
+        merged: wearableSession?.merged === true,
+        cardio: app.rows.cardioLogs.find((c) => c.session_log_id === logId) ?? null,
+        route: info,
+      })
+    : null;
+  const heroDistanceM = watchCardio?.distanceM ?? info.distance_m;
+  const heroTimeS = watchCardio?.durationS ?? info.moving_s;
   const mapCard = (
     <Card>
       <RouteMapSection
@@ -159,11 +172,13 @@ export function RouteInsights({
         meta={`${eBike ? E.eBike.sport : walkKind ? HK.kinds[walkKind] : E.sports[info.sport]}${
           sacGrade !== null && isHikeKind(walkKind) ? ` · ${HK.sacValue(sacGrade)}` : ''
         } · ${formatDateDe(day)}${watch ? ` · ${WR.heroSource}` : ''}${
-          info.is_favorite ? ` · ★ ${D.favorite}` : ''
-        }${difficulty ? ` · ${E.save.difficulties[difficulty]}` : ''}`}
-        distance={distanceText(info.distance_m)}
-        pace={averagePaceOrSpeedText(info.sport, info.moving_s, info.distance_m)}
-        time={durationText(info.moving_s)}
+          watchCardio ? ` · ${WR.watchDistance}` : ''
+        }${info.is_favorite ? ` · ★ ${D.favorite}` : ''}${
+          difficulty ? ` · ${E.save.difficulties[difficulty]}` : ''
+        }`}
+        distance={distanceText(heroDistanceM)}
+        pace={averagePaceOrSpeedText(info.sport, heroTimeS, heroDistanceM)}
+        time={durationText(heroTimeS)}
         elevation={info.elevation_gain_m !== null ? `${info.elevation_gain_m} m` : null}
         points={points}
         runs={paceColoredRuns(points, segments)}

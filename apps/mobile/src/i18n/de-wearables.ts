@@ -185,7 +185,7 @@ export const deWearables = {
   kcal: (n: number) => `${n} kcal (laut Uhr)`,
   duplicateTitle: 'Möglicher Doppel-Eintrag',
   duplicateText:
-    'Diese Einheit von der Uhr könnte dieselbe sein wie ein anderer Eintrag am selben Tag. Zusammenführen: Der andere Eintrag bleibt und bekommt Puls und kcal von der Uhr.',
+    'Diese Einheit von der Uhr könnte dieselbe sein wie ein anderer Eintrag am selben Tag. Zusammenführen: Der andere Eintrag bleibt und bekommt Puls und kcal von der Uhr – bei einer Aufzeichnung mit GPS auch Distanz und Zeit laut Uhr.',
   duplicateOpen: 'Anderen Eintrag ansehen',
   duplicateMerge: 'Zusammenführen',
   duplicateKeep: 'Beide behalten',
@@ -204,6 +204,8 @@ export const deWearables = {
   route: {
     /** Kennzeichen in der Kopf-Karte des Laufs. */
     heroSource: '⌚ laut Uhr',
+    /** App-Aufzeichnung mit Uhr zusammengeführt: Distanz und Zeit stammen von der Uhr (06.11.2026). */
+    watchDistance: '⌚ Distanz und Zeit laut Uhr',
     avgHr: 'Ø Puls',
     kcal: 'kcal laut Uhr',
     legendNote: 'Route von der Uhr, nur für dich sichtbar',
