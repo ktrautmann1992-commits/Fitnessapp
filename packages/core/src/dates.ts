@@ -69,3 +69,34 @@ export function isoDateInTimeZone(
   const part = (type: 'year' | 'month' | 'day') => parts.find((p) => p.type === type)?.value ?? '';
   return `${part('year')}-${part('month')}-${part('day')}`;
 }
+
+/**
+ * Wanduhr eines Zeitpunkts in einer Zeitzone (Standard Europe/Berlin, Sommerzeit inklusive): Kalenderdatum und
+ * Minuten nach Mitternacht (0–1439). `timestamp` als ISO-Zeitstempel oder Millisekunden. Ungültig → RangeError.
+ */
+export function wallClockInTimeZone(
+  timestamp: string | number,
+  timeZone: string = AGE_CHECK_TIME_ZONE,
+): { readonly date: string; readonly minutes: number } {
+  const time = typeof timestamp === 'number' ? timestamp : Date.parse(timestamp);
+  if (!Number.isFinite(time)) {
+    throw new RangeError('Ungültiger Zeitstempel.');
+  }
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).formatToParts(new Date(time));
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((p) => p.type === type)?.value ?? '';
+  // Manche Laufzeiten liefern um Mitternacht „24“ statt „00“ – auf 0 abbilden.
+  const hour = Number(part('hour')) % 24;
+  return {
+    date: `${part('year')}-${part('month')}-${part('day')}`,
+    minutes: hour * 60 + Number(part('minute')),
+  };
+}

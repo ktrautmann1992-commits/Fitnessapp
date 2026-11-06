@@ -2,6 +2,7 @@ import { FREE_SESSION, SESSION_LOG_LIMITS, SPORT_CATALOGUE } from '../constants'
 import { addDays, isoDateInTimeZone } from '../dates';
 import type { EnduranceModality, LoadType, PlannedSessionKind } from '../enums';
 import type { IncrementKind } from '../plan/loads';
+import { completedSessionStartMinutes } from '../plan/session-time';
 import {
   type CardioInput,
   type CardioInputError,
@@ -437,6 +438,11 @@ export interface FreeNutritionSession {
   readonly minutes: number;
   readonly isDeload: false;
   readonly status: 'completed';
+  /**
+   * Essen nach dem Training (06.11.2026): tatsächlicher Beginn (Europe/Berlin) aus `started_at` – fehlt ohne Beginn
+   * bzw. bei Beginn an einem anderen Tag (dann rechnet die Engine wie bisher).
+   */
+  readonly startMinutes?: number;
 }
 
 /**
@@ -454,6 +460,11 @@ export function freeSessionNutritionSessions(
     readonly session_rpe: number | null;
     /** Sportarten Stufe 2: Dauer eines Sportart-Eintrags (fehlt bei älteren Aufrufern). */
     readonly sport_duration_s?: number | null;
+    /**
+     * Beginn (ISO-Zeitstempel; Timer, Eintrag bzw. Smartwatch) – optional (ältere Aufrufer): ohne ihn fehlt
+     * `startMinutes` wie bisher.
+     */
+    readonly started_at?: string | null;
   }[],
   details: {
     readonly cardio: readonly {
@@ -481,6 +492,10 @@ export function freeSessionNutritionSessions(
             (details.doneSets.get(log.id) ?? 0) * FREE_SESSION.strengthMinutesPerSet,
             FREE_SESSION.strengthMinutesMax,
           );
+    const startMinutes = completedSessionStartMinutes({
+      day: log.performed_on,
+      startedAt: log.started_at ?? null,
+    });
     return [
       {
         sessionId: `free:${log.id}`,
@@ -494,6 +509,7 @@ export function freeSessionNutritionSessions(
         minutes,
         isDeload: false,
         status: 'completed',
+        ...(startMinutes === null ? {} : { startMinutes }),
       },
     ];
   });

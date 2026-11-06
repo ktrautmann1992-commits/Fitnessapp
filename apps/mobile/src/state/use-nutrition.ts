@@ -21,6 +21,7 @@ import {
   swapMealRecipe,
   uncheckAllShoppingItems,
   undoTrainingAdaptation,
+  wallClockInTimeZone,
   weekHidesEnergyNumbers,
   withShoppingListRange,
 } from '@fitnessapp/core';
@@ -94,6 +95,9 @@ export function useNutritionWeek(date?: string): NutritionView {
             allowDrafts: backend.mode === 'local',
             shoppingRange:
               shoppingMode === null ? null : { mode: shoppingMode, manual: shoppingManual },
+            // Essen nach dem Training (06.11.2026): Uhrzeit beim Neuberechnen (z. B. gleich nach dem Eintrag einer
+            // Einheit) – heute schon vergangene Mahlzeiten werden dann nicht mehr automatisch getauscht.
+            now: wallClockInTimeZone(Date.now()),
           })
         : null,
     [backend, library, rows, today, versions, weekStart, shoppingMode, shoppingManual],

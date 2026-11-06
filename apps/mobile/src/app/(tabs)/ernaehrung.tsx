@@ -59,6 +59,7 @@ import { useThemeColors } from '@/lib/theme';
 import { Body, Button, Card, ErrorState, Heading, LoadingState, Notice } from '@/components/ui';
 import { showEnergyNumbers, trainingTimelineOptionsFromRows } from '@/data/nutrition-plan';
 import { TrainingAdjustmentNotice, TrainingTimelineCard } from '@/components/training-timeline';
+import { PostWorkoutMealCard } from '@/components/post-workout-meal';
 import { clearTrainingAdjustment, useTrainingAdjustment } from '@/lib/training-meal-adjustment';
 import { timingNoticeText } from '@/lib/training-timeline-format';
 import { preferenceForRecipe } from '@/data/recipe-preference-rows';
@@ -625,6 +626,8 @@ export default function NutritionDayScreen() {
           {adjustMessage.text}
         </Notice>
       ) : null}
+      {/* Nach dem Training (06.11.2026): „Das solltest du jetzt essen“ – nur heute, bis 3 h nach dem Ende. */}
+      {isToday ? <PostWorkoutMealCard view={view} /> : null}
       {/* Nährstoff-Timing: Zeitplan „Essen rund ums Training“ (nur an Trainingstagen). */}
       {timing.timeline !== null ? (
         <TrainingTimelineCard

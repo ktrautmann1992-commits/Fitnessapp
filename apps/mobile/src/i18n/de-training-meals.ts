@@ -103,6 +103,25 @@ export const deTrainingMeals = {
         return 'Lange Einheit heute: unterwegs etwas Kohlenhydrate und regelmäßig trinken.';
     }
   },
+  // Nach dem Training (Gründer-Wunsch 06.11.2026): Karte „Das solltest du jetzt essen“ – ohne Gesundheitsdaten.
+  postNow: {
+    title: 'Nach dem Training: Das solltest du jetzt essen',
+    finished: (end: string, until: string) =>
+      `Training beendet um ${end} – am besten bis ${until} essen.`,
+    justFinished: (until: string) => `Gut gemacht! Am besten bis ${until} essen.`,
+    // Spät am Abend (Ende des Fensters nach Mitternacht): keine Uhrzeit „bis“.
+    finishedLate: (end: string) => `Training beendet um ${end} – am besten bald etwas essen.`,
+    justFinishedLate: 'Gut gemacht! Am besten bald etwas essen.',
+    slot: (label: string) => `Aus deinem Essensplan – ${label}:`,
+    snackOnly:
+      'Bis zur nächsten Mahlzeit dauert es noch – ein eiweißreicher Snack passt jetzt gut:',
+    targets: (proteinG: number, carbsG: number) =>
+      `Richtwert für diese Mahlzeit: ca. ${proteinG} g Eiweiß · ${carbsG} g Kohlenhydrate`,
+    targetsA11y: (proteinG: number, carbsG: number) =>
+      `Richtwert für diese Mahlzeit: ungefähr ${proteinG} Gramm Eiweiß und ${carbsG} Gramm Kohlenhydrate`,
+    general: 'Am besten mit Eiweiß und Kohlenhydraten, dazu etwas trinken.',
+    openNutrition: 'Zur Ernährung',
+  },
   // Uhrzeit an der Einheit (Reiter Training)
   time: {
     label: 'Uhrzeit',

@@ -48,6 +48,7 @@ import {
   startOfIsoWeek,
   resolveMealPlanWeekWithTraining,
   startTimeToMinutes,
+  completedSessionStartMinutes,
   type TrainingAdaptation,
   latestBodyValues,
   type TrainingTimelineOptions,
@@ -122,11 +123,30 @@ function planSessionsForWeek(
       isFree: l.is_free === true,
     })),
   );
+  // Essen nach dem Training (06.11.2026): erledigte Einheit → tatsächlicher Beginn laut Tagebuch (started_at), sonst die
+  // geplante Uhrzeit (`completedSessionStartMinutes` in core). Nur der neueste erledigte Eintrag je Einheit zählt.
+  const startedAt = new Map<string, { at: string; updated: string }>();
+  for (const l of rows.sessionLogs) {
+    if (l.planned_session_id === null || l.status !== 'completed' || l.started_at === null)
+      continue;
+    const known = startedAt.get(l.planned_session_id);
+    if (known === undefined || known.updated < l.client_updated_at) {
+      startedAt.set(l.planned_session_id, { at: l.started_at, updated: l.client_updated_at });
+    }
+  }
   return rows.plannedSessions.flatMap((s): NutritionSessionInput[] => {
     const status = planStatus.get(s.plan_id);
     if (status === undefined || s.scheduled_on < weekStart || s.scheduled_on > weekEnd) return [];
     const actual =
       s.status === 'completed' && s.kind === 'endurance' ? logged.get(s.id) : undefined;
+    const startMinutes =
+      s.status === 'completed'
+        ? completedSessionStartMinutes({
+            day: s.scheduled_on,
+            startedAt: startedAt.get(s.id)?.at ?? null,
+            plannedStartTime: s.start_time,
+          })
+        : startTimeToMinutes(s.start_time);
     return [
       {
         sessionId: s.id,
@@ -140,10 +160,9 @@ function planSessionsForWeek(
           actual !== undefined && actual > 0 ? Math.min(actual, 24 * 60) : s.estimated_minutes,
         isDeload: s.is_deload,
         status: s.status,
-        // Nährstoff-Timing (T2): eigene Uhrzeit der Einheit; ohne Uhrzeit fehlt das Feld (Engine wie bisher).
-        ...(startTimeToMinutes(s.start_time) !== null
-          ? { startMinutes: startTimeToMinutes(s.start_time) as number }
-          : {}),
+        // Nährstoff-Timing (T2): eigene Uhrzeit der Einheit (erledigt: tatsächlicher Beginn); ohne Uhrzeit fehlt das
+        // Feld (Engine wie bisher).
+        ...(startMinutes !== null ? { startMinutes } : {}),
       },
     ];
   });
@@ -153,13 +172,21 @@ function planSessionsForWeek(
  * Als gegessen eingetragene Plan-Mahlzeiten (Ernährungstagebuch, Quelle Plan) – werden beim Verschieben des Trainings
  * nie automatisch geändert (docs/PLAN-NAEHRSTOFF-TIMING.md 6). Nur `datum|platz`, keine Mengen.
  */
-export function trainingMealProtectionFromRows(rows: UserRows): TrainingMealProtection {
+export function trainingMealProtectionFromRows(
+  rows: UserRows,
+  /**
+   * Essen nach dem Training (06.11.2026): jetzt (Europe/Berlin) – heute schon vergangene Plätze bleiben dann ebenfalls
+   * unverändert (`mealSlotPassed` in core). Fehlt es: nur gegessene Mahlzeiten (wie bisher).
+   */
+  now?: { date: string; minutes: number },
+): TrainingMealProtection {
   return {
     eaten: new Set(
       rows.foodLogEntries
         .filter((e) => e.source === 'plan_item' && e.slot !== null)
         .map((e) => `${e.eaten_on}|${e.slot}`),
     ),
+    ...(now === undefined ? {} : { now }),
   };
 }
 
@@ -458,6 +485,11 @@ export function computeNutritionWeek(input: {
    * Einstellung noch nicht geladen), bleibt der gespeicherte Zeitraum.
    */
   shoppingRange?: { mode: ShoppingRangeMode; manual: boolean } | null;
+  /**
+   * Jetzt (Europe/Berlin, `wallClockInTimeZone`): Anpassung ans Training ändert heute nur noch kommende Plätze. Fehlt
+   * es, gilt wie bisher nur der Schutz gegessener Mahlzeiten.
+   */
+  now?: { date: string; minutes: number };
 }): NutritionWeekResult {
   const inputs = nutritionInputsFromRows(input.rows, input.versions, input.today, input.weekStart);
   const profile = mealPlanProfileFromRows(input.rows, input.versions);
@@ -510,14 +542,14 @@ export function computeNutritionWeek(input: {
         ? resolveMealPlanRecord(
             usable.record,
             engineInput,
-            trainingMealProtectionFromRows(input.rows),
+            trainingMealProtectionFromRows(input.rows, input.now),
           )
         : {
             // Nährstoff-Timing: zuerst Anpassung ans Training (gegessene Mahlzeiten bleiben), sonst wie bisher.
             ...resolveMealPlanWeekWithTraining(
               usable?.plan ?? null,
               engineInput,
-              trainingMealProtectionFromRows(input.rows),
+              trainingMealProtectionFromRows(input.rows, input.now),
             ),
             unavailable: [],
           };

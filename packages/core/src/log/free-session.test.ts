@@ -627,6 +627,50 @@ describe('Trainingsenergie freier Einheiten fürs Tagesziel (A-G7)', () => {
   });
 });
 
+describe('Essen nach dem Training: Beginn freier Einheiten (06.11.2026)', () => {
+  const log = (id: string, startedAt: string | null | undefined, extra: object = {}) => ({
+    id,
+    is_free: true,
+    performed_on: '2026-10-14',
+    kind: 'strength' as const,
+    session_rpe: null,
+    ...(startedAt === undefined ? {} : { started_at: startedAt }),
+    ...extra,
+  });
+  const details = { cardio: [], doneSets: new Map([['a', 4]]) };
+
+  it('Beginn laut Eintrag (auch Smartwatch) → startMinutes (Europe/Berlin), Schema gültig', () => {
+    const [s] = freeSessionNutritionSessions(
+      [log('a', '2026-10-14T16:05:00Z', { source: 'health_connect' })],
+      details,
+    );
+    expect(s?.startMinutes).toBe(18 * 60 + 5);
+    expect(nutritionSessionSchema.safeParse(s).success).toBe(true);
+  });
+
+  it('ohne Beginn (ältere Aufrufer, null, unlesbar) fehlt das Feld – wie bisher', () => {
+    const sessions = freeSessionNutritionSessions(
+      [log('a', undefined), log('b', null), log('c', 'kaputt')],
+      details,
+    );
+    expect(sessions).toHaveLength(3);
+    for (const s of sessions) expect('startMinutes' in s).toBe(false);
+  });
+
+  it('Beginn an einem anderen Tag (z. B. 23:50 am Vortag) zählt nicht als Uhrzeit dieses Tages', () => {
+    const [s] = freeSessionNutritionSessions([log('a', '2026-10-13T21:50:00Z')], details);
+    expect(s?.startMinutes).toBeUndefined();
+  });
+
+  it('nach 23 Uhr und zwei Einheiten am Tag: je eigene Uhrzeit', () => {
+    const sessions = freeSessionNutritionSessions(
+      [log('a', '2026-10-14T05:30:00Z'), log('b', '2026-10-14T21:15:00Z')],
+      details,
+    );
+    expect(sessions.map((s) => s.startMinutes)).toEqual([7 * 60 + 30, 23 * 60 + 15]);
+  });
+});
+
 describe('10-%-Bezug der Ausdauer (loggedEnduranceMinutes)', () => {
   it('freie Einträge zählen nie – auch nicht mit (fehlerhaftem) Planbezug', () => {
     const minutes = loggedEnduranceMinutes([

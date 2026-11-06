@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  wallClockInTimeZone,
   addDays,
   createMeasuredOnSchema,
   daysBetween,
@@ -86,5 +87,43 @@ describe('isoDateInTimeZone', () => {
   it('andere Zeitzone und ungültiger Zeitstempel', () => {
     expect(isoDateInTimeZone('2026-10-04T23:30:00.000Z', 'UTC')).toBe('2026-10-04');
     expect(() => isoDateInTimeZone('kein Datum')).toThrow(RangeError);
+  });
+});
+
+describe('wallClockInTimeZone (Essen nach dem Training)', () => {
+  it('Sommer- und Winterzeit Europe/Berlin', () => {
+    expect(wallClockInTimeZone('2026-07-01T16:30:00Z')).toEqual({
+      date: '2026-07-01',
+      minutes: 18 * 60 + 30,
+    });
+    expect(wallClockInTimeZone('2026-12-01T16:30:00Z')).toEqual({
+      date: '2026-12-01',
+      minutes: 17 * 60 + 30,
+    });
+  });
+
+  it('Umstellung: 29.03.2026 (02→03 Uhr) und 25.10.2026 (03→02 Uhr)', () => {
+    expect(wallClockInTimeZone('2026-03-29T00:59:00Z').minutes).toBe(1 * 60 + 59);
+    expect(wallClockInTimeZone('2026-03-29T01:00:00Z').minutes).toBe(3 * 60);
+    expect(wallClockInTimeZone('2026-10-25T00:30:00Z').minutes).toBe(2 * 60 + 30);
+    expect(wallClockInTimeZone('2026-10-25T01:30:00Z').minutes).toBe(2 * 60 + 30);
+  });
+
+  it('Mitternacht und Tageswechsel; Millisekunden; andere Zone', () => {
+    expect(wallClockInTimeZone('2026-10-14T22:00:00Z')).toEqual({ date: '2026-10-15', minutes: 0 });
+    expect(wallClockInTimeZone('2026-10-14T21:59:00Z')).toEqual({
+      date: '2026-10-14',
+      minutes: 1439,
+    });
+    expect(wallClockInTimeZone(Date.parse('2026-10-14T10:00:00Z'))).toEqual({
+      date: '2026-10-14',
+      minutes: 12 * 60,
+    });
+    expect(wallClockInTimeZone('2026-10-14T10:00:00Z', 'UTC').minutes).toBe(10 * 60);
+  });
+
+  it('ungültig → RangeError', () => {
+    expect(() => wallClockInTimeZone('kein Datum')).toThrow(RangeError);
+    expect(() => wallClockInTimeZone(Number.NaN)).toThrow(RangeError);
   });
 });

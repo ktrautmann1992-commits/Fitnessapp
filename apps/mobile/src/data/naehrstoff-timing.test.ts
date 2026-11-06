@@ -81,6 +81,77 @@ describe('Ernährung: Uhrzeit und gegessene Mahlzeiten', () => {
     ).toBe(true);
   });
 
+  it('Essen nach dem Training: erledigte Einheit mit echtem Beginn, freie Einheit (Uhr) mit Beginn', async () => {
+    const { saved, active } = await savedPlan(planPersonRows());
+    const [first, second] = active.sessions;
+    if (!first || !second) throw new Error();
+    const log = (extra: Partial<UserRows['sessionLogs'][number]>) =>
+      ({
+        id: 'l',
+        planned_session_id: null,
+        is_free: false,
+        status: 'completed',
+        kind: 'strength',
+        performed_on: first.scheduled_on,
+        session_rpe: null,
+        sport_duration_s: null,
+        started_at: null,
+        client_updated_at: `${first.scheduled_on}T12:00:00.000Z`,
+        ...extra,
+      }) as UserRows['sessionLogs'][number];
+    const rows: UserRows = {
+      ...saved,
+      plannedSessions: saved.plannedSessions.map((s) =>
+        s.id === first.id
+          ? { ...s, status: 'completed', start_time: '18:00:00' }
+          : s.id === second.id
+            ? { ...s, status: 'completed', start_time: '19:00:00' }
+            : s,
+      ),
+      sessionLogs: [
+        // Älterer Eintrag derselben Einheit zählt nicht.
+        log({
+          id: 'old',
+          planned_session_id: first.id,
+          started_at: `${first.scheduled_on}T04:00:00.000Z`,
+          client_updated_at: `${first.scheduled_on}T05:00:00.000Z`,
+        }),
+        log({
+          id: 'p1',
+          planned_session_id: first.id,
+          started_at: `${first.scheduled_on}T05:10:00.000Z`,
+        }),
+        // Erledigt ohne Beginn → geplante Uhrzeit bleibt.
+        log({ id: 'p2', planned_session_id: second.id, performed_on: second.scheduled_on }),
+        // Freie Einheit von der Uhr.
+        log({
+          id: 'w',
+          is_free: true,
+          source: 'health_connect',
+          started_at: `${first.scheduled_on}T15:30:00.000Z`,
+        }),
+      ],
+    };
+    const week = nutritionInputsFromRows(rows, VERSIONS, TODAY, first.scheduled_on);
+    const sessions = week?.sessions ?? [];
+    // Oktober: Sommerzeit (UTC+2) bis 25.10. – die Fixture-Woche liegt davor.
+    const offset = first.scheduled_on < '2026-10-25' ? 120 : 60;
+    expect(sessions.find((s) => s.sessionId === first.id)?.startMinutes).toBe(5 * 60 + 10 + offset);
+    expect(sessions.find((s) => s.sessionId === second.id)?.startMinutes).toBe(19 * 60);
+    expect(sessions.find((s) => s.sessionId === 'free:w')?.startMinutes).toBe(
+      15 * 60 + 30 + offset,
+    );
+  });
+
+  it('Schutz mit „jetzt“: Feld nur, wenn übergeben', () => {
+    const rows = planPersonRows();
+    expect('now' in trainingMealProtectionFromRows(rows)).toBe(false);
+    expect(trainingMealProtectionFromRows(rows, { date: TODAY, minutes: 600 }).now).toEqual({
+      date: TODAY,
+      minutes: 600,
+    });
+  });
+
   it('gegessen = Plan-Einträge des Tagebuchs als datum|platz', () => {
     const rows = planPersonRows();
     const entry = (source: string, slot: string | null) =>

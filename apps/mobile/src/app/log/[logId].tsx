@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LiveRegion } from '@/components/calendar';
+import { PostWorkoutMealGate } from '@/components/post-workout-meal';
 import { StatValue } from '@/components/design';
 import { EBikeBadge } from '@/components/e-bike';
 import { RouteInsights } from '@/components/route-insights';
@@ -182,6 +183,8 @@ export default function LogEntryScreen() {
           {message.text}
         </Notice>
       ) : null}
+      {/* Nach dem Training (06.11.2026): „Das solltest du jetzt essen“ – nur bis 3 h nach dem Ende. */}
+      <PostWorkoutMealGate />
       {/* Aufgezeichnete Strecke: volle Auswertung (gleich wie /ausdauer/[id]), kcal steht im Eintrag darunter. */}
       {linked && routes ? (
         <View style={styles.insights} testID="log-route-insights">
