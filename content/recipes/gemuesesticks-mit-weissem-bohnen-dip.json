@@ -1,11 +1,9 @@
 {
   "id": "gemuesesticks-mit-weissem-bohnen-dip",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gemüsesticks mit weißem Bohnen-Dip",
   "description_de": "Cremiger Dip aus weißen Bohnen, Tahin und Zitrone mit knackigen Karotten- und Gurkensticks.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -99,6 +97,8 @@
   ],
   "tip_de": "Der Dip hält sich 3 Tage im Kühlschrank – gleich die doppelte Menge machen.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -125,12 +125,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "9df3e24494471fb5182854d3a048d9fc075af7a8e9b3a98092380e863033b26f",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "9df3e24494471fb5182854d3a048d9fc075af7a8e9b3a98092380e863033b26f"
+    "import_assumptions_confirmed_by": null
   }
 }

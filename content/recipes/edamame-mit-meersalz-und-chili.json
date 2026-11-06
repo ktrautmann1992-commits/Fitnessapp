@@ -1,11 +1,9 @@
 {
   "id": "edamame-mit-meersalz-und-chili",
   "version": 3,
-  "status": "draft",
+  "status": "published",
   "title_de": "Edamame mit Meersalz & Chili",
   "description_de": "Warme Edamame, nur mit Salz, Chili und Zitrone gewürzt – pflanzliches Eiweiß in 8 Minuten.",
-  "section_de": "Snack",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -63,6 +61,8 @@
   ],
   "tip_de": "Edamame gibt es tiefgekühlt in den meisten Supermärkten – auch in der Schote, dann 250 g nehmen.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 8,
   "prep_minutes": 3,
   "cook_minutes": 5,
@@ -89,12 +89,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "445c43167134ea4cfe274e631b52d74f70c90119a000a030d626998f6fb86b8f",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "445c43167134ea4cfe274e631b52d74f70c90119a000a030d626998f6fb86b8f"
+    "import_assumptions_confirmed_by": null
   }
 }

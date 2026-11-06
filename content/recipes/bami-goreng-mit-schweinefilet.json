@@ -1,11 +1,9 @@
 {
   "id": "bami-goreng-mit-schweinefilet",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Bami Goreng mit Schweinefilet",
   "description_de": "Indonesisch inspirierte Wok-Nudeln mit zartem Schweinefilet, knackigem Gemüse und Ei.",
-  "section_de": "Mittagessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -121,6 +119,8 @@
     "Gib Nudeln, Fleisch, Sojasauce und Chili dazu, schwenke alles 1–2 Minuten und bestreue es mit Frühlingszwiebeln."
   ],
   "tip_de": "Statt Mie-Nudeln geht auch Basmatireis vom Vortag – dann heißt das Gericht Nasi Goreng.",
+  "section_de": "Mittagessen",
+  "categories": [],
   "total_minutes": 18,
   "prep_minutes": 13,
   "cook_minutes": 5,
@@ -147,12 +147,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "8a71fd00834d33b8f57772f9998947603eb815c6a2f74525691c5ade2fe33694",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8a71fd00834d33b8f57772f9998947603eb815c6a2f74525691c5ade2fe33694"
+    "import_assumptions_confirmed_by": null
   }
 }

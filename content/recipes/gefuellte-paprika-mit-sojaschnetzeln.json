@@ -1,11 +1,9 @@
 {
   "id": "gefuellte-paprika-mit-sojaschnetzeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gefüllte Paprika mit Sojaschnetzeln",
   "description_de": "Ofen-Paprika gefüllt mit würziger Sojaschnetzel-Reis-Füllung, geschmort in Tomatensauce.",
-  "section_de": "Abendessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -155,6 +153,8 @@
     "Schmore die Paprika 25 Minuten im Ofen und bestreue sie vor dem Servieren mit Petersilie."
   ],
   "tip_de": "Gleich ein ganzes Blech machen: Die Paprika halten sich 3 Tage im Kühlschrank und lassen sich gut aufwärmen.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
   "total_minutes": 45,
   "prep_minutes": 39,
   "cook_minutes": 6,
@@ -181,12 +181,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "ea943d67d6692eb41c839f91f67eb0288dada26f65f5853035b2d21e12697f47",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "ea943d67d6692eb41c839f91f67eb0288dada26f65f5853035b2d21e12697f47"
+    "import_assumptions_confirmed_by": null
   }
 }

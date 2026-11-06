@@ -1,11 +1,9 @@
 {
   "id": "american-protein-pancakes-mit-knuspriger-putenbrust",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "American Protein-Pancakes mit knuspriger Putenbrust",
   "description_de": "Fluffige Bananen-Vanille-Pancakes mit Beeren und kross gebratener Putenbrust – der süß-salzige Diner-Klassiker ohne Schwein.",
-  "section_de": "Frühstück",
-  "categories": ["post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -102,6 +100,8 @@
     "Staple die Pancakes, gib die Beeren darüber und serviere die knusprige Putenbrust daneben."
   ],
   "tip_de": "Ohne Pulver: 80 g Magerquark in den Teig rühren. Wer es süßer mag, gibt 1 TL Honig über die Beeren.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
   "total_minutes": 15,
   "prep_minutes": 11,
   "cook_minutes": 4,
@@ -128,12 +128,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "a2dc0feb9b9d7a66e73a36bf44426abd4146153a2fd0fbaa01818474820e74ac",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "a2dc0feb9b9d7a66e73a36bf44426abd4146153a2fd0fbaa01818474820e74ac"
+    "import_assumptions_confirmed_by": null
   }
 }

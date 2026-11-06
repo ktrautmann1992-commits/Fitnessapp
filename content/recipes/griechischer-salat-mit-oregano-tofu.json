@@ -1,11 +1,9 @@
 {
   "id": "griechischer-salat-mit-oregano-tofu",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Griechischer Salat mit Oregano-Tofu",
   "description_de": "Bunter Bauernsalat mit Oliven und Kichererbsen, getoppt mit in Zitrone und Oregano mariniertem Tofu als Feta-Alternative.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -127,6 +125,8 @@
     "Verteile den Tofu samt Marinade über dem Salat und mische vorsichtig durch."
   ],
   "tip_de": "Je länger der Tofu mariniert, desto würziger wird er – über Nacht im Kühlschrank schmeckt er fast wie Feta.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 15,
   "prep_minutes": 15,
   "cook_minutes": 0,
@@ -153,12 +153,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "49ac3de7a9f22e120d83a910375aaa4642d502ca8b817ebb2dd42d57399deb80",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "49ac3de7a9f22e120d83a910375aaa4642d502ca8b817ebb2dd42d57399deb80"
+    "import_assumptions_confirmed_by": null
   }
 }

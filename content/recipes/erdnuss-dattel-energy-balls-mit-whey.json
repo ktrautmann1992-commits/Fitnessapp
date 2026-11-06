@@ -1,11 +1,9 @@
 {
   "id": "erdnuss-dattel-energy-balls-mit-whey",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Erdnuss-Dattel-Energy-Balls mit Whey",
   "description_de": "Drei saftige Kugeln aus Hafer, Datteln, Erdnussmus und Vanille-Whey – ohne Backen, perfekt für unterwegs.",
-  "section_de": "Snack",
-  "categories": ["schnell", "meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -73,6 +71,8 @@
   ],
   "tip_de": "Gleich die fünffache Menge machen: Im Kühlschrank halten die Balls 5 Tage. Ohne Pulver: 1 EL Magerquark und 1 EL mehr Hafer verwenden.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell", "meal-prep"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -99,12 +99,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "04e5d4970c70d32e97eb21cce32015e4cf7da411ca38b3b77061a4ae4be70767",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "04e5d4970c70d32e97eb21cce32015e4cf7da411ca38b3b77061a4ae4be70767"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "gefuellte-eier-mit-senf-skyr-und-gurke",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gefüllte Eier mit Senf-Skyr und Gurke",
   "description_de": "Hart gekochte Eier mit einer cremigen Füllung aus Eigelb, Skyr und Senf, bestäubt mit Paprika – Partyklassiker als herzhafter Snack.",
-  "section_de": "Snack",
-  "categories": ["low-carb"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -73,6 +71,8 @@
     "Schneide die Gurke in Scheiben und serviere sie dazu."
   ],
   "tip_de": "Mit einem Gefrierbeutel, bei dem du eine Ecke abschneidest, lässt sich die Creme sauber einfüllen.",
+  "section_de": "Snack",
+  "categories": ["low-carb"],
   "total_minutes": 15,
   "prep_minutes": 5,
   "cook_minutes": 10,
@@ -92,17 +92,18 @@
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose", "eggs", "mustard"],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "4c19bf6d3dd10ccc7bc1c7a12831a721143610769c9537c55658bb51ed73d8eb",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -112,7 +113,7 @@
         "reason_de": "Schritt 1 gart die Zutat durch: „Koche die Eier 10 Minuten hart, schrecke sie kalt ab, pelle und halbiere sie.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "4c19bf6d3dd10ccc7bc1c7a12831a721143610769c9537c55658bb51ed73d8eb"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "6f082ec8c3744063"
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "gnocchi-in-tomatensauce-mit-parmesan",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Gnocchi in Tomatensauce mit Parmesan",
   "description_de": "Kartoffel-Gnocchi in leichter Tomatensauce – viel leicht verdauliche Stärke und nur wenig Fett, ein klassisches Carbo-Essen vor dem langen Sonntagslauf.",
-  "section_de": "Vor langen Einheiten",
-  "categories": ["pre-workout", "cardio"],
   "meal_types": ["snack"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -91,6 +89,8 @@
   ],
   "tip_de": "Am Vorabend oder 3 Stunden vor dem Lauf essen. Die Sauce darf ruhig gut gesalzen sein – das hilft, Flüssigkeit zu halten.",
   "tags_de": ["Ausdauer"],
+  "section_de": "Vor langen Einheiten",
+  "categories": ["pre-workout", "cardio"],
   "total_minutes": 12,
   "prep_minutes": 4,
   "cook_minutes": 8,
@@ -117,12 +117,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "512dc2b574c7facb3944e582a2cfee423685e7fdde817277c2e1ad5981b56bee",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "512dc2b574c7facb3944e582a2cfee423685e7fdde817277c2e1ad5981b56bee"
+    "import_assumptions_confirmed_by": null
   }
 }
