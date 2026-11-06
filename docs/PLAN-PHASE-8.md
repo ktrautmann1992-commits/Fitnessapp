@@ -127,9 +127,18 @@ Rest weiter und zeigt „nicht freigegeben“.
 - **Gleiche Uhr-Einheit zweimal:** eindeutiger Schlüssel `(user_id, source, external_id)` mit Health-Connect-
   `metadata.id` → erneuter Abgleich ändert, legt nie neu an.
 - **App-GPS + Uhr gleichzeitig:** `matchExisting(imported, existingLogs)`: gleiche Sportart-Gruppe und Zeitfenster
-  überlappen ≥ 50 % der kürzeren Einheit → **zusammenführen**: App-Eintrag/Strecke bleibt führend (Distanz, Linie),
+  überlappen ≥ 50 % der kürzeren Einheit → **zusammenführen**: App-Eintrag/Strecke bleibt führend (Linie; Distanz s. u.),
   Uhr ergänzt Puls-Zusammenfassung und kcal, Eintrag bekommt `external_id`. Überlappung 20–50 % oder Art passt nicht
   → als „Möglicher Doppel-Eintrag“ markieren, Person entscheidet (zusammenführen / beide behalten).
+- **Uhr gewinnt bei Distanz und Zeit (Gründer-Entscheidung 06.11.2026):** Geht die Uhr-Einheit in eine GPS-Aufzeichnung
+  der App ein (Herkunft `gps`; automatisch, beim erneuten Abgleich oder nach „Zusammenführen“ beim Doppel-Hinweis),
+  übernimmt `cardio_logs` Distanz UND Dauer der Uhr (Beispiel: App 23,88 km / 2:41:35 → Uhr 25,26 km / 2:42:41). Linie,
+  Kilometerzeiten, Name, Höhenmeter und Beginn/Ende des Eintrags bleiben von der App. Nur als Paar und nur mit
+  plausibler Distanz der Uhr (> 0, `CARDIO_LOG_LIMITS`, `trackedRouteDistancePlausible`), sonst bleiben beide Werte der
+  App; manuelle/GPX-Einträge bleiben führend. Regel: `mergedCardioValues` (`packages/core/src/wearables/watch-cardio.ts`),
+  gleich in `import_wearable_batch`/`resolve_wearable_duplicate` (`20261106120000_uhr_distanz.sql`, pgTAP 96). Die
+  Kopf-Karte der Lauf-Auswertung zeigt dann Distanz, Zeit und Tempo laut Eintrag mit „⌚ Distanz und Zeit laut Uhr“
+  (`watchCardioForRoute`); Karte und Kilometer-Balken kommen weiter aus der Strecke.
 - Manuell nachgetragene Einheit ohne Uhrzeit: gleiche Art + gleicher Tag + Dauer ±20 % → Rückfrage, nie automatisch.
 - `enduranceActivities`/`enduranceTotals` zählen zusammengeführte Einheiten nur einmal (Test).
 

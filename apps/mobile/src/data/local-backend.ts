@@ -1882,6 +1882,7 @@ export function createLocalBackend(store: KeyValueStore, options: LocalBackendOp
           {
             userId: session.userId,
             now: options.now(),
+            newId: options.newId,
           },
         );
         if (result === 'not_found' || result === 'invalid') {

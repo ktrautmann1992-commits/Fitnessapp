@@ -279,7 +279,7 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
     newId: () => uuid(Math.floor(Math.random() * 1e9)),
   };
 
-  it('merge_into: eigener Eintrag bleibt führend (Herkunft, Distanz), Uhr ergänzt Puls und kcal', () => {
+  it('merge_into: eigener Eintrag bleibt führend (Herkunft, Zeiten), Uhr gibt Distanz, Dauer, Puls und kcal', () => {
     const applied = applyWearableImport(
       EMPTY_LOCAL_WEARABLES,
       rowsWithOwnRun(),
@@ -289,7 +289,16 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
     expect(applied.result).toMatchObject({ created: 0, merged: 1 });
     expect(applied.rows.sessionLogs).toHaveLength(1);
     expect(applied.rows.sessionLogs[0]?.source).toBe('gps');
-    expect(applied.rows.cardioLogs[0]?.distance_m).toBe(6200);
+    // Gründer-Entscheidung 06.11.2026: Distanz und Dauer der Uhr gewinnen, Höhenmeter und Beginn der App bleiben.
+    expect(applied.rows.cardioLogs[0]).toMatchObject({
+      distance_m: 6000,
+      duration_s: 2400,
+      elevation_m: 40,
+    });
+    expect(applied.rows.sessionLogs[0]).toMatchObject({
+      started_at: '2026-10-20T05:00:30.000Z',
+      revision: 2,
+    });
     const w = wearableRowsFor(applied.store, applied.rows, 'me');
     expect(w.sessions[0]).toMatchObject({ session_log_id: uuid(100), merged: true, kcal: 400 });
     expect(w.heartRates[0]?.session_log_id).toBe(uuid(100));
@@ -301,6 +310,52 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
       sessions: [],
       heartRates: [],
     });
+  });
+
+  it('merge_into: Uhr ohne bzw. mit unplausibler Distanz oder manueller Eintrag → Eintrag behält seine Werte', () => {
+    for (const distance_m of [null, 0, 100_000]) {
+      const applied = applyWearableImport(
+        EMPTY_LOCAL_WEARABLES,
+        rowsWithOwnRun(),
+        batch([session('watch', { merge_into: uuid(100), distance_m })]),
+        ctx,
+      );
+      expect(applied.result).toMatchObject({ merged: 1 });
+      expect(applied.rows.cardioLogs[0], String(distance_m)).toMatchObject({
+        distance_m: 6200,
+        duration_s: 2370,
+      });
+      expect(applied.rows.sessionLogs[0]?.revision).toBe(1);
+    }
+    const manual = rowsWithOwnRun();
+    manual.sessionLogs[0] = { ...manual.sessionLogs[0]!, source: 'manual' };
+    const kept = applyWearableImport(
+      EMPTY_LOCAL_WEARABLES,
+      manual,
+      batch([session('watch', { merge_into: uuid(100) })]),
+      ctx,
+    );
+    expect(kept.rows.cardioLogs[0]).toMatchObject({ distance_m: 6200, duration_s: 2370 });
+  });
+
+  it('erneuter Abgleich einer zusammengeführten Einheit: Distanz und Dauer folgen der Uhr', () => {
+    const first = applyWearableImport(
+      EMPTY_LOCAL_WEARABLES,
+      rowsWithOwnRun(),
+      batch([session('watch', { merge_into: uuid(100), distance_m: null })]),
+      ctx,
+    );
+    expect(first.rows.cardioLogs[0]?.distance_m).toBe(6200);
+    const again = applyWearableImport(
+      first.store,
+      first.rows,
+      batch([session('watch', { distance_m: 6100 })]),
+      ctx,
+    );
+    expect(again.result).toMatchObject({ updated: 1 });
+    expect(again.rows.cardioLogs[0]).toMatchObject({ distance_m: 6100, duration_s: 2400 });
+    // Beginn/Ende der App-Aufzeichnung bleiben.
+    expect(again.rows.sessionLogs[0]?.started_at).toBe('2026-10-20T05:00:30.000Z');
   });
 
   it('merge_into auf fremden Eintrag bzw. andere Sportart → neue Einheit', () => {
@@ -338,6 +393,13 @@ describe('Smartwatch im Testmodus: Zusammenführen, Doppel, Trennen, Widerruf', 
     );
     if (merged === 'not_found' || merged === 'invalid') throw new Error(merged);
     expect(merged.rows.sessionLogs.map((l) => l.id)).toEqual([uuid(100)]);
+    // Distanz und Dauer der Uhr gehen in den GPS-Eintrag über (06.11.2026).
+    expect(merged.rows.cardioLogs).toHaveLength(1);
+    expect(merged.rows.cardioLogs[0]).toMatchObject({
+      session_log_id: uuid(100),
+      distance_m: 6000,
+      duration_s: 2400,
+    });
     const w = wearableRowsFor(merged.store, merged.rows, 'me');
     expect(w.sessions[0]).toMatchObject({
       session_log_id: uuid(100),

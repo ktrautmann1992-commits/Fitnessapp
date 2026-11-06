@@ -6,7 +6,8 @@ import type { WearableSessionGroup } from './schema';
  * Doppelte Einheit erkennen (W8-9, docs/PLAN-PHASE-8.md 5.2): Dieselbe Uhr-Einheit zweimal verhindert die
  * external_id (Datenbank). Hier geht es um App-Aufzeichnung/Eintrag UND Uhr für dieselbe Einheit:
  * - gleiche Gruppe und Überlappung ≥ 50 % der kürzeren Einheit → zusammenführen (App-Eintrag bleibt führend:
- *   Distanz, Linie, Name; die Uhr ergänzt Puls und kcal),
+ *   Linie, Name; die Uhr ergänzt Puls und kcal; bei GPS-Aufzeichnungen gewinnen Distanz und Dauer der Uhr seit
+ *   06.11.2026, mergedCardioValues in watch-cardio.ts),
  * - Überlappung ≥ 20 % (bzw. ≥ 50 % bei anderer Gruppe) → „Möglicher Doppel-Eintrag“, die Person entscheidet,
  * - Eintrag ohne Uhrzeit (nachgetragen): gleiche Gruppe, gleicher Tag, Dauer ±20 % → nur nachfragen.
  * Rein, ohne Speicher.

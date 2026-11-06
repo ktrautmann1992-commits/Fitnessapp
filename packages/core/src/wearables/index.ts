@@ -12,3 +12,4 @@ export * from './rows';
 export * from './steps';
 export * from './recovery';
 export * from './recovery-texts-de';
+export * from './watch-cardio';
