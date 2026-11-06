@@ -1,5 +1,6 @@
 import {
   freeSessionNutritionSessions,
+  loggedEnduranceMinutes,
   addDays,
   applyMealPrepPlan,
   type MealPrepPlan,
@@ -108,9 +109,24 @@ function planSessionsForWeek(
   weekEnd: string,
   planStatus: ReadonlyMap<string, UserRows['plans'][number]['status']>,
 ): NutritionSessionInput[] {
+  // Erledigte Ausdauer-Einheit: tatsächliche Dauer laut Tagebuch statt der geplanten (06.11.2026: „Langer Lauf“
+  // geplant 66 min, gelaufen 2:42 h – das Tagesziel blieb sonst bei der Planung). Deckel bleibt in der Engine.
+  const cardioSeconds = new Map(
+    rows.cardioLogs.map((c) => [c.session_log_id, c.duration_s] as const),
+  );
+  const logged = loggedEnduranceMinutes(
+    rows.sessionLogs.map((l) => ({
+      plannedSessionId:
+        l.kind === 'endurance' && l.status === 'completed' ? l.planned_session_id : null,
+      durationS: cardioSeconds.get(l.id) ?? 0,
+      isFree: l.is_free === true,
+    })),
+  );
   return rows.plannedSessions.flatMap((s): NutritionSessionInput[] => {
     const status = planStatus.get(s.plan_id);
     if (status === undefined || s.scheduled_on < weekStart || s.scheduled_on > weekEnd) return [];
+    const actual =
+      s.status === 'completed' && s.kind === 'endurance' ? logged.get(s.id) : undefined;
     return [
       {
         sessionId: s.id,
@@ -120,7 +136,8 @@ function planSessionsForWeek(
         kind: s.kind,
         enduranceModality: s.endurance_modality,
         effortTarget: s.effort_target,
-        minutes: s.estimated_minutes,
+        minutes:
+          actual !== undefined && actual > 0 ? Math.min(actual, 24 * 60) : s.estimated_minutes,
         isDeload: s.is_deload,
         status: s.status,
         // Nährstoff-Timing (T2): eigene Uhrzeit der Einheit; ohne Uhrzeit fehlt das Feld (Engine wie bisher).
