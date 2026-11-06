@@ -51,6 +51,7 @@ import { deWorkouts } from './de-workouts';
 import { deSlim } from './de-slim';
 import { deCalisthenics } from './de-calisthenics';
 import { deTrainingWeek } from './de-training-week';
+import { deStartTraining } from './de-start';
 import { deWidget } from './de-widget';
 import { deRowing } from './de-rowing';
 import { deDeviceCalendar, deMonthReview, deWeightTrend } from './de-review';
@@ -1712,6 +1713,8 @@ export const de = {
   trainingMeals: deTrainingMeals,
   day: deDay,
   trainingWeek: deTrainingWeek,
+  /** „Training starten“ (Gründer-Wunsch 06.11.2026): „+“ auf „Heute“ und Start-Blatt. */
+  startTraining: deStartTraining,
   weekEval: deWeekEval,
   /** Menüleiste, Übersicht, Fortschritt, Mehr, Mein Konto (docs/PLAN-DASHBOARD.md). */
   tabs: deTabs,

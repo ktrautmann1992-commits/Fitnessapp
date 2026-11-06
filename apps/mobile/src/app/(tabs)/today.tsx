@@ -42,6 +42,11 @@ import {
   WeekStrip,
 } from '@/components/training-week';
 import { ConfirmDialog, Screen } from '@/components/screen';
+import {
+  StartTrainingButton,
+  StartTrainingSheet,
+  useStartEntries,
+} from '@/components/start-training';
 import { focusTestId, SwapDialog, type SwapDecision, SwapFeedback } from '@/components/swap';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { BackendError, type PreferenceSwapContext } from '@/data/backend';
@@ -177,12 +182,16 @@ export default function TodayScreen() {
   useFocusEffect(useCallback(() => () => setSwapFeedback(null), []));
   // Frage und Tages-Blatt nur auf dem sichtbaren Bildschirm (Tabs bleiben im Hintergrund geladen).
   const [focused, setFocused] = useState(true);
+  // „Training starten“ (Gründer-Wunsch 06.11.2026): „+“ oben rechts öffnet das Start-Blatt.
+  const [startOpen, setStartOpen] = useState(false);
+  const startEntries = useStartEntries(week.status?.days.find((d) => d.isToday) ?? null, today);
   useFocusEffect(
     useCallback(() => {
       setFocused(true);
       return () => {
         setFocused(false);
         setSheetDate(null);
+        setStartOpen(false);
       };
     }, []),
   );
@@ -515,6 +524,19 @@ export default function TodayScreen() {
     </>
   );
 
+  // Ein Tipp bis zum Start: „+ Training starten“ → Blatt (geplante Einheit zuerst, dann frei/GPS/Sportart/Nachtragen).
+  const startAction = (
+    <StartTrainingButton onPress={() => setStartOpen(true)} expanded={startOpen} />
+  );
+  const startSheet = (
+    <StartTrainingSheet
+      visible={startOpen && focused}
+      onClose={() => setStartOpen(false)}
+      entries={startEntries}
+      today={today}
+    />
+  );
+
   const dialogs = (
     <>
       <ConfirmDialog
@@ -558,7 +580,13 @@ export default function TodayScreen() {
   // --- Kein Plan ------------------------------------------------------------------------------------------
   if (!active) {
     return (
-      <Screen area="training" icon="dumbbell" title={t.today.title} testID="today">
+      <Screen
+        area="training"
+        icon="dumbbell"
+        title={t.today.title}
+        testID="today"
+        headerAction={startAction}
+      >
         <TrainingSwitch selected="plan" prefix="today" exercisesTestID="today-glossary" />
         {competitionLink}
         <NoticeStack items={noticeItems} testID="today-notices" />
@@ -585,6 +613,7 @@ export default function TodayScreen() {
           />
         ) : null}
         {dialogs}
+        {startSheet}
       </Screen>
     );
   }
@@ -947,7 +976,13 @@ export default function TodayScreen() {
   const infoNotices = planInfoNotices(plan, lib);
 
   return (
-    <Screen area="training" icon="dumbbell" title={t.today.title} testID="today">
+    <Screen
+      area="training"
+      icon="dumbbell"
+      title={t.today.title}
+      testID="today"
+      headerAction={startAction}
+    >
       <TrainingSwitch selected="plan" prefix="today" exercisesTestID="today-glossary" />
       {competitionLink}
       <NoticeStack items={[...noticeItems, ...planNotices]} testID="today-notices" />
@@ -1249,6 +1284,7 @@ export default function TodayScreen() {
         />
       </CollapsibleRow>
       {dialogs}
+      {startSheet}
       <DaySheet
         date={sheetDate}
         status={week.status}

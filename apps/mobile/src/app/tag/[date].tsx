@@ -18,6 +18,8 @@ import { DayTrainingRow, IntakeBarCard } from '@/components/day-evaluation';
 import { PlanMealEaten } from '@/components/food-log';
 import { ConsentBlockedNotice } from '@/components/nutrition';
 import { Screen } from '@/components/screen';
+import { StartTrainingSheet, useStartEntries } from '@/components/start-training';
+import { useWeekStatus } from '@/components/training-week';
 import {
   kcalForLog,
   SessionKcalLine,
@@ -25,6 +27,7 @@ import {
   useWatchKcal,
 } from '@/components/session-kcal';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
+import { backfillDayFromRows } from '@/data/backfill';
 import {
   dayAchievementInputsAround,
   dayExerciseNames,
@@ -69,6 +72,13 @@ export default function DayScreen() {
   useEffect(() => {
     void ensureLibrary();
   }, [ensureLibrary]);
+  // „Training starten“ (Gründer-Wunsch 06.11.2026): am Tag „heute“ geplante Einheit(en) mit einem Tipp starten.
+  const [startOpen, setStartOpen] = useState(false);
+  const trainingWeek = useWeekStatus(today);
+  const startEntries = useStartEntries(
+    trainingWeek.status?.days.find((d) => d.date === today) ?? null,
+    today,
+  );
 
   if (app.status.kind === 'loading') {
     return (
@@ -229,6 +239,35 @@ export default function DayScreen() {
     <>
       {header}
       {pager}
+      {/* Tag „heute“: Start mit einem Tipp – direkt unter dem Kopf (Gründer-Wunsch 06.11.2026). */}
+      {isToday ? (
+        <View style={styles.section} testID="day-start">
+          {startEntries.flatMap((entry) =>
+            entry.kind === 'planned'
+              ? [
+                  <Button
+                    key={entry.sessionId}
+                    label={
+                      entry.resume
+                        ? t.startTraining.dayResume(entry.name_de)
+                        : t.startTraining.dayStart(entry.name_de)
+                    }
+                    icon="play"
+                    onPress={() => router.push(`/workout/${entry.sessionId}` as Href)}
+                    testID={`day-start-${entry.sessionId}`}
+                  />,
+                ]
+              : [],
+          )}
+          <Button
+            label={t.startTraining.dayFree}
+            variant="secondary"
+            expanded={startOpen}
+            onPress={() => setStartOpen(true)}
+            testID="day-start-free"
+          />
+        </View>
+      ) : null}
       {evaluation.timing === 'future' ? (
         <Body muted testID="day-future">
           {t.day.future}
@@ -303,6 +342,16 @@ export default function DayScreen() {
             <Body muted>{t.sessionKcal.dayTotalNote}</Body>
           </View>
         ) : null}
+        {evaluation.timing === 'past' && backfillDayFromRows(rows, date, today).block === null ? (
+          <Button
+            label={t.startTraining.dayBackfill}
+            accessibilityLabel={t.startTraining.dayBackfillA11y(dayLabel(date))}
+            variant="secondary"
+            icon="plus"
+            onPress={() => router.push(`/nachtragen?date=${date}` as Href)}
+            testID="day-backfill"
+          />
+        ) : null}
         <Button
           label={t.calendar.open}
           accessibilityLabel={t.calendar.openA11y}
@@ -311,6 +360,14 @@ export default function DayScreen() {
           testID="day-calendar"
         />
       </View>
+      {isToday ? (
+        <StartTrainingSheet
+          visible={startOpen}
+          onClose={() => setStartOpen(false)}
+          entries={startEntries}
+          today={today}
+        />
+      ) : null}
     </>,
   );
 }

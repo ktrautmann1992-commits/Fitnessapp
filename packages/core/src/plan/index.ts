@@ -40,3 +40,5 @@ export * from './race-pace';
 export * from './run-strength';
 // Nährstoff-Timing 2 (docs/PLAN-NAEHRSTOFF-TIMING.md): Uhrzeit an der geplanten Einheit.
 export * from './session-time';
+// „Training starten“ (Gründer-Wunsch 06.11.2026): Einträge des Start-Blatts hinter dem „+“.
+export * from './start-menu';

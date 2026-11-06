@@ -352,6 +352,12 @@ esse ich?“), **Einkaufen** („Was muss ich kaufen?“), **Mehr** („Alles an
 - **Aktionen ins ⋯-Menü** (`MoreMenu`): runder 44-px-Knopf oben rechts, Blatt von unten (Radius 24, Griff, Zeilen
   52 px mit Icon, Schalter-Einträge mit Haken, Gefährliches in Fehlerfarbe, „Schließen“). Seitenkopf-Knöpfe über
   `Screen headerAction` (z. B. ⚙ in Ernährung, `HeaderIconButton`).
+- **„+ Training starten“** (Gründer-Wunsch 06.11.2026, `components/start-training.tsx`): Pille in der Hauptfarbe
+  oben rechts auf „Heute“ (`Screen headerAction`, 44 px) öffnet das Start-Blatt (Radius 24, Griff, Zeilen 60 px mit
+  Icon und Zusatz). Reihenfolge aus `packages/core` `startTrainingMenu`: geplante Einheit von heute (Hauptfarbe)
+  → Krafttraining (`/kraft-starten`, Übungswahl) → Lauf/Rad mit GPS (`/ausdauer`, nur App bzw. Testmodus) → Andere
+  Sportart → Einheit nachtragen. „Dein Tag“ für heute: „Training starten: …“ + „+ Freies Training starten“ (gleiches
+  Blatt) direkt unter dem Kopf; vergangene Tage im Nachtrage-Fenster: „Einheit nachtragen“.
 - **Werkzeuge als bunte Kacheln** (`TileGrid`, zu zweit) statt Knopf-Stapel – Bereichsfarbe je Ziel (Einkaufen
   türkis, Ernährung grün, Fortschritt/Training blau).
 - Neue Strich-Icons: `home` (Reiter Heute), `share`, `print`, `chevron-left`, `filter`.
