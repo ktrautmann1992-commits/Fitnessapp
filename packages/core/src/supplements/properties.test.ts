@@ -33,6 +33,25 @@ const BLOCKING: Readonly<Record<RatedSupplementId, readonly AnyFlag[]>> = {
     'medical_clearance_recommended',
     'heart_rhythm',
   ],
+  // 06.11.2026 (docs/PLAN-SUPPLEMENTE-TRAINING.md)
+  beta_alanine: [
+    'pregnancy',
+    'breastfeeding',
+    'medication',
+    'medical_clearance_recommended',
+    'kidney',
+  ],
+  eaa: ['pregnancy', 'breastfeeding', 'kidney'],
+  electrolytes: [
+    'pregnancy',
+    'breastfeeding',
+    'medication',
+    'medical_clearance_recommended',
+    'kidney',
+    'heart_rhythm',
+  ],
+  zinc: ALL_FLAGS, // nie „passt“
+  magnesium: ALL_FLAGS, // nie „passt“
 };
 const CAFFEINE_EXCLUDING: readonly AnyFlag[] = [
   'medication',

@@ -30,9 +30,9 @@ import type { UserRows } from './types';
 const NO = { kidney: false, breastfeeding: false, heart_rhythm: false, caffeine_sensitive: false };
 
 describe('Inhalte', () => {
-  it('Testmodus: alle 18 aus dem Bündel (Entwurf oder freigegeben, ohne roten Befund), Supabase: nur freigegebene, gültige', () => {
+  it('Testmodus: alle 23 aus dem Bündel (Entwurf oder freigegeben, ohne roten Befund), Supabase: nur freigegebene, gültige', () => {
     const entries = supplementsFromBundle(CONTENT_BUNDLE.supplementFiles);
-    expect(entries).toHaveLength(18);
+    expect(entries).toHaveLength(23);
     expect(entries.every((entry) => entry.status === 'draft' || entry.status === 'published')).toBe(
       true,
     );
@@ -53,7 +53,7 @@ describe('Inhalte', () => {
         { data: { id: 'x' } },
         { data: { ...entries[0]!, status: 'draft' as const } },
       ]),
-    ).toHaveLength(18);
+    ).toHaveLength(23);
   });
 });
 

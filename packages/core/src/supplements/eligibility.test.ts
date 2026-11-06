@@ -11,11 +11,20 @@ import {
 import { supplementInputsSchema, type SupplementInputs } from './inputs';
 import { supplementTestInputs as base, withoutConsent } from './test-helpers';
 
+/** Startliste (Plan 3.2). Die fünf Einträge vom 06.11.2026 prüft `eligibility-extra.test.ts`. */
+const START_IDS: readonly RatedSupplementId[] = [
+  'creatine',
+  'protein_powder',
+  'vitamin_d',
+  'omega3',
+];
+
 function statuses(result: SupplementRecommendations): Record<RatedSupplementId, SupplementStatus> {
-  return Object.fromEntries(result.items.map((item) => [item.id, item.status])) as Record<
-    RatedSupplementId,
-    SupplementStatus
-  >;
+  return Object.fromEntries(
+    result.items
+      .filter((item) => START_IDS.includes(item.id))
+      .map((item) => [item.id, item.status]),
+  ) as Record<RatedSupplementId, SupplementStatus>;
 }
 
 const rec = (overrides: Partial<SupplementInputs> = {}) => recommendSupplements(base(overrides));
@@ -59,6 +68,11 @@ describe('recommendSupplements – Grund-Person (Plan 3.2)', () => {
       'protein_powder',
       'vitamin_d',
       'omega3',
+      'beta_alanine',
+      'eaa',
+      'electrolytes',
+      'zinc',
+      'magnesium',
     ]);
     expect(result.notices).toEqual([]);
   });

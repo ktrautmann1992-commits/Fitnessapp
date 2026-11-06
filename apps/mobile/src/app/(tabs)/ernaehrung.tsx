@@ -75,6 +75,7 @@ import {
 } from '@/lib/nutrition-format';
 import { dayLabel } from '@/lib/plan-format';
 import { useApp } from '@/state/app-state';
+import { useSupplements, useSupplementsVisibility } from '@/state/use-supplements';
 import { healthConsentStatus, HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useFoodLogActions, useFoodLogDay } from '@/state/use-food-log';
 import {
@@ -100,6 +101,8 @@ export default function NutritionDayScreen() {
   const app = useApp();
   const params = useLocalSearchParams<{ tag?: string }>();
   const today = useToday();
+  // „Nahrungsergänzungsmittel anzeigen“ (06.11.2026): aus = keine Supplement-Kachel.
+  const supplementsShown = useSupplementsVisibility(useSupplements()).visible;
   // Ohne gewählten Tag folgt die Ansicht „heute“ – auch über Mitternacht (Wächter N5b K2).
   const [picked, setSelected] = useState<string | null>(() =>
     isoDateSchema.safeParse(params.tag).success ? (params.tag as string) : null,
@@ -519,16 +522,20 @@ export default function NutritionDayScreen() {
       onPress: () => router.push('/ernaehrung/vorrat' as Href),
       testID: 'nutrition-pantry',
     },
-    {
-      key: 'supplements',
-      title: t.slim.nutrition.toolSupplements,
-      subtitle: t.slim.nutrition.toolSupplementsDetail,
-      area: 'ernaehrung',
-      icon: 'pill',
-      accessibilityLabel: t.supplements.open,
-      onPress: () => router.push('/supplemente' as Href),
-      testID: 'nutrition-supplements',
-    },
+    ...(supplementsShown
+      ? [
+          {
+            key: 'supplements',
+            title: t.slim.nutrition.toolSupplements,
+            subtitle: t.slim.nutrition.toolSupplementsDetail,
+            area: 'ernaehrung' as const,
+            icon: 'pill' as const,
+            accessibilityLabel: t.supplements.open,
+            onPress: () => router.push('/supplemente' as Href),
+            testID: 'nutrition-supplements',
+          },
+        ]
+      : []),
     ...((readable?.length ?? 0) > 0
       ? [
           {

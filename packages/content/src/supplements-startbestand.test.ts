@@ -87,6 +87,16 @@ describe('Startbestand Supplemente (content/supplements)', () => {
       category: 'safety_info',
       claim_ids: [],
     });
+    // 06.11.2026: fünf weitere Einträge, alle Stufe B ohne zugelassene Angabe (Wortlaut im EU-Register offen).
+    for (const [id, category] of [
+      ['beta_alanine', 'sport'],
+      ['eaa', 'food'],
+      ['electrolytes', 'sport'],
+      ['zinc', 'diet_season'],
+      ['magnesium', 'diet_season'],
+    ] as const) {
+      expect(byId.get(id), id).toMatchObject({ evidence_level: 'b', category, claim_ids: [] });
+    }
     // Jede zugelassene Angabe kommt genau einmal vor.
     const used = result.supplements.flatMap((entry) => entry.claim_ids).sort();
     expect(used).toEqual(APPROVED_CLAIMS.map((claim) => claim.id).sort());

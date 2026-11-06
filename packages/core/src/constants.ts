@@ -4762,6 +4762,33 @@ export const SUPPLEMENT_HEALTH_CONSENT_MIN_VERSION = 2;
  * - `omega3.epaDhaMgPerDay` 250–500 mg EPA+DHA täglich: 250 mg = Bedingung der zugelassenen Angabe (VO (EU)
  *   432/2012); EFSA (2012), „Scientific Opinion related to the Tolerable Upper Intake Level of EPA, DHA and DPA“,
  *   EFSA Journal 10(7):2815 (bis 5 g/Tag unbedenklich); Obergrenze 500 mg: PRODUKTENTSCHEIDUNG.
+ *
+ * Gründer-Entscheidung 06.11.2026 (docs/PLAN-SUPPLEMENTE-TRAINING.md): fünf weitere Einträge.
+ * - `betaAlanine.dailyG` 3,2–6,4 g am Tag, `maxSingleDoseG` 1,6 g je Portion (Kribbeln/Parästhesie, harmlos), über
+ *   den Tag verteilt zu Mahlzeiten: Trexler ET et al. (2015), „International society of sports nutrition position
+ *   stand: Beta-Alanine“, J Int Soc Sports Nutr 12:30, DOI 10.1186/s12970-015-0090-y (4–6 g/Tag in Teildosen ≤ 2 g);
+ *   Saunders B et al. (2017), Br J Sports Med 51(8):658–669, DOI 10.1136/bjsports-2016-096396 (Effekt vor allem bei
+ *   Belastungen von etwa 30 s bis 10 min); 3,2–6,4 g und ≤ 1,6 g je Portion: Maughan 2018 (IOC, s. o.).
+ *   „passt“ nur mit Intervall-/Sprint-Einheiten im Plan (`needsIntervals`): PRODUKTENTSCHEIDUNG (Stufe B).
+ * - `eaa.servingG` 10–15 g essenzielle Aminosäuren je Portion: Ferrando AA et al. (2023), „International Society of
+ *   Sports Nutrition Position Stand: Effects of essential amino acid supplementation on exercise and performance“,
+ *   J Int Soc Sports Nutr 20(1):2263409, DOI 10.1080/15502783.2023.2263409 (Plateau der Muskelproteinsynthese bei etwa
+ *   15–18 g). „passt“ nur bei Eiweiß-Lücke UND veganer Ernährung (`plantBasedOnly`): PRODUKTENTSCHEIDUNG (Stufe B –
+ *   Proteinpulver bzw. Essen zuerst, Jäger 2017).
+ * - `electrolytes.sodiumMgPerHour` 300–600 mg Natrium je Stunde bei langen Einheiten: abgeleitet aus Sawka MN et al.
+ *   (2007), „American College of Sports Medicine position stand. Exercise and fluid replacement“, Med Sci Sports Exerc
+ *   39(2):377–390, DOI 10.1249/mss.0b013e31802ca597 (Getränke mit 20–30 mmol/l Natrium bei etwa 0,4–0,8 l je Stunde
+ *   ≈ 180–550 mg/h) und McCubbin AJ et al. (2020), „Sports Dietitians Australia Position Statement: Nutrition for
+ *   Exercise in Hot Environments“, Int J Sport Nutr Exerc Metab 30(1):83–98, DOI 10.1123/ijsnem.2019-0300; Spanne
+ *   300–600 mg: PRODUKTENTSCHEIDUNG, VOR LIVEGANG FACHLICH PRÜFEN. `minSessionMinutes` 90: Einheiten ab 90 Minuten
+ *   (Sawka 2007: Natrium bei Belastung über etwa 2 h bzw. starkem Schwitzen; 90 min = PRODUKTENTSCHEIDUNG, sichere
+ *   Seite für warme Tage).
+ * - `zinc.supplementMaxMg` 25 mg am Tag (gesamte Aufnahme, Ergänzungen zählen voll): EFSA-Höchstmenge (UL) 25 mg/Tag
+ *   für Erwachsene (SCF 2003, übernommen in EFSA NDA Panel (2014), „Scientific Opinion on Dietary Reference Values for
+ *   zinc“, EFSA Journal 12(10):3844, DOI 10.2903/j.efsa.2014.3844). Nie „passt“ – nur Info (Blutwerte ärztlich prüfen).
+ * - `magnesium.supplementMaxMg` 250 mg am Tag aus Ergänzungen: EFSA-Höchstmenge (UL) für zusätzliches Magnesium
+ *   (SCF 2001; EFSA NDA Panel (2015), „Scientific Opinion on Dietary Reference Values for magnesium“, EFSA Journal
+ *   13(7):4186, DOI 10.2903/j.efsa.2015.4186). Nie „passt“ – nur Info.
  */
 export const SUPPLEMENT_RULES = {
   adultFromAge: 18,
@@ -4783,6 +4810,11 @@ export const SUPPLEMENT_RULES = {
     lowSunMonths: [10, 11, 12, 1, 2, 3],
   },
   omega3: { epaDhaMgPerDay: { min: 250, max: 500 } },
+  betaAlanine: { dailyG: { min: 3.2, max: 6.4 }, maxSingleDoseG: 1.6, needsIntervals: true },
+  eaa: { servingG: { min: 10, max: 15 }, plantBasedOnly: true },
+  electrolytes: { sodiumMgPerHour: { min: 300, max: 600 }, minSessionMinutes: 90 },
+  zinc: { supplementMaxMg: 25 },
+  magnesium: { supplementMaxMg: 250 },
 } as const satisfies {
   adultFromAge: number;
   creatine: {
@@ -4803,7 +4835,35 @@ export const SUPPLEMENT_RULES = {
     lowSunMonths: readonly number[];
   };
   omega3: { epaDhaMgPerDay: { min: number; max: number } };
+  betaAlanine: {
+    dailyG: { min: number; max: number };
+    maxSingleDoseG: number;
+    needsIntervals: boolean;
+  };
+  eaa: { servingG: { min: number; max: number }; plantBasedOnly: boolean };
+  electrolytes: { sodiumMgPerHour: { min: number; max: number }; minSessionMinutes: number };
+  zinc: { supplementMaxMg: number };
+  magnesium: { supplementMaxMg: number };
 };
+
+/**
+ * Zeitpunkte der Supplemente rund um die Einheit (Gründer-Entscheidung 06.11.2026, docs/PLAN-SUPPLEMENTE-TRAINING.md,
+ * `supplementTrainingDayTiming`). Reine Regeln, gratis, keine KI. VOR LIVEGANG FACHLICH PRÜFEN.
+ * - `caffeineBeforeMinutes` 30–60 min vor dem Start: Guest NS et al. (2021), „International society of sports
+ *   nutrition position stand: caffeine and exercise performance“, J Int Soc Sports Nutr 18:1 (meist 60 min vorher,
+ *   Spitzenspiegel nach 30–60 min). Nur als neutrale Sicherheits-Info mit Grenzen (B2.3), nie als Empfehlung; Einheit
+ *   nach `CAFFEINE_LIMITS.latestTrainingStartMinutes` → Satz „kein Koffein vorher“.
+ * - `afterTrainingMinutes` 0–120: „nach dem Training“ = bis etwa 2 h nach dem Ende (Jäger 2017: Eiweiß innerhalb von
+ *   etwa 2 h nach der Einheit). Fenster: PRODUKTENTSCHEIDUNG.
+ * - `eaaBeforeMinutes` 30: EAA „kurz vor oder nach“ der Einheit (Ferrando 2023). PRODUKTENTSCHEIDUNG.
+ * - `defaultSessionMinutes` 60: Dauer, wenn keine bekannt ist (für das Ende der Einheit). PRODUKTENTSCHEIDUNG.
+ */
+export const SUPPLEMENT_TIMING_RULES = {
+  caffeineBeforeMinutes: { min: 30, max: 60 },
+  afterTrainingMinutes: { min: 0, max: 120 },
+  eaaBeforeMinutes: 30,
+  defaultSessionMinutes: 60,
+} as const;
 
 /**
  * Koffein – nur neutrale Sicherheits-Info, keine Empfehlung, keine Stufe, kein Zweck, keine Shop-Links (Plan 3.5,

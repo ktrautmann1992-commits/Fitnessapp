@@ -5,8 +5,12 @@ import {
   startOfIsoWeek,
   type SupplementContent,
   type SupplementContentFile,
+  startTimeToMinutes,
   supplementContentSchema,
+  SUPPLEMENT_RULES,
   type SupplementProfileSource,
+  timingStartMinutes,
+  type TrainingTimingSession,
   validateContent,
 } from '@fitnessapp/core';
 
@@ -107,6 +111,12 @@ export function supplementSourceFromRows(
     goalType: rows.goals.goal_type,
     secondaryGoalType: rows.goals.secondary_goal_type ?? null,
     experienceLevel: level.data,
+    hasLongSessions: rows.plannedSessions.some(
+      (session) =>
+        activePlans.has(session.plan_id) &&
+        session.status !== 'skipped' &&
+        session.estimated_minutes >= SUPPLEMENT_RULES.electrolytes.minSessionMinutes,
+    ),
     hasIntervalSessions: rows.plannedSessions.some(
       (session) =>
         activePlans.has(session.plan_id) &&
@@ -126,5 +136,53 @@ export function supplementSourceFromRows(
     proteinTargetG,
     hasNutritionTargets: proteinTargetG !== null,
     hasCompetition: rows.competitions.some((competition) => competition.status === 'planned'),
+  };
+}
+
+/** Minuten nach Mitternacht (Ortszeit des Geräts) eines Zeitstempels, `null` = ungültig. */
+function localMinutes(iso: string | null): number | null {
+  if (iso === null) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.getHours() * 60 + date.getMinutes();
+}
+
+/**
+ * Einheit von heute für die Supplement-Zeitpunkte (`supplementTrainingDayTiming`, 06.11.2026): `null` = Ruhetag
+ * (keine offene oder erledigte Einheit im aktiven Plan). Beginn: echter Beginn einer erledigten Einheit vor der
+ * geplanten Uhrzeit (früheste Einheit des Tages); Dauer: längste Einheit des Tages (echte Dauer, sonst geschätzt).
+ */
+export function todayTimingSession(rows: UserRows, today: string): TrainingTimingSession | null {
+  const activePlans = new Set(rows.plans.filter((p) => p.status === 'active').map((p) => p.id));
+  const sessions = rows.plannedSessions.filter(
+    (session) =>
+      activePlans.has(session.plan_id) &&
+      session.scheduled_on === today &&
+      session.status !== 'skipped',
+  );
+  if (sessions.length === 0) return null;
+  const items = sessions.map((session) => {
+    const log = rows.sessionLogs.find((entry) => entry.planned_session_id === session.id);
+    const actualStart = localMinutes(log?.started_at ?? null);
+    const startedMs = log?.started_at ? Date.parse(log.started_at) : Number.NaN;
+    const finishedMs = log?.finished_at ? Date.parse(log.finished_at) : Number.NaN;
+    const actualMinutes =
+      Number.isFinite(startedMs) && Number.isFinite(finishedMs) && finishedMs > startedMs
+        ? Math.round((finishedMs - startedMs) / 60000)
+        : null;
+    let start: number | null;
+    try {
+      start = timingStartMinutes(startTimeToMinutes(session.start_time), actualStart);
+    } catch {
+      start = null;
+    }
+    const duration = actualMinutes ?? session.estimated_minutes;
+    return { start, duration: duration > 0 ? Math.min(duration, 24 * 60) : null };
+  });
+  const starts = items.map((item) => item.start).filter((v): v is number => v !== null);
+  const durations = items.map((item) => item.duration).filter((v): v is number => v !== null);
+  return {
+    startMinutes: starts.length > 0 ? Math.min(...starts) : null,
+    durationMinutes: durations.length > 0 ? Math.max(...durations) : null,
   };
 }

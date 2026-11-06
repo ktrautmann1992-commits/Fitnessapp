@@ -1,0 +1,40 @@
+{
+  "id": "electrolytes",
+  "version": 1,
+  "status": "published",
+  "name_de": "Elektrolyte (Natrium und Kalium)",
+  "evidence_level": "b",
+  "category": "sport",
+  "summary_de": "Mit dem Schweiß verlierst du Wasser und Salze, vor allem Natrium und etwas Kalium. Elektrolyt-Pulver oder -Tabletten enthalten diese Salze zum Mischen ins Getränk.",
+  "how_to_de": "Bei Einheiten ab {minutes}: etwa {dose} Natrium je Stunde, gelöst im Getränk, das du ohnehin trinkst. An normalen Tagen liefert das Essen genug Salz.",
+  "claim_ids": [],
+  "sources": [
+    {
+      "authors": "Sawka MN, Burke LM, Eichner ER et al.",
+      "year": 2007,
+      "title": "American College of Sports Medicine position stand. Exercise and fluid replacement",
+      "journal": "Med Sci Sports Exerc 39(2):377–390",
+      "doi": "10.1249/mss.0b013e31802ca597",
+      "pmid": "17277604"
+    },
+    {
+      "authors": "McCubbin AJ, Allanson BA, Caldwell Odgers JN et al.",
+      "year": 2020,
+      "title": "Sports Dietitians Australia Position Statement: Nutrition for Exercise in Hot Environments",
+      "journal": "Int J Sport Nutr Exerc Metab 30(1):83–98",
+      "doi": "10.1123/ijsnem.2019-0300",
+      "pmid": "31891914"
+    }
+  ],
+  "not_recommended_reason_de": null,
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude (Sitzung)",
+    "batch_id": null,
+    "created_on": "2026-11-06",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
+    "review_note": null
+  }
+}

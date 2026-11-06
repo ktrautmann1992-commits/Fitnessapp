@@ -45,6 +45,10 @@ async function openFromMore(page: Page) {
   await page.getByRole('tab', { name: 'Mehr', exact: true }).click();
   await page.getByTestId('more-supplements').click();
   await heading(page, 'Supplemente');
+  // Seit 06.11.2026 Standard aus („Nahrungsergänzungsmittel anzeigen“) – einschalten.
+  await expect(page.getByTestId('supplements-hidden')).toBeVisible();
+  await page.getByTestId('supplements-visibility').click();
+  await expect(page.getByTestId('supplements-disclaimer')).toBeVisible();
 }
 
 async function doCheck(page: Page) {

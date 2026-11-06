@@ -52,6 +52,8 @@ export interface SupplementProfileSource {
   readonly experienceLevel: ExperienceLevel;
   /** Ausdauer-Plan mit Intervall- oder Sprint-Einheiten (Kreatin beim Ziel Ausdauer, Plan 3.2). */
   readonly hasIntervalSessions: boolean;
+  /** Einheiten ab 90 Minuten im aktiven Plan (Elektrolyte, 06.11.2026). Fehlt = nein. */
+  readonly hasLongSessions?: boolean;
   readonly dietType: DietType;
   /** Gespeicherte Vorlieben: Lebensmittel-Gruppe und Art („like“, „dislike“, „intolerance“). */
   readonly foodPreferences: readonly { readonly group: string; readonly kind: string }[];
@@ -127,6 +129,7 @@ export function buildSupplementInputs(source: SupplementProfileSource): Suppleme
     secondaryGoalType: source.secondaryGoalType,
     experienceLevel: source.experienceLevel,
     hasIntervalSessions: source.hasIntervalSessions,
+    hasLongSessions: source.hasLongSessions ?? false,
     dietType: source.dietType,
     avoidsFish,
     avoidsDairy,

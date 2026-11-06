@@ -14,6 +14,11 @@ import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 
 
 import { type Backend, errorCode, type SupplementLibraryResult } from '@/data/backend';
 import { supplementSourceFromRows } from '@/data/supplement-library';
+import {
+  setSupplementsVisible,
+  supplementsVisible,
+  useSupplementPrefs,
+} from '@/lib/supplement-prefs';
 import { useToday } from '@/lib/use-today';
 
 import { useApp } from './app-state';
@@ -200,4 +205,25 @@ export function useSupplements(): SupplementsView {
 /** Inhalte nach ID (für Detailseiten). */
 export function supplementEntries(state: SupplementLibraryState): readonly SupplementContent[] {
   return state.kind === 'ready' ? state.entries : [];
+}
+
+export interface SupplementsVisibility {
+  /** Geräte-Einstellung geladen (vorher nichts ein- oder ausblenden, kein Flackern). */
+  readonly loaded: boolean;
+  /** „Nahrungsergänzungsmittel anzeigen“ – Standard AUS, für Bestandsnutzer mit Supplement-Daten AN. */
+  readonly visible: boolean;
+  readonly setVisible: (visible: boolean) => void;
+}
+
+/** Sichtbarkeit des Supplement-Bereichs (docs/PLAN-SUPPLEMENTE-TRAINING.md 3) für Karten, Kacheln und Einstellungen. */
+export function useSupplementsVisibility(
+  view: Pick<SupplementsView, 'data'>,
+): SupplementsVisibility {
+  const prefs = useSupplementPrefs();
+  const hasData = view.data.screening !== null || view.data.choices.length > 0;
+  return {
+    loaded: prefs.loaded,
+    visible: supplementsVisible(prefs.visible, hasData),
+    setVisible: setSupplementsVisible,
+  };
 }

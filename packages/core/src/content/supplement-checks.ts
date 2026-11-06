@@ -49,6 +49,12 @@ export const SUPPLEMENT_CONTENT_PLACEHOLDERS: Readonly<
   vitamin_d: ['dose'],
   omega3: ['dose'],
   caffeine: ['dose', 'daily', 'cup', 'cups', 'time'],
+  // 06.11.2026: `{limit}` = Höchstmenge (supplementLimitText), `{minutes}` = lange Einheit (Elektrolyte).
+  beta_alanine: ['dose', 'limit'],
+  eaa: ['dose'],
+  electrolytes: ['dose', 'minutes'],
+  zinc: ['limit'],
+  magnesium: ['limit'],
 };
 
 /**

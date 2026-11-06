@@ -50,6 +50,11 @@ export const supplementInputsSchema = z
     experienceLevel: z.enum(EXPERIENCE_LEVELS),
     /** Hat der Ausdauer-Plan Intervall- oder Sprint-Einheiten (Kreatin beim Ziel Ausdauer, Plan 3.2)? */
     hasIntervalSessions: z.boolean(),
+    /**
+     * Hat der Plan Einheiten ab `SUPPLEMENT_RULES.electrolytes.minSessionMinutes` (90 min)? Elektrolyte, 06.11.2026.
+     * Fehlt = nein (sichere Richtung).
+     */
+    hasLongSessions: z.boolean().optional(),
     dietType: z.enum(DIET_TYPES),
     /** „Fisch mag ich nicht“ oder Fisch-Unverträglichkeit (Lebensmittel-Gruppe `fish`). */
     avoidsFish: z.boolean(),

@@ -1,0 +1,40 @@
+{
+  "id": "eaa",
+  "version": 1,
+  "status": "published",
+  "name_de": "EAA (essenzielle Aminosäuren)",
+  "evidence_level": "b",
+  "category": "food",
+  "summary_de": "EAA sind die Aminosäuren, die dein Körper nicht selbst bilden kann. Sie stecken in allen Lebensmitteln mit Eiweiß – in pflanzlichen oft in kleineren Anteilen.",
+  "how_to_de": "Rühre {dose} in Wasser, kurz vor oder direkt nach dem Training. EAA ersetzen keine Mahlzeit.",
+  "claim_ids": [],
+  "sources": [
+    {
+      "authors": "Ferrando AA, Wolfe RR, Hirsch KR et al.",
+      "year": 2023,
+      "title": "International Society of Sports Nutrition Position Stand: Effects of essential amino acid supplementation on exercise and performance",
+      "journal": "J Int Soc Sports Nutr 20(1):2263409",
+      "doi": "10.1080/15502783.2023.2263409",
+      "pmid": "37800468"
+    },
+    {
+      "authors": "Jäger R, Kerksick CM, Campbell BI et al.",
+      "year": 2017,
+      "title": "International Society of Sports Nutrition Position Stand: protein and exercise",
+      "journal": "J Int Soc Sports Nutr 14:20",
+      "doi": "10.1186/s12970-017-0177-8",
+      "pmid": "28642676"
+    }
+  ],
+  "not_recommended_reason_de": null,
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude (Sitzung)",
+    "batch_id": null,
+    "created_on": "2026-11-06",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
+    "review_note": null
+  }
+}

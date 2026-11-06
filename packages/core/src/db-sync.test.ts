@@ -3932,21 +3932,30 @@ describe('Supplement-Modul in der Datenbank (Phase 6, Etappe SU3, docs/PLAN-PHAS
   const enumsSql = readMigration('_supplement_enums.sql');
   const contentSql = readMigration('_supplements.sql');
   const userSql = readMigration('_supplement_user_data.sql');
-  const enumValues = (name: string) =>
+  const startEnumValues = (name: string) =>
     quotedListAfter(enumsSql, `create type public.${name} as enum (`);
+  // Neueste Fassung von seed_supplements (06.11.2026: *_seed_supplements_training.sql).
+  const seedSql = readMigration('_seed_supplements_training.sql');
 
   it('Aufzählungen = Listen im Core', () => {
+    // supplement_id: Startliste aus *_supplement_enums.sql plus „add value“ vom 06.11.2026.
     expect(enumValues('supplement_id')).toEqual([...SUPPLEMENT_IDS]);
-    expect(enumValues('supplement_evidence')).toEqual([...SUPPLEMENT_EVIDENCE_LEVELS]);
-    expect(enumValues('supplement_category')).toEqual([...SUPPLEMENT_CONTENT_CATEGORIES]);
-    expect(enumValues('supplement_flag')).toEqual([...SUPPLEMENT_FLAGS]);
-    expect(enumValues('user_supplement_status')).toEqual([...USER_SUPPLEMENT_STATUSES]);
+    expect(startEnumValues('supplement_evidence')).toEqual([...SUPPLEMENT_EVIDENCE_LEVELS]);
+    expect(startEnumValues('supplement_category')).toEqual([...SUPPLEMENT_CONTENT_CATEGORIES]);
+    expect(startEnumValues('supplement_flag')).toEqual([...SUPPLEMENT_FLAGS]);
+    expect(startEnumValues('user_supplement_status')).toEqual([...USER_SUPPLEMENT_STATUSES]);
   });
 
   it('seed_supplements kennt genau SUPPLEMENT_CONTENT_IDS; Grenzen wie das Schema', () => {
-    expect(quotedListAfter(contentSql, 'known_ids constant text[] := array[')).toEqual([
+    expect(quotedListAfter(seedSql, 'known_ids constant text[] := array[')).toEqual([
       ...SUPPLEMENT_CONTENT_IDS,
     ]);
+    // Die neue Fassung ändert nur die Liste (Rest wortgleich).
+    const body = (sql: string) =>
+      sql
+        .slice(sql.indexOf('function public.seed_supplements('))
+        .replace(/known_ids constant text\[\] := array\[[^\]]*\];/, '');
+    expect(body(seedSql)).toBe(body(contentSql));
     const { min, max } = CONTENT_SCHEMA_LIMITS.version;
     expect(contentSql).toContain(
       `version integer not null check (version between ${min} and ${max})`,

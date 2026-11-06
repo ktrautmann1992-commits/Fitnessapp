@@ -957,7 +957,7 @@ describe('content-seed: Workouts (docs/PLAN-WORKOUTS.md)', () => {
 });
 
 describe('content-seed: Supplemente (docs/PLAN-PHASE-6.md 7.2, Etappe SU3)', () => {
-  /** Alle 18 Supplemente aus dem Repository, freigegeben (wie nach dem Merge des content-review-PRs). */
+  /** Alle 23 Supplemente aus dem Repository, freigegeben (wie nach dem Merge des content-review-PRs). */
   const withSupplements = () => {
     const r = repo({ contentStatus: 'published' });
     copySupplementDrafts(r.root);
@@ -979,7 +979,7 @@ describe('content-seed: Supplemente (docs/PLAN-PHASE-6.md 7.2, Etappe SU3)', () 
   it('Paket: nur freigegebene; ohne Fachprüfung nur in der Testphase', () => {
     const r = withSupplements();
     const { result } = validateRepository({ cwd: r.root });
-    expect(result.supplements).toHaveLength(18);
+    expect(result.supplements).toHaveLength(23);
     const strict = buildSupplementSeedPackage(result);
     expect(strict.package.supplements).toEqual([]);
     expect(strict.waiting).toEqual(['bcaa', 'caffeine', 'creatine', 'vitamin_d']);

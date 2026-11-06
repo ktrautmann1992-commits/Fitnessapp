@@ -4024,7 +4024,17 @@ export type Database = {
       supplement_category: 'sport' | 'food' | 'diet_season' | 'safety_info';
       supplement_evidence: 'a' | 'b' | 'c';
       supplement_flag: 'kidney' | 'breastfeeding' | 'heart_rhythm' | 'caffeine_sensitive';
-      supplement_id: 'creatine' | 'caffeine' | 'protein_powder' | 'vitamin_d' | 'omega3';
+      supplement_id:
+        | 'creatine'
+        | 'caffeine'
+        | 'protein_powder'
+        | 'vitamin_d'
+        | 'omega3'
+        | 'beta_alanine'
+        | 'eaa'
+        | 'electrolytes'
+        | 'zinc'
+        | 'magnesium';
       user_supplement_status: 'taking' | 'not_for_me';
       training_location: 'gym' | 'home' | 'both';
       training_phase: 'base' | 'build' | 'peak' | 'taper' | 'race_week' | 'recovery';
@@ -4395,7 +4405,18 @@ export const Constants = {
       supplement_category: ['sport', 'food', 'diet_season', 'safety_info'],
       supplement_evidence: ['a', 'b', 'c'],
       supplement_flag: ['kidney', 'breastfeeding', 'heart_rhythm', 'caffeine_sensitive'],
-      supplement_id: ['creatine', 'caffeine', 'protein_powder', 'vitamin_d', 'omega3'],
+      supplement_id: [
+        'creatine',
+        'caffeine',
+        'protein_powder',
+        'vitamin_d',
+        'omega3',
+        'beta_alanine',
+        'eaa',
+        'electrolytes',
+        'zinc',
+        'magnesium',
+      ],
       user_supplement_status: ['taking', 'not_for_me'],
       training_location: ['gym', 'home', 'both'],
       training_phase: ['base', 'build', 'peak', 'taper', 'race_week', 'recovery'],

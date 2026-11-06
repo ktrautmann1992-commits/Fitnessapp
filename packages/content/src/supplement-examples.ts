@@ -179,6 +179,11 @@ const NAMES_DE: Readonly<Record<RatedSupplementResult['id'], string>> = {
   protein_powder: 'Proteinpulver',
   vitamin_d: 'Vitamin D',
   omega3: 'Omega-3',
+  beta_alanine: 'Beta-Alanin',
+  eaa: 'EAA',
+  electrolytes: 'Elektrolyte',
+  zinc: 'Zink',
+  magnesium: 'Magnesium',
 };
 
 function itemCell(item: RatedSupplementResult): string {
