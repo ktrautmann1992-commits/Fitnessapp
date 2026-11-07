@@ -1,11 +1,9 @@
 {
   "id": "thai-hacksalat-mit-minze-und-reisnudeln",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Thai-Hacksalat mit Minze und Reisnudeln",
   "description_de": "Lauwarmes, mageres Schweinehack mit Limette, Chili und frischer Minze auf knackigem Salat und Reisnudeln – inspiriert vom thailändischen Larb.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -137,6 +135,8 @@
     "Verteile Salat, Gemüse und Reisnudeln auf einem Teller, gib das warme Hack darauf, beträufle alles mit dem restlichen Dressing und streue die Minze darüber."
   ],
   "tip_de": "Mit 1 EL gehackten, gerösteten Erdnüssen wird es noch authentischer (+60 kcal).",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 18,
   "prep_minutes": 12,
   "cook_minutes": 6,
@@ -171,12 +171,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "38a2dae46d1a5a7e6177d49231df403f2a59f2df584c054c75497f41065a86f8",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "38a2dae46d1a5a7e6177d49231df403f2a59f2df584c054c75497f41065a86f8"
+    "import_assumptions_confirmed_by": null
   }
 }

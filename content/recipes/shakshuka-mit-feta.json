@@ -1,11 +1,9 @@
 {
   "id": "shakshuka-mit-feta",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Shakshuka mit Feta",
   "description_de": "Pochierte Eier in würziger Tomaten-Paprika-Sauce mit zerbröseltem Feta – orientalisches Frühstück aus einer Pfanne.",
-  "section_de": "Frühstück",
-  "categories": [],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -120,6 +118,8 @@
     "Zerbrösle den Feta darüber und iss die Shakshuka direkt aus der Pfanne mit dem Vollkornbrot."
   ],
   "tip_de": "Mit einer Prise Chiliflocken wird es feuriger.",
+  "section_de": "Frühstück",
+  "categories": [],
   "total_minutes": 20,
   "prep_minutes": 11,
   "cook_minutes": 9,
@@ -146,12 +146,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "3d370484d938606e5201e87ca8fca26a7de6b1f5f7ee0753a1830732857bc531",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "3d370484d938606e5201e87ca8fca26a7de6b1f5f7ee0753a1830732857bc531"
+    "import_assumptions_confirmed_by": null
   }
 }

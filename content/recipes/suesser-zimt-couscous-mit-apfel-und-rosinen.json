@@ -1,11 +1,9 @@
 {
   "id": "suesser-zimt-couscous-mit-apfel-und-rosinen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Süßer Zimt-Couscous mit Apfel und Rosinen",
   "description_de": "Warmer Frühstücks-Couscous mit Sojadrink, Apfel und Rosinen – schnell verfügbare Kohlenhydrate, kaum Fett und sanft für den Magen vor dem Halbmarathon.",
-  "section_de": "Vor langen Einheiten",
-  "categories": ["schnell", "pre-workout", "cardio"],
   "meal_types": ["snack"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -73,6 +71,8 @@
   ],
   "tip_de": "Geschälter Apfel ist bekömmlicher als ungeschälter. Iss die Portion 2–3 Stunden vor dem Start und trink in der Zeit bis zum Start noch etwa 500 ml in kleinen Schlucken.",
   "tags_de": ["Unter 10 Minuten", "Ausdauer"],
+  "section_de": "Vor langen Einheiten",
+  "categories": ["schnell", "pre-workout", "cardio"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -99,12 +99,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "6abae976cb200c5a792aa6f9ef4a691ac353e26d5f810ad87ae79cb634545b85",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "6abae976cb200c5a792aa6f9ef4a691ac353e26d5f810ad87ae79cb634545b85"
+    "import_assumptions_confirmed_by": null
   }
 }

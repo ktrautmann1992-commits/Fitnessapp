@@ -1,11 +1,9 @@
 {
   "id": "suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Süßkartoffel-Erdnuss-Curry mit Tofu, Linsen und Reis",
   "description_de": "Cremiges, mildes Curry mit roten Linsen, Tofu und Spinat, das am zweiten Tag noch besser schmeckt.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 5,
@@ -165,6 +163,8 @@
   ],
   "tip_de": "Gegarter Reis hält im Kühlschrank höchstens 3–4 Tage: Friere die Portionen für Donnerstag und Freitag direkt ein und lege sie jeweils am Vorabend in den Kühlschrank. Zugedeckt in der Mikrowelle 3–4 Minuten bei 600 Watt aufwärmen, einmal umrühren, bis alles durchgehend dampft; bei Bedarf einen Schuss Wasser zugeben.",
   "meal_prep_plan_id": "vegan",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
   "total_minutes": 35,
   "prep_minutes": 4,
   "cook_minutes": 31,
@@ -201,12 +201,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "06f94fbc72fd231519e426e0aa28797fd3a2986f6cf5ee4411933562e303f734",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "06f94fbc72fd231519e426e0aa28797fd3a2986f6cf5ee4411933562e303f734"
+    "import_assumptions_confirmed_by": null
   }
 }

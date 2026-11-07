@@ -1,11 +1,9 @@
 {
   "id": "thai-garnelen-curry-mit-gemuese",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Thai-Garnelen-Curry mit Gemüse",
   "description_de": "Mildes Kokos-Curry mit Garnelen, viel Gemüse, Ingwer und Limette auf etwas Basmatireis – asiatisch und in 18 Minuten fertig.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -111,6 +109,8 @@
     "Schmecke das Curry mit Limettensaft ab und serviere es mit dem Reis."
   ],
   "tip_de": "Für noch weniger Kohlenhydrate den Reis weglassen und 100 g Brokkoli mehr ins Curry geben.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 18,
   "prep_minutes": 7,
   "cook_minutes": 11,
@@ -148,12 +148,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "571866d7006fe91f32fa0c54b5481f6664e5b6525b9a4ad348f0d4a8b3cedc65",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "571866d7006fe91f32fa0c54b5481f6664e5b6525b9a4ad348f0d4a8b3cedc65"
+    "import_assumptions_confirmed_by": null
   }
 }

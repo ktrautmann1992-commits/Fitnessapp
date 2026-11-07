@@ -1,11 +1,9 @@
 {
   "id": "vegane-chili-cheese-fries-mit-sojaschnetzel-chili",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Vegane Chili-Cheese-Fries mit Sojaschnetzel-Chili",
   "description_de": "Knusprige Pommes aus der Heißluftfritteuse unter einem würzigen Sojaschnetzel-Bohnen-Chili und cremiger Hefeflocken-Käsesauce – vegan und richtig sättigend.",
-  "section_de": "Klassiker",
-  "categories": ["fitness-fast-food", "heissluftfritteuse"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -165,6 +163,8 @@
   ],
   "tip_de": "Backofen-Alternative: Pommes auf einem Blech mit Backpapier bei 220 °C Ober-/Unterhitze (200 °C Umluft) 25–30 Minuten backen, nach der Hälfte wenden. Das Chili lässt sich gut doppelt kochen und einfrieren.",
   "tags_de": ["Fitness-Fast-Food", "Heißluftfritteuse"],
+  "section_de": "Klassiker",
+  "categories": ["fitness-fast-food", "heissluftfritteuse"],
   "total_minutes": 35,
   "prep_minutes": 1,
   "cook_minutes": 34,
@@ -191,12 +191,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "8ccb013dcf72900e0b9ce188795d2c13deaf8cdd29348ad9cf41df3cf2df9aa3",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8ccb013dcf72900e0b9ce188795d2c13deaf8cdd29348ad9cf41df3cf2df9aa3"
+    "import_assumptions_confirmed_by": null
   }
 }

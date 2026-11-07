@@ -1,11 +1,9 @@
 {
   "id": "suess-saurer-ananas-tofu-mit-basmatireis",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Süß-saurer Ananas-Tofu mit Basmatireis",
   "description_de": "Viel weißer Reis, fruchtige Ananas und nur wenig Öl liefern reichlich Kohlenhydrate bei wenig Fett und Ballaststoffen – ideal zum Auffüllen der Speicher.",
-  "section_de": "Carb-Loading (2 Tage vorher)",
-  "categories": ["wettkampf", "meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -110,6 +108,8 @@
   ],
   "tip_de": "Lässt sich gut am Vorabend für den nächsten Carb-Loading-Tag vorkochen. Verträgst du Paprika schlecht, lass sie weg und nimm etwas mehr Ananas.",
   "tags_de": ["Wettkampf"],
+  "section_de": "Carb-Loading (2 Tage vorher)",
+  "categories": ["wettkampf", "meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 6,
   "cook_minutes": 19,
@@ -136,12 +136,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "4d627b275f389394d97b411ba19039a0b4d4b2074f141d99682dc8be627702f7",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "4d627b275f389394d97b411ba19039a0b4d4b2074f141d99682dc8be627702f7"
+    "import_assumptions_confirmed_by": null
   }
 }

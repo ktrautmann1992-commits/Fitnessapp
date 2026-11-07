@@ -1,11 +1,9 @@
 {
   "id": "vanille-dattel-energy-balls",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Vanille-Dattel-Energy-Balls",
   "description_de": "Saftige Protein-Kugeln aus Hafer, Datteln, Erdnussmus und Vanille-Protein – der perfekte Snack für unterwegs.",
-  "section_de": "Snack",
-  "categories": ["schnell", "meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -73,6 +71,8 @@
   ],
   "tip_de": "Gleich die 5-fache Menge machen: Im Kühlschrank halten die Balls eine Woche. Ohne Pulver einfach mit 10 g gemahlenen Kürbiskernen und mehr Hafer arbeiten.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell", "meal-prep"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -99,12 +99,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "30ce0da69b65ede984957bcfdce58bad9a19b267a2a098cdb0511273da8dd0af",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "30ce0da69b65ede984957bcfdce58bad9a19b267a2a098cdb0511273da8dd0af"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "skyr-bowl-mit-apfel-und-walnuss",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Skyr-Bowl mit Apfel & Walnuss",
   "description_de": "Kühle Skyr-Schüssel mit knackigem Apfel, Haferflocken und Walnüssen – fertig in fünf Minuten.",
-  "section_de": "Frühstück",
-  "categories": ["schnell"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -73,6 +71,8 @@
   ],
   "tip_de": "Statt Apfel passt auch eine Birne oder eine Handvoll Beeren.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -99,12 +99,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "265b039804bc99634e4a862cda8b927c721302436725c2a622f7449f2451f91d",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "265b039804bc99634e4a862cda8b927c721302436725c2a622f7449f2451f91d"
+    "import_assumptions_confirmed_by": null
   }
 }

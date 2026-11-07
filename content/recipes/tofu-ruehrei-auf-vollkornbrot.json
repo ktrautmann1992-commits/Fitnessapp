@@ -1,11 +1,9 @@
 {
   "id": "tofu-ruehrei-auf-vollkornbrot",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Tofu-Rührei auf Vollkornbrot",
   "description_de": "Würziges Rührei aus zerbröseltem Tofu mit Kurkuma und Spinat auf kräftigem Vollkornbrot mit Tomaten.",
-  "section_de": "Frühstück",
-  "categories": ["post-workout"],
   "meal_types": ["breakfast"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -118,6 +116,8 @@
     "Toaste das Brot, verteile das Tofu-Rührei darauf und serviere es mit den halbierten Cherrytomaten."
   ],
   "tip_de": "Eine Prise Kala Namak (Schwefelsalz) zum Schluss sorgt für echten Ei-Geschmack.",
+  "section_de": "Frühstück",
+  "categories": ["post-workout"],
   "total_minutes": 15,
   "prep_minutes": 10,
   "cook_minutes": 5,
@@ -144,12 +144,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "e30d4fdac991f6f7ddbcad780e59314aa64266eca3065139151763a2d0bf1ae6",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "e30d4fdac991f6f7ddbcad780e59314aa64266eca3065139151763a2d0bf1ae6"
+    "import_assumptions_confirmed_by": null
   }
 }

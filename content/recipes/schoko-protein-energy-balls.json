@@ -1,11 +1,9 @@
 {
   "id": "schoko-protein-energy-balls",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Schoko-Protein-Energy-Balls",
   "description_de": "Kleine Schoko-Kugeln aus Haferflocken, Datteln, Erdnussmus und Whey – ohne Backen, ideal für unterwegs.",
-  "section_de": "Snack",
-  "categories": ["schnell", "meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -64,6 +62,8 @@
   ],
   "tip_de": "Gleich die 5-fache Menge machen – im Kühlschrank halten die Kugeln 5 Tage. Ohne Pulver: 1 TL Backkakao und 1 EL gemahlene Mandeln mehr.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell", "meal-prep"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -90,12 +90,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "f2c1f4d38718f21a1dd6c8641aab009734a1ddd7cf594da383b8d5240bedab21",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "f2c1f4d38718f21a1dd6c8641aab009734a1ddd7cf594da383b8d5240bedab21"
+    "import_assumptions_confirmed_by": null
   }
 }
