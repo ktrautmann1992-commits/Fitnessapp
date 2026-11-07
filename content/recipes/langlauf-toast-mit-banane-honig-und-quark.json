@@ -1,11 +1,9 @@
 {
   "id": "langlauf-toast-mit-banane-honig-und-quark",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Langlauf-Toast mit Banane, Honig und Quark",
   "description_de": "Helles Toastbrot, Banane und Honig liefern viele leicht verdauliche Kohlenhydrate, der Quark etwas Eiweiß – ideal 2–3 Stunden vor dem langen Lauf.",
-  "section_de": "Vor langen Einheiten",
-  "categories": ["schnell", "pre-workout", "cardio"],
   "meal_types": ["snack"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -73,6 +71,8 @@
   ],
   "tip_de": "Iss den Toast 2–3 Stunden vor dem Start. Ist dein Magen empfindlich, nimm statt Quark nur eine dünne Schicht – das Fett bleibt so ohnehin minimal.",
   "tags_de": ["Unter 10 Minuten", "Ausdauer"],
+  "section_de": "Vor langen Einheiten",
+  "categories": ["schnell", "pre-workout", "cardio"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -99,12 +99,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "e6b90444d7f819dc8ccdb413ac12c882892a2a5f74f3139d289b47075243e0a4",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "e6b90444d7f819dc8ccdb413ac12c882892a2a5f74f3139d289b47075243e0a4"
+    "import_assumptions_confirmed_by": null
   }
 }

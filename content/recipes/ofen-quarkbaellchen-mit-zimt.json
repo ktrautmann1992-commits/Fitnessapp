@@ -1,11 +1,9 @@
 {
   "id": "ofen-quarkbaellchen-mit-zimt",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Ofen-Quarkbällchen mit Zimt",
   "description_de": "Fluffige Quarkbällchen wie vom Bäcker, nur im Ofen gebacken statt frittiert – fluffig und perfekt für die Snackdose.",
-  "section_de": "Snack",
-  "categories": ["meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 5,
@@ -94,6 +92,8 @@
   "tip_de": "Halten in einer gut schließenden Dose 4 Tage im Kühlschrank; die Freitagsportion einfrieren und am Vorabend herausnehmen. Kurz 10 Sekunden in der Mikrowelle oder 3 Minuten im Ofen bei 160 °C aufgebacken werden sie wieder fluffig. Dazu passt ein Klecks Skyr.",
   "tags_de": ["zum Mitnehmen"],
   "meal_prep_plan_id": "vegetarisch",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
   "total_minutes": 20,
   "prep_minutes": 2,
   "cook_minutes": 18,
@@ -120,12 +120,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "587f2e4a111a4b53b69f261316334e218fc47b81ed741bba28d664e018a05bcc",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "587f2e4a111a4b53b69f261316334e218fc47b81ed741bba28d664e018a05bcc"
+    "import_assumptions_confirmed_by": null
   }
 }

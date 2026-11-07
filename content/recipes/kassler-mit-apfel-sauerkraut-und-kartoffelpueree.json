@@ -1,11 +1,9 @@
 {
   "id": "kassler-mit-apfel-sauerkraut-und-kartoffelpueree",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kassler mit Apfel-Sauerkraut und Kartoffelpüree",
   "description_de": "Deftiger Winterklassiker in leicht: mageres Kassler auf mildem Apfel-Sauerkraut mit cremigem Püree.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -119,6 +117,8 @@
     "Richte Kassler, Sauerkraut und Püree an und gib frisch gemahlenen Pfeffer darüber."
   ],
   "tip_de": "Kassler ist bereits gegart und gesalzen – das Sauerkraut daher erst am Ende abschmecken.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 35,
   "prep_minutes": 18,
   "cook_minutes": 17,
@@ -145,12 +145,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "d14c4521ff91394fa67da581368b9c680666896df511d66d6d5a0abe3bb22d6e",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "d14c4521ff91394fa67da581368b9c680666896df511d66d6d5a0abe3bb22d6e"
+    "import_assumptions_confirmed_by": null
   }
 }

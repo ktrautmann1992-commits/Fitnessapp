@@ -1,11 +1,9 @@
 {
   "id": "knusprige-ofen-tofu-nuggets-mit-senf-dip",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Knusprige Ofen-Tofu-Nuggets mit Senf-Dip",
   "description_de": "Panierte Tofu-Nuggets aus dem Ofen mit süß-scharfem Senf-Joghurt-Dip.",
-  "section_de": "Snack",
-  "categories": ["post-workout", "meal-prep"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -100,6 +98,8 @@
     "Verrühre Sojajoghurt, Senf und Ahornsirup zum Dip und serviere ihn zu den Nuggets."
   ],
   "tip_de": "In der Heißluftfritteuse werden die Nuggets bei 200 °C in 12 Minuten besonders knusprig.",
+  "section_de": "Snack",
+  "categories": ["post-workout", "meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 5,
   "cook_minutes": 20,
@@ -126,12 +126,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "ef41836114b043af84f17bd69cb936ed06ee8dd22c83b2167685d34103762b95",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "ef41836114b043af84f17bd69cb936ed06ee8dd22c83b2167685d34103762b95"
+    "import_assumptions_confirmed_by": null
   }
 }

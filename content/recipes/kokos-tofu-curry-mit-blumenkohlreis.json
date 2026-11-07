@@ -1,11 +1,9 @@
 {
   "id": "kokos-tofu-curry-mit-blumenkohlreis",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kokos-Tofu-Curry mit Blumenkohlreis",
   "description_de": "Mildes gelbes Curry mit Tofu, Paprika und Spinat in Kokosmilch, serviert auf Blumenkohlreis statt Basmati – vegan und angenehm leicht.",
-  "section_de": "Abendessen",
-  "categories": ["low-carb"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -90,6 +88,8 @@
     "Gare den Blumenkohlreis in einer zweiten Pfanne ohne Fett 4–5 Minuten, salze ihn und serviere das Curry darauf."
   ],
   "tip_de": "Blumenkohlreis gibt es auch tiefgekühlt – das spart das Raspeln.",
+  "section_de": "Abendessen",
+  "categories": ["low-carb"],
   "total_minutes": 25,
   "prep_minutes": 10,
   "cook_minutes": 15,
@@ -116,12 +116,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "b507ee4e3bd527e90704f2e39f8a275917a633b4dc6d31aee4ffccc66ef67ac0",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "b507ee4e3bd527e90704f2e39f8a275917a633b4dc6d31aee4ffccc66ef67ac0"
+    "import_assumptions_confirmed_by": null
   }
 }

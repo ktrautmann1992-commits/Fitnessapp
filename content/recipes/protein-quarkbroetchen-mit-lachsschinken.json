@@ -1,11 +1,9 @@
 {
   "id": "protein-quarkbroetchen-mit-lachsschinken",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Protein-Quarkbrötchen mit Lachsschinken",
   "description_de": "Zwei saftige, selbst gebackene Eiweißbrötchen aus Quark, Haferkleie und Leinsamen, belegt mit Lachsschinken und Gurke.",
-  "section_de": "Frühstück",
-  "categories": ["meal-prep"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -120,6 +118,8 @@
     "Halbiere die Brötchen, bestreiche sie mit Frischkäse und belege sie mit Lachsschinken und Gurkenscheiben."
   ],
   "tip_de": "Back gleich die vierfache Menge und friere die Brötchen ein. Ohne Pulver: 15 g mehr Mehl und 50 g mehr Quark verwenden.",
+  "section_de": "Frühstück",
+  "categories": ["meal-prep"],
   "total_minutes": 35,
   "prep_minutes": 10,
   "cook_minutes": 25,
@@ -146,12 +146,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "2bc5024f3bfbdfee2d074b64f7860e3e63eae58936152e6be8eb59e6eed4f1ed",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "2bc5024f3bfbdfee2d074b64f7860e3e63eae58936152e6be8eb59e6eed4f1ed"
+    "import_assumptions_confirmed_by": null
   }
 }

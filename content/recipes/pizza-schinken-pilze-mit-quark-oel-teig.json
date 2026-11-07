@@ -1,11 +1,9 @@
 {
   "id": "pizza-schinken-pilze-mit-quark-oel-teig",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Pizza Schinken-Pilze mit Quark-Öl-Teig",
   "description_de": "Der Pizzeria-Klassiker mit magerem Kochschinken, frischen Champignons und Quark-Öl-Boden – herzhaft und schnell gemacht.",
-  "section_de": "Pizza & Flammkuchen",
-  "categories": ["fitness-fast-food"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -120,6 +118,8 @@
   ],
   "tip_de": "Pilze sehr dünn schneiden, dann geben sie weniger Wasser ab und der Boden bleibt knusprig. Statt Kochschinken passt auch Putenbrust-Aufschnitt.",
   "tags_de": ["Fitness-Fast-Food"],
+  "section_de": "Pizza & Flammkuchen",
+  "categories": ["fitness-fast-food"],
   "total_minutes": 30,
   "prep_minutes": 17,
   "cook_minutes": 13,
@@ -146,12 +146,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "ecb612d0773e17efacb7f2509f8bf0d5635b87c055d6c7a1ffa6914080d6d5f6",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "ecb612d0773e17efacb7f2509f8bf0d5635b87c055d6c7a1ffa6914080d6d5f6"
+    "import_assumptions_confirmed_by": null
   }
 }

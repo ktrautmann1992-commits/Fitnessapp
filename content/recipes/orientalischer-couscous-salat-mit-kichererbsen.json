@@ -1,11 +1,9 @@
 {
   "id": "orientalischer-couscous-salat-mit-kichererbsen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Orientalischer Couscous-Salat mit Kichererbsen",
   "description_de": "Frischer Couscous-Salat mit Kichererbsen, Räuchertofu, Gurke und viel Petersilie.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -136,6 +134,8 @@
     "Vermische Couscous, Kichererbsen, Gemüse, Tofu und Dressing gründlich."
   ],
   "tip_de": "Hält sich 3 Tage im Kühlschrank und ist ideal für die Lunchbox.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
   "total_minutes": 15,
   "prep_minutes": 15,
   "cook_minutes": 0,
@@ -162,12 +162,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "225680eec81e2d2c4d1b0c2c04bbb042a4ae851902143bc4d2d909ad3714223a",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "225680eec81e2d2c4d1b0c2c04bbb042a4ae851902143bc4d2d909ad3714223a"
+    "import_assumptions_confirmed_by": null
   }
 }

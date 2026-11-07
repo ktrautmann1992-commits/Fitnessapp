@@ -1,11 +1,9 @@
 {
   "id": "krautnudeln-mit-ei-und-huettenkaese",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Krautnudeln mit Ei und Hüttenkäse",
   "description_de": "Österreichisch inspirierte Pfanne aus gebratenem Weißkohl und Vollkornnudeln, die mit Ei und Hüttenkäse zum günstigen Eiweißgericht wird.",
-  "section_de": "Hauptgericht",
-  "categories": ["spar-kueche"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -102,6 +100,8 @@
   ],
   "tip_de": "Ein Weißkohl reicht für mehrere Gerichte – der Rest hält im Kühlschrank locker zwei Wochen.",
   "tags_de": ["Spar-Küche"],
+  "section_de": "Hauptgericht",
+  "categories": ["spar-kueche"],
   "total_minutes": 25,
   "prep_minutes": 5,
   "cook_minutes": 20,
@@ -133,12 +133,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "a66b242c360d5730f82189c7c199536146b188fb6acc2e93bfad78905b5c0659",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "a66b242c360d5730f82189c7c199536146b188fb6acc2e93bfad78905b5c0659"
+    "import_assumptions_confirmed_by": null
   }
 }

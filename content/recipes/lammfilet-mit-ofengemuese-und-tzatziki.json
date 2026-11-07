@@ -1,11 +1,9 @@
 {
   "id": "lammfilet-mit-ofengemuese-und-tzatziki",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Lammfilet mit Ofengemüse und Tzatziki",
   "description_de": "Rosa gebratenes Lammfilet auf mediterranem Ofengemüse mit Bulgur und frischem Skyr-Tzatziki.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -138,6 +136,8 @@
     "Schneide das Lamm in Scheiben und serviere es auf Ofengemüse und Bulgur mit dem Tzatziki."
   ],
   "tip_de": "Lammlachse oder Lammhüfte funktionieren genauso – einfach 1–2 Minuten länger braten.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 35,
   "prep_minutes": 14,
   "cook_minutes": 21,
@@ -164,12 +164,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "9cf6e4c79b7a63221b1086cdfa5260d7936cbb6626af891aa9e29a18c08bd253",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "9cf6e4c79b7a63221b1086cdfa5260d7936cbb6626af891aa9e29a18c08bd253"
+    "import_assumptions_confirmed_by": null
   }
 }

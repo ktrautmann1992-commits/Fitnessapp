@@ -1,11 +1,9 @@
 {
   "id": "ofengemuese-mit-tofu-und-tahin-zitronen-sauce",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Ofengemüse mit Tofu und Tahin-Zitronen-Sauce",
   "description_de": "Buntes Blechgemüse mit Süßkartoffel, Kichererbsen und knusprigem Tofu, beträufelt mit Sesamsauce.",
-  "section_de": "Abendessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -127,6 +125,8 @@
     "Verrühre Tahin, Zitronensaft und 1–2 EL Wasser zu einer glatten Sauce und träufle sie über das Gemüse."
   ],
   "tip_de": "Gleich zwei Bleche backen – das Gemüse schmeckt am nächsten Tag auch kalt als Salat.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
   "total_minutes": 40,
   "prep_minutes": 10,
   "cook_minutes": 30,
@@ -153,12 +153,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "a23adda9404f869d751440bc669c304367d7d08f47e229abd1f917e7462609da",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "a23adda9404f869d751440bc669c304367d7d08f47e229abd1f917e7462609da"
+    "import_assumptions_confirmed_by": null
   }
 }
