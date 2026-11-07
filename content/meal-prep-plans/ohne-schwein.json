@@ -1,7 +1,7 @@
 {
   "id": "ohne-schwein",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Leichte Hähnchen-Woche",
   "description_de": "Protein-Bananenbrot, ein mildes Hähnchen-Curry und Schoko-Haferriegel: ganz ohne Schweinefleisch und gut vorzubereiten. Das Bananenbrot backt, während du das Curry kochst.",
   "recipe_ids": [
@@ -152,8 +152,8 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-07",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
     "import_hash": "1405965768e44618808d3c452aff138abc4657ed5e167c95227cd00ffa041682"
