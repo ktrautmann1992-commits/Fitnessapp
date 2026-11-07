@@ -1,11 +1,9 @@
 {
   "id": "burrito-bowl-mit-schweinehack-und-bohnen",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Burrito-Bowl mit Schweinehack und Bohnen",
   "description_de": "Mexikanische Bowl mit würzigem, magerem Schweinehack, Reis, Bohnen, Mais, Salsa und Limetten-Joghurt.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -146,6 +144,8 @@
     "Richte Reis, Hack-Bohnen-Mischung, Mais, Salat und Salsa nebeneinander in einer Schale an und gib den Limetten-Joghurt darüber."
   ],
   "tip_de": "Für Meal-Prep Reis und Hack getrennt von Salat und Joghurt aufbewahren – so bleibt alles 3 Tage frisch.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 16,
   "cook_minutes": 9,
@@ -172,12 +172,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "0661420becca5856e392bdaaf46b7119acc3eb954efbb31b2ee21ef82192d6ab",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "0661420becca5856e392bdaaf46b7119acc3eb954efbb31b2ee21ef82192d6ab"
+    "import_assumptions_confirmed_by": null
   }
 }

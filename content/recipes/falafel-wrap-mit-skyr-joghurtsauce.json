@@ -1,11 +1,9 @@
 {
   "id": "falafel-wrap-mit-skyr-joghurtsauce",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Falafel-Wrap mit Skyr-Joghurtsauce",
   "description_de": "Schneller Streetfood-Wrap mit Falafel aus dem Kühlregal, knackigem Gemüse, Feta und Joghurtsauce.",
-  "section_de": "Mittagessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -109,6 +107,8 @@
     "Roll den Wrap fest ein und serviere die restliche Sauce zum Dippen."
   ],
   "tip_de": "Statt Feta passt auch Halloumi aus der Pfanne.",
+  "section_de": "Mittagessen",
+  "categories": [],
   "total_minutes": 15,
   "prep_minutes": 15,
   "cook_minutes": 0,
@@ -143,12 +143,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "c8d64bf31425fa0bbf322e43570fe6204dea553e7fd621ac0ccfc0390ca1ace2",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "c8d64bf31425fa0bbf322e43570fe6204dea553e7fd621ac0ccfc0390ca1ace2"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "gruene-bohnen-buendel-im-lachsschinken-mantel-mit-kraeuterquark",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Grüne-Bohnen-Bündel im Lachsschinken-Mantel mit Kräuterquark",
   "description_de": "Kleine Bohnenbündel, umwickelt mit magerem Lachsschinken, der in der Heißluft knusprig wird – eine knusprige Gemüsebeilage zu Kartoffeln, Fisch oder Fleisch.",
-  "section_de": "Beilagen & Gemüse",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -92,6 +90,8 @@
   ],
   "tip_de": "Mit frischen Bohnen die Bündel vorher 4 Minuten in Salzwasser blanchieren. Lachsschinken ist schon salzig – die Bohnen deshalb nicht zusätzlich salzen.",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Beilagen & Gemüse",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 20,
   "prep_minutes": 5,
   "cook_minutes": 15,
@@ -118,12 +118,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "e3ce2a80093a11d2af0edb59468b589335388d514b6fac7f1cdbcf63279a7b37",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "e3ce2a80093a11d2af0edb59468b589335388d514b6fac7f1cdbcf63279a7b37"
+    "import_assumptions_confirmed_by": null
   }
 }

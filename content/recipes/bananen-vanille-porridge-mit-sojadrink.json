@@ -1,11 +1,9 @@
 {
   "id": "bananen-vanille-porridge-mit-sojadrink",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Bananen-Vanille-Porridge mit Sojadrink",
   "description_de": "Cremiger Haferbrei aus Eigenmarken-Haferflocken, der mit Sojadrink und einem Messlöffel Proteinpulver lange satt macht und kaum mehr als einen Euro kostet.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "spar-kueche"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -64,6 +62,8 @@
   ],
   "tip_de": "Ohne Pulver: Rühr 2 EL Erdnussmus und 150 g Sojaskyr natur unter – etwas teurer, aber ähnlich sättigend. Überreife Bananen gibt es oft reduziert, die sind hier ideal.",
   "tags_de": ["Unter 10 Minuten", "Spar-Küche"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "spar-kueche"],
   "total_minutes": 8,
   "prep_minutes": 8,
   "cook_minutes": 0,
@@ -95,12 +95,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "8a620dcd18f7f571508ba9a898dc2cd0196e69c91846bde6fccc696259785c4e",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8a620dcd18f7f571508ba9a898dc2cd0196e69c91846bde6fccc696259785c4e"
+    "import_assumptions_confirmed_by": null
   }
 }

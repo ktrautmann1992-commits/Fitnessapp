@@ -1,11 +1,9 @@
 {
   "id": "heidelbeer-protein-muffins",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Heidelbeer-Protein-Muffins",
   "description_de": "Saftige Quark-Muffins mit Vanille-Whey und Heidelbeeren – süß, saftig und gut zum Mitnehmen.",
-  "section_de": "Snack",
-  "categories": ["meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -83,6 +81,8 @@
     "Backe die Muffins 18–20 Minuten, bis an einem Holzstäbchen kein Teig mehr klebt."
   ],
   "tip_de": "Angaben gelten für 2 Muffins – für ein ganzes Blech einfach mit 6 multiplizieren. Ohne Pulver: 30 g Quark und 10 g Mehl mehr.",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
   "total_minutes": 30,
   "prep_minutes": 10,
   "cook_minutes": 20,
@@ -109,12 +109,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "3185d0cd39233dda53141cf1dc01b75db747cdfd57742be6daec9b37366cb7d4",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "3185d0cd39233dda53141cf1dc01b75db747cdfd57742be6daec9b37366cb7d4"
+    "import_assumptions_confirmed_by": null
   }
 }

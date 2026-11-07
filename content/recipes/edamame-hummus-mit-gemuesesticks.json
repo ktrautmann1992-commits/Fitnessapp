@@ -1,11 +1,9 @@
 {
   "id": "edamame-hummus-mit-gemuesesticks",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Edamame-Hummus mit Gemüsesticks",
   "description_de": "Grüner Hummus aus Edamame und Kichererbsen mit knackigen Sticks für die ganze Woche.",
-  "section_de": "Snack",
-  "categories": ["meal-prep"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 5,
@@ -119,6 +117,8 @@
   "tip_de": "Der Hummus hält gut verschlossen 5 Tage im Kühlschrank, die Sticks bleiben mit feuchtem Küchenpapier 4–5 Tage knackig (Gurke am besten erst ab Mittwoch frisch schneiden). Hummus lässt sich portionsweise einfrieren und über Nacht im Kühlschrank auftauen.",
   "tags_de": ["zum Mitnehmen"],
   "meal_prep_plan_id": "vegan",
+  "section_de": "Snack",
+  "categories": ["meal-prep"],
   "total_minutes": 20,
   "prep_minutes": 16,
   "cook_minutes": 4,
@@ -145,12 +145,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "886992fe2b45099777b9b0110621896c402354f3e061c06bcf7e07a269739363",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "886992fe2b45099777b9b0110621896c402354f3e061c06bcf7e07a269739363"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "casein-vanillepudding-mit-beeren",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Casein-Vanillepudding mit Beeren",
   "description_de": "Dicker, cremiger Vanillepudding aus Casein und Milch – der ideale Snack am späten Abend.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -55,6 +53,8 @@
   ],
   "tip_de": "Je weniger Milch, desto fester der Pudding. Ohne Pulver: 200 g Magerquark mit Vanille und etwas Milch cremig rühren.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -81,12 +81,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "1d1b49294bfc28cb94fe6643df65b8217d1a90cd3f07a6818c8f38fdfb735a65",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "1d1b49294bfc28cb94fe6643df65b8217d1a90cd3f07a6818c8f38fdfb735a65"
+    "import_assumptions_confirmed_by": null
   }
 }

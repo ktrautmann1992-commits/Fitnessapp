@@ -1,11 +1,9 @@
 {
   "id": "bohnen-quesadilla-mit-skyr-dip",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Bohnen-Quesadilla mit Skyr-Dip",
   "description_de": "Knusprig gebratene Tortilla gefüllt mit Kidneybohnen, Mais, Paprika und Mozzarella, dazu ein frischer Skyr-Dip.",
-  "section_de": "Mittagessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -136,6 +134,8 @@
     "Schneide die Quesadilla in Ecken und serviere sie mit dem Dip und dem Salat."
   ],
   "tip_de": "Statt Kidneybohnen gehen auch schwarze Bohnen aus der Dose.",
+  "section_de": "Mittagessen",
+  "categories": [],
   "total_minutes": 15,
   "prep_minutes": 12,
   "cook_minutes": 3,
@@ -162,12 +162,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "49b5b0c13dcb4ee3c2fa4289db76aa8f0e65e101cba081b2945baf39ae0969f7",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "49b5b0c13dcb4ee3c2fa4289db76aa8f0e65e101cba081b2945baf39ae0969f7"
+    "import_assumptions_confirmed_by": null
   }
 }

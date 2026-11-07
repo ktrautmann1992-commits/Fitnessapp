@@ -1,11 +1,9 @@
 {
   "id": "griechischer-bauernsalat-mit-kichererbsen-und-ei",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Griechischer Bauernsalat mit Kichererbsen & Ei",
   "description_de": "Bunter Salat mit Feta, Oliven und Kichererbsen, dazu ein gekochtes Ei – sättigend, frisch und ohne viel Aufwand.",
-  "section_de": "Abendessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -137,6 +135,8 @@
     "Leg den Feta in Würfeln und das geviertelte Ei obenauf."
   ],
   "tip_de": "Für Meal-Prep das Dressing separat transportieren und erst vor dem Essen untermischen.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
   "total_minutes": 15,
   "prep_minutes": 15,
   "cook_minutes": 0,
@@ -163,12 +163,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "8dc3b233bd769db93876faa59d9105b62656f5ac83bb0542049577c005695211",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8dc3b233bd769db93876faa59d9105b62656f5ac83bb0542049577c005695211"
+    "import_assumptions_confirmed_by": null
   }
 }

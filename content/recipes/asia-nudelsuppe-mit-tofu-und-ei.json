@@ -1,11 +1,9 @@
 {
   "id": "asia-nudelsuppe-mit-tofu-und-ei",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Asia-Nudelsuppe mit Tofu & Ei",
   "description_de": "Würzige Brühe mit Mie-Nudeln, Tofu, Pilzen, Spinat und einem wachsweichen Ei – leicht und wärmend.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -138,6 +136,8 @@
     "Rühre den Spinat unter, fülle die Suppe in eine Schale und lege das halbierte Ei, Frühlingszwiebelringe und Chiliflocken obendrauf."
   ],
   "tip_de": "Statt Mie-Nudeln passen auch Reisnudeln.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 18,
   "prep_minutes": 3,
   "cook_minutes": 15,
@@ -174,12 +174,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "df7e26b87313f4cbf369017f9857ff4936753d4987d2981a1fb5f6b5c62489e3",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "df7e26b87313f4cbf369017f9857ff4936753d4987d2981a1fb5f6b5c62489e3"
+    "import_assumptions_confirmed_by": null
   }
 }

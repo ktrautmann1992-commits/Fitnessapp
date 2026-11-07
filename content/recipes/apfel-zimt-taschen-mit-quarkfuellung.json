@@ -1,11 +1,9 @@
 {
   "id": "apfel-zimt-taschen-mit-quarkfuellung",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Apfel-Zimt-Taschen mit Quarkfüllung",
   "description_de": "Knusprig gebackene Vollkorn-Wrap-Taschen mit warmer Apfel-Zimt-Quark-Füllung – schmeckt wie Apfeltasche vom Bäcker, aber mit fast 20 g Eiweiß.",
-  "section_de": "Snacks & Süßes",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -74,6 +72,8 @@
   ],
   "tip_de": "Lässt sich die Tasche schlecht verschließen, den Rand mit etwas Milch befeuchten. Statt Apfel schmecken auch TK-Himbeeren oder Birne.",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 15,
   "prep_minutes": 3,
   "cook_minutes": 12,
@@ -100,12 +100,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "e419b4e117c54783dce3d6615e4b8404a527893324951f4447747e9c4584c543",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "e419b4e117c54783dce3d6615e4b8404a527893324951f4447747e9c4584c543"
+    "import_assumptions_confirmed_by": null
   }
 }

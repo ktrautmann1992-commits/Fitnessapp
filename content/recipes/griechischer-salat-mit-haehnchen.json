@@ -1,11 +1,9 @@
 {
   "id": "griechischer-salat-mit-haehnchen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Griechischer Salat mit Hähnchen",
   "description_de": "Bunter Bauernsalat mit gebratener Hähnchenbrust, Feta und Oliven, dazu eine Scheibe Vollkornbrot.",
-  "section_de": "Abendessen",
-  "categories": [],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -146,6 +144,8 @@
     "Schneide das Hähnchen in Scheiben, lege es mit den Oliven auf den Salat und iss das Brot dazu."
   ],
   "tip_de": "Mit Hähnchen vom Vortag ist der Salat in 5 Minuten fertig.",
+  "section_de": "Abendessen",
+  "categories": [],
   "total_minutes": 15,
   "prep_minutes": 9,
   "cook_minutes": 6,
@@ -165,17 +165,18 @@
   "declared_diet": "omnivore",
   "declared_allergens": ["gluten", "dairy", "lactose", "poultry", "histamine", "onion_garlic"],
   "contains_pork": false,
-  "declared_pregnancy_caution": true,
+  "declared_pregnancy_caution": false,
   "meta": {
     "origin": "manual",
     "model": null,
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "28b51ea16a80d684ae5848c361e32994b8b8a4e883135bb77049721ab8902fd5",
     "import_assumptions": [
       {
         "ingredient_index": 0,
@@ -185,7 +186,7 @@
         "reason_de": "Schritt 1 gart die Zutat durch: „Würze die Hähnchenbrust mit Salz, Pfeffer und Oregano und brate sie in 1 TL Olivenöl pro Seite 5–6 Minuten bei mittlerer Hitze durch.“"
       }
     ],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "28b51ea16a80d684ae5848c361e32994b8b8a4e883135bb77049721ab8902fd5"
+    "import_assumptions_confirmed_by": "Karsten (Auftrag an Claude)",
+    "import_assumptions_fingerprint": "466f46e6883fa899"
   }
 }

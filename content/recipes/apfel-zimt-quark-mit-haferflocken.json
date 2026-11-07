@@ -1,11 +1,9 @@
 {
   "id": "apfel-zimt-quark-mit-haferflocken",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Apfel-Zimt-Quark mit Haferflocken",
   "description_de": "Frischer Quark-Snack mit geriebenem Apfel und Haferflocken, der für unter 1 € rund 20 g Eiweiß liefert.",
-  "section_de": "Snack",
-  "categories": ["schnell", "spar-kueche"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -54,6 +52,8 @@
   ],
   "tip_de": "Saisonale Äpfel aus der Region sind im Herbst am günstigsten – leicht schrumpelige taugen hier bestens.",
   "tags_de": ["Unter 10 Minuten", "Spar-Küche"],
+  "section_de": "Snack",
+  "categories": ["schnell", "spar-kueche"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -85,12 +85,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "4a4d2bd54b4ce783507988386105eca055d36798ab4748b7c9ec61d608393c9c",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "4a4d2bd54b4ce783507988386105eca055d36798ab4748b7c9ec61d608393c9c"
+    "import_assumptions_confirmed_by": null
   }
 }

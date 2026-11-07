@@ -1,11 +1,9 @@
 {
   "id": "eier-curry-mit-blumenkohl-und-spinat",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Eier-Curry mit Blumenkohl & Spinat",
   "description_de": "Indisches Egg Curry mit Blumenkohl in würziger Tomaten-Joghurt-Sauce und einer kleinen Portion Reis.",
-  "section_de": "Abendessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -137,6 +135,8 @@
     "Nimm den Topf vom Herd, rühr den Joghurt unter, schmecke mit Salz ab und serviere das Curry mit dem Reis."
   ],
   "tip_de": "Statt Reis kannst du für ein noch leichteres Abendessen mehr Blumenkohl nehmen.",
+  "section_de": "Abendessen",
+  "categories": ["meal-prep"],
   "total_minutes": 30,
   "prep_minutes": 17,
   "cook_minutes": 13,
@@ -172,12 +172,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-06",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "4467362d75a123fe3bb90a0612acf789453785f047ac048df7d41c193d13da41",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "4467362d75a123fe3bb90a0612acf789453785f047ac048df7d41c193d13da41"
+    "import_assumptions_confirmed_by": null
   }
 }
