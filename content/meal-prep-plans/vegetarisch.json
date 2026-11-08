@@ -1,7 +1,7 @@
 {
   "id": "vegetarisch",
   "version": 2,
-  "status": "draft",
+  "status": "published",
   "title_de": "Veggie-Wohlfühl-Woche",
   "description_de": "Ofen-Kaiserschmarrn, eine Linsen-Lasagne und fluffige Ofen-Quarkbällchen: vegetarischer Genuss, der satt macht. Der Ofen läuft fast durchgehend, du schnippelst parallel.",
   "recipe_ids": [
@@ -148,8 +148,8 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-07",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
     "import_hash": "5709cd40d12d45bbc3d83301f0571c61c6baa4d6f4afcc2b11a921006f29b82d"
