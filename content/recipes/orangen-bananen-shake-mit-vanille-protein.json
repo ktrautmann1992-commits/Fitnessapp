@@ -1,11 +1,9 @@
 {
   "id": "orangen-bananen-shake-mit-vanille-protein",
-  "version": 2,
-  "status": "draft",
+  "version": 3,
+  "status": "published",
   "title_de": "Orangen-Bananen-Shake mit Vanille-Protein",
   "description_de": "Ein flüssiger Snack aus Saft und Banane, der schnell im Blut ankommt und den Magen kaum belastet – mit etwas Eiweiß obendrauf.",
-  "section_de": "30 Min. vorher",
-  "categories": ["schnell", "pre-workout"],
   "meal_types": ["snack"],
   "training_tags": ["vor_training"],
   "servings": 1,
@@ -54,6 +52,8 @@
   ],
   "tip_de": "Ohne Pulver: einfach weglassen und dafür die ganze Banane nehmen. Wer auf Säure empfindlich reagiert, ersetzt die Hälfte des Safts durch Wasser.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "30 Min. vorher",
+  "categories": ["schnell", "pre-workout"],
   "total_minutes": 3,
   "prep_minutes": 3,
   "cook_minutes": 0,
@@ -65,10 +65,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 203,
-    "protein_g": 12.9,
-    "carbs_g": 31.2,
-    "fat_g": 1.4
+    "kcal": 180,
+    "protein_g": 15.5,
+    "carbs_g": 26.5,
+    "fat_g": 0.7
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "fructose"],
@@ -80,12 +80,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-08",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "587305e45b91cf9d821ecfb908e1cb17ace5d827090eb0177dc483c0d9f81c82",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "789698024be66df696c8b4a5c83aa834ea6dc0a8c9a7986c34006751a751e84b"
+    "import_assumptions_confirmed_by": null
   }
 }
