@@ -1,6 +1,6 @@
 {
   "id": "orangen-bananen-shake-mit-vanille-protein",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "title_de": "Orangen-Bananen-Shake mit Vanille-Protein",
   "description_de": "Ein flüssiger Snack aus Saft und Banane, der schnell im Blut ankommt und den Magen kaum belastet – mit etwas Eiweiß obendrauf.",
@@ -39,8 +39,8 @@
     },
     {
       "food_id": "eiswuerfel",
-      "amount": 2,
-      "unit": "piece",
+      "amount": 75,
+      "unit": "g",
       "optional": false,
       "display_de": "2–3 Eiswürfel",
       "scales": true,
@@ -86,6 +86,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "5346f1de978ec2cda06e4575b0d076b325d14dcffb16f6e13f0b3d8a90e1fee9"
+    "import_hash": "789698024be66df696c8b4a5c83aa834ea6dc0a8c9a7986c34006751a751e84b"
   }
 }
