@@ -49,7 +49,7 @@ function git(repoRoot: string, args: readonly string[]): string {
 const allowlistSchema = z.array(
   z
     .object({
-      db: z.enum(['bls', 'ch_naehrwertdatenbank', 'usda_fdc']),
+      db: z.enum(['bls', 'ch_naehrwertdatenbank', 'usda_fdc', 'etikettenwerte']),
       version: z.string().min(1),
       url: z.string().startsWith('https://'),
       license: z.string(),

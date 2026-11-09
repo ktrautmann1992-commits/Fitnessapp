@@ -531,6 +531,52 @@
       "reason_de": "Zuordnung passt (Maracuja roh). Der Gründer-Wert (97 kcal, 2,4 g Eiweiß) stammt aus US-Tabellen mit Kernen und Ballaststoffen; BLS misst das Fruchtfleisch mit 57 kcal. Quelle gilt.",
       "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
       "confirmed_at": "2026-10-24"
+    },
+    {
+      "alpha5_id": "geschmackspulver-zuckerfrei",
+      "source": {
+        "db": "etikettenwerte",
+        "version": "2026-11"
+      },
+      "source_ref": "ETK0004",
+      "source_values": {
+        "kcal": 222,
+        "protein_g": 0.8,
+        "carbs_g": 17,
+        "fat_g": 0.4
+      },
+      "file_values": {
+        "kcal": 330,
+        "eiweiss_g": 3,
+        "kohlenhydrate_g": 75,
+        "fett_g": 2
+      },
+      "reason_de": "Zuordnung passt (Geschmackspulver mit Süßungsmitteln, Vanille). Das echte Etikett nennt 17 g verwertbare KH und 74 g Ballaststoffe; der Wert der Gründer-Datei (75 g KH) zählt die Ballaststoffe offenbar mit. Etikett gilt (Gründer-Entscheidung 09.11.2026, Option A).",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-11-09"
+    },
+    {
+      "alpha5_id": "sojaskyr-natur",
+      "source": {
+        "db": "etikettenwerte",
+        "version": "2026-11"
+      },
+      "source_ref": "ETK0002",
+      "source_values": {
+        "kcal": 65,
+        "protein_g": 5.6,
+        "carbs_g": 3.5,
+        "fat_g": 3.3
+      },
+      "file_values": {
+        "kcal": 68,
+        "eiweiss_g": 8.5,
+        "kohlenhydrate_g": 3,
+        "fett_g": 2.2
+      },
+      "reason_de": "Zuordnung passt (Skyr-Alternative aus Soja, natur). Das echte Etikett nennt 5,6 g Eiweiß; die Gründer-Datei rechnete mit 8,5 g. Etikett gilt, die Rezepte rechnen mit dem Etikettwert (Gründer-Entscheidung 09.11.2026, Option A).",
+      "confirmed_by": "Gründer (Nachweis = Merge dieses PR durch einen Gründer; Eintrag von Claude-Sitzung)",
+      "confirmed_at": "2026-11-09"
     }
   ]
 }

@@ -61,6 +61,7 @@ export const deNutrition = {
     bls: { name: 'Bundeslebensmittelschlüssel (BLS)', publisher: 'Max Rubner-Institut' },
     ch_naehrwertdatenbank: { name: 'Schweizer Nährwertdatenbank', publisher: 'BLV' },
     usda_fdc: { name: 'USDA FoodData Central', publisher: 'U.S. Department of Agriculture' },
+    etikettenwerte: { name: 'Etikettenwerte (Packungsangaben)', publisher: '' },
   },
   /** Verweis auf den Lizenztext (ohne „https://“ – reiner Text im PDF, kein Link). */
   licenseTexts: {

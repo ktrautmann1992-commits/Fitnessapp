@@ -4457,3 +4457,20 @@ bleiben **nur im Buch**. **Zusatzregel (hart):** nur Rezepte, für die schon ein
 - Nächste Schritte: Lauf `foods-import` (Quelle `ch_naehrwertdatenbank`, Version `7.1`, Modus `kandidaten`) → Spalten,
   `headerRow`, Prüfsumme und Quell-IDs per PR festnageln (Gründer merged) → Modus `import` (Gründer merged) →
   `alpha5-import`, Freigabe, Einspielen.
+
+## Nachtrag 09.11.2026: Vierte Nährwert-Quelle „Etikettenwerte“ (Gründer-Entscheidung)
+
+Erythrit, zuckerfreies Geschmackspulver und Johannisbrotkernmehl (17 Eis-/Dessert-Rezepte) scheiterten mit den
+USDA-Näherungen an R4 (Energie passt nicht zu den Makros); Sojaskyr (ca. 20 Rezepte) führt keine der drei
+Datenbanken. **Entscheidung (Gründer, 09.11.2026, Option A):** eigene Einträge mit echten Etikettenwerten.
+
+- Quelle `etikettenwerte`, Version `2026-11` in `packages/content/src/foods/sources.ts`. Original-Datei ist die
+  eingecheckte CSV `packages/content/etikettenwerte/etikettenwerte-2026-11.csv`, abgerufen über die feste
+  Commit-Adresse auf raw.githubusercontent.com, Prüfsumme festgenagelt – Import und `sources-integrity` laufen
+  unverändert wie bei den Datenbanken.
+- Jede Zeile nennt in „Beleg“ das Etikett bzw. Produktdatenblatt (Marke nur dort, nie in Rezepten). Werte unverändert
+  vom Etikett; „Kohlenhydrate verwertbar“ wie bei BLS/CH. Erythrit: 0 g verwertbare Kohlenhydrate, weil es nicht
+  verstoffwechselt wird (Energiefaktor 0 kJ/g, VO (EU) Nr. 1169/2011 Anhang XIV).
+- Sojaskyr laut Etikett 5,6 g Eiweiß (Gründer-Datei: 8,5 g) – bestätigter Datenunterschied, Rezepte rechnen mit dem
+  Etikettwert.
+- Neue oder geänderte Werte: neue CSV-Datei (neue Version), neuer Commit, Gründer-PR.

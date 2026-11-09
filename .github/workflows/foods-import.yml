@@ -22,14 +22,16 @@ on:
           - bls
           - ch_naehrwertdatenbank
           - usda_fdc
+          - etikettenwerte
         default: bls
       version:
-        description: 'Version der Quelle (bls = 4.0, ch_naehrwertdatenbank = 7.1, usda_fdc = sr-legacy-2018-04)'
+        description: 'Version der Quelle (bls = 4.0, ch_naehrwertdatenbank = 7.1, usda_fdc = sr-legacy-2018-04, etikettenwerte = 2026-11)'
         type: choice
         options:
           - '4.0'
           - '7.1'
           - 'sr-legacy-2018-04'
+          - '2026-11'
         default: '4.0'
       modus:
         description: 'kandidaten = nur Vorschläge anzeigen, import = Auszug + Lebensmittel als Pull Request'

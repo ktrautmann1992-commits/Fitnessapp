@@ -77,7 +77,12 @@ export const GELATIN_ORIGINS = ['pork', 'beef', 'fish', 'unknown'] as const;
 export type GelatinOrigin = (typeof GELATIN_ORIGINS)[number];
 
 /** Quelldatenbanken (Plan 5.1, S13). Welche Hauptquelle gilt, entscheidet die Lizenzklärung vor N2b. */
-export const SOURCE_DATABASES = ['bls', 'ch_naehrwertdatenbank', 'usda_fdc'] as const;
+export const SOURCE_DATABASES = [
+  'bls',
+  'ch_naehrwertdatenbank',
+  'usda_fdc',
+  'etikettenwerte',
+] as const;
 export type SourceDatabase = (typeof SOURCE_DATABASES)[number];
 
 /**
