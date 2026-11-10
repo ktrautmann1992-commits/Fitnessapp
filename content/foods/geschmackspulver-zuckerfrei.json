@@ -1,21 +1,20 @@
 {
   "id": "geschmackspulver-zuckerfrei",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "name_de": "Geschmackspulver (mit Süßungsmitteln)",
   "aliases_de": [],
   "shopping_category": "other",
   "pantry": true,
   "nutrients_per_100g": {
-    "kcal": 0,
-    "protein_g": 0,
-    "carbs_g": 100,
-    "sugar_g": 0,
-    "fat_g": 0,
-    "sat_fat_g": 0,
-    "fiber_g": 0,
-    "salt_g": 0,
-    "alcohol_g": 0
+    "kcal": 222,
+    "protein_g": 0.8,
+    "carbs_g": 17,
+    "sugar_g": 7.6,
+    "fat_g": 0.4,
+    "sat_fat_g": 0.3,
+    "fiber_g": 74,
+    "salt_g": 1
   },
   "units": {},
   "groups": [],
@@ -27,13 +26,13 @@
   "freezable": true,
   "substitutes": [],
   "source": {
-    "db": "usda_fdc",
-    "version": "sr-legacy-2018-04",
-    "ref": "170679",
-    "name": "Sweetener, herbal extract powder from Stevia leaf",
+    "db": "etikettenwerte",
+    "version": "2026-11",
+    "ref": "ETK0004",
+    "name": "Geschmackspulver Vanille (mit Süßungsmitteln)",
     "category": "other",
-    "license": "CC0 1.0",
-    "retrieved_at": "2026-11-01"
+    "license": "Etikettenangaben (Fakten, Belege je Zeile)",
+    "retrieved_at": "2026-11-10"
   },
   "meta": {
     "origin": "claude_session",

@@ -1,21 +1,20 @@
 {
   "id": "johannisbrotkernmehl",
-  "version": 1,
+  "version": 2,
   "status": "draft",
   "name_de": "Johannisbrotkernmehl",
   "aliases_de": [],
   "shopping_category": "spices_baking",
   "pantry": true,
   "nutrients_per_100g": {
-    "kcal": 332,
-    "protein_g": 4.6,
-    "carbs_g": 0,
-    "sugar_g": 0,
-    "fat_g": 0.5,
-    "sat_fat_g": 0.06,
-    "fiber_g": 77.3,
-    "salt_g": 0.3125,
-    "alcohol_g": 0
+    "kcal": 203,
+    "protein_g": 6.1,
+    "carbs_g": 4.7,
+    "sugar_g": 1,
+    "fat_g": 0.9,
+    "sat_fat_g": 0.2,
+    "fiber_g": 76.4,
+    "salt_g": 0.012
   },
   "units": {},
   "groups": [],
@@ -27,13 +26,13 @@
   "freezable": true,
   "substitutes": [],
   "source": {
-    "db": "usda_fdc",
-    "version": "sr-legacy-2018-04",
-    "ref": "169045",
-    "name": "Gums, seed gums (includes locust bean, guar)",
+    "db": "etikettenwerte",
+    "version": "2026-11",
+    "ref": "ETK0003",
+    "name": "Johannisbrotkernmehl",
     "category": "other",
-    "license": "CC0 1.0",
-    "retrieved_at": "2026-11-01"
+    "license": "Etikettenangaben (Fakten, Belege je Zeile)",
+    "retrieved_at": "2026-11-10"
   },
   "meta": {
     "origin": "claude_session",
