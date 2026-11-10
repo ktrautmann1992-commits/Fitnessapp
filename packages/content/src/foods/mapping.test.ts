@@ -15,6 +15,8 @@ import { FOOD_MAPPING_PATH, parseFoodMapping } from './mapping';
 /** Format eines BLS-4.0-Schlüssels (geprüft an allen Codes der Summary des Laufs „kandidaten“ vom 12.10.2026). */
 const BLS_REF = /^[A-Z][0-9A-Z]{6}$/;
 /** Schweizer Nährwertdatenbank: Quell-ID wie `keyPattern` in sources.ts (bis zur Prüfung an der Datei angenommen). */
+/** Etikettenwerte: „ETK“ + 4 Ziffern (keyPattern in sources.ts). */
+const LABEL_REF = /^ETK[0-9]{4}$/;
 const CH_REF = /^[0-9]{1,7}$/;
 /** USDA FoodData Central: fdc_id (SR Legacy, z. B. „170923“). */
 const USDA_REF = /^[0-9]{5,7}$/;
@@ -110,9 +112,12 @@ describe('Zuordnung alpha5 → Quelle (Vorschlag, unbestätigt)', () => {
   it('Quell-IDs werden nicht geraten: offen (null) oder aus einem Kandidatenlauf eingetragen', () => {
     for (const item of mapping.items) {
       // Hauptquelle BLS 4.0; Zweitquelle Schweizer Nährwertdatenbank 7.1 nur für Zutaten ohne BLS-Zeile (Plan 19.3);
-      // dritte Quelle USDA FoodData Central SR Legacy nur für Zutaten, die beide nicht führen (Nachtrag 30.10.2026).
+      // dritte Quelle USDA FoodData Central SR Legacy nur für Zutaten, die beide nicht führen (Nachtrag 30.10.2026);
+      // vierte Quelle Etikettenwerte für Zutaten, die keine Datenbank passend führt (Gründer-Entscheidung 09.11.2026).
       expect([`${item.source.db} ${item.source.version}`], item.food_id).toEqual([
-        expect.stringMatching(/^(bls 4\.0|ch_naehrwertdatenbank 7\.1|usda_fdc sr-legacy-2018-04)$/),
+        expect.stringMatching(
+          /^(bls 4\.0|ch_naehrwertdatenbank 7\.1|usda_fdc sr-legacy-2018-04|etikettenwerte 2026-11)$/,
+        ),
       ]);
       expect(item.source.search.length).toBeGreaterThan(0);
       expect(item.reason_de.length).toBeGreaterThan(20);
@@ -120,7 +125,13 @@ describe('Zuordnung alpha5 → Quelle (Vorschlag, unbestätigt)', () => {
       if (ref !== null) {
         // BLS-4.0-Schlüssel: Großbuchstabe + 6 Ziffern/Großbuchstaben (z. B. „F110100“, „F3B4902“).
         expect(ref, item.food_id).toMatch(
-          item.source.db === 'bls' ? BLS_REF : item.source.db === 'usda_fdc' ? USDA_REF : CH_REF,
+          item.source.db === 'bls'
+            ? BLS_REF
+            : item.source.db === 'usda_fdc'
+              ? USDA_REF
+              : item.source.db === 'etikettenwerte'
+                ? LABEL_REF
+                : CH_REF,
         );
         // Jede eingetragene Quell-ID ist begründet (Herkunft aus dem Kandidatenlauf, Rohzustand).
         expect(item.reason_de, item.food_id).toContain(`Quell-ID ${ref} `);

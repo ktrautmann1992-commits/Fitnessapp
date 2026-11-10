@@ -104,7 +104,7 @@ const sha256Schema = z.string().regex(/^[0-9a-f]{64}$/, 'SHA-256 als 64 Hex-Zeic
 
 /** `SOURCE.json` (Plan 5.1 Schritt 2). */
 export const sourceManifestSchema = z.strictObject({
-  db: z.enum(['bls', 'ch_naehrwertdatenbank', 'usda_fdc']),
+  db: z.enum(['bls', 'ch_naehrwertdatenbank', 'usda_fdc', 'etikettenwerte']),
   version: z.string().min(1).max(40),
   title: z.string().min(2).max(200),
   url: z

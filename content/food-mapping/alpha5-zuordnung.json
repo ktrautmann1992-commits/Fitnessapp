@@ -1320,10 +1320,10 @@
       "food_id": "erythrit",
       "alpha5_name": "Erythrit",
       "source": {
-        "db": "usda_fdc",
-        "version": "sr-legacy-2018-04",
-        "ref": "170679",
-        "search": ["stevia", "erythritol", "sweetener"],
+        "db": "etikettenwerte",
+        "version": "2026-11",
+        "ref": "ETK0001",
+        "search": ["erythrit"],
         "state_de": "Pulver",
         "category": "sugar_sweets"
       },
@@ -1340,7 +1340,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID 170679 „Sweetener, herbal extract powder from Stevia leaf“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: Erythrit führt SR Legacy nicht; Süßungsmittel-Pulver aus Steviablättern als Näherung (Erythrit nach LMIV 0 kcal/g). Werte im Import-PR prüfen. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: Pulver. Quell-ID ETK0001 „Erythrit, Pulver“ (Etikettenwerte 2026-11, Beleg: Etikett Erythritol, Open Food Facts): 0 kcal, verwertbare Kohlenhydrate 0 g (Energiefaktor 0 kJ/g nach LMIV Anhang XIV). Vorher USDA-Näherung (Stevia-Pulver) scheiterte an der Energie-Prüfung. Gründer-Entscheidung 09.11.2026 (Option A)."
     },
     {
       "alpha5_id": "espresso-zubereitet",
@@ -1690,10 +1690,10 @@
       "food_id": "geschmackspulver-zuckerfrei",
       "alpha5_name": "Geschmackspulver (zuckerfrei)",
       "source": {
-        "db": "usda_fdc",
-        "version": "sr-legacy-2018-04",
-        "ref": "170679",
-        "search": ["stevia", "sweetener", "sugar free"],
+        "db": "etikettenwerte",
+        "version": "2026-11",
+        "ref": "ETK0004",
+        "search": ["geschmackspulver"],
         "state_de": "Pulver, mit Süßungsmitteln",
         "category": "other"
       },
@@ -1710,7 +1710,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver, mit Süßungsmitteln. Quell-ID 170679 „Sweetener, herbal extract powder from Stevia leaf“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): UNSICHER: zuckerfreies Aromapulver besteht fast nur aus Süßungsmittel und Aroma; Stevia-Pulver als Näherung, Mengen je Rezept klein. Werte im Import-PR prüfen. Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: Pulver, mit Süßungsmitteln. Quell-ID ETK0004 „Geschmackspulver Vanille (mit Süßungsmitteln)“ (Etikettenwerte 2026-11, Beleg: Etikett, Open Food Facts): 222 kcal, 74 g Ballaststoffe. Vorher USDA-Näherung (Stevia-Pulver) scheiterte an der Energie-Prüfung. Gründer-Entscheidung 09.11.2026 (Option A)."
     },
     {
       "alpha5_id": "gewuerzgurken-glas",
@@ -2550,10 +2550,10 @@
       "food_id": "johannisbrotkernmehl",
       "alpha5_name": "Johannisbrotkernmehl",
       "source": {
-        "db": "usda_fdc",
-        "version": "sr-legacy-2018-04",
-        "ref": "169045",
-        "search": ["locust bean", "gum"],
+        "db": "etikettenwerte",
+        "version": "2026-11",
+        "ref": "ETK0003",
+        "search": ["johannisbrotkernmehl"],
         "state_de": "Pulver",
         "category": "other"
       },
@@ -2570,7 +2570,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: Pulver. Quell-ID 169045 „Gums, seed gums (includes locust bean, guar)“ (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): genau passend (Samen-Verdickungsmittel inkl. Johannisbrotkernmehl). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1 → dritte Quelle (Gründer-Entscheidung 30.10.2026)."
+      "reason_de": "Zustand: Pulver. Quell-ID ETK0003 „Johannisbrotkernmehl“ (Etikettenwerte 2026-11, Beleg: Produktdatenblatt des Herstellers): 203 kcal, 76,4 g Ballaststoffe. Vorher USDA „Gums, seed gums“ scheiterte an der Energie-Prüfung. Gründer-Entscheidung 09.11.2026 (Option A)."
     },
     {
       "alpha5_id": "kabeljaufilet",
@@ -5996,10 +5996,10 @@
       "food_id": "sojaskyr-natur",
       "alpha5_name": "Sojaskyr natur",
       "source": {
-        "db": "usda_fdc",
-        "version": "sr-legacy-2018-04",
-        "ref": null,
-        "search": ["soy yogurt", "yogurt, soy", "tofu"],
+        "db": "etikettenwerte",
+        "version": "2026-11",
+        "ref": "ETK0002",
+        "search": ["sojaskyr"],
         "state_de": "natur",
         "category": "soy_products"
       },
@@ -6016,7 +6016,7 @@
       "max_fridge_days": 3,
       "freezable": true,
       "substitutes": [],
-      "reason_de": "Zustand: natur. Quell-ID offen (Lauf 41213043845 „kandidaten“ 31.10.2026, USDA FoodData Central SR Legacy): nur Soja-/Tofu-Joghurt (167722 „Tofu yogurt“, Markenprodukte) mit deutlich weniger Eiweiß als Sojaskyr – passt nicht (wie schon H844000 in BLS). Nicht in BLS 4.0 und Schweizer Nährwertdatenbank 7.1."
+      "reason_de": "Zustand: natur. Quell-ID ETK0002 „Sojaskyr natur“ (Etikettenwerte 2026-11, Beleg: Etikett Skyr-Alternative aus Soja, natur, Open Food Facts): 65 kcal, 5,6 g Eiweiß. In BLS, Schweizer Nährwertdatenbank und USDA nicht geführt. Gründer-Entscheidung 09.11.2026 (Option A)."
     },
     {
       "alpha5_id": "spaghetti-trocken",

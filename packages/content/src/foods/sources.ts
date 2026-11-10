@@ -70,7 +70,7 @@ export type SourceEnergyExtraKey = 'organic_acids_g' | 'alcohol_g' | 'polyols_g'
 
 export interface SourceDefinition {
   /** Kennung wie `SOURCE_DATABASES` in packages/core (food-schema.ts). */
-  readonly db: 'bls' | 'ch_naehrwertdatenbank' | 'usda_fdc';
+  readonly db: 'bls' | 'ch_naehrwertdatenbank' | 'usda_fdc' | 'etikettenwerte';
   /** Version der Quelle = Ordnername unter content/sources/<db>/<version>/. */
   readonly version: string;
   /** Anzeigename der Quelle. */
@@ -384,8 +384,79 @@ const USDA_SR_LEGACY: SourceDefinition = {
     'Auszug: nur die von Alpha5 verwendeten Lebensmittel, Werte unverändert (aus dem langen CSV-Format je Lebensmittel in eine Zeile gestellt). In der App: Salz aus Natrium berechnet (× 2,5), verfügbare Kohlenhydrate = „Carbohydrate, by difference“ minus Ballaststoffe, Nährwerte je Rezept aus Zutatenmengen hochgerechnet.',
 };
 
+/**
+ * Vierte Quelle (Gründer-Entscheidung 09.11.2026, Option A): Etikettenwerte für Zutaten, die keine der drei
+ * Datenbanken passend führt (Erythrit, Sojaskyr, Johannisbrotkernmehl, Geschmackspulver mit Süßungsmitteln).
+ *
+ * Original-Datei ist eine im Repository eingecheckte CSV (packages/content/etikettenwerte/etikettenwerte-2026-11.csv),
+ * abgerufen über die FESTE Adresse eines Commits (raw.githubusercontent.com/<Repo>/<Commit-SHA>/…) – der Inhalt unter
+ * dieser Adresse kann sich nicht ändern; zusätzlich ist die Prüfsumme festgenagelt. Jede Zeile nennt in der Spalte
+ * „Beleg“ das Etikett bzw. Produktdatenblatt (Marke nur dort, nie in Rezepten). Neue Werte = neue Datei, neuer Commit,
+ * neue Version per Gründer-PR.
+ *
+ * „Kohlenhydrate verwertbar“ wie bei BLS/CH (ohne Ballaststoffe). Erythrit: 0 g, weil es nicht verstoffwechselt wird
+ * (Energiefaktor 0 kJ/g, VO (EU) Nr. 1169/2011 Anhang XIV) – das Etikett nennt die 99,8 g als Kohlenhydrate.
+ */
+const LABEL_VALUES_2026_11: SourceDefinition = {
+  db: 'etikettenwerte',
+  version: '2026-11',
+  title: 'Etikettenwerte (Packungsangaben), Stand November 2026',
+  url: 'https://raw.githubusercontent.com/ktrautmann1992-commits/Fitnessapp/0b597302a1d2f6aab5eb1fb0d8af87cdc81a59bf/packages/content/etikettenwerte/etikettenwerte-2026-11.csv',
+  downloadPage: null,
+  urlStatus: 'confirmed',
+  licenseStatus: 'confirmed',
+  confirmedBy:
+    'Werte von Claude-Sitzung aus Etiketten/Produktdatenblättern übernommen (Belege je Zeile, 09.11.2026); Nachweis = Merge durch Gründer',
+  originalFilename: 'etikettenwerte-2026-11.csv',
+  format: 'csv',
+  sheet: null,
+  csvDelimiter: ',',
+  originalSha256: '674fc9f557bd98c936f1436df36e0a4c22099f96e75446d972f5ce2ab263f9c0',
+  keyColumn: 0,
+  keyPattern: '^ETK[0-9]{4}$',
+  nameColumn: 1,
+  nutrients: {
+    kcal: [{ code: 'Energie', header: 'Energie (kcal)', unit: 'kcal', convert: 'none' }],
+    protein_g: [{ code: 'Eiweiß', header: 'Eiweiß (g)', unit: 'g', convert: 'none' }],
+    carbs_g: [
+      {
+        code: 'Kohlenhydrate',
+        header: 'Kohlenhydrate verwertbar (g)',
+        unit: 'g',
+        convert: 'none',
+      },
+    ],
+    sugar_g: [{ code: 'Zucker', header: 'Zucker (g)', unit: 'g', convert: 'none' }],
+    fat_g: [{ code: 'Fett', header: 'Fett (g)', unit: 'g', convert: 'none' }],
+    sat_fat_g: [
+      {
+        code: 'gesättigte',
+        header: 'gesättigte Fettsäuren (g)',
+        unit: 'g',
+        convert: 'none',
+      },
+    ],
+    fiber_g: [{ code: 'Ballaststoffe', header: 'Ballaststoffe (g)', unit: 'g', convert: 'none' }],
+    salt_g: [{ code: 'Salz', header: 'Salz (g)', unit: 'g', convert: 'none' }],
+  },
+  columnsStatus: 'confirmed',
+  license: 'Etikettenangaben (Fakten, Belege je Zeile)',
+  licenseUrl: 'https://eur-lex.europa.eu/eli/reg/2011/1169/oj',
+  licenseText:
+    'Nährwertangaben von Lebensmitteletiketten (Pflichtangaben nach VO (EU) Nr. 1169/2011) bzw. Produktdatenblättern; Werte aus Open Food Facts (ODbL) bzw. dem Datenblatt des Herstellers, Beleg je Zeile.',
+  attribution:
+    'Etikettenwerte (Packungsangaben), Stand November 2026; teils über Open Food Facts (openfoodfacts.org, ODbL).',
+  changesNote:
+    'Werte unverändert vom Etikett; Erythrit mit 0 g verwertbaren Kohlenhydraten (Energiefaktor 0 kJ/g). In der App: Nährwerte je Rezept aus Zutatenmengen hochgerechnet.',
+};
+
 /** Allowlist: genau diese Quellen/Versionen darf `foods-import` laden und `sources-integrity` anerkennen. */
-export const SOURCES: readonly SourceDefinition[] = [BLS_4_0, CH_7_1, USDA_SR_LEGACY];
+export const SOURCES: readonly SourceDefinition[] = [
+  BLS_4_0,
+  CH_7_1,
+  USDA_SR_LEGACY,
+  LABEL_VALUES_2026_11,
+];
 
 /** Quelle nach Datenbank und Version (undefined = nicht in der Allowlist). */
 export function findSource(
