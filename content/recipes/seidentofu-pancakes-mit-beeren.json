@@ -1,11 +1,9 @@
 {
   "id": "seidentofu-pancakes-mit-beeren",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Seidentofu-Pancakes mit Beeren",
   "description_de": "Fluffige Hafer-Pancakes ohne Ei, getoppt mit Sojaskyr und warmen Beeren.",
-  "section_de": "Frühstück",
-  "categories": [],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -101,6 +99,8 @@
     "Serviere die Pancakes mit Sojaskyr und den warmen Beeren."
   ],
   "tip_de": "Die Pancakes lassen sich gut einfrieren und im Toaster aufbacken.",
+  "section_de": "Frühstück",
+  "categories": [],
   "total_minutes": 25,
   "prep_minutes": 20,
   "cook_minutes": 5,
@@ -127,12 +127,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "5b66b75ebcc0861c140c742b9df053760258bda3facec9ef0a30c4e7b62f3f5d",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "5b66b75ebcc0861c140c742b9df053760258bda3facec9ef0a30c4e7b62f3f5d"
+    "import_assumptions_confirmed_by": null
   }
 }

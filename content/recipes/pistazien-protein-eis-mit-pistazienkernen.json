@@ -1,11 +1,9 @@
 {
   "id": "pistazien-protein-eis-mit-pistazienkernen",
   "version": 3,
-  "status": "draft",
+  "status": "published",
   "title_de": "Pistazien-Protein-Eis mit Pistazienkernen",
   "description_de": "Nussig-cremiges Pistazieneis auf Mandeldrink-Basis mit knackigen Kernen – sommerlich wie aus der Eisdiele, aber mit über 30 g Eiweiß.",
-  "section_de": "Protein-Eis mit Mandeldrink",
-  "categories": ["schnell", "sommer-eis"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -75,6 +73,8 @@
   ],
   "tip_de": "Für eine intensivere Farbe und mehr Aroma einen Teil der Pistazien vor dem Einfrieren fein gemahlen mitmixen; die Kerne für das Mix-in dann auf 5 g reduzieren.",
   "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "section_de": "Protein-Eis mit Mandeldrink",
+  "categories": ["schnell", "sommer-eis"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -101,12 +101,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "d1eb4cd357c57a10a92c00e5f013d5ad6ceb6607665e7d337e573533b557fc5d",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "d1eb4cd357c57a10a92c00e5f013d5ad6ceb6607665e7d337e573533b557fc5d"
+    "import_assumptions_confirmed_by": null
   }
 }

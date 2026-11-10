@@ -1,11 +1,9 @@
 {
   "id": "wassermelone-limette-sorbet",
   "version": 3,
-  "status": "draft",
+  "status": "published",
   "title_de": "Wassermelone-Limette-Sorbet",
   "description_de": "Hellrotes, superleichtes Sorbet aus Wassermelone und Limette mit klarem Fruchtprotein – pure Abkühlung bei Hitze.",
-  "section_de": "Sorbet & Erfrischung",
-  "categories": ["schnell", "sommer-eis"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -74,6 +72,8 @@
   ],
   "tip_de": "Ein paar Minzblätter mitpürieren für extra Frische. Schäumt die Masse stark, 5 Minuten stehen lassen oder den Schaum abschöpfen – so wird das Sorbet gleichmäßiger.",
   "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "section_de": "Sorbet & Erfrischung",
+  "categories": ["schnell", "sommer-eis"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -100,12 +100,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "990f8568f6120b77df3aa317ba7c93764b878abe502aefbdfe04b9b9b57701d9",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "990f8568f6120b77df3aa317ba7c93764b878abe502aefbdfe04b9b9b57701d9"
+    "import_assumptions_confirmed_by": null
   }
 }

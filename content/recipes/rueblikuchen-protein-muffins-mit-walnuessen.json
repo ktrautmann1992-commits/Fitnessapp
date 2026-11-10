@@ -1,11 +1,9 @@
 {
   "id": "rueblikuchen-protein-muffins-mit-walnuessen",
   "version": 3,
-  "status": "draft",
+  "status": "published",
   "title_de": "Rüblikuchen-Protein-Muffins mit Walnüssen",
   "description_de": "Zwei saftige Karotten-Muffins mit Zimt und Walnusskernen, die in Silikonförmchen in der Heißluftfritteuse backen – kein großer Ofen nötig, perfekt zum Mitnehmen.",
-  "section_de": "Snacks & Süßes",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -102,6 +100,8 @@
   ],
   "tip_de": "Ohne Proteinpulver: 15 g Mehl mehr und 40 g Magerquark zusätzlich – dann etwa 8 g weniger Eiweiß. Die Muffins halten gut verpackt 2 Tage im Kühlschrank.",
   "tags_de": ["Heißluftfritteuse", "zum Mitnehmen"],
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 25,
   "prep_minutes": 11,
   "cook_minutes": 14,
@@ -128,12 +128,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "513263bc242ade46992b537daf1458cb2783846387e26bea14591011ad2d46eb",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "513263bc242ade46992b537daf1458cb2783846387e26bea14591011ad2d46eb"
+    "import_assumptions_confirmed_by": null
   }
 }

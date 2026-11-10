@@ -1,11 +1,9 @@
 {
   "id": "mango-sojaskyr-mit-ahorn-kuerbiskernen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Mango-Sojaskyr mit Ahorn-Kürbiskernen",
   "description_de": "Pflanzlicher Skyr mit fruchtiger Mango liefert reichlich Eiweiß und schnelle Kohlenhydrate, ist kühl und angenehm leicht für den Magen nach dem Training.",
-  "section_de": "Direkt danach",
-  "categories": ["schnell", "post-workout"],
   "meal_types": ["snack"],
   "training_tags": ["nach_training"],
   "servings": 1,
@@ -55,6 +53,8 @@
   ],
   "tip_de": "Die TK-Mango morgens in einer Dose mitnehmen – nach dem Training ist sie perfekt aufgetaut und noch schön kühl.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Direkt danach",
+  "categories": ["schnell", "post-workout"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -81,12 +81,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "4994a53be449ccd8530b9371f1b701e8ab1a2fa10bfc1e10f19b07ca88b09851",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "4994a53be449ccd8530b9371f1b701e8ab1a2fa10bfc1e10f19b07ca88b09851"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "espresso-eiskaffee-protein-eis",
   "version": 3,
-  "status": "draft",
+  "status": "published",
   "title_de": "Espresso-Eiskaffee-Protein-Eis",
   "description_de": "Eiskaffee zum Löffeln: kräftiger Espresso, Vanille und ein Hauch Karamell – erfrischend am Sommernachmittag und mit wenig Fett.",
-  "section_de": "Protein-Eis mit Mandeldrink",
-  "categories": ["schnell", "sommer-eis"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -74,6 +72,8 @@
   ],
   "tip_de": "Für Eiskaffee-Feeling eine Kugel in ein Glas kalten Espresso mit Mandeldrink geben. Wer kein Koffein möchte, nimmt entkoffeinierten Espresso.",
   "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "section_de": "Protein-Eis mit Mandeldrink",
+  "categories": ["schnell", "sommer-eis"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -100,12 +100,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "fab0ba2530c381863eb1ec750eddbd3d49aeb442e08b5b4cb16389b7f50bc4e6",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "fab0ba2530c381863eb1ec750eddbd3d49aeb442e08b5b4cb16389b7f50bc4e6"
+    "import_assumptions_confirmed_by": null
   }
 }

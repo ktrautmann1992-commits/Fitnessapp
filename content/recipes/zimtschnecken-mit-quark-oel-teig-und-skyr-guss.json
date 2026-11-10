@@ -1,11 +1,9 @@
 {
   "id": "zimtschnecken-mit-quark-oel-teig-und-skyr-guss",
   "version": 3,
-  "status": "draft",
+  "status": "published",
   "title_de": "Zimtschnecken mit Quark-Öl-Teig und Skyr-Guss",
   "description_de": "Drei kleine, fluffige Zimtschnecken aus schnellem Quark-Öl-Teig ohne Hefe, mit einem cremigen Skyr-Guss statt Zuckerglasur.",
-  "section_de": "Snacks & Süßes",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -92,6 +90,8 @@
   ],
   "tip_de": "Die Schnecken lassen sich ohne Guss gut mitnehmen; den Skyr dann in einem kleinen Glas extra einpacken. Wer mehr Eiweiß will, rührt 10 g Whey-Proteinpulver (Vanille) in den Guss.",
   "tags_de": ["Heißluftfritteuse", "zum Mitnehmen"],
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 25,
   "prep_minutes": 2,
   "cook_minutes": 23,
@@ -118,12 +118,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "596c26ee2dfdaf7e40605e751e89a1d6e0f3d6292a3a555f52d4a399b541e638",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "596c26ee2dfdaf7e40605e751e89a1d6e0f3d6292a3a555f52d4a399b541e638"
+    "import_assumptions_confirmed_by": null
   }
 }

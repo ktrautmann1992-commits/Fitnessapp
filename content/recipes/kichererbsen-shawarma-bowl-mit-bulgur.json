@@ -1,11 +1,9 @@
 {
   "id": "kichererbsen-shawarma-bowl-mit-bulgur",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kichererbsen-Shawarma-Bowl mit Bulgur",
   "description_de": "Orientalisch gewürzte Ofen-Kichererbsen auf Bulgur mit frischem Gemüse und cremiger Knoblauch-Sojaskyr-Sauce.",
-  "section_de": "Mittagessen",
-  "categories": ["meal-prep"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -164,6 +162,8 @@
     "Gib die Knoblauchsauce darüber und bestreue alles mit Petersilie."
   ],
   "tip_de": "Für Meal-Prep Sauce und Gemüse getrennt aufbewahren, damit die Kichererbsen knusprig bleiben.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
   "total_minutes": 25,
   "prep_minutes": 25,
   "cook_minutes": 0,
@@ -190,12 +190,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "909fa769f944caed3521b701f64b9c669aa7e3d666f954085b16e762fba3ba91",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "909fa769f944caed3521b701f64b9c669aa7e3d666f954085b16e762fba3ba91"
+    "import_assumptions_confirmed_by": null
   }
 }

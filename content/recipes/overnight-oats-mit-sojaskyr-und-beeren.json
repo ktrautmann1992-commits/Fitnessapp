@@ -1,11 +1,9 @@
 {
   "id": "overnight-oats-mit-sojaskyr-und-beeren",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Overnight Oats mit Sojaskyr und Beeren",
   "description_de": "Cremige Haferflocken mit Sojaskyr und Chia, die über Nacht ziehen und morgens fertig im Kühlschrank warten.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "meal-prep"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -83,6 +81,8 @@
   ],
   "tip_de": "Im verschlossenen Glas hält sich das Frühstück 2 Tage im Kühlschrank – ideal, um gleich mehrere vorzubereiten.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "meal-prep"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -109,12 +109,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "6a02efbe094ea0b5ddf36f782f543bb067071a3402b15dc2d11da41779ee0e23",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "6a02efbe094ea0b5ddf36f782f543bb067071a3402b15dc2d11da41779ee0e23"
+    "import_assumptions_confirmed_by": null
   }
 }

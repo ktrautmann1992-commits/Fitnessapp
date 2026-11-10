@@ -1,11 +1,9 @@
 {
   "id": "schoko-mandel-sojaskyr",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Schoko-Mandel-Sojaskyr",
   "description_de": "Cremiger Sojaskyr mit Kakao und Schoko-Protein, getoppt mit gehackten Mandeln – schmeckt wie Schokopudding, ist aber vegan und kohlenhydratarm.",
-  "section_de": "Snack",
-  "categories": ["schnell", "low-carb"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -54,6 +52,8 @@
   ],
   "tip_de": "Ohne Pulver: Nimm 1 TL mehr Kakao und süße nach Geschmack mit Erythrit.",
   "tags_de": ["Unter 10 Minuten", "Süß"],
+  "section_de": "Snack",
+  "categories": ["schnell", "low-carb"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -80,12 +80,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "5ffa451a7b3a7fa99555fc2fd5ea3af563aa722910692b7a66cf842a8590cf46",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "5ffa451a7b3a7fa99555fc2fd5ea3af563aa722910692b7a66cf842a8590cf46"
+    "import_assumptions_confirmed_by": null
   }
 }

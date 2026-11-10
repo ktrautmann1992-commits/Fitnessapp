@@ -1,11 +1,9 @@
 {
   "id": "knusprige-zimt-apfelringe-mit-sojaskyr-und-mandeln",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Knusprige Zimt-Apfelringe mit Sojaskyr und Mandeln",
   "description_de": "Dünne Apfelringe mit Zimt werden in der Heißluft weich mit leicht karamellisierten Rändern – mit Sojaskyr und gerösteten Mandeln ein veganer Nachtisch.",
-  "section_de": "Snacks & Süßes",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -73,6 +71,8 @@
   ],
   "tip_de": "Feste, säuerliche Äpfel (z. B. Boskoop oder Elstar) behalten ihre Form am besten. Für knusprige Apfelchips die Ringe 2 mm dünn schneiden und 20 Minuten bei 140 °C trocknen.",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 20,
   "prep_minutes": 3,
   "cook_minutes": 17,
@@ -99,12 +99,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "20b2e328b08ec2fafe24f6c91b292812011c9b09d470018cc7d6ea91d6df73ac",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "20b2e328b08ec2fafe24f6c91b292812011c9b09d470018cc7d6ea91d6df73ac"
+    "import_assumptions_confirmed_by": null
   }
 }

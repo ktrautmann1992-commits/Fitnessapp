@@ -1,11 +1,9 @@
 {
   "id": "vanille-chia-pudding-mit-mango-spiegel",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Vanille-Chia-Pudding mit Mango-Spiegel",
   "description_de": "Veganer Chia-Pudding mit Sojaskyr und Vanille-Protein unter einer fruchtigen Mangoschicht – sättigt lange und lässt sich prima vorbereiten.",
-  "section_de": "Ohne Backen",
-  "categories": ["meal-prep", "protein-dessert"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -73,6 +71,8 @@
   ],
   "tip_de": "Über Nacht quellen lassen und morgens nur noch Skyr und Mango ergänzen. Ohne Pulver: 50 g mehr Sojaskyr nehmen und mit etwas Vanille aromatisieren (ca. 20 g Eiweiß).",
   "tags_de": ["Dessert"],
+  "section_de": "Ohne Backen",
+  "categories": ["meal-prep", "protein-dessert"],
   "total_minutes": 35,
   "prep_minutes": 35,
   "cook_minutes": 0,
@@ -99,12 +99,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "67ae553c45d3d1b7f1c5f16668b0a2ec6a7cad058e775bf6a9b9a7a8ae36f277",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "67ae553c45d3d1b7f1c5f16668b0a2ec6a7cad058e775bf6a9b9a7a8ae36f277"
+    "import_assumptions_confirmed_by": null
   }
 }

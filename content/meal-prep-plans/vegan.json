@@ -1,7 +1,7 @@
 {
   "id": "vegan",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Vegane Power-Woche",
   "description_de": "Baked Oats, ein cremiges Tofu-Linsen-Curry und grüner Edamame-Hummus: rein pflanzlich und mit genug Eiweiß für deine Ziele. In knapp 2 Stunden ist alles für Montag bis Freitag vorbereitet.",
   "recipe_ids": [
@@ -152,8 +152,8 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
     "import_hash": "2fcae1903089b53593c8eb6e61780d3e20078eaf6dec1fa410ef770d0835d51f"

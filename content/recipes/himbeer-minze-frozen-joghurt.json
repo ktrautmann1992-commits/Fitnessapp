@@ -1,11 +1,9 @@
 {
   "id": "himbeer-minze-frozen-joghurt",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Himbeer-Minze-Frozen-Joghurt",
   "description_de": "Fruchtig-säuerlicher Sojaskyr-Frozen-Joghurt mit Himbeeren und frischer Minze – vegan und angenehm kühlend.",
-  "section_de": "Frozen Joghurt",
-  "categories": ["schnell", "sommer-eis"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -65,6 +63,8 @@
   ],
   "tip_de": "Wer keine Kerne mag, streicht das Himbeerpüree vorher durch ein Sieb. Für Stückchen 30 g Himbeeren zurückhalten und am Ende mit der Mix-in-Funktion untermischen.",
   "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "section_de": "Frozen Joghurt",
+  "categories": ["schnell", "sommer-eis"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -91,12 +91,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "339a8600205cc1c4fdc938eb1071e8af6987575f9b40c32bfc4f70a1b2299515",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "339a8600205cc1c4fdc938eb1071e8af6987575f9b40c32bfc4f70a1b2299515"
+    "import_assumptions_confirmed_by": null
   }
 }

@@ -1,11 +1,9 @@
 {
   "id": "veganer-linsen-bohnen-burger",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Veganer Linsen-Bohnen-Burger",
   "description_de": "Ein würziges Patty aus Linsen, schwarzen Bohnen und Sojaschnetzeln mit rauchiger Paprika und cremiger Soja-Skyr-Sauce – vegan und sättigend.",
-  "section_de": "Burger & Hot Dog",
-  "categories": ["fitness-fast-food"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -173,6 +171,8 @@
   ],
   "tip_de": "Die Patties lassen sich gut auf Vorrat formen und roh zwischen Backpapier einfrieren. Feine Sojaschnetzel (Sojagranulat) binden besser als grobe Stücke.",
   "tags_de": ["Fitness-Fast-Food"],
+  "section_de": "Burger & Hot Dog",
+  "categories": ["fitness-fast-food"],
   "total_minutes": 30,
   "prep_minutes": 25,
   "cook_minutes": 5,
@@ -199,12 +199,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "8946049ca59f78fd771be5f4c7772bdcf71bfc509104a8569c6f11989f303a46",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "8946049ca59f78fd771be5f4c7772bdcf71bfc509104a8569c6f11989f303a46"
+    "import_assumptions_confirmed_by": null
   }
 }

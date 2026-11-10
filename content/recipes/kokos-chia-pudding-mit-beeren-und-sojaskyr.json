@@ -1,11 +1,9 @@
 {
   "id": "kokos-chia-pudding-mit-beeren-und-sojaskyr",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kokos-Chia-Pudding mit Beeren und Sojaskyr",
   "description_de": "Über Nacht gequollener Chia-Pudding mit Kokos, Sojaskyr und Vanille-Protein, getoppt mit Beeren – vegan, kohlenhydratarm und morgens sofort fertig.",
-  "section_de": "Frühstück",
-  "categories": ["schnell", "low-carb"],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -72,6 +70,8 @@
   ],
   "tip_de": "Ohne Pulver: Nimm 150 g Sojaskyr statt 100 g – der Pudding wird etwas weniger süß, bleibt aber schön cremig.",
   "tags_de": ["Unter 10 Minuten", "Vorbereiten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "low-carb"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -98,12 +98,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "134d78af6cd9a91359989b5e565b927fcc8596793669fd1df89947833c8d5940",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "134d78af6cd9a91359989b5e565b927fcc8596793669fd1df89947833c8d5940"
+    "import_assumptions_confirmed_by": null
   }
 }

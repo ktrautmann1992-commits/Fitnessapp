@@ -1,11 +1,9 @@
 {
   "id": "kichererbsenmehl-omelett-mit-paprika-und-pilzen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Kichererbsenmehl-Omelett mit Paprika und Pilzen",
   "description_de": "Herzhaftes, eifreies Omelett aus Kichererbsenmehl, gefüllt mit Paprika und Champignons, dazu ein Kräuter-Sojaskyr-Dip.",
-  "section_de": "Frühstück",
-  "categories": [],
   "meal_types": ["breakfast"],
   "training_tags": [],
   "servings": 1,
@@ -137,6 +135,8 @@
     "Rühre Sojaskyr mit Petersilie, Salz und Pfeffer glatt und serviere ihn als Dip dazu."
   ],
   "tip_de": "Den Teig kannst du am Vorabend anrühren und abgedeckt im Kühlschrank lagern – morgens geht es dann noch schneller.",
+  "section_de": "Frühstück",
+  "categories": [],
   "total_minutes": 20,
   "prep_minutes": 16,
   "cook_minutes": 4,
@@ -163,12 +163,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "3de70a3505cfe0d4197906978034d1b556a0db34b807b7049b9d9f09083a5822",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "3de70a3505cfe0d4197906978034d1b556a0db34b807b7049b9d9f09083a5822"
+    "import_assumptions_confirmed_by": null
   }
 }

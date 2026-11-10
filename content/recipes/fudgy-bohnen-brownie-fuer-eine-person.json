@@ -1,11 +1,9 @@
 {
   "id": "fudgy-bohnen-brownie-fuer-eine-person",
   "version": 3,
-  "status": "draft",
+  "status": "published",
   "title_de": "Fudgy Bohnen-Brownie für eine Person",
   "description_de": "Saftiger, schokoladiger Mini-Brownie aus schwarzen Bohnen, Kakao und Datteln – vegan und ohne Mehl.",
-  "section_de": "Aus dem Ofen oder der Mikrowelle",
-  "categories": ["protein-dessert"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -101,6 +99,8 @@
   ],
   "tip_de": "Ohne Pulver: 1 EL Erdnussmus in den Teig und 100 g Sojaskyr natur als Topping dazu (ca. 19 g Eiweiß). Die doppelte Menge hält abgedeckt 3 Tage im Kühlschrank.",
   "tags_de": ["Dessert"],
+  "section_de": "Aus dem Ofen oder der Mikrowelle",
+  "categories": ["protein-dessert"],
   "total_minutes": 30,
   "prep_minutes": 10,
   "cook_minutes": 20,
@@ -127,12 +127,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "d7e86295055c97d77d5f80213990fe99748c0c7e165007c859ef5f140cc7cbe1",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "d7e86295055c97d77d5f80213990fe99748c0c7e165007c859ef5f140cc7cbe1"
+    "import_assumptions_confirmed_by": null
   }
 }
