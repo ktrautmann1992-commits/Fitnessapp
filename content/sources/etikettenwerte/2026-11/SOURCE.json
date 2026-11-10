@@ -1,0 +1,16 @@
+{
+  "db": "etikettenwerte",
+  "version": "2026-11",
+  "title": "Etikettenwerte (Packungsangaben), Stand November 2026",
+  "url": "https://raw.githubusercontent.com/ktrautmann1992-commits/Fitnessapp/0b597302a1d2f6aab5eb1fb0d8af87cdc81a59bf/packages/content/etikettenwerte/etikettenwerte-2026-11.csv",
+  "original_filename": "etikettenwerte-2026-11.csv",
+  "original_bytes": 1102,
+  "original_sha256": "674fc9f557bd98c936f1436df36e0a4c22099f96e75446d972f5ce2ab263f9c0",
+  "extract_sha256": "6ca5a3f9a555fc6971e6f8c322ad37fba7d826c7b25ab5d72d7deb82923d302a",
+  "extract_rows": 4,
+  "retrieved_at": "2026-11-10T15:33:07Z",
+  "workflow_run_id": "42845435958",
+  "license": "Etikettenangaben (Fakten, Belege je Zeile)",
+  "license_url": "https://eur-lex.europa.eu/eli/reg/2011/1169/oj",
+  "attribution": "Etikettenwerte (Packungsangaben), Stand November 2026; teils über Open Food Facts (openfoodfacts.org, ODbL)."
+}
