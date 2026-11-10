@@ -1,11 +1,9 @@
 {
   "id": "kokos-ananas-eis-im-pina-colada-stil",
-  "version": 2,
-  "status": "draft",
+  "version": 3,
+  "status": "published",
   "title_de": "Kokos-Ananas-Eis im Piña-Colada-Stil",
   "description_de": "Tropisch-frisches Eis mit Ananas und Kokos, das nach Strandurlaub schmeckt – vegan und alkoholfrei.",
-  "section_de": "Protein-Eis mit Mandeldrink",
-  "categories": ["schnell", "sommer-eis"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -75,6 +73,8 @@
   ],
   "tip_de": "Ein paar Ananasstückchen zurückbehalten und als Mix-in verwenden – das sorgt für fruchtige Stückchen im Eis. Statt Mandeldrink geht auch Kokosdrink.",
   "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "section_de": "Protein-Eis mit Mandeldrink",
+  "categories": ["schnell", "sommer-eis"],
   "total_minutes": 7,
   "prep_minutes": 7,
   "cook_minutes": 0,
@@ -86,10 +86,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 243,
-    "protein_g": 34,
-    "carbs_g": 18.2,
-    "fat_g": 9.7
+    "kcal": 256,
+    "protein_g": 34.1,
+    "carbs_g": 8.3,
+    "fat_g": 9.8
   },
   "declared_diet": "vegan",
   "declared_allergens": ["legumes", "soy", "tree_nuts"],
@@ -101,12 +101,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "4531ba8e263d4b5774f99efe58651d25bf3312e34c09bd9c7ebcffe332450855",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "6b5f5b8b5cabcef62e3ca8db8f54e7a10767bf12aab31787bbeb12e26d266f86"
+    "import_assumptions_confirmed_by": null
   }
 }

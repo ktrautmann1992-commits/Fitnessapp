@@ -5930,10 +5930,10 @@
    ],
    "tipp": "Im verschlossenen Glas hält sich das Frühstück 2 Tage im Kühlschrank – ideal, um gleich mehrere vorzubereiten.",
    "naehrwerte_pro_portion": {
-    "kcal": 499,
-    "eiweiss_g": 31.1,
-    "kohlenhydrate_g": 53.9,
-    "fett_g": 13.9
+    "kcal": 480,
+    "eiweiss_g": 25.7,
+    "kohlenhydrate_g": 50.9,
+    "fett_g": 15.5
    },
    "status": "draft"
   },
@@ -6009,10 +6009,10 @@
    ],
    "tipp": "Die Pancakes lassen sich gut einfrieren und im Toaster aufbacken.",
    "naehrwerte_pro_portion": {
-    "kcal": 492,
-    "eiweiss_g": 27.5,
-    "kohlenhydrate_g": 51.7,
-    "fett_g": 17.1
+    "kcal": 461,
+    "eiweiss_g": 23.2,
+    "kohlenhydrate_g": 45.7,
+    "fett_g": 17.5
    },
    "status": "draft"
   },
@@ -7313,10 +7313,10 @@
    ],
    "tipp": "Mit Zimt oder etwas Vanille wird der Snack ohne Zucker süßer.",
    "naehrwerte_pro_portion": {
-    "kcal": 230,
-    "eiweiss_g": 21.0,
-    "kohlenhydrate_g": 13.0,
-    "fett_g": 9.4
+    "kcal": 229,
+    "eiweiss_g": 15.6,
+    "kohlenhydrate_g": 13.6,
+    "fett_g": 11.5
    },
    "status": "draft"
   },
@@ -9223,10 +9223,10 @@
    ],
    "tipp": "Statt Gurke passen auch Radieschen oder ein paar Streifen Paprika.",
    "naehrwerte_pro_portion": {
-    "kcal": 211,
-    "eiweiss_g": 16.9,
-    "kohlenhydrate_g": 15.6,
-    "fett_g": 7.6
+    "kcal": 183,
+    "eiweiss_g": 15.4,
+    "kohlenhydrate_g": 15,
+    "fett_g": 5.7
    },
    "status": "draft"
   },
@@ -18641,10 +18641,10 @@
    ],
    "tipp": "Statt Banane passen auch TK-Himbeeren: kurz zwischen den Fingern zerdrücken, sie tauen auf dem warmen Toast in einer Minute an.",
    "naehrwerte_pro_portion": {
-    "kcal": 452,
-    "eiweiss_g": 27.2,
-    "kohlenhydrate_g": 49.0,
-    "fett_g": 14.5
+    "kcal": 437,
+    "eiweiss_g": 21.9,
+    "kohlenhydrate_g": 46.1,
+    "fett_g": 16.6
    },
    "status": "draft"
   },
@@ -19969,10 +19969,10 @@
    ],
    "tipp": "Die TK-Mango morgens in einer Dose mitnehmen – nach dem Training ist sie perfekt aufgetaut und noch schön kühl.",
    "naehrwerte_pro_portion": {
-    "kcal": 360,
-    "eiweiss_g": 29.7,
-    "kohlenhydrate_g": 33.1,
-    "fett_g": 11.8
+    "kcal": 350,
+    "eiweiss_g": 21.2,
+    "kohlenhydrate_g": 31.2,
+    "fett_g": 15.1
    },
    "status": "draft"
   },
@@ -25188,7 +25188,7 @@
    "naehrwerte_pro_portion": {
     "kcal": 306,
     "eiweiss_g": 30.6,
-    "kohlenhydrate_g": 31.1,
+    "kohlenhydrate_g": 21.1,
     "fett_g": 9.8
    },
    "status": "draft"
@@ -25915,10 +25915,10 @@
    ],
    "tipp": "Aubergine saugt Öl auf wie ein Schwamm – deshalb bestreichen statt übergießen. Passt warm oder kalt zu Couscous, Bulgur oder Fladenbrot.",
    "naehrwerte_pro_portion": {
-    "kcal": 266,
-    "eiweiss_g": 16.1,
-    "kohlenhydrate_g": 11.4,
-    "fett_g": 14.9
+    "kcal": 258,
+    "eiweiss_g": 11.7,
+    "kohlenhydrate_g": 13.1,
+    "fett_g": 16.5
    },
    "status": "draft"
   },
@@ -26150,7 +26150,7 @@
    "naehrwerte_pro_portion": {
     "kcal": 324,
     "eiweiss_g": 17.3,
-    "kohlenhydrate_g": 52,
+    "kohlenhydrate_g": 40,
     "fett_g": 9.4
    },
    "status": "draft"
@@ -26212,10 +26212,10 @@
    ],
    "tipp": "Feste, säuerliche Äpfel (z. B. Boskoop oder Elstar) behalten ihre Form am besten. Für knusprige Apfelchips die Ringe 2 mm dünn schneiden und 20 Minuten bei 140 °C trocknen.",
    "naehrwerte_pro_portion": {
-    "kcal": 245,
-    "eiweiss_g": 14.9,
-    "kohlenhydrate_g": 26.5,
-    "fett_g": 7.8
+    "kcal": 250,
+    "eiweiss_g": 11,
+    "kohlenhydrate_g": 27.6,
+    "fett_g": 9.5
    },
    "status": "draft"
   },
@@ -26373,7 +26373,7 @@
    "naehrwerte_pro_portion": {
     "kcal": 313,
     "eiweiss_g": 25.4,
-    "kohlenhydrate_g": 45.4,
+    "kohlenhydrate_g": 35.4,
     "fett_g": 5.4
    },
    "status": "draft"
@@ -26514,7 +26514,7 @@
    "naehrwerte_pro_portion": {
     "kcal": 209,
     "eiweiss_g": 26.1,
-    "kohlenhydrate_g": 28.9,
+    "kohlenhydrate_g": 18.9,
     "fett_g": 2.5
    },
    "status": "draft"
@@ -26659,7 +26659,7 @@
    "naehrwerte_pro_portion": {
     "kcal": 360,
     "eiweiss_g": 30,
-    "kohlenhydrate_g": 54.5,
+    "kohlenhydrate_g": 44.5,
     "fett_g": 3.7
    },
    "status": "draft"
@@ -26866,10 +26866,10 @@
    ],
    "tipp": "Gefrierzeit: Bananen mindestens 4 Stunden vorher einfrieren – am besten immer einen Beutel Bananenscheiben auf Vorrat haben. Für festeres Eis 20 Minuten nachfrieren. Ohne Pulver: 100 g mehr Sojaskyr nehmen (ca. 19 g Eiweiß).",
    "naehrwerte_pro_portion": {
-    "kcal": 298,
-    "eiweiss_g": 23.2,
-    "kohlenhydrate_g": 29.4,
-    "fett_g": 8.3
+    "kcal": 272,
+    "eiweiss_g": 23.3,
+    "kohlenhydrate_g": 23.6,
+    "fett_g": 9.3
    },
    "status": "draft"
   },
@@ -26992,9 +26992,9 @@
    ],
    "tipp": "Gefrierzeit: etwa 3 Stunden; wird es über Nacht steinhart, 15–20 Minuten antauen lassen. Alternativ in Eis-am-Stiel-Formen füllen. Ohne Pulver: 50 g Skyr natur zusätzlich und etwas Vanille statt Whey (ca. 25 g Eiweiß).",
    "naehrwerte_pro_portion": {
-    "kcal": 234,
+    "kcal": 235,
     "eiweiss_g": 32.5,
-    "kohlenhydrate_g": 21.7,
+    "kohlenhydrate_g": 11.7,
     "fett_g": 5.6
    },
    "status": "draft"
@@ -27059,10 +27059,10 @@
    ],
    "tipp": "Für eine intensivere Farbe und mehr Aroma einen Teil der Pistazien vor dem Einfrieren fein gemahlen mitmixen; die Kerne für das Mix-in dann auf 5 g reduzieren.",
    "naehrwerte_pro_portion": {
-    "kcal": 290,
-    "eiweiss_g": 32.3,
-    "kohlenhydrate_g": 27.3,
-    "fett_g": 12.8
+    "kcal": 308,
+    "eiweiss_g": 32.4,
+    "kohlenhydrate_g": 10.7,
+    "fett_g": 12.9
    },
    "status": "draft"
   },
@@ -27132,9 +27132,9 @@
    ],
    "tipp": "Statt Süßkirschen passen abgetropfte Sauerkirschen aus dem Glas – das Eis wird dann etwas säuerlicher. Zartbitterschokolade auf die Zutatenliste prüfen, wenn es streng vegan sein soll.",
    "naehrwerte_pro_portion": {
-    "kcal": 281,
+    "kcal": 280,
     "eiweiss_g": 35.9,
-    "kohlenhydrate_g": 25,
+    "kohlenhydrate_g": 10.1,
     "fett_g": 11.7
    },
    "status": "draft"
@@ -27197,10 +27197,10 @@
    ],
    "tipp": "Für Eiskaffee-Feeling eine Kugel in ein Glas kalten Espresso mit Mandeldrink geben. Wer kein Koffein möchte, nimmt entkoffeinierten Espresso.",
    "naehrwerte_pro_portion": {
-    "kcal": 212,
+    "kcal": 225,
     "eiweiss_g": 29.8,
-    "kohlenhydrate_g": 24.4,
-    "fett_g": 5.9
+    "kohlenhydrate_g": 9.4,
+    "fett_g": 6
    },
    "status": "draft"
   },
@@ -27265,10 +27265,10 @@
    ],
    "tipp": "Ein paar Ananasstückchen zurückbehalten und als Mix-in verwenden – das sorgt für fruchtige Stückchen im Eis. Statt Mandeldrink geht auch Kokosdrink.",
    "naehrwerte_pro_portion": {
-    "kcal": 243,
-    "eiweiss_g": 34,
-    "kohlenhydrate_g": 18.2,
-    "fett_g": 9.7
+    "kcal": 256,
+    "eiweiss_g": 34.1,
+    "kohlenhydrate_g": 8.3,
+    "fett_g": 9.8
    },
    "status": "draft"
   },
@@ -27329,7 +27329,7 @@
    "naehrwerte_pro_portion": {
     "kcal": 247,
     "eiweiss_g": 33.9,
-    "kohlenhydrate_g": 25.5,
+    "kohlenhydrate_g": 15.5,
     "fett_g": 6.7
    },
    "status": "draft"
@@ -27399,9 +27399,9 @@
    ],
    "tipp": "Mit TK-Heidelbeeren funktioniert es genauso. Wer es fruchtiger mag, rührt die Hälfte der Beeren schon vor dem Einfrieren püriert unter.",
    "naehrwerte_pro_portion": {
-    "kcal": 324,
-    "eiweiss_g": 34,
-    "kohlenhydrate_g": 41.6,
+    "kcal": 341,
+    "eiweiss_g": 34.1,
+    "kohlenhydrate_g": 25,
     "fett_g": 8.8
    },
    "status": "draft"
@@ -27465,10 +27465,10 @@
    ],
    "tipp": "Basilikum vorsichtig dosieren und vorher probieren – alternativ Minze nehmen. Mit TK-Erdbeeren (angetaut) gelingt es das ganze Jahr.",
    "naehrwerte_pro_portion": {
-    "kcal": 221,
+    "kcal": 234,
     "eiweiss_g": 27.3,
-    "kohlenhydrate_g": 33,
-    "fett_g": 2.7
+    "kohlenhydrate_g": 18,
+    "fett_g": 2.8
    },
    "status": "draft"
   },
@@ -27526,10 +27526,10 @@
    ],
    "tipp": "Wer keine Kerne mag, streicht das Himbeerpüree vorher durch ein Sieb. Für Stückchen 30 g Himbeeren zurückhalten und am Ende mit der Mix-in-Funktion untermischen.",
    "naehrwerte_pro_portion": {
-    "kcal": 258,
-    "eiweiss_g": 27.1,
-    "kohlenhydrate_g": 17.7,
-    "fett_g": 7.0
+    "kcal": 251,
+    "eiweiss_g": 18,
+    "kohlenhydrate_g": 16.7,
+    "fett_g": 10.2
    },
    "status": "draft"
   },
@@ -27603,9 +27603,9 @@
    ],
    "tipp": "Nur unbehandelte Zitronen abreiben. Mit 1 EL Instant-Puddingpulver mit Süßungsmitteln (Vanille) wird die Konsistenz noch cremiger.",
    "naehrwerte_pro_portion": {
-    "kcal": 258,
+    "kcal": 276,
     "eiweiss_g": 31.8,
-    "kohlenhydrate_g": 37.6,
+    "kohlenhydrate_g": 21,
     "fett_g": 4.7
    },
    "status": "draft"
@@ -27670,7 +27670,7 @@
    "naehrwerte_pro_portion": {
     "kcal": 218,
     "eiweiss_g": 19.3,
-    "kohlenhydrate_g": 39.9,
+    "kohlenhydrate_g": 29.9,
     "fett_g": 1.6
    },
    "status": "draft"
@@ -27730,7 +27730,7 @@
    "naehrwerte_pro_portion": {
     "kcal": 189,
     "eiweiss_g": 18.9,
-    "kohlenhydrate_g": 39.9,
+    "kohlenhydrate_g": 24.9,
     "fett_g": 0.6
    },
    "status": "draft"
@@ -27800,9 +27800,9 @@
    ],
    "tipp": "Wer die Kerne nicht mag, streicht die Maracuja durch ein Sieb. Mit frischer, sehr reifer Mango wird das Sorbet noch aromatischer.",
    "naehrwerte_pro_portion": {
-    "kcal": 268,
+    "kcal": 269,
     "eiweiss_g": 28.1,
-    "kohlenhydrate_g": 31,
+    "kohlenhydrate_g": 21,
     "fett_g": 7.2
    },
    "status": "draft"
@@ -29964,8 +29964,8 @@
    ],
    "aufbewahrung": [
     "Nutze 5 auslaufsichere Glas- oder Kunststoffdosen fürs Curry, 5 kleine Gläser für den Hummus und Dosen für Oats und Sticks.",
-    "Alles muss innerhalb von 2 Stunden nach dem Kochen abgekühlt im Kühlschrank (max. 5 °C) stehen; Curry mit Reis hält dort höchstens 3–4 Tage.",
-    "Friere die Curry-Portionen für Donnerstag und Freitag direkt ein und lege sie jeweils am Vorabend zum Auftauen in den Kühlschrank."
+    "Alles muss innerhalb von 2 Stunden nach dem Kochen abgekühlt im Kühlschrank (max. 5 °C) stehen; Curry mit Reis hält dort höchstens 1 Tag – die Portionen für die folgenden Tage direkt einfrieren.",
+    "Friere die Curry-Portionen für Dienstag bis Freitag direkt ein und lege sie jeweils am Vorabend zum Auftauen in den Kühlschrank."
    ],
    "abendessen_hinweis": "Abends kochst du frisch – zum Beispiel ein veganes Gericht aus dem Kapitel „Fertig in 10 Minuten“."
   },

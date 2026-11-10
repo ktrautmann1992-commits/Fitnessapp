@@ -1,0 +1,82 @@
+{
+  "id": "sojaskyr-mit-beeren-und-kuerbiskernen",
+  "version": 1,
+  "status": "published",
+  "title_de": "Sojaskyr mit Beeren und Kürbiskernen",
+  "description_de": "Schneller Eiweiß-Snack aus Sojaskyr, fruchtigen Beeren und knackigen Kernen.",
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "beerenmischung-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g (aufgetaut)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kuerbiskerne",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Taue die Beeren am Vorabend im Kühlschrank oder 1 Minute in der Mikrowelle auf.",
+    "Gib den Sojaskyr in eine Schale und verteile die Beeren darauf.",
+    "Streue die Kürbiskerne darüber."
+  ],
+  "tip_de": "Mit Zimt oder etwas Vanille wird der Snack ohne Zucker süßer.",
+  "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "total_minutes": 3,
+  "prep_minutes": 3,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 229,
+    "protein_g": 15.6,
+    "carbs_g": 13.6,
+    "fat_g": 11.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "1c4408b1489372b8eb0a7e55661597c044975f18b85f7925d8f0d7cf1013feca",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null
+  }
+}

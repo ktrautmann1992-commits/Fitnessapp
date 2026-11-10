@@ -1,0 +1,161 @@
+{
+  "id": "vegan",
+  "version": 1,
+  "status": "published",
+  "title_de": "Vegane Power-Woche",
+  "description_de": "Baked Oats, ein cremiges Tofu-Linsen-Curry und grüner Edamame-Hummus: rein pflanzlich und mit genug Eiweiß für deine Ziele. In knapp 2 Stunden ist alles für Montag bis Freitag vorbereitet.",
+  "recipe_ids": [
+    "apfel-zimt-baked-oats-mit-sojaskyr",
+    "suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis",
+    "edamame-hummus-mit-gemuesesticks"
+  ],
+  "cook_steps": [
+    {
+      "start_min": 0,
+      "text_de": "Ofen auf 180 °C vorheizen, Reiswasser aufsetzen, Tofu zum Abtropfen zwischen Küchenpapier pressen."
+    },
+    {
+      "start_min": 5,
+      "text_de": "Baked-Oats-Teig anrühren und 5 Minuten quellen lassen, währenddessen Äpfel würfeln."
+    },
+    {
+      "start_min": 15,
+      "text_de": "Baked Oats in den Ofen schieben (30–35 Min.) und den Reis aufsetzen."
+    },
+    {
+      "start_min": 20,
+      "text_de": "Zwiebeln, Knoblauch, Ingwer und Süßkartoffel schneiden; Tofu würfeln."
+    },
+    {
+      "start_min": 30,
+      "text_de": "Tofu im großen Topf goldbraun braten, gleichzeitig Wasser für die Edamame aufkochen."
+    },
+    {
+      "start_min": 40,
+      "text_de": "Gegarten Reis zum Abkühlen auf einem Blech ausbreiten; Curry-Basis andünsten und alles für das Curry zugeben (20 Min. köcheln)."
+    },
+    {
+      "start_min": 45,
+      "text_de": "Edamame 4 Minuten garen, kalt abschrecken; Baked Oats aus dem Ofen holen und abkühlen lassen."
+    },
+    {
+      "start_min": 50,
+      "text_de": "Hummus pürieren und in 5 Gläser füllen."
+    },
+    {
+      "start_min": 60,
+      "text_de": "Karotten, Paprika und Gurke in Sticks schneiden und mit feuchtem Küchenpapier in Dosen packen."
+    },
+    {
+      "start_min": 70,
+      "text_de": "Spinat, Tofu und Sojasauce ins Curry rühren, abschmecken und vom Herd nehmen."
+    },
+    {
+      "start_min": 80,
+      "text_de": "Baked Oats in 5 Stücke schneiden und mit Sojaskyr-Bechern portionieren."
+    },
+    {
+      "start_min": 90,
+      "text_de": "Curry und Reis auf 5 Dosen verteilen; Dosen für Donnerstag und Freitag beschriften und einfrieren."
+    },
+    {
+      "start_min": 100,
+      "text_de": "Alles andere in den Kühlschrank stellen, Küche aufräumen – fertig."
+    }
+  ],
+  "storage_plan": [
+    {
+      "recipe_id": "apfel-zimt-baked-oats-mit-sojaskyr",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "apfel-zimt-baked-oats-mit-sojaskyr",
+      "weekday": "tue",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "apfel-zimt-baked-oats-mit-sojaskyr",
+      "weekday": "wed",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "apfel-zimt-baked-oats-mit-sojaskyr",
+      "weekday": "thu",
+      "method": "freeze"
+    },
+    {
+      "recipe_id": "apfel-zimt-baked-oats-mit-sojaskyr",
+      "weekday": "fri",
+      "method": "freeze"
+    },
+    {
+      "recipe_id": "suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis",
+      "weekday": "tue",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis",
+      "weekday": "wed",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis",
+      "weekday": "thu",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "suesskartoffel-erdnuss-curry-mit-tofu-linsen-und-reis",
+      "weekday": "fri",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "edamame-hummus-mit-gemuesesticks",
+      "weekday": "mon",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "edamame-hummus-mit-gemuesesticks",
+      "weekday": "tue",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "edamame-hummus-mit-gemuesesticks",
+      "weekday": "wed",
+      "method": "fridge"
+    },
+    {
+      "recipe_id": "edamame-hummus-mit-gemuesesticks",
+      "weekday": "thu",
+      "method": "fresh"
+    },
+    {
+      "recipe_id": "edamame-hummus-mit-gemuesesticks",
+      "weekday": "fri",
+      "method": "fresh"
+    }
+  ],
+  "storage_de": [
+    "Nutze 5 auslaufsichere Glas- oder Kunststoffdosen fürs Curry, 5 kleine Gläser für den Hummus und Dosen für Oats und Sticks.",
+    "Alles muss innerhalb von 2 Stunden nach dem Kochen abgekühlt im Kühlschrank (max. 5 °C) stehen; Curry mit Reis hält dort höchstens 1 Tag – die Portionen für die folgenden Tage direkt einfrieren.",
+    "Friere die Curry-Portionen für Dienstag bis Freitag direkt ein und lege sie jeweils am Vorabend zum Auftauen in den Kühlschrank."
+  ],
+  "dinner_hint_de": "Abends kochst du frisch – zum Beispiel ein veganes Gericht aus dem Kapitel „Fertig in 10 Minuten“.",
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "2fcae1903089b53593c8eb6e61780d3e20078eaf6dec1fa410ef770d0835d51f"
+  }
+}

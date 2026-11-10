@@ -1,11 +1,9 @@
 {
   "id": "erdbeer-basilikum-frozen-joghurt",
-  "version": 2,
-  "status": "draft",
+  "version": 3,
+  "status": "published",
   "title_de": "Erdbeer-Basilikum-Frozen-Joghurt",
   "description_de": "Frische Erdbeeren treffen auf einen Hauch Basilikum – ein überraschend erfrischender Frozen Joghurt für heiße Tage.",
-  "section_de": "Frozen Joghurt",
-  "categories": ["schnell", "sommer-eis"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -74,6 +72,8 @@
   ],
   "tip_de": "Basilikum vorsichtig dosieren und vorher probieren – alternativ Minze nehmen. Mit TK-Erdbeeren (angetaut) gelingt es das ganze Jahr.",
   "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "section_de": "Frozen Joghurt",
+  "categories": ["schnell", "sommer-eis"],
   "total_minutes": 7,
   "prep_minutes": 7,
   "cook_minutes": 0,
@@ -85,10 +85,10 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 221,
+    "kcal": 234,
     "protein_g": 27.3,
-    "carbs_g": 33,
-    "fat_g": 2.7
+    "carbs_g": 18,
+    "fat_g": 2.8
   },
   "declared_diet": "vegetarian",
   "declared_allergens": ["dairy", "lactose", "histamine"],
@@ -100,12 +100,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "cc9b303296f1096078914b32dc30eed18faee906f76c2598dd7aa78d14a57441",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "69532d28154cb61030d915a63c0fefe19cfb3b0039d534f05c2d2a218798639b"
+    "import_assumptions_confirmed_by": null
   }
 }

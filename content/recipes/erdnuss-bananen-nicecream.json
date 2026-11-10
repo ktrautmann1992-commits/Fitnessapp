@@ -1,0 +1,101 @@
+{
+  "id": "erdnuss-bananen-nicecream",
+  "version": 1,
+  "status": "published",
+  "title_de": "Erdnuss-Bananen-Nicecream",
+  "description_de": "Softeis-cremige Nicecream aus gefrorener Banane, Sojaskyr und Erdnussmus – vegan, ohne Eismaschine und mit Vanille-Protein; die Bananen brauchen vorher mindestens 4 Stunden im Gefrierfach.",
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "banane",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Banane (120 g), in Scheiben gefroren",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Banane in Scheiben und friere sie in einem Gefrierbeutel mindestens 4 Stunden (am besten über Nacht) ein.",
+    "Lass die gefrorenen Scheiben 2–3 Minuten antauen und gib sie mit Sojaskyr, Proteinpulver und Salz in einen leistungsstarken Mixer oder Zerkleinerer.",
+    "Mixe alles in kurzen Intervallen, schiebe die Masse zwischendurch mit einem Löffel nach unten, bis sie cremig wie Softeis ist.",
+    "Füll die Nicecream in eine Schale, ziehe das Erdnussmus in Schlieren darüber und iss sie sofort."
+  ],
+  "tip_de": "Gefrierzeit: Bananen mindestens 4 Stunden vorher einfrieren – am besten immer einen Beutel Bananenscheiben auf Vorrat haben. Für festeres Eis 20 Minuten nachfrieren. Ohne Pulver: 100 g mehr Sojaskyr nehmen (ca. 19 g Eiweiß).",
+  "tags_de": ["Unter 10 Minuten", "Dessert"],
+  "section_de": "Gefroren",
+  "categories": ["schnell", "protein-dessert"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 272,
+    "protein_g": 23.3,
+    "carbs_g": 23.6,
+    "fat_g": 9.3
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "peanuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "92937393e9b60d7949fce131acc2a9b6801dcd9bd0f3824083679c021dd646da",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null
+  }
+}

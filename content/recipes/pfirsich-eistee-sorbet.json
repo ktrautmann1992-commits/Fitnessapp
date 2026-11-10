@@ -1,11 +1,9 @@
 {
   "id": "pfirsich-eistee-sorbet",
-  "version": 2,
-  "status": "draft",
+  "version": 3,
+  "status": "published",
   "title_de": "Pfirsich-Eistee-Sorbet",
   "description_de": "Eistee zum Löffeln: schwarzer Tee, saftige Pfirsiche und Zitrone ergeben ein leichtes, fruchtiges Sorbet.",
-  "section_de": "Sorbet & Erfrischung",
-  "categories": ["schnell", "sommer-eis"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -65,6 +63,8 @@
   ],
   "tip_de": "Mit grünem Tee wird es milder, mit Pfirsichen aus der Dose (abgetropft) gelingt es auch außerhalb der Saison. Tee ruhig abends aufbrühen und über Nacht im Kühlschrank abkühlen lassen.",
   "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "section_de": "Sorbet & Erfrischung",
+  "categories": ["schnell", "sommer-eis"],
   "total_minutes": 10,
   "prep_minutes": 10,
   "cook_minutes": 0,
@@ -78,7 +78,7 @@
   "declared_per_serving": {
     "kcal": 189,
     "protein_g": 18.9,
-    "carbs_g": 39.9,
+    "carbs_g": 24.9,
     "fat_g": 0.6
   },
   "declared_diet": "vegetarian",
@@ -91,12 +91,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "f704f816efdf60a593eca6ec65bd31f8292b31f234f9a3a4c1927f1499fcd528",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "fbcf08adb4cfec2474774f2d4c76ed5276ec848b05c156d2f24160be4e1618a3"
+    "import_assumptions_confirmed_by": null
   }
 }

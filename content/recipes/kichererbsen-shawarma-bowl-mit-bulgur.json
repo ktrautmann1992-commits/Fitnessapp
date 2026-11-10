@@ -1,0 +1,201 @@
+{
+  "id": "kichererbsen-shawarma-bowl-mit-bulgur",
+  "version": 1,
+  "status": "published",
+  "title_de": "Kichererbsen-Shawarma-Bowl mit Bulgur",
+  "description_de": "Orientalisch gewürzte Ofen-Kichererbsen auf Bulgur mit frischem Gemüse und cremiger Knoblauch-Sojaskyr-Sauce.",
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kichererbsen-dose-abgetropft",
+      "amount": 180,
+      "unit": "g",
+      "optional": false,
+      "display_de": "180 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprikapulver-edelsuess",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kurkuma",
+      "amount": 0.25,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "¼ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "bulgur-trocken",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "gemuesebruehe-zubereitet",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomaten",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Tomate (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "¼ Gurke (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rotkohl",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g, fein gehobelt",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "nach Geschmack",
+      "scales": false,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize den Backofen auf 220 °C Ober-/Unterhitze vor.",
+    "Tupfe die Kichererbsen trocken, mische sie mit Olivenöl, Kreuzkümmel, Paprikapulver, Kurkuma, Zimt und Salz und röste sie auf einem Blech 18–20 Minuten.",
+    "Übergieße den Bulgur mit der kochenden Gemüsebrühe, decke ihn ab und lass ihn 10 Minuten quellen.",
+    "Verrühre Sojaskyr mit gepresstem Knoblauch, Zitronensaft und einer Prise Salz.",
+    "Würfle Tomate und Gurke und richte Bulgur, Gemüse, Rotkohl und Kichererbsen in einer Schale an.",
+    "Gib die Knoblauchsauce darüber und bestreue alles mit Petersilie."
+  ],
+  "tip_de": "Für Meal-Prep Sauce und Gemüse getrennt aufbewahren, damit die Kichererbsen knusprig bleiben.",
+  "section_de": "Mittagessen",
+  "categories": ["meal-prep"],
+  "total_minutes": 25,
+  "prep_minutes": 25,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 660,
+    "protein_g": 36.2,
+    "carbs_g": 89.1,
+    "fat_g": 14.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "celery", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "909fa769f944caed3521b701f64b9c669aa7e3d666f954085b16e762fba3ba91",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null
+  }
+}

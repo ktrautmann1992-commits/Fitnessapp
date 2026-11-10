@@ -1,0 +1,101 @@
+{
+  "id": "erdnuss-bananen-toast-mit-zimt-sojaskyr",
+  "version": 1,
+  "status": "published",
+  "title_de": "Erdnuss-Bananen-Toast mit Zimt-Sojaskyr",
+  "description_de": "Knuspriger Vollkorntoast mit Erdnussmus und Banane, dazu ein cremiger Zimt-Sojaskyr.",
+  "meal_types": ["breakfast"],
+  "training_tags": ["vor_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "vollkorntoast",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (60 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erdnussmus",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "banane",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ große Banane (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Steck die Toastscheiben direkt in den Toaster (ca. 3 Minuten).",
+    "Während der Toast bräunt, rührst du Sojaskyr und Zimt in einer Schale glatt und schneidest die Banane in Scheiben.",
+    "Bestreich den heißen Toast mit Erdnussmus und leg die Bananenscheiben darauf.",
+    "Iss den Zimt-Sojaskyr dazu – oder gib ihn als Dip neben den Toast."
+  ],
+  "tip_de": "Statt Banane passen auch TK-Himbeeren: kurz zwischen den Fingern zerdrücken, sie tauen auf dem warmen Toast in einer Minute an.",
+  "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Frühstück",
+  "categories": ["schnell", "pre-workout"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 437,
+    "protein_g": 21.9,
+    "carbs_g": 46.1,
+    "fat_g": 16.6
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "peanuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "162de2d92dfe13bc21eeadc025d77428fcd8057e7ef5eb201c79943f00ac63b7",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null
+  }
+}

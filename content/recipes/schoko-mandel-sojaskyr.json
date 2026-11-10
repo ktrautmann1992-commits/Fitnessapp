@@ -1,0 +1,91 @@
+{
+  "id": "schoko-mandel-sojaskyr",
+  "version": 1,
+  "status": "published",
+  "title_de": "Schoko-Mandel-Sojaskyr",
+  "description_de": "Cremiger Sojaskyr mit Kakao und Schoko-Protein, getoppt mit gehackten Mandeln – schmeckt wie Schokopudding, ist aber vegan und kohlenhydratarm.",
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "veganes-proteinpulver-schoko",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Messlöffel (15 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "backkakao",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "mandeln",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 kleine Handvoll (15 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Sojaskyr, Proteinpulver und Kakao glatt, bei Bedarf mit 1–2 EL Wasser.",
+    "Hacke die Mandeln grob und röste sie kurz ohne Fett an.",
+    "Streue die Mandeln über die Creme."
+  ],
+  "tip_de": "Ohne Pulver: Nimm 1 TL mehr Kakao und süße nach Geschmack mit Erythrit.",
+  "tags_de": ["Unter 10 Minuten", "Süß"],
+  "section_de": "Snack",
+  "categories": ["schnell", "low-carb"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 300,
+    "protein_g": 31.6,
+    "carbs_g": 8.9,
+    "fat_g": 14.3
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "tree_nuts"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-10",
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "5ffa451a7b3a7fa99555fc2fd5ea3af563aa722910692b7a66cf842a8590cf46",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null
+  }
+}
