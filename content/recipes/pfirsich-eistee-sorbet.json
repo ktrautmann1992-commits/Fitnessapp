@@ -1,6 +1,6 @@
 {
   "id": "pfirsich-eistee-sorbet",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Pfirsich-Eistee-Sorbet",
   "description_de": "Eistee zum Löffeln: schwarzer Tee, saftige Pfirsiche und Zitrone ergeben ein leichtes, fruchtiges Sorbet.",
@@ -78,7 +78,7 @@
   "declared_per_serving": {
     "kcal": 189,
     "protein_g": 18.9,
-    "carbs_g": 39.9,
+    "carbs_g": 24.9,
     "fat_g": 0.6
   },
   "declared_diet": "vegetarian",
@@ -97,6 +97,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "fbcf08adb4cfec2474774f2d4c76ed5276ec848b05c156d2f24160be4e1618a3"
+    "import_hash": "f704f816efdf60a593eca6ec65bd31f8292b31f234f9a3a4c1927f1499fcd528"
   }
 }

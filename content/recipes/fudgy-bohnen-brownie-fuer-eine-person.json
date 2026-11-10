@@ -1,6 +1,6 @@
 {
   "id": "fudgy-bohnen-brownie-fuer-eine-person",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Fudgy Bohnen-Brownie für eine Person",
   "description_de": "Saftiger, schokoladiger Mini-Brownie aus schwarzen Bohnen, Kakao und Datteln – vegan und ohne Mehl.",
@@ -114,7 +114,7 @@
   "declared_per_serving": {
     "kcal": 360,
     "protein_g": 30,
-    "carbs_g": 54.5,
+    "carbs_g": 44.5,
     "fat_g": 3.7
   },
   "declared_diet": "vegan",
@@ -133,6 +133,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "6acc3deff2c22bbe907369aee9aab6bd4a260c4f00585f8f556b963613696f5b"
+    "import_hash": "d7e86295055c97d77d5f80213990fe99748c0c7e165007c859ef5f140cc7cbe1"
   }
 }

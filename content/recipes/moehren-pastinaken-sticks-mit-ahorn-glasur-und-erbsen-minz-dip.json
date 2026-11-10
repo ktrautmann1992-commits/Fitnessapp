@@ -1,0 +1,156 @@
+{
+  "id": "moehren-pastinaken-sticks-mit-ahorn-glasur-und-erbsen-minz-dip",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Möhren-Pastinaken-Sticks mit Ahorn-Glasur und Erbsen-Minz-Dip",
+  "description_de": "Süßliche Wurzelgemüse-Sticks mit leichter Ahornsirup-Glasur, dazu ein knallgrüner Dip aus Erbsen und Sojaskyr, der die Beilage abrundet.",
+  "section_de": "Beilagen & Gemüse",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "moehre",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Möhren (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pastinake",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Pastinake (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "rosmarin-getrocknet",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "erbsen-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g, aufgetaut",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "minze-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ein paar Blätter (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor.",
+    "Schäle Möhren und Pastinake und schneide sie in fingerdicke Sticks. Mische sie mit Olivenöl, Rosmarin und Salz.",
+    "Gare die Sticks in einer Lage 14–16 Minuten bei 200 °C und schüttel den Korb nach 7 Minuten. Beträufle sie in den letzten 3 Minuten mit dem Ahornsirup und schüttel noch einmal.",
+    "Püriere in der Zwischenzeit die aufgetauten Erbsen mit Sojaskyr, Zitronensaft, Minze, Salz und Pfeffer zu einem cremigen Dip.",
+    "Serviere die heißen Sticks mit dem Dip."
+  ],
+  "tip_de": "Den Ahornsirup erst am Ende zugeben, sonst wird er bitter. Der Erbsen-Dip hält sich gekühlt 2 Tage und passt auch aufs Brot.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 25,
+  "prep_minutes": 1,
+  "cook_minutes": 24,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 321,
+    "protein_g": 14.7,
+    "carbs_g": 43.3,
+    "fat_g": 8
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "b03f34f17bbbfcc76c4ab23e1743003b2bf5d275e4f2dc47fa1dfc05eb16a28d"
+  }
+}

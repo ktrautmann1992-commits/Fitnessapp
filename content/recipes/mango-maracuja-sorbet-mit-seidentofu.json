@@ -1,6 +1,6 @@
 {
   "id": "mango-maracuja-sorbet-mit-seidentofu",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Mango-Maracuja-Sorbet mit Seidentofu",
   "description_de": "Leuchtend gelbes, exotisch-frisches Sorbet aus Mango und Maracuja, das durch Seidentofu cremig wird – vegan und erfrischend.",
@@ -94,9 +94,9 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 268,
+    "kcal": 269,
     "protein_g": 28.1,
-    "carbs_g": 31,
+    "carbs_g": 21,
     "fat_g": 7.2
   },
   "declared_diet": "vegan",
@@ -115,6 +115,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "e7599428a7faeb82ac61e3b6da442972f554c27f6cab8885976a75a092db5463"
+    "import_hash": "097623dc0413d82c8dbb2562aafc688fc2271a70d6413e515409623e3d4dd57b"
   }
 }

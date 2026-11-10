@@ -1,0 +1,102 @@
+{
+  "id": "himbeer-minze-frozen-joghurt",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Himbeer-Minze-Frozen-Joghurt",
+  "description_de": "Fruchtig-säuerlicher Sojaskyr-Frozen-Joghurt mit Himbeeren und frischer Minze – vegan und angenehm kühlend.",
+  "section_de": "Frozen Joghurt",
+  "categories": ["schnell", "sommer-eis"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "himbeeren-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g, angetaut",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "minze-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6–8 Blätter (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "geschmackspulver-zuckerfrei",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g), Sorte Himbeere",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "erythrit",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Püriere Himbeeren, Minze, Geschmackspulver und Erythrit und verrühre alles gründlich mit dem Sojaskyr.",
+    "Füll die Masse in den Gefrierbecher. Fülle höchstens bis zur Max-Linie.",
+    "Verschließe den Becher und friere ihn mindestens 24 Stunden waagerecht ein.",
+    "Setze den gefrorenen Becher in die Eismaschine mit Gefrierbecher ein und verarbeite ihn mit dem Programm für leichtes Eis.",
+    "Ist die Masse noch bröselig, gib 1–2 EL Sojadrink oder Wasser dazu und lass sie einmal nachdrehen, bis sie cremig ist."
+  ],
+  "tip_de": "Wer keine Kerne mag, streicht das Himbeerpüree vorher durch ein Sieb. Für Stückchen 30 g Himbeeren zurückhalten und am Ende mit der Mix-in-Funktion untermischen.",
+  "tags_de": ["Unter 10 Minuten", "Sommer-Eis"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 251,
+    "protein_g": 18,
+    "carbs_g": 16.7,
+    "fat_g": 10.2
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "339a8600205cc1c4fdc938eb1071e8af6987575f9b40c32bfc4f70a1b2299515"
+  }
+}

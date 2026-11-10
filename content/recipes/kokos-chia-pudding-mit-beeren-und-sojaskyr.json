@@ -1,0 +1,109 @@
+{
+  "id": "kokos-chia-pudding-mit-beeren-und-sojaskyr",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kokos-Chia-Pudding mit Beeren und Sojaskyr",
+  "description_de": "Über Nacht gequollener Chia-Pudding mit Kokos, Sojaskyr und Vanille-Protein, getoppt mit Beeren – vegan, kohlenhydratarm und morgens sofort fertig.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "low-carb"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "chiasamen",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "3 EL (30 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Messlöffel (20 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "beerenmischung-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kokosraspeln",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Sojadrink und Proteinpulver klumpenfrei und rühre die Chiasamen unter.",
+    "Rühr nach 5 Minuten noch einmal um, damit nichts verklumpt, und stell den Pudding abgedeckt über Nacht in den Kühlschrank.",
+    "Gib morgens den Sojaskyr darauf, verteile die Beeren darüber und bestreue alles mit Kokosraspeln."
+  ],
+  "tip_de": "Ohne Pulver: Nimm 150 g Sojaskyr statt 100 g – der Pudding wird etwas weniger süß, bleibt aber schön cremig.",
+  "tags_de": ["Unter 10 Minuten", "Vorbereiten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 426,
+    "protein_g": 35.7,
+    "carbs_g": 14.8,
+    "fat_g": 19.7
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "134d78af6cd9a91359989b5e565b927fcc8596793669fd1df89947833c8d5940"
+  }
+}

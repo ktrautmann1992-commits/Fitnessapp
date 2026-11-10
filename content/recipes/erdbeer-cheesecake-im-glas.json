@@ -1,6 +1,6 @@
 {
   "id": "erdbeer-cheesecake-im-glas",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Erdbeer-Cheesecake im Glas",
   "description_de": "Cremige Quark-Frischkäse-Schicht auf Dattel-Hafer-Boden mit frischen Erdbeeren – schmeckt wie Käsekuchen, liefert aber reichlich Eiweiß.",
@@ -105,7 +105,7 @@
   "declared_per_serving": {
     "kcal": 313,
     "protein_g": 25.4,
-    "carbs_g": 45.4,
+    "carbs_g": 35.4,
     "fat_g": 5.4
   },
   "declared_diet": "vegetarian",
@@ -124,6 +124,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "1c9a054565c48424013357c6d84fff02f48310619dcdff39d5e00027551d5f01"
+    "import_hash": "05097d383c64ef20260356c13ee090401f0886ebc0a0ce920c3ff7da60f7fc9d"
   }
 }

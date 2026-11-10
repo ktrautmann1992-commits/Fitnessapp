@@ -1,0 +1,119 @@
+{
+  "id": "raeuchertofu-knaeckebrot-mit-gurke",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Räuchertofu-Knäckebrot mit Gurke",
+  "description_de": "Knuspriges Knäckebrot mit Senf-Sojaskyr, rauchigem Tofu und frischer Gurke – herzhaft und in 5 Minuten fertig.",
+  "section_de": "Snack",
+  "categories": ["schnell"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "knaeckebrot",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (20 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 30,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (30 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "raeuchertofu",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "gurke",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL Ringe (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Sojaskyr mit Senf und einer Prise Pfeffer.",
+    "Bestreiche die Knäckebrotscheiben mit der Senfcreme.",
+    "Schneide Räuchertofu und Gurke in dünne Scheiben und belege die Knäckebrote abwechselnd damit.",
+    "Bestreue alles mit Frühlingszwiebelringen."
+  ],
+  "tip_de": "Statt Gurke passen auch Radieschen oder ein paar Streifen Paprika.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 183,
+    "protein_g": 15.4,
+    "carbs_g": 15,
+    "fat_g": 5.7
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "mustard", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "b37b0dd00e6417ae557a3a274925a32081173c910a3455396a224168721eb414"
+  }
+}

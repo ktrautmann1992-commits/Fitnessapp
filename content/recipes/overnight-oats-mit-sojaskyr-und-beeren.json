@@ -1,0 +1,120 @@
+{
+  "id": "overnight-oats-mit-sojaskyr-und-beeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Overnight Oats mit Sojaskyr und Beeren",
+  "description_de": "Cremige Haferflocken mit Sojaskyr und Chia, die über Nacht ziehen und morgens fertig im Kühlschrank warten.",
+  "section_de": "Frühstück",
+  "categories": ["schnell", "meal-prep"],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 60,
+      "unit": "g",
+      "optional": false,
+      "display_de": "60 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 200,
+      "unit": "g",
+      "optional": false,
+      "display_de": "200 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "chiasamen",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "beerenmischung-tk",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Gib Haferflocken, Chiasamen und Zimt in ein Glas mit Deckel.",
+    "Rühre Sojaskyr, Sojadrink und Ahornsirup unter, bis keine trockenen Stellen mehr da sind.",
+    "Gib die gefrorenen Beeren obendrauf und verschließe das Glas.",
+    "Stell die Oats mindestens 4 Stunden, am besten über Nacht, in den Kühlschrank.",
+    "Rühre morgens einmal durch und gib bei Bedarf noch einen Schuss Sojadrink dazu."
+  ],
+  "tip_de": "Im verschlossenen Glas hält sich das Frühstück 2 Tage im Kühlschrank – ideal, um gleich mehrere vorzubereiten.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 480,
+    "protein_g": 25.7,
+    "carbs_g": 50.9,
+    "fat_g": 15.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "6a02efbe094ea0b5ddf36f782f543bb067071a3402b15dc2d11da41779ee0e23"
+  }
+}

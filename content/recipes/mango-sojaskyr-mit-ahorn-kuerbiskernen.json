@@ -1,0 +1,92 @@
+{
+  "id": "mango-sojaskyr-mit-ahorn-kuerbiskernen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Mango-Sojaskyr mit Ahorn-Kürbiskernen",
+  "description_de": "Pflanzlicher Skyr mit fruchtiger Mango liefert reichlich Eiweiß und schnelle Kohlenhydrate, ist kühl und angenehm leicht für den Magen nach dem Training.",
+  "section_de": "Direkt danach",
+  "categories": ["schnell", "post-workout"],
+  "meal_types": ["snack"],
+  "training_tags": ["nach_training"],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 300,
+      "unit": "g",
+      "optional": false,
+      "display_de": "300 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "mango-tk",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kuerbiskerne",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (10 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (10 g)",
+      "scales": true,
+      "role": "sweet"
+    }
+  ],
+  "steps_de": [
+    "Lass die Mangowürfel kurz antauen (oder über Nacht im Kühlschrank auftauen).",
+    "Zerdrücke die Hälfte der Mango mit einer Gabel und rühre sie unter den Sojaskyr.",
+    "Gib den Rest der Mangowürfel obenauf.",
+    "Mische die Kürbiskerne mit dem Ahornsirup und streue sie darüber."
+  ],
+  "tip_de": "Die TK-Mango morgens in einer Dose mitnehmen – nach dem Training ist sie perfekt aufgetaut und noch schön kühl.",
+  "tags_de": ["Unter 10 Minuten"],
+  "total_minutes": 5,
+  "prep_minutes": 5,
+  "cook_minutes": 0,
+  "no_cook": true,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 350,
+    "protein_g": 21.2,
+    "carbs_g": 31.2,
+    "fat_g": 15.1
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "4994a53be449ccd8530b9371f1b701e8ab1a2fa10bfc1e10f19b07ca88b09851"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "id": "heidelbeer-cheesecake-frozen-joghurt",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Heidelbeer-Cheesecake-Frozen-Joghurt",
   "description_de": "Cremiger Skyr-Frischkäse-Frozen-Joghurt mit Heidelbeeren und Keksbröseln – schmeckt wie Käsekuchen, nur eiskalt.",
@@ -96,9 +96,9 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 324,
-    "protein_g": 34,
-    "carbs_g": 41.6,
+    "kcal": 341,
+    "protein_g": 34.1,
+    "carbs_g": 25,
     "fat_g": 8.8
   },
   "declared_diet": "vegetarian",
@@ -117,6 +117,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "b3caa18c73888b49e089565e5aed94d11a8692f94d41a9af15dfc2c5f2a902a9"
+    "import_hash": "1d85de969387cd67f84fb8d6399c2174907c9e46f73705748094673e55924ebe"
   }
 }

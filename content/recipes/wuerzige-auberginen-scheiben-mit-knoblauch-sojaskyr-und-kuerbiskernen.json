@@ -1,0 +1,147 @@
+{
+  "id": "wuerzige-auberginen-scheiben-mit-knoblauch-sojaskyr-und-kuerbiskernen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Würzige Auberginen-Scheiben mit Knoblauch-Sojaskyr und Kürbiskernen",
+  "description_de": "Mit Rauchpaprika und Kreuzkümmel gewürzte Auberginenscheiben werden in der Heißluft cremig-weich mit gebräunten Rändern – dazu ein kühler Knoblauch-Minz-Dip.",
+  "section_de": "Beilagen & Gemüse",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "aubergine",
+      "amount": 250,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Aubergine (250 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "paprikapulver-geraeuchert",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 120,
+      "unit": "g",
+      "optional": false,
+      "display_de": "120 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "knoblauch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Zehe (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "minze-frisch",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "ein paar Blätter (3 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "kuerbiskerne",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (8 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Schneide die Aubergine in 1,5 cm dicke Scheiben, salze sie leicht und lass sie 5 Minuten ziehen; dann trocken tupfen.",
+    "Heize die Heißluftfritteuse 3 Minuten auf 200 °C vor. Verrühre Olivenöl mit Rauchpaprika und Kreuzkümmel und bestreiche die Scheiben damit von beiden Seiten.",
+    "Lege die Scheiben in einer Lage in den Korb (bei Bedarf in 2 Durchgängen) und gare sie 12–14 Minuten bei 200 °C; nach 7 Minuten wenden. Sie sind fertig, wenn sie innen weich und an den Rändern gebräunt sind.",
+    "Röste die Kürbiskerne in den letzten 2 Minuten mit im Korb (in einer kleinen ofenfesten Schale), damit sie nicht wegfliegen.",
+    "Verrühre Sojaskyr mit gepresstem Knoblauch, Zitronensaft, gehackter Minze und Salz, gib ihn auf die Auberginen und streue die Kürbiskerne darüber."
+  ],
+  "tip_de": "Aubergine saugt Öl auf wie ein Schwamm – deshalb bestreichen statt übergießen. Passt warm oder kalt zu Couscous, Bulgur oder Fladenbrot.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 25,
+  "prep_minutes": 4,
+  "cook_minutes": 21,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 258,
+    "protein_g": 11.7,
+    "carbs_g": 13.1,
+    "fat_g": 16.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "c863dc9968faf5a0cc0dcd397235d580ca107a0869e8b774a8106da7560f1785"
+  }
+}

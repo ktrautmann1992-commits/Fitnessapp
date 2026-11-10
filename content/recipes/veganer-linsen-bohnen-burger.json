@@ -1,0 +1,210 @@
+{
+  "id": "veganer-linsen-bohnen-burger",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Veganer Linsen-Bohnen-Burger",
+  "description_de": "Ein würziges Patty aus Linsen, schwarzen Bohnen und Sojaschnetzeln mit rauchiger Paprika und cremiger Soja-Skyr-Sauce – vegan und sättigend.",
+  "section_de": "Burger & Hot Dog",
+  "categories": ["fitness-fast-food"],
+  "meal_types": ["main"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "sojaschnetzel-trocken",
+      "amount": 25,
+      "unit": "g",
+      "optional": false,
+      "display_de": "25 g (fein)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "linsen-dose-abgetropft",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "schwarze-bohnen-dose-abgetropft",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "haferflocken",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 EL (20 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "kichererbsenmehl",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (15 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "tomatenmark",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (10 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "paprikapulver-geraeuchert",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kreuzkuemmel",
+      "amount": 0.5,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "½ TL",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "vollkornbroetchen",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 großes Brötchen (80 g)",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "senf",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "blattsalat",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Blätter (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "tomate",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Scheiben (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "rote-zwiebel",
+      "amount": 20,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 Ringe (20 g)",
+      "scales": true,
+      "role": "vegetable"
+    }
+  ],
+  "steps_de": [
+    "Übergieße die Sojaschnetzel mit kochendem Wasser, lass sie 10 Minuten quellen und drücke sie danach kräftig aus.",
+    "Zerdrücke Linsen und Bohnen grob mit einer Gabel und vermenge sie mit den Sojaschnetzeln, Haferflocken, Kichererbsenmehl, Tomatenmark und den Gewürzen zu einer formbaren Masse; lass sie 5 Minuten ruhen.",
+    "Forme mit nassen Händen ein großes, ca. 2 cm dickes Patty.",
+    "Brate das Patty im Rapsöl in einer beschichteten Pfanne bei mittlerer Hitze 4–5 Minuten pro Seite, bis es eine feste, braune Kruste hat; wende es vorsichtig mit einem breiten Pfannenwender.",
+    "Verrühre Sojaskyr mit Senf und einer Prise Salz und belege das angeröstete Brötchen mit Sauce, Salat, Tomate, Patty und Zwiebelringen."
+  ],
+  "tip_de": "Die Patties lassen sich gut auf Vorrat formen und roh zwischen Backpapier einfrieren. Feine Sojaschnetzel (Sojagranulat) binden besser als grobe Stücke.",
+  "tags_de": ["Fitness-Fast-Food"],
+  "total_minutes": 30,
+  "prep_minutes": 25,
+  "cook_minutes": 5,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 705,
+    "protein_g": 45.2,
+    "carbs_g": 88.1,
+    "fat_g": 13
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "mustard", "histamine", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "8946049ca59f78fd771be5f4c7772bdcf71bfc509104a8569c6f11989f303a46"
+  }
+}

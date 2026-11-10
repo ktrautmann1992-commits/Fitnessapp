@@ -1,0 +1,174 @@
+{
+  "id": "kichererbsenmehl-omelett-mit-paprika-und-pilzen",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Kichererbsenmehl-Omelett mit Paprika und Pilzen",
+  "description_de": "Herzhaftes, eifreies Omelett aus Kichererbsenmehl, gefüllt mit Paprika und Champignons, dazu ein Kräuter-Sojaskyr-Dip.",
+  "section_de": "Frühstück",
+  "categories": [],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "kichererbsenmehl",
+      "amount": 70,
+      "unit": "g",
+      "optional": false,
+      "display_de": "70 g",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "wasser",
+      "amount": 120,
+      "unit": "ml",
+      "optional": false,
+      "display_de": "120 ml",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "hefeflocken",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL (5 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "kurkuma",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Messerspitze",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "paprika-rot",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ Paprika (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "champignons",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "4 Stück (80 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "fruehlingszwiebeln",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Stange (15 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "olivenoel",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "2 TL (8 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "petersilie-frisch",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 EL gehackt (5 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "salz",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "pfeffer",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Kichererbsenmehl, Wasser, Hefeflocken, Kurkuma, Backpulver und eine Prise Salz zu einem glatten Teig und lass ihn 5 Minuten quellen.",
+    "Schneide Paprika in Streifen, Champignons in Scheiben und Frühlingszwiebel in Ringe.",
+    "Erhitze die Hälfte des Olivenöls in einer beschichteten Pfanne und brate das Gemüse 4 Minuten bei mittlerer Hitze an, dann aus der Pfanne nehmen.",
+    "Gib das restliche Öl in die Pfanne, gieße den Teig hinein und lass ihn bei mittlerer Hitze 3–4 Minuten stocken, bis die Oberseite fast fest ist.",
+    "Verteile das Gemüse auf einer Hälfte, klappe das Omelett zusammen und brate es noch 1 Minute.",
+    "Rühre Sojaskyr mit Petersilie, Salz und Pfeffer glatt und serviere ihn als Dip dazu."
+  ],
+  "tip_de": "Den Teig kannst du am Vorabend anrühren und abgedeckt im Kühlschrank lagern – morgens geht es dann noch schneller.",
+  "total_minutes": 20,
+  "prep_minutes": 16,
+  "cook_minutes": 4,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 469,
+    "protein_g": 29.8,
+    "carbs_g": 43.5,
+    "fat_g": 15.7
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy", "mushrooms", "onion_garlic"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "3de70a3505cfe0d4197906978034d1b556a0db34b807b7049b9d9f09083a5822"
+  }
+}

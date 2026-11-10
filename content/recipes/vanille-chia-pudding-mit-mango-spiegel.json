@@ -1,0 +1,110 @@
+{
+  "id": "vanille-chia-pudding-mit-mango-spiegel",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Vanille-Chia-Pudding mit Mango-Spiegel",
+  "description_de": "Veganer Chia-Pudding mit Sojaskyr und Vanille-Protein unter einer fruchtigen Mangoschicht – sättigt lange und lässt sich prima vorbereiten.",
+  "section_de": "Ohne Backen",
+  "categories": ["meal-prep", "protein-dessert"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "chiasamen",
+      "amount": 15,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1½ EL (15 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "veganes-proteinpulver-vanille",
+      "amount": 10,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1/3 Messlöffel (10 g)",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "mango-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g (aufgetaut)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    }
+  ],
+  "steps_de": [
+    "Verrühre Sojadrink und Proteinpulver klümpchenfrei und rühre die Chiasamen ein.",
+    "Lass die Mischung 5 Minuten stehen, rühre noch einmal kräftig um und lass sie dann mindestens 30 Minuten im Kühlschrank quellen.",
+    "Rühre den Sojaskyr unter den gequollenen Chia-Pudding und füll ihn in ein Glas.",
+    "Püriere die aufgetaute Mango mit dem Ahornsirup und gieße das Püree als Spiegel über den Pudding."
+  ],
+  "tip_de": "Über Nacht quellen lassen und morgens nur noch Skyr und Mango ergänzen. Ohne Pulver: 50 g mehr Sojaskyr nehmen und mit etwas Vanille aromatisieren (ca. 20 g Eiweiß).",
+  "tags_de": ["Dessert"],
+  "total_minutes": 35,
+  "prep_minutes": 35,
+  "cook_minutes": 0,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": true,
+    "fridge_days": 3,
+    "freezable": true
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 301,
+    "protein_g": 25.8,
+    "carbs_g": 21.5,
+    "fat_g": 10.3
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "67ae553c45d3d1b7f1c5f16668b0a2ec6a7cad058e775bf6a9b9a7a8ae36f277"
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "id": "seidentofu-pancakes-mit-beeren",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Seidentofu-Pancakes mit Beeren",
+  "description_de": "Fluffige Hafer-Pancakes ohne Ei, getoppt mit Sojaskyr und warmen Beeren.",
+  "section_de": "Frühstück",
+  "categories": [],
+  "meal_types": ["breakfast"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "haferflocken",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "50 g",
+      "scales": true,
+      "role": "carb"
+    },
+    {
+      "food_id": "seidentofu",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojadrink-ungesuesst",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 ml",
+      "scales": true,
+      "role": "protein"
+    },
+    {
+      "food_id": "banane",
+      "amount": 50,
+      "unit": "g",
+      "optional": false,
+      "display_de": "½ kleine Banane (50 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "backpulver",
+      "amount": 3,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (3 g)",
+      "scales": true,
+      "role": "seasoning"
+    },
+    {
+      "food_id": "rapsoel",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 100,
+      "unit": "g",
+      "optional": false,
+      "display_de": "100 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "beerenmischung-tk",
+      "amount": 80,
+      "unit": "g",
+      "optional": false,
+      "display_de": "80 g",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "pinch",
+      "optional": false,
+      "display_de": "1 Prise",
+      "scales": true,
+      "role": "seasoning"
+    }
+  ],
+  "steps_de": [
+    "Püriere Haferflocken, Seidentofu, Sojadrink, Banane, Backpulver und Zimt mit dem Stabmixer zu einem glatten Teig.",
+    "Lass den Teig 5 Minuten quellen.",
+    "Erhitze das Rapsöl in einer beschichteten Pfanne auf mittlerer Stufe und gib je 2 EL Teig pro Pancake hinein.",
+    "Brate die Pancakes 2–3 Minuten, bis sich Bläschen bilden, wende sie und brate sie weitere 2 Minuten.",
+    "Erwärme die Beeren kurz in einem kleinen Topf oder in der Mikrowelle.",
+    "Serviere die Pancakes mit Sojaskyr und den warmen Beeren."
+  ],
+  "tip_de": "Die Pancakes lassen sich gut einfrieren und im Toaster aufbacken.",
+  "total_minutes": 25,
+  "prep_minutes": 20,
+  "cook_minutes": 5,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 461,
+    "protein_g": 23.2,
+    "carbs_g": 45.7,
+    "fat_g": 17.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["gluten", "legumes", "soy"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "5b66b75ebcc0861c140c742b9df053760258bda3facec9ef0a30c4e7b62f3f5d"
+  }
+}

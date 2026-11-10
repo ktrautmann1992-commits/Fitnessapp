@@ -1,6 +1,6 @@
 {
   "id": "zitronenkuchen-frozen-joghurt",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Zitronenkuchen-Frozen-Joghurt",
   "description_de": "Spritzig-cremiger Frozen Joghurt mit Zitronenabrieb und Keksstückchen – erinnert an saftigen Zitronenkuchen und erfrischt trotzdem.",
@@ -105,9 +105,9 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 258,
+    "kcal": 276,
     "protein_g": 31.8,
-    "carbs_g": 37.6,
+    "carbs_g": 21,
     "fat_g": 4.7
   },
   "declared_diet": "vegetarian",
@@ -126,6 +126,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "b9a10b469c9a80bd0ed86e802ec735bb138068a9aa0965b3817fb25cde7b32b2"
+    "import_hash": "f945a6ffbb57f9e0b86463a359b043a6106f826f438a131e34b49f0b61950fa5"
   }
 }

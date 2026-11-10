@@ -1,0 +1,110 @@
+{
+  "id": "knusprige-zimt-apfelringe-mit-sojaskyr-und-mandeln",
+  "version": 1,
+  "status": "draft",
+  "title_de": "Knusprige Zimt-Apfelringe mit Sojaskyr und Mandeln",
+  "description_de": "Dünne Apfelringe mit Zimt werden in der Heißluft weich mit leicht karamellisierten Rändern – mit Sojaskyr und gerösteten Mandeln ein veganer Nachtisch.",
+  "section_de": "Snacks & Süßes",
+  "categories": ["heissluftfritteuse"],
+  "meal_types": ["snack"],
+  "training_tags": [],
+  "servings": 1,
+  "ingredients": [
+    {
+      "food_id": "apfel",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 Apfel (150 g)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zitronensaft",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 ml)",
+      "scales": true,
+      "role": "vegetable"
+    },
+    {
+      "food_id": "zimt",
+      "amount": 1,
+      "unit": "tsp",
+      "optional": false,
+      "display_de": "1 TL",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "sojaskyr-natur",
+      "amount": 150,
+      "unit": "g",
+      "optional": false,
+      "display_de": "150 g",
+      "scales": true,
+      "role": "fat"
+    },
+    {
+      "food_id": "ahornsirup",
+      "amount": 5,
+      "unit": "g",
+      "optional": false,
+      "display_de": "1 TL (5 g)",
+      "scales": true,
+      "role": "sweet"
+    },
+    {
+      "food_id": "mandeln",
+      "amount": 8,
+      "unit": "g",
+      "optional": false,
+      "display_de": "6 Mandeln (8 g)",
+      "scales": true,
+      "role": "fat"
+    }
+  ],
+  "steps_de": [
+    "Entkerne den Apfel mit einem Apfelausstecher und schneide ihn in 5 mm dicke Ringe. Beträufle sie mit Zitronensaft und bestreue sie von beiden Seiten mit Zimt.",
+    "Heize die Heißluftfritteuse 3 Minuten auf 180 °C vor.",
+    "Lege die Ringe in einer Lage in den Korb und gare sie 8–10 Minuten bei 180 °C; nach 5 Minuten wenden. Hacke die Mandeln grob und röste sie in den letzten 2 Minuten in einer kleinen ofenfesten Schale mit.",
+    "Verrühre Sojaskyr mit Ahornsirup und einer Prise Zimt, richte die warmen Apfelringe darauf an und streue die Mandeln darüber."
+  ],
+  "tip_de": "Feste, säuerliche Äpfel (z. B. Boskoop oder Elstar) behalten ihre Form am besten. Für knusprige Apfelchips die Ringe 2 mm dünn schneiden und 20 Minuten bei 140 °C trocknen.",
+  "tags_de": ["Heißluftfritteuse"],
+  "total_minutes": 20,
+  "prep_minutes": 3,
+  "cook_minutes": 17,
+  "no_cook": false,
+  "meal_prep": {
+    "suitable": false,
+    "fridge_days": 0,
+    "freezable": false
+  },
+  "equipment_de": [],
+  "declared_per_serving": {
+    "kcal": 250,
+    "protein_g": 11,
+    "carbs_g": 27.6,
+    "fat_g": 9.5
+  },
+  "declared_diet": "vegan",
+  "declared_allergens": ["legumes", "soy", "tree_nuts", "fructose"],
+  "contains_pork": false,
+  "declared_pregnancy_caution": false,
+  "meta": {
+    "origin": "manual",
+    "model": null,
+    "batch_id": null,
+    "created_on": "2026-10-23",
+    "expert_reviewed": false,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "review_note": null,
+    "source_file": "alpha5-rezepte.json@1.1",
+    "import_assumptions": [],
+    "import_assumptions_confirmed_by": null,
+    "import_hash": "20b2e328b08ec2fafe24f6c91b292812011c9b09d470018cc7d6ea91d6df73ac"
+  }
+}

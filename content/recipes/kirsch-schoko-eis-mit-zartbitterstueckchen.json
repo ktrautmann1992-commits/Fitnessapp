@@ -1,6 +1,6 @@
 {
   "id": "kirsch-schoko-eis-mit-zartbitterstueckchen",
-  "version": 2,
+  "version": 3,
   "status": "draft",
   "title_de": "Kirsch-Schoko-Eis mit Zartbitterstückchen",
   "description_de": "Dunkles Schokoeis mit saftigen Kirschen und Schokostückchen – vegan, schön fruchtig und ideal als kühler Abschluss eines heißen Tages.",
@@ -95,9 +95,9 @@
   },
   "equipment_de": [],
   "declared_per_serving": {
-    "kcal": 281,
+    "kcal": 280,
     "protein_g": 35.9,
-    "carbs_g": 25,
+    "carbs_g": 10.1,
     "fat_g": 11.7
   },
   "declared_diet": "vegan",
@@ -116,6 +116,6 @@
     "source_file": "alpha5-rezepte.json@1.1",
     "import_assumptions": [],
     "import_assumptions_confirmed_by": null,
-    "import_hash": "72142dde82b88fd98c7d6cf937aa4b427e17dadf9eaca3ea8cdabc82129d2d18"
+    "import_hash": "cdb138db3675314cadc3cca0087e7a7f02de233a5927aff82dc5af9c77665eb2"
   }
 }
