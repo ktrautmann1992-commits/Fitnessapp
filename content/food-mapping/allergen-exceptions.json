@@ -4,5 +4,23 @@
     "rule": "animal_rennet",
     "reason": "Eigener Katalogeintrag für vegetarischen Hartkäse italienischer Art mit mikrobiellem Lab. Die Wort-Regel greift nur, weil die Nährwert-Quelle „Parmesan“ heißt; Original-Parmesan bleibt mit tierischem Lab im Katalog (parmesan).",
     "source": "Nährwerte: BLS 4.0 M306400 (Parmesan). Lab-Art: im Handel als „vegetarisch“ gekennzeichnete Hartkäse italienischer Art (mikrobielles Lab, Zutatenliste der Packung)."
+  },
+  {
+    "food_id": "sojaskyr-natur",
+    "rule": "dairy",
+    "reason": "Sojaskyr ist eine rein pflanzliche Skyr-Alternative aus Soja ohne Milch. Die Wort-Regel „skyr“ (Gruppe Milch) greift nur über den Namen; Milch-Skyr bleibt unverändert (skyr-natur).",
+    "source": "Etikettenwerte 2026-11 ETK0002 (Skyr-Alternative aus Soja, natur): Zutatenliste der Packung ohne Milchbestandteile (rein pflanzlich, vegan gekennzeichnet)."
+  },
+  {
+    "food_id": "sojaskyr-natur",
+    "rule": "lactose",
+    "reason": "Sojaskyr ist eine rein pflanzliche Skyr-Alternative aus Soja ohne Milch. Die Wort-Regel „skyr“ (Gruppe Laktose) greift nur über den Namen; Milch-Skyr bleibt unverändert (skyr-natur).",
+    "source": "Etikettenwerte 2026-11 ETK0002 (Skyr-Alternative aus Soja, natur): Zutatenliste der Packung ohne Milchbestandteile (rein pflanzlich, vegan gekennzeichnet)."
+  },
+  {
+    "food_id": "sojaskyr-natur",
+    "rule": "animal_dairy",
+    "reason": "Sojaskyr ist eine rein pflanzliche Skyr-Alternative aus Soja ohne Milch. Die Wort-Regel „skyr“ (tierischer Bestandteil Milch) greift nur über den Namen; Milch-Skyr bleibt unverändert (skyr-natur).",
+    "source": "Etikettenwerte 2026-11 ETK0002 (Skyr-Alternative aus Soja, natur): Zutatenliste der Packung ohne Milchbestandteile (rein pflanzlich, vegan gekennzeichnet)."
   }
 ]
