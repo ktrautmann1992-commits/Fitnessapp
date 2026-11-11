@@ -1,11 +1,9 @@
 {
   "id": "wuerzige-auberginen-scheiben-mit-knoblauch-sojaskyr-und-kuerbiskernen",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Würzige Auberginen-Scheiben mit Knoblauch-Sojaskyr und Kürbiskernen",
   "description_de": "Mit Rauchpaprika und Kreuzkümmel gewürzte Auberginenscheiben werden in der Heißluft cremig-weich mit gebräunten Rändern – dazu ein kühler Knoblauch-Minz-Dip.",
-  "section_de": "Beilagen & Gemüse",
-  "categories": ["heissluftfritteuse"],
   "meal_types": ["main"],
   "training_tags": [],
   "servings": 1,
@@ -110,6 +108,8 @@
   ],
   "tip_de": "Aubergine saugt Öl auf wie ein Schwamm – deshalb bestreichen statt übergießen. Passt warm oder kalt zu Couscous, Bulgur oder Fladenbrot.",
   "tags_de": ["Heißluftfritteuse"],
+  "section_de": "Beilagen & Gemüse",
+  "categories": ["heissluftfritteuse"],
   "total_minutes": 25,
   "prep_minutes": 4,
   "cook_minutes": 21,
@@ -136,12 +136,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-11",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "c863dc9968faf5a0cc0dcd397235d580ca107a0869e8b774a8106da7560f1785",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "c863dc9968faf5a0cc0dcd397235d580ca107a0869e8b774a8106da7560f1785"
+    "import_assumptions_confirmed_by": null
   }
 }

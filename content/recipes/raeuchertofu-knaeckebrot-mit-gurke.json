@@ -1,11 +1,9 @@
 {
   "id": "raeuchertofu-knaeckebrot-mit-gurke",
   "version": 1,
-  "status": "draft",
+  "status": "published",
   "title_de": "Räuchertofu-Knäckebrot mit Gurke",
   "description_de": "Knuspriges Knäckebrot mit Senf-Sojaskyr, rauchigem Tofu und frischer Gurke – herzhaft und in 5 Minuten fertig.",
-  "section_de": "Snack",
-  "categories": ["schnell"],
   "meal_types": ["snack"],
   "training_tags": [],
   "servings": 1,
@@ -82,6 +80,8 @@
   ],
   "tip_de": "Statt Gurke passen auch Radieschen oder ein paar Streifen Paprika.",
   "tags_de": ["Unter 10 Minuten"],
+  "section_de": "Snack",
+  "categories": ["schnell"],
   "total_minutes": 5,
   "prep_minutes": 5,
   "cook_minutes": 0,
@@ -108,12 +108,12 @@
     "batch_id": null,
     "created_on": "2026-10-23",
     "expert_reviewed": false,
-    "reviewed_by": null,
-    "reviewed_at": null,
+    "reviewed_by": "Karsten (Auftrag an Claude)",
+    "reviewed_at": "2026-11-11",
     "review_note": null,
     "source_file": "alpha5-rezepte.json@1.1",
+    "import_hash": "b37b0dd00e6417ae557a3a274925a32081173c910a3455396a224168721eb414",
     "import_assumptions": [],
-    "import_assumptions_confirmed_by": null,
-    "import_hash": "b37b0dd00e6417ae557a3a274925a32081173c910a3455396a224168721eb414"
+    "import_assumptions_confirmed_by": null
   }
 }
