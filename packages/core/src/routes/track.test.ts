@@ -467,3 +467,101 @@ describe('Wächter S1 M1: Ausreißer als erster Punkt', () => {
     expect(f.points).toHaveLength(599);
   });
 });
+
+describe('Distanz kurviger Strecken (Gründer-Meldung 14.11.2026: App ca. 1 km kürzer als die Uhr)', () => {
+  /**
+   * Nachgestellter Lauf: 2,8 m/s (≈ 6:00 min/km), alle 2 s ein Punkt (ROUTE_RECORDING.gpsTimeIntervalMs), Richtungs-
+   * wechsel nach `leg` Metern um `turn` (Bogenmaß), GPS-Fehler zeitlich korreliert (AR(1), ρ 0,9) mit σ `sigma` m,
+   * gemeldete Genauigkeit `acc`. Wahre Länge = gelaufene Strecke.
+   */
+  function curvyRun(o: {
+    seed: number;
+    meters: number;
+    leg: (r: () => number) => number;
+    turn: (r: () => number) => number;
+    sigma: number;
+    acc: (r: () => number) => number;
+  }): { points: TrackPoint[]; truth: number } {
+    const rand = seededRandom(o.seed);
+    const v = 2.8;
+    let north = 0;
+    let east = 0;
+    let heading = 0;
+    let truth = 0;
+    let onLeg = 0;
+    let leg = o.leg(rand);
+    let en = 0;
+    let ee = 0;
+    const k = Math.sqrt(1 - 0.81) * o.sigma;
+    const points: TrackPoint[] = [];
+    for (let s = 1; truth < o.meters; s += 1) {
+      north += Math.cos(heading) * v;
+      east += Math.sin(heading) * v;
+      truth += v;
+      onLeg += v;
+      if (onLeg >= leg) {
+        heading += o.turn(rand);
+        leg = o.leg(rand);
+        onLeg = 0;
+      }
+      en = 0.9 * en + k * gauss(rand);
+      ee = 0.9 * ee + k * gauss(rand);
+      if (s % 2 === 0)
+        points.push({
+          ...offset(START, north + en, east + ee),
+          t: T0 + s * 1000,
+          accuracyM: o.acc(rand),
+        });
+    }
+    return { points, truth };
+  }
+
+  const scenarios = {
+    'Waldweg, viele sanfte Kurven': {
+      leg: (r: () => number) => 20 + r() * 30,
+      turn: (r: () => number) => (r() - 0.5) * 1.2,
+      sigma: 5,
+      acc: (r: () => number) => 8 + r() * 8,
+    },
+    'Park, Kurven, Bäume': {
+      leg: (r: () => number) => 40 + r() * 60,
+      turn: (r: () => number) => (r() - 0.5) * 2,
+      sigma: 6,
+      acc: (r: () => number) => 10 + r() * 10,
+    },
+    'Straße, kaum Kurven, freier Himmel': {
+      leg: () => 2000,
+      turn: (r: () => number) => (r() - 0.5) * 0.6,
+      sigma: 3,
+      acc: () => 5,
+    },
+  } as const;
+
+  it.each(Object.keys(scenarios))('%s: 10 km innerhalb ±3 %', (name) => {
+    const sc = scenarios[name as keyof typeof scenarios];
+    for (const seed of [1, 2, 3]) {
+      const { points, truth } = curvyRun({ seed, meters: 10_000, ...sc });
+      const d = movingDistance(filterTrackPoints(points, 'run').points, 'run');
+      expect(d / truth, `${name} seed ${seed}`).toBeGreaterThan(0.97);
+      expect(d / truth, `${name} seed ${seed}`).toBeLessThan(1.03);
+    }
+  });
+
+  it('10 min Stehen bei schwachem GPS (σ 8 m, Genauigkeit 15–25 m, alle 2 s) → höchstens 20 m', () => {
+    for (const seed of [1, 2, 3, 4]) {
+      const rand = seededRandom(seed * 31);
+      let en = 0;
+      let ee = 0;
+      const k = Math.sqrt(1 - 0.81) * 8;
+      const pts: TrackPoint[] = Array.from({ length: 300 }, (_, i) => {
+        en = 0.9 * en + k * gauss(rand);
+        ee = 0.9 * ee + k * gauss(rand);
+        return { ...offset(START, en, ee), t: T0 + i * 2000, accuracyM: 15 + rand() * 10 };
+      });
+      expect(
+        movingDistance(filterTrackPoints(pts, 'run').points, 'run'),
+        `seed ${seed}`,
+      ).toBeLessThanOrEqual(20);
+    }
+  });
+});
