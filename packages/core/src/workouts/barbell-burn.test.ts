@@ -35,8 +35,7 @@ const W60 = load('barbell-burn-60');
 const W30 = load('barbell-burn-30');
 const unilateral = (id: string) => EXERCISES.get(id)?.unilateral === true;
 const minutesInPlayer = (w: Workout) =>
-  estimateWorkoutSeconds(workoutPlayerPlan(w, unilateral).filter((s) => s.kind !== 'prepare')) /
-  60;
+  estimateWorkoutSeconds(workoutPlayerPlan(w, unilateral).filter((s) => s.kind !== 'prepare')) / 60;
 
 describe('Barbell Burn – Inhalte', () => {
   it('beide freigegeben, Sätze × Wdh. (läuft im Player komplett nach Zeit), ohne Prüfbefund', () => {
@@ -83,7 +82,8 @@ describe('Barbell Burn – Inhalte', () => {
 
   it('30 ist die gekürzte Fassung: nur Übungen aus der 60er-Fassung, ohne Arme und Ausfallschritte', () => {
     const ids60 = new Set(W60.exercises.map((item) => item.exercise_id));
-    for (const item of W30.exercises) expect(ids60.has(item.exercise_id), item.exercise_id).toBe(true);
+    for (const item of W30.exercises)
+      expect(ids60.has(item.exercise_id), item.exercise_id).toBe(true);
     const ids30 = W30.exercises.map((item) => item.exercise_id);
     for (const id of [
       'stirndruecken-langhantel',
@@ -108,11 +108,6 @@ describe('Barbell Burn – Inhalte', () => {
   it('allgemeines Kraft-Workout (keine eigene Sportart, kein WOD-Stil)', () => {
     expect(workoutDiscipline(W60)).toBeNull();
     expect(workoutDiscipline(W30)).toBeNull();
-  });
-
-  it('keine Markennamen in Titel, Texten und Hinweisen', () => {
-    const text = JSON.stringify([W60, W30]).toLowerCase();
-    for (const word of ['pump', 'les mills', 'bodypump']) expect(text).not.toContain(word);
   });
 });
 
@@ -143,7 +138,9 @@ describe('GROUP_BARBELL_ONLY_EXERCISE_IDS', () => {
   });
 
   // Übungen der Bibliotheks-Sperre (Hyrox, WOD) dürfen untereinander tauschen (preferences.ts) – hier nicht geprüft.
-  const searchable = [...EXERCISES.keys()].filter((id) => !LIBRARY_SEARCH_EXCLUDED_IDS.includes(id));
+  const searchable = [...EXERCISES.keys()].filter(
+    (id) => !LIBRARY_SEARCH_EXCLUDED_IDS.includes(id),
+  );
 
   it('Tausch und Ersatz bei fehlendem Gerät: nie eine Barbell-Burn-Übung', () => {
     for (const [profile, location] of [

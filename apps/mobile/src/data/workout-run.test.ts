@@ -77,7 +77,8 @@ describe('Workout-Bibliothek im Testmodus', () => {
     for (const w of s.workouts) {
       // Kurze Entspannung ab 5 Minuten (29.10.2026, „Fünf Minuten Ruhe“).
       expect(w.minutes).toBeGreaterThanOrEqual(5);
-      expect(w.minutes).toBeLessThanOrEqual(45);
+      // Barbell Burn 60 (14.11.2026) nutzt die volle Länge (WORKOUT_LIMITS.minutes.max).
+      expect(w.minutes).toBeLessThanOrEqual(60);
       for (const item of w.exercises) expect(s.exercises.has(item.exercise_id)).toBe(true);
     }
   });

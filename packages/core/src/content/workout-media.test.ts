@@ -113,7 +113,9 @@ describe('checkWorkoutMediaFiles', () => {
   });
 
   it('Schemafehler mit Pfad (z. B. fehlende Lizenz)', () => {
-    const { license: _license, ...noLicense } = media();
+    const noLicense = Object.fromEntries(
+      Object.entries(media()).filter(([key]) => key !== 'license'),
+    );
     const problems = checkWorkoutMediaFiles([file(noLicense)], ctx);
     expect(problems.some((p) => p.startsWith(`workout-media/${ID}.json: license`))).toBe(true);
   });
