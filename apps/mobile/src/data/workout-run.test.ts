@@ -59,9 +59,10 @@ describe('Workout-Bibliothek im Testmodus', () => {
     const s = await setup();
     const published = s.workouts.filter((w) => w.status === 'published');
     // 56 + 10 Yoga-/Pilates-Routinen der Restpunkte A (27.10.2026) + 15 „Neues ausprobieren“ (29.10.2026: 3 Entspannung,
-    // 3 Hyrox, 3 Calisthenics, 6 im WOD-Stil) + 2 WODs mit Box-Sprung/Seilspringen/Thruster (30.10.2026, W-O6).
-    expect(published.length).toBe(83);
-    expect(s.workouts).toHaveLength(83);
+    // 3 Hyrox, 3 Calisthenics, 6 im WOD-Stil) + 2 WODs mit Box-Sprung/Seilspringen/Thruster (30.10.2026, W-O6)
+    // + Barbell Burn 60 und 30 (14.11.2026).
+    expect(published.length).toBe(85);
+    expect(s.workouts).toHaveLength(85);
     expect(
       s.workouts
         .filter((w) => w.status === 'draft')
