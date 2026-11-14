@@ -1,0 +1,35 @@
+{
+  "exercise_id": "kniebeuge-langhantel-leicht",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "kniebeuge-langhantel-leicht-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, leichte Langhantel auf dem oberen Rücken, Hände greifen die Stange, Füße etwas weiter als hüftbreit.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "kniebeuge-langhantel-leicht-end.svg",
+      "alt_de": "Endposition: tiefe Kniebeuge mit der leichten Langhantel auf dem oberen Rücken, Rücken gerade, Fersen am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

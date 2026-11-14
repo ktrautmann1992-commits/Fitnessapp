@@ -202,3 +202,40 @@ Gründer-Auftrag 30.10.2026, Umsetzung freigegeben (privater Nutzerkreis, Prüfv
 (Version 2): „AMRAP 15 – Studio“ (+ Box-Sprünge, Richtwert 4 Runden) und „Chipper – Langhantel“ (+ Seilspringen zum
 Start, + Box-Sprünge nach den Wall Balls). Hyrox- und HIIT-Workouts bleiben unverändert: Seilspringen ist keine
 Hyrox-Station, und die HIIT-Workouts sind bewusst ohne Geräte.
+
+## 8. Nachtrag 14.11.2026: Workout-Player (Gründer-Feedback „läuft von selbst, Bildschirm bleibt an“)
+
+**Ziel:** Ein Workout läuft komplett nach Zeit, ohne Tippen: Countdown → Übung → Pause → Übung … Bedienung nur noch
+freiwillig (Pausieren, Überspringen, „Schon fertig – weiter“, Beenden).
+
+- **Countdown 10 s** (`WORKOUT_LIMITS.prepareS`, vorher 5 s) zeigt schon die erste Übung mit Bild, Dosierung und
+  „So geht's“ (erste zwei Schritte der Übungsbeschreibung, `howToLines`).
+- **Zeitfenster statt „Erledigt“** (`packages/core/src/workouts/player.ts`, `WORKOUT_PLAYER` in constants.ts):
+  Übungen nach Wiederholungen bekommen Wiederholungen × 3 s (einseitig doppelt), auf 5 s aufgerundet, 20–90 s.
+  Gilt für Zirkel, Intervalle (HIIT/Tabata/Hyrox/Calisthenics/Rudern/WOD) und Sätze × Wdh. – Flow lief schon nach
+  Zeit. AMRAP: Zeitfenster sind das Tempo, „Schon fertig“ bringt mehr Runden, das Zeitlimit beendet den Lauf.
+  For Time/Chipper: Zeitfenster als Obergrenze je Übung, Zeit = aktive Zeit. EMOM unverändert.
+- **Anzeige** (`components/power-player.tsx`): große Restzeit; während der Übung das Bewegungsbild und „Als Nächstes:
+  …“ mit kleinem Bild; im Countdown und in der Pause die kommende Übung groß.
+- **Bewegungsbild** (`components/exercise-motion.tsx`, auch im Yoga-/Flow-Player): Ausgangs- und Endposition wechseln
+  jede Sekunde mit 300 ms Überblendung; bei „Bewegung reduzieren“ nur das Startbild; ohne Endbild statisch. Endbilder
+  erzeugt der vorhandene Generator (`packages/content/src/illustrations/poses-end.ts`, `pnpm illustrations`), Bildart
+  `end_position` in `EXERCISE_MEDIA_KINDS`. **Jede der 200 Übungen in content/workouts hat ein Endbild** (Tests in
+  content und App): 93 mit echtem Umkehrpunkt (von Hand), 107 Halte-/Dehn-/Flow-Übungen mit „Atem-Variante“ (Kopf und
+  freie Arme geben leicht nach). Die 77 Übungen ohne Workout zeigen weiter nur das Startbild.
+- **Signale** („Ton und Vibration“): 3-2-1 kurzer Ton vor jedem Wechsel (`countdownCue`), langer hoher Ton beim
+  Wechsel, Doppelton am Ende. App: WAV-Töne über expo-audio (schon Abhängigkeit, kein neues natives Modul) plus
+  Vibration; Browser: Web Audio.
+- **Bildschirm bleibt an** in Countdown, Übung und Pause (auch pausiert): App über expo-keep-awake; Browser direkt über
+  die Wake-Lock-Schnittstelle (`lib/web-wake-lock.ts`) – neu angefordert, wenn der Browser sie freigibt (Tab verdeckt,
+  Akku-Sparmodus) und die Seite wieder sichtbar ist; ohne Schnittstelle kein Fehler; am Ende freigegeben.
+
+**Offen:** gesprochene Ansage „Als Nächstes: …“ (expo-speech wäre vorhanden, bewusst weggelassen); echte Umkehrpunkte
+für bewegte Flow-Übungen (z. B. Pilates-Beinkreise) statt Atem-Variante; Endbilder für die 77 Übungen ohne Workout;
+App-Töne bei eingeschaltetem iOS-Stumm-Schalter (Vibration kommt trotzdem).
+
+## 9. Nachtrag 14.11.2026: Barbell Burn 60/30 und Workout-Bilder
+
+Zwei Langhantel-Gruppenworkouts mit eigener Choreografie (Tracks als Übungen in Sätzen, läuft im Player nach Zeit),
+neues Hilfsmittel Stepbrett, neun neue Übungen und Bilder je Workout (Kachel in der Liste, Banner in der Ansicht).
+Details: docs/PLAN-BARBELL-BURN.md.

@@ -107,7 +107,7 @@ describe('Lauf', () => {
     const run = startWorkoutRun(steps, t0);
     expect(workoutRunView(steps, run, t0).view).toMatchObject({
       index: 0,
-      remainingS: 5,
+      remainingS: WORKOUT_LIMITS.prepareS,
       nextWork: { exerciseId: 'kniebeuge-kg', pass: 1 },
     });
     const { view } = workoutRunView(steps, run, t0 + P + s(5));
@@ -131,7 +131,7 @@ describe('Lauf', () => {
       roundsCompleted: 2,
       complete: true,
     });
-    expect(summary.activeS).toBe(5 + 130);
+    expect(summary.activeS).toBe(WORKOUT_LIMITS.prepareS + 130);
   });
 
   it('Pausieren hält die Zeit an, Fortsetzen läuft weiter', () => {
@@ -152,7 +152,9 @@ describe('Lauf', () => {
     // Ende verschiebt sich um die Pause.
     const done = advanceWorkoutRun(steps, run, t0 + s(3600));
     expect(done.finishedAtMs).toBe(t0 + P + s(130 + 60));
-    expect(workoutRunSummary(steps, done, t0 + s(3600)).activeS).toBe(5 + 130);
+    expect(workoutRunSummary(steps, done, t0 + s(3600)).activeS).toBe(
+      WORKOUT_LIMITS.prepareS + 130,
+    );
   });
 
   it('doppelt pausieren bzw. fortsetzen ändert nichts', () => {
@@ -206,7 +208,7 @@ describe('Lauf', () => {
     expect(run.index).toBe(1);
     expect(workoutRunView(sets, run, t0 + s(600)).view.remainingS).toBeNull();
     run = completeWorkoutStep(sets, run, t0 + s(640));
-    expect(run.results[1]).toEqual({ status: 'done', seconds: 635 });
+    expect(run.results[1]).toEqual({ status: 'done', seconds: 640 - WORKOUT_LIMITS.prepareS });
     // Pause 60 s läuft von selbst.
     run = advanceWorkoutRun(sets, run, t0 + s(700));
     expect(run.index).toBe(3);
@@ -233,7 +235,7 @@ describe('Lauf', () => {
       workDone: 1,
       roundsCompleted: 0,
       complete: false,
-      activeS: 35,
+      activeS: WORKOUT_LIMITS.prepareS + 30,
     });
     // Nach dem Ende ändert nichts mehr den Lauf.
     expect(completeWorkoutStep(steps, run, t0 + s(1000))).toBe(run);
@@ -249,7 +251,12 @@ describe('Lauf', () => {
   it('Uhr springt zurück: nie negative Zeiten', () => {
     const run = startWorkoutRun(steps, t0);
     const { view } = workoutRunView(steps, run, t0 - s(100));
-    expect(view).toMatchObject({ index: 0, remainingS: 5, stepElapsedS: 0, activeS: 0 });
+    expect(view).toMatchObject({
+      index: 0,
+      remainingS: WORKOUT_LIMITS.prepareS,
+      stepElapsedS: 0,
+      activeS: 0,
+    });
   });
 
   it('leerer Ablauf ist ein Programmierfehler', () => {

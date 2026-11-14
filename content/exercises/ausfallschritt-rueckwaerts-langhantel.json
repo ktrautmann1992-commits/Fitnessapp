@@ -1,0 +1,55 @@
+{
+  "id": "ausfallschritt-rueckwaerts-langhantel",
+  "version": 1,
+  "status": "published",
+  "name_de": "Ausfallschritt rückwärts mit leichter Langhantel",
+  "name_en": "Light Barbell Reverse Lunge",
+  "aliases_de": [],
+  "movement_pattern": "lunge",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors", "hamstrings"],
+  "equipment_ids": ["barbell"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": true,
+  "difficulty": 2,
+  "caution_tags": ["spinal_loading"],
+  "description_de": "Ausfallschritt nach hinten mit einer leichten Langhantel auf dem oberen Rücken. Der Schritt nach hinten ist leichter zu kontrollieren als nach vorn.",
+  "steps_de": [
+    "Leichte Langhantel auf dem oberen Rücken ablegen, aufrecht stehen.",
+    "Mit einem Bein einen großen Schritt nach hinten machen und das hintere Knie Richtung Boden senken.",
+    "Über die Ferse des vorderen Fußes zurück in den Stand drücken.",
+    "Alle Wiederholungen einer Seite, dann die andere Seite."
+  ],
+  "tips_de": [
+    "Oberkörper bleibt aufrecht.",
+    "Ohne Langhantel ist die Übung genauso wirksam für den Anfang."
+  ],
+  "common_mistakes_de": [
+    "Schritt zu kurz, das vordere Knie schiebt weit über die Zehen.",
+    "Hinteres Knie prallt auf den Boden."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "ausfallschritt-rueckwaerts-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "split-kniebeuge",
+      "reason": "easier",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-14",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 14.11.2026)",
+    "reviewed_at": "2026-11-14",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Langhantel-Gruppenworkouts „Barbell Burn“ (Gründer-Auftrag 14.11.2026). Vor dem Livegang fachlich prüfen."
+  }
+}

@@ -11,8 +11,8 @@ select col_default_is('public', 'equipment', 'home_selectable', 'true', 'Standar
 select results_eq(
   $$ select id from public.equipment where not home_selectable order by sort_order $$,
   array['power_rack', 'cable_station', 'lat_pulldown', 'leg_press', 'machine_chest_press',
-        'leg_curl_machine', 'leg_extension_machine', 'mat', 'yoga_block'],
-  'Studio-Geräte sind nicht zu Hause auswählbar (Barren/Dip-Station seit Calisthenics auch zu Hause), Matte/Block gibt es nicht zu wählen'
+        'leg_curl_machine', 'leg_extension_machine', 'mat', 'yoga_block', 'step_bench'],
+  'Studio-Geräte sind nicht zu Hause auswählbar (Barren/Dip-Station seit Calisthenics auch zu Hause), Matte/Block/Stepbrett gibt es nicht zu wählen'
 );
 select is(
   (select count(*)::int from public.equipment where home_selectable), 20,

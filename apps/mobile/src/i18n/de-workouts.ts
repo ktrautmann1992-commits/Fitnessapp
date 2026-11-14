@@ -134,6 +134,8 @@ export const deWorkouts = {
   minutes: (n: number) => `${n} Min.`,
   noEquipment: 'ohne Geräte',
   doneToday: 'Heute erledigt ✓',
+  /** Workout-Bild (Barbell Burn, 14.11.2026): sichtbarer KI-Hinweis auf dem Banner, für Bildschirmleser ausgeschrieben. */
+  aiImageA11y: (notice: string) => `Hinweis zum Bild: ${notice}`,
   card: {
     open: (title: string) => `${title} öffnen`,
   },
@@ -207,6 +209,16 @@ export const deWorkouts = {
     leaveHint:
       'Bleib auf dieser Seite, solange der Timer läuft – beim Verlassen oder Neuladen endet er.',
     stepLive: (text: string) => text,
+    // Workout-Player (Gründer-Feedback 14.11.2026): läuft komplett nach Zeit.
+    nextUp: (name: string) => `Als Nächstes: ${name}`,
+    startsIn: 'Startet in',
+    howTo: 'So geht’s',
+    timeBox: (reps: string, seconds: number) => `${reps} · ${seconds} s Zeit`,
+    finishEarly: 'Schon fertig – weiter',
+    autoHint: 'Läuft von selbst weiter – du musst nichts tippen.',
+    image: (name: string) => `Bewegung: ${name} (Ausgangs- und Endposition im Wechsel)`,
+    imageStatic: (name: string) => `Bild: ${name}`,
+    thumb: (name: string) => `Vorschau: ${name}`,
   },
   finish: {
     title: 'Geschafft!',

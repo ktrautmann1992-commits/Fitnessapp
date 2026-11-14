@@ -1,6 +1,6 @@
 import { handle } from './equipment';
 import type { ExerciseIllustration } from './poses';
-import type { PoseSpec, Prop } from './rig';
+import type { Point, PoseSpec, Prop } from './rig';
 
 /**
  * Indoor-Rudern (Sportarten Stufe 1 · Etappe R, docs/PLAN-SPORTARTEN-STUFE-1.md 2.3, Entwürfe): Ausgangsposition am
@@ -9,7 +9,7 @@ import type { PoseSpec, Prop } from './rig';
  */
 
 /** Rudergerät von der Seite: Schiene, Sitz, Stemmbrett, Schwungrad-Gehäuse und Kette zum Griff. */
-function rowingMachine(): Prop[] {
+export function rowingMachine(seat: Point = [-14, 12]): Prop[] {
   return [
     // Schiene (flach über dem Boden) und Füße der Schiene
     {
@@ -22,8 +22,8 @@ function rowingMachine(): Prop[] {
       role: 'furnitureLine',
     },
     { t: 'rect', at: [-42, 0], w: 6, h: 8, r: 1.5, role: 'furnitureLine' },
-    // Sitz (Rollsitz unter dem Becken)
-    { t: 'rect', at: [-14, 12], w: 28, h: 6, r: 3, role: 'furnitureLine' },
+    // Sitz (Rollsitz unter dem Becken; Endposition: mit dem Becken nach hinten gerollt)
+    { t: 'rect', at: seat, w: 28, h: 6, r: 3, role: 'furnitureLine' },
     // Stemmbrett schräg vor den Füßen
     {
       t: 'line',

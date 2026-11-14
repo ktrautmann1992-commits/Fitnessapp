@@ -1,0 +1,52 @@
+{
+  "id": "schulterdruecken-langhantel-leicht",
+  "version": 1,
+  "status": "published",
+  "name_de": "Schulterdrücken mit leichter Langhantel",
+  "name_en": "Light Barbell Overhead Press",
+  "aliases_de": [],
+  "movement_pattern": "vertical_push",
+  "primary_muscles": ["front_delts"],
+  "secondary_muscles": ["side_delts", "triceps", "upper_back"],
+  "equipment_ids": ["barbell"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["overhead", "spinal_loading"],
+  "description_de": "Schulterdrücken im Stand mit leichter Langhantel, ohne Rack: Die Stange liegt auf den vorderen Schultern und wird über den Kopf gedrückt.",
+  "steps_de": [
+    "Stange von den Oberschenkeln auf die vorderen Schultern holen, Griff etwas weiter als schulterbreit.",
+    "Füße hüftbreit, Gesäß und Bauch fest anspannen.",
+    "Stange senkrecht über den Kopf drücken, der Kopf geht kurz zurück und dann unter die Stange.",
+    "Kontrolliert zurück auf die Schultern senken."
+  ],
+  "tips_de": [
+    "Kein Hohlkreuz – lieber leichter wählen.",
+    "Bei „Halbe Wiederholungen“ nur bis auf Stirnhöhe senken."
+  ],
+  "common_mistakes_de": ["Hohlkreuz beim Drücken.", "Stange wandert weit vor den Körper."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schulterdruecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "schulterdruecken-band",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-14",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 14.11.2026)",
+    "reviewed_at": "2026-11-14",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Langhantel-Gruppenworkouts „Barbell Burn“ (Gründer-Auftrag 14.11.2026). Vor dem Livegang fachlich prüfen."
+  }
+}

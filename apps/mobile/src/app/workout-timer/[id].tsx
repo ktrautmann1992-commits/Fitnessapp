@@ -2,6 +2,7 @@ import {
   amrapScore,
   capWorkoutRun,
   completeWorkoutStep,
+  countdownCue,
   endWorkoutRun,
   pauseWorkoutRun,
   resumeWorkoutRun,
@@ -17,15 +18,7 @@ import {
   wodStyle,
   wodTimeCapS,
 } from '@fitnessapp/core';
-import {
-  areaColors,
-  brandColors,
-  fontSize,
-  fontWeight,
-  heroColors,
-  radius,
-  spacing,
-} from '@fitnessapp/ui';
+import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -33,6 +26,7 @@ import { StyleSheet, View } from 'react-native';
 import { PostWorkoutMealGate } from '@/components/post-workout-meal';
 import { LiveRegion } from '@/components/calendar';
 import { FlowPlayer } from '@/components/flow-player';
+import { PowerPlayer } from '@/components/power-player';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { kcalFor, SessionKcalLine, useSessionKcalContext } from '@/components/session-kcal';
 import {
@@ -54,13 +48,7 @@ import { berlinTodayIso } from '@/lib/format';
 import { INTERVAL_TIMER_AWAKE_TAG, useScreenAwake } from '@/lib/keep-awake';
 import { useThemeColors } from '@/lib/theme';
 import { announceStep, playWorkoutSignal, useWorkoutSignals } from '@/lib/workout-signals';
-import {
-  clockText,
-  doseText,
-  passText,
-  stepAnnouncement,
-  stepTitle,
-} from '@/lib/workout-timer-format';
+import { clockText, passText, stepAnnouncement } from '@/lib/workout-timer-format';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useExerciseLookup } from '@/state/use-flow-safety';
@@ -137,7 +125,8 @@ export default function WorkoutTimerScreen() {
     }
   }, [computed, run]);
 
-  // Bildschirm bleibt an, solange der Timer läuft (eigener Tag, unabhängig von der Einstellung im Training).
+  // Bildschirm bleibt an, solange der Timer läuft – Countdown, Übung, Pause und auch pausiert (eigener Tag, unabhängig
+  // von der Einstellung im Training); im Browser über die Wake-Lock-Schnittstelle mit erneutem Anfordern.
   useScreenAwake(run !== null && !finished, INTERVAL_TIMER_AWAKE_TAG);
 
   // Inklusive Posen der Yoga-/Pilates-/Mobility-Routinen (nur in displayExercises).
@@ -162,6 +151,16 @@ export default function WorkoutTimerScreen() {
     announceStep(text);
     setLive((current) => ({ text, version: current.version + 1 }));
   }, [names, signals.enabled, view]);
+
+  // 3-2-1 vor jedem Wechsel: kurzer Ton je Sekunde (packages/core countdownCue, jeder Schlüssel genau einmal).
+  const lastCue = useRef<string | null>(null);
+  useEffect(() => {
+    if (!view) return;
+    const cue = countdownCue(view);
+    if (cue === null || cue.key === lastCue.current) return;
+    lastCue.current = cue.key;
+    playWorkoutSignal('tick', signals.enabled);
+  }, [signals.enabled, view]);
 
   if (app.status.kind === 'loading') {
     return (
@@ -401,9 +400,6 @@ export default function WorkoutTimerScreen() {
   // jeweils mit Wort („Arbeit“/„Pause“), nie nur über die Farbe.
   const isFlow = workout.format === 'flow';
   const capRemaining = wodCapRemainingS(computed.run, now, capS);
-  const box = heroColors.light;
-  const accent = isWork ? areaColors.dark.workouts.icon : areaColors.dark.ernaehrung.icon;
-  const frame = isWork ? areaColors.light.workouts.strong : areaColors.light.ernaehrung.strong;
 
   return (
     <Screen
@@ -414,6 +410,7 @@ export default function WorkoutTimerScreen() {
       footer={
         <View style={styles.footer}>
           {isReps ? (
+            // Nur Läufe ohne Zeitfenster (vor dem Workout-Player gestartet): warten auf „Erledigt“.
             <Button
               label={
                 workStep && workStep.passes > 1 && view.rounds === 1
@@ -460,6 +457,15 @@ export default function WorkoutTimerScreen() {
               />
             </View>
           </View>
+          {workStep?.timeBoxed ? (
+            // Freiwillig: Zeitfenster vorzeitig beenden (AMRAP/For Time: schneller). Sonst läuft es von selbst weiter.
+            <Button
+              label={t.workouts.timer.finishEarly}
+              variant="link"
+              onPress={() => update(completeWorkoutStep)}
+              testID="workout-timer-done"
+            />
+          ) : null}
           <Button
             label={t.workouts.timer.end}
             variant="link"
@@ -481,56 +487,8 @@ export default function WorkoutTimerScreen() {
           {`${passText(workStep ?? next, view)} · ${t.workouts.timer.progress(view.workDone, view.workTotal)}`}
         </Body>
       ) : null}
-      {!isFlow ? (
-        <View
-          style={[styles.timerBox, { borderColor: frame, backgroundColor: box.background }]}
-          testID="workout-timer-box"
-        >
-          <Text style={[styles.stepLabel, { color: accent }]} testID="workout-timer-kind">
-            {step?.kind === 'work'
-              ? t.workouts.timer.work
-              : step?.kind === 'prepare'
-                ? t.workouts.timer.prepare
-                : t.workouts.timer.rest}
-          </Text>
-          <Text style={[styles.stepTitle, { color: box.text }]} testID="workout-timer-step">
-            {stepTitle(step, names)}
-          </Text>
-          {view.remainingS !== null ? (
-            <Text
-              style={[styles.countdown, { color: box.text }]}
-              accessibilityLabel={t.workouts.timer.remaining(view.remainingS)}
-              testID="workout-timer-remaining"
-            >
-              {clockText(view.remainingS)}
-            </Text>
-          ) : workStep ? (
-            <Text style={[styles.reps, { color: box.text }]} testID="workout-timer-reps">
-              {doseText(workStep, names)}
-            </Text>
-          ) : null}
-          {paused ? (
-            <Text
-              style={[styles.paused, { color: brandColors.signal }]}
-              testID="workout-timer-paused"
-            >
-              {t.workouts.timer.paused}
-            </Text>
-          ) : null}
-        </View>
-      ) : null}
-      {!isFlow ? (
-        <Card>
-          <Body muted>{t.workouts.timer.next}</Body>
-          {next ? (
-            <Body testID="workout-timer-next">
-              {`${stepTitle(next, names)} · ${doseText(next, names)}`}
-            </Body>
-          ) : (
-            <Body testID="workout-timer-next">{t.workouts.timer.nextNone}</Body>
-          )}
-        </Card>
-      ) : null}
+      {!isFlow ? <PowerPlayer view={view} exercises={exercises} /> : null}
+      {!isFlow && !isReps ? <Body muted>{t.workouts.timer.autoHint}</Body> : null}
       <Checkbox
         label={t.workouts.timer.signals}
         checked={signals.enabled}

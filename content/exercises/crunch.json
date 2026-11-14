@@ -1,0 +1,46 @@
+{
+  "id": "crunch",
+  "version": 1,
+  "status": "published",
+  "name_de": "Crunch",
+  "name_en": "Crunch",
+  "aliases_de": ["Bauchpresse"],
+  "movement_pattern": "core_flexion",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["long_supine", "floor_transfer", "spinal_flexion"],
+  "description_de": "Klassische Bauchübung in Rückenlage: Kopf und Schultern rollen ein kleines Stück vom Boden ab, der untere Rücken bleibt liegen.",
+  "steps_de": [
+    "Auf den Rücken legen, Knie gebeugt, Füße aufgestellt, Fingerspitzen locker an die Schläfen.",
+    "Ausatmen und Kopf und Schulterblätter ein kleines Stück vom Boden abrollen.",
+    "Kurz halten, dann langsam wieder ablegen."
+  ],
+  "tips_de": [
+    "Blick schräg nach oben, Kinn nicht auf die Brust ziehen.",
+    "Nicht am Kopf ziehen – die Hände stützen nur."
+  ],
+  "common_mistakes_de": ["Am Nacken ziehen.", "Mit Schwung hochreißen."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "l-sitz-gehockt",
+      "reason": "harder",
+      "priority": 1
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-14",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 14.11.2026)",
+    "reviewed_at": "2026-11-14",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Langhantel-Gruppenworkouts „Barbell Burn“ (Gründer-Auftrag 14.11.2026). Vor dem Livegang fachlich prüfen."
+  }
+}

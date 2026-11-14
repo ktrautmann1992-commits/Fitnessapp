@@ -1,0 +1,52 @@
+{
+  "id": "stirndruecken-langhantel",
+  "version": 1,
+  "status": "published",
+  "name_de": "Stirndrücken mit leichter Langhantel",
+  "name_en": "Light Barbell Skull Crusher",
+  "aliases_de": ["French Press liegend"],
+  "movement_pattern": "elbow_extension",
+  "primary_muscles": ["triceps"],
+  "secondary_muscles": [],
+  "equipment_ids": ["barbell", "step_bench"],
+  "mechanics": "isolation",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["long_supine"],
+  "description_de": "Trizepsübung in Rückenlage auf dem Stepbrett oder dem Boden: Die Oberarme bleiben fast senkrecht, nur die Unterarme senken die leichte Langhantel Richtung Stirn und strecken sie wieder.",
+  "steps_de": [
+    "Auf dem Stepbrett oder dem Boden liegen, Stange mit schmalem Griff über der Brust halten.",
+    "Oberarme leicht Richtung Kopf neigen und dort festhalten.",
+    "Nur die Ellbogen beugen und die Stange langsam knapp über die Stirn senken.",
+    "Ellbogen strecken, bis die Arme wieder fast gerade sind."
+  ],
+  "tips_de": [
+    "Sehr leichtes Gewicht – der Trizeps ermüdet schnell.",
+    "Ellbogen zeigen nach oben, nicht nach außen."
+  ],
+  "common_mistakes_de": ["Oberarme schwingen mit.", "Stange zu schnell gesenkt."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "trizepsstrecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "dips-stuhl",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-14",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 14.11.2026)",
+    "reviewed_at": "2026-11-14",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Langhantel-Gruppenworkouts „Barbell Burn“ (Gründer-Auftrag 14.11.2026). Vor dem Livegang fachlich prüfen."
+  }
+}

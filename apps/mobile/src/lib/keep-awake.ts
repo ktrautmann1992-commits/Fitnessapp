@@ -4,10 +4,11 @@ import { Platform } from 'react-native';
 
 import { deviceStore } from '@/data/create-backend';
 import { readJson, STORAGE_KEYS, writeJson } from '@/data/kv';
+import { holdWebWakeLock, type WebWakeLockEnv } from '@/lib/web-wake-lock';
 
 /**
  * Bildschirm bleibt an, solange der Trainingsmodus offen ist (docs/PLAN-PHASE-4.md 6.2): App über expo-keep-awake,
- * Browser über die Wake-Lock-Schnittstelle (macht expo-keep-awake im Web), wo verfügbar. Abschaltbar in den
+ * Browser über die Wake-Lock-Schnittstelle (web-wake-lock.ts, mit erneutem Anfordern), wo verfügbar. Abschaltbar in den
  * Einstellungen (Akku, Risiko 8). Fehler (z. B. Browser ohne Wake-Lock, Akku-Sparmodus) bleiben folgenlos.
  */
 
@@ -47,40 +48,32 @@ export function useKeepAwakeSetting(): {
   return { enabled, loaded, setEnabled };
 }
 
-/** Bildschirm an, solange `active`. Im Browser nach dem Zurückkehren in den Tab erneut anfordern. */
+/** Bildschirm an, solange `active`. Im Browser über holdWebWakeLock (erneutes Anfordern nach Freigabe). */
 export function useScreenAwake(active: boolean, tag: string = TAG): void {
   useEffect(() => {
     if (!active) return;
+    if (Platform.OS === 'web') {
+      if (typeof document === 'undefined' || typeof navigator === 'undefined') return;
+      return holdWebWakeLock({
+        wakeLock: (navigator as { wakeLock?: WebWakeLockEnv['wakeLock'] }).wakeLock,
+        document,
+        setInterval: (fn, ms) => setInterval(fn, ms),
+        clearInterval: (id) => clearInterval(id as ReturnType<typeof setInterval>),
+      });
+    }
+    // App: expo-keep-awake (eine Sperre je Tag; die App gibt sie beim Verlassen frei).
     let held = false;
     let cancelled = false;
-    // Nie zwei Anfragen gleichzeitig (Wächter C2 K2): expo-keep-awake merkt sich je Tag nur EINE Sperre – eine
-    // zweite würde die erste überschreiben, die dann nie freigegeben würde.
-    let pending = false;
-    const acquire = () => {
-      if (pending) return;
-      pending = true;
-      activateKeepAwakeAsync(tag).then(
-        () => {
-          pending = false;
-          // Erst nach dem Verlassen angekommen → gleich wieder freigeben.
-          if (cancelled) deactivateKeepAwake(tag).catch(() => undefined);
-          else held = true;
-        },
-        () => {
-          pending = false;
-        },
-      );
-    };
-    acquire();
-    const onVisible = () => {
-      // Der Browser gibt die Sperre frei, sobald der Tab verdeckt ist.
-      if (typeof document !== 'undefined' && document.visibilityState === 'visible') acquire();
-    };
-    const web = Platform.OS === 'web' && typeof document !== 'undefined';
-    if (web) document.addEventListener('visibilitychange', onVisible);
+    activateKeepAwakeAsync(tag).then(
+      () => {
+        // Erst nach dem Verlassen angekommen → gleich wieder freigeben.
+        if (cancelled) deactivateKeepAwake(tag).catch(() => undefined);
+        else held = true;
+      },
+      () => undefined,
+    );
     return () => {
       cancelled = true;
-      if (web) document.removeEventListener('visibilitychange', onVisible);
       if (held) deactivateKeepAwake(tag).catch(() => undefined);
     };
   }, [active, tag]);

@@ -58,8 +58,8 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   // Yoga-/Pilates-Routinen der Restpunkte); ohne Gesundheits-Check sind „Sanft in den Morgen“ (zu viele
   // Umkehrhaltungen für den vorsichtigen Plan) und 2 Restpunkte-Routinen (gestützte Brücke) ausgeblendet. Dazu 15 aus
   // „Neues ausprobieren“ (29.10.2026: Entspannung, Hyrox, Calisthenics, WOD-Stil) und 2 WODs mit Box-Sprung/Seilspringen
-  // (30.10.2026, W-O6).
-  await expect(count(page)).toHaveText('80 Workouts');
+  // (30.10.2026, W-O6). Dazu Barbell Burn 60 und 30 (14.11.2026).
+  await expect(count(page)).toHaveText('82 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
@@ -90,7 +90,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-1').click();
   await expect(page.getByTestId('workouts-no-match')).toBeVisible();
   await page.getByTestId('workouts-filter-reset').click();
-  await expect(count(page)).toHaveText('80 Workouts');
+  await expect(count(page)).toHaveText('82 Workouts');
 
   // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();
@@ -116,17 +116,20 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
   await expect(page.getByTestId('workout-exercises')).toContainText('1. Dead Bug');
 
   await page.getByTestId('workout-start').click();
+  // Countdown (10 s) zeigt schon die erste Übung.
   await expect(page.getByTestId('workout-timer-kind')).toHaveText('Gleich geht’s los');
-  await expect(page.getByTestId('workout-timer-remaining')).toHaveText('0:05');
-  await expect(page.getByTestId('workout-timer-next')).toHaveText('Dead Bug · 30 s');
+  await expect(page.getByTestId('workout-timer-remaining')).toHaveText('0:10');
+  await expect(page.getByTestId('workout-timer-step')).toHaveText('Dead Bug');
+  await expect(page.getByTestId('workout-timer-dose')).toHaveText('30 s');
 
-  // Vorbereitung läuft ab → erste Übung.
-  await page.clock.fastForward(6000);
+  // Countdown läuft ab → erste Übung.
+  await page.clock.fastForward(11_000);
+  await expect(page.getByTestId('workout-timer-kind')).toHaveText('Los!');
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Dead Bug');
   await expect(page.getByTestId('workout-timer-progress')).toHaveText(
     'Runde 1 von 3 · 0 von 15 erledigt',
   );
-  await expect(page.getByTestId('workout-timer-next')).toHaveText('Unterarmstütz · 30 s');
+  await expect(page.getByTestId('workout-timer-next')).toHaveText('Als Nächstes: Unterarmstütz');
 
   // Pausieren hält die Zeit an.
   await page.getByTestId('workout-timer-pause').click();
@@ -139,12 +142,15 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
 
   // Übung läuft ab → Pause; „Pause beenden“ → nächste Übung; diese überspringen.
   await page.clock.fastForward(31_000);
-  await expect(page.getByTestId('workout-timer-step')).toHaveText('Pause');
+  await expect(page.getByTestId('workout-timer-kind')).toHaveText('Pause');
+  // In der Pause: die kommende Übung groß.
+  await expect(page.getByTestId('workout-timer-step')).toHaveText('Unterarmstütz');
   await expect(page.getByTestId('workout-timer-progress')).toContainText('1 von 15 erledigt');
   await page.getByTestId('workout-timer-skip').click();
+  await expect(page.getByTestId('workout-timer-kind')).toHaveText('Los!');
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Unterarmstütz');
   await page.getByTestId('workout-timer-skip').click();
-  await expect(page.getByTestId('workout-timer-step')).toHaveText('Pause');
+  await expect(page.getByTestId('workout-timer-kind')).toHaveText('Pause');
 
   // Vorzeitig beenden (mit Nachfrage).
   await page.getByTestId('workout-timer-end').click();
@@ -183,27 +189,32 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
   await expect(card(page, 'bauch-blitz')).toContainText('Heute erledigt ✓');
 });
 
-test('Sätze × Wdh.: Satz abhaken, Satzpause, nächster Satz', async ({ page }) => {
+test('Sätze × Wdh.: Zeitfenster je Satz läuft ohne Tippen ab, Satzpause, nächster Satz', async ({
+  page,
+}) => {
   await setup(page);
   await card(page, 'kurzhantel-basis').click();
   await heading(page, 'Kurzhantel-Basis');
   await page.getByTestId('workout-start').click();
-  await page.clock.fastForward(6000);
+  await page.clock.fastForward(11_000);
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Goblet-Kniebeuge');
-  await expect(page.getByTestId('workout-timer-reps')).toHaveText('10 Wiederholungen');
+  await expect(page.getByTestId('workout-timer-dose')).toHaveText('10 Wiederholungen · 30 s Zeit');
+  await expect(page.getByTestId('workout-timer-remaining')).toHaveText(/^0:[23]\d$/);
   await expect(page.getByTestId('workout-timer-progress')).toHaveText(
     'Satz 1 von 3 · 0 von 14 erledigt',
   );
-  // Nach Wiederholungen läuft keine Zeit ab – wartet auf „Satz erledigt“.
-  await page.clock.fastForward(120_000);
-  await expect(page.getByTestId('workout-timer-step')).toHaveText('Goblet-Kniebeuge');
-  await page.getByRole('button', { name: 'Satz erledigt ✓' }).click();
-  await expect(page.getByTestId('workout-timer-step')).toHaveText('Satzpause');
-  await expect(page.getByTestId('workout-timer-remaining')).toHaveText('1:00');
+  // Zeitfenster läuft ab → Satzpause, ganz ohne „Erledigt“.
+  await page.clock.fastForward(31_000);
+  await expect(page.getByTestId('workout-timer-kind')).toHaveText('Satzpause');
+  await expect(page.getByTestId('workout-timer-remaining')).toHaveText(/^(1:00|0:5\d)$/);
   await page.clock.fastForward(61_000);
+  await expect(page.getByTestId('workout-timer-kind')).toHaveText('Los!');
   await expect(page.getByTestId('workout-timer-progress')).toHaveText(
     'Satz 2 von 3 · 1 von 14 erledigt',
   );
+  // „Schon fertig – weiter“ bleibt freiwillig möglich.
+  await page.getByTestId('workout-timer-done').click();
+  await expect(page.getByTestId('workout-timer-kind')).toHaveText('Satzpause');
 });
 
 test('Yoga (Flow): Stuhl-Yoga mit Seitenwechsel, Pose überspringen; Kategorie Yoga; Heute-Karte und Schalter', async ({
@@ -225,7 +236,7 @@ test('Yoga (Flow): Stuhl-Yoga mit Seitenwechsel, Pose überspringen; Kategorie Y
   await page.getByTestId('workout-start').click();
   await expect(page.getByTestId('flow-player')).toBeVisible();
   await expect(page.getByTestId('flow-name')).toHaveText('Entspannung im Sitzen');
-  await page.clock.fastForward(6000);
+  await page.clock.fastForward(11_000);
   await expect(page.getByTestId('flow-progress')).toHaveText('Pose 1 von 19');
   await expect(page.getByTestId('flow-remaining')).toHaveText(/^[01]:\d\d$/);
   await expect(page.getByTestId('flow-next')).toHaveText('Rumpfspannung im Sitzen');

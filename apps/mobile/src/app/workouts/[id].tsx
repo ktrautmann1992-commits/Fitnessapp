@@ -12,7 +12,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
-import { equipmentText, StarRating } from '@/components/workouts';
+import { equipmentText, StarRating, WorkoutBanner } from '@/components/workouts';
 import { newId } from '@/data/create-backend';
 import { activeRunStore, startActiveRun } from '@/data/workout-run';
 import { t } from '@/i18n';
@@ -117,7 +117,7 @@ export default function WorkoutDetailScreen() {
   const hiddenFlow = prepared?.hidden === true;
 
   function start() {
-    if (!resumable) beginRun(userId, workout);
+    if (!resumable) beginRun(userId, workout, exercises);
     router.push(`/workout-timer/${workout.id}` as Href);
   }
 
@@ -160,6 +160,7 @@ export default function WorkoutDetailScreen() {
         </View>
       }
     >
+      <WorkoutBanner workoutId={workout.id} />
       <StarRating difficulty={workout.difficulty} size="lg" testID="workout-detail-stars" />
       <Body>{workout.summary_de}</Body>
       {hiddenFlow ? (
@@ -277,8 +278,21 @@ export default function WorkoutDetailScreen() {
 }
 
 /** Neuen Lauf beginnen (außerhalb des Renderns: Zeitpunkt und ID entstehen beim Tippen). */
-function beginRun(userId: string, workout: Workout): void {
-  activeRunStore.set(startActiveRun({ ownerUserId: userId, workout, nowMs: Date.now(), newId }));
+function beginRun(
+  userId: string,
+  workout: Workout,
+  exercises: ReadonlyMap<string, { readonly unilateral: boolean }> | null,
+): void {
+  activeRunStore.set(
+    startActiveRun({
+      ownerUserId: userId,
+      workout,
+      nowMs: Date.now(),
+      newId,
+      // Zeitfenster für Wiederholungen (Power-Workouts): einseitige Übungen doppelt.
+      unilateral: (id) => exercises?.get(id)?.unilateral === true,
+    }),
+  );
 }
 
 const styles = StyleSheet.create({
