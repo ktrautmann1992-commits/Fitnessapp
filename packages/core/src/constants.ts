@@ -4306,7 +4306,17 @@ export const ROUTE_AUTO_PAUSE_KMH = { run: 3, bike: 5, walk: 1.5 } as const;
  */
 export const ROUTE_MOTION = {
   windowS: 20,
+  /** Glättung für die Bewegungserkennung (Stillstand mit Rauschen → keine Bewegung). */
   smoothingPoints: 5,
+  /**
+   * Glättung für die DISTANZ (14.11.2026, Gründer-Meldung: App-Lauf ca. 1 km kürzer als die Uhr). Bis dahin zählte
+   * die Distanz aus den über 5 Punkte je Seite gemittelten Positionen – bei 2 s Takt ±10 s ≈ ±30 m Laufweg; das
+   * schneidet jede Kurve ab (Nachstellung mit GPS-Rauschen: 4–9 % zu kurz auf kurvigen Wegen, passend zu 1,4 km
+   * auf 25 km gegenüber der Uhr). Über 1 Punkt je Seite bleibt Rauschen gedämpft, Kurven bleiben erhalten (Test
+   * „Distanz kurviger Strecken“ in track.test.ts: ±3 %). Stillstand erkennt weiter `smoothingPoints`/`windowS`.
+   * PRODUKTENTSCHEIDUNG.
+   */
+  distanceSmoothingPoints: 1,
 } as const;
 
 /**
