@@ -1,0 +1,35 @@
+{
+  "exercise_id": "bankdruecken-step-langhantel",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "bankdruecken-step-langhantel-start.svg",
+      "alt_de": "Ausgangsposition: auf einem flachen Stepbrett liegen, Füße am Boden, leichte Langhantel mit gestreckten Armen über der Brust.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "bankdruecken-step-langhantel-end.svg",
+      "alt_de": "Endposition: auf dem Stepbrett liegend, Langhantel knapp über der Brust, Ellbogen etwas unter Brett-Höhe.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

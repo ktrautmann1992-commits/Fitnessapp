@@ -101,7 +101,8 @@ describe('Startbestand (content/)', () => {
       expect(item.version, item.id).toBeGreaterThanOrEqual(1);
       expect(item.meta, item.id).toMatchObject({
         origin: 'claude_session',
-        model: 'claude-opus-5-5',
+        // Modellangabe: genaue Kennung (Startbestand) oder nur „Claude“ (ab Barbell Burn, 14.11.2026).
+        model: expect.stringMatching(/^claude/i),
         expert_reviewed: false,
       });
       if (item.status === 'draft') {

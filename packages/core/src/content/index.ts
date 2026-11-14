@@ -4,6 +4,7 @@ export * from './catalog-review';
 export * from './checks';
 export * from './exercise-media';
 export * from './recipe-media';
+export * from './workout-media';
 export * from './fit-check';
 export * from './food-schema';
 export * from './glossary';

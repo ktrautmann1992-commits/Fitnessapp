@@ -7,8 +7,9 @@ import {
   workoutTileSummary,
 } from '@fitnessapp/core';
 import { areaColors, fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 
+import { workoutImageFor } from '@/data/workout-media';
 import { t } from '@/i18n';
 import { appFont } from '@/lib/fonts';
 import { useThemeColors } from '@/lib/theme';
@@ -127,7 +128,7 @@ export function WorkoutCard({
       ]}
     >
       <View style={styles.cardHead}>
-        <IconChip area="workouts" icon="stopwatch" size={40} />
+        <WorkoutThumb workoutId={workout.id} testID={`workout-card-${workout.id}-thumb`} />
         <Text style={[styles.cardTitle, { color: theme.text }]}>{workout.title_de}</Text>
       </View>
       <StarRating difficulty={workout.difficulty} />
@@ -144,6 +145,65 @@ export function WorkoutCard({
         <Text style={[styles.cardDone, { color: theme.success }]}>{t.workouts.doneToday}</Text>
       ) : null}
     </Pressable>
+  );
+}
+
+/** Kantenlänge des Workout-Bilds in der Liste. */
+export const WORKOUT_THUMB_SIZE = 64;
+
+/**
+ * Bild links in der Workout-Karte (Barbell Burn, 14.11.2026, docs/PLAN-BARBELL-BURN.md). Reiner Schmuck – der Titel
+ * daneben trägt die Ansage; ohne Bild das bisherige Stoppuhr-Symbol (Workouts ohne Bild bleiben unverändert).
+ */
+export function WorkoutThumb({ workoutId, testID }: { workoutId: string; testID?: string }) {
+  const image = workoutImageFor(workoutId);
+  if (!image) return <IconChip area="workouts" icon="stopwatch" size={40} />;
+  return (
+    <View
+      aria-hidden
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      testID={testID}
+      style={styles.thumb}
+    >
+      <Image
+        source={image.thumbnail}
+        resizeMode="cover"
+        style={styles.thumbImage}
+        accessible={false}
+      />
+    </View>
+  );
+}
+
+/**
+ * Großes Bild (21:9) oben in der Workout-Ansicht mit sichtbarem KI-Hinweis (wie die Rezeptfotos). Ohne Bild nichts
+ * (kein leerer Rahmen).
+ */
+export function WorkoutBanner({ workoutId }: { workoutId: string }) {
+  const image = workoutImageFor(workoutId);
+  const theme = useThemeColors();
+  if (!image) return null;
+  return (
+    <View style={[styles.banner, { backgroundColor: theme.border }]} testID="workout-banner">
+      <Image
+        source={image.banner}
+        resizeMode="cover"
+        style={styles.bannerImage}
+        accessibilityRole="image"
+        accessibilityLabel={image.alt_de}
+        alt={image.alt_de}
+      />
+      {image.ai_notice_de ? (
+        <Text
+          style={styles.notice}
+          accessibilityLabel={t.workouts.aiImageA11y(image.ai_notice_de)}
+          testID="workout-banner-ai"
+        >
+          {image.ai_notice_de}
+        </Text>
+      ) : null}
+    </View>
   );
 }
 
@@ -239,4 +299,29 @@ const styles = StyleSheet.create({
   cardTitle: { flex: 1, minWidth: 0, fontSize: fontSize.lg, fontWeight: fontWeight.bold },
   cardMeta: { fontSize: fontSize.sm },
   cardDone: { fontSize: fontSize.sm, fontWeight: fontWeight.bold },
+  thumb: {
+    width: WORKOUT_THUMB_SIZE,
+    height: WORKOUT_THUMB_SIZE,
+    borderRadius: radius.md,
+    overflow: 'hidden',
+  },
+  thumbImage: { width: WORKOUT_THUMB_SIZE, height: WORKOUT_THUMB_SIZE },
+  // Fester Rahmen 21:9 (wie die Bilder); das Bild füllt ihn – so auch im Web-Export (react-native-web).
+  banner: { width: '100%', aspectRatio: 21 / 9, borderRadius: radius.lg, overflow: 'hidden' },
+  // Ausdrücklich 100 % – react-native-web nimmt sonst die Pixelmaße der Bilddatei (1080 × 463).
+  bannerImage: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
+  notice: {
+    position: 'absolute',
+    right: spacing.xs,
+    bottom: spacing.xs,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: radius.sm,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: fontWeight.semibold,
+    lineHeight: 14,
+  },
 });

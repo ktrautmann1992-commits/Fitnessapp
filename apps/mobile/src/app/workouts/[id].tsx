@@ -12,7 +12,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
-import { equipmentText, StarRating } from '@/components/workouts';
+import { equipmentText, StarRating, WorkoutBanner } from '@/components/workouts';
 import { newId } from '@/data/create-backend';
 import { activeRunStore, startActiveRun } from '@/data/workout-run';
 import { t } from '@/i18n';
@@ -160,6 +160,7 @@ export default function WorkoutDetailScreen() {
         </View>
       }
     >
+      <WorkoutBanner workoutId={workout.id} />
       <StarRating difficulty={workout.difficulty} size="lg" testID="workout-detail-stars" />
       <Body>{workout.summary_de}</Body>
       {hiddenFlow ? (

@@ -21,13 +21,14 @@ function bundle(args: string[], env: Record<string, string>): number {
 describe('Inhalts-Bündel der App (scripts/bundle-content.mjs)', () => {
   // 239 Übungen (inkl. 16 Aufwärm-/Dehn-Entwürfe der Trainings-Modi, 74 Entwürfe Calisthenics/Schlingentrainer/
   // Lauf-ABC, 2 Entwürfe Rudern, 50 Posen Yoga/Pilates/Mobility und 17 Hyrox-Entwürfe – Sportarten Stufe 1)
-  // + 49 Vorlagen (Körpergewicht K1/K2, 7 Entwürfe Calisthenics/Schlingentrainer) + 4 Übungen im WOD-Stil (W-O6).
+  // + 49 Vorlagen (Körpergewicht K1/K2, 7 Entwürfe Calisthenics/Schlingentrainer) + 4 Übungen im WOD-Stil (W-O6)
+  // + 9 Übungen Barbell Burn (14.11.2026).
   it('Testmodus-Build: alle Inhalte; mit Supabase-Werten und --empty-if-supabase: leer (keine Entwürfe im Build)', () => {
-    expect(bundle(['--empty-if-supabase'], {})).toBe(326);
+    expect(bundle(['--empty-if-supabase'], {})).toBe(335);
     expect(
       bundle(['--empty-if-supabase'], { EXPO_PUBLIC_SUPABASE_URL: 'https://x.supabase.co' }),
     ).toBe(0);
     // Website (ohne Schalter) bündelt immer alles – der Redaktionsbereich braucht die Entwürfe.
-    expect(bundle([], { EXPO_PUBLIC_SUPABASE_URL: 'https://x.supabase.co' })).toBe(326);
+    expect(bundle([], { EXPO_PUBLIC_SUPABASE_URL: 'https://x.supabase.co' })).toBe(335);
   });
 });

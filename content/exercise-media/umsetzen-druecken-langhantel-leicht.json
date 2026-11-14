@@ -1,0 +1,35 @@
+{
+  "exercise_id": "umsetzen-druecken-langhantel-leicht",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "umsetzen-druecken-langhantel-leicht-start.svg",
+      "alt_de": "Ausgangsposition: hüftbreit stehen, Knie locker, leichte Langhantel im Obergriff mit gestreckten Armen vor den Oberschenkeln.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "umsetzen-druecken-langhantel-leicht-end.svg",
+      "alt_de": "Endposition: leichte Langhantel mit gestreckten Armen über den Kopf gedrückt, Rumpf fest.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

@@ -425,6 +425,8 @@ describe('Listen', () => {
       '_calisthenics_equipment.sql',
       // Sportarten Stufe 1 · Restpunkte: Hyrox-Geräte, Matte, Block.
       '_sportarten_rest_equipment.sql',
+      // Barbell Burn (14.11.2026): Stepbrett.
+      '_step_bench_equipment.sql',
     ]) {
       for (const m of readMigration(suffix).matchAll(rowPattern)) {
         catalog.set(m[1] as string, {

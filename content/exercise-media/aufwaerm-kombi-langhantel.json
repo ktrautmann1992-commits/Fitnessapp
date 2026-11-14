@@ -1,0 +1,35 @@
+{
+  "exercise_id": "aufwaerm-kombi-langhantel",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "aufwaerm-kombi-langhantel-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, Knie locker, leichte Langhantel mit gestreckten Armen vor den Oberschenkeln, Füße hüftbreit.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "aufwaerm-kombi-langhantel-end.svg",
+      "alt_de": "Endposition: Hüfte nach hinten, Oberkörper vorgebeugt, Rücken gerade, Langhantel zum Bauchnabel gezogen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

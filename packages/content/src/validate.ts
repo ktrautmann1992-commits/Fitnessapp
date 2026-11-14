@@ -18,6 +18,7 @@ import { join, relative, resolve } from 'node:path';
 import {
   checkExerciseMediaFiles,
   checkRecipeMediaFiles,
+  checkWorkoutMediaFiles,
   CONTENT_SEED_SETTINGS_FILE,
   type ContentFile,
   type ContentFileKind,
@@ -44,6 +45,9 @@ import {
   validateContent,
   type WorkoutContentFile,
   type WorkoutContentFileKind,
+  WORKOUT_MEDIA_ASSET_DIR,
+  WORKOUT_MEDIA_FOLDER,
+  type WorkoutMediaFile,
 } from '@fitnessapp/core';
 
 import { loadNutritionCatalog } from './foods/catalog-loader';
@@ -285,6 +289,48 @@ export function checkRecipeMediaFolder(
     ...problems,
     ...checkRecipeMediaFiles(files, {
       recipeIds: allowed,
+      assetExists: (file) => existsSync(join(assetDir, file)),
+    }),
+  ];
+}
+
+/**
+ * Workout-Bilder (`content/workout-media/<workout-id>.json`, docs/PLAN-BARBELL-BURN.md): wie die Rezeptfotos – Lizenz,
+ * Quelle und KI-Hinweis Pflicht, beide Bilddateien unter `apps/mobile/assets/workout-media/`, das Workout muss es in
+ * `content/workouts/` geben. Jeder Befund ist ein blockierender Datei-Fehler.
+ */
+export function checkWorkoutMediaFolder(
+  contentDir: string,
+  workoutIds: ReadonlySet<string>,
+  repoRoot: string | undefined,
+): string[] {
+  const dir = join(contentDir, WORKOUT_MEDIA_FOLDER);
+  if (!existsSync(dir)) {
+    return [];
+  }
+  const problems: string[] = [];
+  const files: WorkoutMediaFile[] = [];
+  for (const fileName of readdirSync(dir).sort()) {
+    if (fileName.startsWith('.')) {
+      continue;
+    }
+    if (!fileName.endsWith('.json')) {
+      problems.push(
+        `${WORKOUT_MEDIA_FOLDER}/${fileName}: keine JSON-Datei – Bilder gehören nach ${WORKOUT_MEDIA_ASSET_DIR}/.`,
+      );
+      continue;
+    }
+    try {
+      files.push({ fileName, data: JSON.parse(readFileSync(join(dir, fileName), 'utf8')) });
+    } catch (error) {
+      files.push({ fileName, jsonError: (error as Error).message });
+    }
+  }
+  const assetDir = join(repoRoot ?? resolve(contentDir, '..'), WORKOUT_MEDIA_ASSET_DIR);
+  return [
+    ...problems,
+    ...checkWorkoutMediaFiles(files, {
+      workoutIds,
       assetExists: (file) => existsSync(join(assetDir, file)),
     }),
   ];
@@ -615,6 +661,14 @@ export function validateRepository(options: {
     }),
   );
   const recipeMediaProblems = checkRecipeMediaFolder(contentDir, recipeIds, repoRoot);
+  // Workout-Bilder (Barbell Burn, 14.11.2026): wie Rezeptfotos.
+  const workoutIds = new Set(
+    workoutFiles.files.flatMap((file) => {
+      const id = (file.data as { id?: unknown } | undefined)?.id;
+      return typeof id === 'string' ? [id] : [];
+    }),
+  );
+  const workoutMediaProblems = checkWorkoutMediaFolder(contentDir, workoutIds, repoRoot);
   // Auswärts-Zuordnung (G-AV2): unbekannte Lebensmittel/Schemafehler blockieren, „wartet auf Import“ ist ein Hinweis.
   const catalogIds = new Set(
     nutrition.files.flatMap((file) => {
@@ -643,6 +697,7 @@ export function validateRepository(options: {
       ...seed.problems,
       ...mediaProblems,
       ...recipeMediaProblems,
+      ...workoutMediaProblems,
       ...eatingOut.problems,
     ],
     versionNote,

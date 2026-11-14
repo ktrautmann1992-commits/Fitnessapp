@@ -233,3 +233,9 @@ freiwillig (Pausieren, Überspringen, „Schon fertig – weiter“, Beenden).
 **Offen:** gesprochene Ansage „Als Nächstes: …“ (expo-speech wäre vorhanden, bewusst weggelassen); echte Umkehrpunkte
 für bewegte Flow-Übungen (z. B. Pilates-Beinkreise) statt Atem-Variante; Endbilder für die 77 Übungen ohne Workout;
 App-Töne bei eingeschaltetem iOS-Stumm-Schalter (Vibration kommt trotzdem).
+
+## 9. Nachtrag 14.11.2026: Barbell Burn 60/30 und Workout-Bilder
+
+Zwei Langhantel-Gruppenworkouts mit eigener Choreografie (Tracks als Übungen in Sätzen, läuft im Player nach Zeit),
+neues Hilfsmittel Stepbrett, neun neue Übungen und Bilder je Workout (Kachel in der Liste, Banner in der Ansicht).
+Details: docs/PLAN-BARBELL-BURN.md.

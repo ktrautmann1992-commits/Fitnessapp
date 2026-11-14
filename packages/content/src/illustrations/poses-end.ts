@@ -1069,6 +1069,79 @@ const MOVING_END_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustration>> =
     }),
     'Endposition: das Schwungbein gestreckt nach hinten, Arme gegengleich wie beim Laufen.',
   ),
+
+  // --- Langhantel-Gruppenworkouts „Barbell Burn“ (14.11.2026, poses-langhantel-leicht.ts) --------------------------
+  'aufwaerm-kombi-langhantel': e(
+    hingeDown('aufwaerm-kombi-langhantel', 40, {
+      near: [-160, -90, -90],
+      far: [-162, -92, -90],
+    }),
+    'Endposition: Hüfte nach hinten, Oberkörper vorgebeugt, Rücken gerade, Langhantel zum Bauchnabel gezogen.',
+  ),
+  'kniebeuge-langhantel-leicht': e(
+    squat('kniebeuge-langhantel-leicht', { near: [-160, 32, 50], far: [-163, 30, 50] }),
+    'Endposition: tiefe Kniebeuge mit der leichten Langhantel auf dem oberen Rücken, Rücken gerade, Fersen am Boden.',
+  ),
+  'bankdruecken-step-langhantel': e(
+    move('bankdruecken-step-langhantel', {
+      near: { arm: [196, 90, 90] },
+      far: { arm: [195, 91, 90] },
+    }),
+    'Endposition: auf dem Stepbrett liegend, Langhantel knapp über der Brust, Ellbogen etwas unter Brett-Höhe.',
+  ),
+  'umsetzen-druecken-langhantel-leicht': e(
+    move('umsetzen-druecken-langhantel-leicht', {
+      near: { arm: [48, 102, 100] },
+      far: { arm: [50, 103, 100] },
+    }),
+    'Endposition: leichte Langhantel mit gestreckten Armen über den Kopf gedrückt, Rumpf fest.',
+  ),
+  'stirndruecken-langhantel': e(
+    move('stirndruecken-langhantel', {
+      near: { arm: [80, -50, -50] },
+      far: { arm: [81, -49, -50] },
+    }),
+    'Endposition: Oberarme leicht Richtung Kopf geneigt, Ellbogen gebeugt, Langhantel knapp über der Stirn.',
+  ),
+  'bizepscurl-langhantel': e(
+    move('bizepscurl-langhantel', {
+      near: { arm: [-88, 78, 80] },
+      far: { arm: [-92, 80, 80] },
+    }),
+    'Endposition: Langhantel bis vor die Schultern gebeugt, Oberarme bleiben am Körper.',
+  ),
+  'ausfallschritt-rueckwaerts-langhantel': e(
+    move('ausfallschritt-rueckwaerts-langhantel', {
+      dx: -16,
+      dy: -26,
+      near: { leg: keep('fwd') },
+      far: { leg: { ik: [-48, 9], bend: 'down', end: -40 } },
+    }),
+    'Endposition: ein Bein weit nach hinten gesetzt, hinteres Knie knapp über dem Boden, Langhantel auf dem oberen Rücken, Oberkörper aufrecht.',
+  ),
+  'schulterdruecken-langhantel-leicht': e(
+    move('schulterdruecken-langhantel-leicht', {
+      near: { arm: [48, 102, 100] },
+      far: { arm: [50, 103, 100] },
+    }),
+    'Endposition: leichte Langhantel mit gestreckten Armen über den Kopf gedrückt, Rumpf fest.',
+  ),
+  langhantelrudern: e(
+    move('langhantelrudern', {
+      near: { arm: [-160, -90, -90] },
+      far: { arm: [-162, -92, -90] },
+    }),
+    'Endposition: vorgebeugt, Ellbogen nach hinten oben gezogen, Langhantel am Bauch.',
+  ),
+  crunch: e(
+    move('crunch', {
+      torso: 28,
+      head: 36,
+      near: { arm: [98, 18, 18] },
+      far: { arm: [100, 20, 18] },
+    }),
+    'Endposition: Kopf und Schulterblätter vom Boden abgerollt, unterer Rücken bleibt liegen, Füße am Boden.',
+  ),
 };
 
 export const EXERCISE_END_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustration>> = {

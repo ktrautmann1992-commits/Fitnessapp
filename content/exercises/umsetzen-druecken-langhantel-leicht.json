@@ -1,0 +1,49 @@
+{
+  "id": "umsetzen-druecken-langhantel-leicht",
+  "version": 1,
+  "status": "published",
+  "name_de": "Umsetzen und Drücken mit leichter Langhantel",
+  "name_en": "Light Barbell Clean and Press",
+  "aliases_de": ["Clean & Press leicht"],
+  "movement_pattern": "vertical_push",
+  "primary_muscles": ["front_delts", "upper_back"],
+  "secondary_muscles": ["glutes", "hamstrings", "triceps", "lower_back"],
+  "equipment_ids": ["barbell"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 3,
+  "caution_tags": ["overhead", "spinal_loading"],
+  "description_de": "Ganzkörper-Kombination mit leichter Langhantel: Stange von den Oberschenkeln mit Schwung aus der Hüfte auf die vorderen Schultern holen und anschließend über den Kopf drücken. Kontrolliert statt explosiv.",
+  "steps_de": [
+    "Hüftbreit stehen, leichte Langhantel im Obergriff vor den Oberschenkeln.",
+    "Hüfte kurz nach hinten schieben, dann strecken und die Stange dicht am Körper nach oben führen.",
+    "Ellbogen schnell nach vorn drehen und die Stange auf den vorderen Schultern ablegen.",
+    "Stange über den Kopf drücken, dann in zwei Schritten zurück zu den Oberschenkeln senken."
+  ],
+  "tips_de": ["Lieber langsam und sauber als schnell.", "Rumpf fest, kein Hohlkreuz beim Drücken."],
+  "common_mistakes_de": ["Stange schwingt weit vom Körper weg.", "Hohlkreuz über Kopf."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "schulterdruecken-langhantel-leicht",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "schulterdruecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-14",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 14.11.2026)",
+    "reviewed_at": "2026-11-14",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Langhantel-Gruppenworkouts „Barbell Burn“ (Gründer-Auftrag 14.11.2026). Vor dem Livegang fachlich prüfen."
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "exercise_id": "bizepscurl-langhantel",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "bizepscurl-langhantel-start.svg",
+      "alt_de": "Ausgangsposition: aufrecht stehen, Langhantel im Untergriff an gestreckten Armen vor den Oberschenkeln.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "bizepscurl-langhantel-end.svg",
+      "alt_de": "Endposition: Langhantel bis vor die Schultern gebeugt, Oberarme bleiben am Körper.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}
