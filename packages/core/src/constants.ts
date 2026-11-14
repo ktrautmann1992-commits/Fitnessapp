@@ -833,7 +833,8 @@ export const FREE_SESSION = {
  *   höchstens 20 % bzw. 2 Minuten. Grobe Annahme (übliches Tempo 2–4 s je Wiederholung) – PRODUKTENTSCHEIDUNG.
  * - Sicherheitshinweise in der App (Hinweis, kein Verbot): ab `hardStars` (4) für Einsteiger und bei einem Gesundheits-
  *   Check mit Auffälligkeiten „erst leichtere Workouts / ärztlich abklären“; Aufwärmen immer (CLAUDE.md, Sicherheit der
- *   Empfehlungen). `prepareS` = 5 s „Gleich geht's los“ vor der ersten Übung.
+ *   Empfehlungen). `prepareS` = 10 s Countdown „Gleich geht's los“ vor der ersten Übung – zeigt schon die erste Übung mit
+ *   Bild und Ausführung (Gründer-Feedback 14.11.2026: Zeit, um Handy hinzulegen und Position einzunehmen; vorher 5 s).
  * VOR LIVEGANG FACHLICH PRÜFEN.
  */
 export const WORKOUT_LIMITS = {
@@ -853,7 +854,26 @@ export const WORKOUT_LIMITS = {
   hardStars: 4,
   secondsPerRep: 3,
   durationTolerance: { share: 0.2, minMinutes: 2 },
-  prepareS: 5,
+  prepareS: 10,
+} as const;
+
+/**
+ * Workout-Player für Power-Workouts (Gründer-Feedback 14.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 4 „Workout-Player“):
+ * Das Workout läuft komplett nach Zeit, ohne Tippen. Übungen nach Wiederholungen bekommen ein Zeitfenster:
+ * Wiederholungen × `timeBox.secondsPerRep` (= WORKOUT_LIMITS.secondsPerRep, einseitige Übungen doppelt), auf
+ * `timeBox.roundToS` aufgerundet, begrenzt auf `timeBox.minS`–`timeBox.maxS` (innerhalb von WORKOUT_LIMITS.workS).
+ * „Fertig“ bleibt möglich (schneller weiter), muss aber nicht gedrückt werden.
+ * - `cueSeconds` 3: kurzer Ton bei 3-2-1 vor jedem Wechsel, eigener Ton beim Wechsel.
+ * - `mediaSwapMs` 1000: Start-/Endposition wechseln im Sekundentakt (Überblendung `mediaFadeMs`), bei „Bewegung
+ *   reduzieren“ nur das Startbild.
+ * Quelle: PRODUKTENTSCHEIDUNG (Tempo 2–4 s je Wiederholung wie W6, 20 s Mindestzeit für Umgreifen/Position finden,
+ * 90 s Obergrenze wie lange Intervalle) – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const WORKOUT_PLAYER = {
+  timeBox: { secondsPerRep: WORKOUT_LIMITS.secondsPerRep, minS: 20, maxS: 90, roundToS: 5 },
+  cueSeconds: 3,
+  mediaSwapMs: 1000,
+  mediaFadeMs: 300,
 } as const;
 
 /**

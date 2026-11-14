@@ -15,6 +15,21 @@
         "obtained_on": "2026-10-21"
       },
       "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "goblet-kniebeuge-end.svg",
+      "alt_de": "Endposition: tiefe Kniebeuge, Kurzhantel dicht vor der Brust, Ellbogen zwischen den Knien, Fersen am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
     }
   ]
 }

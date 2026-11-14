@@ -1,16 +1,15 @@
 import type { Workout, WorkoutRunView, WorkoutTimerStep } from '@fitnessapp/core';
 import { fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { StyleSheet, View } from 'react-native';
-import { SvgXml } from 'react-native-svg';
 
 import { ProgressRing, useAreaColors } from '@/components/design';
+import { ExerciseMotion } from '@/components/exercise-motion';
 import { Text } from '@/components/text';
 import { Body, Card } from '@/components/ui';
-import { exerciseMediaFor, illustrationXml } from '@/data/exercise-media';
 import { t } from '@/i18n';
 import { deYoga } from '@/i18n/de-yoga';
 import { appFont } from '@/lib/fonts';
-import { useColorSchemeName, useThemeColors } from '@/lib/theme';
+import { useThemeColors } from '@/lib/theme';
 import { clockText, type ExerciseNames } from '@/lib/workout-timer-format';
 
 const Y = deYoga.player;
@@ -39,14 +38,12 @@ export function FlowPlayer({
   names: ExerciseNames;
 }) {
   const theme = useThemeColors();
-  const scheme = useColorSchemeName();
   const area = useAreaColors('workouts');
   const step = view.step;
   const work: WorkStep | null = step?.kind === 'work' ? step : null;
   // Während „Gleich geht's los“ zeigt das Bild schon die erste Pose.
   const shown: WorkStep | null = work ?? view.nextWork;
   const name = shown ? (names.get(shown.exerciseId)?.name_de ?? shown.exerciseId) : '';
-  const media = shown ? exerciseMediaFor(shown.exerciseId, 'start_position') : null;
   const total = step?.kind === 'work' || step?.kind === 'prepare' ? (step.seconds ?? 0) : 0;
   const remaining = view.remainingS ?? 0;
   const fraction = total > 0 ? Math.max(0, Math.min(1, remaining / total)) : 0;
@@ -64,12 +61,14 @@ export function FlowPlayer({
           : Y.progress(view.workDone + view.workSkipped, view.workTotal)}
       </Body>
       <View style={[styles.imageBox, { backgroundColor: area.surface }]}>
-        {media && media.source.kind === 'svg' ? (
-          <SvgXml
-            xml={illustrationXml(media.source.template, scheme, { gap: area.surface })}
-            width="100%"
+        {/* Workout-Player 14.11.2026: ruhige Atem-Bewegung (Start ↔ Ende), bei „Bewegung reduzieren“ still. */}
+        {shown ? (
+          <ExerciseMotion
+            key={shown.exerciseId}
+            exerciseId={shown.exerciseId}
             height={200}
-            accessibilityLabel={Y.image(name)}
+            surface={area.surface}
+            label={Y.image(name)}
             testID="flow-image"
           />
         ) : null}

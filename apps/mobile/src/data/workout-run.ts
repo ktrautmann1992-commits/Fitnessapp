@@ -10,7 +10,7 @@ import {
   wodCapReached,
   wodStyle,
   wodTimeCapS,
-  wodTimerPlan,
+  workoutPlayerPlan,
 } from '@fitnessapp/core';
 
 import { createFreeDraft, freeDraftKey, type WorkoutDraft } from './workout-draft';
@@ -47,9 +47,12 @@ export function startActiveRun(input: {
   workout: Workout;
   nowMs: number;
   newId: () => string;
+  /** Einseitige Übung? (Zeitfenster doppelt, packages/core player.ts) */
+  unilateral?: (exerciseId: string) => boolean;
 }): ActiveWorkoutRun {
-  // WOD-Stil: AMRAP mit Höchstzahl Runden (das Zeitlimit beendet den Lauf), sonst wie buildWorkoutTimerPlan.
-  const steps = wodTimerPlan(input.workout);
+  // Workout-Player (14.11.2026): WOD-Stil wie wodTimerPlan; Power-Workouts (Zirkel/Intervall) komplett nach Zeit –
+  // Übungen nach Wiederholungen bekommen ein Zeitfenster.
+  const steps = workoutPlayerPlan(input.workout, input.unilateral);
   return {
     ownerUserId: input.ownerUserId,
     workoutId: input.workout.id,

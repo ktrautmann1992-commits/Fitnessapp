@@ -15,6 +15,21 @@
         "obtained_on": "2026-10-21"
       },
       "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "klimmzug-band-unterstuetzt-end.svg",
+      "alt_de": "Endposition: Kinn über der Stange, ein Fuß im Band, Ellbogen nach unten gezogen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
     }
   ]
 }

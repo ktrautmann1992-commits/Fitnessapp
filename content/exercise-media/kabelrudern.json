@@ -15,6 +15,21 @@
         "obtained_on": "2026-10-21"
       },
       "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "kabelrudern-end.svg",
+      "alt_de": "Endposition: aufrecht sitzen, Griff zum Bauch gezogen, Ellbogen nah am Körper nach hinten.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
     }
   ]
 }
