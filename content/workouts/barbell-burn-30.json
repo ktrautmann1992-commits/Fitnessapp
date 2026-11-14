@@ -1,0 +1,92 @@
+{
+  "id": "barbell-burn-30",
+  "version": 1,
+  "status": "published",
+  "title_de": "Barbell Burn 30",
+  "summary_de": "Die kurze Fassung des Langhantel-Gruppenworkouts: Aufwärmen, Kniebeugen, Brust, Rücken, Schultern, Bauch und Dehnen in 30 Minuten. Leichtes Gewicht, viele Wiederholungen, Tempo-Angaben bei jeder Übung. Gewicht so wählen, dass alle Wiederholungen sauber gelingen.",
+  "category": "full_body",
+  "difficulty": 2,
+  "minutes": 30,
+  "format": "sets_reps",
+  "rounds": 1,
+  "round_rest_s": 0,
+  "equipment_ids": ["barbell", "step_bench"],
+  "warmup_de": "2 Minuten locker auf der Stelle gehen, Schultern und Arme kreisen. Dann führt Track 1 mit der leeren Stange durch Hüfte, Rücken und Schultern. Scheiben erst ab Track 2 aufstecken.",
+  "cooldown_de": "Das letzte Stück ist das Dehnen. Danach noch 2 Minuten ruhig gehen und tief durchatmen.",
+  "exercises": [
+    {
+      "exercise_id": "aufwaerm-kombi-langhantel",
+      "reps": 16,
+      "duration_s": null,
+      "sets": 2,
+      "rest_s": 15,
+      "note_de": "Track 1 – Aufwärmen: nur die Stange. Ruhig „2 runter – 2 hoch“, jede Runde etwas tiefer."
+    },
+    {
+      "exercise_id": "kniebeuge-langhantel-leicht",
+      "reps": 18,
+      "duration_s": null,
+      "sets": 5,
+      "rest_s": 15,
+      "note_de": "Track 2 – Kniebeugen: Satz 1–2 „2 runter – 2 hoch“, Satz 3–4 „3 runter – 1 hoch“, Satz 5 Halbe Wiederholungen unten."
+    },
+    {
+      "exercise_id": "bankdruecken-step-langhantel",
+      "reps": 18,
+      "duration_s": null,
+      "sets": 5,
+      "rest_s": 15,
+      "note_de": "Track 3 – Brust: auf dem Stepbrett oder dem Boden. „3 runter – 1 hoch“, im letzten Satz Pulse."
+    },
+    {
+      "exercise_id": "langhantelrudern",
+      "reps": 16,
+      "duration_s": null,
+      "sets": 3,
+      "rest_s": 15,
+      "note_de": "Track 4 – Rücken, Teil 1: zügig ziehen, „1 hoch – 2 runter“."
+    },
+    {
+      "exercise_id": "rumaenisches-kreuzheben-langhantel",
+      "reps": 16,
+      "duration_s": null,
+      "sets": 2,
+      "rest_s": 15,
+      "note_de": "Track 4 – Rücken, Teil 2: Kreuzheben mit gestreckten Beinen, „3 runter – 1 hoch“, Rücken gerade."
+    },
+    {
+      "exercise_id": "schulterdruecken-langhantel-leicht",
+      "reps": 16,
+      "duration_s": null,
+      "sets": 4,
+      "rest_s": 15,
+      "note_de": "Track 5 – Schultern: „1 hoch – 2 runter“, im letzten Satz Halbe Wiederholungen. Kein Hohlkreuz."
+    },
+    {
+      "exercise_id": "crunch",
+      "reps": 20,
+      "duration_s": null,
+      "sets": 3,
+      "rest_s": 15,
+      "note_de": "Track 6 – Bauch ohne Stange: „2 hoch – 2 runter“, im letzten Satz Pulse oben."
+    },
+    {
+      "exercise_id": "beinrueckseite-dehnen-sitzend",
+      "reps": null,
+      "duration_s": 90,
+      "sets": 1,
+      "rest_s": 0,
+      "note_de": "Track 7 – Dehnen: ruhig atmen, nach der Hälfte tiefer gehen."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-14",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 14.11.2026)",
+    "reviewed_at": "2026-11-14",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Eigene Choreografie für ein Langhantel-Gruppenworkout (Gründer-Auftrag 14.11.2026, docs/PLAN-BARBELL-BURN.md). Vor dem Livegang fachlich prüfen."
+  }
+}
