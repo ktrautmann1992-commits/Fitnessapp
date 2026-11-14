@@ -4,63 +4,34 @@ import { AccessibilityInfo, Platform } from 'react-native';
 
 import { deviceStore } from '@/data/create-backend';
 import { readJson, STORAGE_KEYS, writeJson } from '@/data/kv';
+import { playWorkoutSound } from '@/lib/workout-sound';
 
 /**
- * Ton und Vibration im Workout-Timer (docs/PLAN-WORKOUTS.md Abschnitt 4): beim Wechsel zu einer Übung bzw. Pause und am
- * Ende. App: Vibration (expo-haptics); Browser: kurzer Ton über die Web-Audio-Schnittstelle (ohne Vibration).
- * Abschaltbar, gespeichert nur auf diesem Gerät. Fehler (z. B. Browser ohne Ton) bleiben folgenlos.
+ * Ton und Vibration im Workout-Timer (docs/PLAN-WORKOUTS.md Abschnitt 4, Workout-Player 14.11.2026): 3-2-1 vor jedem
+ * Wechsel ein kurzer Ton (`tick`), beim Wechsel zu Übung bzw. Pause ein langer hoher Ton, am Ende ein Doppelton.
+ * App: Ton über expo-audio (workout-sound.native.ts) plus Vibration (expo-haptics); Browser: Ton über die Web-Audio-
+ * Schnittstelle (workout-sound.ts, ohne Vibration). Abschaltbar („Ton und Vibration“), gespeichert nur auf diesem
+ * Gerät. Fehler (z. B. Browser ohne Ton) bleiben folgenlos.
  */
-export type WorkoutSignal = 'work' | 'rest' | 'finish';
+export type WorkoutSignal = 'tick' | 'work' | 'rest' | 'finish';
 
-type AudioContextLike = {
-  currentTime: number;
-  destination: unknown;
-  createOscillator(): {
-    frequency: { value: number };
-    connect(node: unknown): void;
-    start(at?: number): void;
-    stop(at?: number): void;
-  };
-  createGain(): {
-    gain: { value: number };
-    connect(node: unknown): void;
-  };
-};
-
-let audio: AudioContextLike | null = null;
-
-function beep(signal: WorkoutSignal): void {
-  const Ctor = (globalThis as { AudioContext?: new () => AudioContextLike }).AudioContext;
-  if (!Ctor) return;
-  audio ??= new Ctor();
-  const tones = signal === 'finish' ? [660, 880] : signal === 'work' ? [880] : [520];
-  tones.forEach((frequency, i) => {
-    const ctx = audio as AudioContextLike;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.frequency.value = frequency;
-    gain.gain.value = 0.08;
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    const at = ctx.currentTime + i * 0.22;
-    osc.start(at);
-    osc.stop(at + 0.18);
-  });
-}
-
-/** Signal ausgeben (Ton bzw. Vibration) – nur, wenn eingeschaltet. */
+/** Signal ausgeben (Ton und – in der App – Vibration) – nur, wenn eingeschaltet. */
 export function playWorkoutSignal(signal: WorkoutSignal, enabled: boolean): void {
   if (!enabled) return;
   try {
-    if (Platform.OS === 'web') {
-      beep(signal);
-    } else if (signal === 'finish') {
+    playWorkoutSound(signal === 'tick' ? 'tick' : signal === 'finish' ? 'finish' : 'go');
+    if (Platform.OS === 'web') return;
+    if (signal === 'finish') {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(
         () => undefined,
       );
     } else {
       void Haptics.impactAsync(
-        signal === 'work' ? Haptics.ImpactFeedbackStyle.Heavy : Haptics.ImpactFeedbackStyle.Light,
+        signal === 'work'
+          ? Haptics.ImpactFeedbackStyle.Heavy
+          : signal === 'rest'
+            ? Haptics.ImpactFeedbackStyle.Medium
+            : Haptics.ImpactFeedbackStyle.Light,
       ).catch(() => undefined);
     }
   } catch {

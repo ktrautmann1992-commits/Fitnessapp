@@ -53,6 +53,25 @@ describe('eigene Illustrationen (Entscheidung B)', () => {
     }
   });
 
+  it('Endposition (Workout-Player): jede Übung eines Workouts hat Start- und Endbild', () => {
+    const end = exerciseMediaFor('liegestuetz', 'end_position');
+    expect(end?.image.alt_de).toMatch(/^Endposition: /);
+    expect(end?.source.kind).toBe('svg');
+    const workoutsDir = fileURLToPath(new URL('../../../../content/workouts/', import.meta.url));
+    const used = new Set<string>();
+    for (const name of readdirSync(workoutsDir).filter((n) => n.endsWith('.json'))) {
+      const workout = JSON.parse(readFileSync(`${workoutsDir}${name}`, 'utf8')) as {
+        exercises: { exercise_id: string }[];
+      };
+      for (const item of workout.exercises) used.add(item.exercise_id);
+    }
+    expect(used.size).toBeGreaterThan(100);
+    const missing = [...used].filter((id) => exerciseMediaFor(id, 'end_position') === null);
+    expect(missing).toEqual([]);
+    // Übungen ohne Workout dürfen (noch) ohne Endbild sein → statisches Startbild.
+    expect(exerciseMediaFor('bankdruecken-langhantel', 'end_position')).toBeNull();
+  });
+
   it('illustrationXml setzt hell und dunkel alle Farbmarken ein, ohne externe Verweise', () => {
     const source = exerciseMediaFor('liegestuetz', 'start_position')!.source;
     if (source.kind !== 'svg') throw new Error('SVG erwartet');

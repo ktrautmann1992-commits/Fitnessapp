@@ -37,7 +37,13 @@ export const EXERCISE_MEDIA: Readonly<Record<string, ExerciseMediaEntry>> = Obje
     id,
     {
       media: illustration.media,
-      sources: { start_position: { kind: 'svg', template: illustration.templates.start_position } },
+      sources: {
+        start_position: { kind: 'svg', template: illustration.templates.start_position },
+        // Endposition (Workout-Player 14.11.2026): nur bei Übungen mit Bewegung; der Timer blendet beide ineinander.
+        ...(illustration.templates.end_position !== undefined
+          ? { end_position: { kind: 'svg', template: illustration.templates.end_position } }
+          : {}),
+      },
     },
   ]),
 );

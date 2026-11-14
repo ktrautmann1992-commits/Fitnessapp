@@ -35,10 +35,10 @@ test('Freies Workout beendet → „Nach dem Training“-Karte mit Mittagessen u
   await page.getByTestId('workout-card-kurzhantel-basis').click();
   await heading(page, 'Kurzhantel-Basis');
   await page.getByTestId('workout-start').click();
-  // Vorbereitung überspringen, einen Satz abhaken, vorzeitig beenden und speichern.
+  // Countdown überspringen, einen Satz vorzeitig abschließen, Workout beenden und speichern.
   await page.getByTestId('workout-timer-skip').click();
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Goblet-Kniebeuge');
-  await page.getByRole('button', { name: 'Satz erledigt ✓' }).click();
+  await page.getByTestId('workout-timer-done').click();
   await page.getByTestId('workout-timer-end').click();
   await page.getByTestId('workout-end-dialog').getByRole('button', { name: 'Beenden' }).click();
   await heading(page, 'Workout beendet');

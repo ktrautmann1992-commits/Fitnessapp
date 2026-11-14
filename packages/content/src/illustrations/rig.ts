@@ -364,7 +364,11 @@ export interface Scene {
   readonly box: readonly [number, number, number, number];
 }
 
-export function buildScene(pose: PoseSpec): Scene {
+/**
+ * `anchorX`: feste Verschiebung Welt → Bild (statt waagerecht mittig). Für die Endposition: sie nutzt die Verschiebung
+ * der Ausgangsposition, damit Boden, Geräte und Füße beim Überblenden (Workout-Timer) an derselben Stelle bleiben.
+ */
+export function buildScene(pose: PoseSpec, anchorX?: number): Scene {
   const sk = placeSkeleton(pose);
   const props = pose.props ?? [];
   const backProps = props.filter((p) => !p.front).map((p) => propShape(p, sk));
@@ -415,7 +419,7 @@ export function buildScene(pose: PoseSpec): Scene {
     y1 = Math.max(y1, d);
   }
   // Waagerecht mittig, senkrecht fest auf der Bodenlinie.
-  const offsetX = VIEW_WIDTH / 2 - (x0 + x1) / 2;
+  const offsetX = anchorX ?? VIEW_WIDTH / 2 - (x0 + x1) / 2;
   return {
     shapes,
     offsetX,
@@ -429,8 +433,8 @@ const num = (n: number) => {
 };
 
 /** SVG-Text mit Farbmarken `{rolle}`; palette.ts setzt die Farben ein. */
-export function renderTemplate(pose: PoseSpec): string {
-  const scene = buildScene(pose);
+export function renderTemplate(pose: PoseSpec, anchorX?: number): string {
+  const scene = buildScene(pose, anchorX);
   const X = (x: number) => num(x + scene.offsetX);
   const Y = (y: number) => num(GROUND_Y - y);
   const pts = (list: readonly Vec[]) => list.map((p) => `${X(p[0])},${Y(p[1])}`).join(' ');

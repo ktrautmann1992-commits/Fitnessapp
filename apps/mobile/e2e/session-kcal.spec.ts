@@ -38,7 +38,7 @@ async function finishWorkout(page: Page) {
   await page.goto('/workouts/bauch-blitz');
   await heading(page, 'Bauch-Blitz');
   await page.getByTestId('workout-start').click();
-  await page.clock.fastForward(6000);
+  await page.clock.fastForward(11_000);
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Dead Bug');
   await page.clock.fastForward(31_000);
   await page.clock.fastForward(120_000);

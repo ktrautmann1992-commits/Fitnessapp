@@ -6,3 +6,4 @@ export * from './flow';
 export * from './recovery-routine';
 export * from './wod';
 export * from './discover';
+export * from './player';

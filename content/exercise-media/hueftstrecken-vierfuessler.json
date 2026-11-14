@@ -15,6 +15,21 @@
         "obtained_on": "2026-10-21"
       },
       "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "hueftstrecken-vierfuessler-end.svg",
+      "alt_de": "Endposition: im Vierfüßlerstand ein Bein angewinkelt nach hinten oben gedrückt, Fußsohle zur Decke, Rücken gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
     }
   ]
 }

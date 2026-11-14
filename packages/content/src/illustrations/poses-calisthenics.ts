@@ -39,7 +39,7 @@ function hang(legs: { near: Limb; far: Limb }, props: Prop[] = pullUpBar(BAR)): 
 const hangLegs = { near: [-95, -150, -100] as Limb, far: [-97, -145, -100] as Limb };
 
 /** Oben am Ende eines Klimmzugs: Kinn über der Stange, Ellbogen unten. */
-const pullTop: PoseSpec = {
+export const pullTop: PoseSpec = {
   view: 'side',
   torso: 95,
   head: 92,

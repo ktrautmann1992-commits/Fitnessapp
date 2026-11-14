@@ -18,8 +18,11 @@ export const EXERCISE_MEDIA_FOLDER = 'exercise-media';
 /** Ordner der Bilddateien relativ zur Repository-Wurzel. */
 export const EXERCISE_MEDIA_ASSET_DIR = 'apps/mobile/assets/exercise-media';
 
-/** Bildarten je Übung. Derzeit nur die Ausgangsposition. */
-export const EXERCISE_MEDIA_KINDS = ['start_position'] as const;
+/**
+ * Bildarten je Übung: Ausgangsposition (Pflichtbild) und – wo die Übung eine Bewegung hat – die Endposition
+ * (Umkehrpunkt, Gründer-Feedback 14.11.2026: der Workout-Timer blendet beide im Sekundentakt ineinander).
+ */
+export const EXERCISE_MEDIA_KINDS = ['start_position', 'end_position'] as const;
 export type ExerciseMediaKind = (typeof EXERCISE_MEDIA_KINDS)[number];
 
 /** Herkunft eines Bildes. Gründer-Entscheidung 21.10.2026: B – eigene Illustrationen (`own_work`). */

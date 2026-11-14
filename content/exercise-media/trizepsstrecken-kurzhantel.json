@@ -15,6 +15,21 @@
         "obtained_on": "2026-10-21"
       },
       "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "trizepsstrecken-kurzhantel-end.svg",
+      "alt_de": "Endposition: Oberarme bleiben neben dem Kopf, Unterarme hinter den Kopf gesenkt, Kurzhantel im Nacken.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
     }
   ]
 }

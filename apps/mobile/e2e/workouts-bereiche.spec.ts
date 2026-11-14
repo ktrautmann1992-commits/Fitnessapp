@@ -124,8 +124,9 @@ test('AMRAP im CrossFit-Stil: Zeitlimit beendet den Timer, freie Einheit im Tage
 
   await page.getByTestId('workout-start').click();
   await expect(page.getByTestId('workout-timer-cap')).toHaveText(/^Zeitlimit: noch 1[12]:\d\d$/);
-  await page.clock.fastForward(6000); // Vorbereitung
-  // Runde 1: Burpees (30 s) laufen ab, dann Wiederholungen abhaken.
+  await page.clock.fastForward(11_000); // Countdown
+  // Runde 1: Burpees (30 s) laufen ab, dann Wiederholungen mit „Schon fertig“ schneller abschließen (freiwillig –
+  // ohne Tippen liefe jedes Zeitfenster von selbst ab).
   await page.clock.fastForward(31_000);
   await page.getByTestId('workout-timer-done').click();
   await page.getByTestId('workout-timer-done').click();
@@ -134,8 +135,9 @@ test('AMRAP im CrossFit-Stil: Zeitlimit beendet den Timer, freie Einheit im Tage
   await page.clock.fastForward(12 * 60 * 1000);
   await heading(page, 'Geschafft!');
   await expect(page.getByTestId('workout-finish-cap')).toHaveText('Zeitlimit erreicht');
+  // Ohne weiteres Tippen laufen die Zeitfenster weiter – mehr als eine Runde im Zeitlimit.
   await expect(page.getByTestId('workout-finish-wod')).toHaveText(
-    /^Ergebnis: 1 Runde \+ \d+ Übung/,
+    /^Ergebnis: \d+ Runden? \+ \d+ Übung/,
   );
   await page.getByTestId('workout-save').click();
   await expect(page.getByTestId('workout-saved')).toContainText('Gespeichert');
@@ -145,7 +147,7 @@ test('AMRAP im CrossFit-Stil: Zeitlimit beendet den Timer, freie Einheit im Tage
   expect(log?.is_free).toBe(true);
   expect(log?.source).toBe('workout');
   expect(log?.notes).toMatch(
-    /^Workout „AMRAP 12 – Körpergewicht“ .*AMRAP: 1 Runden \+ \d+ Übungen/,
+    /^Workout „AMRAP 12 – Körpergewicht“ .*AMRAP: \d+ Runden \+ \d+ Übungen/,
   );
   expect(log?.notes).toContain('Zeitlimit erreicht');
   // Plan unverändert (Pläne, Einheiten, Übungen).

@@ -15,6 +15,21 @@
         "obtained_on": "2026-10-21"
       },
       "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "pistol-kniebeuge-kasten-end.svg",
+      "alt_de": "Endposition: auf einem Bein bis zur Kastenkante abgesenkt, das andere Bein gestreckt nach vorn, Arme nach vorn.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
     }
   ]
 }

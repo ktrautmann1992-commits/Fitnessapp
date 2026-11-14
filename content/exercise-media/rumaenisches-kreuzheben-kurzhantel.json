@@ -15,6 +15,21 @@
         "obtained_on": "2026-10-21"
       },
       "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "rumaenisches-kreuzheben-kurzhantel-end.svg",
+      "alt_de": "Endposition: Hüfte weit nach hinten, Oberkörper fast waagerecht, Rücken gerade, Kurzhanteln vor den Schienbeinen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
     }
   ]
 }
