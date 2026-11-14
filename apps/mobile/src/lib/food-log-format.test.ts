@@ -2,6 +2,8 @@ import { dayIntakeView } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
 import {
+  amountUnitText,
+  amountWithUnitText,
   buildErrorText,
   confirmText,
   entryAmountText,
@@ -88,5 +90,20 @@ describe('Zahlen aus und Schwangerschaft: keine kcal in Fehlern und Rückfragen 
     for (const text of [confirmText(entry, false), confirmText(entry, true)]) {
       expect(text).not.toMatch(/groß|viel/);
     }
+  });
+});
+
+describe('Haushaltsmengen beim freien Eintragen (14.11.2026)', () => {
+  it('Ein- und Mehrzahl, Brüche, g/ml unverändert', () => {
+    expect(amountWithUnitText(1, 'slice')).toBe('1 Scheibe');
+    expect(amountWithUnitText(2, 'slice')).toBe('2 Scheiben');
+    expect(amountWithUnitText(0.5, 'glass')).toBe('½ Glas');
+    expect(amountWithUnitText(3, 'glass')).toBe('3 Gläser');
+    expect(amountWithUnitText(1, 'handful')).toBe('1 Handvoll');
+    expect(amountWithUnitText(1.5, 'bowl')).toBe('1½ Schalen');
+    expect(amountWithUnitText(150, 'g')).toBe('150 g');
+    expect(amountWithUnitText(200, 'ml')).toBe('200 ml');
+    expect(amountUnitText('tbsp')).toBe('EL');
+    expect(amountUnitText('piece', 4)).toBe('Stück');
   });
 });

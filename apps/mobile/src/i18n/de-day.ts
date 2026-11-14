@@ -66,6 +66,9 @@ export const deDay = {
   estimate: 'Laut deinen Einträgen – Schätzwerte, nach deinen aktuellen Angaben.',
   entries: (count: string) => `Eingetragen: ${count}`,
   meals: (eaten: number, planned: number) => `Mahlzeiten: ${eaten} von ${planned} abgehakt`,
+  /** „Etwas anderes gegessen“ (14.11.2026): ersetzte Plan-Mahlzeiten – neutral, ohne Bewertung. */
+  mealsReplaced: (n: number) =>
+    n === 1 ? '1 durch etwas anderes ersetzt' : `${n} durch etwas anderes ersetzt`,
   noMealPlan: 'Für diesen Tag gibt es keinen Essensplan. Eintragen geht trotzdem.',
   noStoredMealPlan:
     'Für diesen Tag ist kein Essensplan gespeichert – deshalb gibt es hier keine Mahlzeiten zum Abhaken. Eintragen geht trotzdem.',

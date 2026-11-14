@@ -118,8 +118,15 @@ export interface DayEvaluation {
     readonly entryCount: number;
     /** Einträge ohne kcal-Wert – nur mit Zahlen relevant („Ein Eintrag ohne Kalorienangabe“). */
     readonly entriesWithoutValue: number;
-    /** „3 von 4 Mahlzeiten abgehakt“; null = kein (verwendbarer) Essensplan oder künftiger Tag. */
-    readonly meals: { readonly planned: number; readonly eaten: number } | null;
+    /**
+     * „3 von 4 Mahlzeiten abgehakt“; null = kein (verwendbarer) Essensplan oder künftiger Tag. `replaced` (14.11.2026):
+     * Plan-Mahlzeiten, für deren Platz statt „wie geplant“ etwas anderes eingetragen ist – weder offen noch gegessen.
+     */
+    readonly meals: {
+      readonly planned: number;
+      readonly eaten: number;
+      readonly replaced: number;
+    } | null;
     readonly targetNotices: readonly NutritionNoticeCode[];
   };
   readonly training: {
@@ -163,7 +170,13 @@ export function dayEvaluation(input: DayEvaluationInput): DayEvaluation {
     const eatenSlots = new Set(
       entries.filter((e) => e.source === 'plan_item' && slots.has(e.slot)).map((e) => e.slot),
     );
-    meals = { planned: slots.size, eaten: eatenSlots.size };
+    // „Etwas anderes gegessen“: Platz ohne Plan-Eintrag, aber mit einem anderen Eintrag genau dort (planSlotStatus).
+    const replacedSlots = new Set(
+      entries
+        .filter((e) => e.source !== 'plan_item' && slots.has(e.slot) && !eatenSlots.has(e.slot))
+        .map((e) => e.slot),
+    );
+    meals = { planned: slots.size, eaten: eatenSlots.size, replaced: replacedSlots.size };
   }
 
   const items = input.trainingItems.map((item): DayTrainingItem => {
