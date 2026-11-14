@@ -158,8 +158,9 @@ describe('Einspiel-Paket', () => {
     const pkg = buildSeedPackage(result);
     expect(pkg.exercises.map((e) => e.id)).toEqual(result.exercises.map((e) => e.id));
     // 172 (inkl. 2 Rudern) + 50 Posen der Etappe Y + 17 Hyrox der Etappe H (Sportarten Stufe 1).
-    // + 34 Posen der Restpunkte A (27.10.2026) + 4 Übungen für Workouts im WOD-Stil (W-O6, 30.10.2026).
-    expect(pkg.exercises).toHaveLength(277);
+    // + 34 Posen der Restpunkte A (27.10.2026) + 4 Übungen für Workouts im WOD-Stil (W-O6, 30.10.2026)
+    // + 9 Übungen für die Langhantel-Gruppenworkouts Barbell Burn (14.11.2026).
+    expect(pkg.exercises).toHaveLength(286);
     expect(pkg.plan_templates).toHaveLength(49);
   });
 

@@ -6703,10 +6703,29 @@ export const WOD_ONLY_EXERCISE_IDS: readonly string[] = [
   'thruster-langhantel',
 ];
 
-/** Nur über Hyrox-Ketten bzw. Workouts – nie über die Bibliotheks-Suche (Hyrox- und WOD-Übungen). */
+/**
+ * Übungen der Langhantel-Gruppenworkouts „Barbell Burn“ (Gründer-Auftrag 14.11.2026, docs/PLAN-BARBELL-BURN.md):
+ * leichte Langhantel ohne Rack, Stepbrett, Crunch. Wie WOD_ONLY_EXERCISE_IDS nur über Workouts bzw. ihre eigenen
+ * Alternativen – nie über die Bibliotheks-Suche (Tausch, „Andere Übung“, Ersatz bei fehlendem Gerät, Aufwärm-Routine).
+ * So bleiben alle Pläne byte-gleich. PRODUKTENTSCHEIDUNG – nach der Fachprüfung je Übung lockern.
+ */
+export const GROUP_BARBELL_ONLY_EXERCISE_IDS: readonly string[] = [
+  'aufwaerm-kombi-langhantel',
+  'kniebeuge-langhantel-leicht',
+  'bankdruecken-step-langhantel',
+  'umsetzen-druecken-langhantel-leicht',
+  'stirndruecken-langhantel',
+  'bizepscurl-langhantel',
+  'ausfallschritt-rueckwaerts-langhantel',
+  'schulterdruecken-langhantel-leicht',
+  'crunch',
+];
+
+/** Nur über Hyrox-Ketten bzw. Workouts – nie über die Bibliotheks-Suche (Hyrox-, WOD- und Barbell-Burn-Übungen). */
 export const LIBRARY_SEARCH_EXCLUDED_IDS: readonly string[] = [
   ...HYROX_ONLY_EXERCISE_IDS,
   ...WOD_ONLY_EXERCISE_IDS,
+  ...GROUP_BARBELL_ONLY_EXERCISE_IDS,
 ];
 
 /**

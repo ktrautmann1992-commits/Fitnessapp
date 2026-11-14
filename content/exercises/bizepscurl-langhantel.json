@@ -1,0 +1,51 @@
+{
+  "id": "bizepscurl-langhantel",
+  "version": 1,
+  "status": "published",
+  "name_de": "Bizepscurl mit Langhantel",
+  "name_en": "Barbell Biceps Curl",
+  "aliases_de": [],
+  "movement_pattern": "elbow_flexion",
+  "primary_muscles": ["biceps"],
+  "secondary_muscles": ["forearms"],
+  "equipment_ids": ["barbell"],
+  "mechanics": "isolation",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Armbeugen mit der Langhantel im Untergriff. Die Oberarme bleiben am Körper, nur die Unterarme bewegen sich.",
+  "steps_de": [
+    "Aufrecht stehen, Langhantel schulterbreit im Untergriff vor den Oberschenkeln.",
+    "Ellbogen am Körper lassen und die Stange bis vor die Schultern beugen.",
+    "Langsam wieder absenken, bis die Arme fast gestreckt sind."
+  ],
+  "tips_de": [
+    "Oberkörper bleibt ruhig, kein Schwung aus dem Rücken.",
+    "Bei „Pulse“ nur im oberen Drittel kurz und schnell bewegen."
+  ],
+  "common_mistakes_de": ["Schwung mit dem Oberkörper.", "Ellbogen wandern nach vorn."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "bizepscurl-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "bizepscurl-band",
+      "reason": "home",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-14",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 14.11.2026)",
+    "reviewed_at": "2026-11-14",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Langhantel-Gruppenworkouts „Barbell Burn“ (Gründer-Auftrag 14.11.2026). Vor dem Livegang fachlich prüfen."
+  }
+}

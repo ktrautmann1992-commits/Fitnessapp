@@ -1,0 +1,57 @@
+{
+  "id": "bankdruecken-step-langhantel",
+  "version": 1,
+  "status": "published",
+  "name_de": "Bankdrücken auf dem Stepbrett mit leichter Langhantel",
+  "name_en": "Light Barbell Step Bench Press",
+  "aliases_de": ["Brustpresse am Step"],
+  "movement_pattern": "horizontal_push",
+  "primary_muscles": ["chest"],
+  "secondary_muscles": ["triceps", "front_delts"],
+  "equipment_ids": ["barbell", "step_bench"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["long_supine"],
+  "description_de": "Bankdrücken mit leichter Langhantel auf einem flachen Stepbrett. Ohne Stepbrett geht es genauso auf dem Boden (Bodendrücken) – der Boden begrenzt dann die Bewegung.",
+  "steps_de": [
+    "Stange im Sitzen auf die Oberschenkel legen, dann mit der Stange auf das Stepbrett zurücklegen.",
+    "Füße fest aufstellen, Stange etwas weiter als schulterbreit über der Brust halten.",
+    "Stange kontrolliert zur Brust senken, Ellbogen etwa 45 Grad vom Körper.",
+    "Kraftvoll nach oben drücken, ohne die Ellbogen ganz durchzustrecken."
+  ],
+  "tips_de": [
+    "Ohne Stepbrett: auf dem Boden liegen, Oberarme nur sanft ablegen.",
+    "Schulterblätter leicht zusammenziehen."
+  ],
+  "common_mistakes_de": ["Stange wandert Richtung Hals.", "Hüfte hebt vom Brett ab."],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "bodendruecken-kurzhantel",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "liegestuetz",
+      "reason": "home",
+      "priority": 2
+    },
+    {
+      "alternative_id": "bankdruecken-langhantel",
+      "reason": "harder",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-14",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 14.11.2026)",
+    "reviewed_at": "2026-11-14",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Langhantel-Gruppenworkouts „Barbell Burn“ (Gründer-Auftrag 14.11.2026). Vor dem Livegang fachlich prüfen."
+  }
+}

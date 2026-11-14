@@ -1,0 +1,61 @@
+{
+  "id": "kniebeuge-langhantel-leicht",
+  "version": 1,
+  "status": "published",
+  "name_de": "Kniebeuge mit leichter Langhantel",
+  "name_en": "Light Barbell Squat",
+  "aliases_de": [],
+  "movement_pattern": "squat",
+  "primary_muscles": ["quadriceps", "glutes"],
+  "secondary_muscles": ["adductors", "hamstrings"],
+  "equipment_ids": ["barbell"],
+  "mechanics": "compound",
+  "load_type": "weight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["spinal_loading"],
+  "description_de": "Kniebeuge mit einer leichten Langhantel auf dem oberen Rücken – ohne Rack, weil die Stange leicht genug ist, um sie über den Kopf auf die Schultern zu heben. Viele Wiederholungen im Takt statt schwerer Last.",
+  "steps_de": [
+    "Leichte Langhantel vom Boden aufnehmen, über den Kopf führen und auf dem oberen Rücken ablegen.",
+    "Füße etwas weiter als hüftbreit, Fußspitzen leicht nach außen, Rumpf fest.",
+    "Hüfte und Knie gleichzeitig beugen, bis die Oberschenkel etwa waagerecht sind.",
+    "Über die ganze Fußsohle aufstehen; die Tempo-Angabe im Workout gibt den Takt vor."
+  ],
+  "tips_de": [
+    "Knie zeigen in dieselbe Richtung wie die Fußspitzen.",
+    "Bei „Halbe Wiederholungen“ nur bis zur Hälfte hoch, dann wieder tief."
+  ],
+  "common_mistakes_de": [
+    "Knie knicken nach innen.",
+    "Fersen heben ab.",
+    "Rücken rundet sich unten."
+  ],
+  "safety_note_de": "Gewicht so wählen, dass alle Wiederholungen technisch sauber gelingen. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden.",
+  "alternatives": [
+    {
+      "alternative_id": "goblet-kniebeuge",
+      "reason": "other_equipment",
+      "priority": 1
+    },
+    {
+      "alternative_id": "kniebeuge-koerpergewicht",
+      "reason": "home",
+      "priority": 2
+    },
+    {
+      "alternative_id": "kniebeuge-langhantel",
+      "reason": "harder",
+      "priority": 3
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-14",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 14.11.2026)",
+    "reviewed_at": "2026-11-14",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Langhantel-Gruppenworkouts „Barbell Burn“ (Gründer-Auftrag 14.11.2026). Vor dem Livegang fachlich prüfen."
+  }
+}
