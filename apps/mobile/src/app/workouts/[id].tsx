@@ -117,7 +117,7 @@ export default function WorkoutDetailScreen() {
   const hiddenFlow = prepared?.hidden === true;
 
   function start() {
-    if (!resumable) beginRun(userId, workout);
+    if (!resumable) beginRun(userId, workout, exercises);
     router.push(`/workout-timer/${workout.id}` as Href);
   }
 
@@ -277,8 +277,21 @@ export default function WorkoutDetailScreen() {
 }
 
 /** Neuen Lauf beginnen (außerhalb des Renderns: Zeitpunkt und ID entstehen beim Tippen). */
-function beginRun(userId: string, workout: Workout): void {
-  activeRunStore.set(startActiveRun({ ownerUserId: userId, workout, nowMs: Date.now(), newId }));
+function beginRun(
+  userId: string,
+  workout: Workout,
+  exercises: ReadonlyMap<string, { readonly unilateral: boolean }> | null,
+): void {
+  activeRunStore.set(
+    startActiveRun({
+      ownerUserId: userId,
+      workout,
+      nowMs: Date.now(),
+      newId,
+      // Zeitfenster für Wiederholungen (Power-Workouts): einseitige Übungen doppelt.
+      unilateral: (id) => exercises?.get(id)?.unilateral === true,
+    }),
+  );
 }
 
 const styles = StyleSheet.create({

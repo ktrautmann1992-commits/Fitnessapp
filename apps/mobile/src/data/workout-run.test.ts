@@ -187,10 +187,11 @@ describe('Workout abschließen → freie Einheit am Tag (Herkunft „workout“)
     const workout = s.find('kurzhantel-basis');
     const active = startActiveRun({ ownerUserId: USER_ID, workout, nowMs: T0, newId: randomUUID });
     let run = completeWorkoutStep(active.steps, active.run, T0 + 1000); // Vorbereitung
-    run = completeWorkoutStep(active.steps, run, T0 + 40_000); // Goblet Satz 1
-    run = completeWorkoutStep(active.steps, run, T0 + 60_000); // Pause
-    run = skipWorkoutStep(active.steps, run, T0 + 61_000); // Goblet Satz 2 übersprungen
-    run = endWorkoutRun(active.steps, run, T0 + 120_000);
+    // Sätze mit Zeitfenster (Workout-Player): „Fertig“ vor Ablauf, sonst liefe es von selbst weiter.
+    run = completeWorkoutStep(active.steps, run, T0 + 20_000); // Goblet Satz 1
+    run = completeWorkoutStep(active.steps, run, T0 + 25_000); // Pause
+    run = skipWorkoutStep(active.steps, run, T0 + 26_000); // Goblet Satz 2 übersprungen
+    run = endWorkoutRun(active.steps, run, T0 + 40_000);
     const result = workoutLogDraft({
       active: { ...active, run },
       workout,
@@ -215,7 +216,7 @@ describe('Workout abschließen → freie Einheit am Tag (Herkunft „workout“)
     ]);
     expect(payload.notes).toContain('1/14 Sätze');
     expect(payload.notes).toContain('vorzeitig beendet');
-    expect(payload.finished_at).toBe(new Date(T0 + 120_000).toISOString());
+    expect(payload.finished_at).toBe(new Date(T0 + 40_000).toISOString());
   });
 
   it('AMRAP: Höchstzahl Runden, Zeitlimit beendet den Lauf, Notiz mit Ergebnis (29.10.2026)', async () => {

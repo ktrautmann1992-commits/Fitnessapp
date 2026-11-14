@@ -15,6 +15,21 @@
         "obtained_on": "2026-10-21"
       },
       "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "glute-bridge-einbeinig-end.svg",
+      "alt_de": "Endposition: Becken angehoben, ein Fuß am Boden, das andere Bein gestreckt in Verlängerung des Körpers.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
     }
   ]
 }

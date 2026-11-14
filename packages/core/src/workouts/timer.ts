@@ -24,11 +24,16 @@ export type WorkoutTimerStep =
       readonly passes: number;
       /** Runde des Workouts (Sätze × Wdh.: immer 1). */
       readonly round: number;
-      /** Sekunden (nach Zeit) oder null (nach Wiederholungen – wartet auf „Erledigt“). */
+      /** Sekunden (nach Zeit bzw. Zeitfenster) oder null (nach Wiederholungen – wartet auf „Erledigt“). */
       readonly seconds: number | null;
       readonly reps: number | null;
       /** Nur im Format `flow` mit Seitenwechsel (Sportarten Stufe 1): diese Seite – sonst fehlt das Feld. */
       readonly side?: FlowSide;
+      /**
+       * Nur bei Power-Workouts (player.ts): Übung nach Wiederholungen mit Zeitfenster – `seconds` ist das Zeitfenster,
+       * `reps` bleibt die Vorgabe. Der Timer läuft automatisch weiter; „Fertig“ geht früher weiter.
+       */
+      readonly timeBoxed?: true;
     }
   | {
       readonly kind: 'rest';

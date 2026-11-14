@@ -15,6 +15,21 @@
         "obtained_on": "2026-10-21"
       },
       "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "step-down-stufe-end.svg",
+      "alt_de": "Endposition: Standbein auf der Stufe gebeugt, die Ferse des freien Beins tippt vorn auf den Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
     }
   ]
 }
