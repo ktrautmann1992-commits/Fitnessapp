@@ -465,7 +465,11 @@ function FoodSection({
         <Body testID="day-entries">{t.day.entries(t.foodLog.count(food.entryCount))}</Body>
       ) : null}
       {food.meals !== null ? (
-        <Body testID="day-meals">{t.day.meals(food.meals.eaten, food.meals.planned)}</Body>
+        <Body testID="day-meals">
+          {food.meals.replaced > 0
+            ? `${t.day.meals(food.meals.eaten, food.meals.planned)} · ${t.day.mealsReplaced(food.meals.replaced)}`
+            : t.day.meals(food.meals.eaten, food.meals.planned)}
+        </Body>
       ) : planDay !== null ? (
         // Künftiger Tag: nur der Plan, keine Abhak-Zahl (2.2, H5).
         <Body muted testID="day-planned-meals">

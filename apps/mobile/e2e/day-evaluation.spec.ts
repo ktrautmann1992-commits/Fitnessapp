@@ -56,7 +56,7 @@ test('Heute neutral bis zum Zielbereich, gestern rot mit „fehlt etwas?“, obe
   await expect(page.getByTestId('day-meals')).toHaveText(/^Mahlzeiten: 0 von \d abgehakt$/);
 
   // Erste Mahlzeit „Gegessen“ direkt hier → neutral „Noch offen“ (nie rot am Morgen).
-  const eaten = page.getByTestId('day-food').getByTestId(/^eaten-(?!done|undo)/);
+  const eaten = page.getByTestId('day-food').getByTestId(/^eaten-(?!done|undo|other|replaced)/);
   const mealCount = await eaten.count();
   expect(mealCount).toBeGreaterThan(1);
   await eaten.first().click();
@@ -165,7 +165,7 @@ test('„Kalorienzahlen aus“: kein Balken, keine Farben, nur „x von y Mahlze
   await start(page);
   await quickEntry(page, SUNDAY, 300);
   await page.goto(`/tag/${MONDAY}`);
-  const eaten = page.getByTestId('day-food').getByTestId(/^eaten-(?!done|undo)/);
+  const eaten = page.getByTestId('day-food').getByTestId(/^eaten-(?!done|undo|other|replaced)/);
   await eaten.first().click();
   await expect(page.getByTestId('day-zone')).toBeVisible();
 

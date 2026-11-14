@@ -140,7 +140,30 @@ describe('Essen', () => {
         },
       }),
     );
-    expect(r.food.meals).toEqual({ planned: 4, eaten: 3 });
+    expect(r.food.meals).toEqual({ planned: 4, eaten: 3, replaced: 0 });
+  });
+
+  it('„Etwas anderes gegessen“ (14.11.2026): Platz mit anderem Eintrag zählt als ersetzt, nicht als gegessen', () => {
+    const r = dayEvaluation(
+      input({
+        mealPlan: { slots: ['breakfast', 'lunch', 'dinner'], belowFloor: false },
+        foodLog: {
+          available: true,
+          entries: [
+            entry(300, 'breakfast'),
+            entry(200, 'breakfast'),
+            entry(600, 'lunch', 'plan_item'),
+            // Wie geplant UND zusätzlich etwas: zählt als gegessen, nicht als ersetzt.
+            entry(500, 'dinner', 'plan_item'),
+            entry(100, 'dinner'),
+            entry(80, 'other'),
+          ],
+        },
+      }),
+    );
+    expect(r.food.meals).toEqual({ planned: 3, eaten: 2, replaced: 1 });
+    // Die Tagessumme enthält nur, was eingetragen ist (kein Plan-Wert für das ersetzte Frühstück).
+    expect(r.food.entryCount).toBe(6);
   });
 
   it('kein Essensplan: keine Mahlzeiten-Zahl, Balken geht trotzdem', () => {
@@ -227,7 +250,7 @@ describe('Zahlen aus und Schwangerschaft (2.3)', () => {
     );
     expect(r.food.intake).toEqual({ kind: 'hidden' });
     expect(r.notices).toEqual([]);
-    expect(r.food.meals).toEqual({ planned: 2, eaten: 1 });
+    expect(r.food.meals).toEqual({ planned: 2, eaten: 1, replaced: 0 });
     expect(r.food.entriesWithoutValue).toBe(0);
   });
 

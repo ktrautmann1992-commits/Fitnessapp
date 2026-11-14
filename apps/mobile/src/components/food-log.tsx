@@ -4,6 +4,7 @@ import {
   type FoodLogEntry,
   foodLogGroup,
   type PlannedMeal,
+  planSlotStatus,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { useRouter, type Href } from 'expo-router';
@@ -51,6 +52,7 @@ export function PlanMealEaten({
   onMessage: (message: { text: string; tone: 'success' | 'danger' } | null) => void;
 }) {
   const [busy, setBusy] = useState(false);
+  const router = useRouter();
   if (!view.supported || !view.consentValid || view.dateStatus !== 'ok') return null;
   const logged = view.planItem(meal.slot);
   const run = async (task: () => Promise<unknown>) => {
@@ -64,16 +66,52 @@ export function PlanMealEaten({
       setBusy(false);
     }
   };
+  // „Etwas anderes gegessen“ (14.11.2026): „Eintragen“ für genau diesen Platz; danach gilt die Plan-Mahlzeit als
+  // ersetzt (core `planSlotStatus`) – weder offen noch gegessen.
+  const openOther = () =>
+    router.push(`/ernaehrung/eintragen?tag=${date}&platz=${meal.slot}&anders=1` as Href);
   if (logged === null) {
+    const status = planSlotStatus(view.entries, date, meal.slot);
+    if (status === 'replaced') {
+      const titles = view.entries
+        .filter((e) => e.slot === meal.slot && e.source !== 'plan_item')
+        .map((e) => view.displayTitle(e));
+      return (
+        <View style={styles.eaten} testID={`eaten-replaced-${meal.slot}`}>
+          <Body>{t.foodLog.eatenReplaced(titles.join(', '))}</Body>
+          <Button
+            label={t.foodLog.eatenReplacedMore}
+            accessibilityLabel={t.foodLog.eatenReplacedMoreA11y(meal.titleDe)}
+            variant="link"
+            onPress={openOther}
+            testID={`eaten-other-more-${meal.slot}`}
+          />
+        </View>
+      );
+    }
     return (
-      <Button
-        label={t.foodLog.eaten}
-        accessibilityLabel={t.foodLog.eatenA11y(meal.titleDe)}
-        variant="secondary"
-        loading={busy}
-        onPress={() => void run(() => actions.markEaten(meal, date, 1))}
-        testID={`eaten-${meal.slot}`}
-      />
+      <View style={styles.choices}>
+        <View style={styles.choice}>
+          <Button
+            label={t.foodLog.eaten}
+            accessibilityLabel={t.foodLog.eatenA11y(meal.titleDe)}
+            variant="secondary"
+            loading={busy}
+            onPress={() => void run(() => actions.markEaten(meal, date, 1))}
+            testID={`eaten-${meal.slot}`}
+          />
+        </View>
+        <View style={styles.choice}>
+          <Button
+            label={t.foodLog.eatenOther}
+            accessibilityLabel={t.foodLog.eatenOtherA11y(meal.titleDe)}
+            variant="secondary"
+            disabled={busy}
+            onPress={openOther}
+            testID={`eaten-other-${meal.slot}`}
+          />
+        </View>
+      </View>
     );
   }
   return (
@@ -327,6 +365,8 @@ export function FoodLogEntryItem({
 const styles = StyleSheet.create({
   section: { gap: spacing.sm },
   eaten: { gap: spacing.xs },
+  choices: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  choice: { flexGrow: 1, flexBasis: 150 },
   group: { gap: spacing.xs },
   groupTitle: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold },
   item: {

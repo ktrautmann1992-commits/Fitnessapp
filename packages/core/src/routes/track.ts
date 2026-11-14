@@ -239,7 +239,10 @@ export interface MotionResult {
  * symmetrisch und an Anfang/Ende kürzer (erster und letzter Punkt bleiben). Gerade Strecken bleiben exakt, Rauschen im
  * Stehen mittelt sich heraus. Längengrade über ±180° hinweg fortlaufend gerechnet.
  */
-export function smoothPositions(points: readonly TrackPoint[]): { lat: number; lng: number }[] {
+export function smoothPositions(
+  points: readonly TrackPoint[],
+  perSide: number = ROUTE_MOTION.smoothingPoints,
+): { lat: number; lng: number }[] {
   const n = points.length;
   const lat: number[] = [];
   const lng: number[] = [];
@@ -262,7 +265,7 @@ export function smoothPositions(points: readonly TrackPoint[]): { lat: number; l
     pLng.push((pLng[i] as number) + (lng[i] as number));
   }
   return points.map((_, i) => {
-    const k = Math.min(ROUTE_MOTION.smoothingPoints, i, n - 1 - i);
+    const k = Math.min(perSide, i, n - 1 - i);
     const count = 2 * k + 1;
     return {
       lat: ((pLat[i + k + 1] as number) - (pLat[i - k] as number)) / count,
@@ -284,6 +287,8 @@ export function motionSegments(
   const minMps = ROUTE_AUTO_PAUSE_KMH[sport] / 3.6;
   const halfMs = (ROUTE_MOTION.windowS * 1000) / 2;
   const smooth = smoothPositions(points);
+  // Distanz aus schwächer geglätteten Positionen: Starke Glättung schneidet Kurven ab (ROUTE_MOTION.distanceSmoothingPoints).
+  const track = smoothPositions(points, ROUTE_MOTION.distanceSmoothingPoints);
   const moving: boolean[] = [];
   const distanceM: number[] = [];
   const dtS: number[] = [];
@@ -302,7 +307,7 @@ export function motionSegments(
       span > 0 &&
       haversineM(smooth[a] as LatLngPoint, smooth[b] as LatLngPoint) / span >= minMps;
     moving.push(isMoving);
-    distanceM.push(haversineM(smooth[i - 1] as LatLngPoint, smooth[i] as LatLngPoint));
+    distanceM.push(haversineM(track[i - 1] as LatLngPoint, track[i] as LatLngPoint));
     dtS.push(dt);
   }
   return { moving, distanceM, dtS };

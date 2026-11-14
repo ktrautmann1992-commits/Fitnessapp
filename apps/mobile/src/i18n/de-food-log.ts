@@ -9,7 +9,8 @@ export const deFoodLog = {
   add: 'Eintragen',
   addA11y: (day: string) => `Essen für ${day} eintragen`,
   empty: 'Noch nichts eingetragen.',
-  emptyHint: 'Tippe bei einer Mahlzeit auf „Gegessen“ oder trage etwas anderes ein.',
+  emptyHint:
+    'Tippe bei einer Mahlzeit auf „Wie geplant gegessen“ oder „Etwas anderes gegessen“ – oder trage frei ein.',
   count: (n: number) => (n === 1 ? '1 Eintrag' : `${n} Einträge`),
   summary: (count: string, kcal: string) => `${count} · ${kcal}`,
   withoutValue: (n: number) =>
@@ -45,8 +46,14 @@ export const deFoodLog = {
   planNotStored:
     'Dieser Plan war für diesen Tag nicht gespeichert – „Gegessen“ gibt es hier deshalb nicht. Eintragen geht trotzdem.',
   // „Gegessen“ an der Plan-Mahlzeit (Plan 5 Nr. 1)
-  eaten: 'Gegessen',
-  eatenA11y: (title: string) => `${title} als gegessen eintragen`,
+  eaten: 'Wie geplant gegessen',
+  eatenA11y: (title: string) => `${title}: wie geplant gegessen eintragen`,
+  // „Etwas anderes gegessen“ (Gründer-Rückmeldung 14.11.2026): öffnet „Eintragen“ für genau diese Mahlzeit.
+  eatenOther: 'Etwas anderes gegessen',
+  eatenOtherA11y: (title: string) => `Statt ${title} etwas anderes eintragen`,
+  eatenReplaced: (titles: string) => `Etwas anderes gegessen: ${titles}`,
+  eatenReplacedMore: 'Noch etwas dazu eintragen',
+  eatenReplacedMoreA11y: (title: string) => `Statt ${title}: noch etwas dazu eintragen`,
   eatenDone: (portion: string) => `Gegessen · ${portion}`,
   eatenPortionQuestion: 'Wie viel davon?',
   eatenUndo: 'Nicht gegessen',
@@ -81,7 +88,7 @@ export const deFoodLog = {
   addThis: 'Eintragen',
   addThisA11y: (title: string) => `${title} eintragen`,
   searchLabel: 'Lebensmittel oder Rezept suchen',
-  searchHint: 'Mindestens 2 Buchstaben, z. B. „Banane“.',
+  searchHint: 'Mindestens 2 Buchstaben, z. B. „Käse“, „Brot“ oder „Banane“.',
   searchFoods: 'Lebensmittel',
   // Etappe E4a: nur die eigenen Produkte (nie Produkte aus Open Food Facts in der Katalog-Suche).
   searchOwnProducts: 'Deine Produkte',
@@ -152,6 +159,52 @@ export const deFoodLog = {
     discardText:
       'Die Einträge werden von diesem Gerät gelöscht. Was schon gespeichert ist, bleibt unverändert.',
     discarded: 'Verworfen.',
+  },
+  // Freies Eintragen (Gründer-Rückmeldung 14.11.2026): Haushaltsmengen, Korb „Deine Mahlzeit“, Schnellauswahl.
+  free: {
+    otherNotice: (slot: string) =>
+      `Etwas anderes statt des Plans (${slot}): Lebensmittel suchen, Menge wählen, eintragen. Mehrere Lebensmittel? Erst „Zur Mahlzeit“, dann alle auf einmal eintragen.`,
+    quickTitle: 'Mit einem Tipp',
+    quickFavorites: 'Deine Favoriten',
+    quickRecent: 'Zuletzt gegessen',
+    quickAddA11y: (title: string) => `${title} eintragen`,
+    householdUnits: {
+      slice: { one: 'Scheibe', many: 'Scheiben' },
+      piece: { one: 'Stück', many: 'Stück' },
+      handful: { one: 'Handvoll', many: 'Handvoll' },
+      bowl: { one: 'Schale', many: 'Schalen' },
+      glass: { one: 'Glas', many: 'Gläser' },
+      cup: { one: 'Becher', many: 'Becher' },
+      tbsp: { one: 'EL', many: 'EL' },
+      tsp: { one: 'TL', many: 'TL' },
+      portion: { one: 'Portion', many: 'Portionen' },
+    },
+    countLabel: 'Wie viel?',
+    gramsHint: (grams: string) => `≈ ${grams} g · Richtwert`,
+    standInNote: (base: string) =>
+      `Noch nicht in unserer Lebensmittel-Liste – wir rechnen mit den Werten von ${base} (Richtwert).`,
+    amountRange: 'Anzahl: ½ bis 20 (in halben Schritten), umgerechnet höchstens 2.000 g.',
+    addToBasket: 'Zur Mahlzeit',
+    addToBasketA11y: (title: string) => `${title} zur Mahlzeit hinzufügen`,
+    basketTitle: 'Deine Mahlzeit',
+    basketHint: 'Weitere Lebensmittel suchen und dazulegen – dann alle auf einmal eintragen.',
+    basketRemove: 'Entfernen',
+    basketRemoveA11y: (title: string) => `${title} aus der Mahlzeit entfernen`,
+    basketSubmit: (n: number) =>
+      n === 1 ? '1 Lebensmittel eintragen' : `Alle ${n} Lebensmittel eintragen`,
+    basketSaved: (n: number) =>
+      n === 1 ? '1 Lebensmittel eingetragen.' : `${n} Lebensmittel eingetragen.`,
+    basketFull: 'Mehr als 15 Lebensmittel gehen nicht auf einmal – bitte erst eintragen.',
+    basketInvalid: (title: string) => `${title}: Diese Menge geht nicht – bitte ändern.`,
+    basketAdded: (title: string) => `Zur Mahlzeit gelegt: ${title}`,
+    favoriteName: 'Name als Favorit',
+    favoriteSave: 'Als Favorit speichern',
+    favoriteSaved: (name: string) =>
+      `Als Favorit gespeichert: ${name}. Du findest ihn oben unter „Deine Favoriten“.`,
+    favoriteNameInvalid: 'Bitte einen Namen mit 1 bis 60 Zeichen eingeben.',
+    favoriteLimit: 'Du hast schon 100 eigene Gerichte. Lösche zuerst eins.',
+    favoriteInvalid: 'Diese Mahlzeit lässt sich nicht als Favorit speichern.',
+    newMeal: 'Neue Mahlzeit zusammenstellen',
   },
   errors: {
     outOfRange: 'Eintragen geht nur für heute und bis zu 14 Tage zurück.',
