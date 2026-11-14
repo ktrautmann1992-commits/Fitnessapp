@@ -1,0 +1,29 @@
+{
+  "workout_id": "barbell-burn-60",
+  "alt_de": "Foto: Training mit leichter Langhantel in der Gruppe – Kniebeuge mit der Stange auf dem oberen Rücken, im Hintergrund weitere Teilnehmende auf Stepbrettern.",
+  "origin": "ai_generated",
+  "ai_notice_de": "KI-Bild, Higgsfield",
+  "license": {
+    "name": "KI-Bild, erzeugt von den Gründern mit Higgsfield",
+    "attribution_de": null
+  },
+  "source": {
+    "creator": "Higgsfield (Gründer)",
+    "obtained_on": "2026-11-14"
+  },
+  "reviewed_by": null,
+  "images": [
+    {
+      "kind": "thumbnail",
+      "file": "barbell-burn-60-thumb.webp",
+      "width": 320,
+      "height": 320
+    },
+    {
+      "kind": "banner",
+      "file": "barbell-burn-60-banner.webp",
+      "width": 1080,
+      "height": 463
+    }
+  ]
+}

@@ -134,6 +134,8 @@ export const deWorkouts = {
   minutes: (n: number) => `${n} Min.`,
   noEquipment: 'ohne Geräte',
   doneToday: 'Heute erledigt ✓',
+  /** Workout-Bild (Barbell Burn, 14.11.2026): sichtbarer KI-Hinweis auf dem Banner, für Bildschirmleser ausgeschrieben. */
+  aiImageA11y: (notice: string) => `Hinweis zum Bild: ${notice}`,
   card: {
     open: (title: string) => `${title} öffnen`,
   },
