@@ -5,7 +5,6 @@ import {
   defaultFoodLogSlot,
   entryFromCustomMeal,
   foodLogDisplayTitle,
-  entryFromFood,
   entryFromRecipe,
   entryFromFavorite,
   entryFromTemplate,
@@ -17,8 +16,6 @@ import {
   type FoodLogEntry,
   type FoodLogFavorite,
   type FoodLogManualSlot,
-  type FoodLogUnit,
-  foodLogUnitsFor,
   isFavoriteEntry,
   isoDateSchema,
   moveEntry,
@@ -35,6 +32,21 @@ import {
   entryFromUserProduct,
   normalizeFoodText,
   productEntryDisplayTitle,
+  addToBasket,
+  basketCustomMealInput,
+  basketEntries,
+  type BasketItem,
+  buildCustomMeal,
+  canAddCustomMeal,
+  entryFromFoodAmount,
+  FOOD_HOUSEHOLD_LIMITS,
+  FOOD_LOG_SLOTS,
+  type FoodAmountUnit,
+  type FoodLogSlot,
+  orderCustomMealsForSlot,
+  removeFromBasket,
+  suggestBasketName,
+  withStandIns,
 } from '@fitnessapp/core';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
@@ -42,6 +54,7 @@ import { View } from 'react-native';
 
 import { CustomMealPicker } from '@/components/custom-meals';
 import { EatingOutTab } from '@/components/eating-out';
+import { BasketCard, FoodAmountPicker, QuickPicks } from '@/components/food-log-free';
 import { NutritionGate, nutritionReady } from '@/components/nutrition';
 import { ConfirmDialog, Screen } from '@/components/screen';
 import { TestPhaseBadge } from '@/components/test-phase';
@@ -78,7 +91,7 @@ import { setProductHandoff } from '@/lib/product-handoff';
 import { useToday } from '@/lib/use-today';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
-import { useCustomMeals } from '@/state/use-custom-meals';
+import { useCustomMealActions, useCustomMeals } from '@/state/use-custom-meals';
 import { useFoodLogActions, useFoodLogDay } from '@/state/use-food-log';
 import { useNutritionWeek } from '@/state/use-nutrition';
 
@@ -105,8 +118,13 @@ export default function FoodLogEntryScreen() {
     tag?: string;
     bearbeiten?: string;
     rezept?: string;
-    /** Vorbelegte Mahlzeit („+“ an der Mahlzeiten-Karte der Tagesübersicht): breakfast, lunch, dinner, other. */
+    /**
+     * Vorbelegte Mahlzeit („+“ an der Mahlzeiten-Karte der Tagesübersicht): breakfast, lunch, dinner, other – oder
+     * (14.11.2026, „Etwas anderes gegessen“) der genaue Platz der Plan-Mahlzeit, z. B. snack_morning.
+     */
     platz?: string;
+    /** „Etwas anderes gegessen“ an einer Plan-Mahlzeit (14.11.2026): Hinweis oben, Suche vorausgewählt. */
+    anders?: string;
   }>();
   const today = useToday();
   const editId = typeof params.bearbeiten === 'string' ? params.bearbeiten : null;
@@ -116,21 +134,38 @@ export default function FoodLogEntryScreen() {
     return tag.success && foodLogDateStatus(tag.data, today) === 'ok' ? tag.data : null;
   });
   const date = pickedDate ?? editRow?.eaten_on ?? today;
+  // Genauer Platz aus der Adresse (Plan-Mahlzeit, z. B. snack_morning) – gilt, solange die Auswahl dazu passt.
+  const exactSlot: FoodLogSlot | null = FOOD_LOG_SLOTS.find((s) => s === params.platz) ?? null;
+  const other = params.anders === '1' && exactSlot !== null && exactSlot !== 'other';
   const [slot, setSlot] = useState<FoodLogManualSlot>(() => {
     const now = new Date();
     if (editRow) return manualSlotOf(editRow.slot);
-    const fromCard = FOOD_LOG_MANUAL_SLOTS.find((s) => s === params.platz);
-    return fromCard ?? defaultFoodLogSlot(now.getHours() * 60 + now.getMinutes());
+    if (exactSlot !== null) return manualSlotOf(exactSlot);
+    return defaultFoodLogSlot(now.getHours() * 60 + now.getMinutes());
   });
-  const [tab, setTab] = useState<Tab>(typeof params.rezept === 'string' ? 'search' : 'recent');
+  const targetSlot: FoodLogSlot =
+    exactSlot !== null && manualSlotOf(exactSlot) === slot ? exactSlot : slot;
+  const [tab, setTab] = useState<Tab>(
+    typeof params.rezept === 'string' || other ? 'search' : 'recent',
+  );
   const view = useNutritionWeek(date);
   const foodLog = useFoodLogDay(date, view.showNumbers);
   const actions = useFoodLogActions();
   const [message, setMessage] = useState<Message | null>(null);
   const [lastSaved, setLastSaved] = useState<FoodLogEntry | null>(null);
-  const [pending, setPending] = useState<FoodLogEntry | null>(null);
+  const [pending, setPending] = useState<{
+    entries: FoodLogEntry[];
+    basket: boolean;
+    savedName?: string;
+  } | null>(null);
   const [busy, setBusy] = useState(false);
   const meals = useCustomMeals();
+  const mealActions = useCustomMealActions();
+  // Korb „Deine Mahlzeit“ (14.11.2026): mehrere Lebensmittel, dann alle auf einmal eintragen bzw. als Favorit.
+  const [basket, setBasket] = useState<BasketItem[]>([]);
+  const [basketSaved, setBasketSaved] = useState(false);
+  const [basketFavorite, setBasketFavorite] = useState(false);
+  const [basketKey, setBasketKey] = useState(0);
   // E4a: Produkt zum erneuten Abrufen, wenn der Zwischenspeicher-Eintrag fehlt (Server: product_unavailable).
   const [refetch, setRefetch] = useState<{ code: string; amount: number } | null>(null);
   const userProducts: readonly UserFoodProductRow[] = app.rows?.userFoodProducts ?? [];
@@ -195,23 +230,39 @@ export default function FoodLogEntryScreen() {
   const library = view.library.result.library;
   const showNumbers = view.showNumbers;
 
-  async function store(entry: FoodLogEntry, confirmed = false, savedName?: string) {
-    if (!confirmed && needsFoodLogConfirmation(entry)) {
-      setPending(entry);
+  /** Speichern; `basket` = alle Lebensmittel der Mahlzeit auf einmal (je Lebensmittel ein Eintrag). */
+  async function store(
+    input: FoodLogEntry | readonly FoodLogEntry[],
+    confirmed = false,
+    savedName?: string,
+  ) {
+    const fromBasket = Array.isArray(input);
+    const list: FoodLogEntry[] = fromBasket ? [...input] : [input as FoodLogEntry];
+    const entry = list[0];
+    if (entry === undefined) return;
+    if (!confirmed && list.some((e) => needsFoodLogConfirmation(e))) {
+      setPending({
+        entries: list,
+        basket: fromBasket,
+        ...(savedName !== undefined ? { savedName } : {}),
+      });
       return;
     }
     setBusy(true);
     setMessage(null);
     setRefetch(null);
     try {
-      await actions.save([entry]);
-      setLastSaved(editId ? null : entry);
+      await actions.save(list);
+      setLastSaved(editId || fromBasket ? null : entry);
+      if (fromBasket) setBasketSaved(true);
       setMessage({
         text: editId
           ? t.foodLog.updated
-          : savedName !== undefined
-            ? t.eatingOut.saved(savedName)
-            : t.foodLog.saved(titleOf(entry)),
+          : fromBasket
+            ? t.foodLog.free.basketSaved(list.length)
+            : savedName !== undefined
+              ? t.eatingOut.saved(savedName)
+              : t.foodLog.saved(titleOf(entry)),
         tone: 'success',
       });
     } catch (error) {
@@ -243,19 +294,27 @@ export default function FoodLogEntryScreen() {
     void store(build.entry);
   }
 
-  const target = () => ({ id: newId(), date, slot });
+  const target = () => ({ id: newId(), date, slot: targetSlot });
+  const pendingCheck =
+    pending?.entries.find((e) => needsFoodLogConfirmation(e)) ?? pending?.entries[0] ?? null;
   const confirmDialog = (
     <ConfirmDialog
       visible={pending !== null}
       title={t.foodLog.confirmTitle}
-      message={pending ? confirmText(pending, showNumbers) : ''}
+      message={pendingCheck ? confirmText(pendingCheck, showNumbers) : ''}
       confirmLabel={t.foodLog.confirmYes}
       confirmVariant="primary"
       onCancel={() => setPending(null)}
       onConfirm={() => {
-        const entry = pending;
+        const next = pending;
         setPending(null);
-        if (entry) void store(entry, true);
+        if (next) {
+          void store(
+            next.basket ? next.entries : (next.entries[0] as FoodLogEntry),
+            true,
+            next.savedName,
+          );
+        }
       }}
       testID="food-log-confirm"
     />
@@ -348,6 +407,154 @@ export default function FoodLogEntryScreen() {
     typeof params.rezept === 'string'
       ? (library.recipes.find((r) => r.id === params.rezept) ?? null)
       : null;
+  const recentAvailable = (item: FoodLogEntryRow | FoodLogFavorite) =>
+    (item.source !== 'custom_meal' ||
+      ('custom_meal_id' in item && mealById(item.custom_meal_id) !== null)) &&
+    (item.source !== 'product' ||
+      item.user_product_id === null ||
+      ownById(item.user_product_id) !== null);
+  const pickRecent = (item: FoodLogEntryRow | FoodLogFavorite) => {
+    // Eigenes Gericht (E2): neu aus dem aktuellen Gericht mit derselben Portion.
+    if (item.source === 'custom_meal' && 'custom_meal_id' in item) {
+      const meal = mealById(item.custom_meal_id);
+      if (meal) pickCustom(meal, item.portion ?? 1);
+      return;
+    }
+    // Eigenes Produkt (E4a): neu aus dem aktuellen Produkt mit derselben Menge.
+    if (item.source === 'product' && item.user_product_id !== null) {
+      const own = ownById(item.user_product_id);
+      if (own && item.amount !== null) {
+        submit(entryFromUserProduct(own, item.amount, target()));
+      }
+      return;
+    }
+    // Produkt aus Open Food Facts: gleiche Menge; die Werte rechnet der Server aus dem Zwischenspeicher nach
+    // (fehlt er, kommt „Produkt neu abrufen“).
+    submit(entryFromTemplate(templateOf(item), target()));
+  };
+  const favoriteTitleOf = (item: FoodLogFavorite) =>
+    item.source === 'product' && item.user_product_id !== null
+      ? (ownById(item.user_product_id)?.name_de ?? item.title_de)
+      : item.title_de;
+  const pickFavorite = (item: FoodLogEntryRow | FoodLogFavorite) => {
+    // E4a: Produkt-Favoriten speichern keine Werte – über die Produktansicht (neu abfragen bzw. eigenes
+    // Produkt) mit der gemerkten Menge.
+    if ('fav_key' in item && item.source === 'product') {
+      openProduct({
+        ...(item.product_code !== null ? { code: item.product_code } : {}),
+        ...(item.user_product_id !== null ? { ownId: item.user_product_id } : {}),
+        ...(item.amount !== null ? { amount: item.amount } : {}),
+      });
+      return;
+    }
+    // Favoriten aus Katalog/Rezept speichern keine Werte – neu aus dem Bestand gerechnet (Wächter E1 S1).
+    submit(
+      'fav_key' in item
+        ? entryFromFavorite(item, library, target())
+        : entryFromTemplate(templateOf(item), target()),
+    );
+  };
+
+  // Schnellauswahl „Mit einem Tipp“ (14.11.2026): eigene Gerichte zuerst (zuletzt zu dieser Mahlzeit gegessen vorn),
+  // dann Stern-Favoriten (ohne Produkte – die brauchen die Produktansicht), dann „Zuletzt gegessen“.
+  const quickMeals = orderCustomMealsForSlot(meals, all, targetSlot).slice(
+    0,
+    FOOD_HOUSEHOLD_LIMITS.quickChips,
+  );
+  const quickFavorites = favorites
+    .filter((item) => item.source !== 'product' && favoriteAvailable(item, library))
+    .slice(0, FOOD_HOUSEHOLD_LIMITS.quickChips);
+  const quickRecent = recent
+    .filter((item) => recentAvailable(item))
+    .slice(0, FOOD_HOUSEHOLD_LIMITS.quickChips);
+
+  // Katalog plus Ersatz für fehlende Alltags-Lebensmittel („Emmentaler“ → Werte wie Gouda, Richtwert; core).
+  const freeFoods = withStandIns(library.foods);
+  // Korb „Deine Mahlzeit“
+  const basketRows = basket.map((item) => ({
+    item,
+    title: freeFoods.get(item.food_id)?.name_de ?? item.food_id,
+  }));
+  const putInBasket = (food: Food, amount: number, unit: FoodAmountUnit) => {
+    const start = basketSaved ? [] : basket;
+    const next = addToBasket(start, { food_id: food.id, amount, unit });
+    if (next === null) {
+      setMessage({ text: t.foodLog.free.basketFull, tone: 'warning' });
+      return;
+    }
+    if (basketSaved) {
+      setBasketSaved(false);
+      setBasketFavorite(false);
+      setBasketKey((k) => k + 1);
+    }
+    setBasket(next);
+    setLastSaved(null);
+    setMessage({ text: t.foodLog.free.basketAdded(food.name_de), tone: 'success' });
+  };
+  const submitBasket = () => {
+    const result = basketEntries(basket, freeFoods, { date, slot: targetSlot }, newId);
+    if (!result.ok) {
+      const title = result.index === null ? null : basketRows[result.index]?.title;
+      setMessage({
+        text: title ? t.foodLog.free.basketInvalid(title) : buildErrorText('invalid'),
+        tone: 'warning',
+      });
+      return;
+    }
+    void store(result.entries);
+  };
+  const saveBasketFavorite = async (name: string) => {
+    if (!canAddCustomMeal(meals)) {
+      setMessage({ text: t.foodLog.free.favoriteLimit, tone: 'warning' });
+      return;
+    }
+    const input = basketCustomMealInput(basket, freeFoods, { id: newId(), name });
+    const built = input === null ? null : buildCustomMeal(input, library.foods);
+    if (built === null || !built.ok) {
+      setMessage({
+        text:
+          built?.ok === false && built.reason === 'name'
+            ? t.foodLog.free.favoriteNameInvalid
+            : t.foodLog.free.favoriteInvalid,
+        tone: 'warning',
+      });
+      return;
+    }
+    setBusy(true);
+    try {
+      await mealActions.save(built.meal);
+      setBasketFavorite(true);
+      setMessage({ text: t.foodLog.free.favoriteSaved(built.meal.name_de), tone: 'success' });
+    } catch (error) {
+      setMessage({ text: errorText(error), tone: 'danger' });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const moreWays = (
+    <>
+      <Card>
+        <TestPhaseBadge testID="food-log-photo-test-phase" />
+        <Body muted>{t.foodPhoto.openHint}</Body>
+        <Button
+          label={t.foodPhoto.open}
+          variant="secondary"
+          onPress={() => router.push(`/ernaehrung/foto?tag=${date}&platz=${slot}` as Href)}
+          testID="food-log-photo"
+        />
+      </Card>
+      <Card>
+        <Body muted>{t.foodProduct.openHint}</Body>
+        <Button
+          label={t.foodProduct.open}
+          variant="secondary"
+          onPress={() => openProduct({})}
+          testID="food-log-product"
+        />
+      </Card>
+    </>
+  );
 
   return shell(
     <>
@@ -383,25 +590,24 @@ export default function FoodLogEntryScreen() {
         value={slot}
         onChange={setSlot}
       />
-      <Card>
-        <TestPhaseBadge testID="food-log-photo-test-phase" />
-        <Body muted>{t.foodPhoto.openHint}</Body>
-        <Button
-          label={t.foodPhoto.open}
-          variant="secondary"
-          onPress={() => router.push(`/ernaehrung/foto?tag=${date}&platz=${slot}` as Href)}
-          testID="food-log-photo"
-        />
-      </Card>
-      <Card>
-        <Body muted>{t.foodProduct.openHint}</Body>
-        <Button
-          label={t.foodProduct.open}
-          variant="secondary"
-          onPress={() => openProduct({})}
-          testID="food-log-product"
-        />
-      </Card>
+      {other ? (
+        <Notice tone="info" testID="food-log-other-notice">
+          {t.foodLog.free.otherNotice(manualSlotLabel(slot))}
+        </Notice>
+      ) : null}
+      <QuickPicks
+        meals={quickMeals}
+        favorites={quickFavorites}
+        recent={quickRecent}
+        busy={busy}
+        favoriteTitleOf={favoriteTitleOf}
+        recentTitleOf={titleOf}
+        onMeal={(meal) => pickCustom(meal, 1)}
+        onFavorite={pickFavorite}
+        onRecent={pickRecent}
+      />
+      {/* „Etwas anderes gegessen“: Suche zuerst, Foto und Barcode darunter (weniger Scrollen). */}
+      {other ? null : moreWays}
       <ChoiceList
         label={t.foodLog.tabsLabel}
         horizontal
@@ -428,32 +634,8 @@ export default function FoodLogEntryScreen() {
               ? templateDetailText(item, showNumbers)
               : recentDetailText(item, meals, showNumbers)
           }
-          available={(item) =>
-            (item.source !== 'custom_meal' ||
-              ('custom_meal_id' in item && mealById(item.custom_meal_id) !== null)) &&
-            (item.source !== 'product' ||
-              item.user_product_id === null ||
-              ownById(item.user_product_id) !== null)
-          }
-          onPick={(item) => {
-            // Eigenes Gericht (E2): neu aus dem aktuellen Gericht mit derselben Portion.
-            if (item.source === 'custom_meal' && 'custom_meal_id' in item) {
-              const meal = mealById(item.custom_meal_id);
-              if (meal) pickCustom(meal, item.portion ?? 1);
-              return;
-            }
-            // Eigenes Produkt (E4a): neu aus dem aktuellen Produkt mit derselben Menge.
-            if (item.source === 'product' && item.user_product_id !== null) {
-              const own = ownById(item.user_product_id);
-              if (own && item.amount !== null) {
-                submit(entryFromUserProduct(own, item.amount, target()));
-              }
-              return;
-            }
-            // Produkt aus Open Food Facts: gleiche Menge; die Werte rechnet der Server aus dem Zwischenspeicher nach
-            // (fehlt er, kommt „Produkt neu abrufen“).
-            submit(entryFromTemplate(templateOf(item), target()));
-          }}
+          available={recentAvailable}
+          onPick={pickRecent}
         />
       ) : null}
       {tab === 'favorites' ? (
@@ -489,47 +671,47 @@ export default function FoodLogEntryScreen() {
           busy={busy}
           testID="food-log-favorites"
           titleOf={titleOf}
-          favoriteTitleOf={(item) =>
-            item.source === 'product' && item.user_product_id !== null
-              ? (ownById(item.user_product_id)?.name_de ?? item.title_de)
-              : item.title_de
-          }
+          favoriteTitleOf={favoriteTitleOf}
           available={(item) =>
             !('fav_key' in item) ||
             (item.source === 'product'
               ? item.user_product_id === null || ownById(item.user_product_id) !== null
               : favoriteAvailable(item, library))
           }
-          onPick={(item) => {
-            // E4a: Produkt-Favoriten speichern keine Werte – über die Produktansicht (neu abfragen bzw. eigenes
-            // Produkt) mit der gemerkten Menge.
-            if ('fav_key' in item && item.source === 'product') {
-              openProduct({
-                ...(item.product_code !== null ? { code: item.product_code } : {}),
-                ...(item.user_product_id !== null ? { ownId: item.user_product_id } : {}),
-                ...(item.amount !== null ? { amount: item.amount } : {}),
-              });
-              return;
-            }
-            // Favoriten aus Katalog/Rezept speichern keine Werte – neu aus dem Bestand gerechnet (Wächter E1 S1).
-            submit(
-              'fav_key' in item
-                ? entryFromFavorite(item, library, target())
-                : entryFromTemplate(templateOf(item), target()),
-            );
+          onPick={pickFavorite}
+        />
+      ) : null}
+      {basket.length > 0 ? (
+        <BasketCard
+          key={basketKey}
+          rows={basketRows}
+          suggestedName={suggestBasketName(basket, freeFoods)}
+          saved={basketSaved}
+          favoriteSaved={basketFavorite}
+          busy={busy}
+          onRemove={(index) => setBasket(removeFromBasket(basket, index))}
+          onSubmit={submitBasket}
+          onFavorite={(name) => void saveBasketFavorite(name)}
+          onClear={() => {
+            setBasket([]);
+            setBasketSaved(false);
+            setBasketFavorite(false);
+            setBasketKey((k) => k + 1);
+            setMessage(null);
           }}
         />
       ) : null}
       {tab === 'search' ? (
         <SearchTab
-          foods={library.foods}
+          foods={freeFoods}
           recipes={library.recipes}
           preselectedRecipe={preselectedRecipe}
           ownProducts={userProducts}
           onOwnProduct={(id) => openProduct({ ownId: id })}
           busy={busy}
           onQuick={() => setTab('quick')}
-          onFood={(food, amount, unit) => submit(entryFromFood(food, amount, unit, target()))}
+          onFood={(food, amount, unit) => submit(entryFromFoodAmount(food, amount, unit, target()))}
+          onBasket={putInBasket}
           onRecipe={(recipe, servings) =>
             submit(entryFromRecipe(recipe, library.foods, servings, target()))
           }
@@ -561,6 +743,7 @@ export default function FoodLogEntryScreen() {
           onSubmit={(input) => submit(quickEntry(input, target()))}
         />
       ) : null}
+      {other ? moreWays : null}
       {confirmDialog}
     </>,
   );
@@ -639,6 +822,7 @@ function SearchTab({
   busy,
   onQuick,
   onFood,
+  onBasket,
   onRecipe,
 }: {
   foods: ReadonlyMap<string, Food>;
@@ -649,7 +833,9 @@ function SearchTab({
   onOwnProduct: (id: string) => void;
   busy: boolean;
   onQuick: () => void;
-  onFood: (food: Food, amount: number, unit: FoodLogUnit) => void;
+  onFood: (food: Food, amount: number, unit: FoodAmountUnit) => void;
+  /** „Zur Mahlzeit“ (14.11.2026): Lebensmittel in den Korb legen. */
+  onBasket: (food: Food, amount: number, unit: FoodAmountUnit) => void;
   onRecipe: (recipe: Recipe, servings: number) => void;
 }) {
   const [query, setQuery] = useState(preselectedRecipe?.title_de ?? '');
@@ -681,11 +867,17 @@ function SearchTab({
         testID="food-log-search-input"
       />
       {selected?.kind === 'food' ? (
-        <FoodAmountForm
+        <FoodAmountPicker
           key={selected.food.id}
           food={selected.food}
           busy={busy}
           onSubmit={(amount, unit) => onFood(selected.food, amount, unit)}
+          onBasket={(amount, unit) => {
+            onBasket(selected.food, amount, unit);
+            // Weiter suchen: Auswahl und Suchfeld leeren (nächstes Lebensmittel mit wenigen Tipps).
+            setSelected(null);
+            setQuery('');
+          }}
         />
       ) : selected?.kind === 'recipe' ? (
         <RecipeServingsForm
@@ -746,62 +938,6 @@ function SearchTab({
         )
       ) : null}
     </View>
-  );
-}
-
-function FoodAmountForm({
-  food,
-  busy,
-  onSubmit,
-}: {
-  food: Food;
-  busy: boolean;
-  onSubmit: (amount: number, unit: FoodLogUnit) => void;
-}) {
-  const units = foodLogUnitsFor(food);
-  const [unit, setUnit] = useState<FoodLogUnit>(units.includes('piece') ? 'piece' : 'g');
-  const [text, setText] = useState(unit === 'piece' ? '1' : '100');
-  const [error, setError] = useState<string>();
-  return (
-    <Card>
-      <Heading level={2}>{food.name_de}</Heading>
-      <ChoiceList
-        label={t.foodLog.unitLabel}
-        horizontal
-        options={units.map((value) => ({ value, label: unitText(value) }))}
-        value={unit}
-        onChange={(next) => {
-          setUnit(next);
-          setText(next === 'piece' ? '1' : '100');
-          setError(undefined);
-        }}
-      />
-      {!units.includes('piece') ? <Body muted>{t.foodLog.pieceUnavailable}</Body> : null}
-      <TextField
-        label={`${t.foodLog.amountLabel} (${unitText(unit)})`}
-        value={text}
-        onChangeText={setText}
-        keyboardType="decimal-pad"
-        error={error}
-        maxLength={7}
-        testID="food-log-amount"
-      />
-      <Button
-        label={t.foodLog.addThis}
-        accessibilityLabel={t.foodLog.addThisA11y(food.name_de)}
-        loading={busy}
-        onPress={() => {
-          const amount = parseDecimal(text);
-          if (amount === null || Number.isNaN(amount)) {
-            setError(t.foodLog.amountInvalid);
-            return;
-          }
-          setError(undefined);
-          onSubmit(amount, unit);
-        }}
-        testID="food-log-food-add"
-      />
-    </Card>
   );
 }
 

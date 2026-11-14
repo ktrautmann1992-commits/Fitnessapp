@@ -14,6 +14,7 @@ import { addDays, daysBetween } from '../dates';
 import { barcodeSchema } from './barcode';
 import { MEAL_PLAN_SLOT_KEYS } from './meal-plan-payload';
 import type { PlannedMeal } from './meal-plan';
+import { searchFoods } from './food-search';
 import { computeRecipeFacts, type RecipeNutrients } from './recipe-nutrients';
 import { gramsPerUnit } from './units';
 
@@ -994,8 +995,8 @@ export interface FoodLogSearchResult {
 }
 
 /**
- * Lebensmittel (Name und Suchbegriffe) und Rezepte (Titel) nach Namen – gleiche Normalisierung wie die Zutaten-Suche
- * (`normalizeFoodText`). Treffer am Wortanfang zuerst, dann alphabetisch. Ohne Profil-Filter: Das Tagebuch hält fest,
+ * Lebensmittel (Name, Suchbegriffe, Lebensmittel-Art – `searchFoods`) und Rezepte (Titel) – gleiche Normalisierung wie
+ * die Zutaten-Suche (`normalizeFoodText`). Treffer am Anfang bzw. Wortanfang zuerst, dann alphabetisch. Ohne Profil-Filter: Das Tagebuch hält fest,
  * was gegessen wurde, es empfiehlt nichts.
  */
 export function searchFoodLogCatalog(
@@ -1020,17 +1021,18 @@ export function searchFoodLogCatalog(
       .sort((a, b) => a.score - b.score || a.name.localeCompare(b.name, 'de'))
       .slice(0, FOOD_LOG_SEARCH.maxHits)
       .map((x) => x.item);
-  const foods: { item: Food; score: number; name: string }[] = [];
-  for (const food of library.foods.values()) {
-    const score = rank([food.name_de, ...food.aliases_de]);
-    if (score !== null) foods.push({ item: food, score, name: food.name_de });
-  }
+  // Lebensmittel (14.11.2026): Name, Suchbegriffe UND Lebensmittel-Art („Käse“ → Gouda), Umlaute egal, leichte
+  // Tippfehler – `searchFoods` (food-search.ts).
+  const foods = searchFoods(library.foods.values(), query.slice(0, FOOD_LOG_SEARCH.maxChars), {
+    minChars: FOOD_LOG_SEARCH.minChars,
+    max: FOOD_LOG_SEARCH.maxHits,
+  });
   const recipes: { item: Recipe; score: number; name: string }[] = [];
   for (const recipe of library.recipes) {
     const score = rank([recipe.title_de]);
     if (score !== null) recipes.push({ item: recipe, score, name: recipe.title_de });
   }
-  return { foods: byRank(foods), recipes: byRank(recipes) };
+  return { foods, recipes: byRank(recipes) };
 }
 
 /** Standard-Portionen der Plan-Mahlzeit (für die Auswahl in der App). */

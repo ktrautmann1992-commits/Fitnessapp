@@ -8,6 +8,7 @@ import {
   type FoodLogManualSlot,
   type FoodLogSlot,
   type FoodLogUnit,
+  type FoodAmountUnit,
 } from '@fitnessapp/core';
 
 import { t } from '@/i18n';
@@ -46,6 +47,19 @@ export function portionText(value: number): string {
 
 export function unitText(unit: FoodLogUnit): string {
   return t.foodLog.units[unit];
+}
+
+/** Einheit beim Eintragen (14.11.2026): g/ml wie im Tagebuch, Haushaltsmengen Ein-/Mehrzahl („1 Scheibe“, „2 Scheiben“). */
+export function amountUnitText(unit: FoodAmountUnit, count = 1): string {
+  if (unit === 'g' || unit === 'ml') return t.foodLog.units[unit];
+  const label = t.foodLog.free.householdUnits[unit];
+  return count > 1 ? label.many : label.one;
+}
+
+/** Menge mit Einheit, z. B. „2 Scheiben“, „½ Glas“, „150 g“. */
+export function amountWithUnitText(amount: number, unit: FoodAmountUnit): string {
+  const value = unit === 'g' || unit === 'ml' ? formatNumberDe(amount) : portionNumber(amount);
+  return t.foodLog.amount(value, amountUnitText(unit, amount));
 }
 
 /** Menge bzw. Portion eines Eintrags, z. B. „1 Stück“, „150 g“, „¾ Portion“; Schnelleintrag ohne Menge → null. */

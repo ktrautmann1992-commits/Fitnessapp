@@ -322,7 +322,7 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.getByTestId('progress-day').click();
     await expect(page.getByTestId('day')).toBeVisible();
     await shot('dein-tag');
-    const eaten = page.getByTestId('day-food').getByTestId(/^eaten-(?!done|undo)/);
+    const eaten = page.getByTestId('day-food').getByTestId(/^eaten-(?!done|undo|other|replaced)/);
     if ((await eaten.count()) > 0) {
       await eaten.first().click();
       await expect(page.getByTestId('day-zone')).toBeVisible();

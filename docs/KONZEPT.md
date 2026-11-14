@@ -599,6 +599,21 @@ besteht. Einkaufsliste nach Abteilungen, Mengen aufgerundet, Häkchen bleiben be
   Lebensmitteln (R19 wie `filter.ts`). Logik `packages/core/src/nutrition/eating-out.ts`, Tabelle `eating-out-table.ts`,
   Grenzen `EATING_OUT` in `constants.ts`.
 
+- **Essen frei eintragen (Gründer-Rückmeldung Testphase 14.11.2026, `docs/PLAN-ESSEN-FREI-EINTRAGEN.md`):** An jeder
+  Plan-Mahlzeit zwei Knöpfe „Wie geplant gegessen“ und „Etwas anderes gegessen“ (öffnet „Eintragen“ für genau diesen
+  Platz); ist dort etwas anderes eingetragen, gilt die Plan-Mahlzeit als **ersetzt** – weder offen noch gegessen
+  (`planSlotStatus`, Tagesauswertung `meals.replaced`). Suche nach Name, Suchbegriffen und **Lebensmittel-Art** („Käse“
+  → alle Käse, „Brot“ → alle Brote), Umlaute egal („kase“), leichte Tippfehler („Gauda“). Menge in Gramm oder
+  **Haushaltsmengen** (Scheibe, Stück, Handvoll, Schale, Glas, Becher, EL, TL) – umgerechnet in Gramm gespeichert, das
+  Tagebuch-Format und die Datenbank bleiben unverändert. **„Deine Mahlzeit“:** mehrere Lebensmittel sammeln, alle auf
+  einmal eintragen, mit einem Tipp „Als Favorit speichern“ (eigenes Gericht aus Zutaten, Name vorgeschlagen, z. B.
+  „Käsebrot“). Oben im Eintragen-Bildschirm „Mit einem Tipp“: Favoriten und „Zuletzt gegessen“. Ohne KI, gratis.
+  Alle Mengen sind **Richtwerte** („≈ 25 g · Richtwert“). Fehlt ein Alltags-Lebensmittel im Katalog, rechnet ein
+  **Ersatz** mit dem ähnlichsten Katalog-Lebensmittel (Emmentaler → Gouda, `FOOD_STAND_INS`, Titel „Emmentaler (≈ Gouda)“).
+  Tabelle `packages/core/src/nutrition/food-household-table.ts` (Grammwerte mit Quelle, PRODUKTENTSCHEIDUNG), Logik
+  `food-household.ts`/`food-search.ts`, Grenzen `FOOD_HOUSEHOLD_LIMITS`. Fehlende Alltags-Lebensmittel:
+  `docs/FEHLENDE-LEBENSMITTEL.md`.
+
 ### 6.2 Standardgerichte (Gratis)
 - Eigene Gerichte anlegen („Mein Porridge“, „Shake nach dem Training“) mit kcal und Makros – direkt eingegeben oder aus Zutaten berechnet
 - Mit einem Tipp ins Tagebuch, Portion anpassbar

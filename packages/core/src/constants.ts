@@ -3306,6 +3306,31 @@ export const FOOD_LOG_LIMITS = {
   maxFavorites: 100,
 } as const;
 
+/**
+ * Freies Eintragen (Gründer-Rückmeldung Testphase 14.11.2026, docs/PLAN-ESSEN-FREI-EINTRAGEN.md):
+ * - `count`: Anzahl einer Haushaltsmenge („2 Scheiben“) 0,5–20 in ½-Schritten – wie Stück im Tagebuch
+ *   (`FOOD_LOG_LIMITS.amountPiece`); umgerechnet gelten weiter 1–2.000 g je Eintrag.
+ * - `basketMaxItems` 15: „Mahlzeit zusammenstellen“ trägt höchstens 15 Lebensmittel auf einmal ein (unter
+ *   `maxEntriesPerSave` 40 und `CUSTOM_MEAL_LIMITS.maxItems` 30, damit der Korb immer als Favorit speicherbar ist).
+ * - `quickChips` 6: so viele „Zuletzt gegessen“-Knöpfe oben im Eintragen-Bildschirm.
+ * - Suche: Lebensmittel-Arten („Käse“ → alle Käse) ab `groupMinChars` 3 Zeichen; leichte Tippfehler-Toleranz ab
+ *   `fuzzyMinChars` 5 Zeichen („Gauda“ → Gouda) mit höchstens 1 Abweichung, ab `fuzzyTwoFrom` 8 Zeichen höchstens 2 –
+ *   nur, solange es weniger als `fuzzyOnlyBelow` 3 echte Treffer gibt (sonst stört „Mischung“ bei „Milch“).
+ * Alles PRODUKTENTSCHEIDUNG (Bedienung, keine Empfehlung).
+ */
+export const FOOD_HOUSEHOLD_LIMITS = {
+  count: FOOD_LOG_LIMITS.amountPiece,
+  basketMaxItems: 15,
+  quickChips: 6,
+  groupMinChars: 3,
+  fuzzyMinChars: 5,
+  fuzzyTwoFrom: 8,
+  fuzzyOnlyBelow: 3,
+} as const;
+
+/** Anzahl-Vorschläge beim Eintragen in Haushaltsmengen (½, 1, 2, 3). PRODUKTENTSCHEIDUNG. */
+export const FOOD_HOUSEHOLD_COUNT_CHOICES = [0.5, 1, 2, 3] as const;
+
 /** Portionen für „Gegessen“ bei einer Plan-Mahlzeit (Plan 5 Nr. 1): ½, ¾, 1, 1¼, 1½, 2. PRODUKTENTSCHEIDUNG. */
 export const FOOD_LOG_PORTION_CHOICES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
 

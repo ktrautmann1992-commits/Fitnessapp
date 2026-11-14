@@ -7,6 +7,8 @@ export * from './eating-out';
 export * from './custom-meal';
 export * from './barcode';
 export * from './food-log';
+export * from './food-household';
+export * from './food-search';
 export * from './food-product';
 export * from './food-product-lookup';
 export * from './food-photo';
