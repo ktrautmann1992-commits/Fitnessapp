@@ -287,6 +287,18 @@ export const EQUIPMENT = [
     sortOrder: 310,
     homeSelectable: false,
   },
+  // Langhantel-Gruppenworkouts „Barbell Burn“ (Gründer-Auftrag 14.11.2026, docs/PLAN-BARBELL-BURN.md,
+  // 20261114120000_step_bench_equipment.sql): flaches Stepbrett zum Liegen bei Brust- und Trizeps-Übungen. Wie Matte und
+  // Block ein ersetzbares Hilfsmittel (OPTIONAL_AID_EQUIPMENT: auf dem Boden liegen) – nicht zu Hause wählbar, Kategorie
+  // `other` (kein Kraft-Gerät).
+  {
+    id: 'step_bench',
+    nameDe: 'Stepbrett',
+    category: 'other',
+    hasWeights: false,
+    sortOrder: 320,
+    homeSelectable: false,
+  },
   {
     id: 'other',
     nameDe: 'Sonstiges',
@@ -340,6 +352,9 @@ export const GYM_OPTIONAL_EQUIPMENT_IDS: readonly string[] = [
 export const OPTIONAL_AID_EQUIPMENT: Readonly<Record<string, string>> = {
   mat: 'Handtuch, Decke oder Teppich',
   yoga_block: 'festes Kissen oder dickes Buch',
+  // Barbell Burn (Gründer-Auftrag 14.11.2026): ohne Stepbrett auf dem Boden liegen (Bodendrücken) – der Boden begrenzt
+  // die Bewegung, die Übung bleibt sicher.
+  step_bench: 'auf dem Boden liegen',
 };
 
 /** Ist das Gerät ein ersetzbares Hilfsmittel (OPTIONAL_AID_EQUIPMENT)? */
