@@ -137,6 +137,12 @@
     "job_start": "a788d9fb-d5f8-4e40-84f2-a6da8327943b",
     "job_end": "ed7f8101-79d2-44e9-9415-6494e11ed736"
   },
+  "vorgebeugtes-rudern-kurzhantel": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142619_5a39cfd3-2349-432b-8c3c-b228bc98cbdb.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142737_fd864765-ca13-462c-8346-a633fc0f2275.png",
+    "job_start": "5a39cfd3-2349-432b-8c3c-b228bc98cbdb",
+    "job_end": "fd864765-ca13-462c-8346-a633fc0f2275"
+  },
   "beinrueckseite-dehnen-sitzend": {
     "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142536_5ccc35da-97c6-454b-ba6f-ea9b1b8192fa.png",
     "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142618_7dbf8d92-4cdd-4790-b3ef-24e2d93a027e.png",
@@ -154,5 +160,143 @@
     "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142738_3ed51dae-a007-413f-a03d-8f35fba61f41.png",
     "job_start": "ca27cea9-c5f9-454b-af0a-677c793380c8",
     "job_end": "3ed51dae-a007-413f-a03d-8f35fba61f41"
+  },
+  "mobility-schulterkreisen": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142657_65f0c60b-79c6-40e2-9fe2-7eef8e5eac23.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142900_7e8de5c4-56ef-4a74-b1dd-96e8f5fd04ed.png",
+    "job_start": "65f0c60b-79c6-40e2-9fe2-7eef8e5eac23",
+    "job_end": "7e8de5c4-56ef-4a74-b1dd-96e8f5fd04ed"
+  },
+  "rudern-band": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142737_98f729fa-65ed-43af-b047-bd4aba5a4b52.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142900_34f39133-8dc5-423f-97a9-a52877c26fe7.png",
+    "job_start": "98f729fa-65ed-43af-b047-bd4aba5a4b52",
+    "job_end": "34f39133-8dc5-423f-97a9-a52877c26fe7"
+  },
+  "seitstuetz": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142738_d11637b8-9881-4985-9486-275d1620012e.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142900_43de1cc9-4094-4e35-82c2-d2df7aeeda6e.png",
+    "job_start": "d11637b8-9881-4985-9486-275d1620012e",
+    "job_end": "43de1cc9-4094-4e35-82c2-d2df7aeeda6e"
+  },
+  "wadenheben-koerpergewicht": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142824_2d09ac30-a64a-47d8-973a-3a6099092433.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142900_053136d9-b25c-4fdf-bf89-2fc8c1c76766.png",
+    "job_start": "2d09ac30-a64a-47d8-973a-3a6099092433",
+    "job_end": "053136d9-b25c-4fdf-bf89-2fc8c1c76766"
+  },
+  "yoga-entspannung-sitzend": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142824_3d7c4407-eecd-4de4-9221-8664d1a598ce.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142940_7f76dbcd-70f1-41da-9f66-6eea41367e2c.png",
+    "job_start": "3d7c4407-eecd-4de4-9221-8664d1a598ce",
+    "job_end": "7f76dbcd-70f1-41da-9f66-6eea41367e2c"
+  },
+  "yoga-knie-zur-brust": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142824_adc74120-61b4-4397-90f6-ea9bb718266e.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142941_61d4bd78-b3cb-495f-967a-ecbf3ebf036c.png",
+    "job_start": "adc74120-61b4-4397-90f6-ea9bb718266e",
+    "job_end": "61d4bd78-b3cb-495f-967a-ecbf3ebf036c"
+  },
+  "ausfallschritt-rueckwaerts-kurzhantel": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142824_db6b333b-6fd1-49ee-824a-92c9f26c6a6c.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142940_8216200d-0701-46c5-8ab6-36864df463c5.png",
+    "job_start": "db6b333b-6fd1-49ee-824a-92c9f26c6a6c",
+    "job_end": "8216200d-0701-46c5-8ab6-36864df463c5"
+  },
+  "baerenstand-schulter-tippen": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_142941_e59439e1-3e8d-4528-8698-acead6a86def.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143035_c028c30e-c437-4afc-9f55-1988f55f973d.png",
+    "job_start": "e59439e1-3e8d-4528-8698-acead6a86def",
+    "job_end": "c028c30e-c437-4afc-9f55-1988f55f973d"
+  },
+  "dead-bug-gestreckt": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143034_f83dd047-18c5-44df-ab0b-7127a58ddcb6.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143139_37998863-6330-4920-b68a-ff4831069723.png",
+    "job_start": "f83dd047-18c5-44df-ab0b-7127a58ddcb6",
+    "job_end": "37998863-6330-4920-b68a-ff4831069723"
+  },
+  "gesaess-dehnen-sitzend": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143034_13a77987-4b3b-4a43-abda-a8dff7f1e764.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143138_7b4d0567-b120-418b-a8c6-b177192cd2f8.png",
+    "job_start": "13a77987-4b3b-4a43-abda-a8dff7f1e764",
+    "job_end": "7b4d0567-b120-418b-a8c6-b177192cd2f8"
+  },
+  "glute-bridge-einbeinig": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143104_8281c7ef-a806-4ec1-8629-e3a04729676c.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143208_0ee78357-6624-4aa5-bdba-8e245ec80183.png",
+    "job_start": "8281c7ef-a806-4ec1-8629-e3a04729676c",
+    "job_end": "0ee78357-6624-4aa5-bdba-8e245ec80183"
+  },
+  "goblet-kniebeuge": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143137_736e7583-eea6-4f18-9b55-c713571beb05.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143208_fd923026-36ab-4257-9716-0125e70770a5.png",
+    "job_start": "736e7583-eea6-4f18-9b55-c713571beb05",
+    "job_end": "fd923026-36ab-4257-9716-0125e70770a5"
+  },
+  "hollow-body-halten": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143238_1d70aebf-9d05-442a-8602-728044e1b60f.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143340_d3950e6c-6df5-44b4-9d66-0ff67592a6e7.png",
+    "job_start": "1d70aebf-9d05-442a-8602-728044e1b60f",
+    "job_end": "d3950e6c-6df5-44b4-9d66-0ff67592a6e7"
+  },
+  "hueftstrecken-vierfuessler": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143239_4db88caa-45ac-479a-b473-7ee23c3f398a.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143340_3f3bea26-a9e9-4763-a5b7-42b831e2c02b.png",
+    "job_start": "4db88caa-45ac-479a-b473-7ee23c3f398a",
+    "job_end": "3f3bea26-a9e9-4763-a5b7-42b831e2c02b"
+  },
+  "kettlebell-swing": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143309_5ce02d71-9453-4c54-bbc3-2ecf9ba3bae1.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143418_4e7b6036-77d7-449e-b01a-5e58c880348d.png",
+    "job_start": "5ce02d71-9453-4c54-bbc3-2ecf9ba3bae1",
+    "job_end": "4e7b6036-77d7-449e-b01a-5e58c880348d"
+  },
+  "kniebeuge-pause": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143309_ada9a1da-ee5b-46b3-b722-9f08c3386463.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143419_56b2ec4b-c685-42ad-82ad-8e3ed5b8fe3e.png",
+    "job_start": "ada9a1da-ee5b-46b3-b722-9f08c3386463",
+    "job_end": "56b2ec4b-c685-42ad-82ad-8e3ed5b8fe3e"
+  },
+  "kniebeuge-stuhl": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143419_bec91cfc-284b-4fe0-8818-bc53565af3ed.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143532_74496a78-8d5f-4bfe-98b3-8ccd6a6ab3f3.png",
+    "job_start": "bec91cfc-284b-4fe0-8818-bc53565af3ed",
+    "job_end": "74496a78-8d5f-4bfe-98b3-8ccd6a6ab3f3"
+  },
+  "marschieren-auf-der-stelle": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143419_aaeeea64-5ad7-477d-b9be-6d9c1f0d3693.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143532_2ba20a9e-efaf-4381-b347-2865e3fb34f5.png",
+    "job_start": "aaeeea64-5ad7-477d-b9be-6d9c1f0d3693",
+    "job_end": "2ba20a9e-efaf-4381-b347-2865e3fb34f5"
+  },
+  "mobility-nacken-seitneige": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143453_2f87986d-e1bd-43c2-9e22-03b8c5a5f267.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143608_1e02c94c-f611-4654-a17f-e26a19366132.png",
+    "job_start": "2f87986d-e1bd-43c2-9e22-03b8c5a5f267",
+    "job_end": "1e02c94c-f611-4654-a17f-e26a19366132"
+  },
+  "oberschenkel-vorderseite-dehnen": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143454_50f124d4-c266-4db2-9d64-fa69dc0b9251.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143608_0a8e128e-2ce0-49ba-8e0c-3225c5abe833.png",
+    "job_start": "50f124d4-c266-4db2-9d64-fa69dc0b9251",
+    "job_end": "0a8e128e-2ce0-49ba-8e0c-3225c5abe833"
+  },
+  "pallof-press-band": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143454_05989508-979c-470d-b174-1ea1b45646f1.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143608_bafcd47a-f57e-44ca-addd-808a0e0e6512.png",
+    "job_start": "05989508-979c-470d-b174-1ea1b45646f1",
+    "job_end": "bafcd47a-f57e-44ca-addd-808a0e0e6512"
+  },
+  "pilates-beckenkippen": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143533_5e954c43-85bf-4c7d-913c-f5c44fee7d5c.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143643_254b1e66-3863-48ff-8714-4e4e20035fe4.png",
+    "job_start": "5e954c43-85bf-4c7d-913c-f5c44fee7d5c",
+    "job_end": "254b1e66-3863-48ff-8714-4e4e20035fe4"
+  },
+  "schulterdruecken-kurzhantel": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143531_cb658eac-80a6-4657-8674-8bfabbe0c2b9.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_143609_5b5c6e1c-513e-459b-b247-e8d169eec6f9.png",
+    "job_start": "cb658eac-80a6-4657-8674-8bfabbe0c2b9",
+    "job_end": "5b5c6e1c-513e-459b-b247-e8d169eec6f9"
   }
 }
