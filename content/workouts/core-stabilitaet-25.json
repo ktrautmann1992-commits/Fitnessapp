@@ -1,0 +1,92 @@
+{
+  "id": "core-stabilitaet-25",
+  "version": 1,
+  "status": "published",
+  "title_de": "Core-Stabilität 25",
+  "summary_de": "Acht Stationen für einen stabilen Rumpf: Stütz, Schulter-Tippen, Dead Bug lang und Seitstütz mit Hüftheben. 45 Sekunden Arbeit, 15 Sekunden Pause.",
+  "category": "core",
+  "difficulty": 3,
+  "minutes": 25,
+  "format": "interval",
+  "rounds": 3,
+  "round_rest_s": 60,
+  "equipment_ids": [],
+  "warmup_de": "3 Minuten locker aufwärmen: auf der Stelle gehen, Arme kreisen, Hüfte kreisen und ein paar Runden Katze-Kuh im Vierfüßlerstand.",
+  "cooldown_de": "Zum Schluss ruhig auf dem Rücken liegen, Knie angestellt, und eine Minute entspannt in den Bauch atmen.",
+  "exercises": [
+    {
+      "exercise_id": "unterarmstuetz",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "dead-bug-gestreckt",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "seitstuetz-hueftheben",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "baerenstand-schulter-tippen",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "hollow-body-halten",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Wird es zu schwer: Knie beugen."
+    },
+    {
+      "exercise_id": "stuetz-schulter-tippen",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bird-dog",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Abwechselnd links und rechts, langsam."
+    },
+    {
+      "exercise_id": "fersen-tippen-seitlich",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Kraft-Ausdauer auf Zeit mit Stationen für die tiefen Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

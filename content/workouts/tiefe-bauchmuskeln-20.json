@@ -1,0 +1,84 @@
+{
+  "id": "tiefe-bauchmuskeln-20",
+  "version": 1,
+  "status": "published",
+  "title_de": "Tiefe Bauchmuskeln 20",
+  "summary_de": "Sanfter Rumpf-Zirkel nach Zeit für die tiefe Bauchmuskulatur: Atmung, Bauchnabel einziehen und ruhige Halteübungen – 35 Sekunden Arbeit, 20 Sekunden Pause.",
+  "category": "core",
+  "difficulty": 1,
+  "minutes": 20,
+  "format": "interval",
+  "rounds": 3,
+  "round_rest_s": 45,
+  "equipment_ids": [],
+  "warmup_de": "3 Minuten locker aufwärmen: auf der Stelle gehen, Arme kreisen, Hüfte kreisen und ein paar Runden Katze-Kuh im Vierfüßlerstand.",
+  "cooldown_de": "Zum Schluss ruhig auf dem Rücken liegen, Knie angestellt, und eine Minute entspannt in den Bauch atmen.",
+  "exercises": [
+    {
+      "exercise_id": "tiefe-bauchatmung-rueckenlage",
+      "reps": null,
+      "duration_s": 35,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "dead-bug",
+      "reps": null,
+      "duration_s": 35,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bauchnabel-einziehen-vierfuessler",
+      "reps": null,
+      "duration_s": 35,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bird-dog",
+      "reps": null,
+      "duration_s": 35,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Abwechselnd links und rechts, langsam."
+    },
+    {
+      "exercise_id": "seitstuetz-knie",
+      "reps": null,
+      "duration_s": 35,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "glute-bridge",
+      "reps": null,
+      "duration_s": 35,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "unterarmstuetz",
+      "reps": null,
+      "duration_s": 35,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Bei Bedarf auf den Knien."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Kraft-Ausdauer auf Zeit mit Stationen für die tiefen Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

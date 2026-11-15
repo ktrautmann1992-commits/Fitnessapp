@@ -1,0 +1,100 @@
+{
+  "id": "beine-po-ausdauer-28",
+  "version": 1,
+  "status": "published",
+  "title_de": "Beine & Po Ausdauer 28",
+  "summary_de": "Neun Stationen für Beine und Gesäß ohne Geräte – mit Bärenstand und Fersen-Tippen für die Körpermitte. 45 Sekunden Arbeit, 15 Sekunden Pause.",
+  "category": "legs_glutes",
+  "difficulty": 3,
+  "minutes": 28,
+  "format": "interval",
+  "rounds": 3,
+  "round_rest_s": 60,
+  "equipment_ids": [],
+  "warmup_de": "5 Minuten locker aufwärmen: auf der Stelle gehen, Arme kreisen, Hüfte kreisen und 10 ruhige Kniebeugen ohne Tiefe.",
+  "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
+  "exercises": [
+    {
+      "exercise_id": "kniebeuge-pause",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "ausfallschritt-gehen-koerpergewicht",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Abwechselnd links und rechts, kleine Schritte sind in Ordnung."
+    },
+    {
+      "exercise_id": "glute-bridge-einbeinig",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "seitlicher-ausfallschritt",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "kniebeuge-tempo",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "wadenheben-koerpergewicht",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "hueftstrecken-vierfuessler",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "baerenstand-halten",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "fersen-tippen-seitlich",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Kraft-Ausdauer auf Zeit mit Stationen für die tiefen Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

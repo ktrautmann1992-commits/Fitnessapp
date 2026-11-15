@@ -1,0 +1,35 @@
+{
+  "exercise_id": "dead-bug-gestreckt",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "dead-bug-gestreckt-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, Arme senkrecht nach oben, Beine gestreckt zur Decke, unterer Rücken am Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "dead-bug-gestreckt-end.svg",
+      "alt_de": "Endposition: Rückenlage, ein Arm nach hinten über den Kopf, das gegenüberliegende Bein gestreckt knapp über dem Boden, das andere Bein zeigt zur Decke.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

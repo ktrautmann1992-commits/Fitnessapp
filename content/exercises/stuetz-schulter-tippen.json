@@ -1,0 +1,52 @@
+{
+  "id": "stuetz-schulter-tippen",
+  "version": 1,
+  "status": "published",
+  "name_de": "Schulter-Tippen im Liegestütz",
+  "name_en": "Plank Shoulder Taps",
+  "aliases_de": ["Shoulder Taps", "Plank mit Schulter-Tippen"],
+  "movement_pattern": "core_anti_rotation",
+  "primary_muscles": ["abs", "obliques"],
+  "secondary_muscles": ["front_delts", "chest", "triceps"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Im hohen Liegestütz tippt abwechselnd eine Hand an die gegenüberliegende Schulter. Im Unterarmstütz geht das nicht – daher aus dem hohen Stütz. Der Rumpf bleibt dabei still.",
+  "steps_de": [
+    "Hoher Liegestütz: Hände unter den Schultern, Füße etwas weiter als hüftbreit, Körper gerade.",
+    "Bauch fest, Gesäß leicht anspannen.",
+    "Eine Hand an die gegenüberliegende Schulter tippen und kontrolliert zurücksetzen.",
+    "Seite wechseln – Hüfte und Schultern bleiben waagerecht."
+  ],
+  "tips_de": [
+    "Breitere Füße machen es leichter, engere schwerer.",
+    "Leichter: auf den Knien oder im Bärenstand."
+  ],
+  "common_mistakes_de": ["Hüfte schwingt von Seite zu Seite.", "Hohlkreuz.", "Zu schnell tippen."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden. Bei Beschwerden in Handgelenken oder Schultern die Variante im Bärenstand wählen.",
+  "alternatives": [
+    {
+      "alternative_id": "baerenstand-schulter-tippen",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "pallof-press-band",
+      "reason": "other_equipment",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Kraft-Ausdauer-Workouts mit Schwerpunkt tiefe Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

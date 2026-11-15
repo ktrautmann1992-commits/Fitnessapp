@@ -1,0 +1,55 @@
+{
+  "id": "fersen-tippen-seitlich",
+  "version": 1,
+  "status": "published",
+  "name_de": "Fersen seitlich tippen",
+  "name_en": "Heel Taps",
+  "aliases_de": ["Heel Taps", "Fersen-Tippen in Rückenlage"],
+  "movement_pattern": "core_flexion",
+  "primary_muscles": ["obliques"],
+  "secondary_muscles": ["abs"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["long_supine", "floor_transfer", "spinal_flexion"],
+  "description_de": "Bauchübung in Rückenlage: Kopf und Schultern leicht abgehoben, die Hände tippen abwechselnd seitlich an die Fersen. Kräftigt vor allem die seitlichen Bauchmuskeln.",
+  "steps_de": [
+    "Auf den Rücken legen, Knie gebeugt, Füße etwas weiter als hüftbreit aufgestellt, Arme lang neben dem Körper.",
+    "Ausatmen, Kopf und Schultern ein kleines Stück abheben, Blick schräg nach vorn.",
+    "Seitlich zur rechten Ferse neigen und tippen, dann zur linken.",
+    "Die Schultern bleiben während der ganzen Zeit leicht angehoben."
+  ],
+  "tips_de": [
+    "Die Bewegung kommt aus der Seite des Rumpfes, nicht aus den Armen.",
+    "Wird der Nacken müde, kurz ablegen und weitermachen."
+  ],
+  "common_mistakes_de": [
+    "Kinn auf die Brust ziehen.",
+    "Schultern zwischendurch ablegen und mit Schwung wieder hochkommen."
+  ],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden. Bei Nacken- oder Rückenbeschwerden lieber die tiefe Bauchatmung in Rückenlage wählen.",
+  "alternatives": [
+    {
+      "alternative_id": "crunch",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "l-sitz-gehockt",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Kraft-Ausdauer-Workouts mit Schwerpunkt tiefe Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

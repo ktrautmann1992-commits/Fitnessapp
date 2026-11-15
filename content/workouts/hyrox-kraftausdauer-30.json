@@ -1,0 +1,84 @@
+{
+  "id": "hyrox-kraftausdauer-30",
+  "version": 1,
+  "status": "published",
+  "title_de": "Hyrox-Kraft-Ausdauer 30",
+  "summary_de": "Kraft-Ausdauer für Hyrox ohne Spezialgeräte: Burpees, Ausfallschritte, Tragen und Kniebeugen nach Zeit, dazu Stütz und Schulter-Tippen für die Körpermitte.",
+  "category": "hiit_cardio",
+  "difficulty": 3,
+  "minutes": 30,
+  "format": "interval",
+  "rounds": 4,
+  "round_rest_s": 60,
+  "equipment_ids": [],
+  "warmup_de": "Fünf Minuten zügig gehen oder locker traben, Arme kreisen und ein paar lockere Kniebeugen.",
+  "cooldown_de": "Langsam gehen, tief durchatmen, dann Waden und Oberschenkel sanft dehnen.",
+  "exercises": [
+    {
+      "exercise_id": "burpee-ohne-sprung",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "ausfallschritt-gehen-koerpergewicht",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Abwechselnd links und rechts."
+    },
+    {
+      "exercise_id": "taschen-tragen",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Zwei gefüllte Einkaufstaschen oder Wasserflaschen."
+    },
+    {
+      "exercise_id": "kniebeuge-koerpergewicht",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "hampelmann",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Ohne Springen: Step-Jacks."
+    },
+    {
+      "exercise_id": "unterarmstuetz",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "baerenstand-schulter-tippen",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Kraft-Ausdauer auf Zeit mit Stationen für die tiefen Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

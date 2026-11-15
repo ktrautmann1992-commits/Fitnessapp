@@ -1,63 +1,79 @@
 {
   "id": "sanfter-einstieg-ganzkoerper",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Sanfter Einstieg",
-  "summary_de": "Ganzkörper ohne Geräte für den Start: einfache Übungen, viele Pausen, ruhiges Tempo. Gut, um die Bewegungen kennenzulernen.",
+  "summary_de": "Ganzkörper ohne Geräte für den Start, nach Zeit: einfache Übungen, Pausen nach jeder Übung, ruhiges Tempo – und Bauchatmung für die tiefen Bauchmuskeln.",
   "category": "full_body",
   "difficulty": 1,
-  "minutes": 17,
-  "format": "circuit",
+  "minutes": 21,
+  "format": "interval",
   "rounds": 3,
-  "round_rest_s": 60,
+  "round_rest_s": 45,
   "equipment_ids": [],
   "warmup_de": "5 Minuten locker aufwärmen: auf der Stelle gehen, Arme kreisen, Hüfte kreisen und 10 ruhige Kniebeugen ohne Tiefe.",
   "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
   "exercises": [
     {
       "exercise_id": "kniebeuge-stuhl",
-      "reps": 10,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "liegestuetz-erhoeht",
-      "reps": 8,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "glute-bridge",
-      "reps": 12,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "tuerrahmen-rudern",
-      "reps": 8,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": "Nach der Hälfte die Seite wechseln."
     },
     {
       "exercise_id": "bird-dog",
-      "reps": 6,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite, langsam."
+      "note_de": "Abwechselnd links und rechts, langsam."
     },
     {
       "exercise_id": "unterarmstuetz",
       "reps": null,
       "duration_s": 20,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Bei Bedarf auf den Knien."
+    },
+    {
+      "exercise_id": "marschieren-auf-der-stelle",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "tiefe-bauchatmung-rueckenlage",
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null

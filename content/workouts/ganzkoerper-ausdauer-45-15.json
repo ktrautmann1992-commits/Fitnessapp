@@ -1,0 +1,100 @@
+{
+  "id": "ganzkoerper-ausdauer-45-15",
+  "version": 1,
+  "status": "published",
+  "title_de": "Ganzkörper Ausdauer 45/15",
+  "summary_de": "Neun harte Stationen ohne Geräte, 45 Sekunden Arbeit und nur 15 Sekunden Pause. Für Geübte mit sicherer Technik bei Liegestütz und Ausfallschritt.",
+  "category": "full_body",
+  "difficulty": 4,
+  "minutes": 28,
+  "format": "interval",
+  "rounds": 3,
+  "round_rest_s": 60,
+  "equipment_ids": [],
+  "warmup_de": "5 Minuten aufwärmen: zügig auf der Stelle gehen, Arme kreisen, Schultern lockern und ein paar Step-Jacks im ruhigen Tempo.",
+  "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
+  "exercises": [
+    {
+      "exercise_id": "liegestuetz",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "kniebeuge-pause",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "ausfallschritt-gehen-koerpergewicht",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Abwechselnd links und rechts."
+    },
+    {
+      "exercise_id": "pike-liegestuetz",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "burpee-ohne-sprung",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "rdl-einbeinig-koerpergewicht",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "hollow-body-halten",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "seitstuetz-hueftheben",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "dead-bug-gestreckt",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Kraft-Ausdauer auf Zeit mit Stationen für die tiefen Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

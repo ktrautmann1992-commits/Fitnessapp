@@ -1,0 +1,84 @@
+{
+  "id": "kettlebell-kraftausdauer-28",
+  "version": 1,
+  "status": "published",
+  "title_de": "Kettlebell Kraft-Ausdauer 28",
+  "summary_de": "Kettlebell-Schwung und Tragen im Wechsel mit Körpergewicht-Übungen und Bärenstand. Fast alles nach Zeit, 15 Sekunden Pause zwischen den Stationen.",
+  "category": "full_body",
+  "difficulty": 3,
+  "minutes": 28,
+  "format": "circuit",
+  "rounds": 4,
+  "round_rest_s": 60,
+  "equipment_ids": ["kettlebells"],
+  "warmup_de": "5 Minuten aufwärmen: Arme und Hüfte kreisen, 10 Kniebeugen und 10 Hüftbeugen ohne Gewicht, dann ein paar leichte Schwünge.",
+  "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
+  "exercises": [
+    {
+      "exercise_id": "kettlebell-swing",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Kraft aus der Hüfte, Rücken gerade."
+    },
+    {
+      "exercise_id": "farmers-carry-kettlebell",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "kniebeuge-koerpergewicht",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "liegestuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Leichter: Hände erhöht."
+    },
+    {
+      "exercise_id": "ausfallschritt-gehen-koerpergewicht",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Abwechselnd links und rechts."
+    },
+    {
+      "exercise_id": "baerenstand-halten",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "seitstuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Kraft-Ausdauer auf Zeit mit Stationen für die tiefen Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

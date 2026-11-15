@@ -21,6 +21,7 @@ import {
 import { CALISTHENICS_ILLUSTRATIONS } from './poses-calisthenics';
 import { HYROX_ILLUSTRATIONS } from './poses-hyrox';
 import { LIGHT_BARBELL_ILLUSTRATIONS } from './poses-langhantel-leicht';
+import { DEEP_CORE_ILLUSTRATIONS } from './poses-tiefe-bauchmuskeln';
 import { ROWING_ILLUSTRATIONS } from './poses-rowing';
 import { WOD_ILLUSTRATIONS } from './poses-wod';
 import { YOGA_ILLUSTRATIONS } from './poses-yoga';
@@ -1323,4 +1324,5 @@ export const EXERCISE_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustratio
   // --- Workouts im WOD-Stil: Box-Sprung, Seilspringen, Thruster (docs/PLAN-WORKOUTS.md W-O6) -----------------------
   ...WOD_ILLUSTRATIONS,
   ...LIGHT_BARBELL_ILLUSTRATIONS,
+  ...DEEP_CORE_ILLUSTRATIONS,
 };

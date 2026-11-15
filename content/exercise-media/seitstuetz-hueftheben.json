@@ -1,0 +1,35 @@
+{
+  "exercise_id": "seitstuetz-hueftheben",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "seitstuetz-hueftheben-start.svg",
+      "alt_de": "Ausgangsposition: Seitstütz von vorn – Ellbogen unter der Schulter, Beine gestreckt, Hüfte angehoben, Körper vom Kopf bis zu den Füßen gerade, oberer Arm nach oben gestreckt.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "seitstuetz-hueftheben-end.svg",
+      "alt_de": "Endposition: Seitstütz mit gesenkter Hüfte knapp über dem Boden, Ellbogen bleibt unter der Schulter.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

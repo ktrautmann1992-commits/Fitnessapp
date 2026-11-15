@@ -62,10 +62,11 @@ function dbRows(publish: boolean, archived: readonly string[] = []) {
 }
 
 describe('Bibliothek aus der Datenbank', () => {
-  it('Zeilen → Inhalte im Format von packages/core (alle 286 Übungen, 49 Vorlagen)', () => {
+  it('Zeilen → Inhalte im Format von packages/core (alle 294 Übungen, 49 Vorlagen)', () => {
     const content = contentFromDbRows(dbRows(true));
-    // 172 (inkl. 2 Rudern) + 17 Hyrox + 50 Posen der Etappe Y (Sportarten Stufe 1) + 34 Posen (Restpunkte A) + 9 Barbell Burn.
-    expect(content.exercises).toHaveLength(286);
+    // 172 (inkl. 2 Rudern) + 17 Hyrox + 50 Posen der Etappe Y (Sportarten Stufe 1) + 34 Posen (Restpunkte A) + 9 Barbell Burn
+    // + 8 Tiefe Bauchmuskeln (15.11.2026).
+    expect(content.exercises).toHaveLength(294);
     expect(content.templates).toHaveLength(49);
     expect(content.templates[0]?.sessions[0]?.exercises.length).toBeGreaterThan(0);
   });
@@ -80,11 +81,12 @@ describe('Bibliothek aus der Datenbank', () => {
   it('Zwischenspeicher: nur Übungen, wieder mit Zod geprüft', () => {
     const library = libraryFromDbRows(dbRows(true));
     const cached = libraryFromCache(JSON.parse(JSON.stringify(libraryToCache(library))));
-    // Posen (isFlowPoseId) nur zur Anzeige – die Plan-Engine sieht 202 Übungen (inkl. 2 Rudern, 17 Hyrox, 4 WOD-Stil, 9 Barbell Burn).
-    expect(cached?.exercises.size).toBe(202);
-    expect(cached?.displayExercises?.size).toBe(286);
-    expect(library.exercises.size).toBe(202);
-    expect(library.displayExercises?.size).toBe(286);
+    // Posen (isFlowPoseId) nur zur Anzeige – die Plan-Engine sieht 202 Übungen (inkl. 2 Rudern, 17 Hyrox, 4 WOD-Stil, 9 Barbell Burn,
+    // 8 Tiefe Bauchmuskeln).
+    expect(cached?.exercises.size).toBe(210);
+    expect(cached?.displayExercises?.size).toBe(294);
+    expect(library.exercises.size).toBe(210);
+    expect(library.displayExercises?.size).toBe(294);
     expect(cached?.templates).toEqual([]);
     expect(libraryFromCache(null)).toBeNull();
   });

@@ -60,9 +60,9 @@ describe('Workout-Bibliothek im Testmodus', () => {
     const published = s.workouts.filter((w) => w.status === 'published');
     // 56 + 10 Yoga-/Pilates-Routinen der Restpunkte A (27.10.2026) + 15 „Neues ausprobieren“ (29.10.2026: 3 Entspannung,
     // 3 Hyrox, 3 Calisthenics, 6 im WOD-Stil) + 2 WODs mit Box-Sprung/Seilspringen/Thruster (30.10.2026, W-O6)
-    // + Barbell Burn 60 und 30 (14.11.2026).
-    expect(published.length).toBe(85);
-    expect(s.workouts).toHaveLength(85);
+    // + Barbell Burn 60 und 30 (14.11.2026) + 16 Kraft-Ausdauer auf Zeit (15.11.2026).
+    expect(published.length).toBe(101);
+    expect(s.workouts).toHaveLength(101);
     expect(
       s.workouts
         .filter((w) => w.status === 'draft')
@@ -102,17 +102,15 @@ describe('Workout-Bibliothek im Testmodus', () => {
     expect(workoutsFromBundle(CONTENT_BUNDLE.files, [first]).map((w) => w.id)).toEqual([
       (first.data as Workout).id,
     ]);
-    // Lauf-Kraft-Workouts (docs/PLAN-CALISTHENICS-SCHLINGE.md 4): freigegeben (27.10.2026).
+    // Lauf-Kraft-Workouts (docs/PLAN-CALISTHENICS-SCHLINGE.md 4): freigegeben (27.10.2026); dazu „Kraft-Ausdauer für
+    // Läufer 25“ (15.11.2026).
     const runStrength = CONTENT_BUNDLE.workoutFiles.filter(
       (f) => (f.data as Workout).category === 'run_strength',
     );
-    expect(runStrength.length).toBe(4);
-    expect(workoutsFromBundle(CONTENT_BUNDLE.files, runStrength).map((w) => w.status)).toEqual([
-      'published',
-      'published',
-      'published',
-      'published',
-    ]);
+    expect(runStrength.length).toBe(5);
+    expect(workoutsFromBundle(CONTENT_BUNDLE.files, runStrength).map((w) => w.status)).toEqual(
+      Array(5).fill('published'),
+    );
   });
 
   it('workoutsFromDbRows: nur gültige freigegebene Zeilen', () => {
@@ -160,7 +158,7 @@ describe('Workout abschließen → freie Einheit am Tag (Herkunft „workout“)
       name_de: 'Freie Kraft-Einheit',
       started_at: active.startedAt,
     });
-    expect(payload.notes).toBe('Workout „Bauch-Blitz“ (★★☆☆☆) · 3/3 Runden · 12 Min.\nLief gut');
+    expect(payload.notes).toBe('Workout „Bauch-Blitz“ (★★☆☆☆) · 4/4 Runden · 22 Min.\nLief gut');
     expect(payload.exercises).toHaveLength(workout.exercises.length);
     expect(payload.exercises.every((e) => e.sets.length === workout.rounds)).toBe(true);
 

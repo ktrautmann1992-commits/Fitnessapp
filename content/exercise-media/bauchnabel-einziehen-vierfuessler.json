@@ -1,0 +1,35 @@
+{
+  "exercise_id": "bauchnabel-einziehen-vierfuessler",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "bauchnabel-einziehen-vierfuessler-start.svg",
+      "alt_de": "Ausgangsposition: Vierfüßlerstand, Hände unter den Schultern, Knie unter der Hüfte, Rücken gerade, Blick zum Boden.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "bauchnabel-einziehen-vierfuessler-end.svg",
+      "alt_de": "Endposition: dieselbe Haltung, beim Ausatmen geben Kopf und Arme leicht nach – ruhig weiteratmen.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

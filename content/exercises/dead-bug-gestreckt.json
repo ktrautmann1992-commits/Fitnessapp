@@ -1,0 +1,56 @@
+{
+  "id": "dead-bug-gestreckt",
+  "version": 1,
+  "status": "published",
+  "name_de": "Dead Bug mit gestreckten Beinen",
+  "name_en": "Straight-Leg Dead Bug",
+  "aliases_de": ["Dead Bug lang"],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "bodyweight",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": ["long_supine"],
+  "description_de": "Schwerere Variante des Dead Bug: Die Beine zeigen gestreckt nach oben und senken sich abwechselnd mit dem gegenüberliegenden Arm, der untere Rücken bleibt am Boden.",
+  "steps_de": [
+    "Auf den Rücken legen, Arme senkrecht nach oben, Beine gestreckt zur Decke.",
+    "Unteren Rücken sanft in den Boden drücken und die Bauchspannung aufbauen.",
+    "Ausatmen und einen Arm nach hinten sowie das gegenüberliegende gestreckte Bein Richtung Boden senken.",
+    "Nur so tief senken, wie der Rücken liegen bleibt, dann zurück und Seite wechseln."
+  ],
+  "tips_de": [
+    "Langsam und gleichmäßig senken – zwei Sekunden runter, zwei hoch.",
+    "Wird es zu schwer, das Bein im Knie leicht beugen."
+  ],
+  "common_mistakes_de": [
+    "Hohlkreuz beim Absenken.",
+    "Bein fallen lassen statt kontrolliert senken.",
+    "Kopf und Nacken anspannen."
+  ],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden. Bei Rückenbeschwerden die Variante mit gebeugten Knien wählen.",
+  "alternatives": [
+    {
+      "alternative_id": "dead-bug",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "hollow-body-halten",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Kraft-Ausdauer-Workouts mit Schwerpunkt tiefe Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

@@ -5,6 +5,7 @@ import {
   isCalisthenicsWorkout,
   isHyroxWorkout,
   isRelaxWorkout,
+  isStrengthEnduranceWorkout,
   missingWorkoutEquipment,
   WORKOUT_THEMES,
   workoutDiscipline,
@@ -153,6 +154,61 @@ describe('Bereiche', () => {
   });
 });
 
+describe('Kraft-Ausdauer auf Zeit (Fokus, 15.11.2026)', () => {
+  const timed = (overrides: Parameters<typeof makeWorkout>[0] = {}) =>
+    makeWorkout({
+      id: 'ka',
+      title_de: 'Zirkel 25',
+      format: 'interval',
+      minutes: 25,
+      exercises: [
+        workoutItem('kniebeuge-kg', { reps: null, duration_s: 40 }),
+        workoutItem('liegestuetz-kg', { reps: null, duration_s: 40 }),
+        workoutItem('dead-bug', { reps: null, duration_s: 40 }),
+      ],
+      ...overrides,
+    });
+
+  it('Zirkel/Intervall, Kraft-Kategorie, 20–30 Minuten, mindestens die Hälfte nach Zeit', () => {
+    expect(isStrengthEnduranceWorkout(timed())).toBe(true);
+    expect(isStrengthEnduranceWorkout(timed({ format: 'circuit', minutes: 20 }))).toBe(true);
+    expect(isStrengthEnduranceWorkout(timed({ minutes: 30, category: 'core' }))).toBe(true);
+    // Grenzen: 19 und 31 Minuten, Sätze × Wdh., Flow, Mobilität, Rudern, WOD-Stil.
+    expect(isStrengthEnduranceWorkout(timed({ minutes: 19 }))).toBe(false);
+    expect(isStrengthEnduranceWorkout(timed({ minutes: 31 }))).toBe(false);
+    expect(isStrengthEnduranceWorkout(timed({ format: 'sets_reps' }))).toBe(false);
+    expect(isStrengthEnduranceWorkout(timed({ format: 'flow' }))).toBe(false);
+    expect(isStrengthEnduranceWorkout(timed({ category: 'mobility' }))).toBe(false);
+    expect(isStrengthEnduranceWorkout(timed({ category: 'rowing' }))).toBe(false);
+    expect(isStrengthEnduranceWorkout(timed({ title_de: 'AMRAP 25', format: 'circuit' }))).toBe(
+      false,
+    );
+    // Weniger als die Hälfte nach Zeit bzw. keine Übungen.
+    const mostlyReps = timed({
+      exercises: [
+        workoutItem('a'),
+        workoutItem('b'),
+        workoutItem('c', { reps: null, duration_s: 40 }),
+      ],
+    });
+    expect(isStrengthEnduranceWorkout(mostlyReps)).toBe(false);
+    expect(isStrengthEnduranceWorkout(timed({ exercises: [] }))).toBe(false);
+  });
+
+  it('Bereich und „Alle“: Kraft-Ausdauer zuerst, sonst Reihenfolge der Eingabe', () => {
+    const ka = timed();
+    expect(workoutHasTheme(ka, 'strength_endurance')).toBe(true);
+    expect(workoutHasTheme(generic, 'strength_endurance')).toBe(false);
+    expect(workoutsForTheme([generic, yogaRelax, ka], null).map((w) => w.id)).toEqual([
+      'ka',
+      'gen',
+      'yoga-ruhe',
+    ]);
+    expect(workoutsForTheme([generic, ka], 'strength_endurance').map((w) => w.id)).toEqual(['ka']);
+    expect(workoutThemeCounts([generic, ka]).strength_endurance).toBe(1);
+  });
+});
+
 describe('workoutsForTheme', () => {
   const all = [generic, yogaHard, yogaRelax, mobility, pilates, hyrox, calisthenics, wod, rowing];
 
@@ -197,6 +253,7 @@ describe('workoutsForTheme', () => {
 
   it('Anzahl je Bereich', () => {
     expect(workoutThemeCounts(all)).toEqual({
+      strength_endurance: 0,
       relax: 2,
       yoga_pilates: 3,
       hyrox: 1,

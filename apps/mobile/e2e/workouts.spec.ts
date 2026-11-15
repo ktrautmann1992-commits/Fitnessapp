@@ -58,12 +58,12 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   // Yoga-/Pilates-Routinen der Restpunkte); ohne Gesundheits-Check sind „Sanft in den Morgen“ (zu viele
   // Umkehrhaltungen für den vorsichtigen Plan) und 2 Restpunkte-Routinen (gestützte Brücke) ausgeblendet. Dazu 15 aus
   // „Neues ausprobieren“ (29.10.2026: Entspannung, Hyrox, Calisthenics, WOD-Stil) und 2 WODs mit Box-Sprung/Seilspringen
-  // (30.10.2026, W-O6). Dazu Barbell Burn 60 und 30 (14.11.2026).
-  await expect(count(page)).toHaveText('82 Workouts');
+  // (30.10.2026, W-O6). Dazu Barbell Burn 60 und 30 (14.11.2026) und 16 Kraft-Ausdauer auf Zeit (15.11.2026).
+  await expect(count(page)).toHaveText('98 Workouts');
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
-    /Bauch-Blitz, Schwierigkeit 2 von 5 Sternen: eher leicht, 12 Min\./,
+    /Bauch-Blitz, Schwierigkeit 2 von 5 Sternen: eher leicht, 22 Min\./,
   );
 
   // Filter sind zugeklappt („Filter“ antippen).
@@ -77,7 +77,9 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-5').click();
   await page.getByTestId('workouts-filter-stars-1').click();
   await page.getByTestId('workouts-filter-category-core').click();
-  await expect(count(page)).toHaveText('1 Workout');
+  // Rumpf-Basis und „Tiefe Bauchmuskeln 20“ (15.11.2026).
+  await expect(count(page)).toHaveText('2 Workouts');
+  await expect(card(page, 'tiefe-bauchmuskeln-20')).toBeVisible();
   await expect(card(page, 'rumpf-basis')).toBeVisible();
 
   await page.getByTestId('workouts-filter-reset').click();
@@ -90,7 +92,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   await page.getByTestId('workouts-filter-stars-1').click();
   await expect(page.getByTestId('workouts-no-match')).toBeVisible();
   await page.getByTestId('workouts-filter-reset').click();
-  await expect(count(page)).toHaveText('82 Workouts');
+  await expect(count(page)).toHaveText('98 Workouts');
 
   // „Workouts“ steht im Training – unter „Mehr“ nicht noch einmal (kein Doppel).
   await page.getByRole('tab', { name: 'Mehr' }).click();
@@ -127,7 +129,7 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
   await expect(page.getByTestId('workout-timer-kind')).toHaveText('Los!');
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Dead Bug');
   await expect(page.getByTestId('workout-timer-progress')).toHaveText(
-    'Runde 1 von 3 · 0 von 15 erledigt',
+    'Runde 1 von 4 · 0 von 28 erledigt',
   );
   await expect(page.getByTestId('workout-timer-next')).toHaveText('Als Nächstes: Unterarmstütz');
 
@@ -145,7 +147,7 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
   await expect(page.getByTestId('workout-timer-kind')).toHaveText('Pause');
   // In der Pause: die kommende Übung groß.
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Unterarmstütz');
-  await expect(page.getByTestId('workout-timer-progress')).toContainText('1 von 15 erledigt');
+  await expect(page.getByTestId('workout-timer-progress')).toContainText('1 von 28 erledigt');
   await page.getByTestId('workout-timer-skip').click();
   await expect(page.getByTestId('workout-timer-kind')).toHaveText('Los!');
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Unterarmstütz');
@@ -156,7 +158,7 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
   await page.getByTestId('workout-timer-end').click();
   await page.getByTestId('workout-end-dialog').getByRole('button', { name: 'Beenden' }).click();
   await heading(page, 'Workout beendet');
-  await expect(page.getByTestId('workout-finish-summary')).toHaveText(/^1 von 15 erledigt/);
+  await expect(page.getByTestId('workout-finish-summary')).toHaveText(/^1 von 28 erledigt/);
   await page.getByTestId('workout-rpe-6').click();
   await page.getByTestId('workout-note').fill('Kurz, aber gut');
   await page.getByTestId('workout-save').click();
@@ -173,7 +175,7 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
     session_rpe: 6,
   });
   expect(logs[0]?.notes).toMatch(
-    /^Workout „Bauch-Blitz“ \(★★☆☆☆\) · 0\/3 Runden · \d+ Min\. · vorzeitig beendet\nKurz, aber gut$/,
+    /^Workout „Bauch-Blitz“ \(★★☆☆☆\) · 0\/4 Runden · \d+ Min\. · vorzeitig beendet\nKurz, aber gut$/,
   );
 
   // Am heutigen Tag sichtbar.

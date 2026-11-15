@@ -1,0 +1,56 @@
+{
+  "id": "tiefe-bauchatmung-rueckenlage",
+  "version": 1,
+  "status": "published",
+  "name_de": "Tiefe Bauchatmung in Rückenlage",
+  "name_en": "Deep Core Breathing (Supine)",
+  "aliases_de": ["Beckenboden-Atmung", "TVA-Atmung"],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": ["long_supine"],
+  "description_de": "Ruhige Atemübung für die tiefe Bauchmuskulatur und den Beckenboden: Beim Ausatmen spannt sich die Körpermitte sanft von unten nach innen, beim Einatmen löst sie sich wieder.",
+  "steps_de": [
+    "Auf den Rücken legen, Knie gebeugt, Füße hüftbreit aufgestellt, Arme locker neben dem Körper.",
+    "Durch die Nase einatmen, Bauch und Flanken weiten sich, der Beckenboden lässt los.",
+    "Langsam durch den Mund ausatmen und dabei den Beckenboden sanft anheben und den Unterbauch leicht nach innen ziehen.",
+    "Die Spannung kurz halten, ohne die Luft anzuhalten, dann beim Einatmen wieder lösen."
+  ],
+  "tips_de": [
+    "Die Spannung ist klein: etwa ein Drittel der möglichen Kraft reicht.",
+    "Becken und unterer Rücken bleiben ruhig liegen – nichts drückt nach unten."
+  ],
+  "common_mistakes_de": [
+    "Luft anhalten oder pressen.",
+    "Gesäß fest anspannen statt den Beckenboden sanft anzuheben.",
+    "Bauch mit Kraft einziehen, sodass die Schultern hochziehen."
+  ],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden. Nach einer Geburt oder bei Beschwerden im Beckenboden vorher ärztlich oder physiotherapeutisch abklären lassen.",
+  "alternatives": [
+    {
+      "alternative_id": "bauchnabel-einziehen-vierfuessler",
+      "reason": "harder",
+      "priority": 1
+    },
+    {
+      "alternative_id": "dead-bug",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Kraft-Ausdauer-Workouts mit Schwerpunkt tiefe Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}
