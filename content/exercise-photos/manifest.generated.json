@@ -401,6 +401,12 @@
     "job_start": "1d5a6bc2-2780-45bf-adf6-b2ec002f41e3",
     "job_end": "f175d1cc-93a9-484a-bde6-6bd4ce759cee"
   },
+  "mobility-knie-zur-wand": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144215_46f04cfd-a38c-4046-9beb-fdf8ce9ecc6f.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144323_70a381d7-b445-4e56-8d6a-d66acd36218d.png",
+    "job_start": "46f04cfd-a38c-4046-9beb-fdf8ce9ecc6f",
+    "job_end": "70a381d7-b445-4e56-8d6a-d66acd36218d"
+  },
   "mobility-wade-wand": {
     "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144215_898486fe-ce7b-493c-89a9-ac29c20963ad.png",
     "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144249_8b27c987-f312-44b2-9856-2feef279695a.png",
@@ -412,5 +418,83 @@
     "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144249_239bdd3a-2e7d-456b-a4ad-95afb55221c8.png",
     "job_start": "25287209-38a7-493c-90b4-26362a08878b",
     "job_end": "239bdd3a-2e7d-456b-a4ad-95afb55221c8"
+  },
+  "pilates-rumpf-atmung-sitzend": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144323_4dbaa334-4c71-4c2e-a46c-3ad0b53cb411.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144443_1c5fab9b-67cb-4f32-afa9-20fa49aac1f0.png",
+    "job_start": "4dbaa334-4c71-4c2e-a46c-3ad0b53cb411",
+    "job_end": "1c5fab9b-67cb-4f32-afa9-20fa49aac1f0"
+  },
+  "pilates-schwan-sanft": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144323_1056abfc-88d0-4cae-9d8e-129bd464db46.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144441_d0dc1dee-903e-4d3f-9611-62c7584cc4e3.png",
+    "job_start": "1056abfc-88d0-4cae-9d8e-129bd464db46",
+    "job_end": "d0dc1dee-903e-4d3f-9611-62c7584cc4e3"
+  },
+  "pilates-seitliegend-beinheben": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144406_c8cba6c3-24ea-4f79-be7c-20e10c2f4ac5.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144442_8652f807-f616-444f-8670-17757351c70c.png",
+    "job_start": "c8cba6c3-24ea-4f79-be7c-20e10c2f4ac5",
+    "job_end": "8652f807-f616-444f-8670-17757351c70c"
+  },
+  "pilates-stehend-beinkreisen": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144406_c9595a33-51c9-4e84-9af3-b7101f7a5015.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144519_c0d3d9da-09df-4334-bbff-2ad0a6bd5e44.png",
+    "job_start": "c9595a33-51c9-4e84-9af3-b7101f7a5015",
+    "job_end": "c0d3d9da-09df-4334-bbff-2ad0a6bd5e44"
+  },
+  "pilates-tischbein-wechsel": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144406_a277adf4-d92a-4617-afa8-ffef7d5a3532.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144442_62241f00-d465-40fb-b6c2-bad3ed106e93.png",
+    "job_start": "a277adf4-d92a-4617-afa8-ffef7d5a3532",
+    "job_end": "62241f00-d465-40fb-b6c2-bad3ed106e93"
+  },
+  "rdl-einbeinig-koerpergewicht": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144406_f19fbe5e-ff53-404e-bea4-21878116c6cd.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144519_d9b4e8a1-79f5-4563-a64a-88f09e14a553.png",
+    "job_start": "f19fbe5e-ff53-404e-bea4-21878116c6cd",
+    "job_end": "d9b4e8a1-79f5-4563-a64a-88f09e14a553"
+  },
+  "rumaenisches-kreuzheben-langhantel": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144519_dd04d283-9a92-48c2-973b-e27e12e0adbc.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144636_0bf6f2e8-3d9a-44cc-96db-128cb5cb23b9.png",
+    "job_start": "dd04d283-9a92-48c2-973b-e27e12e0adbc",
+    "job_end": "0bf6f2e8-3d9a-44cc-96db-128cb5cb23b9"
+  },
+  "seilspringen": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144519_cf1191ce-3de2-4f70-a877-464e1bb7a3b2.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144600_7e0333b6-ea24-405a-b92c-3e0e83c33425.png",
+    "job_start": "cf1191ce-3de2-4f70-a877-464e1bb7a3b2",
+    "job_end": "7e0333b6-ea24-405a-b92c-3e0e83c33425"
+  },
+  "step-jacks": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144559_0574ae08-eefa-4cf3-ae8f-92809c697a48.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144710_eb3f54a5-ee03-4900-a5d1-faa57181880c.png",
+    "job_start": "0574ae08-eefa-4cf3-ae8f-92809c697a48",
+    "job_end": "eb3f54a5-ee03-4900-a5d1-faa57181880c"
+  },
+  "step-up-stufe": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144600_d1dcd332-5bbc-454f-b85f-6f17b8f724a3.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144710_35dec2a3-0d21-4935-974d-ecf1f6e94446.png",
+    "job_start": "d1dcd332-5bbc-454f-b85f-6f17b8f724a3",
+    "job_end": "35dec2a3-0d21-4935-974d-ecf1f6e94446"
+  },
+  "tiefe-bauchatmung-rueckenlage": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144559_9ff0c957-23b8-4a6d-bc44-a121e2eb052d.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144711_6b920381-55e6-45b7-8a34-ef74056b6a20.png",
+    "job_start": "9ff0c957-23b8-4a6d-bc44-a121e2eb052d",
+    "job_end": "6b920381-55e6-45b7-8a34-ef74056b6a20"
+  },
+  "wadenheben-einbeinig": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144636_8cfedbcc-24a8-4ef7-b5b4-420e424e5405.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144746_5717498c-77e6-4b75-b681-e03084b7fe29.png",
+    "job_start": "8cfedbcc-24a8-4ef7-b5b4-420e424e5405",
+    "job_end": "5717498c-77e6-4b75-b681-e03084b7fe29"
+  },
+  "wall-balls": {
+    "start": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144636_75476e11-8233-47f7-9178-140caa89fe3d.png",
+    "end": "https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq/hf_20261115_144746_0b212b5e-68f8-4bc5-baef-75ceefcd8749.png",
+    "job_start": "75476e11-8233-47f7-9178-140caa89fe3d",
+    "job_end": "0b212b5e-68f8-4bc5-baef-75ceefcd8749"
   }
 }
