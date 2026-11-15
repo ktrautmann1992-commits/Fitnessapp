@@ -17,7 +17,7 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 
 import { Text } from '@/components/text';
-import { exerciseMediaFor, illustrationXml } from '@/data/exercise-media';
+import { exerciseMediaFor, illustrationXml, useExerciseMedia } from '@/data/exercise-media';
 import { t } from '@/i18n';
 import { appFont, displayFont } from '@/lib/fonts';
 import { type ExerciseSummary, exerciseSummary } from '@/lib/plan-format';
@@ -612,10 +612,11 @@ function Small({ children, testID }: { children: ReactNode; testID?: string }) {
 function ExerciseThumb({ exerciseId }: { exerciseId: string }) {
   const scheme = useColorSchemeName();
   const training = useAreaColors('training');
+  const loaded = useExerciseMedia();
   const found = exerciseMediaFor(exerciseId, 'start_position');
   return (
     <View style={[styles.illustration, { backgroundColor: training.surface }]}>
-      {found === null ? (
+      {!loaded ? null : found === null ? (
         <Icon name="dumbbell" size={26} color={training.icon} />
       ) : found.source.kind === 'svg' ? (
         <SvgXml

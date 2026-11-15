@@ -212,10 +212,30 @@ export interface TextRuleHit {
   readonly label: string;
 }
 
-function findHits(text: string, compiled: typeof COMPILED_NUTRITION): TextRuleHit[] {
+/**
+ * Vorfilter (Leistung, 15.11.2026: der Testmodus prüft beim App-Start alle Inhalte): ein Ausdruck mit allen Mustern
+ * OHNE die Wortende-Bedingung. Trifft eine einzelne Regel, trifft auch er – findet er nichts, gibt es keinen Treffer,
+ * und die Einzelregeln müssen nicht laufen. Ergebnis und Reihenfolge der Treffer bleiben gleich.
+ */
+function prefilter(compiled: readonly { readonly rule: TermRule }[]): RegExp {
+  const patterns = compiled.map(({ rule }) => `(?:${rule.pattern})`).join('|');
+  return new RegExp(`(?<![\\p{L}\\p{N}])(?:${patterns})`, 'iu');
+}
+
+const PREFILTER = prefilter(COMPILED);
+const PREFILTER_NUTRITION = prefilter(COMPILED_NUTRITION);
+
+function findHits(
+  text: string,
+  compiled: typeof COMPILED_NUTRITION,
+  anyHit: RegExp,
+): TextRuleHit[] {
   const hits: TextRuleHit[] = [];
   // NFC: zerlegte Umlaute (z. B. aus macOS-Kopien) wie zusammengesetzte behandeln (Wächter N2a, B2).
   const normalized = text.normalize('NFC');
+  if (!anyHit.test(normalized)) {
+    return hits;
+  }
   for (const { kind, rule, re } of compiled) {
     const found = re.exec(normalized);
     if (found) {
@@ -227,7 +247,7 @@ function findHits(text: string, compiled: typeof COMPILED_NUTRITION): TextRuleHi
 
 /** Alle Verstöße in einem Text (leer = in Ordnung). Übungen und Vorlagen (Regel Ü6). */
 export function findTextRuleHits(text: string): TextRuleHit[] {
-  return findHits(text, COMPILED);
+  return findHits(text, COMPILED, PREFILTER);
 }
 
 /**
@@ -235,5 +255,5 @@ export function findTextRuleHits(text: string): TextRuleHit[] {
  * Rezepte und Lebensmittel (Regel R10).
  */
 export function findNutritionTextRuleHits(text: string): TextRuleHit[] {
-  return findHits(text, COMPILED_NUTRITION);
+  return findHits(text, COMPILED_NUTRITION, PREFILTER_NUTRITION);
 }

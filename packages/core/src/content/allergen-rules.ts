@@ -189,6 +189,9 @@ export function matchWordRule(texts: readonly string[], rule: WordRule): WordHit
     const spaced = ` ${text.replace(/-/g, ' ')} `;
     const joined = ` ${text.replace(/-/g, '')} `;
     const words = splitWords(text);
+    // Negativ-Spannen hängen nur vom Wort ab (nicht vom Muster): je Wort höchstens einmal berechnen, und nur, wenn
+    // ein Muster überhaupt trifft (Leistung: App-Start im Testmodus prüft den ganzen Katalog, 15.11.2026).
+    const negativesByWord: ([number, number][] | undefined)[] = [];
     for (const pattern of rule.words) {
       if (pattern.includes(' ')) {
         if (spaced.includes(` ${pattern} `) || joined.includes(` ${pattern} `)) {
@@ -196,9 +199,13 @@ export function matchWordRule(texts: readonly string[], rule: WordRule): WordHit
         }
         continue;
       }
-      for (const word of words) {
-        const negatives = negativeSpans(word, rule.negatives);
-        const valid = spansOf(word, pattern).some(
+      for (const [index, word] of words.entries()) {
+        const spans = spansOf(word, pattern);
+        if (spans.length === 0) {
+          continue;
+        }
+        const negatives = (negativesByWord[index] ??= negativeSpans(word, rule.negatives));
+        const valid = spans.some(
           ([start, end]) => !negatives.some(([ns, ne]) => ns <= start && end <= ne),
         );
         if (valid) {

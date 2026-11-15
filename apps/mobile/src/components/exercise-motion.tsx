@@ -1,9 +1,9 @@
 import { WORKOUT_PLAYER } from '@fitnessapp/core';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { Animated, Platform, StyleSheet, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 
-import { exerciseMediaFor, illustrationXml } from '@/data/exercise-media';
+import { exerciseMediaFor, illustrationXml, useExerciseMedia } from '@/data/exercise-media';
 import { useReducedMotion } from '@/lib/reduced-motion';
 import { useColorSchemeName } from '@/lib/theme';
 
@@ -24,8 +24,9 @@ export function exerciseMotionTemplates(
  * Übungsbild als „GIF“ (Workout-Player, Gründer-Feedback 14.11.2026): Ausgangs- und Endposition wechseln im
  * Sekundentakt mit kurzer Überblendung (WORKOUT_PLAYER.mediaSwapMs/mediaFadeMs) – so sieht man, wie die Bewegung geht.
  * Ohne Endbild (Halteübungen) oder bei „Bewegung reduzieren“: nur das Startbild. Ohne Bild: nichts (kein leerer Rahmen).
+ * Leistung (15.11.2026): `memo` – der Player zeichnet alle 250 ms neu; das SVG nur, wenn sich Bild oder Bildwechsel ändert.
  */
-export function ExerciseMotion({
+export const ExerciseMotion = memo(function ExerciseMotion({
   exerciseId,
   height,
   surface,
@@ -43,7 +44,11 @@ export function ExerciseMotion({
 }) {
   const scheme = useColorSchemeName();
   const reduced = useReducedMotion();
-  const templates = exerciseMotionTemplates(exerciseId);
+  const mediaLoaded = useExerciseMedia();
+  const templates = useMemo(
+    () => (mediaLoaded ? exerciseMotionTemplates(exerciseId) : null),
+    [mediaLoaded, exerciseId],
+  );
   const moving = animate && !reduced && templates?.end != null;
   const [opacity] = useState(() => new Animated.Value(0));
   const [showEnd, setShowEnd] = useState(false);
@@ -67,8 +72,30 @@ export function ExerciseMotion({
     };
   }, [moving, opacity, exerciseId]);
 
+  const startSvg = useMemo(
+    () =>
+      templates ? (
+        <SvgXml
+          xml={illustrationXml(templates.start, scheme, { gap: surface })}
+          width="100%"
+          height={height}
+        />
+      ) : null,
+    [templates, scheme, surface, height],
+  );
+  const endSvg = useMemo(
+    () =>
+      templates?.end ? (
+        <SvgXml
+          xml={illustrationXml(templates.end, scheme, { gap: surface })}
+          width="100%"
+          height={height}
+        />
+      ) : null,
+    [templates, scheme, surface, height],
+  );
+
   if (!templates) return null;
-  const xml = (template: string) => illustrationXml(template, scheme, { gap: surface });
   return (
     <View
       style={[styles.box, { height }]}
@@ -79,18 +106,18 @@ export function ExerciseMotion({
       // Für Tests (Playwright): welches Bild gerade vorn ist.
       {...{ dataSet: { motion: moving ? 'on' : 'off', frame: showEnd ? 'end' : 'start' } }}
     >
-      <SvgXml xml={xml(templates.start)} width="100%" height={height} />
-      {moving && templates.end ? (
+      {startSvg}
+      {moving && endSvg ? (
         <Animated.View
           style={[StyleSheet.absoluteFill, { opacity }]}
           testID={testID ? `${testID}-end` : undefined}
         >
-          <SvgXml xml={xml(templates.end)} width="100%" height={height} />
+          {endSvg}
         </Animated.View>
       ) : null}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   box: { width: '100%', alignItems: 'center', justifyContent: 'center' },

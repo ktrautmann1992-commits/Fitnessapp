@@ -20,7 +20,7 @@ import Svg, { G, Path, SvgXml } from 'react-native-svg';
 
 import { Body, Button, Card, Heading } from '@/components/ui';
 import { focusTestId, focusView } from '@/components/swap';
-import { exerciseMediaFor, illustrationXml } from '@/data/exercise-media';
+import { exerciseMediaFor, illustrationXml, useExerciseMedia } from '@/data/exercise-media';
 import { t } from '@/i18n';
 import { muscleMapA11yLabel, muscleMapLegend, shapePaths } from '@/lib/muscle-map-format';
 import {
@@ -273,6 +273,8 @@ export function MuscleMapThumbnail({
  */
 export function StartPositionImage({ exerciseId }: { exerciseId: string }) {
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
+  // Lädt die Übungsbilder bei Bedarf nach und zeichnet dann neu (Leistung, data/exercise-media.ts).
+  useExerciseMedia();
   const found = exerciseMediaFor(exerciseId, 'start_position');
   if (!found) return null;
   const { image, source } = found;
