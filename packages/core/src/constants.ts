@@ -902,9 +902,18 @@ export const FLOW_RULES = {
  *   in den Calisthenics-Skill-Pfaden, und das Workout braucht nur Calisthenics-Geräte (`calisthenicsEquipment`).
  * - `wodTitlePrefixes`: Funktionelle Workouts im WOD-Stil erkennt die App am Titelanfang (AMRAP, EMOM, For Time,
  *   Chipper) – die Begriffe sind gängige, markenfreie Bezeichnungen der Trainingsformen.
- * Quelle: PRODUKTENTSCHEIDUNG (Gründer-Auftrag 29.10.2026, Testphase).
+ * - `strengthEndurance` (Gründer-Auftrag 15.11.2026 „deutlich mehr Workouts auf Zeit, Kraft-Ausdauer, darauf soll der
+ *   Fokus liegen“): Zirkel oder Intervall (kein WOD-Stil) aus einer Kraft-/HIIT-Kategorie (`categories`), Dauer
+ *   `minutes` 20–30 und mindestens `minTimedShare` der Übungen nach Sekunden dosiert. Diese Workouts stehen als erster
+ *   Bereich und in „Alle“ oben.
+ * Quelle: PRODUKTENTSCHEIDUNG (Gründer-Auftrag 29.10.2026 bzw. 15.11.2026, Testphase).
  */
 export const WORKOUT_THEME_RULES = {
+  strengthEndurance: {
+    categories: ['full_body', 'core', 'upper_body', 'legs_glutes', 'hiit_cardio', 'run_strength'],
+    minutes: { min: 20, max: 30 },
+    minTimedShare: 0.5,
+  },
   relaxMaxStars: 1,
   hyroxMinShare: 0.5,
   hyroxMinExercises: 2,
@@ -6756,11 +6765,31 @@ export const GROUP_BARBELL_ONLY_EXERCISE_IDS: readonly string[] = [
   'crunch',
 ];
 
-/** Nur über Hyrox-Ketten bzw. Workouts – nie über die Bibliotheks-Suche (Hyrox-, WOD- und Barbell-Burn-Übungen). */
+/**
+ * Übungen für die tiefe Bauchmuskulatur in den Kraft-Ausdauer-Workouts auf Zeit (Gründer-Auftrag 15.11.2026,
+ * docs/PLAN-WORKOUTS.md Abschnitt 10): Bauchatmung, Bauchnabel einziehen, Dead Bug mit gestreckten Beinen, Bärenstand,
+ * Schulter-Tippen, Fersen seitlich tippen, Seitstütz mit Hüftheben. Wie GROUP_BARBELL_ONLY_EXERCISE_IDS nur über
+ * Workouts bzw. ihre eigenen Alternativen – nie über die Bibliotheks-Suche (Tausch, „Andere Übung“, Ersatz bei
+ * fehlendem Gerät, Aufwärm-Routine). So bleiben alle Pläne byte-gleich. PRODUKTENTSCHEIDUNG – nach der Fachprüfung in
+ * die Plan-Engine aufnehmen.
+ */
+export const DEEP_CORE_ONLY_EXERCISE_IDS: readonly string[] = [
+  'tiefe-bauchatmung-rueckenlage',
+  'bauchnabel-einziehen-vierfuessler',
+  'dead-bug-gestreckt',
+  'baerenstand-halten',
+  'baerenstand-schulter-tippen',
+  'stuetz-schulter-tippen',
+  'fersen-tippen-seitlich',
+  'seitstuetz-hueftheben',
+];
+
+/** Nur über Hyrox-Ketten bzw. Workouts – nie über die Bibliotheks-Suche (Hyrox-, WOD-, Barbell-Burn- und Tiefe-Bauch-Übungen). */
 export const LIBRARY_SEARCH_EXCLUDED_IDS: readonly string[] = [
   ...HYROX_ONLY_EXERCISE_IDS,
   ...WOD_ONLY_EXERCISE_IDS,
   ...GROUP_BARBELL_ONLY_EXERCISE_IDS,
+  ...DEEP_CORE_ONLY_EXERCISE_IDS,
 ];
 
 /**

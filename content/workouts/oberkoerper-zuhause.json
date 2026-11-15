@@ -1,13 +1,13 @@
 {
   "id": "oberkoerper-zuhause",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Oberkörper zuhause",
-  "summary_de": "Drücken und Ziehen ohne Geräte: Liegestütz-Varianten, Rudern am Türrahmen und Dips am Stuhl.",
+  "summary_de": "Drücken und Ziehen ohne Geräte nach Zeit: Liegestütz-Varianten, Rudern am Türrahmen und Dips am Stuhl, dazu Schulter-Tippen und Bauchnabel einziehen.",
   "category": "upper_body",
   "difficulty": 2,
-  "minutes": 14,
-  "format": "circuit",
+  "minutes": 22,
+  "format": "interval",
   "rounds": 3,
   "round_rest_s": 60,
   "equipment_ids": [],
@@ -16,24 +16,24 @@
   "exercises": [
     {
       "exercise_id": "liegestuetz-erhoeht",
-      "reps": 10,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "tuerrahmen-rudern",
-      "reps": 10,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": "Nach der Hälfte die Seite wechseln."
     },
     {
       "exercise_id": "dips-stuhl",
-      "reps": 8,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null
@@ -41,15 +41,31 @@
     {
       "exercise_id": "handtuch-latziehen",
       "reps": null,
-      "duration_s": 30,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "y-t-w-vorgebeugt",
-      "reps": 8,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "stuetz-schulter-tippen",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Leichter: auf den Knien."
+    },
+    {
+      "exercise_id": "bauchnabel-einziehen-vierfuessler",
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null

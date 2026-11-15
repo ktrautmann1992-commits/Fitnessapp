@@ -1,0 +1,35 @@
+{
+  "exercise_id": "stuetz-schulter-tippen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "stuetz-schulter-tippen-start.svg",
+      "alt_de": "Ausgangsposition: hoher Liegestütz von der Seite, Arme gestreckt, Hände unter den Schultern, Körper vom Kopf bis zu den Fersen gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "stuetz-schulter-tippen-end.svg",
+      "alt_de": "Endposition: im hohen Liegestütz tippt eine Hand an die gegenüberliegende Schulter, Hüfte bleibt waagerecht.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

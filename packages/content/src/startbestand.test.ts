@@ -35,7 +35,8 @@ describe('Startbestand (content/)', () => {
     // + 50 Yoga-/Pilates-/Mobility-Posen (Sportarten Stufe 1 · Etappe Y, Entwürfe) + 17 Hyrox-Stationen und Ersatz
     // (Etappe H).
     // + 34 Posen der Restpunkte A (27.10.2026).
-    expect(result.exercises.length).toBeLessThanOrEqual(290);
+    // + 8 Übungen für die tiefen Bauchmuskeln (Kraft-Ausdauer, 15.11.2026).
+    expect(result.exercises.length).toBeLessThanOrEqual(300);
     expect(result.templates).toHaveLength(49);
     expect(extra.map((t) => t.id).sort()).toEqual([
       'calisthenics-einsteiger-2t',

@@ -1,0 +1,52 @@
+{
+  "id": "baerenstand-halten",
+  "version": 1,
+  "status": "published",
+  "name_de": "Bärenstand halten",
+  "name_en": "Bear Hold",
+  "aliases_de": ["Bear Hold", "Vierfüßler-Schweben"],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques", "front_delts", "quadriceps"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 2,
+  "caution_tags": [],
+  "description_de": "Halteübung aus dem Vierfüßlerstand: Die Knie schweben eine Handbreit über dem Boden, Rücken gerade, die tiefe Bauchmuskulatur hält alles ruhig.",
+  "steps_de": [
+    "Vierfüßlerstand: Hände unter den Schultern, Knie unter der Hüfte, Zehen aufgestellt.",
+    "Ausatmen, Bauchnabel leicht einziehen und die Knie wenige Zentimeter vom Boden heben.",
+    "Rücken gerade halten, ruhig weiteratmen und die Position halten.",
+    "Zum Lösen die Knie langsam wieder ablegen."
+  ],
+  "tips_de": [
+    "Die Knie schweben nur knapp über dem Boden.",
+    "Hände aktiv in den Boden drücken, Schultern weg von den Ohren."
+  ],
+  "common_mistakes_de": ["Gesäß zu hoch schieben.", "Rücken durchhängen lassen.", "Luft anhalten."],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden. Bei Beschwerden in den Handgelenken auf den Fäusten abstützen.",
+  "alternatives": [
+    {
+      "alternative_id": "bauchnabel-einziehen-vierfuessler",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "unterarmstuetz",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Kraft-Ausdauer-Workouts mit Schwerpunkt tiefe Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

@@ -36,6 +36,8 @@ import {
 /** Übungen mit Atem-Variante als Endposition (siehe oben) – Halten, Tragen, Dehnen, Flow-Posen. */
 export const END_BREATH_IDS: readonly string[] = [
   'adduktoren-dehnen-stehend',
+  'baerenstand-halten',
+  'bauchnabel-einziehen-vierfuessler',
   'beinrueckseite-dehnen-sitzend',
   'brustdehnung-tuerrahmen',
   'copenhagen-seitstuetz-knie',
@@ -100,6 +102,7 @@ export const END_BREATH_IDS: readonly string[] = [
   'seitstuetz',
   'seitstuetz-knie',
   'taschen-tragen',
+  'tiefe-bauchatmung-rueckenlage',
   'toter-hang',
   'unterarm-dehnen',
   'unterarmstuetz',
@@ -640,6 +643,12 @@ const MOVING_END_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustration>> =
     }),
     'Endposition: Körper vom Knie bis zum Kopf als Linie langsam nach vorn abgesenkt, Hände bereit zum Abfangen.',
   ),
+  'beinbeuger-band': e(
+    move('beinbeuger-band', {
+      near: { leg: [182, 95, 165] },
+    }),
+    'Endposition: Bauchlage, ein Unterschenkel gegen das Band nach oben gebeugt, Knie etwa rechtwinklig, Hüfte bleibt am Boden.',
+  ),
   'beinbeuger-maschine': e(
     move('beinbeuger-maschine', {
       near: { leg: [0, -128, -40] },
@@ -1141,6 +1150,45 @@ const MOVING_END_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustration>> =
       far: { arm: [100, 20, 18] },
     }),
     'Endposition: Kopf und Schulterblätter vom Boden abgerollt, unterer Rücken bleibt liegen, Füße am Boden.',
+  ),
+  // --- Tiefe Bauchmuskeln (Kraft-Ausdauer, Gründer-Auftrag 15.11.2026) --------------------------------------------
+  'dead-bug-gestreckt': e(
+    move('dead-bug-gestreckt', {
+      near: { arm: [8, 8, 8] },
+      far: { leg: [170, 170, 150] },
+    }),
+    'Endposition: Rückenlage, ein Arm nach hinten über den Kopf, das gegenüberliegende Bein gestreckt knapp über dem Boden, das andere Bein zeigt zur Decke.',
+  ),
+  'baerenstand-schulter-tippen': e(
+    move('baerenstand-schulter-tippen', {
+      near: { arm: [-70, 120, 120] },
+    }),
+    'Endposition: im Bärenstand tippt eine Hand an die gegenüberliegende Schulter, Becken bleibt ruhig und waagerecht.',
+  ),
+  'stuetz-schulter-tippen': e(
+    move('stuetz-schulter-tippen', {
+      near: { arm: [-70, 120, 120] },
+    }),
+    'Endposition: im hohen Liegestütz tippt eine Hand an die gegenüberliegende Schulter, Hüfte bleibt waagerecht.',
+  ),
+  'fersen-tippen-seitlich': e(
+    move('fersen-tippen-seitlich', {
+      torso: 22,
+      head: 32,
+      near: { arm: [198, 194, 194] },
+      far: { arm: [197, 193, 193] },
+    }),
+    'Endposition: Schultern bleiben angehoben, der Oberkörper neigt sich zur Seite, eine Hand tippt an die Ferse.',
+  ),
+  'seitstuetz-hueftheben': e(
+    move('seitstuetz-hueftheben', {
+      torso: 30,
+      head: 30,
+      dy: -9,
+      near: { leg: keep('down') },
+      far: { leg: keep('down') },
+    }),
+    'Endposition: Seitstütz mit gesenkter Hüfte knapp über dem Boden, Ellbogen bleibt unter der Schulter.',
   ),
 };
 

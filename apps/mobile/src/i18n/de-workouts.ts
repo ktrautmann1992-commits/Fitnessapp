@@ -70,6 +70,7 @@ export const deWorkouts = {
     label: 'Bereiche',
     all: 'Alle',
     names: {
+      strength_endurance: 'Kraft-Ausdauer (auf Zeit)',
       relax: 'Entspannung',
       yoga_pilates: 'Yoga & Pilates',
       hyrox: 'Hyrox',
@@ -80,6 +81,8 @@ export const deWorkouts = {
     chip: (name: string, n: number) => `${name} (${n})`,
     chipA11y: (name: string, n: number) => `${name}: ${n === 1 ? '1 Workout' : `${n} Workouts`}`,
     intro: {
+      strength_endurance:
+        'Unser Schwerpunkt: 20–30 Minuten Zirkel und Intervalle nach Zeit – der Timer führt dich ohne Tippen durch. In jedem Workout stecken Übungen für die tiefen Bauchmuskeln.',
       relax:
         'Ruhige Yoga- und Dehn-Abläufe zum Abschalten – mit Atemübung und Body-Scan im Liegen.',
       yoga_pilates: 'Alle Yoga- und Pilates-Abläufe, vom sanften Einstieg bis zur Kräftigung.',

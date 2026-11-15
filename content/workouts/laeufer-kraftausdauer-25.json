@@ -1,0 +1,92 @@
+{
+  "id": "laeufer-kraftausdauer-25",
+  "version": 1,
+  "status": "published",
+  "title_de": "Kraft-Ausdauer für Läufer 25",
+  "summary_de": "Einbeinige Kraft, Waden und ein stabiler Rumpf für ökonomisches Laufen – acht Stationen nach Zeit, 40 Sekunden Arbeit und 20 Sekunden Pause.",
+  "category": "run_strength",
+  "difficulty": 2,
+  "minutes": 25,
+  "format": "interval",
+  "rounds": 3,
+  "round_rest_s": 60,
+  "equipment_ids": [],
+  "warmup_de": "5 Minuten locker traben oder zügig gehen, dann Füße, Knie und Hüfte kurz kreisen.",
+  "cooldown_de": "Zum Schluss 2–3 Minuten ruhig gehen, Waden und Hüfte sanft dehnen und locker durchatmen.",
+  "exercises": [
+    {
+      "exercise_id": "split-kniebeuge",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "glute-bridge-einbeinig",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "wadenheben-einbeinig",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "laeufer-kniehub-stand",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "rdl-einbeinig-koerpergewicht",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "seitstuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "copenhagen-seitstuetz-knie",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "dead-bug",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Kraft-Ausdauer auf Zeit mit Stationen für die tiefen Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

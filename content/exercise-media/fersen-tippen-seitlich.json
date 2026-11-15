@@ -1,0 +1,35 @@
+{
+  "exercise_id": "fersen-tippen-seitlich",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "fersen-tippen-seitlich-start.svg",
+      "alt_de": "Ausgangsposition: Rückenlage, Knie gebeugt, Füße aufgestellt, Kopf und Schultern leicht abgehoben, Arme lang Richtung Füße.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "fersen-tippen-seitlich-end.svg",
+      "alt_de": "Endposition: Schultern bleiben angehoben, der Oberkörper neigt sich zur Seite, eine Hand tippt an die Ferse.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

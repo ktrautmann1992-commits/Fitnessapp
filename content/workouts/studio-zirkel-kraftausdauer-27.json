@@ -1,0 +1,98 @@
+{
+  "id": "studio-zirkel-kraftausdauer-27",
+  "version": 1,
+  "status": "published",
+  "title_de": "Studio-Zirkel Kraft-Ausdauer 27",
+  "summary_de": "Zirkel an Maschinen und Kabelzug mit leichtem Gewicht, dazwischen Rudergerät und Rumpf-Stationen. Die Geräte laufen im Zeitfenster, alles ohne Tippen.",
+  "category": "full_body",
+  "difficulty": 2,
+  "minutes": 27,
+  "format": "circuit",
+  "rounds": 3,
+  "round_rest_s": 60,
+  "equipment_ids": [
+    "leg_press",
+    "rowing_machine",
+    "lat_pulldown",
+    "machine_chest_press",
+    "cable_station"
+  ],
+  "warmup_de": "5 Minuten locker rudern oder radeln, dann Hüfte und Schultern kreisen. Die erste Runde an den Geräten mit leichtem Gewicht beginnen.",
+  "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
+  "exercises": [
+    {
+      "exercise_id": "beinpresse",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "rudergeraet-locker",
+      "reps": null,
+      "duration_s": 60,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "latziehen",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "unterarmstuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "brustpresse",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "dead-bug",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "kabelrudern",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "seitstuetz-knie",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Kraft-Ausdauer auf Zeit mit Stationen für die tiefen Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

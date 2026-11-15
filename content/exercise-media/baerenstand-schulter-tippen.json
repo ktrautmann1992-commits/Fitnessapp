@@ -1,0 +1,35 @@
+{
+  "exercise_id": "baerenstand-schulter-tippen",
+  "images": [
+    {
+      "kind": "start_position",
+      "file": "baerenstand-schulter-tippen-start.svg",
+      "alt_de": "Ausgangsposition: Bärenstand – Hände unter den Schultern, Knie schweben knapp über dem Boden, Rücken gerade.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    },
+    {
+      "kind": "end_position",
+      "file": "baerenstand-schulter-tippen-end.svg",
+      "alt_de": "Endposition: im Bärenstand tippt eine Hand an die gegenüberliegende Schulter, Becken bleibt ruhig und waagerecht.",
+      "origin": "own_work",
+      "license": {
+        "name": "eigene Illustration Alpha5",
+        "attribution_de": null
+      },
+      "source": {
+        "creator": "Alpha5",
+        "obtained_on": "2026-10-21"
+      },
+      "reviewed_by": null
+    }
+  ]
+}

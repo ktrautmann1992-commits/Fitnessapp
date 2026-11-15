@@ -1,0 +1,56 @@
+{
+  "id": "seitstuetz-hueftheben",
+  "version": 1,
+  "status": "published",
+  "name_de": "Seitstütz mit Hüftheben",
+  "name_en": "Side Plank Hip Lifts",
+  "aliases_de": ["Seitstütz-Hüftsenken", "Side Plank Dips"],
+  "movement_pattern": "core_anti_rotation",
+  "primary_muscles": ["obliques"],
+  "secondary_muscles": ["abs", "glutes", "side_delts"],
+  "equipment_ids": [],
+  "mechanics": "compound",
+  "load_type": "bodyweight",
+  "unilateral": true,
+  "difficulty": 3,
+  "caution_tags": [],
+  "description_de": "Im Seitstütz senkt sich die Hüfte langsam ein Stück Richtung Boden und hebt sich wieder über die gerade Linie. Kräftigt die seitliche Rumpfmuskulatur und die Hüfte.",
+  "steps_de": [
+    "Seitstütz: Ellbogen unter der Schulter, Beine gestreckt übereinander, Hüfte angehoben, Körper gerade.",
+    "Die Hüfte langsam ein kleines Stück Richtung Boden senken.",
+    "Ausatmen und die Hüfte wieder anheben, bis der Körper eine gerade Linie bildet.",
+    "Nach der Hälfte der Zeit die Seite wechseln."
+  ],
+  "tips_de": [
+    "Leichter: das untere Knie am Boden ablegen.",
+    "Der Ellbogen drückt aktiv in den Boden, die Schulter sinkt nicht ein."
+  ],
+  "common_mistakes_de": [
+    "Hüfte nach hinten schieben.",
+    "Oberkörper nach vorn kippen.",
+    "Schulter hängt zum Ohr."
+  ],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden. Bei Schulterbeschwerden den Seitstütz auf den Knien halten.",
+  "alternatives": [
+    {
+      "alternative_id": "seitstuetz",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "seitstuetz-knie",
+      "reason": "easier",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Kraft-Ausdauer-Workouts mit Schwerpunkt tiefe Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}

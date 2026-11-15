@@ -1,0 +1,92 @@
+{
+  "id": "oberkoerper-kurzhantel-ausdauer-25",
+  "version": 1,
+  "status": "published",
+  "title_de": "Oberkörper Kurzhantel-Ausdauer 25",
+  "summary_de": "Schultern, Rücken, Brust und Arme mit Kurzhanteln im Zeitfenster, dazwischen Liegestütz, Tragen und Bärenstand nach Zeit.",
+  "category": "upper_body",
+  "difficulty": 3,
+  "minutes": 25,
+  "format": "circuit",
+  "rounds": 3,
+  "round_rest_s": 60,
+  "equipment_ids": ["dumbbells"],
+  "warmup_de": "5 Minuten aufwärmen: Arme und Hüfte kreisen, 10 Kniebeugen ohne Gewicht, dann die erste Runde mit leichtem Gewicht beginnen.",
+  "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
+  "exercises": [
+    {
+      "exercise_id": "schulterdruecken-kurzhantel",
+      "reps": 12,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "liegestuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": "Leichter: Hände erhöht."
+    },
+    {
+      "exercise_id": "vorgebeugtes-rudern-kurzhantel",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "farmers-carry-kurzhantel",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bodendruecken-kurzhantel",
+      "reps": 15,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "baerenstand-halten",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "reverse-fly-kurzhantel",
+      "reps": 12,
+      "duration_s": null,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "stuetz-schulter-tippen",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Kraft-Ausdauer auf Zeit mit Stationen für die tiefen Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}
