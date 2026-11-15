@@ -1,11 +1,13 @@
 import { WORKOUT_PLAYER } from '@fitnessapp/core';
 import { act } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { loadExerciseMedia } from '@/data/exercise-media';
 import { cleanup, render } from '@/test/render';
 
 import { ExerciseMotion, exerciseMotionTemplates } from './exercise-motion';
 
+beforeAll(loadExerciseMedia);
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => {
   cleanup();

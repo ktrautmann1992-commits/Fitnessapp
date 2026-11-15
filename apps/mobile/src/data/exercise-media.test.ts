@@ -2,32 +2,51 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { exerciseMediaSchema } from '@fitnessapp/core';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import {
-  EXERCISE_MEDIA,
   type ExerciseMediaEntry,
   exerciseMediaFor,
+  exerciseMediaRegistry,
   illustrationXml,
+  loadExerciseMedia,
 } from './exercise-media';
 
 /** Übungsbilder: Registry der App passt zu content/exercise-media; Anzeige nur, wenn ein Bild da ist. */
 
 const mediaDir = fileURLToPath(new URL('../../../../content/exercise-media/', import.meta.url));
 
-describe('EXERCISE_MEDIA', () => {
+describe('Übungsbilder werden erst bei Bedarf geladen (Leistung)', () => {
+  it('vor dem Laden: leere Registry, kein Bild', () => {
+    expect(exerciseMediaRegistry()).toEqual({});
+    expect(exerciseMediaFor('liegestuetz', 'start_position')).toBeNull();
+  });
+
+  it('nach dem Laden: alle Bilder; weitere Aufrufe laden nicht erneut', async () => {
+    const first = loadExerciseMedia();
+    expect(loadExerciseMedia()).toBe(first);
+    const registry = await first;
+    expect(exerciseMediaRegistry()).toBe(registry);
+    expect(exerciseMediaFor('liegestuetz', 'start_position')?.source.kind).toBe('svg');
+  });
+});
+
+describe('Registry', () => {
+  beforeAll(loadExerciseMedia);
+  const EXERCISE_MEDIA = () => exerciseMediaRegistry();
+
   it('stimmt mit content/exercise-media überein (gleiche Übungen, gleiche Angaben inkl. Lizenz)', () => {
     const files = existsSync(mediaDir)
       ? readdirSync(mediaDir).filter((name) => name.endsWith('.json'))
       : [];
-    expect(Object.keys(EXERCISE_MEDIA).sort()).toEqual(
+    expect(Object.keys(EXERCISE_MEDIA()).sort()).toEqual(
       files.map((name) => name.replace(/\.json$/, '')).sort(),
     );
     for (const name of files) {
       const data = exerciseMediaSchema.parse(
         JSON.parse(readFileSync(`${mediaDir}${name}`, 'utf8')),
       );
-      const entry = EXERCISE_MEDIA[data.exercise_id];
+      const entry = EXERCISE_MEDIA()[data.exercise_id];
       expect(entry?.media).toEqual(data);
       for (const image of data.images) expect(entry?.sources[image.kind]).toBeDefined();
     }
@@ -37,6 +56,7 @@ describe('EXERCISE_MEDIA', () => {
 const exercisesDir = fileURLToPath(new URL('../../../../content/exercises/', import.meta.url));
 
 describe('eigene Illustrationen (Entscheidung B)', () => {
+  beforeAll(loadExerciseMedia);
   const exerciseIds = readdirSync(exercisesDir)
     .filter((name) => name.endsWith('.json'))
     .map((name) => name.replace(/\.json$/, ''));
@@ -98,6 +118,7 @@ describe('eigene Illustrationen (Entscheidung B)', () => {
 });
 
 describe('exerciseMediaFor', () => {
+  beforeAll(loadExerciseMedia);
   const registry: Record<string, ExerciseMediaEntry> = {
     'kniebeuge-langhantel': {
       media: exerciseMediaSchema.parse({

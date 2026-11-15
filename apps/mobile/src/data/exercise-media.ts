@@ -4,12 +4,13 @@ import {
   exerciseMediaImage,
   type ExerciseMediaKind,
 } from '@fitnessapp/core';
+import { useEffect, useSyncExternalStore } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 
-import {
-  GENERATED_ILLUSTRATIONS,
-  ILLUSTRATION_COLORS,
-  type IllustrationRole,
+import type {
+  GeneratedIllustration,
+  ILLUSTRATION_COLORS as IllustrationColors,
+  IllustrationRole,
 } from './exercise-illustrations.generated';
 
 /**
@@ -32,21 +33,71 @@ export interface ExerciseMediaEntry {
   readonly sources: Readonly<Partial<Record<ExerciseMediaKind, ExerciseMediaSource>>>;
 }
 
-export const EXERCISE_MEDIA: Readonly<Record<string, ExerciseMediaEntry>> = Object.fromEntries(
-  Object.entries(GENERATED_ILLUSTRATIONS).map(([id, illustration]) => [
-    id,
-    {
-      media: illustration.media,
-      sources: {
-        start_position: { kind: 'svg', template: illustration.templates.start_position },
-        // Endposition (Workout-Player 14.11.2026): nur bei Übungen mit Bewegung; der Timer blendet beide ineinander.
-        ...(illustration.templates.end_position !== undefined
-          ? { end_position: { kind: 'svg', template: illustration.templates.end_position } }
-          : {}),
+function registryFrom(
+  illustrations: Readonly<Record<string, GeneratedIllustration>>,
+): Readonly<Record<string, ExerciseMediaEntry>> {
+  return Object.fromEntries(
+    Object.entries(illustrations).map(([id, illustration]) => [
+      id,
+      {
+        media: illustration.media,
+        sources: {
+          start_position: { kind: 'svg', template: illustration.templates.start_position },
+          // Endposition (Workout-Player 14.11.2026): nur bei Übungen mit Bewegung; der Timer blendet beide ineinander.
+          ...(illustration.templates.end_position !== undefined
+            ? { end_position: { kind: 'svg', template: illustration.templates.end_position } }
+            : {}),
+        },
       },
+    ]),
+  );
+}
+
+/**
+ * Leistung (15.11.2026): Die Vorlagen (≈ 1,5 MB Text) liegen NICHT im Start-Bundle, sondern werden beim ersten Bedarf
+ * nachgeladen (`import()` → eigener Teil im Web-Export). Bis dahin ist die Registry leer; `useExerciseMedia()` lädt
+ * und zeichnet die Komponente neu, sobald die Bilder da sind.
+ */
+let EXERCISE_MEDIA: Readonly<Record<string, ExerciseMediaEntry>> = {};
+let COLORS: typeof IllustrationColors | null = null;
+let loading: Promise<Readonly<Record<string, ExerciseMediaEntry>>> | null = null;
+const listeners = new Set<() => void>();
+
+/** Übungsbilder laden (einmalig; weitere Aufrufe teilen sich das Laden). */
+export function loadExerciseMedia(): Promise<Readonly<Record<string, ExerciseMediaEntry>>> {
+  loading ??= import('./exercise-illustrations.generated').then(
+    ({ GENERATED_ILLUSTRATIONS, ILLUSTRATION_COLORS }) => {
+      EXERCISE_MEDIA = registryFrom(GENERATED_ILLUSTRATIONS);
+      COLORS = ILLUSTRATION_COLORS;
+      for (const listener of listeners) listener();
+      return EXERCISE_MEDIA;
     },
-  ]),
-);
+  );
+  return loading;
+}
+
+/** Aktuelle Registry (leer, solange die Bilder noch nicht geladen sind). */
+export function exerciseMediaRegistry(): Readonly<Record<string, ExerciseMediaEntry>> {
+  return EXERCISE_MEDIA;
+}
+
+function subscribe(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+const isLoaded = () => COLORS !== null;
+
+/** true, sobald die Übungsbilder geladen sind; stößt das Laden an. */
+export function useExerciseMedia(): boolean {
+  const loaded = useSyncExternalStore(subscribe, isLoaded, isLoaded);
+  useEffect(() => {
+    if (!loaded) void loadExerciseMedia();
+  }, [loaded]);
+  return loaded;
+}
 
 /**
  * Setzt die Farben (hell/dunkel) in eine SVG-Vorlage mit Marken `{rolle}` ein. `overrides` ersetzt einzelne Rollen,
@@ -57,16 +108,35 @@ export function illustrationXml(
   scheme: 'light' | 'dark',
   overrides: Readonly<Partial<Record<IllustrationRole, string>>> = {},
 ): string {
+  // Leistung: Ergebnis je Vorlage, Modus und Ersetzungen merken (Listen und der Player zeichnen oft neu).
+  const key = `${scheme}|${JSON.stringify(overrides)}`;
+  let byKey = XML_CACHE.get(template);
+  const cached = byKey?.get(key);
+  if (cached !== undefined) return cached;
   const palette: Readonly<Record<string, string>> = {
-    ...ILLUSTRATION_COLORS[scheme],
+    ...COLORS?.[scheme],
     ...overrides,
   };
-  return template.replace(/\{(\w+)\}/g, (match, role: string) =>
+  const xml = template.replace(/\{(\w+)\}/g, (match, role: string) =>
     Object.hasOwn(palette, role) ? palette[role]! : match,
   );
+  // Ohne geladene Farben (Vorlage von außerhalb der Registry) nicht merken.
+  if (COLORS === null) return xml;
+  if (!byKey) {
+    byKey = new Map();
+    XML_CACHE.set(template, byKey);
+  }
+  byKey.set(key, xml);
+  return xml;
 }
 
-/** Bild einer Art zu einer Übung samt Quelle; null = kein Bild → die App zeigt nichts an. */
+/** Vorlage → (Modus + Ersetzungen) → fertiges SVG. Begrenzt durch die Zahl der Vorlagen und Flächenfarben. */
+const XML_CACHE = new Map<string, Map<string, string>>();
+
+/**
+ * Bild einer Art zu einer Übung samt Quelle; null = kein Bild → die App zeigt nichts an. Standard ist die geladene
+ * Registry (vor `loadExerciseMedia` leer).
+ */
 export function exerciseMediaFor(
   exerciseId: string,
   kind: ExerciseMediaKind,
