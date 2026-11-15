@@ -902,9 +902,18 @@ export const FLOW_RULES = {
  *   in den Calisthenics-Skill-Pfaden, und das Workout braucht nur Calisthenics-Geräte (`calisthenicsEquipment`).
  * - `wodTitlePrefixes`: Funktionelle Workouts im WOD-Stil erkennt die App am Titelanfang (AMRAP, EMOM, For Time,
  *   Chipper) – die Begriffe sind gängige, markenfreie Bezeichnungen der Trainingsformen.
- * Quelle: PRODUKTENTSCHEIDUNG (Gründer-Auftrag 29.10.2026, Testphase).
+ * - `strengthEndurance` (Gründer-Auftrag 15.11.2026 „deutlich mehr Workouts auf Zeit, Kraft-Ausdauer, darauf soll der
+ *   Fokus liegen“): Zirkel oder Intervall (kein WOD-Stil) aus einer Kraft-/HIIT-Kategorie (`categories`), Dauer
+ *   `minutes` 20–30 und mindestens `minTimedShare` der Übungen nach Sekunden dosiert. Diese Workouts stehen als erster
+ *   Bereich und in „Alle“ oben.
+ * Quelle: PRODUKTENTSCHEIDUNG (Gründer-Auftrag 29.10.2026 bzw. 15.11.2026, Testphase).
  */
 export const WORKOUT_THEME_RULES = {
+  strengthEndurance: {
+    categories: ['full_body', 'core', 'upper_body', 'legs_glutes', 'hiit_cardio', 'run_strength'],
+    minutes: { min: 20, max: 30 },
+    minTimedShare: 0.5,
+  },
   relaxMaxStars: 1,
   hyroxMinShare: 0.5,
   hyroxMinExercises: 2,

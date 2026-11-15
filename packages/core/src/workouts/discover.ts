@@ -17,6 +17,8 @@ import { wodStyle } from './wod';
  */
 
 export const WORKOUT_THEMES = [
+  // Fokus (Gründer-Auftrag 15.11.2026): Kraft-Ausdauer auf Zeit steht als erster Bereich.
+  'strength_endurance',
   'relax',
   'yoga_pilates',
   'hyrox',
@@ -42,6 +44,7 @@ export type WorkoutDiscipline = (typeof WORKOUT_DISCIPLINES)[number];
 type ThemeInput = Pick<
   Workout,
   | 'category'
+  | 'minutes'
   | 'format'
   | 'difficulty'
   | 'title_de'
@@ -64,6 +67,23 @@ function share(workout: ThemeInput, ids: ReadonlySet<string>): { count: number; 
   const total = workout.exercises.length;
   const count = workout.exercises.filter((item) => ids.has(item.exercise_id)).length;
   return { count, share: total === 0 ? 0 : count / total };
+}
+
+/**
+ * Kraft-Ausdauer auf Zeit (Gründer-Auftrag 15.11.2026, WORKOUT_THEME_RULES.strengthEndurance): Zirkel oder Intervall
+ * ohne WOD-Stil, Kraft-/HIIT-Kategorie, 20–30 Minuten, mindestens die Hälfte der Übungen nach Sekunden.
+ */
+export function isStrengthEnduranceWorkout(
+  workout: ThemeInput & Pick<Workout, 'minutes'>,
+): boolean {
+  const rules = WORKOUT_THEME_RULES.strengthEndurance;
+  if (workout.format !== 'circuit' && workout.format !== 'interval') return false;
+  if (wodStyle(workout) !== null) return false;
+  if (!(rules.categories as readonly string[]).includes(workout.category)) return false;
+  if (workout.minutes < rules.minutes.min || workout.minutes > rules.minutes.max) return false;
+  const total = workout.exercises.length;
+  const timed = workout.exercises.filter((item) => item.duration_s !== null).length;
+  return total > 0 && timed / total >= rules.minTimedShare;
 }
 
 /** Ruhige Flow-Routine (Yoga/Mobilität, höchstens WORKOUT_THEME_RULES.relaxMaxStars Sterne). */
@@ -118,6 +138,8 @@ export function workoutDiscipline(workout: ThemeInput): WorkoutDiscipline | null
 /** Gehört das Workout zum Bereich? („Neues ausprobieren“ wählt aus der ganzen Liste – workoutsForTheme.) */
 export function workoutHasTheme(workout: ThemeInput, theme: WorkoutTheme): boolean {
   switch (theme) {
+    case 'strength_endurance':
+      return isStrengthEnduranceWorkout(workout);
     case 'relax':
       return isRelaxWorkout(workout);
     case 'yoga_pilates':
@@ -134,7 +156,7 @@ export function workoutHasTheme(workout: ThemeInput, theme: WorkoutTheme): boole
 }
 
 /**
- * Workouts eines Bereichs in der Reihenfolge der Eingabe. „Neues ausprobieren“: je Sportart/Trainingsform
+ * Workouts eines Bereichs in der Reihenfolge der Eingabe (ohne Bereich: Kraft-Ausdauer auf Zeit zuerst). „Neues ausprobieren“: je Sportart/Trainingsform
  * (WORKOUT_DISCIPLINES) das leichteste Workout – Sterne, dann Dauer, dann Titel – zum Hineinschnuppern; Reihenfolge
  * wie WORKOUT_DISCIPLINES.
  */
@@ -142,7 +164,13 @@ export function workoutsForTheme<W extends ThemeInput & Pick<Workout, 'minutes'>
   workouts: readonly W[],
   theme: WorkoutTheme | null,
 ): W[] {
-  if (theme === null) return [...workouts];
+  // „Alle“: Kraft-Ausdauer auf Zeit zuerst (Fokus, Gründer-Auftrag 15.11.2026), sonst Reihenfolge der Eingabe.
+  if (theme === null) {
+    return [
+      ...workouts.filter((w) => isStrengthEnduranceWorkout(w)),
+      ...workouts.filter((w) => !isStrengthEnduranceWorkout(w)),
+    ];
+  }
   if (theme !== 'try_new') return workouts.filter((w) => workoutHasTheme(w, theme));
   const best = new Map<WorkoutDiscipline, W>();
   for (const workout of workouts) {
