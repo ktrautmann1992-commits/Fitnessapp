@@ -239,3 +239,46 @@ App-Töne bei eingeschaltetem iOS-Stumm-Schalter (Vibration kommt trotzdem).
 Zwei Langhantel-Gruppenworkouts mit eigener Choreografie (Tracks als Übungen in Sätzen, läuft im Player nach Zeit),
 neues Hilfsmittel Stepbrett, neun neue Übungen und Bilder je Workout (Kachel in der Liste, Banner in der Ansicht).
 Details: docs/PLAN-BARBELL-BURN.md.
+
+## 10. Nachtrag 15.11.2026: Kraft-Ausdauer auf Zeit und tiefe Bauchmuskeln
+
+Gründer-Auftrag: „Die Workouts, bei denen die Übungen auf Zeit gehen, sollen länger gehen (20–30 min). Übungen für die
+Tiefenmuskulatur des Bauchs einbauen. Deutlich mehr Workouts auf Zeit (Kraft-Ausdauer) – darauf soll der Fokus liegen.“
+
+**Wo in der App:** Reiter Training → Workouts. Erster Bereich „Kraft-Ausdauer (auf Zeit)“ mit Anzahl und kurzer
+Einleitung; in „Alle“ stehen diese Workouts oben (danach wie bisher nach Sternen, Dauer, Titel). Regel in
+`isStrengthEnduranceWorkout` (core `workouts/discover.ts`, Grenzen in `WORKOUT_THEME_RULES.strengthEndurance`):
+Zirkel oder Intervall ohne WOD-Stil, Kategorie Ganzkörper/Rumpf/Oberkörper/Beine/HIIT/Lauf-Kraft, 20–30 Minuten,
+mindestens die Hälfte der Übungen nach Sekunden. Kein neues Inhaltsfeld, keine neue Ansicht.
+
+**16 neue Workouts (20–30 Min., Stufe 1–4):** Tiefe Bauchmuskeln 20, Core-Stabilität 25, Ganzkörper Kraft-Ausdauer 25,
+Beine & Po Ausdauer 28, Oberkörper Kraft-Ausdauer 22, Kurzhantel-Zirkel 25, Kettlebell Kraft-Ausdauer 28, Band-Zirkel 25,
+Studio-Zirkel Kraft-Ausdauer 27 (Maschinen, Kabelzug, Rudergerät), Stufe & Stuhl Zirkel 25, Power-Intervall 30/15,
+Kraft-Ausdauer für Läufer 25, Hyrox-Kraft-Ausdauer 30, Kurzhantel & Band Mix 25, Oberkörper Kurzhantel-Ausdauer 25,
+Ganzkörper Ausdauer 45/15. Dosierung nach Zeit (35/20, 40/20, 45/15, 30/15); Übungen mit Gewicht bleiben nach
+Wiederholungen (Regel W4) und laufen im Player im Zeitfenster.
+
+**11 verlängerte Workouts** (mehr Runden bzw. Tiefe-Bauch-Stationen, überwiegend auf Zeit umgestellt – nicht nur längere
+Pausen): Bauch-Blitz 12 → 22, Beine & Po – Start 17 → 20, Cardio ohne Springen 16 → 21, Ganzkörper mit Band 18 → 25,
+Ganzkörper-Zirkel 19 → 25, HIIT für Einsteiger 16 → 22, Hyrox-Einstieg ohne Geräte 15 → 25, Hyrox-Training zuhause
+18 → 27, Oberkörper zuhause 14 → 22, Rumpf-Basis 12 → 21, Sanfter Einstieg 17 → 21.
+
+**Bewusst unverändert:** Mobilität/Erholung/Technik (Hüfte und Rücken mobil, Beweglich in den Tag, Lauf-ABC,
+Rudern-Technik und die übrigen Rudern-Einheiten), Rücken-fit (Haltung mit Band, Rücken-fit Büro – Prävention, keine
+Kraft-Ausdauer), Lauf-Kraft 15 min (feste Bausteine des Laufplans, `RUN_STRENGTH`), Calisthenics-Grundlagen/an der
+Stange (Skill-Training nach Wiederholungen), WOD-Stil (Zeitlimit steht im Titel, z. B. „AMRAP 12“), Express-Ganzkörper
+(bewusst 10-Minuten-Einheit).
+
+**Neue Übungen (8, mit Start- und Endbild):** Tiefe Bauchatmung in Rückenlage, Bauchnabel einziehen im Vierfüßlerstand,
+Dead Bug mit gestreckten Beinen, Bärenstand halten, Bärenstand mit Schulter-Tippen, Schulter-Tippen im Liegestütz (im
+Unterarmstütz nicht möglich), Fersen seitlich tippen, Seitstütz mit Hüftheben. Pallof-Halten ohne Band entfällt (ohne
+Band kein Widerstand; Pallof Press mit Band vorhanden). Die Übungen kommen nur über Workouts in die App
+(`DEEP_CORE_ONLY_EXERCISE_IDS` in der Bibliotheks-Sperre) – Pläne bleiben byte-gleich; nach der Fachprüfung in die
+Plan-Engine aufnehmen. Dazu Endposition für Beinbeuger mit Band.
+
+**Tests:** core `workouts/kraft-ausdauer.test.ts` (Prüfregeln, Dauer = Schätzung/Player, Zeit-Anteil, ≥ 3 Min. tiefe
+Bauchmuskeln je Workout, Seitenwechsel-Hinweise, Bibliotheks-Sperre), `discover.test.ts` (Grenzfälle 19/31 Min.,
+Formate, Kategorien); Playwright `kraft-ausdauer.spec.ts` (Bildschirmfotos mit `KA_SHOTS=<Ordner>`).
+
+**Offen:** fachliche Prüfung der neuen Workouts und Übungen vor dem Livegang; eigene Hyrox-Kraft-Ausdauer-Variante mit
+Kurzhanteln; Kraft-Ausdauer-Workouts optional im Plan vorschlagen.
