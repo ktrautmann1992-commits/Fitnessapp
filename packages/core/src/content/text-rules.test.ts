@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { findNutritionTextRuleHits, findTextRuleHits } from './text-rules';
+import {
+  findNutritionTextRuleHits,
+  findTextRuleHits,
+  FORBIDDEN_BRANDS,
+  FORBIDDEN_FOOD_BRANDS,
+  FORBIDDEN_MEDICAL_TERMS,
+  HEALTH_CLAIM_TERMS,
+} from './text-rules';
 
 const labels = (text: string) => findTextRuleHits(text).map((hit) => hit.label);
 
@@ -142,5 +149,48 @@ describe('Health-Claims, Nährwert-Schlagworte und Lebensmittel-Marken (R10, Pla
 
   it('Übungstexte (Ü6) prüfen Health-Claims nicht', () => {
     expect(findTextRuleHits('Light-Variante der Übung')).toEqual([]);
+  });
+});
+
+describe('Vorfilter (Leistung): gleiche Treffer wie jede Regel einzeln', () => {
+  type Rules = typeof FORBIDDEN_MEDICAL_TERMS;
+  // Referenz ohne Vorfilter: jede Regel einzeln, wie compile() in text-rules.ts.
+  const reference = (text: string, lists: readonly (readonly [string, Rules])[]) => {
+    const normalized = text.normalize('NFC');
+    return lists.flatMap(([kind, list]) =>
+      list.flatMap((rule) => {
+        const end = rule.wholeWord ? '(?![\\p{L}\\p{N}])' : '';
+        const re = new RegExp(`(?<![\\p{L}\\p{N}])(?:${rule.pattern})${end}`, 'iu');
+        const found = re.exec(normalized);
+        return found ? [{ kind, match: found[0], label: rule.label }] : [];
+      }),
+    );
+  };
+
+  it.each([
+    '',
+    'Mit dem Medizinball werfen.',
+    'medizinisch empfohlen, garantiert schmerzfrei',
+    'Nutellabrot mit Alpro',
+    'Alprostadil ist keine Marke, Alpro schon.',
+    'Rama-Margarine und Dr.Oetker Pudding, Coca Cola',
+    'gut für die Verdauung und das Immunsystem',
+    'Vorheilen, nachheilen, Heilung',
+    'Kniebeuge: Füße schulterbreit, Rücken gerade, langsam absenken.',
+    'Reha-Übung, REHA',
+    'César-Salat und Crème fraîche, Prävention',
+  ])('„%s“', (text) => {
+    const medicalAndBrands = [
+      ['medical', FORBIDDEN_MEDICAL_TERMS],
+      ['brand', FORBIDDEN_BRANDS],
+    ] as const;
+    expect(findTextRuleHits(text)).toEqual(reference(text, medicalAndBrands));
+    expect(findNutritionTextRuleHits(text)).toEqual(
+      reference(text, [
+        ...medicalAndBrands,
+        ['health_claim', HEALTH_CLAIM_TERMS],
+        ['brand', FORBIDDEN_FOOD_BRANDS],
+      ]),
+    );
   });
 });
