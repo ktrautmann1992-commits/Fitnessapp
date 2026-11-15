@@ -7,20 +7,13 @@ import {
 } from '@fitnessapp/core';
 import { brandColors, fontSize, fontWeight, radius, spacing } from '@fitnessapp/ui';
 import { useEffect, useRef, useState } from 'react';
-import {
-  Image,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  useColorScheme,
-  View,
-} from 'react-native';
-import Svg, { G, Path, SvgXml } from 'react-native-svg';
+import { Modal, Pressable, ScrollView, StyleSheet, useColorScheme, View } from 'react-native';
+import Svg, { G, Path } from 'react-native-svg';
 
 import { Body, Button, Card, Heading } from '@/components/ui';
+import { ExercisePicture } from '@/components/exercise-picture';
 import { focusTestId, focusView } from '@/components/swap';
-import { exerciseMediaFor, illustrationXml, useExerciseMedia } from '@/data/exercise-media';
+import { exerciseMediaFor, useExerciseMedia } from '@/data/exercise-media';
 import { t } from '@/i18n';
 import { muscleMapA11yLabel, muscleMapLegend, shapePaths } from '@/lib/muscle-map-format';
 import {
@@ -278,11 +271,14 @@ export function StartPositionImage({ exerciseId }: { exerciseId: string }) {
   const found = exerciseMediaFor(exerciseId, 'start_position');
   if (!found) return null;
   const { image, source } = found;
-  const credit =
-    image.license.attribution_de ??
-    (image.origin === 'own_work'
-      ? t.muscleMap.ownIllustration
-      : t.muscleMap.imageCredit(image.source.creator, image.license.name));
+  const isPhoto = source.kind === 'photo';
+  // Übungsfoto (docs/UEBUNGSFOTOS.md): KI-Bild statt eigener Illustration – Hinweis im Bild und darunter.
+  const credit = isPhoto
+    ? t.muscleMap.aiPhotoCredit
+    : (image.license.attribution_de ??
+      (image.origin === 'own_work'
+        ? t.muscleMap.ownIllustration
+        : t.muscleMap.imageCredit(image.source.creator, image.license.name)));
   return (
     <Card>
       <View style={styles.map} testID="exercise-start-position">
@@ -291,20 +287,21 @@ export function StartPositionImage({ exerciseId }: { exerciseId: string }) {
           accessible
           accessibilityRole="image"
           accessibilityLabel={image.alt_de}
-          style={styles.startImage}
+          style={[styles.startImage, isPhoto && styles.startPhoto]}
           testID="exercise-start-position-image"
+          // Für Tests (Playwright): Foto oder Illustration.
+          {...{ dataSet: { media: source.kind } }}
         >
-          {source.kind === 'svg' ? (
-            <SvgXml
-              xml={illustrationXml(source.template, scheme)}
-              width="100%"
-              height="100%"
-              accessible={false}
-              aria-hidden
-            />
-          ) : (
-            <Image source={source.source} resizeMode="contain" style={styles.fill} />
-          )}
+          <ExercisePicture source={source} scheme={scheme} />
+          {isPhoto ? (
+            <Text
+              style={styles.aiNotice}
+              accessibilityLabel={t.muscleMap.aiPhotoA11y}
+              testID="exercise-start-position-ai"
+            >
+              {t.muscleMap.aiPhotoNotice}
+            </Text>
+          ) : null}
         </View>
         <Body muted style={styles.note}>
           {credit}
@@ -351,5 +348,20 @@ const styles = StyleSheet.create({
   },
   dialogContent: { padding: spacing.lg, gap: spacing.md },
   startImage: { width: '100%', maxWidth: 400, aspectRatio: 4 / 3, alignSelf: 'center' },
+  startPhoto: { borderRadius: radius.md, overflow: 'hidden' },
+  aiNotice: {
+    position: 'absolute',
+    right: spacing.xs,
+    bottom: spacing.xs,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: radius.sm,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: fontWeight.semibold,
+    lineHeight: 14,
+  },
   fill: { width: '100%', height: '100%' },
 });

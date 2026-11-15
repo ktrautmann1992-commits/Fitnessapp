@@ -17,6 +17,7 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 
 import { Text } from '@/components/text';
+import { ExercisePicture } from '@/components/exercise-picture';
 import { exerciseMediaFor, illustrationXml, useExerciseMedia } from '@/data/exercise-media';
 import { t } from '@/i18n';
 import { appFont, displayFont } from '@/lib/fonts';
@@ -608,7 +609,10 @@ function Small({ children, testID }: { children: ReactNode; testID?: string }) {
   );
 }
 
-/** 64-px-Bild der Ausgangsposition auf hellem Trainingsblau; ohne Bild nur die Fläche mit Hantel-Icon. */
+/**
+ * 64-px-Bild der Ausgangsposition auf hellem Trainingsblau (Foto oder Illustration); ohne Bild nur die Fläche mit
+ * Hantel-Icon.
+ */
 function ExerciseThumb({ exerciseId }: { exerciseId: string }) {
   const scheme = useColorSchemeName();
   const training = useAreaColors('training');
@@ -626,6 +630,9 @@ function ExerciseThumb({ exerciseId }: { exerciseId: string }) {
           accessible={false}
           aria-hidden
         />
+      ) : found.source.kind === 'photo' ? (
+        // Übungsfoto (docs/UEBUNGSFOTOS.md): 4:3 über die volle Breite der Kachel.
+        <ExercisePicture source={found.source} scheme={scheme} height={ILLUSTRATION * 0.75} />
       ) : (
         <Image source={found.source.source} resizeMode="contain" style={styles.illustrationImage} />
       )}

@@ -1,22 +1,29 @@
 import { WORKOUT_PLAYER } from '@fitnessapp/core';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { Animated, Platform, StyleSheet, View } from 'react-native';
-import { SvgXml } from 'react-native-svg';
 
-import { exerciseMediaFor, illustrationXml, useExerciseMedia } from '@/data/exercise-media';
+import { ExercisePicture } from '@/components/exercise-picture';
+import {
+  type ExerciseMediaSource,
+  exerciseMediaFor,
+  useExerciseMedia,
+} from '@/data/exercise-media';
 import { useReducedMotion } from '@/lib/reduced-motion';
 import { useColorSchemeName } from '@/lib/theme';
 
-/** SVG-Vorlagen der Ausgangs- und (falls vorhanden) Endposition einer Übung. */
-export function exerciseMotionTemplates(
+/**
+ * Bilder der Ausgangs- und (falls vorhanden) Endposition einer Übung: Foto-Paar (docs/UEBUNGSFOTOS.md) oder
+ * Illustration. Ende nur aus derselben Quellart wie der Start.
+ */
+export function exerciseMotionFrames(
   exerciseId: string,
-): { start: string; end: string | null } | null {
+): { start: ExerciseMediaSource; end: ExerciseMediaSource | null } | null {
   const start = exerciseMediaFor(exerciseId, 'start_position');
-  if (!start || start.source.kind !== 'svg') return null;
+  if (!start || start.source.kind === 'raster') return null;
   const end = exerciseMediaFor(exerciseId, 'end_position');
   return {
-    start: start.source.template,
-    end: end && end.source.kind === 'svg' ? end.source.template : null,
+    start: start.source,
+    end: end && end.source.kind === start.source.kind ? end.source : null,
   };
 }
 
@@ -25,6 +32,7 @@ export function exerciseMotionTemplates(
  * Sekundentakt mit kurzer Überblendung (WORKOUT_PLAYER.mediaSwapMs/mediaFadeMs) – so sieht man, wie die Bewegung geht.
  * Ohne Endbild (Halteübungen) oder bei „Bewegung reduzieren“: nur das Startbild. Ohne Bild: nichts (kein leerer Rahmen).
  * Leistung (15.11.2026): `memo` – der Player zeichnet alle 250 ms neu; das SVG nur, wenn sich Bild oder Bildwechsel ändert.
+ * Fotos (docs/UEBUNGSFOTOS.md) stehen 4:3 in der vorgegebenen Höhe; das Endfoto wird nur bei Bewegung eingebunden.
  */
 export const ExerciseMotion = memo(function ExerciseMotion({
   exerciseId,
@@ -45,11 +53,11 @@ export const ExerciseMotion = memo(function ExerciseMotion({
   const scheme = useColorSchemeName();
   const reduced = useReducedMotion();
   const mediaLoaded = useExerciseMedia();
-  const templates = useMemo(
-    () => (mediaLoaded ? exerciseMotionTemplates(exerciseId) : null),
+  const frames = useMemo(
+    () => (mediaLoaded ? exerciseMotionFrames(exerciseId) : null),
     [mediaLoaded, exerciseId],
   );
-  const moving = animate && !reduced && templates?.end != null;
+  const moving = animate && !reduced && frames?.end != null;
   const [opacity] = useState(() => new Animated.Value(0));
   const [showEnd, setShowEnd] = useState(false);
 
@@ -72,30 +80,35 @@ export const ExerciseMotion = memo(function ExerciseMotion({
     };
   }, [moving, opacity, exerciseId]);
 
-  const startSvg = useMemo(
+  const overrides = useMemo(() => ({ gap: surface }), [surface]);
+  const startImage = useMemo(
     () =>
-      templates ? (
-        <SvgXml
-          xml={illustrationXml(templates.start, scheme, { gap: surface })}
-          width="100%"
+      frames ? (
+        <ExercisePicture
+          source={frames.start}
+          scheme={scheme}
+          overrides={overrides}
           height={height}
+          rounded={frames.start.kind === 'photo' ? 8 : 0}
         />
       ) : null,
-    [templates, scheme, surface, height],
+    [frames, scheme, overrides, height],
   );
-  const endSvg = useMemo(
+  const endImage = useMemo(
     () =>
-      templates?.end ? (
-        <SvgXml
-          xml={illustrationXml(templates.end, scheme, { gap: surface })}
-          width="100%"
+      frames?.end && moving ? (
+        <ExercisePicture
+          source={frames.end}
+          scheme={scheme}
+          overrides={overrides}
           height={height}
+          rounded={frames.end.kind === 'photo' ? 8 : 0}
         />
       ) : null,
-    [templates, scheme, surface, height],
+    [frames, moving, scheme, overrides, height],
   );
 
-  if (!templates) return null;
+  if (!frames) return null;
   return (
     <View
       style={[styles.box, { height }]}
@@ -103,16 +116,22 @@ export const ExerciseMotion = memo(function ExerciseMotion({
       accessibilityRole="image"
       accessibilityLabel={label}
       testID={testID}
-      // Für Tests (Playwright): welches Bild gerade vorn ist.
-      {...{ dataSet: { motion: moving ? 'on' : 'off', frame: showEnd ? 'end' : 'start' } }}
+      // Für Tests (Playwright): welches Bild gerade vorn ist und ob Foto oder Illustration.
+      {...{
+        dataSet: {
+          motion: moving ? 'on' : 'off',
+          frame: showEnd ? 'end' : 'start',
+          media: frames.start.kind,
+        },
+      }}
     >
-      {startSvg}
-      {moving && endSvg ? (
+      {startImage}
+      {moving && endImage ? (
         <Animated.View
-          style={[StyleSheet.absoluteFill, { opacity }]}
+          style={[StyleSheet.absoluteFill, styles.overlay, { opacity }]}
           testID={testID ? `${testID}-end` : undefined}
         >
-          {endSvg}
+          {endImage}
         </Animated.View>
       ) : null}
     </View>
@@ -121,4 +140,5 @@ export const ExerciseMotion = memo(function ExerciseMotion({
 
 const styles = StyleSheet.create({
   box: { width: '100%', alignItems: 'center', justifyContent: 'center' },
+  overlay: { alignItems: 'center', justifyContent: 'center' },
 });
