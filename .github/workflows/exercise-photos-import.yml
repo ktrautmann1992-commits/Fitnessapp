@@ -1,0 +1,83 @@
+name: exercise-photos-import
+
+# Übungsfotos übernehmen (docs/UEBUNGSFOTOS.md).
+# Startet automatisch, wenn sich content/exercise-photos/manifest.json auf einem Branch claude/** ändert, oder von Hand
+# (GitHub-App → Actions → exercise-photos-import → Run workflow, Branch wählen).
+# Für jede Übung im Manifest, deren Fotos fehlen oder deren Adresse sich geändert hat (Vergleich mit imported.json):
+# Start- und Endbild per curl laden, mit ImageMagick auf 640×480 zuschneiden, mit cwebp als WebP (≤ 45 KB) speichern,
+# App-Zuordnung apps/mobile/src/data/exercise-photo-registry.generated.ts und Prüfbögen
+# content/exercise-photos/review/sheet-<n>.jpg erneuern und alles auf denselben Branch committen.
+# Kein Endlos-Lauf: Der Commit ändert das Manifest nie, und Pushes mit dem GITHUB_TOKEN starten keine Workflows.
+on:
+  push:
+    branches: ['claude/**']
+    paths: ['content/exercise-photos/manifest.json']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: exercise-photos-import-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: ImageMagick und WebP-Werkzeuge installieren
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq imagemagick webp
+          convert -version | head -1
+          cwebp -version
+      - name: Fotos laden und umrechnen
+        id: import
+        run: |
+          set +e
+          node scripts/exercise-photos.mjs 2>&1 | tee import.log
+          code=${PIPESTATUS[0]}
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          # Manifest ungültig oder Werkzeug fehlt: sofort abbrechen, nichts committen.
+          if [ "$code" = "1" ]; then exit 1; fi
+          exit 0
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo "## Übungsfotos"
+            echo '```'
+            cat import.log 2>/dev/null || echo "(kein Protokoll)"
+            echo '```'
+            ls content/exercise-photos/review/*.jpg 2>/dev/null | sed 's/^/- Prüfbogen: /'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit auf denselben Branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/mobile/assets/exercise-photos content/exercise-photos/imported.json \
+            content/exercise-photos/review apps/mobile/src/data/exercise-photo-registry.generated.ts
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen."
+            exit 0
+          fi
+          if git diff --cached --name-only | grep -qx 'content/exercise-photos/manifest.json'; then
+            echo "::error::Das Manifest darf vom Workflow nicht geändert werden."
+            exit 1
+          fi
+          git commit -q -m "Übungsfotos übernommen (exercise-photos-import)"
+          git pull --rebase -q origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+      - name: Fehlgeschlagene Downloads melden
+        if: steps.import.outputs.code == '2'
+        run: |
+          grep '::error::' import.log || true
+          echo "::error::Einige Fotos konnten nicht geladen werden (IDs oben). Die übrigen sind committet."
+          exit 1
