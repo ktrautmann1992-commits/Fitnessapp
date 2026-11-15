@@ -6756,11 +6756,31 @@ export const GROUP_BARBELL_ONLY_EXERCISE_IDS: readonly string[] = [
   'crunch',
 ];
 
-/** Nur über Hyrox-Ketten bzw. Workouts – nie über die Bibliotheks-Suche (Hyrox-, WOD- und Barbell-Burn-Übungen). */
+/**
+ * Übungen für die tiefe Bauchmuskulatur in den Kraft-Ausdauer-Workouts auf Zeit (Gründer-Auftrag 15.11.2026,
+ * docs/PLAN-WORKOUTS.md Abschnitt 10): Bauchatmung, Bauchnabel einziehen, Dead Bug mit gestreckten Beinen, Bärenstand,
+ * Schulter-Tippen, Fersen seitlich tippen, Seitstütz mit Hüftheben. Wie GROUP_BARBELL_ONLY_EXERCISE_IDS nur über
+ * Workouts bzw. ihre eigenen Alternativen – nie über die Bibliotheks-Suche (Tausch, „Andere Übung“, Ersatz bei
+ * fehlendem Gerät, Aufwärm-Routine). So bleiben alle Pläne byte-gleich. PRODUKTENTSCHEIDUNG – nach der Fachprüfung in
+ * die Plan-Engine aufnehmen.
+ */
+export const DEEP_CORE_ONLY_EXERCISE_IDS: readonly string[] = [
+  'tiefe-bauchatmung-rueckenlage',
+  'bauchnabel-einziehen-vierfuessler',
+  'dead-bug-gestreckt',
+  'baerenstand-halten',
+  'baerenstand-schulter-tippen',
+  'stuetz-schulter-tippen',
+  'fersen-tippen-seitlich',
+  'seitstuetz-hueftheben',
+];
+
+/** Nur über Hyrox-Ketten bzw. Workouts – nie über die Bibliotheks-Suche (Hyrox-, WOD-, Barbell-Burn- und Tiefe-Bauch-Übungen). */
 export const LIBRARY_SEARCH_EXCLUDED_IDS: readonly string[] = [
   ...HYROX_ONLY_EXERCISE_IDS,
   ...WOD_ONLY_EXERCISE_IDS,
   ...GROUP_BARBELL_ONLY_EXERCISE_IDS,
+  ...DEEP_CORE_ONLY_EXERCISE_IDS,
 ];
 
 /**

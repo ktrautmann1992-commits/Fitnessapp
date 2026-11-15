@@ -1,0 +1,56 @@
+{
+  "id": "bauchnabel-einziehen-vierfuessler",
+  "version": 1,
+  "status": "published",
+  "name_de": "Bauchnabel einziehen im Vierfüßlerstand",
+  "name_en": "Abdominal Draw-in (Quadruped)",
+  "aliases_de": ["Bauch-Vakuum", "Vakuum im Vierfüßlerstand"],
+  "movement_pattern": "core_anti_extension",
+  "primary_muscles": ["abs"],
+  "secondary_muscles": ["obliques"],
+  "equipment_ids": [],
+  "mechanics": "isolation",
+  "load_type": "time",
+  "unilateral": false,
+  "difficulty": 1,
+  "caution_tags": [],
+  "description_de": "Übung für den queren Bauchmuskel: Im Vierfüßlerstand zieht der Bauchnabel beim Ausatmen sanft Richtung Wirbelsäule, der Rücken bleibt dabei gerade.",
+  "steps_de": [
+    "Vierfüßlerstand: Hände unter den Schultern, Knie unter der Hüfte, Rücken gerade, Blick zum Boden.",
+    "Einatmen und den Bauch locker hängen lassen.",
+    "Ausatmen und den Bauchnabel langsam Richtung Wirbelsäule ziehen, ohne den Rücken zu runden.",
+    "Spannung halten und ruhig weiteratmen, dann lösen und wiederholen."
+  ],
+  "tips_de": [
+    "Stell dir vor, du schließt eine enge Hose am Unterbauch.",
+    "Der Rücken bleibt flach wie ein Tisch – nur der Bauch bewegt sich."
+  ],
+  "common_mistakes_de": [
+    "Rücken zum Katzenbuckel runden.",
+    "Luft anhalten.",
+    "Schultern zu den Ohren ziehen."
+  ],
+  "safety_note_de": "Nur so weit und so oft bewegen, wie die Technik sauber bleibt. Bei Schmerzen, Schwindel oder ungewohnten Beschwerden die Übung beenden. Bei Beschwerden in den Handgelenken auf den Fäusten oder den Unterarmen abstützen.",
+  "alternatives": [
+    {
+      "alternative_id": "tiefe-bauchatmung-rueckenlage",
+      "reason": "easier",
+      "priority": 1
+    },
+    {
+      "alternative_id": "baerenstand-halten",
+      "reason": "harder",
+      "priority": 2
+    }
+  ],
+  "meta": {
+    "origin": "claude_session",
+    "model": "Claude",
+    "batch_id": null,
+    "created_on": "2026-11-15",
+    "expert_reviewed": false,
+    "reviewed_by": "Claude (Gründer-Auftrag 15.11.2026)",
+    "reviewed_at": "2026-11-15",
+    "review_note": "Testphase – noch nicht fachlich geprüft. Neu für die Kraft-Ausdauer-Workouts mit Schwerpunkt tiefe Bauchmuskeln (Gründer-Auftrag 15.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 10). Vor dem Livegang fachlich prüfen."
+  }
+}
