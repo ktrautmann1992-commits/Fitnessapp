@@ -1,55 +1,71 @@
 {
   "id": "beine-po-start",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Beine & Po – Start",
-  "summary_de": "Einfache Übungen für Beine und Gesäß ohne Geräte. Ruhiges Tempo, saubere Technik, genügend Pausen.",
+  "summary_de": "Einfache Übungen für Beine und Gesäß nach Zeit, ohne Geräte – mit ruhigen Übungen für die tiefen Bauchmuskeln. Ruhiges Tempo, 20 Sekunden Pause nach jeder Übung.",
   "category": "legs_glutes",
   "difficulty": 1,
-  "minutes": 17,
-  "format": "circuit",
+  "minutes": 20,
+  "format": "interval",
   "rounds": 3,
-  "round_rest_s": 60,
+  "round_rest_s": 75,
   "equipment_ids": [],
   "warmup_de": "5 Minuten locker aufwärmen: auf der Stelle gehen, Arme kreisen, Hüfte kreisen und 10 ruhige Kniebeugen ohne Tiefe.",
   "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
   "exercises": [
     {
       "exercise_id": "kniebeuge-koerpergewicht",
-      "reps": 10,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "glute-bridge",
-      "reps": 12,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "split-kniebeuge",
-      "reps": 8,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": "Nach der Hälfte die Seite wechseln."
     },
     {
       "exercise_id": "hueftstrecken-vierfuessler",
-      "reps": 10,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": "Nach der Hälfte die Seite wechseln."
     },
     {
       "exercise_id": "wadenheben-koerpergewicht",
-      "reps": 15,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bauchnabel-einziehen-vierfuessler",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "dead-bug",
+      "reps": null,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
       "note_de": null

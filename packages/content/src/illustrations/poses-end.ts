@@ -643,6 +643,12 @@ const MOVING_END_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustration>> =
     }),
     'Endposition: Körper vom Knie bis zum Kopf als Linie langsam nach vorn abgesenkt, Hände bereit zum Abfangen.',
   ),
+  'beinbeuger-band': e(
+    move('beinbeuger-band', {
+      near: { leg: [182, 95, 165] },
+    }),
+    'Endposition: Bauchlage, ein Unterschenkel gegen das Band nach oben gebeugt, Knie etwa rechtwinklig, Hüfte bleibt am Boden.',
+  ),
   'beinbeuger-maschine': e(
     move('beinbeuger-maschine', {
       near: { leg: [0, -128, -40] },

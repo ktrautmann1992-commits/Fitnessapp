@@ -1,13 +1,13 @@
 {
   "id": "rumpf-basis",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Rumpf-Basis",
-  "summary_de": "Kurzes Rumpftraining für Einsteiger: ruhige Halteübungen und kontrollierte Bewegungen für Bauch und unteren Rücken.",
+  "summary_de": "Rumpftraining für Einsteiger nach Zeit: ruhige Halteübungen, Atmung und kontrollierte Bewegungen für die tiefen Bauchmuskeln und den unteren Rücken.",
   "category": "core",
   "difficulty": 1,
-  "minutes": 12,
-  "format": "circuit",
+  "minutes": 21,
+  "format": "interval",
   "rounds": 3,
   "round_rest_s": 45,
   "equipment_ids": [],
@@ -16,40 +16,64 @@
   "exercises": [
     {
       "exercise_id": "dead-bug",
-      "reps": 8,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite, Lendenwirbelsäule bleibt am Boden."
+      "note_de": "Lendenwirbelsäule bleibt am Boden."
     },
     {
       "exercise_id": "unterarmstuetz",
       "reps": null,
-      "duration_s": 20,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
-      "note_de": null
+      "note_de": "Bei Bedarf auf den Knien."
     },
     {
       "exercise_id": "bird-dog",
-      "reps": 6,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
-      "note_de": null
+      "note_de": "Abwechselnd links und rechts, langsam."
     },
     {
       "exercise_id": "seitstuetz-knie",
       "reps": null,
-      "duration_s": 20,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
       "note_de": "Nach der Hälfte die Seite wechseln."
     },
     {
       "exercise_id": "glute-bridge",
-      "reps": 12,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "tiefe-bauchatmung-rueckenlage",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bauchnabel-einziehen-vierfuessler",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "hollow-body-gehockt",
+      "reps": null,
+      "duration_s": 20,
       "sets": null,
       "rest_s": 20,
       "note_de": null

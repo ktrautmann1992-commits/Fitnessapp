@@ -1,14 +1,14 @@
 {
   "id": "hyrox-einsteiger-ohne-geraete",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Hyrox-Einstieg ohne Geräte",
-  "summary_de": "Sanfter Einstieg in die Hyrox-Bewegungen ganz ohne Geräte und ohne Sprünge – mit Pausen nach jeder Übung.",
+  "summary_de": "Sanfter Einstieg in die Hyrox-Bewegungen ganz ohne Geräte und ohne Sprünge – nach Zeit, mit Pausen nach jeder Übung, Bärenstand und Dead Bug für die Körpermitte.",
   "category": "hiit_cardio",
   "difficulty": 2,
-  "minutes": 15,
-  "format": "circuit",
-  "rounds": 3,
+  "minutes": 25,
+  "format": "interval",
+  "rounds": 4,
   "round_rest_s": 60,
   "equipment_ids": [],
   "warmup_de": "Fünf Minuten zügig gehen und die Arme kreisen.",
@@ -16,11 +16,11 @@
   "exercises": [
     {
       "exercise_id": "ausfallschritt-gehen-koerpergewicht",
-      "reps": 12,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Gesamt, kleine Schritte sind in Ordnung."
+      "note_de": "Abwechselnd links und rechts, kleine Schritte sind in Ordnung."
     },
     {
       "exercise_id": "burpee-ohne-sprung",
@@ -40,8 +40,24 @@
     },
     {
       "exercise_id": "kniebeuge-koerpergewicht",
-      "reps": 15,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "baerenstand-halten",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "dead-bug",
+      "reps": null,
+      "duration_s": 30,
       "sets": null,
       "rest_s": 20,
       "note_de": null

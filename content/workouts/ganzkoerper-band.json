@@ -1,13 +1,13 @@
 {
   "id": "ganzkoerper-band",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Ganzkörper mit Band",
-  "summary_de": "Ein Widerstandsband reicht: Rudern, Drücken, Hüftbeugen und Rumpf in einem ausgewogenen Zirkel.",
+  "summary_de": "Ein Widerstandsband reicht: Rudern, Drücken, Hüftbeugen und Rumpf nach Zeit – 40 Sekunden Arbeit, 20 Sekunden Pause, dazu Dead Bug und Bärenstand.",
   "category": "full_body",
   "difficulty": 2,
-  "minutes": 18,
-  "format": "circuit",
+  "minutes": 25,
+  "format": "interval",
   "rounds": 3,
   "round_rest_s": 60,
   "equipment_ids": ["resistance_bands"],
@@ -16,51 +16,67 @@
   "exercises": [
     {
       "exercise_id": "rudern-band",
-      "reps": 12,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "brustdruecken-band",
-      "reps": 12,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "kniebeuge-koerpergewicht",
-      "reps": 12,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "good-morning-band",
-      "reps": 12,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "schulterdruecken-band",
-      "reps": 10,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "pallof-press-band",
-      "reps": 8,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": "Nach der Hälfte die Seite wechseln."
+    },
+    {
+      "exercise_id": "dead-bug",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "baerenstand-halten",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
     }
   ],
   "meta": {

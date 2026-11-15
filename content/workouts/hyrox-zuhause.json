@@ -1,14 +1,14 @@
 {
   "id": "hyrox-zuhause",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Hyrox-Training zuhause",
-  "summary_de": "Hyrox-Bewegungen ohne Spezialgeräte: Ausfallschritte, Burpees, Tragen und Kniebeugen als Zirkel mit Kurzhanteln.",
+  "summary_de": "Hyrox-Bewegungen ohne Spezialgeräte: Ausfallschritte, Burpees, Tragen und Kniebeugen als Zirkel mit Kurzhanteln – fast alles nach Zeit, mit Schulter-Tippen für die Körpermitte.",
   "category": "hiit_cardio",
   "difficulty": 3,
-  "minutes": 18,
+  "minutes": 27,
   "format": "circuit",
-  "rounds": 3,
+  "rounds": 4,
   "round_rest_s": 90,
   "equipment_ids": ["dumbbells"],
   "warmup_de": "Fünf Minuten auf der Stelle gehen, Step-Jacks und lockere Kniebeugen.",
@@ -16,11 +16,11 @@
   "exercises": [
     {
       "exercise_id": "ausfallschritt-gehen-koerpergewicht",
-      "reps": 16,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 45,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Gesamt, abwechselnd links und rechts."
+      "note_de": "Abwechselnd links und rechts."
     },
     {
       "exercise_id": "burpee-ohne-sprung",
@@ -51,7 +51,15 @@
       "reps": null,
       "duration_s": 45,
       "sets": null,
-      "rest_s": 0,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "stuetz-schulter-tippen",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 20,
       "note_de": null
     }
   ],

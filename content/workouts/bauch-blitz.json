@@ -1,14 +1,14 @@
 {
   "id": "bauch-blitz",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Bauch-Blitz",
-  "summary_de": "Kurzes Rumpftraining nach Zeit: 30 Sekunden Arbeit, 15 Sekunden Pause. Kurz, knackig und ohne Geräte.",
+  "summary_de": "Rumpftraining nach Zeit: 30 Sekunden Arbeit, 15 Sekunden Pause, vier Runden – mit Bauchnabel einziehen und Schulter-Tippen im Bärenstand für die tiefen Bauchmuskeln.",
   "category": "core",
   "difficulty": 2,
-  "minutes": 12,
+  "minutes": 22,
   "format": "interval",
-  "rounds": 3,
+  "rounds": 4,
   "round_rest_s": 45,
   "equipment_ids": [],
   "warmup_de": "5 Minuten locker aufwärmen: auf der Stelle gehen, Arme kreisen, Hüfte kreisen und 10 ruhige Kniebeugen ohne Tiefe.",
@@ -48,6 +48,22 @@
     },
     {
       "exercise_id": "glute-bridge",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bauchnabel-einziehen-vierfuessler",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "baerenstand-schulter-tippen",
       "reps": null,
       "duration_s": 30,
       "sets": null,

@@ -1,15 +1,15 @@
 {
   "id": "cardio-ohne-springen",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Cardio ohne Springen",
-  "summary_de": "Puls hoch, Gelenke geschont: Intervalle ohne Sprünge, die du auch in einer Mietwohnung leise machen kannst.",
+  "summary_de": "Puls hoch, Gelenke geschont: Intervalle ohne Sprünge, die du auch in einer Mietwohnung leise machen kannst – mit Dead Bug und Bauchnabel einziehen für die tiefen Bauchmuskeln.",
   "category": "hiit_cardio",
   "difficulty": 1,
-  "minutes": 16,
+  "minutes": 21,
   "format": "interval",
   "rounds": 3,
-  "round_rest_s": 60,
+  "round_rest_s": 45,
   "equipment_ids": [],
   "warmup_de": "5 Minuten aufwärmen: zügig auf der Stelle gehen, Arme kreisen, Schultern lockern und ein paar Step-Jacks im ruhigen Tempo.",
   "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
@@ -48,6 +48,22 @@
     },
     {
       "exercise_id": "liegestuetz-erhoeht",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "dead-bug",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "bauchnabel-einziehen-vierfuessler",
       "reps": null,
       "duration_s": 30,
       "sets": null,

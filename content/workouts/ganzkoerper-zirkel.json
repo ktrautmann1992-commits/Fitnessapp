@@ -1,12 +1,12 @@
 {
   "id": "ganzkoerper-zirkel",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Ganzkörper-Zirkel",
-  "summary_de": "Ein kompletter Zirkel ohne Geräte für Fortgeschrittene: Beine, Drücken, Ziehen am Tisch, Hüfte und Rumpf.",
+  "summary_de": "Ein kompletter Zirkel ohne Geräte für Fortgeschrittene, überwiegend nach Zeit: Beine, Drücken, Ziehen am Tisch, Hüfte und Rumpf – mit Schulter-Tippen und Dead Bug lang.",
   "category": "full_body",
   "difficulty": 3,
-  "minutes": 19,
+  "minutes": 25,
   "format": "circuit",
   "rounds": 3,
   "round_rest_s": 90,
@@ -32,11 +32,11 @@
     },
     {
       "exercise_id": "split-kniebeuge",
-      "reps": 10,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": "Nach der Hälfte die Seite wechseln."
     },
     {
       "exercise_id": "tisch-rudern",
@@ -48,14 +48,30 @@
     },
     {
       "exercise_id": "hip-thrust-sofa",
-      "reps": 12,
-      "duration_s": null,
+      "reps": null,
+      "duration_s": 40,
       "sets": null,
       "rest_s": 20,
       "note_de": null
     },
     {
       "exercise_id": "unterarmstuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "stuetz-schulter-tippen",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "dead-bug-gestreckt",
       "reps": null,
       "duration_s": 40,
       "sets": null,
