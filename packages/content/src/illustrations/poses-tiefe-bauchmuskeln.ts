@@ -84,10 +84,7 @@ export const DEEP_CORE_ILLUSTRATIONS: Readonly<Record<string, ExerciseIllustrati
     alt: 'Ausgangsposition: hoher Liegestütz von der Seite, Arme gestreckt, Hände unter den Schultern, Körper vom Kopf bis zu den Fersen gerade.',
   },
   'fersen-tippen-seitlich': {
-    pose: supineKneesBent(
-      { near: [192, 186, 186], far: [191, 185, 185] },
-      { torso: 16, head: 26 },
-    ),
+    pose: supineKneesBent({ near: [192, 186, 186], far: [191, 185, 185] }, { torso: 16, head: 26 }),
     alt: 'Ausgangsposition: Rückenlage, Knie gebeugt, Füße aufgestellt, Kopf und Schultern leicht abgehoben, Arme lang Richtung Füße.',
   },
   'seitstuetz-hueftheben': {
