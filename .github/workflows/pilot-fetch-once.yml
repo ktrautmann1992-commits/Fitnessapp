@@ -15,13 +15,13 @@ jobs:
           set -euo pipefail
           sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick webp
           b=https://d8j0ntlcm91z4.cloudfront.net/user_3H4lYbkHxzmQw3EACNeAeWBFHJq
-          mkdir -p pilot && cd pilot
+          mkdir -p pilot2 && cd pilot2
           i=0
-          for f in hf_20261115_140308_26a49697-6fdf-4689-881a-564f1d035995 hf_20261115_140354_65ae4146-8881-4a00-bfd3-028b06463722 hf_20261115_140307_8f546da2-ecd5-4739-a2b2-4c44fdf33738 hf_20261115_140355_aac65ce7-6441-47f4-b6cc-1d7246c24452 hf_20261115_140308_4450306f-c6ce-446c-9282-002e80b14915 hf_20261115_140354_95924666-baef-40fe-90b0-831e1ad5ef29 hf_20261115_140307_c090cab7-2915-47a9-a540-0d7f8e49460e hf_20261115_140354_409a16f8-aa2b-4944-b111-4082b9d088b9; do
-            i=$((i+1)); curl -fsSL -o $i.png "$b/$f.png"; convert $i.png -resize 480x360 $i.jpg; rm $i.png
+          for f in hf_20261115_140720_d2746cd6-cfa7-49fb-a935-0d998e8d78fd hf_20261115_140745_8d26e455-177d-40a1-bd7f-ba1c9f8c5287 hf_20261115_140720_2e21af91-b9ac-4ccc-bd47-eb89a54aa467 hf_20261115_140745_684347ac-482b-44e3-baf2-43ded807f395 hf_20261115_140720_9444d21d-848c-48c6-b9ee-6b384774f74d hf_20261115_140746_fb14202c-47f4-43c1-9da8-94d76938bbb1; do
+            i=$((i+1)); curl -fsSL -o $i.png "$b/$f.png"; identify $i.png; convert $i.png -resize 480x360 $i.jpg; rm $i.png
           done
-          montage 1.jpg 2.jpg 3.jpg 4.jpg 5.jpg 6.jpg 7.jpg 8.jpg -tile 4x2 -geometry +6+6 kontaktbogen.jpg
+          montage 1.jpg 2.jpg 3.jpg 4.jpg 5.jpg 6.jpg -tile 2x3 -geometry +6+6 kontaktbogen.jpg
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
-          git add pilot && git commit -m "Pilot-Übungsbilder (Kontaktbogen)" && git push
+          git add pilot2 && git commit -m "Pilot 2: günstige Übungsbilder (Kontaktbogen)" && git push
