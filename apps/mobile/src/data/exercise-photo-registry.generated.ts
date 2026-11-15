@@ -25,10 +25,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/ausfallschritt-rueckwaerts-kurzhantel-start.webp'),
     end: require('../../assets/exercise-photos/ausfallschritt-rueckwaerts-kurzhantel-end.webp'),
   },
-  'australian-pull-up': {
-    start: require('../../assets/exercise-photos/australian-pull-up-start.webp'),
-    end: require('../../assets/exercise-photos/australian-pull-up-end.webp'),
-  },
   'baerenstand-halten': {
     start: require('../../assets/exercise-photos/baerenstand-halten-start.webp'),
     end: require('../../assets/exercise-photos/baerenstand-halten-end.webp'),
@@ -81,10 +77,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/burpee-ohne-sprung-start.webp'),
     end: require('../../assets/exercise-photos/burpee-ohne-sprung-end.webp'),
   },
-  'burpee-weitsprung': {
-    start: require('../../assets/exercise-photos/burpee-weitsprung-start.webp'),
-    end: require('../../assets/exercise-photos/burpee-weitsprung-end.webp'),
-  },
   'copenhagen-seitstuetz-knie': {
     start: require('../../assets/exercise-photos/copenhagen-seitstuetz-knie-start.webp'),
     end: require('../../assets/exercise-photos/copenhagen-seitstuetz-knie-end.webp'),
@@ -100,10 +92,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'dead-bug-gestreckt': {
     start: require('../../assets/exercise-photos/dead-bug-gestreckt-start.webp'),
     end: require('../../assets/exercise-photos/dead-bug-gestreckt-end.webp'),
-  },
-  'dips-barren': {
-    start: require('../../assets/exercise-photos/dips-barren-start.webp'),
-    end: require('../../assets/exercise-photos/dips-barren-end.webp'),
   },
   'dips-stuhl': {
     start: require('../../assets/exercise-photos/dips-stuhl-start.webp'),
