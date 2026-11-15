@@ -123,7 +123,7 @@ test('Power-Workout läuft ohne Tippen: Countdown mit erster Übung, Übung → 
   await expect(kind).toHaveText('Pause');
   await expect(step).toHaveText('Liegestütz');
   await expect(page.getByTestId('power-player-upcoming')).toHaveText('Als Nächstes');
-  await expect(page.getByTestId('workout-timer-progress')).toContainText('1 von 18 erledigt');
+  await expect(page.getByTestId('workout-timer-progress')).toContainText('1 von 24 erledigt');
   await shot(page, 'pause.png');
 
   // 4) Pause läuft ab → nächste Übung, wieder ohne Tippen.
@@ -134,7 +134,7 @@ test('Power-Workout läuft ohne Tippen: Countdown mit erster Übung, Übung → 
   // 5) Bis zum Ende vorspulen: alles erledigt, kein einziges „Erledigt“ getippt; Sperre freigegeben.
   await page.clock.fastForward(30 * 60 * 1000);
   await heading(page, 'Geschafft!');
-  await expect(page.getByTestId('workout-finish-summary')).toHaveText(/^18 von 18 erledigt/);
+  await expect(page.getByTestId('workout-finish-summary')).toHaveText(/^24 von 24 erledigt/);
   await expect.poll(async () => (await wake(page)).active).toBe(0);
   expect((await wake(page)).requested).toBeGreaterThanOrEqual(1);
 });
