@@ -12,6 +12,7 @@ import type {
   ILLUSTRATION_COLORS as IllustrationColors,
   IllustrationRole,
 } from './exercise-illustrations.generated';
+import type { ExercisePhotoPair } from './exercise-photo-registry.generated';
 
 /**
  * Übungsbilder in der App (Nachtrag „Muskelkarte“ in docs/PLAN-UEBUNGEN-GLOSSAR-TAUSCH.md). Gründer-Entscheidung B
@@ -23,40 +24,55 @@ import type {
  * Ein Rasterbild (z. B. lizenziertes Foto) käme so dazu: Datei nach `apps/mobile/assets/exercise-media/`, Zuordnung in
  * `content/exercise-media/<übungs-id>.json` (Lizenz Pflicht) und hier ein Eintrag mit `{ kind: 'raster', source:
  * require('…') }`. Der Test `exercise-media.test.ts` prüft, dass Registry und content/exercise-media übereinstimmen.
+ *
+ * Übungsfotos (docs/UEBUNGSFOTOS.md): Liegt für eine Übung ein KI-Foto-Paar vor (exercise-photo-registry.generated.ts,
+ * erzeugt vom Workflow exercise-photos-import), ersetzt es Start- und Endbild der Illustration (`kind: 'photo'`, 4:3).
+ * Ohne Foto bleibt die Illustration. Start und Ende kommen immer aus derselben Quelle (nie Foto + Strichfigur).
  */
 export type ExerciseMediaSource =
   | { readonly kind: 'svg'; readonly template: string }
-  | { readonly kind: 'raster'; readonly source: ImageSourcePropType };
+  | { readonly kind: 'raster'; readonly source: ImageSourcePropType }
+  | { readonly kind: 'photo'; readonly source: ImageSourcePropType };
 
 export interface ExerciseMediaEntry {
   readonly media: ExerciseMedia;
   readonly sources: Readonly<Partial<Record<ExerciseMediaKind, ExerciseMediaSource>>>;
 }
 
-function registryFrom(
+/**
+ * Registry aus Illustrationen und Fotos. Fotos gelten nur für Übungen mit Illustration (Alt-Text und Bildarten kommen
+ * aus deren Zuordnung); das Endfoto nur, wenn die Übung eine Endposition hat (Halteübungen bleiben statisch).
+ */
+export function registryFrom(
   illustrations: Readonly<Record<string, GeneratedIllustration>>,
+  photos: Readonly<Record<string, ExercisePhotoPair>> = {},
 ): Readonly<Record<string, ExerciseMediaEntry>> {
   return Object.fromEntries(
-    Object.entries(illustrations).map(([id, illustration]) => [
-      id,
-      {
-        media: illustration.media,
-        sources: {
-          start_position: { kind: 'svg', template: illustration.templates.start_position },
-          // Endposition (Workout-Player 14.11.2026): nur bei Übungen mit Bewegung; der Timer blendet beide ineinander.
-          ...(illustration.templates.end_position !== undefined
-            ? { end_position: { kind: 'svg', template: illustration.templates.end_position } }
-            : {}),
-        },
-      },
-    ]),
+    Object.entries(illustrations).map(([id, illustration]) => {
+      const photo = Object.hasOwn(photos, id) ? photos[id] : undefined;
+      const hasEnd = illustration.templates.end_position !== undefined;
+      const sources: Partial<Record<ExerciseMediaKind, ExerciseMediaSource>> = photo
+        ? {
+            start_position: { kind: 'photo', source: photo.start },
+            ...(hasEnd ? { end_position: { kind: 'photo', source: photo.end } } : {}),
+          }
+        : {
+            start_position: { kind: 'svg', template: illustration.templates.start_position },
+            // Endposition (Workout-Player 14.11.2026): nur bei Übungen mit Bewegung; der Timer blendet beide ineinander.
+            ...(illustration.templates.end_position !== undefined
+              ? { end_position: { kind: 'svg', template: illustration.templates.end_position } }
+              : {}),
+          };
+      return [id, { media: illustration.media, sources }];
+    }),
   );
 }
 
 /**
  * Leistung (15.11.2026): Die Vorlagen (≈ 1,5 MB Text) liegen NICHT im Start-Bundle, sondern werden beim ersten Bedarf
  * nachgeladen (`import()` → eigener Teil im Web-Export). Bis dahin ist die Registry leer; `useExerciseMedia()` lädt
- * und zeichnet die Komponente neu, sobald die Bilder da sind.
+ * und zeichnet die Komponente neu, sobald die Bilder da sind. Die Foto-Zuordnung kommt genauso nach; die Fotos selbst
+ * sind eigene Dateien (Web: eigene Adressen, Handy: Asset-Dateien) und werden erst beim Anzeigen geladen.
  */
 let EXERCISE_MEDIA: Readonly<Record<string, ExerciseMediaEntry>> = {};
 let COLORS: typeof IllustrationColors | null = null;
@@ -65,14 +81,15 @@ const listeners = new Set<() => void>();
 
 /** Übungsbilder laden (einmalig; weitere Aufrufe teilen sich das Laden). */
 export function loadExerciseMedia(): Promise<Readonly<Record<string, ExerciseMediaEntry>>> {
-  loading ??= import('./exercise-illustrations.generated').then(
-    ({ GENERATED_ILLUSTRATIONS, ILLUSTRATION_COLORS }) => {
-      EXERCISE_MEDIA = registryFrom(GENERATED_ILLUSTRATIONS);
-      COLORS = ILLUSTRATION_COLORS;
-      for (const listener of listeners) listener();
-      return EXERCISE_MEDIA;
-    },
-  );
+  loading ??= Promise.all([
+    import('./exercise-illustrations.generated'),
+    import('./exercise-photo-registry.generated'),
+  ]).then(([{ GENERATED_ILLUSTRATIONS, ILLUSTRATION_COLORS }, { EXERCISE_PHOTOS }]) => {
+    EXERCISE_MEDIA = registryFrom(GENERATED_ILLUSTRATIONS, EXERCISE_PHOTOS);
+    COLORS = ILLUSTRATION_COLORS;
+    for (const listener of listeners) listener();
+    return EXERCISE_MEDIA;
+  });
   return loading;
 }
 

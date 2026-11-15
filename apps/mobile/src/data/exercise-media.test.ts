@@ -4,13 +4,19 @@ import { fileURLToPath } from 'node:url';
 import { exerciseMediaSchema } from '@fitnessapp/core';
 import { beforeAll, describe, expect, it } from 'vitest';
 
+import { GENERATED_ILLUSTRATIONS } from './exercise-illustrations.generated';
 import {
   type ExerciseMediaEntry,
   exerciseMediaFor,
   exerciseMediaRegistry,
   illustrationXml,
   loadExerciseMedia,
+  registryFrom,
 } from './exercise-media';
+import { EXERCISE_PHOTOS } from './exercise-photo-registry.generated';
+
+/** Foto (docs/UEBUNGSFOTOS.md) oder eigene Illustration – beides gilt als Übungsbild. */
+const PICTURE = /^(svg|photo)$/;
 
 /** Übungsbilder: Registry der App passt zu content/exercise-media; Anzeige nur, wenn ein Bild da ist. */
 
@@ -27,7 +33,7 @@ describe('Übungsbilder werden erst bei Bedarf geladen (Leistung)', () => {
     expect(loadExerciseMedia()).toBe(first);
     const registry = await first;
     expect(exerciseMediaRegistry()).toBe(registry);
-    expect(exerciseMediaFor('liegestuetz', 'start_position')?.source.kind).toBe('svg');
+    expect(exerciseMediaFor('liegestuetz', 'start_position')?.source.kind).toMatch(PICTURE);
   });
 });
 
@@ -69,14 +75,15 @@ describe('eigene Illustrationen (Entscheidung B)', () => {
       expect(found!.image.alt_de).toMatch(/^Ausgangsposition: /);
       expect(found!.image.origin).toBe('own_work');
       expect(found!.image.license.name).toBe('eigene Illustration Alpha5');
-      expect(found!.source.kind).toBe('svg');
+      // Foto, wo eins da ist, sonst die Illustration.
+      expect(found!.source.kind, id).toBe(Object.hasOwn(EXERCISE_PHOTOS, id) ? 'photo' : 'svg');
     }
   });
 
   it('Endposition (Workout-Player): jede Übung eines Workouts hat Start- und Endbild', () => {
     const end = exerciseMediaFor('liegestuetz', 'end_position');
     expect(end?.image.alt_de).toMatch(/^Endposition: /);
-    expect(end?.source.kind).toBe('svg');
+    expect(end?.source.kind).toMatch(PICTURE);
     const workoutsDir = fileURLToPath(new URL('../../../../content/workouts/', import.meta.url));
     const used = new Set<string>();
     for (const name of readdirSync(workoutsDir).filter((n) => n.endsWith('.json'))) {
@@ -86,17 +93,24 @@ describe('eigene Illustrationen (Entscheidung B)', () => {
       for (const item of workout.exercises) used.add(item.exercise_id);
     }
     expect(used.size).toBeGreaterThan(100);
-    const missing = [...used].filter((id) => exerciseMediaFor(id, 'end_position') === null);
+    // Endbild als Foto oder Illustration – aber immer dieselbe Art wie das Startbild.
+    const missing = [...used].filter((id) => {
+      const end = exerciseMediaFor(id, 'end_position');
+      return (
+        end === null || end.source.kind !== exerciseMediaFor(id, 'start_position')?.source.kind
+      );
+    });
     expect(missing).toEqual([]);
     // Übungen ohne Workout dürfen (noch) ohne Endbild sein → statisches Startbild.
     expect(exerciseMediaFor('bankdruecken-langhantel', 'end_position')).toBeNull();
   });
 
+  // Vorlage direkt aus den Illustrationen (in der Registry kann ein Foto an ihrer Stelle stehen).
+  const template = GENERATED_ILLUSTRATIONS['liegestuetz']!.templates.start_position;
+
   it('illustrationXml setzt hell und dunkel alle Farbmarken ein, ohne externe Verweise', () => {
-    const source = exerciseMediaFor('liegestuetz', 'start_position')!.source;
-    if (source.kind !== 'svg') throw new Error('SVG erwartet');
-    const light = illustrationXml(source.template, 'light');
-    const dark = illustrationXml(source.template, 'dark');
+    const light = illustrationXml(template, 'light');
+    const dark = illustrationXml(template, 'dark');
     for (const xml of [light, dark]) {
       expect(xml).toMatch(/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 240 180"/);
       expect(xml).not.toMatch(/\{\w+\}/);
@@ -108,9 +122,7 @@ describe('eigene Illustrationen (Entscheidung B)', () => {
   });
 
   it('illustrationXml ersetzt einzelne Rollen (Rand in der Farbe der Fläche)', () => {
-    const source = exerciseMediaFor('liegestuetz', 'start_position')!.source;
-    if (source.kind !== 'svg') throw new Error('SVG erwartet');
-    const xml = illustrationXml(source.template, 'dark', { gap: '#1c2a4d' });
+    const xml = illustrationXml(template, 'dark', { gap: '#1c2a4d' });
     expect(xml).toContain('#1c2a4d');
     expect(xml).not.toContain('#151922');
     expect(xml).toContain('#e3ebff');
@@ -145,8 +157,10 @@ describe('exerciseMediaFor', () => {
     );
     expect(exerciseMediaFor('liegestuetz', 'start_position', registry)).toBeNull();
     expect(exerciseMediaFor('toString', 'start_position', registry)).toBeNull();
-    // Standard-Registry: eigene Illustration als SVG-Vorlage.
-    expect(exerciseMediaFor('kniebeuge-langhantel', 'start_position')?.source.kind).toBe('svg');
+    // Standard-Registry: Foto oder eigene Illustration als SVG-Vorlage.
+    expect(exerciseMediaFor('kniebeuge-langhantel', 'start_position')?.source.kind).toMatch(
+      PICTURE,
+    );
   });
 
   it('Zuordnung ohne geladene Bildquelle → null', () => {
@@ -157,5 +171,71 @@ describe('exerciseMediaFor', () => {
         'kniebeuge-langhantel': { media: entry.media, sources: {} },
       }),
     ).toBeNull();
+  });
+});
+
+describe('Übungsfotos: Foto vor Illustration (docs/UEBUNGSFOTOS.md)', () => {
+  const pick = <K extends string>(keys: readonly K[]) =>
+    Object.fromEntries(keys.map((k) => [k, GENERATED_ILLUSTRATIONS[k]!]));
+  // Liegestütz hat eine Endposition, Bankdrücken mit Langhantel (noch) nicht.
+  const illustrations = pick(['liegestuetz', 'bankdruecken-langhantel', 'kniebeuge-langhantel']);
+  const photos = {
+    liegestuetz: { start: { uri: 'l-start.webp' }, end: { uri: 'l-end.webp' } },
+    'bankdruecken-langhantel': { start: { uri: 'b-start.webp' }, end: { uri: 'b-end.webp' } },
+    'gibt-es-nicht': { start: { uri: 'x-start.webp' }, end: { uri: 'x-end.webp' } },
+  };
+  const registry = registryFrom(illustrations, photos);
+
+  it('Foto vorhanden → Start und Ende als Foto, Alt-Text aus der Illustration', () => {
+    const start = exerciseMediaFor('liegestuetz', 'start_position', registry);
+    expect(start?.source).toEqual({ kind: 'photo', source: { uri: 'l-start.webp' } });
+    expect(start?.image.alt_de).toMatch(/^Ausgangsposition: /);
+    expect(exerciseMediaFor('liegestuetz', 'end_position', registry)?.source).toEqual({
+      kind: 'photo',
+      source: { uri: 'l-end.webp' },
+    });
+  });
+
+  it('kein Foto → Illustration (SVG) für Start und Ende', () => {
+    expect(exerciseMediaFor('kniebeuge-langhantel', 'start_position', registry)?.source.kind).toBe(
+      'svg',
+    );
+    expect(registryFrom(illustrations)['liegestuetz']?.sources.end_position?.kind).toBe('svg');
+  });
+
+  it('Übung ohne Endposition: nur das Startfoto (statisch), nie Foto und Strichfigur gemischt', () => {
+    expect(
+      exerciseMediaFor('bankdruecken-langhantel', 'start_position', registry)?.source.kind,
+    ).toBe('photo');
+    expect(exerciseMediaFor('bankdruecken-langhantel', 'end_position', registry)).toBeNull();
+  });
+
+  it('Foto ohne bekannte Übung wird ignoriert', () => {
+    expect(Object.keys(registry).sort()).toEqual(Object.keys(illustrations).sort());
+    expect(exerciseMediaFor('gibt-es-nicht', 'start_position', registry)).toBeNull();
+  });
+});
+
+describe('Übungsfotos: Zuordnung passt zu den Dateien (exercise-photo-registry.generated.ts)', () => {
+  const photoDir = fileURLToPath(new URL('../../assets/exercise-photos/', import.meta.url));
+
+  it('jede Übung mit Start- und Endfoto steht in der Zuordnung und umgekehrt', () => {
+    const files = existsSync(photoDir) ? readdirSync(photoDir) : [];
+    const pairs = files
+      .filter((name) => name.endsWith('-start.webp'))
+      .map((name) => name.replace(/-start\.webp$/, ''))
+      .filter((id) => files.includes(`${id}-end.webp`))
+      .sort();
+    expect(Object.keys(EXERCISE_PHOTOS).sort()).toEqual(pairs);
+    for (const id of pairs) expect(Object.hasOwn(GENERATED_ILLUSTRATIONS, id), id).toBe(true);
+  });
+
+  it('die Fotos liegen nicht im Start-Bundle: nur exercise-media.ts lädt die Zuordnung per import()', () => {
+    const source = readFileSync(
+      fileURLToPath(new URL('./exercise-media.ts', import.meta.url)),
+      'utf8',
+    );
+    expect(source).toContain("import('./exercise-photo-registry.generated')");
+    expect(source).not.toMatch(/^import \{[^}]*\} from '\.\/exercise-photo-registry\.generated'/m);
   });
 });

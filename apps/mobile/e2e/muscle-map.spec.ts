@@ -87,8 +87,14 @@ test('Übungsdetail zeigt Muskelkarte mit Legende; Training: kleine Karte öffne
   await expect(start.getByRole('heading', { name: 'Ausgangsposition' })).toBeVisible();
   const image = page.getByRole('img', { name: /^Ausgangsposition: auf der Flachbank liegen/ });
   await expect(image).toBeVisible();
-  await expect(image.locator('svg')).toHaveCount(1);
-  await expect(start).toContainText('Eigene Illustration von Alpha5');
+  // Übungsfoto (docs/UEBUNGSFOTOS.md), wo eins da ist – sonst die eigene Illustration.
+  if ((await image.getAttribute('data-media')) === 'photo') {
+    await expect(image.locator('img')).toHaveCount(1);
+    await expect(start.getByTestId('exercise-start-position-ai')).toHaveText('KI-Bild');
+  } else {
+    await expect(image.locator('svg')).toHaveCount(1);
+    await expect(start).toContainText('Eigene Illustration von Alpha5');
+  }
   const startBox = await start.boundingBox();
   const mapBox = await map.boundingBox();
   expect(startBox!.y).toBeLessThan(mapBox!.y);
@@ -111,9 +117,11 @@ test('Ausgangsposition: Bild im Dunkelmodus in Theme-Farben, ohne Netzaufruf fü
     name: 'Ausgangsposition: hoher Liegestütz von der Seite, Arme gestreckt, Hände unter den Schultern, Körper vom Kopf bis zu den Fersen gerade.',
   });
   await expect(image).toBeVisible();
-  // Figur in Eisblau (dunkle Palette), nicht im hellen Graphit.
-  const html = await image.innerHTML();
-  expect(html.toLowerCase()).toContain('#e3ebff');
-  expect(html.toLowerCase()).not.toContain('#262c3a');
+  // Figur in Eisblau (dunkle Palette), nicht im hellen Graphit – nur bei der Illustration (ein Foto hat feste Farben).
+  if ((await image.getAttribute('data-media')) !== 'photo') {
+    const html = await image.innerHTML();
+    expect(html.toLowerCase()).toContain('#e3ebff');
+    expect(html.toLowerCase()).not.toContain('#262c3a');
+  }
   expect(external).toEqual([]);
 });

@@ -5,7 +5,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { loadExerciseMedia } from '@/data/exercise-media';
 import { cleanup, render } from '@/test/render';
 
-import { ExerciseMotion, exerciseMotionTemplates } from './exercise-motion';
+import { ExerciseMotion, exerciseMotionFrames } from './exercise-motion';
 
 beforeAll(loadExerciseMedia);
 beforeEach(() => vi.useFakeTimers());
@@ -18,11 +18,14 @@ const frameOf = (view: HTMLElement) =>
   view.querySelector('[data-testid="m"]')?.getAttribute('data-frame');
 
 describe('ExerciseMotion (Übungsbild als Bewegung, Workout-Player 14.11.2026)', () => {
-  it('Vorlagen: Liegestütz mit Start und Ende, Übung ohne Endbild nur Start, unbekannt nichts', () => {
-    expect(exerciseMotionTemplates('liegestuetz')?.end).toEqual(expect.stringContaining('<svg'));
+  it('Bilder: Liegestütz mit Start und Ende, Übung ohne Endbild nur Start, unbekannt nichts', () => {
+    // Foto (docs/UEBUNGSFOTOS.md) oder Illustration – Start und Ende immer von derselben Art.
+    const frames = exerciseMotionFrames('liegestuetz');
+    expect(frames?.start.kind).toMatch(/^(svg|photo)$/);
+    expect(frames?.end?.kind).toBe(frames?.start.kind);
     // Bankdrücken mit Langhantel kommt in keinem Workout vor und hat (noch) kein Endbild.
-    expect(exerciseMotionTemplates('bankdruecken-langhantel')).toMatchObject({ end: null });
-    expect(exerciseMotionTemplates('gibt-es-nicht')).toBeNull();
+    expect(exerciseMotionFrames('bankdruecken-langhantel')).toMatchObject({ end: null });
+    expect(exerciseMotionFrames('gibt-es-nicht')).toBeNull();
   });
 
   it('wechselt im Sekundentakt zwischen Ausgangs- und Endposition (Endlosschleife)', () => {

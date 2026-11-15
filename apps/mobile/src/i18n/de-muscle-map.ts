@@ -19,4 +19,8 @@ export const deMuscleMap = {
   startPositionTitle: 'Ausgangsposition',
   imageCredit: (creator: string, license: string) => `Bild: ${creator} · ${license}`,
   ownIllustration: 'Eigene Illustration von Alpha5, vereinfachte Darstellung.',
+  // Übungsfotos (docs/UEBUNGSFOTOS.md): sichtbarer KI-Hinweis wie bei Workout- und Rezeptbildern.
+  aiPhotoNotice: 'KI-Bild',
+  aiPhotoA11y: 'Hinweis: KI-Bild',
+  aiPhotoCredit: 'KI-Bild von Alpha5: mit KI erzeugtes Foto der Ausgangsposition.',
 };
