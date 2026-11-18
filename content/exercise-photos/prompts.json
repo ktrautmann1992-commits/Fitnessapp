@@ -729,13 +729,13 @@
     "id": "step-down-stufe",
     "uses": 2,
     "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands tall on one leg on a low wooden step, the free foot hanging just off the front edge of the step, hands on her hips. Equipment: a sturdy low wooden step platform. No text, no logos, no brand names.",
-    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Step-Down: the standing leg on the step bent about 60 degrees, knee over the toes, hips level, the free heel lightly touching the floor in front of the step, torso slightly forward, hands on the hips. The pose must clearly differ from the reference photo. No text, no logos."
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Step-Down: bend the standing leg on the step to about 60 degrees, lowering her body, so the straight free leg reaches DOWN in front of the step and its heel lightly touches the floor; the free foot is lower than the step, not lifted; hips level, hands on the hips. The pose must clearly differ from the reference photo. No text, no logos."
   },
   {
     "id": "tisch-rudern",
     "uses": 2,
-    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back under a sturdy solid wooden table, hands gripping the table edge shoulder-width, arms straight, knees bent with feet flat on the floor, hips lifted so the body is straight from shoulders to knees. Equipment: a sturdy plain wooden table. No text, no logos, no brand names.",
-    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Table Inverted Row: chest pulled up to the table edge, elbows bent and pointing back, shoulder blades squeezed, body still straight from shoulders to knees, feet flat on the floor. The pose must clearly differ from the reference photo. No text, no logos."
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back under a sturdy solid wooden table, both hands gripping the table edge above her chest, arms straight, knees bent with feet flat on the floor, hips lifted off the floor so her body is straight from shoulders to knees. Equipment: a sturdy plain wooden table. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Table Inverted Row: pull her chest up close to the table edge, elbows bent 90 degrees and pointing back, shoulder blades squeezed, body still straight from shoulders to knees, feet flat on the floor; her body is clearly higher than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
   },
   {
     "id": "reverse-fly-kurzhantel",
@@ -1023,7 +1023,7 @@
     "id": "trizeps-liegestuetz-eng",
     "uses": 1,
     "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She holds a high plank on the mat, hands close together under the chest, arms straight, body one straight line from head to heels. Equipment: a grey exercise mat. No text, no logos, no brand names.",
-    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Close-grip Push-up: bottom of the push-up, elbows bent about 90 degrees and tucked tight along the ribs pointing back, chest a few centimetres above the mat, body straight. The pose must clearly differ from the reference photo. No text, no logos."
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Close-grip Push-up: bend her elbows to about 90 degrees and lower her whole straight body so her chest is a few centimetres above the mat, elbows tucked tight along the ribs pointing back; her body is clearly much lower than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
   },
   {
     "id": "handtuch-rudern-isometrisch",
@@ -1047,7 +1047,7 @@
     "id": "stirndruecken-langhantel",
     "uses": 1,
     "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on a low step platform, knees bent with feet flat on the floor, holding a light barbell with a narrow grip straight up above the chest, arms straight. Equipment: a light barbell with small black plates and a low black aerobic step platform. No text, no logos, no brand names.",
-    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Light Barbell Skull Crusher: elbows bent so the bar is lowered to just above the forehead, upper arms angled slightly back toward the head and fixed, feet flat. The pose must clearly differ from the reference photo. No text, no logos."
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Light Barbell Skull Crusher: bend her elbows to about 90 degrees so the bar comes down to just above her forehead, upper arms angled slightly back and fixed, forearms angled back toward her head; the bar is clearly much lower than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
   },
   {
     "id": "bizepscurl-kurzhantel",
@@ -1058,8 +1058,8 @@
   {
     "id": "bizepscurl-langhantel",
     "uses": 1,
-    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, holding a light barbell with an underhand shoulder-width grip in front of her thighs, arms straight. Equipment: a light barbell with small black plates. No text, no logos, no brand names.",
-    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Barbell Biceps Curl: elbows fully bent, the barbell lifted up to the front of her upper chest at collarbone height, forearms vertical, elbows still at her sides. The barbell is clearly much higher than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright in profile holding a light barbell with an underhand shoulder-width grip in front of her thighs, arms straight, elbows at her sides. Equipment: a light barbell with small black plates. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Barbell Biceps Curl: elbows fully bent so the forearms point up, the barbell now in front of her shoulders at collarbone height, upper arms still vertical at her sides; the barbell is clearly much higher than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
   },
   {
     "id": "seitheben-kurzhantel",
@@ -1082,8 +1082,8 @@
   {
     "id": "thruster-langhantel",
     "uses": 1,
-    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is at the bottom of a front squat, a light barbell resting on the front of her shoulders, elbows high and forward, thighs parallel to the floor, torso upright, heels flat. Equipment: a light barbell with small black plates. No text, no logos, no brand names.",
-    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Barbell Thruster: standing fully upright with legs straight and the barbell pressed straight overhead above the mid-foot, arms straight. The pose must clearly differ from the reference photo. No text, no logos."
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is crouched low in a deep front squat, NOT standing: hips low, thighs parallel to the floor, knees bent 90 degrees, heels flat, torso upright, a light barbell resting on the front of her shoulders with elbows high pointing forward. Equipment: a light barbell with small black plates. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Barbell Thruster: she has stood up fully, legs straight, and pressed the barbell straight overhead above the mid-foot, arms straight. The pose must clearly differ from the reference photo. No text, no logos."
   },
   {
     "id": "umsetzen-druecken-langhantel-leicht",
