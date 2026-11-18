@@ -261,10 +261,14 @@ test('Export: Hinweis vor dem Herunterladen, Datei mit Tagebuch, Konto und Einwi
   // + supplement_screening, user_supplements (Phase 6 SU3/SU4) + recipe_preferences (Rezept-Favoriten 25.10.2026)
   // + pantry_items (Vorratsschrank 25.10.2026) + shoes, shoe_defaults, shoe_assignments (Schuhe 25.10.2026)
   // + pain_episodes, travel_modes (Trainings-Modi 25.10.2026) + hydration_logs (Trinken, 25.10.2026)
-  // + live_sessions (Live-Begleitung 27.10.2026; im Testmodus leer).
-  expect(Object.keys(file.data)).toHaveLength(59);
+  // + live_sessions (Live-Begleitung 27.10.2026; im Testmodus leer)
+  // + custom_workouts, workout_variants, exercise_dislikes (Eigene Workouts 18.11.2026).
+  expect(Object.keys(file.data)).toHaveLength(62);
   expect(Object.keys(file.data)).toEqual(
     expect.arrayContaining([
+      'custom_workouts',
+      'workout_variants',
+      'exercise_dislikes',
       'recipe_preferences',
       'pantry_items',
       'shoes',
