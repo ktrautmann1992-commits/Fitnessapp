@@ -86,12 +86,15 @@ export function WorkoutCard({
   doneToday,
   onPress,
   available = null,
+  badge = null,
 }: {
   workout: Workout;
   doneToday: boolean;
   onPress: () => void;
   /** Geräte laut Angaben (useWorkoutEquipment); null = unbekannt, kein Hinweis. */
   available?: ReadonlySet<string> | null;
+  /** Kleines Kennzeichen unter dem Titel (z. B. „angepasst“, docs/PLAN-EIGENE-WORKOUTS.md). */
+  badge?: string | null;
 }) {
   const theme = useThemeColors();
   const discipline = workoutDiscipline(workout);
@@ -110,6 +113,7 @@ export function WorkoutCard({
       accessibilityLabel={[
         workout.title_de,
         t.workouts.stars.a11y(workout.difficulty),
+        badge,
         meta,
         missingText,
         doneToday ? t.workouts.doneToday : null,
@@ -132,6 +136,14 @@ export function WorkoutCard({
         <Text style={[styles.cardTitle, { color: theme.text }]}>{workout.title_de}</Text>
       </View>
       <StarRating difficulty={workout.difficulty} />
+      {badge ? (
+        <Text
+          style={[styles.cardBadge, { color: theme.text, borderColor: theme.primary }]}
+          testID={`workout-card-${workout.id}-badge`}
+        >
+          {badge}
+        </Text>
+      ) : null}
       <Text style={[styles.cardMeta, { color: theme.textMuted }]}>{meta}</Text>
       {missingText ? (
         <Text
@@ -298,6 +310,15 @@ const styles = StyleSheet.create({
   },
   cardTitle: { flex: 1, minWidth: 0, fontSize: fontSize.lg, fontWeight: fontWeight.bold },
   cardMeta: { fontSize: fontSize.sm },
+  cardBadge: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    fontSize: fontSize.sm,
+    overflow: 'hidden',
+  },
   cardDone: { fontSize: fontSize.sm, fontWeight: fontWeight.bold },
   thumb: {
     width: WORKOUT_THUMB_SIZE,

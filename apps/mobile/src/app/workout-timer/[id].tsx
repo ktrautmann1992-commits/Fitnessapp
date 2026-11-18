@@ -41,6 +41,7 @@ import {
   TextField,
 } from '@/components/ui';
 import { newId } from '@/data/create-backend';
+import { workoutDetailHref } from '@/data/my-workouts-view';
 import { activeRunStore, workoutLogDraft } from '@/data/workout-run';
 import { t } from '@/i18n';
 import { deYoga } from '@/i18n/de-yoga';
@@ -178,7 +179,8 @@ export default function WorkoutTimerScreen() {
   if (route !== HOME_ROUTE || !app.rows || !app.session) {
     return <Redirect href={route as Href} />;
   }
-  const toDetail = () => router.replace(`/workouts/${params.id ?? ''}` as Href);
+  // Eigene Workouts haben ihre eigene Ansicht (docs/PLAN-EIGENE-WORKOUTS.md).
+  const toDetail = () => router.replace(workoutDetailHref(params.id ?? '') as Href);
   if (library.kind !== 'ready' || exercises === null) {
     return (
       <Screen>

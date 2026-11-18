@@ -28,17 +28,21 @@ import {
   Checkbox,
   ChoiceList,
   ErrorState,
+  Heading,
   LoadingState,
   Notice,
   OptionButton,
 } from '@/components/ui';
 import { TrainingSwitch } from '@/components/training-switch';
 import { WorkoutCard } from '@/components/workouts';
+import { myCustomWorkouts, variantFor, workoutDetailHref } from '@/data/my-workouts-view';
 import { t } from '@/i18n';
+import { deMyWorkouts } from '@/i18n/de-my-workouts';
 import { berlinTodayIso } from '@/lib/format';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
 import { useExerciseLookup, useFlowSafety } from '@/state/use-flow-safety';
+import { useMyWorkouts } from '@/state/use-my-workouts';
 import { useWorkoutEquipment, useWorkoutLibrary } from '@/state/use-workouts';
 
 const STARS = [1, 2, 3, 4, 5] as const;
@@ -60,6 +64,8 @@ export default function WorkoutsScreen() {
   const [theme, setTheme] = useState<WorkoutTheme | null>(null);
   const equipment = useWorkoutEquipment();
   const today = berlinTodayIso();
+  // Eigene Workouts und getauschte Bibliotheks-Workouts (docs/PLAN-EIGENE-WORKOUTS.md).
+  const mine = useMyWorkouts();
 
   const workouts = library.kind === 'ready' ? library.workouts : null;
   const flowSafety = useFlowSafety();
@@ -80,6 +86,13 @@ export default function WorkoutsScreen() {
   // Bereiche nach Filtern und Sicherheitsfilter: „Neues ausprobieren“ wählt nur aus, was die Person sehen darf.
   const shown = useMemo(() => workoutsForTheme(listed, theme), [listed, theme]);
   const themeCounts = useMemo(() => workoutThemeCounts(listed), [listed]);
+  const custom = useMemo(() => myCustomWorkouts(mine.data, lookup), [mine.data, lookup]);
+  const hasCustom = (mine.data?.custom.length ?? 0) > 0;
+  const { ensureLibrary } = app;
+  // Eigene Workouts brauchen die Übungsbibliothek (Dauer, Namen) – nur laden, wenn es welche gibt.
+  useEffect(() => {
+    if (hasCustom) void ensureLibrary();
+  }, [ensureLibrary, hasCustom]);
   const done = useMemo(
     () => workoutsDoneOn(workouts ?? [], app.rows?.sessionLogs ?? [], today),
     [app.rows?.sessionLogs, today, workouts],
@@ -134,6 +147,42 @@ export default function WorkoutsScreen() {
       {/* „App verschlanken“ (26.10.2026): Workouts sind ein Teil des Reiters „Training“ (Umschalter oben). */}
       <TrainingSwitch selected="workouts" prefix="workouts" />
       <LiveRegion text={live.text} version={live.version} />
+      {/* Eigene Workouts (Gründer-Wunsch 18.11.2026): Erstellen gut sichtbar oben, darunter „Meine Workouts“. */}
+      <View style={styles.section} testID="my-workouts">
+        <Button
+          label={deMyWorkouts.list.create}
+          icon="plus"
+          onPress={() => router.push('/eigene-workouts/neu' as Href)}
+          accessibilityHint={deMyWorkouts.list.createHint}
+          testID="custom-create"
+        />
+        <Body muted>{deMyWorkouts.list.createHint}</Body>
+        <Heading level={2}>{deMyWorkouts.list.title}</Heading>
+        {mine.state.kind === 'ready' && mine.state.load.offline ? (
+          <Notice tone="warning">{deMyWorkouts.list.offline}</Notice>
+        ) : null}
+        {mine.state.kind === 'error' ? (
+          <ErrorState message={deMyWorkouts.list.loadFailed} onRetry={() => void mine.reload()} />
+        ) : mine.state.kind === 'loading' || (hasCustom && !lookup) ? (
+          <LoadingState />
+        ) : custom.length === 0 ? (
+          <Body muted testID="my-workouts-empty">
+            {deMyWorkouts.list.empty}
+          </Body>
+        ) : (
+          <View style={styles.list} testID="my-workouts-list">
+            {custom.map((c) => (
+              <WorkoutCard
+                key={c.workoutId}
+                workout={c.workout}
+                doneToday={false}
+                available={equipment}
+                onPress={() => router.push(workoutDetailHref(c.workoutId) as Href)}
+              />
+            ))}
+          </View>
+        )}
+      </View>
       {library.kind === 'loading' ? <LoadingState label={t.workouts.loading} /> : null}
       {library.kind === 'error' ? (
         <ErrorState message={t.workouts.loadFailed} onRetry={library.retry} />
@@ -314,6 +363,7 @@ export default function WorkoutsScreen() {
                 workout={workout}
                 doneToday={done.has(workout.id)}
                 available={equipment}
+                badge={variantFor(mine.data, workout.id) ? deMyWorkouts.swap.adjusted : null}
                 onPress={() => router.push(`/workouts/${workout.id}` as Href)}
               />
             ))}
