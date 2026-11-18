@@ -705,9 +705,17 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/wadenheben-einbeinig-start.webp'),
     end: require('../../assets/exercise-photos/wadenheben-einbeinig-end.webp'),
   },
+  'wadenheben-gebeugtes-knie': {
+    start: require('../../assets/exercise-photos/wadenheben-gebeugtes-knie-start.webp'),
+    end: require('../../assets/exercise-photos/wadenheben-gebeugtes-knie-end.webp'),
+  },
   'wadenheben-koerpergewicht': {
     start: require('../../assets/exercise-photos/wadenheben-koerpergewicht-start.webp'),
     end: require('../../assets/exercise-photos/wadenheben-koerpergewicht-end.webp'),
+  },
+  'wadenheben-kurzhantel': {
+    start: require('../../assets/exercise-photos/wadenheben-kurzhantel-start.webp'),
+    end: require('../../assets/exercise-photos/wadenheben-kurzhantel-end.webp'),
   },
   'wall-balls': {
     start: require('../../assets/exercise-photos/wall-balls-start.webp'),
@@ -717,9 +725,45 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/y-t-w-vorgebeugt-start.webp'),
     end: require('../../assets/exercise-photos/y-t-w-vorgebeugt-end.webp'),
   },
+  'yoga-adlerarme-sitzend': {
+    start: require('../../assets/exercise-photos/yoga-adlerarme-sitzend-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-adlerarme-sitzend-end.webp'),
+  },
+  'yoga-baum': {
+    start: require('../../assets/exercise-photos/yoga-baum-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-baum-end.webp'),
+  },
+  'yoga-baum-wand': {
+    start: require('../../assets/exercise-photos/yoga-baum-wand-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-baum-wand-end.webp'),
+  },
+  'yoga-beine-an-der-wand': {
+    start: require('../../assets/exercise-photos/yoga-beine-an-der-wand-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-beine-an-der-wand-end.webp'),
+  },
+  'yoga-berghaltung': {
+    start: require('../../assets/exercise-photos/yoga-berghaltung-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-berghaltung-end.webp'),
+  },
+  'yoga-brustoeffner-stuhl': {
+    start: require('../../assets/exercise-photos/yoga-brustoeffner-stuhl-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-brustoeffner-stuhl-end.webp'),
+  },
+  'yoga-drehsitz': {
+    start: require('../../assets/exercise-photos/yoga-drehsitz-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-drehsitz-end.webp'),
+  },
   'yoga-drehsitz-stuhl': {
     start: require('../../assets/exercise-photos/yoga-drehsitz-stuhl-start.webp'),
     end: require('../../assets/exercise-photos/yoga-drehsitz-stuhl-end.webp'),
+  },
+  'yoga-dreieck': {
+    start: require('../../assets/exercise-photos/yoga-dreieck-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-dreieck-end.webp'),
+  },
+  'yoga-dreieck-block': {
+    start: require('../../assets/exercise-photos/yoga-dreieck-block-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-dreieck-block-end.webp'),
   },
   'yoga-entspannung-rueckenlage': {
     start: require('../../assets/exercise-photos/yoga-entspannung-rueckenlage-start.webp'),
@@ -728,6 +772,22 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'yoga-entspannung-sitzend': {
     start: require('../../assets/exercise-photos/yoga-entspannung-sitzend-start.webp'),
     end: require('../../assets/exercise-photos/yoga-entspannung-sitzend-end.webp'),
+  },
+  'yoga-girlande-block': {
+    start: require('../../assets/exercise-photos/yoga-girlande-block-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-girlande-block-end.webp'),
+  },
+  'yoga-halbe-vorbeuge-block': {
+    start: require('../../assets/exercise-photos/yoga-halbe-vorbeuge-block-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-halbe-vorbeuge-block-end.webp'),
+  },
+  'yoga-heldensitz-block': {
+    start: require('../../assets/exercise-photos/yoga-heldensitz-block-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-heldensitz-block-end.webp'),
+  },
+  'yoga-herabschauender-hund': {
+    start: require('../../assets/exercise-photos/yoga-herabschauender-hund-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-herabschauender-hund-end.webp'),
   },
   'yoga-katze-kuh': {
     start: require('../../assets/exercise-photos/yoga-katze-kuh-start.webp'),
