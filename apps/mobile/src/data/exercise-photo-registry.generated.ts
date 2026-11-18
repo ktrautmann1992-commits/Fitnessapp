@@ -585,6 +585,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/schulterdruecken-kurzhantel-start.webp'),
     end: require('../../assets/exercise-photos/schulterdruecken-kurzhantel-end.webp'),
   },
+  'schulterdruecken-langhantel': {
+    start: require('../../assets/exercise-photos/schulterdruecken-langhantel-start.webp'),
+    end: require('../../assets/exercise-photos/schulterdruecken-langhantel-end.webp'),
+  },
   'schulterdruecken-langhantel-leicht': {
     start: require('../../assets/exercise-photos/schulterdruecken-langhantel-leicht-start.webp'),
     end: require('../../assets/exercise-photos/schulterdruecken-langhantel-leicht-end.webp'),
@@ -592,6 +596,18 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   seilspringen: {
     start: require('../../assets/exercise-photos/seilspringen-start.webp'),
     end: require('../../assets/exercise-photos/seilspringen-end.webp'),
+  },
+  'seitheben-band': {
+    start: require('../../assets/exercise-photos/seitheben-band-start.webp'),
+    end: require('../../assets/exercise-photos/seitheben-band-end.webp'),
+  },
+  'seitheben-kurzhantel': {
+    start: require('../../assets/exercise-photos/seitheben-kurzhantel-start.webp'),
+    end: require('../../assets/exercise-photos/seitheben-kurzhantel-end.webp'),
+  },
+  'seitlicher-ausfallschritt': {
+    start: require('../../assets/exercise-photos/seitlicher-ausfallschritt-start.webp'),
+    end: require('../../assets/exercise-photos/seitlicher-ausfallschritt-end.webp'),
   },
   seitstuetz: {
     start: require('../../assets/exercise-photos/seitstuetz-start.webp'),
@@ -609,6 +625,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/split-kniebeuge-start.webp'),
     end: require('../../assets/exercise-photos/split-kniebeuge-end.webp'),
   },
+  'step-down-stufe': {
+    start: require('../../assets/exercise-photos/step-down-stufe-start.webp'),
+    end: require('../../assets/exercise-photos/step-down-stufe-end.webp'),
+  },
   'step-jacks': {
     start: require('../../assets/exercise-photos/step-jacks-start.webp'),
     end: require('../../assets/exercise-photos/step-jacks-end.webp'),
@@ -617,17 +637,57 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/step-up-stufe-start.webp'),
     end: require('../../assets/exercise-photos/step-up-stufe-end.webp'),
   },
+  'stirndruecken-langhantel': {
+    start: require('../../assets/exercise-photos/stirndruecken-langhantel-start.webp'),
+    end: require('../../assets/exercise-photos/stirndruecken-langhantel-end.webp'),
+  },
   'stuetz-schulter-tippen': {
     start: require('../../assets/exercise-photos/stuetz-schulter-tippen-start.webp'),
     end: require('../../assets/exercise-photos/stuetz-schulter-tippen-end.webp'),
+  },
+  'thruster-langhantel': {
+    start: require('../../assets/exercise-photos/thruster-langhantel-start.webp'),
+    end: require('../../assets/exercise-photos/thruster-langhantel-end.webp'),
   },
   'tiefe-bauchatmung-rueckenlage': {
     start: require('../../assets/exercise-photos/tiefe-bauchatmung-rueckenlage-start.webp'),
     end: require('../../assets/exercise-photos/tiefe-bauchatmung-rueckenlage-end.webp'),
   },
+  'tisch-rudern': {
+    start: require('../../assets/exercise-photos/tisch-rudern-start.webp'),
+    end: require('../../assets/exercise-photos/tisch-rudern-end.webp'),
+  },
+  'trizeps-dehnen': {
+    start: require('../../assets/exercise-photos/trizeps-dehnen-start.webp'),
+    end: require('../../assets/exercise-photos/trizeps-dehnen-end.webp'),
+  },
+  'trizeps-liegestuetz-eng': {
+    start: require('../../assets/exercise-photos/trizeps-liegestuetz-eng-start.webp'),
+    end: require('../../assets/exercise-photos/trizeps-liegestuetz-eng-end.webp'),
+  },
+  'trizepsdruecken-band': {
+    start: require('../../assets/exercise-photos/trizepsdruecken-band-start.webp'),
+    end: require('../../assets/exercise-photos/trizepsdruecken-band-end.webp'),
+  },
+  'trizepsdruecken-kabel': {
+    start: require('../../assets/exercise-photos/trizepsdruecken-kabel-start.webp'),
+    end: require('../../assets/exercise-photos/trizepsdruecken-kabel-end.webp'),
+  },
+  'trizepsstrecken-kurzhantel': {
+    start: require('../../assets/exercise-photos/trizepsstrecken-kurzhantel-start.webp'),
+    end: require('../../assets/exercise-photos/trizepsstrecken-kurzhantel-end.webp'),
+  },
   'tuerrahmen-rudern': {
     start: require('../../assets/exercise-photos/tuerrahmen-rudern-start.webp'),
     end: require('../../assets/exercise-photos/tuerrahmen-rudern-end.webp'),
+  },
+  'umsetzen-druecken-langhantel-leicht': {
+    start: require('../../assets/exercise-photos/umsetzen-druecken-langhantel-leicht-start.webp'),
+    end: require('../../assets/exercise-photos/umsetzen-druecken-langhantel-leicht-end.webp'),
+  },
+  'unterarm-dehnen': {
+    start: require('../../assets/exercise-photos/unterarm-dehnen-start.webp'),
+    end: require('../../assets/exercise-photos/unterarm-dehnen-end.webp'),
   },
   unterarmstuetz: {
     start: require('../../assets/exercise-photos/unterarmstuetz-start.webp'),
