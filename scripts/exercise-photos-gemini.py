@@ -4,8 +4,10 @@
 Liest content/exercise-photos/gemini-request.json (Liste von Übungs-IDs) und die Prompts aus
 content/exercise-photos/prompts.json. Je Übung: Startbild (mit Referenzfoto der Frau für gleiche Person),
 dann Endbild (Startbild als Referenz). Schreibt <id>-start.png / <id>-end.png in den Ausgabeordner.
+Eintrag "<id>#end": nur das Endbild neu erzeugen; als Referenz dient das vorhandene Startbild
+apps/mobile/assets/exercise-photos/<id>-start.webp (mit dwebp nach PNG, liegt dann auch im Ausgabeordner).
 """
-import base64, json, os, sys, time, urllib.request, urllib.error
+import base64, json, os, subprocess, sys, time, urllib.request, urllib.error
 
 API = "https://generativelanguage.googleapis.com/v1beta"
 KEY = os.environ["GEMINI_API_KEY"]
@@ -59,15 +61,22 @@ ids = json.load(open("content/exercise-photos/gemini-request.json"))
 model = pick_model()
 print("Modell:", model)
 failed = []
-for i in ids:
+for item in ids:
+    i, _, only = item.partition("#")
     p = prompts.get(i)
     if not p:
-        failed.append(i); print("Kein Prompt:", i); continue
-    start = gen(model, PREFIX + p["start"], ref_path)
-    if not start:
-        failed.append(i); continue
+        failed.append(item); print("Kein Prompt:", i); continue
     sp = os.path.join(out_dir, f"{i}-start.png")
-    open(sp, "wb").write(start)
+    if only == "end":
+        existing = f"apps/mobile/assets/exercise-photos/{i}-start.webp"
+        if not os.path.exists(existing):
+            failed.append(item); print("Kein Startbild:", i); continue
+        subprocess.run(["dwebp", "-quiet", existing, "-o", sp], check=True)
+    else:
+        start = gen(model, PREFIX + p["start"], ref_path)
+        if not start:
+            failed.append(item); continue
+        open(sp, "wb").write(start)
     end = gen(model, p["end"], sp)
     if not end:
         os.remove(sp); failed.append(i); continue
