@@ -102,6 +102,11 @@ export const DATA_EXPORT_TABLES = [
   // Live-Begleitung (docs/PLAN-PHASE-10.md 21.4): eigene Sitzungen ohne token_hash (*_live_export_my_data.sql);
   // Positionen sind nach dem Ende gelöscht, Notfallkontakte liegen nur auf dem Gerät.
   'live_sessions',
+  // Eigene Workouts (docs/PLAN-EIGENE-WORKOUTS.md, *_custom_workouts_export.sql): eigene Workouts, getauschte
+  // Bibliotheks-Workouts, „Mag ich nicht“ je Übung (kein Gesundheitsdatum, bleibt beim Widerruf)
+  'custom_workouts',
+  'workout_variants',
+  'exercise_dislikes',
 ] as const;
 
 export type DataExportTable = (typeof DATA_EXPORT_TABLES)[number];

@@ -1,7 +1,7 @@
 -- Konto löschen (delete_my_account): löscht alle Daten des Aufrufers per Kaskade, fremde Daten bleiben.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(42);
+select plan(44);
 
 insert into auth.users (id, email) values
   ('11111111-1111-4111-8111-111111111111', 'nutzer-a@example.test'),
@@ -132,6 +132,24 @@ from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-82
 insert into private.admin_actions (action, actor, target_user_id)
 values ('beta_grant', 'gruender-1', '11111111-1111-4111-8111-111111111111');
 
+-- Eigene Workouts (20261118120000_custom_workouts.sql): eigenes Workout, Variante, „Mag ich nicht“ beider Nutzer.
+insert into public.custom_workouts (id, user_id, name, definition)
+select gen_random_uuid(), u, 'Mein Beine 30', '{
+  "version": 1,
+  "input": {"minutes": 30, "areas": ["legs"], "equipment_ids": [], "favorite_ids": [], "dislike_ids": [], "seed": 1},
+  "tracks": [
+    {"kind": "warmup", "area": null, "items": [{"exercise_id": "marschieren-auf-der-stelle", "reps": null, "duration_s": 40, "sets": 1, "rest_s": 10, "note_de": null}]},
+    {"kind": "area", "area": "legs", "items": [{"exercise_id": "uebung-a", "reps": 12, "duration_s": null, "sets": 3, "rest_s": 20, "note_de": null}]},
+    {"kind": "cooldown", "area": null, "items": []}
+  ]}'::jsonb
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+insert into public.workout_variants (user_id, workout_id, definition)
+select u, 'bauch-blitz', '{"version": 1, "base_version": 1, "swaps": [{"index": 0, "from": "uebung-a", "to": "uebung-b"}]}'::jsonb
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+insert into public.exercise_dislikes (user_id, exercise_id)
+select u, 'uebung-a'
+from unnest(array['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']::uuid[]) as u;
+
 -- Ohne Anmeldung (authenticated ohne Nutzer-ID) passiert nichts.
 set local role authenticated;
 set local request.jwt.claims = '{"role":"authenticated"}';
@@ -176,6 +194,13 @@ select is_empty($$ select 1 from public.plan_adjustments where user_id = '111111
 select is_empty($$ select 1 from private.beta_entitlements where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: beta_entitlements leer');
 select is_empty($$ select 1 from private.adjustment_events where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: adjustment_events leer');
 select is_empty($$ select 1 from private.live_adjust_hourly_counts where user_id = '11111111-1111-4111-8111-111111111111' $$, 'A: live_adjust_hourly_counts leer');
+select results_eq(
+  $$ select (select count(*)::int from public.custom_workouts where user_id = '11111111-1111-4111-8111-111111111111'),
+            (select count(*)::int from public.workout_variants where user_id = '11111111-1111-4111-8111-111111111111'),
+            (select count(*)::int from public.exercise_dislikes where user_id = '11111111-1111-4111-8111-111111111111') $$,
+  $$ values (0, 0, 0) $$,
+  'A: eigene Workouts, Varianten und Abneigungen leer'
+);
 select results_eq(
   $$ select count(*)::int, count(target_user_id)::int from private.admin_actions where actor = 'gruender-1' $$,
   $$ values (1, 0) $$,
@@ -232,6 +257,13 @@ select results_eq(
             (select count(*)::int from private.live_adjust_hourly_counts where user_id = '22222222-2222-4222-8222-222222222222') $$,
   $$ values (1, 1, 1, 1, 1) $$,
   'B: Live-Anpassung unverändert'
+);
+select results_eq(
+  $$ select (select count(*)::int from public.custom_workouts where user_id = '22222222-2222-4222-8222-222222222222'),
+            (select count(*)::int from public.workout_variants where user_id = '22222222-2222-4222-8222-222222222222'),
+            (select count(*)::int from public.exercise_dislikes where user_id = '22222222-2222-4222-8222-222222222222') $$,
+  $$ values (1, 1, 1) $$,
+  'B: eigene Workouts, Varianten und Abneigungen unverändert'
 );
 select ok(
   exists (select 1 from public.foods where id = 'hafer') and exists (select 1 from public.recipes where id = 'muesli'),
