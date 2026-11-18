@@ -789,6 +789,14 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/yoga-herabschauender-hund-start.webp'),
     end: require('../../assets/exercise-photos/yoga-herabschauender-hund-end.webp'),
   },
+  'yoga-hueftbeuger-stuhl': {
+    start: require('../../assets/exercise-photos/yoga-hueftbeuger-stuhl-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-hueftbeuger-stuhl-end.webp'),
+  },
+  'yoga-hund-an-der-wand': {
+    start: require('../../assets/exercise-photos/yoga-hund-an-der-wand-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-hund-an-der-wand-end.webp'),
+  },
   'yoga-katze-kuh': {
     start: require('../../assets/exercise-photos/yoga-katze-kuh-start.webp'),
     end: require('../../assets/exercise-photos/yoga-katze-kuh-end.webp'),
@@ -797,9 +805,33 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/yoga-kindhaltung-start.webp'),
     end: require('../../assets/exercise-photos/yoga-kindhaltung-end.webp'),
   },
+  'yoga-kindhaltung-sitzend': {
+    start: require('../../assets/exercise-photos/yoga-kindhaltung-sitzend-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-kindhaltung-sitzend-end.webp'),
+  },
   'yoga-knie-zur-brust': {
     start: require('../../assets/exercise-photos/yoga-knie-zur-brust-start.webp'),
     end: require('../../assets/exercise-photos/yoga-knie-zur-brust-end.webp'),
+  },
+  'yoga-kobra-sanft': {
+    start: require('../../assets/exercise-photos/yoga-kobra-sanft-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-kobra-sanft-end.webp'),
+  },
+  'yoga-krieger-1': {
+    start: require('../../assets/exercise-photos/yoga-krieger-1-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-krieger-1-end.webp'),
+  },
+  'yoga-krieger-2': {
+    start: require('../../assets/exercise-photos/yoga-krieger-2-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-krieger-2-end.webp'),
+  },
+  'yoga-krieger-2-stuhl': {
+    start: require('../../assets/exercise-photos/yoga-krieger-2-stuhl-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-krieger-2-stuhl-end.webp'),
+  },
+  'yoga-krieger-3-wand': {
+    start: require('../../assets/exercise-photos/yoga-krieger-3-wand-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-krieger-3-wand-end.webp'),
   },
   'yoga-liegende-drehung': {
     start: require('../../assets/exercise-photos/yoga-liegende-drehung-start.webp'),
@@ -813,13 +845,25 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/yoga-schmetterling-start.webp'),
     end: require('../../assets/exercise-photos/yoga-schmetterling-end.webp'),
   },
+  'yoga-schulterbruecke': {
+    start: require('../../assets/exercise-photos/yoga-schulterbruecke-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-schulterbruecke-end.webp'),
+  },
   'yoga-schulterbruecke-block': {
     start: require('../../assets/exercise-photos/yoga-schulterbruecke-block-start.webp'),
     end: require('../../assets/exercise-photos/yoga-schulterbruecke-block-end.webp'),
   },
+  'yoga-seitneige-stehend': {
+    start: require('../../assets/exercise-photos/yoga-seitneige-stehend-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-seitneige-stehend-end.webp'),
+  },
   'yoga-seitneige-stuhl': {
     start: require('../../assets/exercise-photos/yoga-seitneige-stuhl-start.webp'),
     end: require('../../assets/exercise-photos/yoga-seitneige-stuhl-end.webp'),
+  },
+  'yoga-seitstreckung-kniend': {
+    start: require('../../assets/exercise-photos/yoga-seitstreckung-kniend-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-seitstreckung-kniend-end.webp'),
   },
   'yoga-sitzende-vorbeuge-block': {
     start: require('../../assets/exercise-photos/yoga-sitzende-vorbeuge-block-start.webp'),
@@ -829,8 +873,24 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/yoga-sphinx-start.webp'),
     end: require('../../assets/exercise-photos/yoga-sphinx-end.webp'),
   },
+  'yoga-stuhlhaltung': {
+    start: require('../../assets/exercise-photos/yoga-stuhlhaltung-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-stuhlhaltung-end.webp'),
+  },
+  'yoga-taube': {
+    start: require('../../assets/exercise-photos/yoga-taube-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-taube-end.webp'),
+  },
   'yoga-tiefer-ausfallschritt': {
     start: require('../../assets/exercise-photos/yoga-tiefer-ausfallschritt-start.webp'),
     end: require('../../assets/exercise-photos/yoga-tiefer-ausfallschritt-end.webp'),
+  },
+  'yoga-vorbeuge-stehend': {
+    start: require('../../assets/exercise-photos/yoga-vorbeuge-stehend-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-vorbeuge-stehend-end.webp'),
+  },
+  'yoga-vorbeuge-stuhl': {
+    start: require('../../assets/exercise-photos/yoga-vorbeuge-stuhl-start.webp'),
+    end: require('../../assets/exercise-photos/yoga-vorbeuge-stuhl-end.webp'),
   },
 };
