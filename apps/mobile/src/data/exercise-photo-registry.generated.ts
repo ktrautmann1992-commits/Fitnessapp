@@ -113,6 +113,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/box-sprung-start.webp'),
     end: require('../../assets/exercise-photos/box-sprung-end.webp'),
   },
+  'brustdehnung-tuerrahmen': {
+    start: require('../../assets/exercise-photos/brustdehnung-tuerrahmen-start.webp'),
+    end: require('../../assets/exercise-photos/brustdehnung-tuerrahmen-end.webp'),
+  },
   'brustdruecken-band': {
     start: require('../../assets/exercise-photos/brustdruecken-band-start.webp'),
     end: require('../../assets/exercise-photos/brustdruecken-band-end.webp'),
@@ -153,9 +157,17 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/dips-stuhl-start.webp'),
     end: require('../../assets/exercise-photos/dips-stuhl-end.webp'),
   },
+  'double-unders': {
+    start: require('../../assets/exercise-photos/double-unders-start.webp'),
+    end: require('../../assets/exercise-photos/double-unders-end.webp'),
+  },
   'einbeinstand-laeufer': {
     start: require('../../assets/exercise-photos/einbeinstand-laeufer-start.webp'),
     end: require('../../assets/exercise-photos/einbeinstand-laeufer-end.webp'),
+  },
+  'face-pull-kabel': {
+    start: require('../../assets/exercise-photos/face-pull-kabel-start.webp'),
+    end: require('../../assets/exercise-photos/face-pull-kabel-end.webp'),
   },
   'farmers-carry-kettlebell': {
     start: require('../../assets/exercise-photos/farmers-carry-kettlebell-start.webp'),
@@ -168,6 +180,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'fersen-tippen-seitlich': {
     start: require('../../assets/exercise-photos/fersen-tippen-seitlich-start.webp'),
     end: require('../../assets/exercise-photos/fersen-tippen-seitlich-end.webp'),
+  },
+  'fliegende-kabel': {
+    start: require('../../assets/exercise-photos/fliegende-kabel-start.webp'),
+    end: require('../../assets/exercise-photos/fliegende-kabel-end.webp'),
   },
   'gesaess-dehnen-sitzend': {
     start: require('../../assets/exercise-photos/gesaess-dehnen-sitzend-start.webp'),
@@ -201,6 +217,14 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/handtuch-latziehen-start.webp'),
     end: require('../../assets/exercise-photos/handtuch-latziehen-end.webp'),
   },
+  'handtuch-rudern-isometrisch': {
+    start: require('../../assets/exercise-photos/handtuch-rudern-isometrisch-start.webp'),
+    end: require('../../assets/exercise-photos/handtuch-rudern-isometrisch-end.webp'),
+  },
+  'hip-thrust-langhantel': {
+    start: require('../../assets/exercise-photos/hip-thrust-langhantel-start.webp'),
+    end: require('../../assets/exercise-photos/hip-thrust-langhantel-end.webp'),
+  },
   'hip-thrust-sofa': {
     start: require('../../assets/exercise-photos/hip-thrust-sofa-start.webp'),
     end: require('../../assets/exercise-photos/hip-thrust-sofa-end.webp'),
@@ -212,6 +236,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'hollow-body-halten': {
     start: require('../../assets/exercise-photos/hollow-body-halten-start.webp'),
     end: require('../../assets/exercise-photos/hollow-body-halten-end.webp'),
+  },
+  'hueftkreisen-stehend': {
+    start: require('../../assets/exercise-photos/hueftkreisen-stehend-start.webp'),
+    end: require('../../assets/exercise-photos/hueftkreisen-stehend-end.webp'),
   },
   'hueftstrecken-vierfuessler': {
     start: require('../../assets/exercise-photos/hueftstrecken-vierfuessler-start.webp'),
@@ -236,6 +264,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'kniebeuge-koerpergewicht': {
     start: require('../../assets/exercise-photos/kniebeuge-koerpergewicht-start.webp'),
     end: require('../../assets/exercise-photos/kniebeuge-koerpergewicht-end.webp'),
+  },
+  'kniebeuge-langhantel': {
+    start: require('../../assets/exercise-photos/kniebeuge-langhantel-start.webp'),
+    end: require('../../assets/exercise-photos/kniebeuge-langhantel-end.webp'),
   },
   'kniebeuge-langhantel-leicht': {
     start: require('../../assets/exercise-photos/kniebeuge-langhantel-leicht-start.webp'),
@@ -269,13 +301,41 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/langhantelrudern-start.webp'),
     end: require('../../assets/exercise-photos/langhantelrudern-end.webp'),
   },
+  'lat-dehnung-stehend': {
+    start: require('../../assets/exercise-photos/lat-dehnung-stehend-start.webp'),
+    end: require('../../assets/exercise-photos/lat-dehnung-stehend-end.webp'),
+  },
   latziehen: {
     start: require('../../assets/exercise-photos/latziehen-start.webp'),
     end: require('../../assets/exercise-photos/latziehen-end.webp'),
   },
+  'lauf-abc-anfersen': {
+    start: require('../../assets/exercise-photos/lauf-abc-anfersen-start.webp'),
+    end: require('../../assets/exercise-photos/lauf-abc-anfersen-end.webp'),
+  },
   'lauf-abc-fussgelenksarbeit': {
     start: require('../../assets/exercise-photos/lauf-abc-fussgelenksarbeit-start.webp'),
     end: require('../../assets/exercise-photos/lauf-abc-fussgelenksarbeit-end.webp'),
+  },
+  'lauf-abc-hopserlauf': {
+    start: require('../../assets/exercise-photos/lauf-abc-hopserlauf-start.webp'),
+    end: require('../../assets/exercise-photos/lauf-abc-hopserlauf-end.webp'),
+  },
+  'lauf-abc-kniehebelauf': {
+    start: require('../../assets/exercise-photos/lauf-abc-kniehebelauf-start.webp'),
+    end: require('../../assets/exercise-photos/lauf-abc-kniehebelauf-end.webp'),
+  },
+  'lauf-abc-seitgalopp': {
+    start: require('../../assets/exercise-photos/lauf-abc-seitgalopp-start.webp'),
+    end: require('../../assets/exercise-photos/lauf-abc-seitgalopp-end.webp'),
+  },
+  'lauf-abc-skippings': {
+    start: require('../../assets/exercise-photos/lauf-abc-skippings-start.webp'),
+    end: require('../../assets/exercise-photos/lauf-abc-skippings-end.webp'),
+  },
+  'lauf-abc-ueberkreuzlauf': {
+    start: require('../../assets/exercise-photos/lauf-abc-ueberkreuzlauf-start.webp'),
+    end: require('../../assets/exercise-photos/lauf-abc-ueberkreuzlauf-end.webp'),
   },
   liegestuetz: {
     start: require('../../assets/exercise-photos/liegestuetz-start.webp'),
