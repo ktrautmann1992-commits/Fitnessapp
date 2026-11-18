@@ -25,6 +25,7 @@ import { USER_SUPPLEMENT_STATUSES } from './supplements/user-data';
 import { RECIPE_PREFERENCE_KINDS } from './nutrition/recipe-preferences';
 import {
   CARDIO_LOG_LIMITS,
+  CUSTOM_WORKOUT_RULES,
   ENDURANCE_SESSION_LIMITS,
   EQUIPMENT_WEIGHT_DECIMALS,
   BARBELL_BAR_KG,
@@ -1242,10 +1243,10 @@ describe('Ernährungstagebuch in der Datenbank (Etappe E1)', () => {
     }
   });
 
-  it('export_my_data(): neueste Fassung in *_live_export_my_data.sql (Live-Begleitung 27.10.2026; davor *_export_my_data_integration.sql: Rezept-Favoriten + Vorratsschrank + Schuhe + Trainings-Modi + Trinken 25.10.2026, Phase 6 SU3, Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
+  it('export_my_data(): neueste Fassung in *_custom_workouts_export.sql (Eigene Workouts 18.11.2026; davor *_live_export_my_data.sql: Live-Begleitung 27.10.2026; davor *_export_my_data_integration.sql: Rezept-Favoriten + Vorratsschrank + Schuhe + Trainings-Modi + Trinken 25.10.2026, Phase 6 SU3, Phase 8, E2 Dashboard, Einkaufen E1, 4b B, E4a + Z3, S1, E3, WP3, E2)', () => {
     const marker = 'create or replace function public.export_my_data()';
     expect(migrationFiles.filter((n) => readMigration(n).includes(marker)).at(-1)).toMatch(
-      /_live_export_my_data\.sql$/,
+      /_custom_workouts_export\.sql$/,
     );
   });
 
@@ -3097,8 +3098,9 @@ describe('Ziele in der Datenbank (Etappe Z3, docs/PLAN-ZIELE.md 5.1/5.2)', () =>
   it('Widerruf und Export: neueste Fassungen sind Obermengen der Vorgänger (Zeile für Zeile, S16)', () => {
     for (const [marker, newestFile] of [
       [revokeMarker, /_training_modes_revoke_export\.sql$/],
-      // Export seit der Live-Begleitung 27.10.2026 in *_live_export_my_data.sql (davor Integration 25.10.2026).
-      [exportMarker, /_live_export_my_data\.sql$/],
+      // Export seit den eigenen Workouts 18.11.2026 in *_custom_workouts_export.sql (davor Live-Begleitung 27.10.2026,
+      // Integration 25.10.2026).
+      [exportMarker, /_custom_workouts_export\.sql$/],
     ] as const) {
       const withFn = migrationFiles.filter((n) => readMigration(n).includes(marker));
       // Widerruf und Export seit Phase 6 SU3 in *_supplement_user_data.sql (davor Phase 8, Einkaufen E1, E2, 4b Etappe B,
@@ -4917,5 +4919,67 @@ describe('Nährstoff-Timing 2 in der Datenbank (docs/PLAN-NAEHRSTOFF-TIMING.md, 
     expect(rpcs).toContain(
       'grant execute on function public.save_meal_plan(jsonb, boolean, boolean) to authenticated;',
     );
+  });
+});
+
+describe('Eigene Workouts in der Datenbank (docs/PLAN-EIGENE-WORKOUTS.md)', () => {
+  const tables = readMigration('_custom_workouts.sql');
+  const exported = readMigration('_custom_workouts_export.sql');
+  const R = CUSTOM_WORKOUT_RULES;
+
+  it('Grenzen = CUSTOM_WORKOUT_RULES und WORKOUT_LIMITS', () => {
+    expect(tables).toContain(`max_entries constant integer := ${R.maxCustom};`);
+    expect(tables).toContain(`max_entries constant integer := ${R.maxVariants};`);
+    expect(tables).toContain(`max_entries constant integer := ${R.maxDislikes};`);
+    expect(tables).toContain(
+      `check (char_length(name) between ${R.name.min} and ${R.name.max} and name = btrim(name))`,
+    );
+    expect(tables).toContain(`in (${R.minutes.map((m) => `'${m}'`).join(', ')})`);
+    const { exercises, reps, sets, restS } = WORKOUT_LIMITS;
+    expect(tables).toContain(`return total between ${exercises.min} and ${exercises.max}`);
+    expect(tables).toContain(`::numeric between ${reps.min} and ${reps.max}`);
+    expect(tables).toContain(`::numeric between ${sets.min} and ${sets.max}`);
+    expect(tables).toContain(`::numeric between ${restS.min} and ${restS.max};`);
+    expect(tables).toContain(
+      `::numeric between ${WORKOUT_LIMITS.workS.min} and ${FLOW_RULES.poseS.max}`,
+    );
+    expect(tables).toContain(`not between 0 and ${exercises.max - 1}`);
+  });
+
+  it('RLS auf allen drei Tabellen, nur eigene Zeilen, Schreiben mit Profil, Kaskade beim Konto-Löschen', () => {
+    for (const table of ['custom_workouts', 'workout_variants', 'exercise_dislikes']) {
+      expect(tables).toContain(`alter table public.${table} enable row level security;`);
+      expect(tables).toContain(`revoke all on table public.${table} from anon, authenticated;`);
+      expect(tables).toContain(
+        `on public.${table} for select to authenticated\n  using (user_id = (select auth.uid()));`,
+      );
+      expect(tables).toContain(
+        `on public.${table} for delete to authenticated\n  using (user_id = (select auth.uid()));`,
+      );
+    }
+    expect(tables.split('references auth.users (id) on delete cascade')).toHaveLength(4);
+    expect(
+      tables.split(
+        'exists (select 1 from public.profiles p where p.user_id = (select auth.uid()))',
+      ),
+    ).toHaveLength(4);
+    // Kein Gesundheitsdatum: kein Kommentar „SENSIBEL“, kein Widerruf-Trigger.
+    expect(tables).not.toContain('SENSIBEL');
+    expect(tables).not.toContain('consents_after_revoke');
+  });
+
+  it('Export: Obermenge der Live-Fassung plus genau die drei neuen Tabellen (= DATA_EXPORT_TABLES)', () => {
+    const marker = 'create or replace function public.export_my_data()';
+    const keysOf = (sql: string) => {
+      const start = sql.lastIndexOf(marker);
+      const fn = sql.slice(start, sql.indexOf('$$;', start));
+      return [...fn.matchAll(/'([a-z_]+)', \(select coalesce/g)].map((m) => m[1] as string);
+    };
+    const before = keysOf(readMigration('_live_export_my_data.sql'));
+    const after = keysOf(exported);
+    expect(after).toEqual([...before, 'custom_workouts', 'workout_variants', 'exercise_dislikes']);
+    for (const table of ['custom_workouts', 'workout_variants', 'exercise_dislikes']) {
+      expect(DATA_EXPORT_TABLES as readonly string[]).toContain(table);
+    }
   });
 });

@@ -254,6 +254,11 @@ export function localDataExport(
     shoe_assignments: [],
     // Live-Begleitung: im Testmodus nur als Demo (nichts gespeichert), Notfallkontakte liegen nur auf dem Gerät.
     live_sessions: [],
+    // Eigene Workouts (docs/PLAN-EIGENE-WORKOUTS.md): im Testmodus ergänzt attachMyWorkouts (data/my-workouts.ts) die
+    // Zeilen aus dem Gerätespeicher.
+    custom_workouts: [],
+    workout_variants: [],
+    exercise_dislikes: [],
     // Übungs-Präferenzen (Etappe T2) – in export_my_data() erst mit Etappe T3 (PENDING_DB_EXPORT_TABLES).
     exercise_preferences: rows.exercisePreferences,
   };

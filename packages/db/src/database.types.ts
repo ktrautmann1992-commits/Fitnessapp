@@ -475,6 +475,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      custom_workouts: {
+        Row: {
+          created_at: string;
+          definition: Json;
+          id: string;
+          name: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          definition: Json;
+          id: string;
+          name: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          definition?: Json;
+          id?: string;
+          name?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       daily_metrics: {
         Row: {
           day: string;
@@ -567,6 +594,32 @@ export type Database = {
           },
           {
             foreignKeyName: 'exercise_alternatives_exercise_id_fkey';
+            columns: ['exercise_id'];
+            isOneToOne: false;
+            referencedRelation: 'exercises';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      exercise_dislikes: {
+        Row: {
+          created_at: string;
+          exercise_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          exercise_id: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          exercise_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'exercise_dislikes_exercise_id_fkey';
             columns: ['exercise_id'];
             isOneToOne: false;
             referencedRelation: 'exercises';
@@ -3522,6 +3575,27 @@ export type Database = {
           time_mode?: string;
           updated_at?: string;
           user_id?: string;
+        };
+        Relationships: [];
+      };
+      workout_variants: {
+        Row: {
+          definition: Json;
+          updated_at: string;
+          user_id: string;
+          workout_id: string;
+        };
+        Insert: {
+          definition: Json;
+          updated_at?: string;
+          user_id?: string;
+          workout_id: string;
+        };
+        Update: {
+          definition?: Json;
+          updated_at?: string;
+          user_id?: string;
+          workout_id?: string;
         };
         Relationships: [];
       };

@@ -1701,6 +1701,10 @@ describe('Supabase-Modus: Tagebuch-Warteschlange', () => {
       'hydration_logs',
       // Live-Begleitung (27.10.2026)
       'live_sessions',
+      // Eigene Workouts (18.11.2026)
+      'custom_workouts',
+      'workout_variants',
+      'exercise_dislikes',
     ];
     const exported = {
       format_version: 1,

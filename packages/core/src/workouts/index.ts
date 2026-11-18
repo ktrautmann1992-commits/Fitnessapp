@@ -7,3 +7,5 @@ export * from './recovery-routine';
 export * from './wod';
 export * from './discover';
 export * from './player';
+export * from './swap';
+export * from './custom';

@@ -4,23 +4,32 @@ import {
   wodStyle,
   type Workout,
   workoutSafetyHints,
+  workoutSwapCandidates,
+  withVariantSwap,
 } from '@fitnessapp/core';
 import { fontSize, fontWeight, spacing } from '@fitnessapp/ui';
 import { Redirect, useLocalSearchParams, useRouter, type Href } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { AdjustedBadge, SwapSheet } from '@/components/my-workouts';
 import { Screen } from '@/components/screen';
 import { Body, Button, Card, Heading, LoadingState, Notice } from '@/components/ui';
 import { equipmentText, StarRating, WorkoutBanner } from '@/components/workouts';
-import { newId } from '@/data/create-backend';
-import { activeRunStore, startActiveRun } from '@/data/workout-run';
+import {
+  customBuildContextFor,
+  shownLibraryWorkout,
+  workoutSwapContextFor,
+} from '@/data/my-workouts-view';
 import { t } from '@/i18n';
+import { deMyWorkouts } from '@/i18n/de-my-workouts';
 import { deYoga } from '@/i18n/de-yoga';
 import { useThemeColors } from '@/lib/theme';
 import { useApp } from '@/state/app-state';
 import { HOME_ROUTE, resolveEntryRoute } from '@/state/flow';
+import { beginWorkoutRun } from '@/state/begin-workout-run';
 import { useExerciseLookup, useFlowSafety } from '@/state/use-flow-safety';
+import { useMyWorkouts } from '@/state/use-my-workouts';
 import { useActiveWorkoutRun, useWorkoutEquipment, useWorkoutLibrary } from '@/state/use-workouts';
 import { Text } from '@/components/text';
 
@@ -40,6 +49,10 @@ export default function WorkoutDetailScreen() {
   // Inklusive Posen (Sportarten Stufe 1: Posen stehen nur in displayExercises).
   const exercises = useExerciseLookup();
   const available = useWorkoutEquipment();
+  // Übungen tauschen (docs/PLAN-EIGENE-WORKOUTS.md 2): persönliche Variante je Workout.
+  const mine = useMyWorkouts();
+  const [swapIndex, setSwapIndex] = useState<number | null>(null);
+  const [swapMessage, setSwapMessage] = useState<{ text: string; tone: 'success' | 'danger' }>();
   const { ensureLibrary } = app;
   useEffect(() => {
     void ensureLibrary();
@@ -93,7 +106,9 @@ export default function WorkoutDetailScreen() {
     original.format === 'flow' && exercises
       ? prepareFlowWorkout(original, flowSafety, exercises)
       : null;
-  const workout: Workout = prepared?.workout ?? original;
+  // Bibliotheks-Workout mit getauschten Übungen (nie bei Flow – dort gilt der eigene Sicherheitsfilter).
+  const shown = shownLibraryWorkout(original, mine.data, exercises);
+  const workout: Workout = prepared?.workout ?? shown.workout;
   const isFlow = workout.format === 'flow';
   const rules = app.safetyRules;
   const hints = workoutSafetyHints(
@@ -117,8 +132,37 @@ export default function WorkoutDetailScreen() {
   const hiddenFlow = prepared?.hidden === true;
 
   function start() {
-    if (!resumable) beginRun(userId, workout, exercises);
+    if (!resumable) beginWorkoutRun(userId, workout, exercises, shown.adjusted);
     router.push(`/workout-timer/${workout.id}` as Href);
+  }
+
+  const swapLibrary = app.library.kind === 'ready' ? app.library.library.exercises : null;
+  const canSwap = !isFlow && swapLibrary !== null && exercises !== null;
+  const swapCandidates =
+    canSwap && swapIndex !== null
+      ? workoutSwapCandidates(
+          workout,
+          swapIndex,
+          workoutSwapContextFor({
+            library: swapLibrary,
+            lookup: exercises,
+            available,
+            build: customBuildContextFor(app.rows, rules, mine.dislikes),
+          }),
+        )
+      : [];
+  const swapName =
+    swapIndex !== null
+      ? (exercises?.get(workout.exercises[swapIndex]?.exercise_id ?? '')?.name_de ?? '')
+      : '';
+
+  async function saveVariant(next: ReturnType<typeof withVariantSwap>, text: string) {
+    try {
+      await mine.saveVariant(original!.id, next);
+      setSwapMessage({ text, tone: 'success' });
+    } catch {
+      setSwapMessage({ text: deMyWorkouts.swap.failed, tone: 'danger' });
+    }
   }
 
   // WOD-Stil (AMRAP/EMOM/For Time/Chipper, packages/core wod.ts): eigene Ablauf-Erklärung und Skalierungs-Hinweis.
@@ -162,6 +206,12 @@ export default function WorkoutDetailScreen() {
     >
       <WorkoutBanner workoutId={workout.id} />
       <StarRating difficulty={workout.difficulty} size="lg" testID="workout-detail-stars" />
+      {shown.adjusted ? <AdjustedBadge testID="workout-adjusted" /> : null}
+      {swapMessage ? (
+        <Notice tone={swapMessage.tone} testID="workout-swap-message">
+          {swapMessage.text}
+        </Notice>
+      ) : null}
       <Body>{workout.summary_de}</Body>
       {hiddenFlow ? (
         <Notice tone="warning" title={deYoga.detail.hiddenTitle} testID="workout-flow-hidden">
@@ -245,6 +295,13 @@ export default function WorkoutDetailScreen() {
               swappedFrom.has(item.exercise_id)
                 ? deYoga.detail.swappedFrom(swappedFrom.get(item.exercise_id) ?? '')
                 : null,
+              shown.swappedIndexes.includes(index)
+                ? deMyWorkouts.swap.swappedFrom(
+                    exercises?.get(original.exercises[index]?.exercise_id ?? '')?.name_de ??
+                      original.exercises[index]?.exercise_id ??
+                      '',
+                  )
+                : null,
             ]
               .filter((x): x is string => x !== null)
               .join(' · ');
@@ -264,34 +321,50 @@ export default function WorkoutDetailScreen() {
                     }
                   />
                 ) : null}
+                {canSwap && exercise ? (
+                  <Button
+                    label={deMyWorkouts.preview.swap}
+                    icon="swap"
+                    variant="secondary"
+                    compact
+                    accessibilityLabel={deMyWorkouts.preview.swapA11y(name)}
+                    onPress={() => {
+                      setSwapMessage(undefined);
+                      setSwapIndex(index);
+                    }}
+                    testID={`workout-swap-${index}`}
+                  />
+                ) : null}
               </View>
             );
           })}
         </View>
       </Card>
+      {shown.adjusted ? (
+        <Button
+          label={deMyWorkouts.swap.restore}
+          variant="link"
+          onPress={() => void saveVariant(null, deMyWorkouts.swap.restored)}
+          testID="workout-restore"
+        />
+      ) : null}
       <Card>
         <Heading level={2}>{t.workouts.detail.cooldown}</Heading>
         <Body>{workout.cooldown_de}</Body>
       </Card>
+      <SwapSheet
+        visible={swapIndex !== null}
+        currentName={swapName}
+        candidates={swapCandidates}
+        onClose={() => setSwapIndex(null)}
+        onPick={(candidate) => {
+          if (swapIndex === null) return;
+          const next = withVariantSwap(original, shown.variant, swapIndex, candidate.exercise.id);
+          setSwapIndex(null);
+          void saveVariant(next, next ? deMyWorkouts.swap.saved : deMyWorkouts.swap.restored);
+        }}
+      />
     </Screen>
-  );
-}
-
-/** Neuen Lauf beginnen (außerhalb des Renderns: Zeitpunkt und ID entstehen beim Tippen). */
-function beginRun(
-  userId: string,
-  workout: Workout,
-  exercises: ReadonlyMap<string, { readonly unilateral: boolean }> | null,
-): void {
-  activeRunStore.set(
-    startActiveRun({
-      ownerUserId: userId,
-      workout,
-      nowMs: Date.now(),
-      newId,
-      // Zeitfenster für Wiederholungen (Power-Workouts): einseitige Übungen doppelt.
-      unilateral: (id) => exercises?.get(id)?.unilateral === true,
-    }),
   );
 }
 

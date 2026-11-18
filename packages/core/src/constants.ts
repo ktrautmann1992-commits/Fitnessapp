@@ -877,6 +877,45 @@ export const WORKOUT_PLAYER = {
 } as const;
 
 /**
+ * Eigene Workouts und Übungstausch in Workouts (Gründer-Wunsch 18.11.2026, docs/PLAN-EIGENE-WORKOUTS.md): Die App baut
+ * aus Dauer, Muskelgruppen, Geräten, Lieblings- und „Mag ich nicht“-Übungen ein Workout im Stil von Barbell Burn
+ * (Aufwärmen → je Muskelgruppe ein Track → Dehnen, Sätze × Wdh. nach Zeitfenster im Player). Werte:
+ * - `minutes`: wählbare Dauern; `toleranceShare` 0,1 = geschätzte Dauer im Player höchstens ±10 % neben dem Ziel.
+ * - `maxExercises` = WORKOUT_LIMITS.exercises.max; `perTrack` 1–3 Übungen je Track; `trackSeconds` ≈ 4,5 Min. je Übung
+ *   (bestimmt, wie viele Übungen ein Track bekommt); Tracks einer Muskelgruppe dürfen sich teilen („Teil 1/2“).
+ * - Dosierung (Grundwerte, dann skaliert): `sets` 1–6 (WORKOUT_LIMITS.sets), `reps` 8–20 (einseitig 6–16), `holdS`
+ *   20–60 s, `restS` 15–45 s (Einsteiger/vorsichtig ab 20 s), Aufwärmen/Dehnen je Übung `warmupS`/`cooldownS`.
+ * - Schwierigkeit: höchste Übungs-Schwierigkeit je Level (`maxDifficulty`), bevorzugt `targetDifficulty`;
+ *   vorsichtiger Plan (Gesundheits-Check auffällig oder fehlend) wie Einsteiger. Ausgeschlossene Merkmale der
+ *   Sicherheitsregeln (excludedCautionTags) kommen nie hinein.
+ * - Tausch (`swap`): Kandidaten höchstens `maxCandidates`, Schwierigkeit höchstens ±`difficultyDelta` zur Übung.
+ * - Speicher: `maxCustom` eigene Workouts, `maxVariants` getauschte Bibliotheks-Workouts, `maxDislikes` Übungen
+ *   „Mag ich nicht“ je Person, Name 3–60 Zeichen (sync: Migration *_custom_workouts.sql).
+ * Quelle: PRODUKTENTSCHEIDUNG (an Barbell Burn 60/30 und WORKOUT_PLAYER angelehnt) – VOR LIVEGANG FACHLICH PRÜFEN.
+ */
+export const CUSTOM_WORKOUT_RULES = {
+  minutes: [15, 20, 30, 45, 60],
+  toleranceShare: 0.1,
+  maxExercises: WORKOUT_LIMITS.exercises.max,
+  perTrack: { min: 1, max: 3 },
+  trackSeconds: 270,
+  sets: { min: 1, max: WORKOUT_LIMITS.sets.max },
+  reps: { min: 8, max: 20, base: 12 },
+  unilateralReps: { min: 6, max: 16, base: 10 },
+  holdS: { min: 20, max: 60, base: 30 },
+  restS: { min: 15, max: 45, base: 20, cautiousMin: 20 },
+  warmupS: { min: 30, max: 60, base: 40 },
+  cooldownS: { min: 30, max: 60, base: 40 },
+  maxDifficulty: { beginner: 2, advanced: 3, competitive: 3 },
+  targetDifficulty: { beginner: 1, advanced: 2, competitive: 3 },
+  swap: { maxCandidates: 8, difficultyDelta: 1 },
+  maxCustom: 50,
+  maxVariants: 200,
+  maxDislikes: 300,
+  name: { min: 3, max: 60 },
+} as const;
+
+/**
  * Yoga-/Pilates-/Mobility-Routinen im Workout-Format `flow` (Sportarten Stufe 1, docs/PLAN-SPORTARTEN-STUFE-1.md 2.4
  * und 5): Pose 15–180 s (`poseS`), Routine 5–45 min (`minutes`, innerhalb von WORKOUT_LIMITS.minutes); Halteposen ab
  * 65 höchstens `seniorHoldMaxS` (= ACTIVE_AGING_RULES.strengthHoldMaxS); eine Routine wird nur gezeigt, wenn

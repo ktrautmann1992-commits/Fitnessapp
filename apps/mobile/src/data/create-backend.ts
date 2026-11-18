@@ -18,6 +18,7 @@ import { createLocalBackend } from './local-backend';
 import { readWebUrl } from './food-photo-remote';
 import { attachShoes, createLocalShoes, createRemoteShoes } from './shoes';
 import { attachHydration, createLocalHydration, createRemoteHydration } from './hydration';
+import { attachMyWorkouts, createLocalMyWorkouts, createRemoteMyWorkouts } from './my-workouts';
 import {
   attachLive,
   createDemoLive,
@@ -129,6 +130,16 @@ export function createBackend(): Backend {
         now,
       }),
     );
+    // Eigene Workouts, Varianten, „Mag ich nicht“ (docs/PLAN-EIGENE-WORKOUTS.md): Warteschlange wie Trinken.
+    attachMyWorkouts(
+      backend,
+      createRemoteMyWorkouts({
+        client,
+        store: deviceStore,
+        userId: async () => (await backend.getSession())?.userId ?? null,
+        now,
+      }),
+    );
     // Live-Begleitung (docs/PLAN-PHASE-10.md 21): Datenbank-Funktionen; Kontakte nur verschlüsselt auf dem Gerät.
     attachLive(backend, {
       live: createRemoteLive({ client }),
@@ -162,6 +173,14 @@ export function createBackend(): Backend {
       userId: async () => (await local.getSession())?.userId ?? null,
       now,
       today: () => todayIso(),
+    }),
+  );
+  attachMyWorkouts(
+    local,
+    createLocalMyWorkouts({
+      store: deviceStore,
+      userId: async () => (await local.getSession())?.userId ?? null,
+      now,
     }),
   );
   // Live-Begleitung im Testmodus: Demo ohne Server (Link zur Demo-Begleit-Seite).
