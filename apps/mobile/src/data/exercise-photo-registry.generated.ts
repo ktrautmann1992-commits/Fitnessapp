@@ -345,6 +345,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/liegestuetz-erhoeht-start.webp'),
     end: require('../../assets/exercise-photos/liegestuetz-erhoeht-end.webp'),
   },
+  'liegestuetz-fuesse-erhoeht': {
+    start: require('../../assets/exercise-photos/liegestuetz-fuesse-erhoeht-start.webp'),
+    end: require('../../assets/exercise-photos/liegestuetz-fuesse-erhoeht-end.webp'),
+  },
   'marschieren-auf-der-stelle': {
     start: require('../../assets/exercise-photos/marschieren-auf-der-stelle-start.webp'),
     end: require('../../assets/exercise-photos/marschieren-auf-der-stelle-end.webp'),
@@ -353,13 +357,29 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/mobility-beinrueckseite-band-liegend-start.webp'),
     end: require('../../assets/exercise-photos/mobility-beinrueckseite-band-liegend-end.webp'),
   },
+  'mobility-brustwirbel-drehung-vierfuessler': {
+    start: require('../../assets/exercise-photos/mobility-brustwirbel-drehung-vierfuessler-start.webp'),
+    end: require('../../assets/exercise-photos/mobility-brustwirbel-drehung-vierfuessler-end.webp'),
+  },
   'mobility-buch-oeffnen-seitlage': {
     start: require('../../assets/exercise-photos/mobility-buch-oeffnen-seitlage-start.webp'),
     end: require('../../assets/exercise-photos/mobility-buch-oeffnen-seitlage-end.webp'),
   },
+  'mobility-frosch-schaukel': {
+    start: require('../../assets/exercise-photos/mobility-frosch-schaukel-start.webp'),
+    end: require('../../assets/exercise-photos/mobility-frosch-schaukel-end.webp'),
+  },
+  'mobility-handgelenke-kreisen': {
+    start: require('../../assets/exercise-photos/mobility-handgelenke-kreisen-start.webp'),
+    end: require('../../assets/exercise-photos/mobility-handgelenke-kreisen-end.webp'),
+  },
   'mobility-hueft-90-90': {
     start: require('../../assets/exercise-photos/mobility-hueft-90-90-start.webp'),
     end: require('../../assets/exercise-photos/mobility-hueft-90-90-end.webp'),
+  },
+  'mobility-hueftbeuger-kniend': {
+    start: require('../../assets/exercise-photos/mobility-hueftbeuger-kniend-start.webp'),
+    end: require('../../assets/exercise-photos/mobility-hueftbeuger-kniend-end.webp'),
   },
   'mobility-hueftkreisen': {
     start: require('../../assets/exercise-photos/mobility-hueftkreisen-start.webp'),
@@ -381,6 +401,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/mobility-schulterkreisen-start.webp'),
     end: require('../../assets/exercise-photos/mobility-schulterkreisen-end.webp'),
   },
+  'mobility-sprunggelenk-kreisen-sitzend': {
+    start: require('../../assets/exercise-photos/mobility-sprunggelenk-kreisen-sitzend-start.webp'),
+    end: require('../../assets/exercise-photos/mobility-sprunggelenk-kreisen-sitzend-end.webp'),
+  },
   'mobility-wade-wand': {
     start: require('../../assets/exercise-photos/mobility-wade-wand-start.webp'),
     end: require('../../assets/exercise-photos/mobility-wade-wand-end.webp'),
@@ -388,6 +412,14 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'mobility-wandengel': {
     start: require('../../assets/exercise-photos/mobility-wandengel-start.webp'),
     end: require('../../assets/exercise-photos/mobility-wandengel-end.webp'),
+  },
+  'mobility-weltbeste-dehnung': {
+    start: require('../../assets/exercise-photos/mobility-weltbeste-dehnung-start.webp'),
+    end: require('../../assets/exercise-photos/mobility-weltbeste-dehnung-end.webp'),
+  },
+  'nordic-curl-assistiert': {
+    start: require('../../assets/exercise-photos/nordic-curl-assistiert-start.webp'),
+    end: require('../../assets/exercise-photos/nordic-curl-assistiert-end.webp'),
   },
   'oberschenkel-vorderseite-dehnen': {
     start: require('../../assets/exercise-photos/oberschenkel-vorderseite-dehnen-start.webp'),
@@ -401,9 +433,37 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/pike-liegestuetz-start.webp'),
     end: require('../../assets/exercise-photos/pike-liegestuetz-end.webp'),
   },
+  'pilates-abrollen-stehend': {
+    start: require('../../assets/exercise-photos/pilates-abrollen-stehend-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-abrollen-stehend-end.webp'),
+  },
   'pilates-beckenkippen': {
     start: require('../../assets/exercise-photos/pilates-beckenkippen-start.webp'),
     end: require('../../assets/exercise-photos/pilates-beckenkippen-end.webp'),
+  },
+  'pilates-beinkreise-seitlage': {
+    start: require('../../assets/exercise-photos/pilates-beinkreise-seitlage-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-beinkreise-seitlage-end.webp'),
+  },
+  'pilates-brustkorb-heben': {
+    start: require('../../assets/exercise-photos/pilates-brustkorb-heben-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-brustkorb-heben-end.webp'),
+  },
+  'pilates-einbein-strecken': {
+    start: require('../../assets/exercise-photos/pilates-einbein-strecken-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-einbein-strecken-end.webp'),
+  },
+  'pilates-einbeinkreisen': {
+    start: require('../../assets/exercise-photos/pilates-einbeinkreisen-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-einbeinkreisen-end.webp'),
+  },
+  'pilates-fersen-tippen': {
+    start: require('../../assets/exercise-photos/pilates-fersen-tippen-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-fersen-tippen-end.webp'),
+  },
+  'pilates-hundert-gehockt': {
+    start: require('../../assets/exercise-photos/pilates-hundert-gehockt-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-hundert-gehockt-end.webp'),
   },
   'pilates-meerjungfrau': {
     start: require('../../assets/exercise-photos/pilates-meerjungfrau-start.webp'),
