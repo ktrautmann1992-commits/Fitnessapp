@@ -1,12 +1,12 @@
 {
   "id": "band-kraftausdauer-25",
-  "version": 1,
+  "version": 2,
   "status": "published",
-  "title_de": "Band-Zirkel 25",
+  "title_de": "Band-Zirkel 30",
   "summary_de": "Ein Widerstandsband, acht Stationen nach Zeit: Rudern, Drücken, Hüfte, Beine und Pallof Press, dazu Dead Bug für die tiefen Bauchmuskeln.",
   "category": "full_body",
   "difficulty": 2,
-  "minutes": 25,
+  "minutes": 30,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 60,
@@ -60,7 +60,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "pallof-press-band",
@@ -68,7 +68,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "dead-bug",

@@ -1,9 +1,9 @@
 {
   "id": "beine-po-ausdauer-28",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Beine & Po Ausdauer 28",
-  "summary_de": "Neun Stationen für Beine und Gesäß ohne Geräte – mit Bärenstand und Fersen-Tippen für die Körpermitte. 45 Sekunden Arbeit, 15 Sekunden Pause.",
+  "summary_de": "Acht Stationen für Beine und Gesäß ohne Geräte – mit Bärenstand und Fersen-Tippen für die Körpermitte. 45 Sekunden Arbeit, 15 Sekunden Pause.",
   "category": "legs_glutes",
   "difficulty": 3,
   "minutes": 28,
@@ -31,20 +31,12 @@
       "note_de": "Abwechselnd links und rechts, kleine Schritte sind in Ordnung."
     },
     {
-      "exercise_id": "glute-bridge-einbeinig",
+      "exercise_id": "glute-bridge",
       "reps": null,
       "duration_s": 45,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
-    },
-    {
-      "exercise_id": "seitlicher-ausfallschritt",
-      "reps": null,
-      "duration_s": 45,
-      "sets": null,
-      "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "kniebeuge-tempo",
@@ -68,7 +60,7 @@
       "duration_s": 45,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "baerenstand-halten",

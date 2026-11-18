@@ -1,12 +1,12 @@
 {
   "id": "oberkoerper-kraftausdauer-22",
-  "version": 1,
+  "version": 2,
   "status": "published",
-  "title_de": "Oberkörper Kraft-Ausdauer 22",
+  "title_de": "Oberkörper Kraft-Ausdauer 24",
   "summary_de": "Drücken und Ziehen ohne Geräte nach Zeit, dazu Schulter-Tippen und Bauchnabel einziehen für einen festen Rumpf. 40 Sekunden Arbeit, 20 Sekunden Pause.",
   "category": "upper_body",
   "difficulty": 2,
-  "minutes": 22,
+  "minutes": 24,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 60,
@@ -28,7 +28,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "dips-stuhl",

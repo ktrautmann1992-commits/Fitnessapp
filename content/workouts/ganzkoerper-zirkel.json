@@ -1,12 +1,12 @@
 {
   "id": "ganzkoerper-zirkel",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "Ganzkörper-Zirkel",
   "summary_de": "Ein kompletter Zirkel ohne Geräte für Fortgeschrittene, überwiegend nach Zeit: Beine, Drücken, Ziehen am Tisch, Hüfte und Rumpf – mit Schulter-Tippen und Dead Bug lang.",
   "category": "full_body",
   "difficulty": 3,
-  "minutes": 25,
+  "minutes": 27,
   "format": "circuit",
   "rounds": 3,
   "round_rest_s": 90,
@@ -36,7 +36,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "tisch-rudern",

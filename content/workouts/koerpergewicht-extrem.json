@@ -1,12 +1,12 @@
 {
   "id": "koerpergewicht-extrem",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Körpergewicht extrem",
   "summary_de": "Fünf Runden schwerer Körpergewicht-Übungen: Archer-Liegestütz, Nordic Curl, Rudern am Tisch und einbeinige Kniebeugen. Nur für sehr Geübte.",
   "category": "full_body",
   "difficulty": 5,
-  "minutes": 34,
+  "minutes": 35,
   "format": "circuit",
   "rounds": 5,
   "round_rest_s": 120,
@@ -28,7 +28,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "tisch-rudern",

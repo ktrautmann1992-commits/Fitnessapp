@@ -1,14 +1,14 @@
 {
   "id": "hiit-40-20",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "HIIT 40/20",
-  "summary_de": "Fünf Runden, je 40 Sekunden Vollgas und 20 Sekunden Pause. Für Geübte, die schon sicher Liegestütz und Ausfallschritte machen.",
+  "summary_de": "Vier Runden, je 40 Sekunden Vollgas und 20 Sekunden Pause. Für Geübte, die schon sicher Liegestütz und Ausfallschritte machen.",
   "category": "hiit_cardio",
   "difficulty": 4,
-  "minutes": 27,
+  "minutes": 25,
   "format": "interval",
-  "rounds": 5,
+  "rounds": 4,
   "round_rest_s": 60,
   "equipment_ids": [],
   "warmup_de": "5 Minuten aufwärmen: zügig auf der Stelle gehen, Arme kreisen, Schultern lockern und ein paar Step-Jacks im ruhigen Tempo.",
@@ -44,7 +44,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "unterarmstuetz",

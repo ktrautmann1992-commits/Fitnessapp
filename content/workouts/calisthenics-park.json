@@ -1,6 +1,6 @@
 {
   "id": "calisthenics-park",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Calisthenics im Park",
   "summary_de": "Für Stange und Barren im Park: negative Klimmzüge, Dips, Pistol-Vorstufe und Hollow Body – kräftig, ohne Akrobatik.",
@@ -36,7 +36,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 45,
-      "note_de": "Je Bein, auf eine Bank setzen."
+      "note_de": "Auf eine Bank setzen."
     },
     {
       "exercise_id": "australian-pull-up",

@@ -1,6 +1,6 @@
 {
   "id": "haltung-mit-band",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Haltung mit Band",
   "summary_de": "Schultern zurück, Rücken stabil: leichte Übungen mit dem Widerstandsband für oberen Rücken und Rumpf.",
@@ -52,7 +52,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "bird-dog",

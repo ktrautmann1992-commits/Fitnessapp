@@ -1,6 +1,6 @@
 {
   "id": "wod-for-time-kurzhantel",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "For Time – Kurzhantel",
   "summary_de": "Drei Runden so schnell wie sauber möglich, Zeitlimit 20 Minuten. Einsteiger: leichtere Hanteln und Pausen nach Bedarf. Fortgeschrittene: schwerer und ohne Pausen.",
@@ -36,7 +36,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 0,
-      "note_de": "Je Bein."
+      "note_de": null
     },
     {
       "exercise_id": "burpee-ohne-sprung",

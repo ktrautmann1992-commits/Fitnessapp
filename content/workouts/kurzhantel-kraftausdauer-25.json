@@ -1,12 +1,12 @@
 {
   "id": "kurzhantel-kraftausdauer-25",
-  "version": 1,
+  "version": 2,
   "status": "published",
-  "title_de": "Kurzhantel-Zirkel 25",
+  "title_de": "Kurzhantel-Zirkel 27",
   "summary_de": "Kraft-Ausdauer mit Kurzhanteln: Hantelübungen im Zeitfenster, dazu Tragen, Dead Bug lang und Schulter-Tippen nach Zeit. Läuft ohne Tippen durch.",
   "category": "full_body",
   "difficulty": 3,
-  "minutes": 25,
+  "minutes": 27,
   "format": "circuit",
   "rounds": 3,
   "round_rest_s": 90,
@@ -60,7 +60,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "schulterdruecken-kurzhantel",

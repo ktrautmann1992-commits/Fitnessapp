@@ -1,12 +1,12 @@
 {
   "id": "rumpf-basis",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "Rumpf-Basis",
   "summary_de": "Rumpftraining für Einsteiger nach Zeit: ruhige Halteübungen, Atmung und kontrollierte Bewegungen für die tiefen Bauchmuskeln und den unteren Rücken.",
   "category": "core",
   "difficulty": 1,
-  "minutes": 21,
+  "minutes": 22,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 45,
@@ -36,7 +36,7 @@
       "duration_s": 30,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Abwechselnd links und rechts, langsam."
+      "note_de": "Langsam, der Rücken bleibt ruhig."
     },
     {
       "exercise_id": "seitstuetz-knie",

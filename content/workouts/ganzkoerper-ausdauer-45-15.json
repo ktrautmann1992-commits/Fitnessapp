@@ -1,9 +1,9 @@
 {
   "id": "ganzkoerper-ausdauer-45-15",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Ganzkörper Ausdauer 45/15",
-  "summary_de": "Neun harte Stationen ohne Geräte, 45 Sekunden Arbeit und nur 15 Sekunden Pause. Für Geübte mit sicherer Technik bei Liegestütz und Ausfallschritt.",
+  "summary_de": "Acht harte Stationen ohne Geräte, 45 Sekunden Arbeit und nur 15 Sekunden Pause. Für Geübte mit sicherer Technik bei Liegestütz und Ausfallschritt.",
   "category": "full_body",
   "difficulty": 4,
   "minutes": 28,
@@ -55,14 +55,6 @@
       "note_de": null
     },
     {
-      "exercise_id": "rdl-einbeinig-koerpergewicht",
-      "reps": null,
-      "duration_s": 45,
-      "sets": null,
-      "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
-    },
-    {
       "exercise_id": "hollow-body-halten",
       "reps": null,
       "duration_s": 45,
@@ -76,7 +68,7 @@
       "duration_s": 45,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "dead-bug-gestreckt",

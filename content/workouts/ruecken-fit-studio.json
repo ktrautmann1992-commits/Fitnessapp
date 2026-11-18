@@ -1,6 +1,6 @@
 {
   "id": "ruecken-fit-studio",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Rücken-fit im Studio",
   "summary_de": "Rückentraining an Kabel und Latzug: Ziehen aus verschiedenen Richtungen, dazu Hüftstrecken mit Kurzhanteln.",
@@ -52,7 +52,7 @@
       "duration_s": null,
       "sets": 2,
       "rest_s": 30,
-      "note_de": "Je Seite."
+      "note_de": null
     }
   ],
   "meta": {

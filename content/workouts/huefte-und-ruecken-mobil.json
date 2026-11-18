@@ -1,12 +1,12 @@
 {
   "id": "huefte-und-ruecken-mobil",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Hüfte & Rücken mobil",
   "summary_de": "Langsame, kontrollierte Bewegungen mit großem Bewegungsweg für Hüfte, Oberschenkelrückseite und oberen Rücken.",
   "category": "mobility",
   "difficulty": 2,
-  "minutes": 10,
+  "minutes": 11,
   "format": "circuit",
   "rounds": 2,
   "round_rest_s": 45,
@@ -36,7 +36,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite, langsam und tief."
+      "note_de": "Langsam und tief."
     },
     {
       "exercise_id": "hueftstrecken-vierfuessler",

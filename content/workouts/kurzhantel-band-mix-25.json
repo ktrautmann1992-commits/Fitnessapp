@@ -1,12 +1,12 @@
 {
   "id": "kurzhantel-band-mix-25",
-  "version": 1,
+  "version": 2,
   "status": "published",
-  "title_de": "Kurzhantel & Band Mix 25",
+  "title_de": "Kurzhantel & Band Mix 28",
   "summary_de": "Gemischter Zirkel mit Kurzhanteln, Band und Körpergewicht: Hantelübungen im Zeitfenster, alles andere nach Zeit – mit Seitstütz und Schulter-Tippen.",
   "category": "full_body",
   "difficulty": 3,
-  "minutes": 25,
+  "minutes": 28,
   "format": "circuit",
   "rounds": 3,
   "round_rest_s": 60,
@@ -36,7 +36,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "liegestuetz",
@@ -76,7 +76,7 @@
       "duration_s": 45,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     }
   ],
   "meta": {

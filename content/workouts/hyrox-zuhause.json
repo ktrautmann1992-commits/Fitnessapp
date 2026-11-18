@@ -1,12 +1,12 @@
 {
   "id": "hyrox-zuhause",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "Hyrox-Training zuhause",
   "summary_de": "Hyrox-Bewegungen ohne Spezialgeräte: Ausfallschritte, Burpees, Tragen und Kniebeugen als Zirkel mit Kurzhanteln – fast alles nach Zeit, mit Schulter-Tippen für die Körpermitte.",
   "category": "hiit_cardio",
   "difficulty": 3,
-  "minutes": 27,
+  "minutes": 30,
   "format": "circuit",
   "rounds": 4,
   "round_rest_s": 90,
@@ -36,7 +36,7 @@
       "duration_s": 30,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Seite nach der Hälfte wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "kniebeuge-schulterdruecken-kurzhantel",

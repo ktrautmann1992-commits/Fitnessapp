@@ -1,12 +1,12 @@
 {
   "id": "ganzkoerper-band",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "Ganzkörper mit Band",
   "summary_de": "Ein Widerstandsband reicht: Rudern, Drücken, Hüftbeugen und Rumpf nach Zeit – 40 Sekunden Arbeit, 20 Sekunden Pause, dazu Dead Bug und Bärenstand.",
   "category": "full_body",
   "difficulty": 2,
-  "minutes": 25,
+  "minutes": 27,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 60,
@@ -60,7 +60,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "dead-bug",
