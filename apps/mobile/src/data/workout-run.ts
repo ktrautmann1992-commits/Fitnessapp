@@ -37,7 +37,8 @@ export interface ActiveWorkoutRun {
   readonly saved: boolean;
   /**
    * Ablauf, aus dem `steps` gebaut wurde – bei Flow-Routinen die für die Person angepasste Fassung
-   * (prepareFlowWorkout: Posen getauscht/entfallen, Halteposen gekürzt). Fehlt = das Workout der Bibliothek.
+   * (prepareFlowWorkout: Posen getauscht/entfallen, Halteposen gekürzt), bei eigenen Workouts und getauschten Übungen
+   * die persönliche Fassung (`keepWorkout`). Fehlt = das Workout der Bibliothek.
    */
   readonly workout?: Workout;
 }
@@ -49,6 +50,11 @@ export function startActiveRun(input: {
   newId: () => string;
   /** Einseitige Übung? (Zeitfenster doppelt, packages/core player.ts) */
   unilateral?: (exerciseId: string) => boolean;
+  /**
+   * Den Ablauf im Lauf mitführen, auch wenn er kein Flow ist (docs/PLAN-EIGENE-WORKOUTS.md): eigene Workouts und
+   * Bibliotheks-Workouts mit getauschten Übungen – der Player zeigt dann genau diese Fassung.
+   */
+  keepWorkout?: boolean;
 }): ActiveWorkoutRun {
   // Workout-Player (14.11.2026): WOD-Stil wie wodTimerPlan; Power-Workouts (Zirkel/Intervall) komplett nach Zeit –
   // Übungen nach Wiederholungen bekommen ein Zeitfenster.
@@ -61,7 +67,9 @@ export function startActiveRun(input: {
     run: startWorkoutRun(steps, input.nowMs),
     startedAt: new Date(input.nowMs).toISOString(),
     saved: false,
-    ...(input.workout.format === 'flow' ? { workout: input.workout } : {}),
+    ...(input.workout.format === 'flow' || input.keepWorkout === true
+      ? { workout: input.workout }
+      : {}),
   };
 }
 
