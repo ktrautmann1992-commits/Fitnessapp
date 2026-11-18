@@ -148,7 +148,13 @@ describe('Live-Begleitung: Datenbank = Core', () => {
   });
 
   it('Export: live_sessions ohne token_hash, Obermenge der Integrations-Fassung', () => {
-    expect(DATA_EXPORT_TABLES.at(-1)).toBe('live_sessions');
+    // Seit den eigenen Workouts (18.11.2026) folgen custom_workouts, workout_variants, exercise_dislikes.
+    expect(DATA_EXPORT_TABLES.slice(-4)).toEqual([
+      'live_sessions',
+      'custom_workouts',
+      'workout_variants',
+      'exercise_dislikes',
+    ]);
     const marker = 'create or replace function public.export_my_data()';
     const body = (text: string) =>
       text.slice(text.indexOf(marker), text.indexOf('$$;', text.indexOf(marker)));
