@@ -45,10 +45,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/bankdruecken-kurzhantel-start.webp'),
     end: require('../../assets/exercise-photos/bankdruecken-kurzhantel-end.webp'),
   },
-  'bankdruecken-langhantel': {
-    start: require('../../assets/exercise-photos/bankdruecken-langhantel-start.webp'),
-    end: require('../../assets/exercise-photos/bankdruecken-langhantel-end.webp'),
-  },
   'bankdruecken-step-langhantel': {
     start: require('../../assets/exercise-photos/bankdruecken-step-langhantel-start.webp'),
     end: require('../../assets/exercise-photos/bankdruecken-step-langhantel-end.webp'),
@@ -61,17 +57,9 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/beinbeuger-band-start.webp'),
     end: require('../../assets/exercise-photos/beinbeuger-band-end.webp'),
   },
-  'beinbeuger-handtuch': {
-    start: require('../../assets/exercise-photos/beinbeuger-handtuch-start.webp'),
-    end: require('../../assets/exercise-photos/beinbeuger-handtuch-end.webp'),
-  },
   'beinbeuger-maschine': {
     start: require('../../assets/exercise-photos/beinbeuger-maschine-start.webp'),
     end: require('../../assets/exercise-photos/beinbeuger-maschine-end.webp'),
-  },
-  'beinpendel-stehend': {
-    start: require('../../assets/exercise-photos/beinpendel-stehend-start.webp'),
-    end: require('../../assets/exercise-photos/beinpendel-stehend-end.webp'),
   },
   beinpresse: {
     start: require('../../assets/exercise-photos/beinpresse-start.webp'),
@@ -85,10 +73,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/beinstrecker-start.webp'),
     end: require('../../assets/exercise-photos/beinstrecker-end.webp'),
   },
-  'beinstrecker-band': {
-    start: require('../../assets/exercise-photos/beinstrecker-band-start.webp'),
-    end: require('../../assets/exercise-photos/beinstrecker-band-end.webp'),
-  },
   'bird-dog': {
     start: require('../../assets/exercise-photos/bird-dog-start.webp'),
     end: require('../../assets/exercise-photos/bird-dog-end.webp'),
@@ -100,10 +84,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'bizepscurl-kurzhantel': {
     start: require('../../assets/exercise-photos/bizepscurl-kurzhantel-start.webp'),
     end: require('../../assets/exercise-photos/bizepscurl-kurzhantel-end.webp'),
-  },
-  'bizepscurl-langhantel': {
-    start: require('../../assets/exercise-photos/bizepscurl-langhantel-start.webp'),
-    end: require('../../assets/exercise-photos/bizepscurl-langhantel-end.webp'),
   },
   'bodendruecken-kurzhantel': {
     start: require('../../assets/exercise-photos/bodendruecken-kurzhantel-start.webp'),
@@ -221,10 +201,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/handtuch-rudern-isometrisch-start.webp'),
     end: require('../../assets/exercise-photos/handtuch-rudern-isometrisch-end.webp'),
   },
-  'hip-thrust-langhantel': {
-    start: require('../../assets/exercise-photos/hip-thrust-langhantel-start.webp'),
-    end: require('../../assets/exercise-photos/hip-thrust-langhantel-end.webp'),
-  },
   'hip-thrust-sofa': {
     start: require('../../assets/exercise-photos/hip-thrust-sofa-start.webp'),
     end: require('../../assets/exercise-photos/hip-thrust-sofa-end.webp'),
@@ -236,10 +212,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'hollow-body-halten': {
     start: require('../../assets/exercise-photos/hollow-body-halten-start.webp'),
     end: require('../../assets/exercise-photos/hollow-body-halten-end.webp'),
-  },
-  'hueftkreisen-stehend': {
-    start: require('../../assets/exercise-photos/hueftkreisen-stehend-start.webp'),
-    end: require('../../assets/exercise-photos/hueftkreisen-stehend-end.webp'),
   },
   'hueftstrecken-vierfuessler': {
     start: require('../../assets/exercise-photos/hueftstrecken-vierfuessler-start.webp'),
@@ -309,10 +281,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/latziehen-start.webp'),
     end: require('../../assets/exercise-photos/latziehen-end.webp'),
   },
-  'lauf-abc-anfersen': {
-    start: require('../../assets/exercise-photos/lauf-abc-anfersen-start.webp'),
-    end: require('../../assets/exercise-photos/lauf-abc-anfersen-end.webp'),
-  },
   'lauf-abc-fussgelenksarbeit': {
     start: require('../../assets/exercise-photos/lauf-abc-fussgelenksarbeit-start.webp'),
     end: require('../../assets/exercise-photos/lauf-abc-fussgelenksarbeit-end.webp'),
@@ -329,10 +297,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/lauf-abc-seitgalopp-start.webp'),
     end: require('../../assets/exercise-photos/lauf-abc-seitgalopp-end.webp'),
   },
-  'lauf-abc-skippings': {
-    start: require('../../assets/exercise-photos/lauf-abc-skippings-start.webp'),
-    end: require('../../assets/exercise-photos/lauf-abc-skippings-end.webp'),
-  },
   'lauf-abc-ueberkreuzlauf': {
     start: require('../../assets/exercise-photos/lauf-abc-ueberkreuzlauf-start.webp'),
     end: require('../../assets/exercise-photos/lauf-abc-ueberkreuzlauf-end.webp'),
@@ -345,10 +309,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/liegestuetz-erhoeht-start.webp'),
     end: require('../../assets/exercise-photos/liegestuetz-erhoeht-end.webp'),
   },
-  'liegestuetz-fuesse-erhoeht': {
-    start: require('../../assets/exercise-photos/liegestuetz-fuesse-erhoeht-start.webp'),
-    end: require('../../assets/exercise-photos/liegestuetz-fuesse-erhoeht-end.webp'),
-  },
   'marschieren-auf-der-stelle': {
     start: require('../../assets/exercise-photos/marschieren-auf-der-stelle-start.webp'),
     end: require('../../assets/exercise-photos/marschieren-auf-der-stelle-end.webp'),
@@ -357,17 +317,9 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/mobility-beinrueckseite-band-liegend-start.webp'),
     end: require('../../assets/exercise-photos/mobility-beinrueckseite-band-liegend-end.webp'),
   },
-  'mobility-brustwirbel-drehung-vierfuessler': {
-    start: require('../../assets/exercise-photos/mobility-brustwirbel-drehung-vierfuessler-start.webp'),
-    end: require('../../assets/exercise-photos/mobility-brustwirbel-drehung-vierfuessler-end.webp'),
-  },
   'mobility-buch-oeffnen-seitlage': {
     start: require('../../assets/exercise-photos/mobility-buch-oeffnen-seitlage-start.webp'),
     end: require('../../assets/exercise-photos/mobility-buch-oeffnen-seitlage-end.webp'),
-  },
-  'mobility-frosch-schaukel': {
-    start: require('../../assets/exercise-photos/mobility-frosch-schaukel-start.webp'),
-    end: require('../../assets/exercise-photos/mobility-frosch-schaukel-end.webp'),
   },
   'mobility-handgelenke-kreisen': {
     start: require('../../assets/exercise-photos/mobility-handgelenke-kreisen-start.webp'),
@@ -417,10 +369,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/mobility-weltbeste-dehnung-start.webp'),
     end: require('../../assets/exercise-photos/mobility-weltbeste-dehnung-end.webp'),
   },
-  'nordic-curl-assistiert': {
-    start: require('../../assets/exercise-photos/nordic-curl-assistiert-start.webp'),
-    end: require('../../assets/exercise-photos/nordic-curl-assistiert-end.webp'),
-  },
   'oberschenkel-vorderseite-dehnen': {
     start: require('../../assets/exercise-photos/oberschenkel-vorderseite-dehnen-start.webp'),
     end: require('../../assets/exercise-photos/oberschenkel-vorderseite-dehnen-end.webp'),
@@ -445,29 +393,9 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/pilates-beinkreise-seitlage-start.webp'),
     end: require('../../assets/exercise-photos/pilates-beinkreise-seitlage-end.webp'),
   },
-  'pilates-brustkorb-heben': {
-    start: require('../../assets/exercise-photos/pilates-brustkorb-heben-start.webp'),
-    end: require('../../assets/exercise-photos/pilates-brustkorb-heben-end.webp'),
-  },
   'pilates-einbein-strecken': {
     start: require('../../assets/exercise-photos/pilates-einbein-strecken-start.webp'),
     end: require('../../assets/exercise-photos/pilates-einbein-strecken-end.webp'),
-  },
-  'pilates-einbeinkreisen': {
-    start: require('../../assets/exercise-photos/pilates-einbeinkreisen-start.webp'),
-    end: require('../../assets/exercise-photos/pilates-einbeinkreisen-end.webp'),
-  },
-  'pilates-fersen-tippen': {
-    start: require('../../assets/exercise-photos/pilates-fersen-tippen-start.webp'),
-    end: require('../../assets/exercise-photos/pilates-fersen-tippen-end.webp'),
-  },
-  'pilates-hundert-gehockt': {
-    start: require('../../assets/exercise-photos/pilates-hundert-gehockt-start.webp'),
-    end: require('../../assets/exercise-photos/pilates-hundert-gehockt-end.webp'),
-  },
-  'pilates-knie-falten': {
-    start: require('../../assets/exercise-photos/pilates-knie-falten-start.webp'),
-    end: require('../../assets/exercise-photos/pilates-knie-falten-end.webp'),
   },
   'pilates-meerjungfrau': {
     start: require('../../assets/exercise-photos/pilates-meerjungfrau-start.webp'),
@@ -488,10 +416,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'pilates-saege': {
     start: require('../../assets/exercise-photos/pilates-saege-start.webp'),
     end: require('../../assets/exercise-photos/pilates-saege-end.webp'),
-  },
-  'pilates-schulterbruecke-abrollen': {
-    start: require('../../assets/exercise-photos/pilates-schulterbruecke-abrollen-start.webp'),
-    end: require('../../assets/exercise-photos/pilates-schulterbruecke-abrollen-end.webp'),
   },
   'pilates-schulterbruecke-marsch': {
     start: require('../../assets/exercise-photos/pilates-schulterbruecke-marsch-start.webp'),
@@ -517,33 +441,17 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/pilates-tischbein-wechsel-start.webp'),
     end: require('../../assets/exercise-photos/pilates-tischbein-wechsel-end.webp'),
   },
-  'pilates-unterarmstuetz-knie': {
-    start: require('../../assets/exercise-photos/pilates-unterarmstuetz-knie-start.webp'),
-    end: require('../../assets/exercise-photos/pilates-unterarmstuetz-knie-end.webp'),
-  },
   'pilates-vierfuessler-arm-bein': {
     start: require('../../assets/exercise-photos/pilates-vierfuessler-arm-bein-start.webp'),
     end: require('../../assets/exercise-photos/pilates-vierfuessler-arm-bein-end.webp'),
-  },
-  'pilates-wandstuetz': {
-    start: require('../../assets/exercise-photos/pilates-wandstuetz-start.webp'),
-    end: require('../../assets/exercise-photos/pilates-wandstuetz-end.webp'),
   },
   'pilates-wirbelsaeule-dehnen-sitzend': {
     start: require('../../assets/exercise-photos/pilates-wirbelsaeule-dehnen-sitzend-start.webp'),
     end: require('../../assets/exercise-photos/pilates-wirbelsaeule-dehnen-sitzend-end.webp'),
   },
-  'pilates-wirbelsaeule-drehen-sitzend': {
-    start: require('../../assets/exercise-photos/pilates-wirbelsaeule-drehen-sitzend-start.webp'),
-    end: require('../../assets/exercise-photos/pilates-wirbelsaeule-drehen-sitzend-end.webp'),
-  },
   'rdl-einbeinig-koerpergewicht': {
     start: require('../../assets/exercise-photos/rdl-einbeinig-koerpergewicht-start.webp'),
     end: require('../../assets/exercise-photos/rdl-einbeinig-koerpergewicht-end.webp'),
-  },
-  'reverse-fly-kurzhantel': {
-    start: require('../../assets/exercise-photos/reverse-fly-kurzhantel-start.webp'),
-    end: require('../../assets/exercise-photos/reverse-fly-kurzhantel-end.webp'),
   },
   rudergeraet: {
     start: require('../../assets/exercise-photos/rudergeraet-start.webp'),
@@ -573,14 +481,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/schulter-rueckseite-dehnen-start.webp'),
     end: require('../../assets/exercise-photos/schulter-rueckseite-dehnen-end.webp'),
   },
-  'schulterblatt-kreisen': {
-    start: require('../../assets/exercise-photos/schulterblatt-kreisen-start.webp'),
-    end: require('../../assets/exercise-photos/schulterblatt-kreisen-end.webp'),
-  },
-  'schulterdruecken-band': {
-    start: require('../../assets/exercise-photos/schulterdruecken-band-start.webp'),
-    end: require('../../assets/exercise-photos/schulterdruecken-band-end.webp'),
-  },
   'schulterdruecken-kurzhantel': {
     start: require('../../assets/exercise-photos/schulterdruecken-kurzhantel-start.webp'),
     end: require('../../assets/exercise-photos/schulterdruecken-kurzhantel-end.webp'),
@@ -596,10 +496,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   seilspringen: {
     start: require('../../assets/exercise-photos/seilspringen-start.webp'),
     end: require('../../assets/exercise-photos/seilspringen-end.webp'),
-  },
-  'seitheben-band': {
-    start: require('../../assets/exercise-photos/seitheben-band-start.webp'),
-    end: require('../../assets/exercise-photos/seitheben-band-end.webp'),
   },
   'seitheben-kurzhantel': {
     start: require('../../assets/exercise-photos/seitheben-kurzhantel-start.webp'),
@@ -625,10 +521,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/split-kniebeuge-start.webp'),
     end: require('../../assets/exercise-photos/split-kniebeuge-end.webp'),
   },
-  'step-down-stufe': {
-    start: require('../../assets/exercise-photos/step-down-stufe-start.webp'),
-    end: require('../../assets/exercise-photos/step-down-stufe-end.webp'),
-  },
   'step-jacks': {
     start: require('../../assets/exercise-photos/step-jacks-start.webp'),
     end: require('../../assets/exercise-photos/step-jacks-end.webp'),
@@ -636,10 +528,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'step-up-stufe': {
     start: require('../../assets/exercise-photos/step-up-stufe-start.webp'),
     end: require('../../assets/exercise-photos/step-up-stufe-end.webp'),
-  },
-  'stirndruecken-langhantel': {
-    start: require('../../assets/exercise-photos/stirndruecken-langhantel-start.webp'),
-    end: require('../../assets/exercise-photos/stirndruecken-langhantel-end.webp'),
   },
   'stuetz-schulter-tippen': {
     start: require('../../assets/exercise-photos/stuetz-schulter-tippen-start.webp'),
@@ -653,17 +541,9 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/tiefe-bauchatmung-rueckenlage-start.webp'),
     end: require('../../assets/exercise-photos/tiefe-bauchatmung-rueckenlage-end.webp'),
   },
-  'tisch-rudern': {
-    start: require('../../assets/exercise-photos/tisch-rudern-start.webp'),
-    end: require('../../assets/exercise-photos/tisch-rudern-end.webp'),
-  },
   'trizeps-dehnen': {
     start: require('../../assets/exercise-photos/trizeps-dehnen-start.webp'),
     end: require('../../assets/exercise-photos/trizeps-dehnen-end.webp'),
-  },
-  'trizeps-liegestuetz-eng': {
-    start: require('../../assets/exercise-photos/trizeps-liegestuetz-eng-start.webp'),
-    end: require('../../assets/exercise-photos/trizeps-liegestuetz-eng-end.webp'),
   },
   'trizepsdruecken-band': {
     start: require('../../assets/exercise-photos/trizepsdruecken-band-start.webp'),
@@ -705,17 +585,9 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/wadenheben-einbeinig-start.webp'),
     end: require('../../assets/exercise-photos/wadenheben-einbeinig-end.webp'),
   },
-  'wadenheben-gebeugtes-knie': {
-    start: require('../../assets/exercise-photos/wadenheben-gebeugtes-knie-start.webp'),
-    end: require('../../assets/exercise-photos/wadenheben-gebeugtes-knie-end.webp'),
-  },
   'wadenheben-koerpergewicht': {
     start: require('../../assets/exercise-photos/wadenheben-koerpergewicht-start.webp'),
     end: require('../../assets/exercise-photos/wadenheben-koerpergewicht-end.webp'),
-  },
-  'wadenheben-kurzhantel': {
-    start: require('../../assets/exercise-photos/wadenheben-kurzhantel-start.webp'),
-    end: require('../../assets/exercise-photos/wadenheben-kurzhantel-end.webp'),
   },
   'wall-balls': {
     start: require('../../assets/exercise-photos/wall-balls-start.webp'),
@@ -732,10 +604,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'yoga-baum': {
     start: require('../../assets/exercise-photos/yoga-baum-start.webp'),
     end: require('../../assets/exercise-photos/yoga-baum-end.webp'),
-  },
-  'yoga-baum-wand': {
-    start: require('../../assets/exercise-photos/yoga-baum-wand-start.webp'),
-    end: require('../../assets/exercise-photos/yoga-baum-wand-end.webp'),
   },
   'yoga-beine-an-der-wand': {
     start: require('../../assets/exercise-photos/yoga-beine-an-der-wand-start.webp'),
@@ -773,29 +641,13 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/yoga-entspannung-sitzend-start.webp'),
     end: require('../../assets/exercise-photos/yoga-entspannung-sitzend-end.webp'),
   },
-  'yoga-girlande-block': {
-    start: require('../../assets/exercise-photos/yoga-girlande-block-start.webp'),
-    end: require('../../assets/exercise-photos/yoga-girlande-block-end.webp'),
-  },
   'yoga-halbe-vorbeuge-block': {
     start: require('../../assets/exercise-photos/yoga-halbe-vorbeuge-block-start.webp'),
     end: require('../../assets/exercise-photos/yoga-halbe-vorbeuge-block-end.webp'),
   },
-  'yoga-heldensitz-block': {
-    start: require('../../assets/exercise-photos/yoga-heldensitz-block-start.webp'),
-    end: require('../../assets/exercise-photos/yoga-heldensitz-block-end.webp'),
-  },
   'yoga-herabschauender-hund': {
     start: require('../../assets/exercise-photos/yoga-herabschauender-hund-start.webp'),
     end: require('../../assets/exercise-photos/yoga-herabschauender-hund-end.webp'),
-  },
-  'yoga-hueftbeuger-stuhl': {
-    start: require('../../assets/exercise-photos/yoga-hueftbeuger-stuhl-start.webp'),
-    end: require('../../assets/exercise-photos/yoga-hueftbeuger-stuhl-end.webp'),
-  },
-  'yoga-hund-an-der-wand': {
-    start: require('../../assets/exercise-photos/yoga-hund-an-der-wand-start.webp'),
-    end: require('../../assets/exercise-photos/yoga-hund-an-der-wand-end.webp'),
   },
   'yoga-katze-kuh': {
     start: require('../../assets/exercise-photos/yoga-katze-kuh-start.webp'),
@@ -813,10 +665,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/yoga-knie-zur-brust-start.webp'),
     end: require('../../assets/exercise-photos/yoga-knie-zur-brust-end.webp'),
   },
-  'yoga-kobra-sanft': {
-    start: require('../../assets/exercise-photos/yoga-kobra-sanft-start.webp'),
-    end: require('../../assets/exercise-photos/yoga-kobra-sanft-end.webp'),
-  },
   'yoga-krieger-1': {
     start: require('../../assets/exercise-photos/yoga-krieger-1-start.webp'),
     end: require('../../assets/exercise-photos/yoga-krieger-1-end.webp'),
@@ -824,10 +672,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'yoga-krieger-2': {
     start: require('../../assets/exercise-photos/yoga-krieger-2-start.webp'),
     end: require('../../assets/exercise-photos/yoga-krieger-2-end.webp'),
-  },
-  'yoga-krieger-2-stuhl': {
-    start: require('../../assets/exercise-photos/yoga-krieger-2-stuhl-start.webp'),
-    end: require('../../assets/exercise-photos/yoga-krieger-2-stuhl-end.webp'),
   },
   'yoga-krieger-3-wand': {
     start: require('../../assets/exercise-photos/yoga-krieger-3-wand-start.webp'),
@@ -844,10 +688,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'yoga-schmetterling': {
     start: require('../../assets/exercise-photos/yoga-schmetterling-start.webp'),
     end: require('../../assets/exercise-photos/yoga-schmetterling-end.webp'),
-  },
-  'yoga-schulterbruecke': {
-    start: require('../../assets/exercise-photos/yoga-schulterbruecke-start.webp'),
-    end: require('../../assets/exercise-photos/yoga-schulterbruecke-end.webp'),
   },
   'yoga-schulterbruecke-block': {
     start: require('../../assets/exercise-photos/yoga-schulterbruecke-block-start.webp'),
@@ -872,14 +712,6 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'yoga-sphinx': {
     start: require('../../assets/exercise-photos/yoga-sphinx-start.webp'),
     end: require('../../assets/exercise-photos/yoga-sphinx-end.webp'),
-  },
-  'yoga-stuhlhaltung': {
-    start: require('../../assets/exercise-photos/yoga-stuhlhaltung-start.webp'),
-    end: require('../../assets/exercise-photos/yoga-stuhlhaltung-end.webp'),
-  },
-  'yoga-taube': {
-    start: require('../../assets/exercise-photos/yoga-taube-start.webp'),
-    end: require('../../assets/exercise-photos/yoga-taube-end.webp'),
   },
   'yoga-tiefer-ausfallschritt': {
     start: require('../../assets/exercise-photos/yoga-tiefer-ausfallschritt-start.webp'),
