@@ -158,7 +158,8 @@ export const deWorkouts = {
       `Jede Übung nach Zeit, der Timer läuft von selbst weiter – ${rounds === 1 ? '1 Runde' : `${rounds} Runden`}.`,
     setsHow: 'Übung für Übung: Satz machen, abhaken, Pause, nächster Satz.',
     reps: (n: number, perSide: boolean) => `${n} Wdh.${perSide ? ' je Seite' : ''}`,
-    seconds: (n: number) => `${n} s`,
+    // Einseitig nach Zeit: der Player läuft je Seite (links, dann rechts).
+    seconds: (n: number, perSide = false) => `${n} s${perSide ? ' je Seite' : ''}`,
     sets: (n: number) => (n === 1 ? '1 Satz' : `${n} Sätze`),
     rest: (s: number) => (s === 0 ? 'ohne Pause' : `${s} s Pause`),
     exerciseInfo: (name: string) => `${name}: Anleitung öffnen`,
@@ -222,6 +223,12 @@ export const deWorkouts = {
     image: (name: string) => `Bewegung: ${name} (Ausgangs- und Endposition im Wechsel)`,
     imageStatic: (name: string) => `Bild: ${name}`,
     thumb: (name: string) => `Vorschau: ${name}`,
+    // Einseitige Übungen je Seite (Gründer-Feedback 18.11.2026): links → Seite wechseln → rechts.
+    sideLeft: 'Linke Seite',
+    sideRight: 'Rechte Seite',
+    sideSwitch: 'Seite wechseln',
+    sideSoon: (side: string) => `Gleich: ${side}`,
+    upcomingSide: (side: string) => `Als Nächstes · ${side}`,
   },
   finish: {
     title: 'Geschafft!',

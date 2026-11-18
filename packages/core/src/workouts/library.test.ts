@@ -233,6 +233,48 @@ describe('Tagebuch-Eintrag aus dem Lauf', () => {
     });
   });
 
+  it('einseitige Übung je Seite im Player: ein Satz je Runde, Sekunden je Seite; Notiz zählt Sätze, nicht Seiten', () => {
+    const side = workoutItem('split-kg', { reps: null, duration_s: 40, rest_s: 15 });
+    const uniWorkout = makeWorkout({
+      format: 'interval',
+      rounds: 2,
+      exercises: [side, workoutItem('unterarmstuetz-kg', { reps: null, duration_s: 30 })],
+    });
+    const uni = (id: string) => id === 'split-kg';
+    const plan = buildWorkoutTimerPlan(uniWorkout, uni);
+    const run = advanceWorkoutRun(plan, startWorkoutRun(plan, t0), t0 + 10_000_000);
+    const summary = workoutRunSummary(plan, run, t0 + 10_000_000);
+    expect(summary.items[0]).toMatchObject({ total: 4, passes: 2 });
+    expect(summary.items[0]?.done.map((d) => d.side)).toEqual(['left', 'right', 'left', 'right']);
+    const timeLookup = new Map(workoutLibraryMap());
+    timeLookup.set('split-kg', { ...timeLookup.get('split-kg')!, load_type: 'time' });
+    const logged = workoutLogExercises(uniWorkout, summary, timeLookup);
+    expect(logged.map((e) => e.exerciseId)).toEqual(['split-kg', 'unterarmstuetz-kg']);
+    expect(logged[0]?.sets.map((x) => x.durationS)).toEqual([40, 40]);
+    // Sätze × Wdh.: beide Seiten = ein Satz in der Notiz.
+    const strength = makeWorkout({
+      format: 'sets_reps',
+      rounds: 1,
+      exercises: [workoutItem('split-kg', { sets: 2 }), workoutItem('kniebeuge-kg', { sets: 2 })],
+    });
+    const sPlan = buildWorkoutTimerPlan(strength, uni);
+    let sRun = startWorkoutRun(sPlan, t0);
+    for (let i = 0; i < 20 && sRun.finishedAtMs === null; i += 1) {
+      sRun = completeWorkoutStep(sPlan, sRun, t0 + i * 1000);
+    }
+    const sSummary = workoutRunSummary(sPlan, sRun, t0 + 30_000);
+    expect(sSummary.workTotal).toBe(6);
+    const note = workoutLogNote({
+      title: 'Test',
+      difficulty: 2,
+      format: 'sets_reps',
+      summary: sSummary,
+      userNote: '',
+    });
+    expect(note).toContain('4/4 Sätze');
+    expect(workoutLogExercises(strength, sSummary, workoutLibraryMap())[0]?.sets).toHaveLength(2);
+  });
+
   it('wird als Workout-Eintrag eine gültige freie Einheit (nur so dürfen Zeit-Sätze ohne Wdh. sein)', () => {
     const run = finishedRun();
     const summary = workoutRunSummary(steps, run, t0 + 10_000_000);

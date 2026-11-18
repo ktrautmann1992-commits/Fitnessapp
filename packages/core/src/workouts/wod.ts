@@ -70,13 +70,16 @@ export function wodTimeCapS(workout: WodInput & Pick<Workout, 'minutes'>): numbe
 
 /**
  * Ablaufplan für den Timer: AMRAP mit WORKOUT_LIMITS.rounds.max Runden (das Zeitlimit beendet den Lauf), alles andere
- * wie buildWorkoutTimerPlan.
+ * wie buildWorkoutTimerPlan (mit `unilateral`: einseitige Übungen je Seite).
  */
-export function wodTimerPlan(workout: WodInput & Pick<Workout, 'minutes'>): WorkoutTimerStep[] {
+export function wodTimerPlan(
+  workout: WodInput & Pick<Workout, 'minutes'>,
+  unilateral?: (exerciseId: string) => boolean,
+): WorkoutTimerStep[] {
   if (wodStyle(workout) === 'amrap') {
-    return buildWorkoutTimerPlan({ ...workout, rounds: WORKOUT_LIMITS.rounds.max });
+    return buildWorkoutTimerPlan({ ...workout, rounds: WORKOUT_LIMITS.rounds.max }, unilateral);
   }
-  return buildWorkoutTimerPlan(workout);
+  return buildWorkoutTimerPlan(workout, unilateral);
 }
 
 /** Aktive Millisekunden (ohne Timer-Pausen) bis `atMs`. */
@@ -126,14 +129,17 @@ export function wodCapReached(run: WorkoutRun, capS: number | null): boolean {
   return activeMs(run, run.finishedAtMs) >= capS * 1000;
 }
 
-/** AMRAP-Ergebnis: volle Runden plus erledigte Übungen der angefangenen Runde. */
+/**
+ * AMRAP-Ergebnis: volle Runden plus erledigte Übungen der angefangenen Runde (eine einseitige Übung zählt einmal, auch
+ * wenn erst eine Seite geschafft ist).
+ */
 export function amrapScore(summary: Pick<WorkoutRunSummary, 'items' | 'roundsCompleted'>): {
   readonly rounds: number;
   readonly extra: number;
 } {
   const partial = summary.roundsCompleted + 1;
   const extra = summary.items.reduce(
-    (sum, item) => sum + item.done.filter((d) => d.pass === partial).length,
+    (sum, item) => sum + (item.done.some((d) => d.pass === partial) ? 1 : 0),
     0,
   );
   return { rounds: summary.roundsCompleted, extra };

@@ -25,7 +25,9 @@ export function stepTitle(step: WorkoutTimerStep | null, names: ExerciseNames): 
       ? t.workouts.timer.restRound
       : step.after === 'set'
         ? t.workouts.timer.restSet
-        : t.workouts.timer.rest;
+        : step.after === 'side'
+          ? t.workouts.timer.sideSwitch
+          : t.workouts.timer.rest;
   }
   return names.get(step.exerciseId)?.name_de ?? step.exerciseId;
 }
@@ -41,13 +43,30 @@ export function passText(
   return t.workouts.timer.round(view.round, view.rounds);
 }
 
+/** „Linke Seite“ / „Rechte Seite“ eines Übungs-Schritts mit Seite, sonst null. */
+export function sideText(step: Extract<WorkoutTimerStep, { kind: 'work' }> | null): string | null {
+  if (!step?.side) return null;
+  return step.side === 'left' ? t.workouts.timer.sideLeft : t.workouts.timer.sideRight;
+}
+
+/**
+ * „je Seite“ nur, wenn der Schritt beide Seiten umfasst – läuft der Player je Seite (`side`), gilt die Zahl für die
+ * angezeigte Seite.
+ */
+export function perSide(
+  step: Extract<WorkoutTimerStep, { kind: 'work' }>,
+  names: ExerciseNames,
+): boolean {
+  return step.side === undefined && names.get(step.exerciseId)?.unilateral === true;
+}
+
 /** Dosierung eines Übungs-Schritts („12 Wiederholungen je Seite“ bzw. „40 s“). */
 export function doseText(
   step: Extract<WorkoutTimerStep, { kind: 'work' }>,
   names: ExerciseNames,
 ): string {
   if (step.reps !== null) {
-    return t.workouts.timer.reps(step.reps, names.get(step.exerciseId)?.unilateral === true);
+    return t.workouts.timer.reps(step.reps, perSide(step, names));
   }
   return t.workouts.detail.seconds(step.seconds ?? 0);
 }
@@ -58,7 +77,7 @@ export function stepAnnouncement(
   names: ExerciseNames,
 ): string {
   if (view.finished || view.step === null) return t.workouts.finish.title;
-  // Flow mit Seitenwechsel (Sportarten Stufe 1): „Krieger II, rechte Seite“.
+  // Seitenwechsel (Flow, einseitige Übungen): „Krieger II, rechte Seite“.
   const side =
     view.step.kind === 'work' && view.step.side
       ? `, ${view.step.side === 'right' ? 'rechte Seite' : 'linke Seite'}`

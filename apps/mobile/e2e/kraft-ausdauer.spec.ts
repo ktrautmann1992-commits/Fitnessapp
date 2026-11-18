@@ -92,7 +92,7 @@ test('Kraft-Ausdauer auf Zeit: erster Bereich, oben in „Alle“, Tiefe Bauchmu
 
   // Ansicht eines neuen Workouts.
   await card(page, 'tiefe-bauchmuskeln-20').click();
-  await heading(page, 'Tiefe Bauchmuskeln 20');
+  await heading(page, 'Tiefe Bauchmuskeln 22');
   await expect(page.getByTestId('workout-exercises')).toContainText(
     '1. Tiefe Bauchatmung in Rückenlage',
   );

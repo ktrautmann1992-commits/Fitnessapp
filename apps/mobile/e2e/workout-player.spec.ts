@@ -123,7 +123,8 @@ test('Power-Workout läuft ohne Tippen: Countdown mit erster Übung, Übung → 
   await expect(kind).toHaveText('Pause');
   await expect(step).toHaveText('Liegestütz');
   await expect(page.getByTestId('power-player-upcoming')).toHaveText('Als Nächstes');
-  await expect(page.getByTestId('workout-timer-progress')).toContainText('1 von 24 erledigt');
+  // 8 Stationen × 3 Runden, die einseitige Split-Kniebeuge je Seite (+1 je Runde) = 27 Schritte.
+  await expect(page.getByTestId('workout-timer-progress')).toContainText('1 von 27 erledigt');
   await shot(page, 'pause.png');
 
   // 4) Pause läuft ab → nächste Übung, wieder ohne Tippen.
@@ -134,7 +135,93 @@ test('Power-Workout läuft ohne Tippen: Countdown mit erster Übung, Übung → 
   // 5) Bis zum Ende vorspulen: alles erledigt, kein einziges „Erledigt“ getippt; Sperre freigegeben.
   await page.clock.fastForward(30 * 60 * 1000);
   await heading(page, 'Geschafft!');
-  await expect(page.getByTestId('workout-finish-summary')).toHaveText(/^24 von 24 erledigt/);
+  await expect(page.getByTestId('workout-finish-summary')).toHaveText(/^27 von 27 erledigt/);
   await expect.poll(async () => (await wake(page)).active).toBe(0);
   expect((await wake(page)).requested).toBeGreaterThanOrEqual(1);
+});
+
+test.describe('einseitige Übung je Seite', () => {
+  // Bildschirmfoto in Handy-Auflösung 1:1 (SIDE_SHOTS=<Ordner>).
+  test.use({ deviceScaleFactor: 1 });
+
+  test('Gründer-Feedback 18.11.2026: „Linke Seite“ volle Zeit → „Seite wechseln“ (5 s) → „Rechte Seite“ volle Zeit → Pause', async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    await stubWakeLock(page);
+    await page.clock.install({ time: MONDAY });
+    await page.goto('/');
+    await page.evaluate(() => window.localStorage.clear());
+    await onboard(page, {
+      consent: false,
+      level: /^Einsteiger/,
+      goal: 'Muskelaufbau',
+      days: [
+        ['Dienstag', 'Kraft im Studio', 60],
+        ['Freitag', 'Kraft im Studio', 60],
+      ],
+    });
+    await page.getByRole('button', { name: 'Zum Plan' }).click();
+    await heading(page, 'Training');
+    await page.goto('/workouts/ganzkoerper-zirkel');
+    await heading(page, 'Ganzkörper-Zirkel');
+    // Liste: Zeit gilt je Seite.
+    await expect(page.getByTestId('workout-exercises')).toContainText('40 s je Seite');
+    await page.getByTestId('workout-start').click();
+
+    const kind = page.getByTestId('workout-timer-kind');
+    const step = page.getByTestId('workout-timer-step');
+    const remaining = page.getByTestId('workout-timer-remaining');
+    const side = page.getByTestId('workout-timer-side');
+    const name = 'Split-Kniebeuge mit Körpergewicht';
+
+    // Countdown 10 s, Kniebeuge 40 s, Pause 20 s, Liegestütz 30 s (Zeitfenster), Pause 20 s.
+    await page.clock.fastForward(10_500);
+    await expect(kind).toHaveText('Los!');
+    await expect(side).toHaveCount(0);
+    await page.clock.fastForward(40_000 + 20_000 + 30_000);
+    // In der Pause davor: kommende Übung mit Seite.
+    await expect(kind).toHaveText('Pause');
+    await expect(step).toHaveText(name);
+    await expect(page.getByTestId('power-player-upcoming')).toHaveText(
+      'Als Nächstes · Linke Seite',
+    );
+
+    // 1) Linke Seite, volle 40 s; „Als Nächstes“ ist die rechte Seite derselben Übung.
+    await page.clock.fastForward(20_000);
+    await expect(kind).toHaveText('Los!');
+    await expect(step).toHaveText(name);
+    await expect(side).toHaveText('Linke Seite');
+    await expect(remaining).toHaveText(/^0:(40|39)$/);
+    await expect(page.getByTestId('workout-timer-next')).toHaveText('Als Nächstes: Rechte Seite');
+    await expect(page.getByTestId('workout-timer-progress')).toContainText('2 von 27 erledigt');
+
+    // 2) Seitenwechsel 5 s: dieselbe Übung im Bild, Restsekunden.
+    await page.clock.fastForward(40_000);
+    await expect(kind).toHaveText('Seite wechseln');
+    await expect(remaining).toHaveText(/^0:0[45]$/);
+    await expect(step).toHaveText(name);
+    await expect(page.getByTestId('power-player-image')).toBeVisible();
+    await expect(page.getByTestId('power-player-upcoming')).toHaveText('Gleich: Rechte Seite');
+    await expect(page.getByTestId('workout-timer-progress')).toContainText('3 von 27 erledigt');
+
+    // 3) Rechte Seite, wieder volle 40 s.
+    await page.clock.fastForward(5_000);
+    await expect(kind).toHaveText('Los!');
+    await expect(step).toHaveText(name);
+    await expect(side).toHaveText('Rechte Seite');
+    await expect(remaining).toHaveText(/^0:(40|39)$/);
+    await expect(page.getByTestId('workout-timer-next')).toHaveText('Als Nächstes: Tisch-Rudern');
+    await page.clock.fastForward(2_000);
+    if (process.env.SIDE_SHOTS) {
+      mkdirSync(process.env.SIDE_SHOTS, { recursive: true });
+      await page.screenshot({ path: join(process.env.SIDE_SHOTS, 'rechte-seite.png') });
+    }
+
+    // 4) Danach die normale Pause, dann die nächste Übung.
+    await page.clock.fastForward(38_500);
+    await expect(kind).toHaveText('Pause');
+    await expect(step).toHaveText('Tisch-Rudern');
+    await expect(side).toHaveCount(0);
+  });
 });

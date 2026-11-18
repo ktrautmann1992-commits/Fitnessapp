@@ -22,7 +22,7 @@ import { Text } from '@/components/text';
 import { Body } from '@/components/ui';
 import { t } from '@/i18n';
 import { useThemeColors } from '@/lib/theme';
-import { clockText, doseText, stepTitle } from '@/lib/workout-timer-format';
+import { clockText, doseText, perSide, sideText, stepTitle } from '@/lib/workout-timer-format';
 
 const T = t.workouts.timer;
 
@@ -32,10 +32,7 @@ export function playerDoseText(
   names: ReadonlyMap<string, Pick<Exercise, 'name_de' | 'unilateral'>>,
 ): string {
   if (step.timeBoxed && step.reps !== null && step.seconds !== null) {
-    return T.timeBox(
-      T.reps(step.reps, names.get(step.exerciseId)?.unilateral === true),
-      step.seconds,
-    );
+    return T.timeBox(T.reps(step.reps, perSide(step, names)), step.seconds);
   }
   return doseText(step, names);
 }
@@ -44,7 +41,10 @@ export function playerDoseText(
  * Workout-Player für Power-Workouts (Gründer-Feedback 14.11.2026, docs/PLAN-WORKOUTS.md Abschnitt 4): läuft komplett
  * nach Zeit. Countdown zeigt schon die erste Übung mit Bild und „So geht's“; während der Übung groß die Restzeit, die
  * Übung als Bewegungsbild (Start ↔ Ende) und „Als Nächstes“ mit kleinem Bild; in der Pause die Restzeit und die
- * kommende Übung. Nur Darstellung – Ablauf, Zeitfenster und Auswahl kommen aus packages/core (player.ts, timer.ts).
+ * kommende Übung. Einseitige Übungen (Gründer-Feedback 18.11.2026): „Linke Seite“ / „Rechte Seite“ groß unter der
+ * Restzeit, dazwischen „Seite wechseln“ mit Restsekunden und derselben Übung im Bild; während der linken Seite steht bei
+ * „Als Nächstes“ die rechte Seite. Nur Darstellung – Ablauf, Zeitfenster und Auswahl kommen aus packages/core
+ * (player.ts, timer.ts).
  */
 export function PowerPlayer({
   view,
@@ -67,6 +67,15 @@ export function PowerPlayer({
   const frame = isWork ? areaColors.light.workouts.strong : areaColors.light.ernaehrung.strong;
   const next = focus.next;
   const nextName = next ? (exercises.get(next.exerciseId)?.name_de ?? next.exerciseId) : null;
+  // Seite der laufenden Übung (groß im Zeitfeld) bzw. der kommenden (Countdown, Pause, Seitenwechsel).
+  const side = sideText(shown);
+  const upcomingLabel =
+    focus.sideSwitch && side ? T.sideSoon(side) : side ? T.upcomingSide(side) : T.next;
+  const nextText = focus.nextIsOtherSide
+    ? T.nextUp(sideText(next) ?? '')
+    : next && nextName
+      ? T.nextUp(nextName)
+      : T.nextNone;
 
   return (
     <View style={styles.wrap} testID="power-player">
@@ -87,6 +96,15 @@ export function PowerPlayer({
             {clockText(view.remainingS)}
           </Text>
         ) : null}
+        {isWork && side ? (
+          <Text
+            style={[styles.side, { color: box.text }]}
+            accessibilityRole="header"
+            testID="workout-timer-side"
+          >
+            {side}
+          </Text>
+        ) : null}
         {view.paused ? (
           <Text
             style={[styles.paused, { color: brandColors.signal }]}
@@ -101,7 +119,7 @@ export function PowerPlayer({
         <View style={[styles.card, { backgroundColor: area.surface }]} testID="power-player-focus">
           {focus.upcoming ? (
             <Text style={[styles.upcoming, { color: area.icon }]} testID="power-player-upcoming">
-              {T.next}
+              {upcomingLabel}
             </Text>
           ) : null}
           <Text
@@ -150,9 +168,7 @@ export function PowerPlayer({
               />
             </View>
           ) : null}
-          <Body testID="workout-timer-next">
-            {next && nextName ? T.nextUp(nextName) : T.nextNone}
-          </Body>
+          <Body testID="workout-timer-next">{nextText}</Body>
         </View>
       ) : null}
     </View>
@@ -175,6 +191,7 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.extrabold,
     fontVariant: ['tabular-nums'],
   },
+  side: { fontSize: fontSize.xl, fontWeight: fontWeight.extrabold },
   paused: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
   card: { borderRadius: radius.lg, padding: spacing.sm, gap: spacing.xs, alignItems: 'stretch' },
   upcoming: {

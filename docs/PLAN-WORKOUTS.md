@@ -282,3 +282,34 @@ Formate, Kategorien); Playwright `kraft-ausdauer.spec.ts` (Bildschirmfotos mit `
 
 **Offen:** fachliche Prüfung der neuen Workouts und Übungen vor dem Livegang; eigene Hyrox-Kraft-Ausdauer-Variante mit
 Kurzhanteln; Kraft-Ausdauer-Workouts optional im Plan vorschlagen.
+
+## 11. Nachtrag 18.11.2026: Einseitige Übungen je Seite im Player
+
+Gründer-Feedback: „Bei den Workouts auf Zeit … macht man 45 s die eine Seite und dann kommt die nächste Übung.
+Sinnvollerweise müsste es 45 s links und dann 45 s rechts der gleichen Übung sein.“
+
+- **Ablauf** (core `workouts/timer.ts` `splitUnilateralSides`, genutzt von `buildWorkoutTimerPlan(workout, unilateral)`,
+  `wodTimerPlan` und `workoutPlayerPlan`): Jede Übung mit `unilateral: true` läuft als **„Linke Seite“** (volle
+  `duration_s`) → **„Seite wechseln“** (`WORKOUT_PLAYER.sideSwitchS` = 5 s, Pause `after: 'side'`) → **„Rechte Seite“**
+  (volle `duration_s`) → normale Pause. Nach Wiederholungen bekommt jede Seite ihr eigenes Zeitfenster
+  (Wdh. × 3 s, gerundet, 20–90 s) statt eines doppelten. Gilt für Zirkel, Intervall, WOD-Stil, Sätze × Wdh. und eigene
+  Workouts; Flow (Yoga/Pilates) bleibt bei `side: 'both'` (erst rechts, dann links), einseitige Posen ohne `both`
+  werden dort nicht geteilt.
+- **Dauer:** Schätzung (Regel W6) und Player zählen beide Seiten und den Seitenwechsel; der Baukasten für eigene
+  Workouts (`customWorkoutSeconds`) und der Übungstausch (`mapWorkoutItem`: Gesamtzeit bleibt etwa gleich, z. B. 40 s
+  beidseitig → 20 s je Seite) rechnen genauso. `minutes` aller betroffenen Workouts angepasst (Version +1), Zahl im
+  Titel mitgezogen (z. B. „Band-Zirkel 30“; IDs bleiben). Kraft-Ausdauer bleibt 20–30 Min.: Läufer 25 mit 2 statt 3
+  Runden, HIIT 40/20 mit 4 statt 5 Runden, Beine & Po Ausdauer 28 und Ganzkörper Ausdauer 45/15 je eine Station
+  weniger (Beine & Po: beidbeinige statt einbeinige Glute Bridge), Stufe & Stuhl ohne Step-down, Core-Stabilität und
+  Power-Intervall mit Seitstütz statt Seitstütz mit Hüftheben.
+- **Hinweise:** „Nach der Hälfte die Seite wechseln“, „Je Seite“, „Abwechselnd links und rechts“ bei einseitigen
+  Übungen entfernt bzw. umformuliert (der Player wechselt selbst). Seitstütz (als beidseitig erfasst) behält den
+  Hinweis. In der Übungsliste steht bei Zeit „40 s je Seite“.
+- **Anzeige** (`components/power-player.tsx`): „Linke Seite“ / „Rechte Seite“ groß unter der Restzeit, beim
+  Seitenwechsel „Seite wechseln“ mit Restsekunden und derselben Übung im Bild („Gleich: Rechte Seite“), während der
+  linken Seite „Als Nächstes: Rechte Seite“. Töne/Vibration wie bei jedem Wechsel. „x von y erledigt“ zählt jede Seite.
+- **Tagebuch:** Jede Übung einmal, ein Satz je Runde bzw. Satz (linke + rechte Seite zusammen, Sekunden je Seite);
+  „x/y Sätze“ und das AMRAP-Ergebnis zählen eine einseitige Übung einmal.
+- **Tests:** core `player.test.ts`, `timer.test.ts`, `library.test.ts`, `custom.test.ts`, `swap.test.ts`,
+  `kraft-ausdauer.test.ts`; Playwright `workout-player.spec.ts` (Linke Seite → Seite wechseln → Rechte Seite mit
+  Test-Uhr, Bildschirmfoto mit `SIDE_SHOTS=<Ordner>`).

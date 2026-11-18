@@ -19,6 +19,9 @@ import { wodTimerPlan } from './wod';
  * - For Time/Chipper: Zeitfenster als Obergrenze je Übung; die Zeit ist die aktive Zeit bis zum letzten Schritt
  *   (mit „Fertig“ schneller), das Zeitlimit bleibt.
  * - EMOM: schon nach Zeit (jede Übung samt Pause eine Minute) – unverändert.
+ * - Einseitige Übungen (Gründer-Feedback 18.11.2026): in allen Formaten außer `flow` je Seite – „Linke Seite“ →
+ *   „Seite wechseln“ (WORKOUT_PLAYER.sideSwitchS) → „Rechte Seite“, jede Seite die volle Zeit bzw. ein eigenes
+ *   Zeitfenster für die Wiederholungen (timer.ts splitUnilateralSides).
  */
 
 /** Läuft dieses Workout komplett nach Zeit (Zeitfenster für Wiederholungen)? */
@@ -28,7 +31,10 @@ export function isPowerWorkout(workout: Pick<Workout, 'format'>): boolean {
   );
 }
 
-/** Zeitfenster für eine Übung nach Wiederholungen (Sekunden). */
+/**
+ * Zeitfenster für eine Übung nach Wiederholungen (Sekunden). `unilateral` = beide Seiten in EINEM Fenster (doppelt) –
+ * nur für Pläne ohne Seiten-Schritte; der Player gibt jeder Seite ihr eigenes Fenster.
+ */
 export function repTimeBoxS(reps: number, unilateral = false): number {
   const { secondsPerRep, minS, maxS, roundToS } = WORKOUT_PLAYER.timeBox;
   const raw = Math.max(0, reps) * secondsPerRep * (unilateral ? 2 : 1);
@@ -36,26 +42,34 @@ export function repTimeBoxS(reps: number, unilateral = false): number {
   return Math.min(maxS, Math.max(minS, rounded));
 }
 
-/** Übungs-Schritte nach Wiederholungen mit Zeitfenster versehen (alle anderen Schritte unverändert). */
+/**
+ * Übungs-Schritte nach Wiederholungen mit Zeitfenster versehen (alle anderen Schritte unverändert). Schritte mit
+ * Seite (`side`) bekommen das Fenster einer Seite.
+ */
 export function timeBoxSteps(
   steps: readonly WorkoutTimerStep[],
   unilateral: (exerciseId: string) => boolean = () => false,
 ): WorkoutTimerStep[] {
   return steps.map((step) =>
     step.kind === 'work' && step.seconds === null && step.reps !== null
-      ? { ...step, seconds: repTimeBoxS(step.reps, unilateral(step.exerciseId)), timeBoxed: true }
+      ? {
+          ...step,
+          seconds: repTimeBoxS(step.reps, step.side === undefined && unilateral(step.exerciseId)),
+          timeBoxed: true,
+        }
       : step,
   );
 }
 
 /**
- * Ablaufplan für den Player: wie wodTimerPlan (AMRAP mit Höchstzahl Runden), bei Power-Workouts mit Zeitfenstern.
+ * Ablaufplan für den Player: wie wodTimerPlan (AMRAP mit Höchstzahl Runden), einseitige Übungen je Seite
+ * (`unilateral`, außer `flow`), bei Power-Workouts mit Zeitfenstern.
  */
 export function workoutPlayerPlan(
   workout: Parameters<typeof wodTimerPlan>[0],
   unilateral: (exerciseId: string) => boolean = () => false,
 ): WorkoutTimerStep[] {
-  const steps = wodTimerPlan(workout);
+  const steps = wodTimerPlan(workout, unilateral);
   return isPowerWorkout(workout) ? timeBoxSteps(steps, unilateral) : steps;
 }
 
@@ -67,12 +81,46 @@ export interface PlayerFocus {
   readonly upcoming: boolean;
   /** Kleine Vorschau „Als Nächstes“ während einer Übung; null in Countdown/Pause (dort ist das große Bild die nächste). */
   readonly next: WorkoutWorkStep | null;
+  /**
+   * true = „Als Nächstes“ ist dieselbe Übung, andere Seite (linke Seite läuft, gleich kommt die rechte) – die App
+   * zeigt dann „Rechte Seite“ statt des Namens.
+   */
+  readonly nextIsOtherSide: boolean;
+  /** true = gerade läuft der Seitenwechsel (Pause `after: 'side'`); das große Bild zeigt dieselbe Übung. */
+  readonly sideSwitch: boolean;
+}
+
+/** Ist `b` dieselbe Übung im selben Durchgang wie `a`, nur die andere Seite? */
+function isOtherSide(a: WorkoutWorkStep, b: WorkoutWorkStep | null): boolean {
+  return (
+    b !== null &&
+    a.side !== undefined &&
+    b.side !== undefined &&
+    a.side !== b.side &&
+    a.itemIndex === b.itemIndex &&
+    a.pass === b.pass &&
+    a.round === b.round
+  );
 }
 
 export function playerFocus(view: Pick<WorkoutRunView, 'step' | 'nextWork'>): PlayerFocus {
   const step = view.step;
-  if (step?.kind === 'work') return { exercise: step, upcoming: false, next: view.nextWork };
-  return { exercise: view.nextWork, upcoming: step !== null, next: null };
+  if (step?.kind === 'work') {
+    return {
+      exercise: step,
+      upcoming: false,
+      next: view.nextWork,
+      nextIsOtherSide: isOtherSide(step, view.nextWork),
+      sideSwitch: false,
+    };
+  }
+  return {
+    exercise: view.nextWork,
+    upcoming: step !== null,
+    next: null,
+    nextIsOtherSide: false,
+    sideSwitch: step?.kind === 'rest' && step.after === 'side',
+  };
 }
 
 /**

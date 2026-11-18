@@ -78,9 +78,94 @@ describe('workoutPlayerPlan', () => {
     expect(plank.timeBoxed).toBeUndefined();
   });
 
-  it('einseitige Übungen bekommen das doppelte Zeitfenster', () => {
-    const steps = workoutPlayerPlan(makeWorkout(), (id) => id === 'liegestuetz-kg');
-    expect(works(steps)[1]!.seconds).toBe(60);
+  it('einseitige Übung nach Wiederholungen: je Seite ein eigenes Zeitfenster, dazwischen der Seitenwechsel', () => {
+    const steps = workoutPlayerPlan(makeWorkout({ rounds: 1 }), (id) => id === 'liegestuetz-kg');
+    // Vorbereitung, Kniebeuge, Pause, Liegestütz links, Seitenwechsel, Liegestütz rechts, Pause, Unterarmstütz.
+    expect(steps.map((s) => (s.kind === 'rest' ? `rest:${s.after}` : s.kind))).toEqual([
+      'prepare',
+      'work',
+      'rest:exercise',
+      'work',
+      'rest:side',
+      'work',
+      'rest:exercise',
+      'work',
+    ]);
+    const [left, right] = works(steps).filter((s) => s.exerciseId === 'liegestuetz-kg');
+    expect(left).toMatchObject({ side: 'left', reps: 10, seconds: 30, timeBoxed: true });
+    expect(right).toMatchObject({ side: 'right', reps: 10, seconds: 30, timeBoxed: true });
+    expect(steps[4]).toEqual({ kind: 'rest', seconds: WORKOUT_PLAYER.sideSwitchS, after: 'side' });
+    expect(WORKOUT_PLAYER.sideSwitchS).toBe(5);
+    // Ohne Seiten-Schritte bliebe es das doppelte Fenster in einem Schritt.
+    expect(repTimeBoxS(10, true)).toBe(60);
+  });
+
+  it('einseitige Übung nach Zeit: linke Seite volle Zeit → Seite wechseln → rechte Seite volle Zeit → Pause', () => {
+    const workout = makeWorkout({
+      format: 'interval',
+      rounds: 2,
+      round_rest_s: 40,
+      exercises: [
+        workoutItem('split-kg', { reps: null, duration_s: 45, rest_s: 15 }),
+        workoutItem('unterarmstuetz-kg', { reps: null, duration_s: 30, rest_s: 15 }),
+      ],
+    });
+    const uni = (id: string) => id === 'split-kg';
+    const steps = workoutPlayerPlan(workout, uni);
+    const round1 = steps.slice(1, 6);
+    expect(round1).toEqual([
+      expect.objectContaining({ kind: 'work', exerciseId: 'split-kg', side: 'left', seconds: 45 }),
+      { kind: 'rest', seconds: 5, after: 'side' },
+      expect.objectContaining({ kind: 'work', exerciseId: 'split-kg', side: 'right', seconds: 45 }),
+      { kind: 'rest', seconds: 15, after: 'exercise' },
+      expect.objectContaining({ kind: 'work', exerciseId: 'unterarmstuetz-kg', seconds: 30 }),
+    ]);
+    // Zweiseitige Übung unverändert: keine Seite.
+    expect('side' in steps[5]!).toBe(false);
+    expect(works(steps)).toHaveLength(6);
+    // Beide Seiten gehören zu derselben Runde und demselben Durchgang.
+    expect(works(steps).filter((s) => s.round === 2 && s.exerciseId === 'split-kg')).toHaveLength(
+      2,
+    );
+  });
+
+  it('ohne einseitige Übungen bleibt der Plan unverändert', () => {
+    const workout = makeWorkout();
+    expect(workoutPlayerPlan(workout, () => false)).toEqual(workoutPlayerPlan(workout));
+    expect(workoutPlayerPlan(workout).some((s) => s.kind === 'rest' && s.after === 'side')).toBe(
+      false,
+    );
+  });
+
+  it('alle Formate: Zirkel, Intervall, Sätze × Wdh. und WOD teilen einseitige Übungen – Flow nicht', () => {
+    const uni = (id: string) => id === 'split-kg';
+    const items = [workoutItem('split-kg', { sets: 2 }), workoutItem('kniebeuge-kg', { sets: 2 })];
+    for (const workout of [
+      makeWorkout({ format: 'circuit', exercises: items }),
+      makeWorkout({ format: 'interval', exercises: items }),
+      makeWorkout({ format: 'sets_reps', rounds: 1, exercises: items }),
+      makeWorkout({
+        format: 'circuit',
+        title_de: 'AMRAP 12 – Test',
+        minutes: 12,
+        exercises: items,
+      }),
+    ]) {
+      const sides = works(workoutPlayerPlan(workout, uni)).filter(
+        (s) => s.exerciseId === 'split-kg',
+      );
+      expect(sides.length, workout.format).toBeGreaterThan(0);
+      expect(
+        sides.every((s) => s.side !== undefined),
+        workout.format,
+      ).toBe(true);
+    }
+    const flow = makeWorkout({
+      format: 'flow',
+      rounds: 1,
+      exercises: [workoutItem('split-kg', { reps: null, duration_s: 30, rest_s: 0 })],
+    });
+    expect(works(workoutPlayerPlan(flow, uni)).every((s) => s.side === undefined)).toBe(true);
   });
 
   it('Sätze × Wdh.: jeder Satz mit Zeitfenster, Satzpausen wie bisher – kein Schritt wartet', () => {
@@ -189,7 +274,40 @@ describe('playerFocus', () => {
       exercise: null,
       upcoming: false,
       next: null,
+      nextIsOtherSide: false,
+      sideSwitch: false,
     });
+  });
+
+  it('einseitig: linke Seite → „Als Nächstes“ ist die rechte Seite; Seitenwechsel zeigt dieselbe Übung', () => {
+    const uniSteps = workoutPlayerPlan(
+      makeWorkout({
+        format: 'interval',
+        rounds: 1,
+        exercises: [
+          workoutItem('split-kg', { reps: null, duration_s: 45, rest_s: 15 }),
+          workoutItem('kniebeuge-kg', { reps: null, duration_s: 30 }),
+        ],
+      }),
+      (id) => id === 'split-kg',
+    );
+    const uniRun = startWorkoutRun(uniSteps, 0);
+    const at = (s: number) => workoutRunView(uniSteps, uniRun, s * 1000 + 1).view;
+    const prep = WORKOUT_LIMITS.prepareS;
+    const left = playerFocus(at(prep));
+    expect(left.exercise).toMatchObject({ exerciseId: 'split-kg', side: 'left' });
+    expect(left.next).toMatchObject({ exerciseId: 'split-kg', side: 'right' });
+    expect(left.nextIsOtherSide).toBe(true);
+    const sw = playerFocus(at(prep + 45));
+    expect(sw).toMatchObject({ upcoming: true, sideSwitch: true, nextIsOtherSide: false });
+    expect(sw.exercise).toMatchObject({ exerciseId: 'split-kg', side: 'right' });
+    expect(at(prep + 45).remainingS).toBe(5);
+    const right = playerFocus(at(prep + 50));
+    expect(right.exercise).toMatchObject({ exerciseId: 'split-kg', side: 'right' });
+    expect(right.next?.exerciseId).toBe('kniebeuge-kg');
+    expect(right.nextIsOtherSide).toBe(false);
+    // Danach die normale Pause.
+    expect(at(prep + 95).step).toMatchObject({ kind: 'rest', after: 'exercise', seconds: 15 });
   });
 });
 
