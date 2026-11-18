@@ -465,6 +465,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/pilates-hundert-gehockt-start.webp'),
     end: require('../../assets/exercise-photos/pilates-hundert-gehockt-end.webp'),
   },
+  'pilates-knie-falten': {
+    start: require('../../assets/exercise-photos/pilates-knie-falten-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-knie-falten-end.webp'),
+  },
   'pilates-meerjungfrau': {
     start: require('../../assets/exercise-photos/pilates-meerjungfrau-start.webp'),
     end: require('../../assets/exercise-photos/pilates-meerjungfrau-end.webp'),
@@ -485,9 +489,21 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/pilates-saege-start.webp'),
     end: require('../../assets/exercise-photos/pilates-saege-end.webp'),
   },
+  'pilates-schulterbruecke-abrollen': {
+    start: require('../../assets/exercise-photos/pilates-schulterbruecke-abrollen-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-schulterbruecke-abrollen-end.webp'),
+  },
+  'pilates-schulterbruecke-marsch': {
+    start: require('../../assets/exercise-photos/pilates-schulterbruecke-marsch-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-schulterbruecke-marsch-end.webp'),
+  },
   'pilates-schwan-sanft': {
     start: require('../../assets/exercise-photos/pilates-schwan-sanft-start.webp'),
     end: require('../../assets/exercise-photos/pilates-schwan-sanft-end.webp'),
+  },
+  'pilates-schwimmen': {
+    start: require('../../assets/exercise-photos/pilates-schwimmen-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-schwimmen-end.webp'),
   },
   'pilates-seitliegend-beinheben': {
     start: require('../../assets/exercise-photos/pilates-seitliegend-beinheben-start.webp'),
@@ -501,9 +517,33 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/pilates-tischbein-wechsel-start.webp'),
     end: require('../../assets/exercise-photos/pilates-tischbein-wechsel-end.webp'),
   },
+  'pilates-unterarmstuetz-knie': {
+    start: require('../../assets/exercise-photos/pilates-unterarmstuetz-knie-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-unterarmstuetz-knie-end.webp'),
+  },
+  'pilates-vierfuessler-arm-bein': {
+    start: require('../../assets/exercise-photos/pilates-vierfuessler-arm-bein-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-vierfuessler-arm-bein-end.webp'),
+  },
+  'pilates-wandstuetz': {
+    start: require('../../assets/exercise-photos/pilates-wandstuetz-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-wandstuetz-end.webp'),
+  },
+  'pilates-wirbelsaeule-dehnen-sitzend': {
+    start: require('../../assets/exercise-photos/pilates-wirbelsaeule-dehnen-sitzend-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-wirbelsaeule-dehnen-sitzend-end.webp'),
+  },
+  'pilates-wirbelsaeule-drehen-sitzend': {
+    start: require('../../assets/exercise-photos/pilates-wirbelsaeule-drehen-sitzend-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-wirbelsaeule-drehen-sitzend-end.webp'),
+  },
   'rdl-einbeinig-koerpergewicht': {
     start: require('../../assets/exercise-photos/rdl-einbeinig-koerpergewicht-start.webp'),
     end: require('../../assets/exercise-photos/rdl-einbeinig-koerpergewicht-end.webp'),
+  },
+  'reverse-fly-kurzhantel': {
+    start: require('../../assets/exercise-photos/reverse-fly-kurzhantel-start.webp'),
+    end: require('../../assets/exercise-photos/reverse-fly-kurzhantel-end.webp'),
   },
   rudergeraet: {
     start: require('../../assets/exercise-photos/rudergeraet-start.webp'),
@@ -525,9 +565,29 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/rumaenisches-kreuzheben-langhantel-start.webp'),
     end: require('../../assets/exercise-photos/rumaenisches-kreuzheben-langhantel-end.webp'),
   },
+  'schraegbankdruecken-kurzhantel': {
+    start: require('../../assets/exercise-photos/schraegbankdruecken-kurzhantel-start.webp'),
+    end: require('../../assets/exercise-photos/schraegbankdruecken-kurzhantel-end.webp'),
+  },
+  'schulter-rueckseite-dehnen': {
+    start: require('../../assets/exercise-photos/schulter-rueckseite-dehnen-start.webp'),
+    end: require('../../assets/exercise-photos/schulter-rueckseite-dehnen-end.webp'),
+  },
+  'schulterblatt-kreisen': {
+    start: require('../../assets/exercise-photos/schulterblatt-kreisen-start.webp'),
+    end: require('../../assets/exercise-photos/schulterblatt-kreisen-end.webp'),
+  },
+  'schulterdruecken-band': {
+    start: require('../../assets/exercise-photos/schulterdruecken-band-start.webp'),
+    end: require('../../assets/exercise-photos/schulterdruecken-band-end.webp'),
+  },
   'schulterdruecken-kurzhantel': {
     start: require('../../assets/exercise-photos/schulterdruecken-kurzhantel-start.webp'),
     end: require('../../assets/exercise-photos/schulterdruecken-kurzhantel-end.webp'),
+  },
+  'schulterdruecken-langhantel-leicht': {
+    start: require('../../assets/exercise-photos/schulterdruecken-langhantel-leicht-start.webp'),
+    end: require('../../assets/exercise-photos/schulterdruecken-langhantel-leicht-end.webp'),
   },
   seilspringen: {
     start: require('../../assets/exercise-photos/seilspringen-start.webp'),
