@@ -199,6 +199,9 @@ export interface WorkoutLogExercise {
  * Erledigte Durchgänge → Sätze je Übung: nach Wiederholungen mit den Wiederholungen des Workouts; Zeitübungen mit den
  * tatsächlichen Sekunden; Körpergewicht/Band nach Zeit ohne Wiederholungen (die Zeit steht in der Notiz). Übungen ohne
  * erledigten Durchgang oder, die es nicht mehr gibt, fehlen. Gewicht wird nicht erfasst (leer).
+ * Einseitige Übungen (Player je Seite, Gründer-Feedback 18.11.2026): linke und rechte Seite eines Durchgangs sind EIN
+ * Satz (Wiederholungen bzw. Sekunden je Seite – die längere erledigte Seite). Flow-Posen mit `side: 'both'` bleiben
+ * zwei Durchgänge (rechts/links) wie bisher.
  */
 export function workoutLogExercises(
   workout: Pick<Workout, 'exercises'>,
@@ -210,7 +213,8 @@ export function workoutLogExercises(
     const content = workout.exercises[item.itemIndex];
     const exercise = exercises.get(item.exerciseId);
     if (!content || !exercise || item.done.length === 0) continue;
-    const sets = item.done.slice(0, SESSION_LOG_LIMITS.setsPerExercise.max).map((d): LoggedSet => {
+    const done = content.side === 'both' ? item.done : mergeSides(item.done);
+    const sets = done.slice(0, SESSION_LOG_LIMITS.setsPerExercise.max).map((d): LoggedSet => {
       if (exercise.load_type === 'time') {
         const seconds = Math.round(d.seconds > 0 ? d.seconds : (content.duration_s ?? 1));
         return {
@@ -234,6 +238,15 @@ export function workoutLogExercises(
     });
   }
   return out.slice(0, SESSION_LOG_LIMITS.exercisesPerSession.max);
+}
+
+/** Seiten eines Durchgangs zusammenfassen (erste Seite bestimmt die Reihenfolge, Sekunden = längere Seite). */
+function mergeSides(
+  done: WorkoutRunSummary['items'][number]['done'],
+): { readonly pass: number; readonly seconds: number }[] {
+  const byPass = new Map<number, number>();
+  for (const d of done) byPass.set(d.pass, Math.max(byPass.get(d.pass) ?? 0, d.seconds));
+  return [...byPass].map(([pass, seconds]) => ({ pass, seconds }));
 }
 
 /** Sterne als Zeichen (★★★☆☆) – nur Anzeige; Bildschirmleser lesen den Text aus der App. */
@@ -269,7 +282,7 @@ export function workoutLogNote(input: {
   const progress = score
     ? `AMRAP: ${score.rounds} Runden + ${score.extra} Übungen`
     : input.format === 'sets_reps'
-      ? `${summary.workDone}/${summary.workTotal} Sätze`
+      ? setsProgress(summary)
       : input.format === 'flow'
         ? `${summary.workDone}/${summary.workTotal} Posen`
         : `${summary.roundsCompleted}/${summary.rounds} Runden`;
@@ -288,6 +301,17 @@ export function workoutLogNote(input: {
   if (own === '') return truncate(head, max);
   const room = max - codePointLength(head) - 1;
   return room <= 0 ? truncate(head, max) : `${head}\n${truncate(own, room)}`;
+}
+
+/** „x/y Sätze“ – beide Seiten einer einseitigen Übung zählen als ein Satz (ohne `items`: Schritte). */
+function setsProgress(
+  summary: Pick<WorkoutRunSummary, 'workDone' | 'workTotal'> &
+    Partial<Pick<WorkoutRunSummary, 'items'>>,
+): string {
+  if (!summary.items) return `${summary.workDone}/${summary.workTotal} Sätze`;
+  const done = summary.items.reduce((n, item) => n + new Set(item.done.map((d) => d.pass)).size, 0);
+  const total = summary.items.reduce((n, item) => n + item.passes, 0);
+  return `${done}/${total} Sätze`;
 }
 
 /** Sekunden als „m:ss“. */

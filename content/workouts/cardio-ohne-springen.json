@@ -1,12 +1,12 @@
 {
   "id": "cardio-ohne-springen",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "Cardio ohne Springen",
   "summary_de": "Puls hoch, Gelenke geschont: Intervalle ohne Sprünge, die du auch in einer Mietwohnung leise machen kannst – mit Dead Bug und Bauchnabel einziehen für die tiefen Bauchmuskeln.",
   "category": "hiit_cardio",
   "difficulty": 1,
-  "minutes": 21,
+  "minutes": 23,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 45,
@@ -36,7 +36,7 @@
       "duration_s": 30,
       "sets": null,
       "rest_s": 30,
-      "note_de": "Bein nach der Hälfte wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "wadenheben-koerpergewicht",

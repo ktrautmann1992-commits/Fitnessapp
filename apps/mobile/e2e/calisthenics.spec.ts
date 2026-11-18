@@ -231,7 +231,7 @@ test('Lauf-Kraft: 15-Minuten-Block nach dem lockeren Lauf, mit Timer zu öffnen'
   });
   await toToday(page);
   const block = page.getByTestId('plan-run-strength');
-  await expect(block).toContainText('Lauf-Kraft danach (15 min)');
+  await expect(block).toContainText('Lauf-Kraft danach (16 min)');
   await expect(block).toContainText('Runden');
   await shot(page, 'plan-run-strength', 'lauf-kraft-heute');
   await page.getByTestId('plan-run-strength-open').click();

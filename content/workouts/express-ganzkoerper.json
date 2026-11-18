@@ -1,12 +1,12 @@
 {
   "id": "express-ganzkoerper",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Express Ganzkörper",
-  "summary_de": "Wenig Zeit? Fünf Grundübungen nach Zeit, 40 Sekunden Arbeit und 20 Sekunden Pause – in gut zehn Minuten durch.",
+  "summary_de": "Wenig Zeit? Fünf Grundübungen nach Zeit, 40 Sekunden Arbeit und 20 Sekunden Pause – in gut zwölf Minuten durch.",
   "category": "full_body",
   "difficulty": 2,
-  "minutes": 10,
+  "minutes": 12,
   "format": "interval",
   "rounds": 2,
   "round_rest_s": 60,
@@ -44,7 +44,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "unterarmstuetz",

@@ -1,6 +1,6 @@
 {
   "id": "beine-intensiv-kurzhantel",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Beine intensiv mit Kurzhanteln",
   "summary_de": "Schwere Beinsätze mit Kurzhanteln und Bank: Bulgarische Split-Kniebeuge, Goblet-Kniebeuge und Kreuzheben.",
@@ -20,7 +20,7 @@
       "duration_s": null,
       "sets": 4,
       "rest_s": 90,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "goblet-kniebeuge",
@@ -44,7 +44,7 @@
       "duration_s": null,
       "sets": 3,
       "rest_s": 75,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "wadenheben-kurzhantel",

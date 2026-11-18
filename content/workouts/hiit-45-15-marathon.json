@@ -1,12 +1,12 @@
 {
   "id": "hiit-45-15-marathon",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "HIIT 45/15 – sehr schwer",
   "summary_de": "Sechs Runden mit nur 15 Sekunden Pause: lange Belastung, kurze Erholung. Nur, wenn du HIIT schon gut kennst.",
   "category": "hiit_cardio",
   "difficulty": 5,
-  "minutes": 40,
+  "minutes": 50,
   "format": "interval",
   "rounds": 6,
   "round_rest_s": 60,
@@ -44,7 +44,7 @@
       "duration_s": 45,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Nach der Hälfte das Bein wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "split-kniebeuge",
@@ -52,7 +52,7 @@
       "duration_s": 45,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "unterarmstuetz",

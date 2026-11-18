@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { WORKOUT_LIMITS } from '../constants';
+import { WORKOUT_LIMITS, WORKOUT_PLAYER } from '../constants';
 import { makeWorkout, workoutItem } from './test-fixtures';
 import {
   advanceWorkoutRun,
@@ -96,6 +96,34 @@ describe('buildWorkoutTimerPlan', () => {
     const steps = buildWorkoutTimerPlan(makeWorkout());
     expect(estimateWorkoutSeconds(steps)).toBe(420);
     expect(estimateWorkoutSeconds(steps, (id) => id === 'kniebeuge-kg')).toBe(420 + 3 * 30);
+  });
+
+  it('einseitig je Seite (splitUnilateralSides): Zeit doppelt plus Seitenwechsel, Wiederholungen je Seite', () => {
+    const uni = (id: string) => id === 'kniebeuge-kg';
+    // makeWorkout: 3 Runden, Kniebeuge 10 Wdh. → je Seite 30 s, dazu 5 s Seitenwechsel je Runde.
+    const split = buildWorkoutTimerPlan(makeWorkout(), uni);
+    expect(estimateWorkoutSeconds(split, uni)).toBe(420 + 3 * (30 + WORKOUT_PLAYER.sideSwitchS));
+    expect(split.filter((x) => x.kind === 'rest' && x.after === 'side')).toHaveLength(3);
+    // Nach Zeit: 45 s → 45 s links + 5 s + 45 s rechts.
+    const timed = makeWorkout({
+      format: 'interval',
+      rounds: 1,
+      exercises: [
+        workoutItem('kniebeuge-kg', { reps: null, duration_s: 45, rest_s: 15 }),
+        workoutItem('liegestuetz-kg', { reps: null, duration_s: 30, rest_s: 15 }),
+      ],
+    });
+    expect(estimateWorkoutSeconds(buildWorkoutTimerPlan(timed))).toBe(45 + 15 + 30);
+    expect(estimateWorkoutSeconds(buildWorkoutTimerPlan(timed, uni), uni)).toBe(
+      45 + 5 + 45 + 15 + 30,
+    );
+    // Flow regelt Seiten selbst (`side: 'both'`) – unilateral ändert dort nichts.
+    const flow = makeWorkout({
+      format: 'flow',
+      rounds: 1,
+      exercises: timed.exercises.map((e) => ({ ...e, rest_s: 0 })),
+    });
+    expect(buildWorkoutTimerPlan(flow, uni)).toEqual(buildWorkoutTimerPlan(flow));
   });
 });
 

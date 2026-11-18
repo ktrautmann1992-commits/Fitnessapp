@@ -4,6 +4,7 @@ import {
   CUSTOM_WORKOUT_RULES,
   GROUP_BARBELL_ONLY_EXERCISE_IDS,
   WORKOUT_LIMITS,
+  WORKOUT_PLAYER,
 } from '../constants';
 import type { Exercise } from '../content/schemas';
 import { requiredEquipmentIds } from '../equipment';
@@ -128,6 +129,39 @@ describe('buildCustomWorkout – Aufbau wie Barbell Burn', () => {
       expect(seconds).toBeLessThanOrEqual(minutes * 60 * 1.1);
     },
   );
+
+  it('Dauer zählt einseitige Übungen je Seite (Player: links → Seitenwechsel → rechts)', () => {
+    const item = (id: string) => ({
+      exercise_id: id,
+      reps: null,
+      duration_s: 30,
+      sets: 2,
+      rest_s: 20,
+      note_de: null,
+    });
+    const track = (id: string) => ({
+      tracks: [{ kind: 'area' as const, area: 'core' as const, items: [item(id)] }],
+    });
+    expect(ex('seitstuetz-hueftheben').unilateral).toBe(true);
+    expect(ex('unterarmstuetz').unilateral).toBe(false);
+    // beidseitig: 30 + 20 + 30; einseitig: je Satz 30 + 5 + 30, dazwischen 20 s Satzpause.
+    expect(customWorkoutSeconds(track('unterarmstuetz'), EXERCISES)).toBe(80);
+    expect(customWorkoutSeconds(track('seitstuetz-hueftheben'), EXERCISES)).toBe(
+      2 * (30 + WORKOUT_PLAYER.sideSwitchS + 30) + 20,
+    );
+    // Wiederholungen einseitig: je Seite ein Zeitfenster (10 Wdh. → 30 s) statt eines doppelten.
+    const reps = {
+      tracks: [
+        {
+          kind: 'area' as const,
+          area: 'legs' as const,
+          items: [{ ...item('split-kniebeuge'), reps: 10, duration_s: null, sets: 1 }],
+        },
+      ],
+    };
+    expect(ex('split-kniebeuge').unilateral).toBe(true);
+    expect(customWorkoutSeconds(reps, EXERCISES)).toBe(30 + WORKOUT_PLAYER.sideSwitchS + 30);
+  });
 
   it('15 vs. 60 Min.: lange Workouts haben mehr Übungen bzw. Sätze, beide höchstens 12 Übungen', () => {
     const short = build({ minutes: 15, areas: ['full_body'], equipment_ids: HOME_DUMBBELLS });

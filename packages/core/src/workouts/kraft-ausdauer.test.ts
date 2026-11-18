@@ -78,7 +78,7 @@ const DEEP_CORE = new Set([
 
 const unilateral = (id: string) => EXERCISES.get(id)?.unilateral === true;
 const estimatedMinutes = (w: Workout) =>
-  estimateWorkoutSeconds(buildWorkoutTimerPlan(w), unilateral) / 60;
+  estimateWorkoutSeconds(buildWorkoutTimerPlan(w, unilateral), unilateral) / 60;
 const playerMinutes = (w: Workout) =>
   estimateWorkoutSeconds(workoutPlayerPlan(w, unilateral).filter((s) => s.kind !== 'prepare')) / 60;
 
@@ -144,19 +144,38 @@ describe('Kraft-Ausdauer auf Zeit – Inhalte', () => {
     for (const w of focus) {
       const items = w.exercises.filter((item) => DEEP_CORE.has(item.exercise_id));
       if (NEW_IDS.includes(w.id)) expect(items.length, w.id).toBeGreaterThanOrEqual(2);
-      const seconds = items.reduce((sum, item) => sum + (item.duration_s ?? 0), 0) * w.rounds;
+      // Einseitige Übungen laufen je Seite – beide Seiten zählen.
+      const seconds =
+        items.reduce(
+          (sum, item) => sum + (item.duration_s ?? 0) * (unilateral(item.exercise_id) ? 2 : 1),
+          0,
+        ) * w.rounds;
       expect(seconds, w.id).toBeGreaterThanOrEqual(180);
     }
   });
 
-  it('Einseitige Übungen nach Zeit mit Hinweis zum Seitenwechsel', () => {
-    for (const w of NEW_IDS.map(byId)) {
+  it('Einseitige Übungen nach Zeit: der Player wechselt die Seite – kein widersprüchlicher Hinweis im Text', () => {
+    // Gründer-Feedback 18.11.2026: „45 s links und dann 45 s rechts“ – der Player teilt einseitige Übungen selbst
+    // (Linke Seite → Seite wechseln → Rechte Seite). Hinweise wie „Nach der Hälfte die Seite wechseln“, „Je Seite“
+    // oder „Abwechselnd links und rechts“ würden dem widersprechen.
+    for (const w of ALL.filter((x) => x.format !== 'flow')) {
+      const steps = workoutPlayerPlan(w, unilateral);
       for (const item of w.exercises) {
-        if (item.duration_s === null || !unilateral(item.exercise_id)) continue;
-        if (item.exercise_id === 'bird-dog') continue; // abwechselnd links und rechts
-        expect(item.note_de, `${w.id}: ${item.exercise_id}`).toMatch(/Seite|links und rechts/);
+        if (!unilateral(item.exercise_id)) continue;
+        expect(item.note_de ?? '', `${w.id}: ${item.exercise_id}`).not.toMatch(
+          /Hälfte|[Jj]e (Seite|Bein)|[Aa]bwechselnd|wechseln/,
+        );
       }
+      const sides = steps.filter((s) => s.kind === 'work' && s.side !== undefined);
+      const uniSteps = steps.filter((s) => s.kind === 'work' && unilateral(s.exerciseId));
+      expect(sides.length, w.id).toBe(uniSteps.length);
     }
+    // Zweiseitig erfasste Halteübungen (Seitstütz) behalten den Hinweis – dort wechselt der Player nicht.
+    const side = byId('laeufer-kraftausdauer-25').exercises.find(
+      (e) => e.exercise_id === 'seitstuetz',
+    );
+    expect(unilateral('seitstuetz')).toBe(false);
+    expect(side?.note_de).toMatch(/Seite wechseln/);
   });
 
   it('Reine Mobilitäts-, Erholungs- und Technik-Workouts bleiben außerhalb des Fokus', () => {

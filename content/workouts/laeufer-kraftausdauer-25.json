@@ -1,6 +1,6 @@
 {
   "id": "laeufer-kraftausdauer-25",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Kraft-Ausdauer für Läufer 25",
   "summary_de": "Einbeinige Kraft, Waden und ein stabiler Rumpf für ökonomisches Laufen – acht Stationen nach Zeit, 40 Sekunden Arbeit und 20 Sekunden Pause.",
@@ -8,7 +8,7 @@
   "difficulty": 2,
   "minutes": 25,
   "format": "interval",
-  "rounds": 3,
+  "rounds": 2,
   "round_rest_s": 60,
   "equipment_ids": [],
   "warmup_de": "5 Minuten locker traben oder zügig gehen, dann Füße, Knie und Hüfte kurz kreisen.",
@@ -20,7 +20,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "glute-bridge-einbeinig",
@@ -28,7 +28,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "wadenheben-einbeinig",
@@ -36,7 +36,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "laeufer-kniehub-stand",
@@ -44,7 +44,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "rdl-einbeinig-koerpergewicht",
@@ -52,7 +52,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "seitstuetz",
@@ -68,7 +68,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "dead-bug",

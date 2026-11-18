@@ -1,6 +1,6 @@
 {
   "id": "beweglich-in-den-tag",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Beweglich in den Tag",
   "summary_de": "Ruhige, große Bewegungen für Hüfte, Schultern und Rumpf. Kein Schwitzen nötig – langsam und mit vollem Bewegungsweg.",
@@ -28,7 +28,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "bird-dog",

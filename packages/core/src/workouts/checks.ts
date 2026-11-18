@@ -18,6 +18,7 @@ import { wodTimeCapS } from './wod';
  *       Format `flow`, das ohne Pausen-Bildschirm läuft); 1 Stern ohne Sprünge („high_impact“).
  * - W6 (gelb): Angegebene Dauer passt zur geschätzten Dauer (±20 %, mindestens ±2 Minuten). WOD-Stil mit Zeitlimit
  *       (AMRAP, For Time, Chipper – wod.ts): `minutes` ist das Limit, gelb nur, wenn die Schätzung darüber liegt.
+ *       Einseitige Übungen zählen je Seite mit Seitenwechsel (splitUnilateralSides, wie im Player).
  * - W7: Textregeln (keine Heil-/Gesundheitsversprechen, keine Marken) wie bei Rezepten.
  */
 export function checkWorkout(workout: Workout, library: ExerciseLookup): ContentIssue[] {
@@ -174,10 +175,8 @@ export function checkWorkout(workout: Workout, library: ExerciseLookup): Content
   }
 
   // W6 – Dauer plausibel (gelb)
-  const estimatedS = estimateWorkoutSeconds(
-    buildWorkoutTimerPlan(workout),
-    (id) => library.get(id)?.unilateral === true,
-  );
+  const unilateral = (id: string) => library.get(id)?.unilateral === true;
+  const estimatedS = estimateWorkoutSeconds(buildWorkoutTimerPlan(workout, unilateral), unilateral);
   const estimatedMin = estimatedS / 60;
   const tolerance = Math.max(
     L.durationTolerance.minMinutes,

@@ -866,6 +866,10 @@ export const WORKOUT_LIMITS = {
  * - `cueSeconds` 3: kurzer Ton bei 3-2-1 vor jedem Wechsel, eigener Ton beim Wechsel.
  * - `mediaSwapMs` 1000: Start-/Endposition wechseln im Sekundentakt (Überblendung `mediaFadeMs`), bei „Bewegung
  *   reduzieren“ nur das Startbild.
+ * - `sideSwitchS` 5 (Gründer-Feedback 18.11.2026 „45 s links und dann 45 s rechts der gleichen Übung“): Einseitige
+ *   Übungen (`unilateral`) laufen in allen Formaten außer `flow` als „Linke Seite“ (volle Zeit bzw. volle
+ *   Wiederholungen mit eigenem Zeitfenster) → „Seite wechseln“ (`sideSwitchS` Sekunden) → „Rechte Seite“; danach die
+ *   normale Pause. Quelle: PRODUKTENTSCHEIDUNG (5 s reichen zum Umsetzen/Umgreifen, kurz genug für den Puls).
  * Quelle: PRODUKTENTSCHEIDUNG (Tempo 2–4 s je Wiederholung wie W6, 20 s Mindestzeit für Umgreifen/Position finden,
  * 90 s Obergrenze wie lange Intervalle) – VOR LIVEGANG FACHLICH PRÜFEN.
  */
@@ -874,6 +878,7 @@ export const WORKOUT_PLAYER = {
   cueSeconds: 3,
   mediaSwapMs: 1000,
   mediaFadeMs: 300,
+  sideSwitchS: 5,
 } as const;
 
 /**

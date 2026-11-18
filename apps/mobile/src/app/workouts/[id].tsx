@@ -285,7 +285,10 @@ export default function WorkoutDetailScreen() {
               item.sets !== null ? t.workouts.detail.sets(item.sets) : null,
               item.reps !== null
                 ? t.workouts.detail.reps(item.reps, exercise?.unilateral === true)
-                : t.workouts.detail.seconds(item.duration_s ?? 0),
+                : t.workouts.detail.seconds(
+                    item.duration_s ?? 0,
+                    !isFlow && exercise?.unilateral === true,
+                  ),
               // Flow: Seitenwechsel statt Pause (ohne Pausen-Bildschirm).
               isFlow
                 ? item.side === 'both'

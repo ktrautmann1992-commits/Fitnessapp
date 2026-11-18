@@ -1,12 +1,12 @@
 {
   "id": "sanfter-einstieg-ganzkoerper",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "Sanfter Einstieg",
   "summary_de": "Ganzkörper ohne Geräte für den Start, nach Zeit: einfache Übungen, Pausen nach jeder Übung, ruhiges Tempo – und Bauchatmung für die tiefen Bauchmuskeln.",
   "category": "full_body",
   "difficulty": 1,
-  "minutes": 21,
+  "minutes": 25,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 45,
@@ -44,7 +44,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "bird-dog",
@@ -52,7 +52,7 @@
       "duration_s": 30,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Abwechselnd links und rechts, langsam."
+      "note_de": "Langsam, der Rücken bleibt ruhig."
     },
     {
       "exercise_id": "unterarmstuetz",

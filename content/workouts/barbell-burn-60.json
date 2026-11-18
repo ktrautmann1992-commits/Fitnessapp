@@ -1,6 +1,6 @@
 {
   "id": "barbell-burn-60",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Barbell Burn 60",
   "summary_de": "Langhantel-Gruppenworkout mit leichtem Gewicht und vielen Wiederholungen: zehn Tracks von Aufwärmen über Beine, Brust, Rücken, Arme und Schultern bis Bauch und Dehnen. Tempo-Angaben bei jeder Übung. Leichtes Gewicht wählen – alle Wiederholungen müssen sauber gelingen.",
@@ -84,7 +84,7 @@
       "duration_s": null,
       "sets": 4,
       "rest_s": 20,
-      "note_de": "Track 7 – Ausfallschritte: je Seite. Satz 1–2 „2 runter – 2 hoch“, Satz 3–4 Pulse unten. Ohne Stange, wenn die Beine brennen."
+      "note_de": "Track 7 – Ausfallschritte: erst links, dann rechts. Satz 1–2 „2 runter – 2 hoch“, Satz 3–4 Pulse unten. Ohne Stange, wenn die Beine brennen."
     },
     {
       "exercise_id": "schulterdruecken-langhantel-leicht",

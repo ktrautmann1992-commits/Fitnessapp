@@ -1,4 +1,4 @@
-import { WORKOUT_LIMITS } from '../constants';
+import { WORKOUT_LIMITS, WORKOUT_PLAYER } from '../constants';
 import { buildFlowTimerSteps, type FlowSide } from './flow';
 import type { Workout } from './schema';
 
@@ -27,7 +27,12 @@ export type WorkoutTimerStep =
       /** Sekunden (nach Zeit bzw. Zeitfenster) oder null (nach Wiederholungen – wartet auf „Erledigt“). */
       readonly seconds: number | null;
       readonly reps: number | null;
-      /** Nur im Format `flow` mit Seitenwechsel (Sportarten Stufe 1): diese Seite – sonst fehlt das Feld. */
+      /**
+       * Seite dieses Schritts – sonst fehlt das Feld (= keine Seite):
+       * - Format `flow` mit Seitenwechsel (Sportarten Stufe 1): erst `right`, dann `left`.
+       * - Einseitige Übungen in allen anderen Formaten (Gründer-Feedback 18.11.2026, splitUnilateralSides): erst
+       *   `left`, kurzer Seitenwechsel, dann `right` – jede Seite die volle Zeit bzw. die vollen Wiederholungen.
+       */
       readonly side?: FlowSide;
       /**
        * Nur bei Power-Workouts (player.ts): Übung nach Wiederholungen mit Zeitfenster – `seconds` ist das Zeitfenster,
@@ -38,14 +43,51 @@ export type WorkoutTimerStep =
   | {
       readonly kind: 'rest';
       readonly seconds: number;
-      /** Pause nach einer Übung, zwischen Runden oder zwischen Sätzen derselben Übung. */
-      readonly after: 'exercise' | 'round' | 'set';
+      /**
+       * Pause nach einer Übung, zwischen Runden oder zwischen Sätzen derselben Übung; `side` = Seitenwechsel einer
+       * einseitigen Übung (WORKOUT_PLAYER.sideSwitchS, zwischen linker und rechter Seite).
+       */
+      readonly after: 'exercise' | 'round' | 'set' | 'side';
     };
 
 export type WorkoutWorkStep = Extract<WorkoutTimerStep, { kind: 'work' }>;
 
-/** Ablaufplan: Vorbereitung, dann Übungen und Pausen. Pausen von 0 s entfallen, nach dem letzten Schritt keine. */
+/**
+ * Ablaufplan: Vorbereitung, dann Übungen und Pausen. Pausen von 0 s entfallen, nach dem letzten Schritt keine.
+ * Mit `unilateral` laufen einseitige Übungen je Seite (splitUnilateralSides) – außer im Format `flow`, das Seiten über
+ * `side: 'both'` der Inhalte regelt.
+ */
 export function buildWorkoutTimerPlan(
+  workout: Pick<Workout, 'format' | 'rounds' | 'round_rest_s' | 'exercises'>,
+  unilateral?: (exerciseId: string) => boolean,
+): WorkoutTimerStep[] {
+  const steps = buildPlainTimerPlan(workout);
+  return unilateral && workout.format !== 'flow' ? splitUnilateralSides(steps, unilateral) : steps;
+}
+
+/**
+ * Einseitige Übungen je Seite (Gründer-Feedback 18.11.2026 „45 s links und dann 45 s rechts der gleichen Übung“):
+ * Jeder Übungs-Schritt einer einseitigen Übung wird zu „linke Seite“ → Seitenwechsel (Pause `after: 'side'`,
+ * WORKOUT_PLAYER.sideSwitchS) → „rechte Seite“, jede Seite mit der vollen Zeit bzw. den vollen Wiederholungen. Die
+ * Pause danach bleibt hinter der rechten Seite. Schritte, die schon eine Seite haben (Flow), bleiben unverändert.
+ */
+export function splitUnilateralSides(
+  steps: readonly WorkoutTimerStep[],
+  unilateral: (exerciseId: string) => boolean,
+): WorkoutTimerStep[] {
+  return steps.flatMap((step): WorkoutTimerStep[] => {
+    if (step.kind !== 'work' || step.side !== undefined || !unilateral(step.exerciseId)) {
+      return [step];
+    }
+    return [
+      { ...step, side: 'left' },
+      { kind: 'rest', seconds: WORKOUT_PLAYER.sideSwitchS, after: 'side' },
+      { ...step, side: 'right' },
+    ];
+  });
+}
+
+function buildPlainTimerPlan(
   workout: Pick<Workout, 'format' | 'rounds' | 'round_rest_s' | 'exercises'>,
 ): WorkoutTimerStep[] {
   const steps: WorkoutTimerStep[] = [{ kind: 'prepare', seconds: WORKOUT_LIMITS.prepareS }];
@@ -98,7 +140,9 @@ export function buildWorkoutTimerPlan(
 
 /**
  * Geschätzte Dauer in Sekunden (Regel W6 und Anzeige): Zeit-Schritte wie geplant, Wiederholungen mit
- * WORKOUT_LIMITS.secondsPerRep (einseitige Übungen doppelt, `unilateral(id)`); ohne die Vorbereitung.
+ * WORKOUT_LIMITS.secondsPerRep; ohne die Vorbereitung. Einseitige Übungen nach Wiederholungen ohne eigene Seite
+ * (Plan ohne splitUnilateralSides) zählen doppelt (`unilateral(id)`); nach Seiten geteilte Pläne zählen jede Seite
+ * und den Seitenwechsel einzeln.
  */
 export function estimateWorkoutSeconds(
   steps: readonly WorkoutTimerStep[],
@@ -108,7 +152,7 @@ export function estimateWorkoutSeconds(
     if (step.kind === 'prepare') return sum;
     if (step.kind === 'rest') return sum + step.seconds;
     if (step.seconds !== null) return sum + step.seconds;
-    const sides = unilateral(step.exerciseId) ? 2 : 1;
+    const sides = step.side === undefined && unilateral(step.exerciseId) ? 2 : 1;
     return sum + (step.reps ?? 0) * WORKOUT_LIMITS.secondsPerRep * sides;
   }, 0);
 }
@@ -338,10 +382,20 @@ function pausedTotal(run: WorkoutRun, atMs: number): number {
 export interface WorkoutItemSummary {
   readonly itemIndex: number;
   readonly exerciseId: string;
-  /** Erledigte Durchgänge (Runden bzw. Sätze) mit ihren Sekunden. */
-  readonly done: readonly { readonly pass: number; readonly seconds: number }[];
+  /**
+   * Erledigte Schritte (Runden bzw. Sätze) mit ihren Sekunden; bei Seiten (Flow `side: 'both'`, einseitige Übungen)
+   * je Seite ein Eintrag mit `side`.
+   */
+  readonly done: readonly {
+    readonly pass: number;
+    readonly seconds: number;
+    readonly side?: FlowSide;
+  }[];
   readonly skipped: number;
+  /** Schritte dieser Übung (je Seite einer). */
   readonly total: number;
+  /** Durchgänge (Runden bzw. Sätze) dieser Übung – beide Seiten zählen als ein Durchgang. */
+  readonly passes: number;
 }
 
 export interface WorkoutRunSummary {
@@ -377,9 +431,14 @@ export function workoutRunSummary(
       exerciseId: own[0]?.step.exerciseId ?? '',
       done: own
         .filter((w) => w.result?.status === 'done')
-        .map((w) => ({ pass: w.step.pass, seconds: w.result?.seconds ?? 0 })),
+        .map((w) => ({
+          pass: w.step.pass,
+          seconds: w.result?.seconds ?? 0,
+          ...(w.step.side === undefined ? {} : { side: w.step.side }),
+        })),
       skipped: own.filter((w) => w.result?.status === 'skipped').length,
       total: own.length,
+      passes: new Set(own.map((w) => `${w.step.round}:${w.step.pass}`)).size,
     };
   });
   const rounds = view.rounds;

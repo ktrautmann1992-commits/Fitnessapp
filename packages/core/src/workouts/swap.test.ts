@@ -130,7 +130,8 @@ describe('workoutSwapCandidates', () => {
     const plank = workoutSwapCandidates(w, 2, ctx());
     for (const c of plank) {
       if (c.exercise.load_type === 'weight') expect(c.item.reps).not.toBeNull();
-      else expect(c.item.duration_s).toBe(30);
+      // Einseitig läuft der Player je Seite: 30 s gesamt → 15 s je Seite.
+      else expect(c.item.duration_s).toBe(c.exercise.unilateral ? 15 : 30);
     }
     const item = w.exercises[0]!;
     const toHold = mapWorkoutItem(item, ex('goblet-kniebeuge'), ex('unterarmstuetz'), 'circuit');
@@ -145,6 +146,38 @@ describe('workoutSwapCandidates', () => {
     expect(
       mapWorkoutItem(item, ex('goblet-kniebeuge'), ex('kniebeuge-koerpergewicht'), 'circuit'),
     ).toMatchObject({ reps: 12, sets: null, rest_s: 15 });
+  });
+
+  it('Dosierung einseitig: Gesamtzeit bleibt etwa gleich (Player läuft je Seite)', () => {
+    const timed = { ...w.exercises[0]!, reps: null, duration_s: 40 };
+    // beidseitig 40 s → einseitig 20 s je Seite und zurück
+    const toUni = mapWorkoutItem(
+      timed,
+      ex('unterarmstuetz'),
+      ex('seitstuetz-hueftheben'),
+      'interval',
+    );
+    expect(toUni).toMatchObject({ duration_s: 20 });
+    const back = mapWorkoutItem(
+      toUni,
+      ex('seitstuetz-hueftheben'),
+      ex('unterarmstuetz'),
+      'interval',
+    );
+    expect(back).toMatchObject({ duration_s: 40 });
+    // einseitig → einseitig: Zeit bleibt
+    expect(
+      mapWorkoutItem(
+        timed,
+        ex('seitstuetz-hueftheben'),
+        ex('copenhagen-seitstuetz-knie'),
+        'interval',
+      ),
+    ).toMatchObject({ duration_s: 40 });
+    // Flow: Seiten über `side` – Zeit bleibt
+    expect(
+      mapWorkoutItem(timed, ex('unterarmstuetz'), ex('seitstuetz-hueftheben'), 'flow'),
+    ).toMatchObject({ duration_s: 40 });
   });
 
   it('Flow-Routinen (Yoga/Pilates) und unbekannte Positionen: keine Kandidaten', () => {

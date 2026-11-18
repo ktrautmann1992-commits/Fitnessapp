@@ -1,6 +1,6 @@
 {
   "id": "calisthenics-grundlagen",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Calisthenics-Grundlagen",
   "summary_de": "Die Basis-Übungen der Skill-Pfade ohne Geräte: Liegestütz, Rudern am Türrahmen, Kniebeugen, Dips am Stuhl, Hollow Body.",
@@ -28,7 +28,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "kniebeuge-koerpergewicht",

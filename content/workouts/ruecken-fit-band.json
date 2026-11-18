@@ -1,12 +1,12 @@
 {
   "id": "ruecken-fit-band",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Rücken-fit mit Band",
   "summary_de": "Sätze für einen kräftigen Rücken: Rudern und Latziehen mit dem Band, dazu Hüftstrecken und Rumpfstabilität.",
   "category": "back_fit",
   "difficulty": 2,
-  "minutes": 18,
+  "minutes": 19,
   "format": "sets_reps",
   "rounds": 1,
   "round_rest_s": 0,
@@ -44,7 +44,7 @@
       "duration_s": null,
       "sets": 2,
       "rest_s": 30,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "bird-dog",
@@ -52,7 +52,7 @@
       "duration_s": null,
       "sets": 2,
       "rest_s": 30,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "glute-bridge",

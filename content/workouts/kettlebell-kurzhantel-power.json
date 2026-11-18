@@ -1,12 +1,12 @@
 {
   "id": "kettlebell-kurzhantel-power",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Kettlebell & Kurzhantel Power",
   "summary_de": "Vier Runden Zirkel mit Kettlebell-Swing, Kniebeuge, Rudern und Liegestütz. Swing nur mit sicherer Technik.",
   "category": "full_body",
   "difficulty": 4,
-  "minutes": 28,
+  "minutes": 29,
   "format": "circuit",
   "rounds": 4,
   "round_rest_s": 90,
@@ -52,7 +52,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "unterarmstuetz",

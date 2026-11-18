@@ -1,7 +1,15 @@
 import type { WorkoutTimerStep } from '@fitnessapp/core';
 import { describe, expect, it } from 'vitest';
 
-import { clockText, doseText, passText, stepAnnouncement, stepTitle } from './workout-timer-format';
+import {
+  clockText,
+  doseText,
+  passText,
+  perSide,
+  sideText,
+  stepAnnouncement,
+  stepTitle,
+} from './workout-timer-format';
 
 const names = new Map([
   ['kniebeuge', { name_de: 'Kniebeuge', unilateral: false }],
@@ -34,6 +42,7 @@ describe('Workout-Timer: Anzeige-Texte', () => {
     expect(stepTitle({ kind: 'rest', seconds: 20, after: 'exercise' }, names)).toBe('Pause');
     expect(stepTitle({ kind: 'rest', seconds: 60, after: 'round' }, names)).toBe('Rundenpause');
     expect(stepTitle({ kind: 'rest', seconds: 60, after: 'set' }, names)).toBe('Satzpause');
+    expect(stepTitle({ kind: 'rest', seconds: 5, after: 'side' }, names)).toBe('Seite wechseln');
     expect(stepTitle(work(), names)).toBe('Kniebeuge');
     expect(stepTitle(work({ exerciseId: 'unbekannt' }), names)).toBe('unbekannt');
     expect(stepTitle(null, names)).toBe('');
@@ -66,5 +75,22 @@ describe('Workout-Timer: Anzeige-Texte', () => {
     expect(stepAnnouncement({ step: null, remainingS: null, finished: true }, names)).toBe(
       'Geschafft!',
     );
+  });
+
+  it('einseitig je Seite (Player): „Linke/Rechte Seite“, Wiederholungen ohne „je Seite“, Seitenwechsel angesagt', () => {
+    const left = work({ exerciseId: 'split', side: 'left', seconds: 30, reps: 8, timeBoxed: true });
+    expect(sideText(left)).toBe('Linke Seite');
+    expect(sideText(work({ exerciseId: 'split', side: 'right' }))).toBe('Rechte Seite');
+    expect(sideText(work())).toBeNull();
+    expect(sideText(null)).toBeNull();
+    expect(perSide(left, names)).toBe(false);
+    expect(perSide(work({ exerciseId: 'split' }), names)).toBe(true);
+    expect(doseText(left, names)).toBe('8 Wiederholungen');
+    expect(
+      stepAnnouncement(
+        { step: { kind: 'rest', seconds: 5, after: 'side' }, remainingS: 5, finished: false },
+        names,
+      ),
+    ).toBe('Seite wechseln: noch 5 Sekunden');
   });
 });

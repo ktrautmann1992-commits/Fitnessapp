@@ -1,12 +1,12 @@
 {
   "id": "power-intervall-30-15",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Power-Intervall 30/15",
   "summary_de": "Vier schnelle Runden für Geübte: 30 Sekunden Vollgas, 15 Sekunden Pause. Sprünge, Liegestütz, Ausfallschritte und harte Rumpf-Stationen.",
   "category": "hiit_cardio",
   "difficulty": 4,
-  "minutes": 26,
+  "minutes": 28,
   "format": "interval",
   "rounds": 4,
   "round_rest_s": 60,
@@ -36,7 +36,7 @@
       "duration_s": 30,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "burpee-weitsprung",
@@ -63,7 +63,7 @@
       "note_de": "Abwechselnd links und rechts."
     },
     {
-      "exercise_id": "seitstuetz-hueftheben",
+      "exercise_id": "seitstuetz",
       "reps": null,
       "duration_s": 30,
       "sets": null,

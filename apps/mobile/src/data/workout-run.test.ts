@@ -129,9 +129,17 @@ describe('Workout abschließen → freie Einheit am Tag (Herkunft „workout“)
   it('komplett: Eintrag mit allen Übungen/Runden, Notiz, Anstrengung, Herkunft „workout“', async () => {
     const s = await setup();
     const workout = s.find('bauch-blitz');
+    // Wie in der App (begin-workout-run): einseitige Übungen (Bird Dog) laufen je Seite.
     const active = runToEnd(
-      startActiveRun({ ownerUserId: USER_ID, workout, nowMs: T0, newId: randomUUID }),
+      startActiveRun({
+        ownerUserId: USER_ID,
+        workout,
+        nowMs: T0,
+        newId: randomUUID,
+        unilateral: (id) => s.exercises.get(id)?.unilateral === true,
+      }),
     );
+    expect(active.steps.some((x) => x.kind === 'work' && x.side === 'left')).toBe(true);
     const result = workoutLogDraft({
       active,
       workout,
@@ -158,7 +166,8 @@ describe('Workout abschließen → freie Einheit am Tag (Herkunft „workout“)
       name_de: 'Freie Kraft-Einheit',
       started_at: active.startedAt,
     });
-    expect(payload.notes).toBe('Workout „Bauch-Blitz“ (★★☆☆☆) · 4/4 Runden · 22 Min.\nLief gut');
+    expect(payload.notes).toBe('Workout „Bauch-Blitz“ (★★☆☆☆) · 4/4 Runden · 25 Min.\nLief gut');
+    // Jede Übung genau einmal, ein Satz je Runde – auch Bird Dog (linke + rechte Seite = ein Satz).
     expect(payload.exercises).toHaveLength(workout.exercises.length);
     expect(payload.exercises.every((e) => e.sets.length === workout.rounds)).toBe(true);
 

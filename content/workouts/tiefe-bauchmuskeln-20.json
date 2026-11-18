@@ -1,12 +1,12 @@
 {
   "id": "tiefe-bauchmuskeln-20",
-  "version": 1,
+  "version": 2,
   "status": "published",
-  "title_de": "Tiefe Bauchmuskeln 20",
+  "title_de": "Tiefe Bauchmuskeln 22",
   "summary_de": "Sanfter Rumpf-Zirkel nach Zeit für die tiefe Bauchmuskulatur: Atmung, Bauchnabel einziehen und ruhige Halteübungen – 35 Sekunden Arbeit, 20 Sekunden Pause.",
   "category": "core",
   "difficulty": 1,
-  "minutes": 20,
+  "minutes": 22,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 45,
@@ -44,7 +44,7 @@
       "duration_s": 35,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Abwechselnd links und rechts, langsam."
+      "note_de": "Langsam, der Rücken bleibt ruhig."
     },
     {
       "exercise_id": "seitstuetz-knie",

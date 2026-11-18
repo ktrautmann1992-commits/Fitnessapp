@@ -68,7 +68,7 @@ export function doseText(
     item.sets !== null ? t.workouts.detail.sets(item.sets) : null,
     item.reps !== null
       ? t.workouts.detail.reps(item.reps, exercise?.unilateral === true)
-      : t.workouts.detail.seconds(item.duration_s ?? 0),
+      : t.workouts.detail.seconds(item.duration_s ?? 0, exercise?.unilateral === true),
     t.workouts.detail.rest(item.rest_s),
   ]
     .filter((x): x is string => x !== null)

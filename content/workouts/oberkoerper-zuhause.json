@@ -1,12 +1,12 @@
 {
   "id": "oberkoerper-zuhause",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "Oberkörper zuhause",
   "summary_de": "Drücken und Ziehen ohne Geräte nach Zeit: Liegestütz-Varianten, Rudern am Türrahmen und Dips am Stuhl, dazu Schulter-Tippen und Bauchnabel einziehen.",
   "category": "upper_body",
   "difficulty": 2,
-  "minutes": 22,
+  "minutes": 24,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 60,
@@ -28,7 +28,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "dips-stuhl",

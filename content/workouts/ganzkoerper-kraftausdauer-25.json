@@ -1,12 +1,12 @@
 {
   "id": "ganzkoerper-kraftausdauer-25",
-  "version": 1,
+  "version": 2,
   "status": "published",
-  "title_de": "Ganzkörper Kraft-Ausdauer 25",
+  "title_de": "Ganzkörper Kraft-Ausdauer 30",
   "summary_de": "Ganzkörper ohne Geräte nach Zeit: Beine, Drücken, Ziehen und zwei Stationen für die tiefen Bauchmuskeln. 40 Sekunden Arbeit, 20 Sekunden Pause.",
   "category": "full_body",
   "difficulty": 2,
-  "minutes": 25,
+  "minutes": 30,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 60,
@@ -36,7 +36,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "tuerrahmen-rudern",
@@ -44,7 +44,7 @@
       "duration_s": 40,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "glute-bridge",

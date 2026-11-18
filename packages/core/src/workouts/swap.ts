@@ -4,6 +4,7 @@ import {
   CUSTOM_WORKOUT_RULES,
   GROUP_BARBELL_ONLY_EXERCISE_IDS,
   WORKOUT_LIMITS,
+  WORKOUT_PLAYER,
 } from '../constants';
 import { contentIdSchema, type Exercise } from '../content/schemas';
 import type { CautionTag, MovementPattern } from '../enums';
@@ -82,12 +83,17 @@ function sharesPrimary(a: Exercise, b: Exercise): boolean {
 }
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+/** Rundung der Sekunden beim Umrechnen (wie WORKOUT_PLAYER.timeBox.roundToS). */
+const ROUND_S = WORKOUT_PLAYER.timeBox.roundToS;
 
 /**
  * Dosierung beim Tausch: Sätze, Pause und Hinweis bleiben. Zeit bleibt Zeit – außer die neue Übung braucht
  * Wiederholungen (mit Gewicht, Regel W4) und das Format erlaubt sie: dann Sekunden ÷ 3 s je Wiederholung (einseitig
  * je Seite). Wiederholungen bleiben Wiederholungen – außer die neue Übung ist eine Halteübung: dann das Zeitfenster
  * des Players (repTimeBoxS). Seitenwechsel (`side`) nur bei Zeit.
+ * Einseitige Übungen laufen im Player je Seite (Gründer-Feedback 18.11.2026): Die Gesamtzeit bleibt etwa gleich –
+ * aus 40 s beidseitig werden 20 s je Seite (auf 5 s gerundet, innerhalb von WORKOUT_LIMITS.workS) und umgekehrt.
+ * Flow-Routinen regeln Seiten über `side` – dort bleibt die Zeit.
  */
 export function mapWorkoutItem(
   item: WorkoutContentItem,
@@ -96,24 +102,29 @@ export function mapWorkoutItem(
   format: Workout['format'],
 ): WorkoutContentItem {
   const base = { ...item, exercise_id: to.id };
+  const flow = format === 'flow';
+  const fromSides = !flow && from?.unilateral === true ? 2 : 1;
+  const toSides = !flow && to.unilateral ? 2 : 1;
+  const perSideS = (totalS: number) =>
+    clamp(
+      Math.round(totalS / toSides / ROUND_S) * ROUND_S,
+      WORKOUT_LIMITS.workS.min,
+      WORKOUT_LIMITS.workS.max,
+    );
   if (item.duration_s !== null) {
-    if (to.load_type === 'weight' && format !== 'interval' && format !== 'flow') {
-      const perRep = WORKOUT_LIMITS.secondsPerRep * (to.unilateral ? 2 : 1);
+    const totalS = item.duration_s * fromSides;
+    if (to.load_type === 'weight' && format !== 'interval' && !flow) {
       const reps = clamp(
-        Math.round(item.duration_s / perRep),
+        Math.round(totalS / (WORKOUT_LIMITS.secondsPerRep * toSides)),
         WORKOUT_LIMITS.reps.min,
         WORKOUT_LIMITS.reps.max,
       );
       return { ...base, reps, duration_s: null, side: null };
     }
-    return base;
+    return fromSides === toSides ? base : { ...base, duration_s: perSideS(totalS) };
   }
   if (to.load_type === 'time') {
-    const seconds = clamp(
-      repTimeBoxS(item.reps ?? 0, from?.unilateral === true),
-      WORKOUT_LIMITS.workS.min,
-      WORKOUT_LIMITS.workS.max,
-    );
+    const seconds = perSideS(repTimeBoxS(item.reps ?? 0, from?.unilateral === true));
     return { ...base, reps: null, duration_s: seconds };
   }
   return base;

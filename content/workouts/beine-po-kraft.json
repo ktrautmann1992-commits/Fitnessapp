@@ -1,12 +1,12 @@
 {
   "id": "beine-po-kraft",
-  "version": 1,
+  "version": 2,
   "status": "published",
   "title_de": "Beine & Po – Kraft",
   "summary_de": "Anspruchsvolle Bein- und Gesäßübungen ohne Geräte: einbeinig, mit Tempo und Pausen im tiefsten Punkt.",
   "category": "legs_glutes",
   "difficulty": 3,
-  "minutes": 22,
+  "minutes": 23,
   "format": "circuit",
   "rounds": 3,
   "round_rest_s": 90,
@@ -28,7 +28,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "hip-thrust-sofa",
@@ -44,7 +44,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "glute-bridge-einbeinig",
@@ -52,7 +52,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": null
     },
     {
       "exercise_id": "wadenheben-einbeinig",
@@ -60,7 +60,7 @@
       "duration_s": null,
       "sets": null,
       "rest_s": 20,
-      "note_de": "Je Seite."
+      "note_de": null
     }
   ],
   "meta": {

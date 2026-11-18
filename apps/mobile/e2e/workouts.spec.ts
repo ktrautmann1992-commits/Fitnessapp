@@ -63,7 +63,7 @@ test('Liste filtern: Sterne, Ziel, ohne Geräte, Dauer, zurücksetzen', async ({
   // Karte: Sterne mit Wort, barrierefrei als ein Text.
   await expect(card(page, 'bauch-blitz')).toHaveAttribute(
     'aria-label',
-    /Bauch-Blitz, Schwierigkeit 2 von 5 Sternen: eher leicht, 22 Min\./,
+    /Bauch-Blitz, Schwierigkeit 2 von 5 Sternen: eher leicht, 25 Min\./,
   );
 
   // Filter sind zugeklappt („Filter“ antippen).
@@ -129,7 +129,7 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
   await expect(page.getByTestId('workout-timer-kind')).toHaveText('Los!');
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Dead Bug');
   await expect(page.getByTestId('workout-timer-progress')).toHaveText(
-    'Runde 1 von 4 · 0 von 28 erledigt',
+    'Runde 1 von 4 · 0 von 32 erledigt',
   );
   await expect(page.getByTestId('workout-timer-next')).toHaveText('Als Nächstes: Unterarmstütz');
 
@@ -147,7 +147,7 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
   await expect(page.getByTestId('workout-timer-kind')).toHaveText('Pause');
   // In der Pause: die kommende Übung groß.
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Unterarmstütz');
-  await expect(page.getByTestId('workout-timer-progress')).toContainText('1 von 28 erledigt');
+  await expect(page.getByTestId('workout-timer-progress')).toContainText('1 von 32 erledigt');
   await page.getByTestId('workout-timer-skip').click();
   await expect(page.getByTestId('workout-timer-kind')).toHaveText('Los!');
   await expect(page.getByTestId('workout-timer-step')).toHaveText('Unterarmstütz');
@@ -158,7 +158,7 @@ test('Workout starten, Timer bedienen, abschließen → Eintrag am heutigen Tag,
   await page.getByTestId('workout-timer-end').click();
   await page.getByTestId('workout-end-dialog').getByRole('button', { name: 'Beenden' }).click();
   await heading(page, 'Workout beendet');
-  await expect(page.getByTestId('workout-finish-summary')).toHaveText(/^1 von 28 erledigt/);
+  await expect(page.getByTestId('workout-finish-summary')).toHaveText(/^1 von 32 erledigt/);
   await page.getByTestId('workout-rpe-6').click();
   await page.getByTestId('workout-note').fill('Kurz, aber gut');
   await page.getByTestId('workout-save').click();
