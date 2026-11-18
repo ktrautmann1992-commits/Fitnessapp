@@ -77,6 +77,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/burpee-ohne-sprung-start.webp'),
     end: require('../../assets/exercise-photos/burpee-ohne-sprung-end.webp'),
   },
+  'burpee-weitsprung': {
+    start: require('../../assets/exercise-photos/burpee-weitsprung-start.webp'),
+    end: require('../../assets/exercise-photos/burpee-weitsprung-end.webp'),
+  },
   'copenhagen-seitstuetz-knie': {
     start: require('../../assets/exercise-photos/copenhagen-seitstuetz-knie-start.webp'),
     end: require('../../assets/exercise-photos/copenhagen-seitstuetz-knie-end.webp'),
@@ -297,9 +301,17 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/pilates-muschel-start.webp'),
     end: require('../../assets/exercise-photos/pilates-muschel-end.webp'),
   },
+  'pilates-ruecken-strecken-bauchlage': {
+    start: require('../../assets/exercise-photos/pilates-ruecken-strecken-bauchlage-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-ruecken-strecken-bauchlage-end.webp'),
+  },
   'pilates-rumpf-atmung-sitzend': {
     start: require('../../assets/exercise-photos/pilates-rumpf-atmung-sitzend-start.webp'),
     end: require('../../assets/exercise-photos/pilates-rumpf-atmung-sitzend-end.webp'),
+  },
+  'pilates-saege': {
+    start: require('../../assets/exercise-photos/pilates-saege-start.webp'),
+    end: require('../../assets/exercise-photos/pilates-saege-end.webp'),
   },
   'pilates-schwan-sanft': {
     start: require('../../assets/exercise-photos/pilates-schwan-sanft-start.webp'),
