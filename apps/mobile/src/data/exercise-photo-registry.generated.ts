@@ -13,6 +13,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/adduktoren-dehnen-stehend-start.webp'),
     end: require('../../assets/exercise-photos/adduktoren-dehnen-stehend-end.webp'),
   },
+  armkreisen: {
+    start: require('../../assets/exercise-photos/armkreisen-start.webp'),
+    end: require('../../assets/exercise-photos/armkreisen-end.webp'),
+  },
   'aufwaerm-kombi-langhantel': {
     start: require('../../assets/exercise-photos/aufwaerm-kombi-langhantel-start.webp'),
     end: require('../../assets/exercise-photos/aufwaerm-kombi-langhantel-end.webp'),
@@ -25,6 +29,10 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/ausfallschritt-rueckwaerts-kurzhantel-start.webp'),
     end: require('../../assets/exercise-photos/ausfallschritt-rueckwaerts-kurzhantel-end.webp'),
   },
+  'ausfallschritt-rueckwaerts-langhantel': {
+    start: require('../../assets/exercise-photos/ausfallschritt-rueckwaerts-langhantel-start.webp'),
+    end: require('../../assets/exercise-photos/ausfallschritt-rueckwaerts-langhantel-end.webp'),
+  },
   'baerenstand-halten': {
     start: require('../../assets/exercise-photos/baerenstand-halten-start.webp'),
     end: require('../../assets/exercise-photos/baerenstand-halten-end.webp'),
@@ -32,6 +40,14 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
   'baerenstand-schulter-tippen': {
     start: require('../../assets/exercise-photos/baerenstand-schulter-tippen-start.webp'),
     end: require('../../assets/exercise-photos/baerenstand-schulter-tippen-end.webp'),
+  },
+  'bankdruecken-kurzhantel': {
+    start: require('../../assets/exercise-photos/bankdruecken-kurzhantel-start.webp'),
+    end: require('../../assets/exercise-photos/bankdruecken-kurzhantel-end.webp'),
+  },
+  'bankdruecken-langhantel': {
+    start: require('../../assets/exercise-photos/bankdruecken-langhantel-start.webp'),
+    end: require('../../assets/exercise-photos/bankdruecken-langhantel-end.webp'),
   },
   'bankdruecken-step-langhantel': {
     start: require('../../assets/exercise-photos/bankdruecken-step-langhantel-start.webp'),
@@ -41,6 +57,22 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/bauchnabel-einziehen-vierfuessler-start.webp'),
     end: require('../../assets/exercise-photos/bauchnabel-einziehen-vierfuessler-end.webp'),
   },
+  'beinbeuger-band': {
+    start: require('../../assets/exercise-photos/beinbeuger-band-start.webp'),
+    end: require('../../assets/exercise-photos/beinbeuger-band-end.webp'),
+  },
+  'beinbeuger-handtuch': {
+    start: require('../../assets/exercise-photos/beinbeuger-handtuch-start.webp'),
+    end: require('../../assets/exercise-photos/beinbeuger-handtuch-end.webp'),
+  },
+  'beinbeuger-maschine': {
+    start: require('../../assets/exercise-photos/beinbeuger-maschine-start.webp'),
+    end: require('../../assets/exercise-photos/beinbeuger-maschine-end.webp'),
+  },
+  'beinpendel-stehend': {
+    start: require('../../assets/exercise-photos/beinpendel-stehend-start.webp'),
+    end: require('../../assets/exercise-photos/beinpendel-stehend-end.webp'),
+  },
   beinpresse: {
     start: require('../../assets/exercise-photos/beinpresse-start.webp'),
     end: require('../../assets/exercise-photos/beinpresse-end.webp'),
@@ -49,9 +81,29 @@ export const EXERCISE_PHOTOS: Readonly<Record<string, ExercisePhotoPair>> = {
     start: require('../../assets/exercise-photos/beinrueckseite-dehnen-sitzend-start.webp'),
     end: require('../../assets/exercise-photos/beinrueckseite-dehnen-sitzend-end.webp'),
   },
+  beinstrecker: {
+    start: require('../../assets/exercise-photos/beinstrecker-start.webp'),
+    end: require('../../assets/exercise-photos/beinstrecker-end.webp'),
+  },
+  'beinstrecker-band': {
+    start: require('../../assets/exercise-photos/beinstrecker-band-start.webp'),
+    end: require('../../assets/exercise-photos/beinstrecker-band-end.webp'),
+  },
   'bird-dog': {
     start: require('../../assets/exercise-photos/bird-dog-start.webp'),
     end: require('../../assets/exercise-photos/bird-dog-end.webp'),
+  },
+  'bizepscurl-band': {
+    start: require('../../assets/exercise-photos/bizepscurl-band-start.webp'),
+    end: require('../../assets/exercise-photos/bizepscurl-band-end.webp'),
+  },
+  'bizepscurl-kurzhantel': {
+    start: require('../../assets/exercise-photos/bizepscurl-kurzhantel-start.webp'),
+    end: require('../../assets/exercise-photos/bizepscurl-kurzhantel-end.webp'),
+  },
+  'bizepscurl-langhantel': {
+    start: require('../../assets/exercise-photos/bizepscurl-langhantel-start.webp'),
+    end: require('../../assets/exercise-photos/bizepscurl-langhantel-end.webp'),
   },
   'bodendruecken-kurzhantel': {
     start: require('../../assets/exercise-photos/bodendruecken-kurzhantel-start.webp'),
