@@ -596,8 +596,8 @@
   {
     "id": "burpee-weitsprung",
     "uses": 2,
-    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: Bottom of the burpee: lying with the chest near the floor, hands under the shoulders, legs extended back, body straight. No text, no logos, no brand names.",
-    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Burpee Broad Jump: Mid broad jump forward: both feet off the floor, arms swung forward, body extended, preparing a soft landing. No text, no logos."
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands on the left third of the frame facing right, in a quarter squat ready to jump forward: feet hip-width and flat on the floor, knees bent about 45 degrees, hips pushed back, torso leaning forward about 30 degrees, both arms swung back behind the hips, gaze forward. Plenty of empty floor in front of her on the right. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Burpee Broad Jump: She has just LANDED a forward broad jump and now stands on the right third of the frame, facing right: both feet flat on the floor hip-width apart, deep landing squat with knees bent about 90 degrees over the toes, hips back at knee height, torso leaning forward about 45 degrees, back straight, both arms reaching forward in front of her for balance. Both feet are firmly on the floor, she is NOT in the air. The pose must clearly differ from the reference photo. No text, no logos."
   },
   {
     "id": "copenhagen-seitstuetz-knie",
@@ -710,13 +710,631 @@
   {
     "id": "pilates-ruecken-strecken-bauchlage",
     "uses": 2,
-    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies face down on the mat, forehead on the mat, arms beside the body, legs long. Equipment: a grey exercise mat. No text, no logos, no brand names.",
-    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Prone Back Extension: Chest and head lifted slightly off the mat, gaze down, shoulder blades drawn back and down, arms beside the body. No text, no logos."
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies face down on the mat, forehead resting on the mat, legs long and together on the mat, elbows bent with palms flat on the mat beside the shoulders. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Prone Back Extension: Low back extension, a big visible change: chest, shoulders and head are clearly raised off the mat, the upper torso angled about 30 degrees up from the mat, breastbone about 20 cm above the mat, palms flat on the mat beside the shoulders with elbows bent close to the ribs supporting lightly, gaze diagonally down, neck long. Pubic bone, hips, thighs and tops of the feet stay flat on the mat. The pose must clearly differ from the reference photo. No text, no logos."
   },
   {
     "id": "pilates-saege",
     "uses": 2,
     "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits tall facing the camera in a wide straddle, legs straight, arms out to the sides at shoulder height. Equipment: a grey exercise mat. No text, no logos, no brand names.",
     "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Saw: Torso rotated and folded forward, right hand reaching toward the outside of the left little toe, left arm reaching back, spine long. No text, no logos."
+  },
+  {
+    "id": "seitlicher-ausfallschritt",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, feet hip-width, hands clasped in front of the chest. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Lateral Lunge: a wide step to one side, that knee bent about 90 degrees over the toes with the hips pushed back, the other leg straight, both feet flat on the floor and pointing forward, torso leaning slightly forward, hands in front of the chest. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "step-down-stufe",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands tall on one leg on a low wooden step, the free foot hanging just off the front edge of the step, hands on her hips. Equipment: a sturdy low wooden step platform. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Step-Down: bend the standing leg on the step to about 60 degrees, lowering her body, so the straight free leg reaches DOWN in front of the step and its heel lightly touches the floor; the free foot is lower than the step, not lifted; hips level, hands on the hips. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "tisch-rudern",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back under a sturdy solid wooden table, both hands gripping the table edge above her chest, arms straight, knees bent with feet flat on the floor, hips lifted off the floor so her body is straight from shoulders to knees. Equipment: a sturdy plain wooden table. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Table Inverted Row: pull her chest up close to the table edge, elbows bent 90 degrees and pointing back, shoulder blades squeezed, body still straight from shoulders to knees, feet flat on the floor; her body is clearly higher than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "reverse-fly-kurzhantel",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She bends forward from the hips so her torso is nearly horizontal, about 30 degrees above horizontal, flat back, knees soft, arms hanging straight down toward the floor under her shoulders, a light dumbbell in each hand. Equipment: a pair of black hex dumbbells. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Dumbbell Reverse Fly: both arms raised out to the sides like wings up to shoulder height, elbows slightly bent, shoulder blades squeezed, torso still bent forward nearly horizontal with a flat back. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "schulterdruecken-band",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, feet hip-width on a blue resistance band, holding one band end in each hand at shoulder height, elbows bent below the hands; two separate band strands run from her feet up to her hands. Equipment: a blue resistance band anchored under both feet. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Banded Overhead Press: both hands pressed straight overhead, arms almost straight, band stretched, abs braced, torso upright. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "schulterdruecken-langhantel-leicht",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright, feet hip-width, a light barbell resting on the front of her shoulders, hands a little wider than the shoulders, elbows slightly in front of the bar. Equipment: a light barbell with small black plates. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Light Barbell Overhead Press: bar pressed straight overhead above the mid-foot, arms straight, head pushed slightly forward through the arms, torso upright, glutes and abs braced. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-schulterbruecke-abrollen",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on the mat, knees bent with feet flat hip-width close to the buttocks, arms beside the body. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Bridge Roll-up: roll her pelvis up so the hips are lifted high off the mat and shoulders, hips and knees form one straight diagonal line; only her shoulders, arms and feet touch the mat. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-schulterbruecke-marsch",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She holds a bridge on the mat: shoulders on the mat, feet flat hip-width, hips lifted so shoulders, hips and knees form one line, arms beside the body. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Bridge March: hips still lifted and level, one foot lifted a few centimetres off the mat with the knee bent, the other foot on the mat. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-schwimmen",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies face down on the mat, arms long forward, forehead just above the mat, legs long. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Swimming: arms and legs hovering just off the mat, the far arm and the leg nearest the camera lifted a little higher, chest slightly lifted, neck long, gaze down. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-unterarmstuetz-knie",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She rests on her FOREARMS and knees on the mat: elbows bent 90 degrees directly under the shoulders, forearms flat on the mat, palms down, knees set back so the body is straight from head to knees, feet resting on the mat. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Kneeling Forearm Plank: same hold with a subtle variation: lower legs lifted off the mat with ankles crossed, forearms still flat on the mat, body still straight from head to knees. No text, no logos."
+  },
+  {
+    "id": "pilates-vierfuessler-arm-bein",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is on all fours on the mat, hands under the shoulders, knees under the hips, back flat. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Quadruped Arm and Leg Reach: the far arm extended forward at shoulder height and the leg nearest the camera extended back at hip height, back flat, pelvis level. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-wirbelsaeule-dehnen-sitzend",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits tall on the mat, legs a bit wider than hip-width, knees slightly bent, arms extended forward at shoulder height. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Spine Stretch Forward: spine rounded forward, chin to chest, arms reaching forward beyond the feet, sitting bones on the mat. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-baum-wand",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright next to a plain wall, the hand nearest the wall on it, weight on the leg nearest the wall, the other foot flat beside it. Equipment: a plain wall section. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Tree Pose at the Wall: lift the outer foot and press its sole against the inner side of the standing leg's lower calf, just above the ankle and well below the knee, that knee turned out to the side, hand on the wall, torso tall. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-beine-an-der-wand",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on the mat close to a plain wall, knees bent with both feet flat against the wall at knee height, arms relaxed on the mat. Equipment: a grey exercise mat and a plain wall section. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Legs up the Wall: both legs now extended straight up, the backs of the legs resting against the wall, heels high up on the wall, buttocks a little away from the wall, back and arms relaxed on the mat. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-dreieck-block",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands on the mat in a wide stance facing the camera, front foot turned out, back foot slightly in, legs straight, arms extended out to the sides at shoulder height, a yoga block upright inside the front foot. Equipment: a grey exercise mat and a light grey foam yoga block. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Triangle with Block: torso tilted sideways over the front leg, lower hand resting on the block, top arm reaching straight up, legs straight, chest open to the camera. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-girlande-block",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands facing the camera, feet wider than hip-width, toes turned slightly out, a yoga block on the mat behind her heels. Equipment: a grey exercise mat and a light grey foam yoga block. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Garland Pose on a Block: deep squat sitting on the block, knees wide, palms together in front of the chest, elbows pressing against the inner knees, back long. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-halbe-vorbeuge-block",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright, feet hip-width, a yoga block on the mat in front of her feet. Equipment: a grey exercise mat and a light grey foam yoga block. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Half Forward Fold with Block: hinged forward from the hips with a long flat back, knees soft, both hands resting on the block, gaze down. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-heldensitz-block",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She kneels upright on the mat, knees together, feet a bit wider than the hips, a yoga block on the mat between her feet. Equipment: a grey exercise mat and a light grey foam yoga block. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Hero Pose on a Block: lower her buttocks down to sit on the yoga block between her heels, hips now low just above the block, shins flat on the mat beside the block, torso tall, hands on her thighs; she is clearly lower than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-herabschauender-hund",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is on all fours on the mat, hands under the shoulders, knees under the hips, toes tucked. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Downward-Facing Dog: hips pushed up and back into an inverted V, arms and back in one line, legs almost straight, heels reaching toward the mat, head between the arms. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-hueftbeuger-stuhl",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits sideways on the edge of a chair, one buttock on the seat, both feet flat on the floor. Equipment: a sturdy plain wooden chair without wheels. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Chair Hip Flexor Stretch: the outer leg extended back with the ball of the foot on the floor, the front leg bent, torso upright, pelvis pressed gently forward. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-hund-an-der-wand",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright a large step away from a plain wall, facing it, arms by her sides. Equipment: a plain wall section. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Wall Dog: hinge forward from the hips: both hands shoulder-width on the wall at HIP height, lower than her shoulders, back flat and horizontal, parallel to the floor, head between the arms, hips above the feet, legs nearly vertical with knees slightly bent. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-krieger-2",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands on the mat in a wide stance facing the camera, front foot turned out, back foot slightly in, legs straight, arms by her sides. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Warrior II: front knee deeply bent to 90 degrees directly over the front ankle so the front thigh is nearly horizontal, back leg straight, torso upright, arms extended horizontally to the sides, gaze over the front hand; she is clearly lower than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-seitstreckung-kniend",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She kneels upright on the mat facing the camera, one leg extended straight to the side with the foot flat on the mat, hands on her hips. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Gate Pose: torso bent sideways toward the straight leg, lower hand resting on the straight leg, the other arm reaching over the head. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-taube",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is on all fours on the mat, hands under the shoulders, knees under the hips. Equipment: a grey exercise mat and a small grey cushion. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Pigeon Pose: one knee bent forward on the mat with the shin diagonal in front of the body, the other leg extended straight back, a cushion under the front hip, torso upright, hands on the mat. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-vorbeuge-stuhl",
+    "uses": 2,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the backrest of a chair, hands on the backrest. Equipment: a sturdy plain wooden chair without wheels. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Half Forward Fold at a Chair: hinge forward from the hips with a long flat back until the torso is horizontal, both hands resting ON the top of the chair backrest, arms straight, head between the arms, knees slightly bent. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "hueftkreisen-stehend",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera next to a plain wall, one hand on the wall, the outer knee lifted straight forward toward the camera to hip height, thigh horizontal, shin hanging down. Equipment: a plain wall section. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Standing Hip Circles: the lifted knee has rotated far out to the side, now pointing sideways away from the wall, thigh still horizontal at hip height, the inner thigh facing the camera, hip wide open, standing leg straight, hand on the wall. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "brustdehnung-tuerrahmen",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands sideways in a white door frame, forearm vertical and flat against the frame at shoulder height, elbow bent 90 degrees, feet together, torso level with the frame. Equipment: a sturdy white interior door frame in a short plain wall section. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Doorway Chest Stretch: she has stepped one foot forward through the doorway and leans her torso gently forward past the frame, the forearm still on the frame at shoulder height so the chest opens, torso upright, shoulders relaxed. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "mobility-brustwirbel-drehung-vierfuessler",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is on all fours on the mat: both knees on the mat under the hips, the far hand flat on the mat under the shoulder, the near hand behind her head with the near elbow pointing down toward the mat under her chest. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Quadruped Thoracic Rotation: rotate her upper body open toward the camera: the near hand stays behind her head and the near elbow now points straight up to the ceiling, chest turned sideways toward the camera, gaze following the elbow, far hand and both knees stay on the mat. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "mobility-frosch-schaukel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is on all fours on the mat with the knees wide apart, inner knees and shins on the mat, ankles in line with the knees, forearms on the mat under the shoulders, hips directly above the knees, back flat. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Frog Rock: move her hips far back: the buttocks now sit low, close to the level of her heels and clearly behind the knees, thighs folded, chest lowered toward the mat, arms stretched forward with forearms on the mat, knees still wide. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "mobility-handgelenke-kreisen",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, forearms in front of the chest, fingers interlaced, hands pointing up, wrists straight. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Wrist Circles: the interlaced hands are now tilted to one side in a wrist circle, wrists bent sideways, forearms still in front of the chest, elbows relaxed. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "mobility-hueftbeuger-kniend",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She kneels in a half-kneeling lunge on the mat: back knee on the mat under the hip, front foot flat with the front knee bent 90 degrees, torso upright, both hands on the front knee. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Kneeling Hip Flexor Stretch: hips shifted gently forward so the front knee moves over the toes and the back thigh angles behind the body, glutes tight, torso still upright, hands on the front knee. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "mobility-sprunggelenk-kreisen-sitzend",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits upright on a chair, one foot flat on the floor, the other leg lifted with the foot off the floor, both hands holding that thigh, ankle pointed down. Equipment: a sturdy plain wooden chair without wheels. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Seated Ankle Circles: the lifted foot is now pulled up with the toes pointing to the ceiling and turned slightly outward, mid circle, leg still lifted and held by the hands. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "mobility-weltbeste-dehnung",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is in a deep lunge on the mat, front foot flat, front knee bent 90 degrees, back knee resting on the mat, both hands on the mat on the inside of the front foot, back long. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of World's Greatest Stretch: the arm on the side of the front leg now reaches straight up to the ceiling, chest rotated open toward that side, gaze up at the hand, the other hand still on the mat inside the front foot, legs unchanged. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "schulter-rueckseite-dehnen",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, feet hip-width, arms hanging relaxed by her sides. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Cross-Body Shoulder Stretch: one straight arm drawn horizontally across the chest to the opposite side at shoulder height, the other hand pressing gently on it just above the elbow, shoulders relaxed and level. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "schulterblatt-kreisen",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright, feet hip-width, arms hanging relaxed, shoulders rolled forward and slightly up, upper back rounded a little. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Shoulder Blade Circles: roll her shoulders back and down: shoulder blades squeezed together, chest lifted and open, arms still hanging relaxed straight down beside her body, hands not on the hips. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "unterarm-dehnen",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright, feet hip-width, arms hanging relaxed by her sides. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Forearm Stretch: the arm nearest the camera is extended straight forward at shoulder height, palm facing forward with fingers pointing down, the other hand gently pulling the fingers back toward the body, shoulders relaxed. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "lauf-abc-anfersen",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing right on the balls of both feet, arms bent 90 degrees at her sides. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Butt Kicks: the rear heel kicked up behind her so it touches the buttocks, that thigh vertical with the knee pointing straight down at the floor, the shin folded tightly behind the thigh, standing on the ball of the other foot, torso upright, opposite arm forward. Not a high knee. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "lauf-abc-hopserlauf",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing right on the ball of one foot, the other foot just behind, arms bent 90 degrees, ready to skip. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Skips: a skip with the front knee driven up to hip height, thigh horizontal, the support foot just pushing off the floor on its toes, opposite arm swung forward and up, torso upright. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "lauf-abc-kniehebelauf",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing right on the balls of both feet, arms bent 90 degrees, ready to run in place. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of High Knees: one knee driven up to hip height with the thigh horizontal, ankle under the knee, standing tall on the ball of the other foot, opposite arm swung forward, torso upright, gaze forward. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "lauf-abc-seitgalopp",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands facing the camera in an athletic stance, feet wider than hip-width, knees slightly bent, arms bent at her sides, ready to shuffle sideways. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Side Shuffle: mid side shuffle, both feet just a few centimetres off the floor and close together under her body, knees slightly bent, torso upright facing the camera, arms bent at her sides. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "lauf-abc-skippings",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing right with a slight forward lean, on the balls of both feet, arms bent 90 degrees. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Skipping Drill: a small quick step, one knee only slightly lifted so the thigh is about 30 degrees in front of vertical and the foot is just above the ankle of the standing leg, standing on the ball of the other foot, slight forward lean, opposite arm forward. Not a high knee. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "lauf-abc-ueberkreuzlauf",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands facing the camera, feet hip-width, knees slightly bent, arms lifted out to the sides at about 45 degrees. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Carioca: her legs are clearly crossed: one leg steps across in front of the other so the shins form an X, the crossing foot placed on the floor beyond the other foot, hips rotated slightly, shoulders facing the camera, arms out to the sides for balance. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "ausfallschritt-rueckwaerts-langhantel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright, feet hip-width, a light barbell resting across her upper back behind the neck, both hands gripping the bar wider than the shoulders, chest up. Equipment: a light barbell with small black plates. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Light Barbell Reverse Lunge: Deep reverse lunge, her body clearly lower than in the reference: one leg stepped about one metre back onto the ball of the foot, rear knee bent 90 degrees and hovering 5 cm above the floor, front thigh horizontal with the front knee bent 90 degrees above the ankle, front foot flat, torso upright, barbell still across the upper back held with both hands. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "kniebeuge-langhantel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright in a steel squat rack, feet shoulder-width, toes slightly out, a barbell resting on her upper back, hands gripping it wider than the shoulders, chest up. Equipment: a barbell with black plates and a simple steel squat rack behind her. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Barbell Back Squat: bottom of the squat, thighs parallel to the floor, hips back, knees over the toes, back straight with the torso leaning forward about 40 degrees, heels flat, barbell still on the upper back. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "beinbeuger-band",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies face down on the mat, forehead on her stacked forearms, legs long; a blue resistance band loops around one ankle and is anchored low behind her to a sturdy table leg, lightly taut. Equipment: a grey exercise mat, a blue resistance band and a sturdy plain wooden table. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Banded Leg Curl: the banded leg is bent with the heel pulled toward the buttocks, knee bent about 100 degrees, shin angled up, band clearly stretched, thigh and hips stay on the mat, the other leg long. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "beinbeuger-maschine",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies face down on a lying leg curl machine, hips on the padded bench, hands on the front handles, legs straight, the ankle roller pad behind her lower calves just above the heels. Equipment: a gym machine: a plain black lying leg curl machine with a padded bench, ankle roller pad and front handles, without any labels, stickers or screens. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Machine Leg Curl: knees bent 90 degrees so the lower legs point straight up, the ankle roller pad lifted up with the calves, hips and thighs stay on the bench, hands on the handles. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "nordic-curl-assistiert",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She kneels upright on a thick grey cushion, heels hooked under the edge of a heavy sofa, body straight from knees to head, hands in front of the chest. Equipment: a sturdy plain grey upholstered sofa and a thick grey cushion. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Assisted Nordic Curl: her whole body leans forward as ONE rigid straight line from knees to head, hips fully straight and not bent at all, the line at about 45 degrees above the floor, heels still anchored under the sofa, hands in front of the chest ready to catch. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "wadenheben-gebeugtes-knie",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands facing a plain wall, hands lightly on the wall, feet hip-width, knees bent about 30 degrees, heels flat on the floor. Equipment: a plain wall section. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Bent-Knee Calf Raise: heels raised high off the floor so she stands on the balls of the feet, heels about 8 cm above the floor, knees still bent about 30 degrees, hands lightly on the wall. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "wadenheben-kurzhantel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands with the balls of both feet on the edge of a plain low wooden step, heels hanging lower than the step edge, legs straight, one dumbbell in the outer hand hanging at her side, the other hand on a plain wall. Equipment: a plain low wooden step platform without any writing, beside a plain wall section, and one black hex dumbbell. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Standing Dumbbell Calf Raise: heels raised as high as possible, she stands on the balls of both feet on the step edge, legs straight, dumbbell at her side, hand on the wall. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "liegestuetz-fuesse-erhoeht",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is in a decline push-up: the tops of both feet rest ON the seat of a sturdy chair behind her, feet about 45 cm above the floor, hands shoulder-width on the mat, arms straight, body one straight line sloping down from heels to head. Equipment: a grey exercise mat and a sturdy plain wooden chair without wheels. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Decline Push-up: bend her elbows to about 90 degrees and lower her chest to a few centimetres above the mat, body still one straight line, both feet still resting on the chair seat. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "trizeps-liegestuetz-eng",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She holds a high plank on the mat, hands close together under the chest, arms straight, body one straight line from head to heels. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Close-grip Push-up: bend her elbows to about 90 degrees and lower her whole straight body so her chest is a few centimetres above the mat, elbows tucked tight along the ribs pointing back; her body is clearly much lower than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "handtuch-rudern-isometrisch",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits upright on the mat, knees slightly bent, a towel looped around the soles of both feet, holding both towel ends with straight arms. Equipment: a grey exercise mat and a plain light grey towel. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Seated Towel Row Hold: elbows pulled back beside the ribs, shoulder blades squeezed together, chest up, the towel taut around the feet, same seated position. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "face-pull-kabel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright a step back from a cable tower, holding a rope attachment set at head height with both hands, arms straight forward. Equipment: a plain black cable tower with a rope attachment, without any labels or stickers. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Cable Face Pull: rope pulled toward the forehead, hands apart beside the ears, elbows high and out to the sides, shoulder blades squeezed, torso upright. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "trizepsstrecken-kurzhantel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright holding one dumbbell with both hands at one end, arms straight overhead, upper arms close to the head. Equipment: one black hex dumbbell. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Overhead Dumbbell Triceps Extension: elbows bent so the dumbbell is lowered behind the head to neck height, upper arms still vertical next to the head, elbows pointing up, torso upright. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "stirndruecken-langhantel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on a low step platform, knees bent with feet flat on the floor, holding a light barbell with a narrow grip straight up above the chest, arms straight. Equipment: a light barbell with small black plates and a low black aerobic step platform. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Light Barbell Skull Crusher: bend her elbows to about 90 degrees so the bar comes down to just above her forehead, upper arms angled slightly back and fixed, forearms angled back toward her head; the bar is clearly much lower than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "bizepscurl-kurzhantel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, a dumbbell in each hand with straight arms at her sides, palms facing forward. Equipment: a pair of black hex dumbbells. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Dumbbell Biceps Curl: both dumbbells curled up to the shoulders, elbows still at her sides, palms facing the shoulders, torso upright. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "bizepscurl-langhantel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright in profile holding a light barbell with an underhand shoulder-width grip in front of her thighs, arms straight, elbows at her sides. Equipment: a light barbell with small black plates. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Barbell Biceps Curl: elbows fully bent so the forearms point up, the barbell now in front of her shoulders at collarbone height, upper arms still vertical at her sides; the barbell is clearly much higher than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "seitheben-kurzhantel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, a light dumbbell in each hand at her sides, elbows slightly bent. Equipment: a pair of black hex dumbbells. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Dumbbell Lateral Raise: both arms raised out to the sides to shoulder height, elbows slightly bent, dumbbells level with the shoulders, torso upright. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "seitheben-band",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera on the middle of a blue resistance band, holding one band end in each hand at her sides, elbows slightly bent; two separate band strands run from her feet to her hands. Equipment: a blue resistance band anchored under both feet. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Banded Lateral Raise: both arms raised out to the sides to shoulder height, elbows slightly bent, band stretched, torso upright. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "schulterdruecken-langhantel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright in front of a squat rack, feet hip-width, a barbell resting on the front of her shoulders, hands shoulder-width, elbows slightly in front of the bar. Equipment: a barbell with black plates and a simple steel squat rack behind her. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Barbell Overhead Press: bar pressed straight overhead above the mid-foot, arms straight, head slightly forward through the arms, torso upright, glutes and abs braced. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "thruster-langhantel",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is crouched low in a deep front squat, NOT standing: hips low, thighs parallel to the floor, knees bent 90 degrees, heels flat, torso upright, a light barbell resting on the front of her shoulders with elbows high pointing forward. Equipment: a light barbell with small black plates. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Barbell Thruster: she has stood up fully, legs straight, and pressed the barbell straight overhead above the mid-foot, arms straight. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "umsetzen-druecken-langhantel-leicht",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright, feet hip-width, holding a light barbell with an overhand grip in front of her thighs, arms straight. Equipment: a light barbell with small black plates. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Light Barbell Clean and Press: standing upright with the bar pressed straight overhead above the mid-foot, arms straight, head slightly forward through the arms. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-abrollen-stehend",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright, feet hip-width, knees soft, arms hanging by her sides. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Standing Roll-down: spine rolled down forward, chin to chest, back rounded, arms hanging toward the floor in front of the feet, knees slightly bent, head relaxed. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-beinkreise-seitlage",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her side on the mat parallel to the camera, head resting on the lower arm, legs long and stacked, top hand on the mat in front of the chest. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Side-Lying Leg Circles: the top leg lifted straight to hip height and drawn slightly forward in a small circle, toes pointed, hips stacked, head on the lower arm. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-brustkorb-heben",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on the mat, knees bent with feet flat hip-width, hands behind the head, head and shoulders on the mat. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Chest Lift: curl her head, neck and shoulders up off the mat: both shoulder blades clearly lifted off the mat, upper back at about 30 degrees to the mat, chin toward the chest, gaze at her knees, hands behind the head, elbows wide, lower back on the mat. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-einbein-strecken",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on the mat, head on the mat, both knees drawn toward the chest, hands on the shins. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Single Leg Stretch (Head Down): one leg extended diagonally up at about 45 degrees, the other knee pulled toward the chest with both hands, head stays on the mat. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-einbeinkreisen",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on the mat, one knee bent with the foot flat, the other leg extended straight up to the ceiling, arms beside the body. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Single Leg Circles: move the raised straight leg in its circle so it now tilts clearly toward her head, about 30 degrees past vertical, toes pointed, pelvis still on the mat, the other foot flat, arms beside the body. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-fersen-tippen",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on the mat, both legs lifted in tabletop, knees over the hips and bent 90 degrees, both shins horizontal and parallel above the mat, arms beside the body. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Toe Taps: lower only the near leg so its heel lightly touches the mat while that knee stays bent; the far leg stays lifted in tabletop with its shin horizontal clearly above the mat, lower back on the mat. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-hundert-gehockt",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on the mat, legs in tabletop with knees over the hips, head and shoulders on the mat, arms long beside the body. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of The Hundred, Bent Knees: curl her head and shoulders up off the mat so both shoulder blades lift clearly, upper back at about 30 degrees, gaze toward the knees, both arms lifted straight forward about 10 cm above the mat reaching toward her feet, legs in tabletop. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-knie-falten",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on the mat, knees bent with both feet flat hip-width, arms beside the body. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Knee Folds: lift one leg so that knee is bent exactly 90 degrees: thigh vertical above the hip, shin horizontal and parallel to the mat, the other foot still flat on the mat, pelvis still. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "pilates-wandstuetz",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands facing a plain wall with both FOREARMS flat against the wall from elbow to hand, elbows bent 90 degrees at shoulder height, feet together a large step back, body one straight diagonal line. Equipment: a plain wall section. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Wall Plank: same hold with a subtle variation: heels lifted slightly, abs drawn in, body still one straight diagonal line, forearms still flat on the wall. No text, no logos."
+  },
+  {
+    "id": "pilates-wirbelsaeule-drehen-sitzend",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits tall on the mat facing the camera, legs extended forward, arms extended out to the sides at shoulder height. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Seated Spine Twist: rotate her whole upper body about 70 degrees to one side: chest and both shoulders turned sideways, so one outstretched arm now points toward the camera and the other points away, both arms still horizontal, pelvis and legs unchanged. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-adlerarme-sitzend",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits upright on a chair facing the camera, feet flat, arms extended forward at shoulder height. Equipment: a sturdy plain wooden chair without wheels. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Eagle Arms Seated: arms crossed in front of the chest, elbows bent, forearms wrapped around each other with palms touching, elbows lifted to shoulder height. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-berghaltung",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, feet hip-width and parallel, arms by her sides, shoulders relaxed. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Mountain Pose: same pose with a subtle variation: palms turned forward, chest slightly lifted. No text, no logos."
+  },
+  {
+    "id": "yoga-brustoeffner-stuhl",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits upright on the front half of a chair, feet flat, hands on her thighs. Equipment: a sturdy plain wooden chair without wheels. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Seated Chest Opener: hands behind the buttocks on the seat, fingers forward, breastbone lifted, shoulder blades drawn together, chest open, gaze forward. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-dreieck",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands on the mat in a wide stance facing the camera, front foot turned out, back foot slightly in, legs straight, arms extended out to the sides at shoulder height. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Triangle Pose: torso tilted sideways over the front leg, lower hand on the front shin, top arm reaching straight up, chest open to the camera. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-kindhaltung-sitzend",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits upright on a chair, feet flat hip-width, hands on her thighs. Equipment: a sturdy plain wooden chair without wheels. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Seated Rest Pose: leaning forward with a long back, forearms resting on her thighs, shoulders relaxed, gaze to the floor. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-kobra-sanft",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies face down on the mat, hands flat beside the chest, elbows bent close to the body, forehead on the mat, legs long with tops of the feet on the mat. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Baby Cobra: head and chest gently lifted off the mat, breastbone about 15 cm above the mat, elbows still clearly bent and close to the ribs (arms not straight), hands flat beside the chest, pubic bone, hips, thighs and feet stay on the mat, gaze slightly forward. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-krieger-2-stuhl",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits upright sideways on the front edge of a chair, both feet flat on the floor, hands on her thighs. Equipment: a sturdy plain wooden chair without wheels. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Chair Warrior II: front leg bent with the foot flat, back leg extended straight back with the foot flat on the floor, arms extended out to the sides at shoulder height. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-krieger-3-wand",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright an arm's length from a plain wall, facing it, hands on the wall at hip height. Equipment: a plain wall section. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Warrior III at the Wall: torso hinged forward so arms and back form a horizontal line, one leg lifted straight back to hip height, hands on the wall, standing leg straight. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-seitneige-stehend",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, feet hip-width, arms by her sides. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Standing Side Bend: one arm raised straight overhead, the other hand on her hip, torso bent sideways toward the hip hand, hips stay centered. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-stuhlhaltung",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright on the mat, feet hip-width, arms by her sides. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Chair Pose: knees deeply bent to about 100 degrees and hips pushed back as if sitting on a chair, thighs nearly parallel to the floor, torso leaning forward about 30 degrees with a long back, arms extended forward and up beside the ears; she is clearly lower than in the reference. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-vorbeuge-stehend",
+    "uses": 1,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright on the mat, feet hip-width, knees slightly bent, arms by her sides. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Standing Forward Fold: torso folded forward and hanging, knees bent, head relaxed, hands holding opposite elbows. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "armkreisen",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, feet hip-width, both arms straight and extended out to the sides at shoulder height, palms down. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Arm Circles: both straight arms now raised high above the head in a wide V, mid big circle, shoulders relaxed down, torso upright, feet unchanged. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "beinpendel-stehend",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands tall in profile next to a sturdy chair that stands on her far side; her far hand rests on the chair backrest. Standing on the far leg, the leg nearest the camera is swung back straight about 30 degrees behind her hip, torso upright. Equipment: a sturdy plain wooden chair without wheels. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Standing Leg Swings: the leg nearest the camera is now swung FORWARD, straight, the foot about at hip height clearly in front of her body, torso upright, far hand still on the chair backrest, standing leg straight. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "lat-dehnung-stehend",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, feet hip-width, one arm stretched straight up above the head, the other hand on her hip. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Standing Lat Stretch: the torso now bends clearly sideways toward the hip hand, about 25 degrees, the raised arm reaching up and over the head in an arc, hips stay level and centered, feet unchanged. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "trizeps-dehnen",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, feet hip-width, arms hanging relaxed by her sides. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Overhead Triceps Stretch: one arm bent overhead with the hand reaching down between the shoulder blades, elbow pointing to the ceiling, the other hand gently pulling that elbow toward the head, torso upright. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "double-unders",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera on the balls of the feet, holding the handles of a thin black jump rope at hip height, elbows close to her sides, the rope resting on the floor behind her heels. Equipment: a thin black jump rope. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Double-Unders: she is in the air, both feet about 15 cm above the floor, legs almost straight, body tall, handles still in her hands at hip height, and the thin black rope clearly visible as a curved arc passing just under her feet. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "hip-thrust-langhantel",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits on the floor with her back to the long side of a flat bench, her shoulder blades resting on the bench edge, buttocks on the floor, knees bent with both feet flat on the floor, a barbell with plates lying across her hip crease held with both hands. Equipment: a flat padded weight bench and a barbell with black plates and a foam pad. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Barbell Hip Thrust: hips lifted high off the floor so torso and thighs form one horizontal line like a tabletop, shoulder blades on the bench edge, knees bent 90 degrees above the ankles, shins vertical, barbell resting on the hips, chin slightly tucked. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "beinbeuger-handtuch",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She is in a hip bridge on a smooth floor: shoulders and arms on the floor, hips lifted high so shoulders, hips and knees form a straight diagonal line, knees bent 90 degrees, both heels resting on a folded light grey towel. Equipment: a plain light grey towel on a smooth light floor. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Towel Slider Leg Curl: both heels slid far forward together with the towel, the towel still under the heels, legs almost straight, hips still lifted about 15 cm off the floor so the body forms a long straight slope from shoulders to heels, arms on the floor. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "beinstrecker",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits upright in a leg extension machine, back against the pad, knees bent 90 degrees, the ankle pad in front of her lower shins, hands on the side handles. Equipment: a gym machine: a plain black leg extension machine with a padded seat and an ankle pad, without any labels, stickers, screens or placards. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Leg Extension: legs extended straight forward at seat height, knees straight, the ankle pad lifted up, back against the backrest, hands on the handles. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "beinstrecker-band",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits upright on a chair, hands holding the seat edges, both knees bent 90 degrees, feet flat. A long blue resistance band runs from the back leg of the chair under the seat forward to a loop around her near ankle, lightly taut. Equipment: a sturdy plain wooden chair without wheels and a long blue resistance band. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Banded Leg Extension: the near leg is straightened forward until horizontal, foot flexed, the long band clearly stretched in a line from the ankle back under the seat to the chair leg, the other foot flat on the floor, torso upright. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "bankdruecken-kurzhantel",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on a flat bench, feet flat on the floor, a dumbbell in each hand beside the chest, elbows below the bench about 45 degrees from the torso. Equipment: a flat padded weight bench and a pair of black hex dumbbells. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Dumbbell Bench Press: both dumbbells pressed straight up above the chest, arms almost straight, dumbbells close together, shoulder blades on the bench, feet flat on the floor. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "bankdruecken-langhantel",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on a flat bench, feet flat on the floor. The barbell is LOWERED and touches her lower chest, both hands gripping it a little wider than the shoulders, elbows bent about 90 degrees and pointing down below the bench, forearms vertical. Rack uprights stand behind her head. The bar is low on her chest, NOT above her. Equipment: a flat bench press station with rack uprights and a barbell with black plates. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Barbell Bench Press: arms now fully straight, the barbell pressed up about 50 cm above her chest, directly over the shoulders, shoulder blades on the bench, feet flat on the floor. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "schraegbankdruecken-kurzhantel",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on an incline bench set to about 30 degrees, feet flat on the floor, a dumbbell in each hand beside the upper chest, elbows below the bench. Equipment: an adjustable padded incline weight bench and a pair of black hex dumbbells. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Incline Dumbbell Press: both dumbbells pressed up above the shoulders, arms almost straight, dumbbells close together, back against the bench, feet flat on the floor. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "fliegende-kabel",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands in the middle between two cable towers facing the camera, one foot slightly forward. Her arms are spread wide out to the sides like wings, almost horizontal at shoulder height, elbows slightly bent, each hand holding a handle with a cable running to the high pulley on that side. Equipment: a plain black double cable crossover station with two handles, without any labels or stickers. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Cable Fly: both hands now brought together in front of her chest at shoulder height, arms in a hugging arc with elbows slightly bent, cables stretched diagonally from the pulleys to her hands, same stance. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "trizepsdruecken-kabel",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, white sneakers, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing a cable tower, holding a rope attached high, elbows at her sides bent about 90 degrees, forearms horizontal. Equipment: a plain black cable tower with a rope attachment at the top pulley, without any labels or stickers. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Cable Triceps Pushdown: forearms pushed down until the arms are straight, hands beside the thighs, elbows still pinned at her sides, torso upright. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "trizepsdruecken-band",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing a closed white door, holding both ends of a blue resistance band anchored high at the top of the door, elbows at her sides bent about 90 degrees. Equipment: a blue resistance band anchored at the top of a closed plain white door with a door anchor. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Banded Triceps Pushdown: forearms pushed down until the arms are straight, hands beside the thighs, band stretched, elbows still at her sides. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "bizepscurl-band",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera on the middle of a blue resistance band, holding one band end in each hand with straight arms at her sides, palms forward; two separate band strands run vertically from her feet to her hands. Equipment: a blue resistance band anchored under both feet. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Banded Biceps Curl: elbows fully bent, both hands curled up to the front of the shoulders, palms facing her, elbows still at her sides, the two separate band strands stretched vertically from her feet up to her hands. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-baum",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright facing the camera, feet together, arms by her sides. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Tree Pose: balancing on one leg, the sole of the other foot pressed against the inner thigh above the knee, knee turned out, palms together in front of the chest. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-drehsitz",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body front view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She sits tall on the mat with both legs extended forward, hands on the mat beside the hips. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Seated Twist: one knee bent with that foot placed outside the other knee, torso rotated toward the bent knee, the opposite elbow hugging the knee, the other hand on the mat behind. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-krieger-1",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She stands upright on the mat, feet together, arms by her sides. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Warrior I: big lunge with the front knee bent over the ankle, back leg straight with the heel down, hips facing forward, both arms raised straight overhead. The pose must clearly differ from the reference photo. No text, no logos."
+  },
+  {
+    "id": "yoga-schulterbruecke",
+    "uses": 0,
+    "start": "Photorealistic fitness app exercise photo, full body side view of an athletic woman in a plain black sports top and black leggings, barefoot, clean seamless light grey studio background and floor, soft even lighting, whole body in frame with margin, centered. START position: She lies on her back on the mat, knees bent with feet flat hip-width close to the buttocks, arms beside the body. Equipment: a grey exercise mat. No text, no logos, no brand names.",
+    "end": "Edit the reference photo: keep exactly the same woman, outfit, equipment, camera angle, framing, background and lighting. Change only her pose to the END position of Bridge Pose: lift her hips high off the mat so shoulders, hips and knees form one straight diagonal line; only shoulders, arms and feet touch the mat, chin slightly tucked. The pose must clearly differ from the reference photo. No text, no logos."
   }
 ]

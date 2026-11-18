@@ -1,0 +1,39 @@
+name: exercise-photos-gemini
+# Übungsfotos mit Google Gemini erzeugen (statt Higgsfield). Läuft bei Änderung der Anfrage-Datei auf claude/**
+# oder von Hand. Ergebnis: WebP-Fotos, App-Zuordnung und Prüfbögen werden auf denselben Branch committet.
+on:
+  push:
+    branches: ['claude/**']
+    paths: [content/exercise-photos/gemini-request.json]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Werkzeuge
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick webp
+      - name: Fotos mit Gemini erzeugen
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_IMAGE_MODEL: ${{ vars.GEMINI_IMAGE_MODEL }}
+        run: |
+          set -euo pipefail
+          dwebp -quiet apps/mobile/assets/exercise-photos/kniebeuge-koerpergewicht-start.webp -o /tmp/ref.png
+          python3 scripts/exercise-photos-gemini.py /tmp/gemini-out /tmp/ref.png
+          ls -la /tmp/gemini-out
+      - name: Umrechnen, Zuordnung und Prüfbögen
+        run: node scripts/exercise-photos.mjs --from-dir /tmp/gemini-out
+      - name: Committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          git add apps/mobile/assets/exercise-photos apps/mobile/src/data/exercise-photo-registry.generated.ts content/exercise-photos/review
+          git diff --cached --quiet && { echo "Nichts Neues"; exit 0; }
+          git commit -m "Übungsfotos (Gemini) übernommen"
+          git push

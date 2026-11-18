@@ -43,6 +43,21 @@ App zeigt wieder die Illustration.
   `packages/core/src/content/exercise-photos.ts`) im Test `packages/content/src/exercise-photos.test.ts` (läuft in `ci`).
 - Bitte als JSON mit 2 Leerzeichen Einrückung speichern (Prettier-Prüfung in `ci`).
 
+## Mit Google Gemini erzeugen (Workflow exercise-photos-gemini)
+
+- Prompts je Übung stehen in `content/exercise-photos/prompts.json` (`start`: Person/Stil + Ausgangsposition,
+  `end`: Bearbeitung des Startbilds zur Endposition). Geprüft im Test `packages/content/src/exercise-photo-prompts.test.ts`.
+- Auftrag: Liste von Übungs-IDs in `content/exercise-photos/gemini-request.json` auf einen Branch `claude/…` pushen
+  (die Datei muss sich ändern). Der Workflow erzeugt Start- und Endbild (`scripts/exercise-photos-gemini.py`,
+  Secret `GEMINI_API_KEY`), rechnet sie mit `scripts/exercise-photos.mjs --from-dir` um und committet Fotos, Zuordnung
+  und Prüfbögen auf denselben Branch.
+- Eintrag `"<id>#end"`: nur das Endbild neu erzeugen (das vorhandene Startfoto bleibt die Vorlage) – halb so teuer,
+  wenn nur die Endposition nicht passt.
+- Gemini-Fotos stehen nicht im Manifest und nicht in `imported.json`; der Import per Adresse löscht nur Fotos, die er
+  selbst übernommen hat (Einträge in `imported.json`).
+- Jedes Paar vor dem Übernehmen ansehen; passt es nicht, die WebP-Dateien löschen (die App zeigt dann die Illustration)
+  und `node scripts/exercise-photos.mjs --registry-only` laufen lassen.
+
 ## Lokal (Claude-Sitzung, ohne Zugriff auf das Bild-CDN)
 
 `node scripts/exercise-photos.mjs --from-dir <ordner>` rechnet lokale Dateien `<id>-start.png` / `<id>-end.png` (auch
