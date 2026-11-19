@@ -1,12 +1,12 @@
 {
   "id": "power-intervall-30-15",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "Power-Intervall 30/15",
-  "summary_de": "Vier schnelle Runden für Geübte: 30 Sekunden Vollgas, 15 Sekunden Pause. Sprünge, Liegestütz, Ausfallschritte und harte Rumpf-Stationen.",
+  "summary_de": "Vier schnelle Runden für Geübte: 30 Sekunden Vollgas, 15 Sekunden Pause. Sprünge, Liegestütz, Y-T-W für den oberen Rücken, Ausfallschritte und harte Rumpf-Stationen.",
   "category": "hiit_cardio",
   "difficulty": 4,
-  "minutes": 28,
+  "minutes": 34,
   "format": "interval",
   "rounds": 4,
   "round_rest_s": 60,
@@ -24,6 +24,14 @@
     },
     {
       "exercise_id": "liegestuetz",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "y-t-w-vorgebeugt",
       "reps": null,
       "duration_s": 30,
       "sets": null,
@@ -63,12 +71,12 @@
       "note_de": "Abwechselnd links und rechts."
     },
     {
-      "exercise_id": "seitstuetz",
+      "exercise_id": "seitstuetz-hueftheben",
       "reps": null,
       "duration_s": 30,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "hollow-body-halten",

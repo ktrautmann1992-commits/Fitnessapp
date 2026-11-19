@@ -948,15 +948,28 @@ export const FLOW_RULES = {
  *   Chipper) – die Begriffe sind gängige, markenfreie Bezeichnungen der Trainingsformen.
  * - `strengthEndurance` (Gründer-Auftrag 15.11.2026 „deutlich mehr Workouts auf Zeit, Kraft-Ausdauer, darauf soll der
  *   Fokus liegen“): Zirkel oder Intervall (kein WOD-Stil) aus einer Kraft-/HIIT-Kategorie (`categories`), Dauer
- *   `minutes` 20–30 und mindestens `minTimedShare` der Übungen nach Sekunden dosiert. Diese Workouts stehen als erster
- *   Bereich und in „Alle“ oben.
+ *   `minutes` 20–35 und mindestens `minTimedShare` der Übungen nach Sekunden dosiert. Diese Workouts stehen als erster
+ *   Bereich und in „Alle“ oben. Obergrenze 35 statt 30 (Gründer-Auftrag 19.11.2026): „Die Vielfalt an Übungen soll
+ *   nicht gekürzt werden, es darf 30 min leicht überschreiten, wenn das nötig ist, um eine Übung auf beiden Seiten
+ *   durchzuführen.“
+ * - `bodyRegions` (Gründer-Auftrag 19.11.2026 „den Körper insgesamt definieren, indem kein Bereich vernachlässigt
+ *   wird“): Ganzkörper-, HIIT- und Cardio-Workouts auf Zeit (`fullBodyCategories`) enthalten mindestens eine Übung je
+ *   Bereich – Beine/Gesäß, Drücken, Ziehen, Rumpf – gemessen an den Hauptmuskeln der Übungen. Workouts mit Fokus im
+ *   Namen (Bauch/Rumpf, Beine & Po, Oberkörper, Läufer) und Hyrox-Stationen bleiben bewusst fokussiert.
  * Quelle: PRODUKTENTSCHEIDUNG (Gründer-Auftrag 29.10.2026 bzw. 15.11.2026, Testphase).
  */
 export const WORKOUT_THEME_RULES = {
   strengthEndurance: {
     categories: ['full_body', 'core', 'upper_body', 'legs_glutes', 'hiit_cardio', 'run_strength'],
-    minutes: { min: 20, max: 30 },
+    minutes: { min: 20, max: 35 },
     minTimedShare: 0.5,
+    fullBodyCategories: ['full_body', 'hiit_cardio'],
+    bodyRegions: {
+      beine: ['quadriceps', 'hamstrings', 'glutes', 'calves', 'adductors'],
+      druecken: ['chest', 'triceps', 'front_delts'],
+      ziehen: ['lats', 'upper_back', 'rear_delts', 'biceps'],
+      rumpf: ['abs', 'obliques', 'lower_back'],
+    },
   },
   relaxMaxStars: 1,
   hyroxMinShare: 0.5,

@@ -1,12 +1,12 @@
 {
   "id": "core-stabilitaet-25",
-  "version": 2,
+  "version": 3,
   "status": "published",
-  "title_de": "Core-Stabilität 28",
-  "summary_de": "Acht Stationen für einen stabilen Rumpf: Stütz, Schulter-Tippen, Dead Bug lang und Seitstütz. 45 Sekunden Arbeit, 15 Sekunden Pause.",
+  "title_de": "Core-Stabilität 30",
+  "summary_de": "Acht Stationen für einen stabilen Rumpf: Stütz, Schulter-Tippen, Dead Bug lang und Seitstütz mit Hüftheben. 45 Sekunden Arbeit, 15 Sekunden Pause.",
   "category": "core",
   "difficulty": 3,
-  "minutes": 28,
+  "minutes": 30,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 60,
@@ -31,12 +31,12 @@
       "note_de": null
     },
     {
-      "exercise_id": "seitstuetz",
+      "exercise_id": "seitstuetz-hueftheben",
       "reps": null,
       "duration_s": 45,
       "sets": null,
       "rest_s": 15,
-      "note_de": "Nach der Hälfte die Seite wechseln."
+      "note_de": null
     },
     {
       "exercise_id": "baerenstand-schulter-tippen",

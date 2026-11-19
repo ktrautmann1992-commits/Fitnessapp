@@ -2,14 +2,23 @@ import { readdirSync, readFileSync } from 'node:fs';
 
 import { describe, expect, it } from 'vitest';
 
-import { DEEP_CORE_ONLY_EXERCISE_IDS, LIBRARY_SEARCH_EXCLUDED_IDS } from '../constants';
+import {
+  DEEP_CORE_ONLY_EXERCISE_IDS,
+  LIBRARY_SEARCH_EXCLUDED_IDS,
+  WORKOUT_THEME_RULES,
+} from '../constants';
 import { equipmentProfile, findSubstitute } from '../plan/equipment-profile';
 import { swapCandidates, type SwapContext } from '../plan/preferences';
 import { planSafetyRules } from '../plan/safety';
 import { EXERCISES, NOTHING, planned } from '../plan/swap-test-helpers';
 import { FULL_HOME, MONDAY, person } from '../plan/test-library';
 import { checkWorkout } from './checks';
-import { isStrengthEnduranceWorkout, workoutsForTheme } from './discover';
+import {
+  isHyroxWorkout,
+  isStrengthEnduranceWorkout,
+  missingBodyRegions,
+  workoutsForTheme,
+} from './discover';
 import { isPowerWorkout, workoutPlayerPlan } from './player';
 import { type Workout, workoutSchema } from './schema';
 import { buildWorkoutTimerPlan, estimateWorkoutSeconds } from './timer';
@@ -115,12 +124,14 @@ describe('Kraft-Ausdauer auf Zeit – Inhalte', () => {
     expect(fresh.filter((w) => w.category === 'core').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('freigegeben, ohne Prüfbefund, 20–30 Minuten, Dauer passt zur Schätzung und zum Player', () => {
+  it('freigegeben, ohne Prüfbefund, 20–35 Minuten, Dauer passt zur Schätzung und zum Player', () => {
     for (const w of focus) {
       expect(w.status, w.id).toBe('published');
       expect(checkWorkout(w, EXERCISES), w.id).toEqual([]);
       expect(w.minutes, w.id).toBeGreaterThanOrEqual(20);
-      expect(w.minutes, w.id).toBeLessThanOrEqual(30);
+      expect(w.minutes, w.id).toBeLessThanOrEqual(
+        WORKOUT_THEME_RULES.strengthEndurance.minutes.max,
+      );
       expect(Math.abs(estimatedMinutes(w) - w.minutes), w.id).toBeLessThanOrEqual(0.5);
       expect(Math.abs(playerMinutes(w) - w.minutes), w.id).toBeLessThanOrEqual(1);
     }
@@ -176,6 +187,36 @@ describe('Kraft-Ausdauer auf Zeit – Inhalte', () => {
     );
     expect(unilateral('seitstuetz')).toBe(false);
     expect(side?.note_de).toMatch(/Seite wechseln/);
+  });
+
+  it('Vielfalt bleibt: wieder aufgenommene Übungen, Dauer darf dafür über 30 Minuten gehen', () => {
+    // Gründer-Auftrag 19.11.2026: „Die Vielfalt an Übungen innerhalb eines Workouts soll nicht gekürzt werden, es
+    // darf auch 30 min leicht überschreiten, wenn das notwendig ist, um eine Übung auf beiden Seiten durchzuführen.“
+    const has = (id: string, exercise: string) =>
+      byId(id).exercises.some((item) => item.exercise_id === exercise);
+    expect(has('beine-po-ausdauer-28', 'glute-bridge-einbeinig')).toBe(true);
+    expect(has('beine-po-ausdauer-28', 'seitlicher-ausfallschritt')).toBe(true);
+    expect(has('core-stabilitaet-25', 'seitstuetz-hueftheben')).toBe(true);
+    expect(has('ganzkoerper-ausdauer-45-15', 'rdl-einbeinig-koerpergewicht')).toBe(true);
+    expect(has('power-intervall-30-15', 'seitstuetz-hueftheben')).toBe(true);
+    expect(has('stufe-stuhl-kraftausdauer-25', 'step-down-stufe')).toBe(true);
+    expect(byId('beine-po-ausdauer-28').minutes).toBeGreaterThan(30);
+    expect(isStrengthEnduranceWorkout(byId('beine-po-ausdauer-28'))).toBe(true);
+  });
+
+  it('Ganzkörper und HIIT auf Zeit: kein Körperbereich fehlt (Beine, Drücken, Ziehen, Rumpf)', () => {
+    // Gründer-Auftrag 19.11.2026: „den Körper insgesamt definieren, indem kein Bereich vernachlässigt wird“.
+    const categories: readonly string[] = WORKOUT_THEME_RULES.strengthEndurance.fullBodyCategories;
+    const primary = (id: string) => EXERCISES.get(id)?.primary_muscles;
+    const checked = ALL.filter(
+      (w) =>
+        w.status === 'published' &&
+        isStrengthEnduranceWorkout(w) &&
+        categories.includes(w.category) &&
+        !isHyroxWorkout(w),
+    );
+    expect(checked.length).toBeGreaterThanOrEqual(12);
+    for (const w of checked) expect(missingBodyRegions(w, primary), w.id).toEqual([]);
   });
 
   it('Reine Mobilitäts-, Erholungs- und Technik-Workouts bleiben außerhalb des Fokus', () => {

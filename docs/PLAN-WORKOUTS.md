@@ -277,7 +277,7 @@ Band kein Widerstand; Pallof Press mit Band vorhanden). Die Übungen kommen nur 
 Plan-Engine aufnehmen. Dazu Endposition für Beinbeuger mit Band.
 
 **Tests:** core `workouts/kraft-ausdauer.test.ts` (Prüfregeln, Dauer = Schätzung/Player, Zeit-Anteil, ≥ 3 Min. tiefe
-Bauchmuskeln je Workout, Seitenwechsel-Hinweise, Bibliotheks-Sperre), `discover.test.ts` (Grenzfälle 19/31 Min.,
+Bauchmuskeln je Workout, Seitenwechsel-Hinweise, Bibliotheks-Sperre), `discover.test.ts` (Grenzfälle 19/31 Min., seit Abschnitt 12: 19/36 Min.,
 Formate, Kategorien); Playwright `kraft-ausdauer.spec.ts` (Bildschirmfotos mit `KA_SHOTS=<Ordner>`).
 
 **Offen:** fachliche Prüfung der neuen Workouts und Übungen vor dem Livegang; eigene Hyrox-Kraft-Ausdauer-Variante mit
@@ -313,3 +313,24 @@ Sinnvollerweise müsste es 45 s links und dann 45 s rechts der gleichen Übung s
 - **Tests:** core `player.test.ts`, `timer.test.ts`, `library.test.ts`, `custom.test.ts`, `swap.test.ts`,
   `kraft-ausdauer.test.ts`; Playwright `workout-player.spec.ts` (Linke Seite → Seite wechseln → Rechte Seite mit
   Test-Uhr, Bildschirmfoto mit `SIDE_SHOTS=<Ordner>`).
+
+## 12. Nachtrag 19.11.2026: Vielfalt vor Kürze, kein Körperbereich vernachlässigt
+
+Gründer-Auftrag: „Die Vielfalt an Übungen innerhalb eines Workouts soll nicht gekürzt werden, es darf auch 30 min leicht
+überschreiten, wenn das notwendig ist, um eine Übung auf beiden Seiten durchzuführen. Das Workout soll insgesamt stimmig
+sein und … den Körper insgesamt definieren, indem kein Bereich vernachlässigt wird.“
+
+- **Grenze:** Kraft-Ausdauer auf Zeit jetzt 20–35 Minuten (`WORKOUT_THEME_RULES.strengthEndurance.minutes.max`).
+- **Zurückgenommene Kürzungen aus Abschnitt 11:** Beine & Po Ausdauer wieder mit einbeiniger Glute Bridge und
+  seitlichem Ausfallschritt (35 Min., Rundenpause 45 s), Ganzkörper Ausdauer 45/15 wieder mit einbeinigem Kreuzheben
+  (35 Min., Rundenpause 30 s), Stufe & Stuhl wieder mit Step-down (35 Min.), Core-Stabilität (30 Min.) und
+  Power-Intervall (34 Min.) wieder mit Seitstütz mit Hüftheben. Läufer 25 bleibt bei 2 Runden und HIIT 40/20 bei
+  4 Runden – dort fehlt keine Übung, nur eine Runde.
+- **Alle Körperbereiche** (`missingBodyRegions` in core `workouts/discover.ts`, Bereiche in
+  `WORKOUT_THEME_RULES.strengthEndurance.bodyRegions`: Beine/Gesäß, Drücken, Ziehen, Rumpf nach Hauptmuskeln):
+  Ganzkörper- und HIIT-Workouts auf Zeit decken alle vier ab. Ergänzt wurde jeweils eine Zugübung für den Rücken:
+  Tisch-Rudern (Ganzkörper Ausdauer 45/15), Handtuch-Rudern (HIIT 40/20), Y-T-W (Power-Intervall, Cardio ohne
+  Springen, Stufe & Stuhl) und Latziehen mit Handtuch (HIIT für Einsteiger). Bewusst fokussiert bleiben Workouts mit
+  Körperbereich im Namen (Bauch/Rumpf/Core, Beine & Po, Oberkörper, Läufer) und die Hyrox-Stationen.
+- **Tests:** `kraft-ausdauer.test.ts` (wieder aufgenommene Übungen, alle Bereiche je Ganzkörper-/HIIT-Workout),
+  `discover.test.ts` (Grenzen 35/36 Minuten, `missingBodyRegions` mit Grenzfällen).

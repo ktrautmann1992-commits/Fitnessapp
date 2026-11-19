@@ -6,6 +6,7 @@ import {
   isHyroxWorkout,
   isRelaxWorkout,
   isStrengthEnduranceWorkout,
+  missingBodyRegions,
   missingWorkoutEquipment,
   WORKOUT_THEMES,
   workoutDiscipline,
@@ -169,13 +170,14 @@ describe('Kraft-Ausdauer auf Zeit (Fokus, 15.11.2026)', () => {
       ...overrides,
     });
 
-  it('Zirkel/Intervall, Kraft-Kategorie, 20–30 Minuten, mindestens die Hälfte nach Zeit', () => {
+  it('Zirkel/Intervall, Kraft-Kategorie, 20–35 Minuten, mindestens die Hälfte nach Zeit', () => {
     expect(isStrengthEnduranceWorkout(timed())).toBe(true);
     expect(isStrengthEnduranceWorkout(timed({ format: 'circuit', minutes: 20 }))).toBe(true);
     expect(isStrengthEnduranceWorkout(timed({ minutes: 30, category: 'core' }))).toBe(true);
-    // Grenzen: 19 und 31 Minuten, Sätze × Wdh., Flow, Mobilität, Rudern, WOD-Stil.
+    expect(isStrengthEnduranceWorkout(timed({ minutes: 35 }))).toBe(true);
+    // Grenzen: 19 und 36 Minuten, Sätze × Wdh., Flow, Mobilität, Rudern, WOD-Stil.
     expect(isStrengthEnduranceWorkout(timed({ minutes: 19 }))).toBe(false);
-    expect(isStrengthEnduranceWorkout(timed({ minutes: 31 }))).toBe(false);
+    expect(isStrengthEnduranceWorkout(timed({ minutes: 36 }))).toBe(false);
     expect(isStrengthEnduranceWorkout(timed({ format: 'sets_reps' }))).toBe(false);
     expect(isStrengthEnduranceWorkout(timed({ format: 'flow' }))).toBe(false);
     expect(isStrengthEnduranceWorkout(timed({ category: 'mobility' }))).toBe(false);
@@ -304,5 +306,38 @@ describe('Geräte-Hinweis', () => {
     expect(missingWorkoutEquipment({ equipment_ids: ['sled'] }, none)).toEqual(['sled']);
     expect(missingWorkoutEquipment({ equipment_ids: [] }, none)).toEqual([]);
     expect(missingWorkoutEquipment({ equipment_ids: ['sled'] }, null)).toEqual([]);
+  });
+});
+
+describe('missingBodyRegions', () => {
+  const muscles: Record<string, string[]> = {
+    kniebeuge: ['quadriceps', 'glutes'],
+    liegestuetz: ['chest'],
+    rudern: ['upper_back', 'lats'],
+    stuetz: ['abs'],
+  };
+  const lookup = (id: string) => muscles[id];
+  const items = (...ids: string[]) => ({
+    exercises: ids.map((id) => workoutItem(id, { reps: null, duration_s: 40 })),
+  });
+
+  it('alle vier Bereiche abgedeckt → nichts fehlt', () => {
+    expect(
+      missingBodyRegions(items('kniebeuge', 'liegestuetz', 'rudern', 'stuetz'), lookup),
+    ).toEqual([]);
+  });
+
+  it('nennt fehlende Bereiche in fester Reihenfolge', () => {
+    expect(missingBodyRegions(items('kniebeuge', 'stuetz'), lookup)).toEqual([
+      'druecken',
+      'ziehen',
+    ]);
+    expect(missingBodyRegions(items('rudern'), lookup)).toEqual(['beine', 'druecken', 'rumpf']);
+  });
+
+  it('leeres Workout und unbekannte Übungen: alle Bereiche fehlen', () => {
+    const all = ['beine', 'druecken', 'ziehen', 'rumpf'];
+    expect(missingBodyRegions(items(), lookup)).toEqual(all);
+    expect(missingBodyRegions(items('gibt-es-nicht'), lookup)).toEqual(all);
   });
 });

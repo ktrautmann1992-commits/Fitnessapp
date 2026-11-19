@@ -1,12 +1,12 @@
 {
   "id": "stufe-stuhl-kraftausdauer-25",
-  "version": 2,
+  "version": 3,
   "status": "published",
-  "title_de": "Stufe & Stuhl Zirkel 27",
-  "summary_de": "Eine Treppenstufe und ein Stuhl reichen: Step-ups, Split-Kniebeugen und Kniebeugen nach Zeit, dazu Dead Bug und Bärenstand für die Körpermitte.",
+  "title_de": "Stufe & Stuhl Zirkel 35",
+  "summary_de": "Eine Treppenstufe und ein Stuhl reichen: Step-ups, Step-downs, Split-Kniebeugen und Kniebeugen nach Zeit, Liegestütz und Y-T-W für den Oberkörper, dazu Dead Bug und Bärenstand für die Körpermitte.",
   "category": "legs_glutes",
   "difficulty": 2,
-  "minutes": 27,
+  "minutes": 35,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 60,
@@ -16,6 +16,14 @@
   "exercises": [
     {
       "exercise_id": "step-up-stufe",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "step-down-stufe",
       "reps": null,
       "duration_s": 40,
       "sets": null,
@@ -48,6 +56,14 @@
     },
     {
       "exercise_id": "liegestuetz-erhoeht",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "y-t-w-vorgebeugt",
       "reps": null,
       "duration_s": 40,
       "sets": null,
