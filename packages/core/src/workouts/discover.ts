@@ -86,6 +86,26 @@ export function isStrengthEnduranceWorkout(
   return total > 0 && timed / total >= rules.minTimedShare;
 }
 
+/** Körperbereich nach WORKOUT_THEME_RULES.strengthEndurance.bodyRegions. */
+export type WorkoutBodyRegion = keyof typeof WORKOUT_THEME_RULES.strengthEndurance.bodyRegions;
+
+/**
+ * Körperbereiche (Beine, Drücken, Ziehen, Rumpf), die keine Übung des Workouts als Hauptmuskel trainiert
+ * (Gründer-Auftrag 19.11.2026 „kein Bereich vernachlässigt“). Unbekannte Übungen zählen für keinen Bereich.
+ */
+export function missingBodyRegions(
+  workout: Pick<Workout, 'exercises'>,
+  primaryMuscles: (exerciseId: string) => readonly string[] | undefined,
+): WorkoutBodyRegion[] {
+  const trained = new Set(
+    workout.exercises.flatMap((item) => primaryMuscles(item.exercise_id) ?? []),
+  );
+  const regions = WORKOUT_THEME_RULES.strengthEndurance.bodyRegions;
+  return (Object.keys(regions) as WorkoutBodyRegion[]).filter(
+    (region) => !(regions[region] as readonly string[]).some((muscle) => trained.has(muscle)),
+  );
+}
+
 /** Ruhige Flow-Routine (Yoga/Mobilität, höchstens WORKOUT_THEME_RULES.relaxMaxStars Sterne). */
 export function isRelaxWorkout(workout: ThemeInput): boolean {
   return (

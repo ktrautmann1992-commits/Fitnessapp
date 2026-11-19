@@ -1,15 +1,15 @@
 {
   "id": "ganzkoerper-ausdauer-45-15",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "Ganzkörper Ausdauer 45/15",
-  "summary_de": "Acht harte Stationen ohne Geräte, 45 Sekunden Arbeit und nur 15 Sekunden Pause. Für Geübte mit sicherer Technik bei Liegestütz und Ausfallschritt.",
+  "summary_de": "Zehn harte Stationen ohne Geräte für den ganzen Körper – Drücken, Ziehen am Tisch, Beine und Rumpf. 45 Sekunden Arbeit und nur 15 Sekunden Pause. Für Geübte mit sicherer Technik bei Liegestütz und Ausfallschritt.",
   "category": "full_body",
   "difficulty": 4,
-  "minutes": 28,
+  "minutes": 35,
   "format": "interval",
   "rounds": 3,
-  "round_rest_s": 60,
+  "round_rest_s": 30,
   "equipment_ids": [],
   "warmup_de": "5 Minuten aufwärmen: zügig auf der Stelle gehen, Arme kreisen, Schultern lockern und ein paar Step-Jacks im ruhigen Tempo.",
   "cooldown_de": "Zum Schluss 3–5 Minuten ruhig gehen und locker durchatmen. Beine, Hüfte und Schultern sanft ausschütteln.",
@@ -39,7 +39,23 @@
       "note_de": "Abwechselnd links und rechts."
     },
     {
+      "exercise_id": "rdl-einbeinig-koerpergewicht",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
       "exercise_id": "pike-liegestuetz",
+      "reps": null,
+      "duration_s": 45,
+      "sets": null,
+      "rest_s": 15,
+      "note_de": null
+    },
+    {
+      "exercise_id": "tisch-rudern",
       "reps": null,
       "duration_s": 45,
       "sets": null,

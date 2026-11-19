@@ -1,12 +1,12 @@
 {
   "id": "hiit-einsteiger",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "HIIT für Einsteiger",
-  "summary_de": "Erste Intervalle mit 40 Sekunden Arbeit und 20 Sekunden Pause. Mit Hampelmann – wer nicht springen möchte, nimmt Step-Jacks. Dazu Bärenstand und Dead Bug.",
+  "summary_de": "Erste Intervalle mit 40 Sekunden Arbeit und 20 Sekunden Pause. Mit Hampelmann – wer nicht springen möchte, nimmt Step-Jacks. Dazu Latziehen mit dem Handtuch, Bärenstand und Dead Bug.",
   "category": "hiit_cardio",
   "difficulty": 2,
-  "minutes": 22,
+  "minutes": 25,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 60,
@@ -32,6 +32,14 @@
     },
     {
       "exercise_id": "liegestuetz-erhoeht",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "handtuch-latziehen",
       "reps": null,
       "duration_s": 40,
       "sets": null,

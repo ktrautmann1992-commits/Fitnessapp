@@ -1,12 +1,12 @@
 {
   "id": "cardio-ohne-springen",
-  "version": 3,
+  "version": 4,
   "status": "published",
   "title_de": "Cardio ohne Springen",
-  "summary_de": "Puls hoch, Gelenke geschont: Intervalle ohne Sprünge, die du auch in einer Mietwohnung leise machen kannst – mit Dead Bug und Bauchnabel einziehen für die tiefen Bauchmuskeln.",
+  "summary_de": "Puls hoch, Gelenke geschont: Intervalle ohne Sprünge, die du auch in einer Mietwohnung leise machen kannst – mit Y-T-W für den oberen Rücken sowie Dead Bug und Bauchnabel einziehen für die tiefen Bauchmuskeln.",
   "category": "hiit_cardio",
   "difficulty": 1,
-  "minutes": 23,
+  "minutes": 26,
   "format": "interval",
   "rounds": 3,
   "round_rest_s": 45,
@@ -48,6 +48,14 @@
     },
     {
       "exercise_id": "liegestuetz-erhoeht",
+      "reps": null,
+      "duration_s": 30,
+      "sets": null,
+      "rest_s": 30,
+      "note_de": null
+    },
+    {
+      "exercise_id": "y-t-w-vorgebeugt",
       "reps": null,
       "duration_s": 30,
       "sets": null,

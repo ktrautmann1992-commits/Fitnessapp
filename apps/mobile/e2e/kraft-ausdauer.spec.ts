@@ -74,7 +74,7 @@ test('Kraft-Ausdauer auf Zeit: erster Bereich, oben in „Alle“, Tiefe Bauchmu
     /^Kraft-Ausdauer/,
   );
   const first = page.getByTestId('workouts-list').locator('[data-testid^="workout-card-"]').first();
-  await expect(first).toHaveAttribute('aria-label', /(2[0-9]|30) Min\./);
+  await expect(first).toHaveAttribute('aria-label', /(2[0-9]|3[0-5]) Min\./);
 
   await chip.click();
   await expect(page.getByTestId('workouts-theme-intro')).toContainText('tiefen Bauchmuskeln');

@@ -1,12 +1,12 @@
 {
   "id": "hiit-40-20",
-  "version": 2,
+  "version": 3,
   "status": "published",
   "title_de": "HIIT 40/20",
-  "summary_de": "Vier Runden, je 40 Sekunden Vollgas und 20 Sekunden Pause. Für Geübte, die schon sicher Liegestütz und Ausfallschritte machen.",
+  "summary_de": "Vier Runden mit sechs Stationen, je 40 Sekunden Vollgas und 20 Sekunden Pause – Beine, Liegestütz, Handtuch-Rudern und Rumpf. Für Geübte, die schon sicher Liegestütz und Ausfallschritte machen.",
   "category": "hiit_cardio",
   "difficulty": 4,
-  "minutes": 25,
+  "minutes": 29,
   "format": "interval",
   "rounds": 4,
   "round_rest_s": 60,
@@ -32,6 +32,14 @@
     },
     {
       "exercise_id": "liegestuetz",
+      "reps": null,
+      "duration_s": 40,
+      "sets": null,
+      "rest_s": 20,
+      "note_de": null
+    },
+    {
+      "exercise_id": "handtuch-rudern-isometrisch",
       "reps": null,
       "duration_s": 40,
       "sets": null,
